@@ -1,0 +1,335 @@
+import React, { useState, useEffect } from 'react';
+
+// --- IKONER ---
+const Landmark = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="2" y1="22" x2="22" y2="22"/><polyline points="9 22 9 12 15 12 15 22"/><polyline points="12 2 2 7 2 12 22 12 22 7 12 2"/><path d="M2 17h20"/><path d="M6 12v5"/><path d="M10 12v5"/><path d="M14 12v5"/><path d="M18 12v5"/></svg>
+);
+const Trophy = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+);
+const RefreshCw = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+);
+const CheckCircle2 = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+);
+const XCircle = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+);
+const ChevronRight = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m9 18 6-6-6-6"/></svg>
+);
+const ArrowLeft = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+);
+
+const App = () => {
+  const [gameState, setGameState] = useState('start');
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [questions, setQuestions] = useState([]);
+  const [currentOptions, setCurrentOptions] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [isAnswered, setIsAnswered] = useState(false);
+  const [score, setScore] = useState(0);
+
+  const allQuestionsData = [
+    {
+      question: "Vad är en politisk ideologi?",
+      correct: "En samling idéer om hur samhället ska styras och fungera.",
+      incorrect: ["En lista på alla lagar i Sverige.", "Namnet på ett politiskt parti.", "En historisk bok om krig."]
+    },
+    {
+      question: "Vilken historisk händelse lade grunden för liberalismen?",
+      correct: "Franska revolutionen.",
+      incorrect: ["Industriella revolutionen.", "Ryska revolutionen.", "Andra världskriget."]
+    },
+    {
+      question: "Vilken händelse låg bakom att socialismen växte fram?",
+      correct: "Industriella revolutionen.",
+      incorrect: ["Amerikanska revolutionen.", "Franska revolutionen.", "Upplysningen."]
+    },
+    {
+      question: "Varför växte konservatismen fram?",
+      correct: "Som en reaktion mot de snabba förändringarna i franska revolutionen.",
+      incorrect: ["För att människor ville ha mer miljöpolitik.", "För att kvinnor krävde rösträtt.", "För att arbetarna ville ha högre lön."]
+    },
+    {
+      question: "Vad är ett centralt mål inom socialismen?",
+      correct: "Att minska ekonomiska skillnader mellan rika och fattiga.",
+      incorrect: ["Att bevara gamla traditioner.", "Att öka privat ägande.", "Att ha så lite skatt som möjligt."]
+    },
+    {
+      question: "Vad är det viktigaste för liberalismen?",
+      correct: "Individens frihet och valfrihet.",
+      incorrect: ["Gemensamt ägande av alla företag.", "Starka traditioner och religion.", "Att staten bestämmer allt."]
+    },
+    {
+      question: "Vad vill konservatismen uppnå?",
+      correct: "Bevara traditioner och ha stabilitet i samhället.",
+      incorrect: ["Snabba revolutioner.", "Att avskaffa alla klasskillnader.", "Att staten inte ska ha någon makt."]
+    },
+    {
+      question: "Vilken politisk fråga förknippas ofta med socialismen?",
+      correct: "Att ta bort vinster i välfärden (vård och skola).",
+      incorrect: ["Sänkta skatter för företag.", "Minskad offentlig sektor.", "Fri marknad utan regler."]
+    },
+    {
+      question: "Vilken politisk fråga är typisk för liberalismen?",
+      correct: "Valfrihet i skola och vård genom privata alternativ.",
+      incorrect: ["Att förbjuda privata företag.", "Att staten ska äga alla banker.", "Höjda bidrag till alla."]
+    },
+    {
+      question: "Vilken politisk fråga förknippas ofta med konservatismen?",
+      correct: "Lag och ordning samt ett starkt försvar.",
+      incorrect: ["Att avskaffa polisen.", "Att ha fri invandring.", "Att krossa patriarkatet."]
+    },
+    {
+      question: "Vad har socialism och liberalism gemensamt?",
+      correct: "Tron på demokratiska värderingar.",
+      incorrect: ["Motstånd mot individens frihet.", "Att de vill bevara monarkin.", "Att de är emot förändring."]
+    },
+    {
+      question: "Vad skiljer liberalismen från socialismen?",
+      correct: "Liberalismen betonar individens frihet, socialismen betonar jämlikhet.",
+      incorrect: ["Socialismen vill ha låg skatt, liberalismen hög.", "Liberalismen är emot demokrati.", "Det finns ingen skillnad."]
+    },
+    {
+      question: "Vad skiljer konservatismen från liberalismen?",
+      correct: "Konservatismen vill bevara traditioner, liberalismen är mer öppen för förändring.",
+      incorrect: ["Konservatismen vill ha mer frihet än liberalismen.", "Konservatismen bygger på kollektivt ägande.", "Liberalismen vill bevara religionen."]
+    },
+    {
+      question: "Vad har konservatismen och liberalismen gemensamt?",
+      correct: "Tron på individens ansvar.",
+      incorrect: ["Krav på revolution.", "Motstånd mot privat ägande.", "Gemensamt ägande av företag."]
+    },
+    {
+      question: "Hur ser konservatismen på ekonomisk ojämlikhet jämfört med socialismen?",
+      correct: "Konservatismen tycker det är naturligt, socialismen vill minska den.",
+      incorrect: ["Socialismen tycker det är bra med rika och fattiga.", "Båda vill att staten ska äga allt.", "Konservatismen vill ha 100% skatt."]
+    },
+    {
+      question: "Vilken ideologi betonar solidaritet och kollektivets ansvar?",
+      correct: "Socialism.",
+      incorrect: ["Liberalism.", "Konservatism.", "Ekologism."]
+    },
+    {
+      question: "Vad betyder ordet 'liber' (som i liberalism)?",
+      correct: "Fri.",
+      incorrect: ["Kamrat.", "Bevara.", "Strid."]
+    },
+    {
+      question: "Vem kallas ofta för socialismens fader?",
+      correct: "Karl Marx.",
+      incorrect: ["Edmund Burke.", "Ebba Busch.", "Donald Trump."]
+    },
+    {
+      question: "Vem räknas som konservatismens fader?",
+      correct: "Edmund Burke.",
+      incorrect: ["Karl Marx.", "Nooshi Dadgostar.", "Ulf Kristersson."]
+    },
+    {
+      question: "Vilken ideologi växte fram på 1970-talet på grund av miljöproblem?",
+      correct: "Ekologism.",
+      incorrect: ["Socialism.", "Liberalism.", "Nationalism."]
+    },
+    {
+      question: "Vad är feminismens främsta mål?",
+      correct: "Att samhället ska bli jämställt mellan kvinnor och män.",
+      incorrect: ["Att män ska ha all makt.", "Att bevara gamla traditioner.", "Att sänka skatterna för rika."]
+    },
+    {
+      question: "Vad innebär nationalism?",
+      correct: "Att människor med samma språk och kultur ska ha ett eget land.",
+      incorrect: ["Att alla länder ska tas bort.", "Att miljöfrågor är viktigast.", "Att staten ska äga alla fabriker."]
+    },
+    {
+      question: "Vad står GAL för i GAL-TAN-skalan?",
+      correct: "Grön, Alternativ, Libertär.",
+      incorrect: ["Gammal, Arbetande, Lojal.", "Gemensam, Allmän, Laglydig.", "Grön, Auktoritär, Nationalistisk."]
+    },
+    {
+      question: "Vad står TAN för i GAL-TAN-skalan?",
+      correct: "Traditionell, Auktoritär, Nationalistisk.",
+      incorrect: ["Trygg, Alternativ, Ny.", "Tillsammans, Allvarlig, Normal.", "Teknisk, Aktiv, Nyttig."]
+    },
+    {
+      question: "Vad vill partier som sitter till VÄNSTER på skalan oftast ha?",
+      correct: "Högre skatter för att satsa mer på välfärden.",
+      incorrect: ["Lägre skatter för att människor ska bestämma själva.", "Mindre makt till staten.", "Att privatisera all sjukvård."]
+    },
+    {
+      question: "Vad vill partier som sitter till HÖGER på skalan oftast ha?",
+      correct: "Lägre skatter och mer ansvar för individen.",
+      incorrect: ["Högre skatter för att göra allt mer jämlikt.", "Att staten ska äga alla företag.", "Att förbjuda valfrihet i skolan."]
+    },
+    {
+      question: "Vad kallas det när politiker lovar enkla lösningar på svåra problem för att vinna röster?",
+      correct: "Populism.",
+      incorrect: ["Nationalism.", "Ekologism.", "Feminism."]
+    },
+    {
+      question: "Vad är ett patriarkat enligt feminismen?",
+      correct: "Ett samhälle där män har mer makt än kvinnor.",
+      incorrect: ["Ett samhälle där alla är lika.", "Ett samhälle som styrs av miljöregler.", "Ett samhälle utan lagar."]
+    },
+    {
+      question: "Vilken ideologi vill att förändringar i samhället ska ske långsamt?",
+      correct: "Konservatism.",
+      incorrect: ["Socialism.", "Liberalism.", "Ekologism."]
+    },
+    {
+      question: "Vilken ideologi vill ha så stor frihet som möjligt för företag och handel?",
+      correct: "Liberalism.",
+      incorrect: ["Socialism.", "Ekologism.", "Feminism."]
+    }
+  ];
+
+  const shuffleArray = (array) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  const startGame = () => {
+    const shuffledQuestions = shuffleArray(allQuestionsData).slice(0, 30);
+    setQuestions(shuffledQuestions);
+    setScore(0);
+    setCurrentQuestionIndex(0);
+    setGameState('playing');
+    loadQuestion(shuffledQuestions[0]);
+  };
+
+  const loadQuestion = (questionData) => {
+    setSelectedOption(null);
+    setIsAnswered(false);
+    const options = [questionData.correct, ...questionData.incorrect];
+    setCurrentOptions(shuffleArray(options));
+  };
+
+  const handleOptionClick = (option) => {
+    if (isAnswered) return;
+    setSelectedOption(option);
+    setIsAnswered(true);
+    if (option === questions[currentQuestionIndex].correct) {
+      setScore(score + 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentQuestionIndex + 1 < questions.length) {
+      const nextIndex = currentQuestionIndex + 1;
+      setCurrentQuestionIndex(nextIndex);
+      loadQuestion(questions[nextIndex]);
+    } else {
+      setGameState('result');
+    }
+  };
+
+  if (gameState === 'start') {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
+        <div className="bg-white max-w-md w-full rounded-2xl shadow-xl overflow-hidden border-t-8 border-yellow-500">
+          <div className="p-8 text-center">
+            <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Landmark className="w-10 h-10 text-yellow-600" />
+            </div>
+            <h1 className="text-3xl font-black text-slate-900 mb-2">Ideologier Quiz</h1>
+            <p className="text-slate-500 mb-8">Träna på de stora politiska ismerna inför provet. 30 frågor på enkel svenska!</p>
+            <div className="space-y-3">
+              <button onClick={startGame} className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-95">
+                Starta quizet
+              </button>
+              <a href="index.html" className="flex items-center justify-center gap-2 text-slate-400 hover:text-slate-600 font-medium py-2">
+                <ArrowLeft className="w-4 h-4" /> Tillbaka till portalen
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (gameState === 'result') {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
+        <div className="bg-white max-w-md w-full rounded-2xl shadow-xl p-8 text-center border-t-8 border-yellow-500">
+          <Trophy className="w-20 h-20 mx-auto mb-4 text-yellow-500" />
+          <h2 className="text-3xl font-black text-slate-800 mb-2">Bra jobbat!</h2>
+          <p className="text-6xl font-black text-yellow-500 mb-6">{score} / {questions.length}</p>
+          <div className="space-y-4">
+            <button onClick={startGame} className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95">
+              <RefreshCw className="w-5 h-5" /> Försök igen
+            </button>
+            <a href="index.html" className="block w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-4 rounded-xl transition-all">
+              Tillbaka till portalen
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const currentQ = questions[currentQuestionIndex];
+
+  return (
+    <div className="min-h-screen flex flex-col items-center py-8 p-4 bg-slate-50">
+      <div className="w-full max-w-md">
+        <div className="mb-6">
+          <div className="flex justify-between text-xs font-black uppercase tracking-widest text-slate-400 mb-2 px-1">
+            <span>Fråga {currentQuestionIndex + 1} / {questions.length}</span>
+            <span>Poäng: {score}</span>
+          </div>
+          <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-yellow-500 transition-all duration-300" 
+              style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
+            ></div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-6 border-b-4 border-slate-100">
+          <h2 className="text-xl font-bold text-slate-800 leading-snug">{currentQ.question}</h2>
+        </div>
+
+        <div className="space-y-3">
+          {currentOptions.map((option, index) => {
+            let btnClasses = "w-full text-left p-5 rounded-xl border-2 transition-all font-bold flex items-center justify-between gap-3 shadow-sm ";
+            if (!isAnswered) {
+              btnClasses += "border-slate-100 bg-white text-slate-600 hover:border-yellow-400 hover:shadow-md active:scale-95";
+            } else {
+              if (option === currentQ.correct) {
+                btnClasses += "border-green-500 bg-green-50 text-green-800";
+              } else if (option === selectedOption) {
+                btnClasses += "border-red-500 bg-red-50 text-red-800";
+              } else {
+                btnClasses += "border-slate-50 bg-slate-50 text-slate-300 opacity-60";
+              }
+            }
+            return (
+              <button key={index} onClick={() => handleOptionClick(option)} disabled={isAnswered} className={btnClasses}>
+                <span>{option}</span>
+                {isAnswered && option === currentQ.correct && <CheckCircle2 className="w-6 h-6 text-green-500 shrink-0" />}
+                {isAnswered && option === selectedOption && option !== currentQ.correct && <XCircle className="w-6 h-6 text-red-500 shrink-0" />}
+              </button>
+            );
+          })}
+        </div>
+
+        {isAnswered && (
+          <div className="mt-8">
+            <button onClick={handleNext} className="w-full bg-slate-900 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95">
+              {currentQuestionIndex + 1 === questions.length ? 'Se resultat' : 'Nästa fråga'}
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default App;
