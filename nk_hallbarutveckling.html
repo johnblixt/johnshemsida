@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NK - Hållbar Utveckling Quiz</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 font-sans">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // --- IKONER ---
+    const Leaf = ({ className }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+    );
+    const Trophy = ({ className }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+    );
+
+    // --- FRÅGOR (ORSAKSKEDJAN 1-10) ---
+    const chainQuestions = [
+      { q: "Vad är oftast det första steget i kedjan som förklarar hur människan påverkar miljön?", a: "Vår konsumtion (att vi köper och använder saker).", i: ["Att det regnar mycket.", "Att växter växer.", "Källsortering."], step: "Steg 1: Konsumtion" },
+      { q: "När fabriker tillverkar saker används ofta kol, olja och gas. Vad kallas dessa?", a: "Fossila bränslen.", i: ["Förnybar energi.", "Ekosystemtjänster.", "Cirkulär ekonomi."], step: "Steg 2: Resurser" },
+      { q: "Vad släpps ut i luften när vi bränner fossila bränslen?", a: "Växthusgaser som koldioxid.", i: ["Rent syre.", "Bara vatten.", "Guld."], step: "Steg 3: Utsläpp" },
+      { q: "Varför är koldioxid i atmosfären ett problem?", a: "Det förstärker växthuseffekten och håller kvar värme.", i: ["Det blir mörkt ute.", "Det luktar illa.", "Det stoppar regn."], step: "Steg 4: Växthuseffekten" },
+      { q: "Vad händer med jordens temperatur när växthuseffekten ökar?", a: "Global uppvärmning (medeltemperaturen stiger).", i: ["Det blir istid.", "Inget händer.", "Det blir bara varmt på Nordpolen."], step: "Steg 5: Temperatur" },
+      { q: "Hur kan värmen leda till fler skogsbränder?", a: "Värmen torkar ut mark och växter.", i: ["Träden börjar brinna själva.", "Djuren startar bränder.", "Det slutar åska."], step: "Steg 6: Torka" },
+      { q: "Varför leder skogsbränder till ännu MER uppvärmning?", a: "Elden släpper ut den koldioxid som träden lagrat.", i: ["Elden värmer rymden.", "Röken är varm.", "Askan är svart."], step: "Steg 7: Ond cirkel" },
+      { q: "Vad händer med isarna vid polerna när jorden blir varmare?", a: "De smälter och blir vatten.", i: ["De blir tjockare.", "De flyttar till Sverige.", "De blir kolsyra."], step: "Steg 8: Smältning" },
+      { q: "Vad händer när vit is ersätts av mörkt havsvatten?", a: "Mörkt vatten suger åt sig mer värme (Albedo-effekten).", i: ["Havet blir ljusare.", "Jorden kyls ner.", "Fiskarna fryser."], step: "Steg 9: Reflektion" },
+      { q: "Vad blir konsekvensen för kuststäder när isarna smälter?", a: "Havsnivåerna stiger och orsakar översvämningar.", i: ["Haven torkar ut.", "Det blir större stränder.", "Vattnet blir drickbart."], step: "Steg 10: Havsnivå" }
+    ];
+
+    // --- BEGREPPSFRÅGOR (22 stycken) ---
+    const conceptQuestions = [
+      { q: "Vad innebär 'Hållbar utveckling'?", a: "Att vi lever bra idag utan att förstöra för framtiden.", i: ["Att vi använder upp alla resurser nu.", "Att ekonomin växer hela tiden.", "Att vi slutar bygga hus."], step: "Hållbarhet" },
+      { q: "Vilken del av hållbarhet handlar om att djur och natur ska må bra?", a: "Ekologisk hållbarhet.", i: ["Social hållbarhet.", "Ekonomisk hållbarhet.", "Cirkulär ekonomi."], step: "Hållbarhet" },
+      { q: "Vilken del handlar om rättvisa, hälsa och trygghet för människor?", a: "Social hållbarhet.", i: ["Ekologisk hållbarhet.", "Ekonomisk hållbarhet.", "Klimatanpassning."], step: "Hållbarhet" },
+      { q: "Vad innebär 'Ekonomisk hållbarhet'?", a: "Att använda pengar och resurser så att de räcker länge utan att skada miljön.", i: ["Att tjäna så mycket pengar som möjligt snabbt.", "Att aldrig använda pengar.", "Att bara köpa billiga saker."], step: "Hållbarhet" },
+      { q: "Vad är ett 'Ekologiskt fotavtryck'?", a: "Ett mått på hur mycket naturresurser en person använder.", i: ["Storleken på ens skor.", "Hur mycket man går i skogen.", "Ett märke efter en björn."], step: "Begrepp" },
+      { q: "Vad kallas resurser som aldrig tar slut, som sol och vind?", a: "Förnybara naturresurser.", i: ["Icke-förnybara resurser.", "Fossila bränslen.", "Livscykelanalys."], step: "Resurser" },
+      { q: "Vad är ett exempel på en icke-förnybar resurs?", a: "Olja och metaller.", i: ["Solljus.", "Vind.", "Trä."], step: "Resurser" },
+      { q: "Vad innebär 'Biologisk mångfald'?", a: "Att det finns många olika arter och naturtyper.", i: ["Att alla skogar ser likadana ut.", "Att det bara finns en sorts säd.", "Att vi planterar mer plast."], step: "Natur" },
+      { q: "Vad är 'Ekosystemtjänster'?", a: "Gratis saker vi får från naturen, som syre och pollinering.", i: ["När man jobbar som skogshuggare.", "Att köpa mat i affären.", "Att städa i en park."], step: "Natur" },
+      { q: "Vad är ett hot mot biologisk mångfald?", a: "Skogsavverkning och miljögifter.", i: ["Att plantera blommor.", "Att det finns för många bin.", "Att solen skiner."], step: "Natur" },
+      { q: "Vad gör man i en 'Livscykelanalys' (LCA)?", a: "Man kollar miljöpåverkan från råvara till sopor.", i: ["Man kollar hur länge ett djur lever.", "Man räknar hur många som köper en vara.", "Man kollar om en produkt är snygg."], step: "Analys" },
+      { q: "Vad innebär 'Cirkulär ekonomi'?", a: "Att vi lagar, återanvänder och återvinner saker.", i: ["Att vi slänger allt och köper nytt.", "Att pengar rör sig i en cirkel.", "Att alla butiker ligger i en ring."], step: "Ekonomi" },
+      { q: "Vad handlar 'Klimaträttvisa' om?", a: "Att rika länder som släppt ut mest tar störst ansvar.", i: ["Att alla länder ska betala lika mycket.", "Att domstolar ska bestämma vädret.", "Att sluta använda pengar."], step: "Rättvisa" },
+      { q: "Vad är målet med Parisavtalet?", a: "Att hålla uppvärmningen under 2 grader (helst 1,5).", i: ["Att förbjuda bilar i Paris.", "Att alla ska bli vegetarianer.", "Att flytta FN till Frankrike."], step: "Avtal" },
+      { q: "Vad är 'Globala målen' (Agenda 2030)?", a: "17 mål för att stoppa fattigdom och skydda miljön.", i: ["En tävling i sport.", "En lista på världens rikaste länder.", "Regler för hur man bygger flygplan."], step: "Avtal" },
+      { q: "Vad är 'Klimatanpassning'?", a: "Att förbereda samhället på t.ex. översvämningar.", i: ["Att sluta använda el.", "Att flytta till en annan planet.", "Att måla husen vita."], step: "Åtgärder" },
+      { q: "Vad är 'Klimatåtgärder'?", a: "Saker vi gör för att minska utsläpp och bromsa uppvärmningen.", i: ["Att mäta hur varmt det är.", "Att skriva om vädret i tidningen.", "Att vänta på att det ska bli kallt."], step: "Åtgärder" },
+      { q: "Vad är en klimatåtgärd på individnivå?", a: "Att äta mer vegetariskt och resa hållbart.", i: ["Att staten bygger kärnkraft.", "Att företag renar sina utsläpp.", "Att uppfinna nya maskiner."], step: "Individ" },
+      { q: "Vad kan en stat göra som klimatåtgärd?", a: "Stifta lagar och höja skatt på utsläpp.", i: ["Sluta handla kläder.", "Sopsortera hemma hos ministern.", "Bara prata om vädret."], step: "Staten" },
+      { q: "Vad kan ett företag göra för miljön?", a: "Designa produkter som håller länge och kan lagas.", i: ["Sluta betala lön.", "Be kunderna kasta deras produkter.", "Flytta fabriken till skogen."], step: "Företag" },
+      { q: "Vilken energikälla är förnybar?", a: "Sol, vind och vatten.", i: ["Olja och kol.", "Kärnkraft.", "Naturgas."], step: "Energi" },
+      { q: "Vilken energikälla är icke-förnybar?", a: "Olja, kol och kärnkraft.", i: ["Solenergi.", "Vindkraft.", "Vågenergi."], step: "Energi" }
+    ];
+
+    const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
+
+    function App() {
+      const [gameState, setGameState] = useState('start');
+      const [allQuestions, setAllQuestions] = useState([]);
+      const [currentIdx, setCurrentIdx] = useState(0);
+      const [score, setScore] = useState(0);
+      const [selected, setSelected] = useState(null);
+      const [shuffledOptions, setShuffledOptions] = useState([]);
+
+      const start = () => {
+        const combined = [...chainQuestions, ...shuffle(conceptQuestions)];
+        setAllQuestions(combined);
+        setCurrentIdx(0);
+        setScore(0);
+        setSelected(null);
+        setGameState('play');
+        const firstQ = combined[0];
+        setShuffledOptions(shuffle([firstQ.a, ...firstQ.i]));
+      };
+
+      const handleAns = (ans) => {
+        if (selected) return;
+        setSelected(ans);
+        if (ans === allQuestions[currentIdx].a) setScore(score + 1);
+      };
+
+      const next = () => {
+        const nextIdx = currentIdx + 1;
+        if (nextIdx < allQuestions.length) {
+          setCurrentIdx(nextIdx);
+          setSelected(null);
+          const nextQ = allQuestions[nextIdx];
+          setShuffledOptions(shuffle([nextQ.a, ...nextQ.i]));
+        } else {
+          setGameState('end');
+        }
+      };
+
+      if (gameState === 'start') return (
+        <div className="flex items-center justify-center min-h-screen p-4 text-center">
+          <div className="bg-white p-8 rounded-3xl shadow-xl max-w-sm w-full border-t-8 border-green-500">
+            <Leaf className="w-16 h-16 text-green-500 mx-auto mb-4" />
+            <h1 className="text-2xl font-black mb-2 uppercase tracking-tight">NK: Miljöquiz</h1>
+            <p className="text-slate-500 mb-6 font-medium">Lär dig orsakskedjan och viktiga begrepp för hållbar utveckling.</p>
+            <button onClick={start} className="w-full bg-green-500 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-green-600 transition-all active:scale-95">Starta Spelet</button>
+          </div>
+        </div>
+      );
+
+      if (gameState === 'end') return (
+        <div className="flex items-center justify-center min-h-screen p-4 text-center">
+          <div className="bg-white p-8 rounded-3xl shadow-xl max-w-sm w-full border-t-8 border-green-500">
+            <Trophy className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-black mb-2 text-slate-800">Bra jobbat!</h2>
+            <p className="text-4xl font-black text-green-500 mb-4">{score} / {allQuestions.length}</p>
+            <button onClick={start} className="w-full bg-slate-800 text-white font-bold py-4 rounded-xl mb-3 shadow-md">Spela igen</button>
+            <a href="index.html" className="block text-slate-400 font-bold hover:text-slate-600">Tillbaka till portalen</a>
+          </div>
+        </div>
+      );
+
+      const q = allQuestions[currentIdx];
+
+      return (
+        <div className="flex flex-col items-center min-h-screen p-4 pt-8">
+          <div className="w-full max-w-md">
+            <div className="flex justify-between text-[10px] font-black text-slate-400 mb-2 uppercase tracking-widest">
+              <span>{q.step}</span>
+              <span>Fråga {currentIdx + 1} / {allQuestions.length}</span>
+            </div>
+            <div className="h-2 bg-slate-200 rounded-full mb-6 overflow-hidden">
+              <div className="h-full bg-green-500 transition-all duration-500" style={{width: `${((currentIdx+1)/allQuestions.length)*100}%`}}></div>
+            </div>
+            <div className="bg-white p-6 rounded-2xl shadow-sm mb-6 border-b-4 border-slate-100">
+              <h2 className="text-lg font-bold text-slate-800 leading-snug">{q.q}</h2>
+            </div>
+            <div className="space-y-3">
+              {shuffledOptions.map((opt, i) => (
+                <button key={i} onClick={() => handleAns(opt)} disabled={!!selected} className={`w-full text-left p-4 rounded-xl font-bold border-2 transition-all ${
+                  !selected ? "bg-white border-slate-100 hover:border-green-400 hover:shadow-sm" : 
+                  opt === q.a ? "bg-green-50 border-green-500 text-green-700" : 
+                  opt === selected ? "bg-red-50 border-red-500 text-red-700" : "bg-white border-slate-50 text-slate-300 opacity-60"
+                }`}>
+                  {opt}
+                </button>
+              ))}
+            </div>
+            {selected && (
+              <button onClick={next} className="w-full mt-8 bg-slate-900 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2">
+                {currentIdx + 1 === allQuestions.length ? "Visa Resultat" : "Gå Vidare"}
+              </button>
+            )}
+          </div>
+        </div>
+      );
+    }
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
