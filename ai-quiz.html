@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Mästaren: Interaktivt Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .option-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .correct { background-color: #10b981 !important; color: white; border-color: #059669 !important; }
+        .incorrect { background-color: #ef4444 !important; color: white; border-color: #dc2626 !important; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        
+        /* Rank Colors for Live Header */
+        .text-noob { color: #94a3b8; } /* Grå */
+        .text-rookie { color: #10b981; } /* Grön */
+        .text-junior { color: #3b82f6; } /* Blå */
+        .text-bronze { color: #b45309; } /* Brun/Brons */
+        .text-silver { color: #64748b; } /* Silver/Stål */
+        .text-allstar { color: #8b5cf6; } /* Lila */
+        .text-elite { color: #f59e0b; font-weight: 900; } /* Guld */
+
+        /* Final Rank Badge Styles */
+        .rank-elite { background: linear-gradient(45deg, #f59e0b, #d946ef); color: white; }
+        .rank-allstar { background-color: #8b5cf6; color: white; }
+        .rank-silver { background-color: #64748b; color: white; }
+        .rank-bronze { background-color: #b45309; color: white; }
+        .rank-junior { background-color: #3b82f6; color: white; }
+        .rank-rookie { background-color: #10b981; color: white; }
+        .rank-noob { background-color: #94a3b8; color: white; }
+        .rank-none { background-color: #e2e8f0; color: #64748b; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4 font-sans text-slate-800">
+
+    <div id="app" class="max-w-2xl w-full bg-white rounded-2xl shadow-xl overflow-hidden">
+        <!-- Progress Bar -->
+        <div class="h-2 bg-slate-100 w-full">
+            <div id="progress" class="h-full bg-blue-500 transition-all duration-300" style="width: 0%"></div>
+        </div>
+
+        <div class="p-8">
+            <!-- Header with Counter, Live Score and Live Title -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900">AI-Mästaren</h1>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <span id="live-rank" class="text-xs font-black uppercase tracking-tighter bg-slate-100 px-3 py-1 rounded-full border border-slate-200 self-center">NEWBIE</span>
+                    <span id="score-counter" class="text-sm font-bold text-green-700 bg-green-50 px-3 py-1 rounded-full border border-green-100">Poäng: 0</span>
+                    <span id="counter" class="text-sm font-medium text-slate-500 bg-slate-100 px-3 py-1 rounded-full">1 / 70</span>
+                </div>
+            </div>
+
+            <!-- Question Area -->
+            <div id="quiz-content" class="fade-in">
+                <p id="question-text" class="text-lg font-semibold mb-6 leading-tight"></p>
+                <div id="options-container" class="space-y-3">
+                    <!-- Options injected here -->
+                </div>
+            </div>
+
+            <!-- Feedback Area -->
+            <div id="feedback" class="mt-6 p-4 rounded-xl hidden fade-in bg-slate-50 border border-slate-200 text-center">
+                <p id="feedback-text" class="text-sm italic mb-4 text-slate-600"></p>
+                <button id="next-btn" class="w-full bg-slate-900 text-white py-3 rounded-lg font-bold hover:bg-slate-800 transition-colors">
+                    Nästa fråga
+                </button>
+            </div>
+
+            <!-- Results Screen -->
+            <div id="results" class="hidden text-center fade-in">
+                <div class="mb-6">
+                    <div id="final-rank-badge" class="inline-block px-8 py-3 rounded-full text-xl font-black uppercase tracking-widest mb-4 shadow-lg">
+                        RANK: <span id="final-rank-text">-</span>
+                    </div>
+                    <h2 class="text-3xl font-extrabold text-slate-900">Bra jobbat!</h2>
+                    <p class="text-slate-500 mt-2">Du har genomfört hela träningen.</p>
+                </div>
+                
+                <div class="bg-slate-50 p-6 rounded-2xl mb-8 border border-slate-100">
+                    <p class="text-slate-500 uppercase tracking-wider text-xs font-bold mb-1">Ditt slutresultat</p>
+                    <p class="text-6xl font-black text-slate-900"><span id="final-score">0</span> <span class="text-slate-300 text-3xl">/ 70</span></p>
+                </div>
+                
+                <button onclick="location.reload()" class="bg-blue-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-200 active:scale-95">
+                    Starta om och nå Elite-rank
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const baseQuestions = [
+            { q: "Vad är den primära betydelsen av begreppet AI (Artificiell Intelligens)?", a: [{t: "Teknik som gör det möjligt för maskiner att simulera mänskliga kognitiva funktioner.", c: true}, {t: "En databas som lagrar all information som finns på internet.", c: false}, {t: "Ett program som automatiskt uppdaterar din dators hårdvara.", c: false}, {t: "En robot som ser ut precis som en människa.", c: false}], r: "Detta är kärnan i AI: att maskiner utför uppgifter som kräver intelligens." },
+            { q: "Hur skulle du kortfattat beskriva vad Artificiell Intelligens faktiskt är?", a: [{t: "Datorer som programmerats att fatta beslut och lösa problem likt en människa.", c: true}, {t: "En maskin som alltid vet sanningen om framtiden.", c: false}, {t: "Ett sätt att få internet att gå snabbare.", c: false}, {t: "Programkod som aldrig kan ändras eller förbättras.", c: false}], r: "AI syftar till att efterlikna mänskligt beslutsfattande och problemlösning." },
+            { q: "Vad står akronymen AI för i tekniska sammanhang?", a: [{t: "Artificiell Intelligens", c: true}, {t: "Automatiserad Information", c: false}, {t: "Avancerad Interaktion", c: false}, {t: "Artificiell Infrastruktur", c: false}], r: "Detta är den korrekta svenska termen för Artificial Intelligence." },
+            { q: "Ge ett exempel på var vi möter AI i vår vardag.", a: [{t: "Rekommendationssystem på streamingtjänster som Netflix.", c: true}, {t: "En vanlig köksklocka som tickar.", c: false}, {t: "En ficklampa med batteri.", c: false}, {t: "En manuell kaffebryggare.", c: false}], r: "Dessa system analyserar ditt beteende för att förutsäga vad du vill se härnäst." },
+            { q: "Vilken av dessa tjänster använder oftast AI för att förbättra användarupplevelsen?", a: [{t: "Sökfunktioner på internet som Google.", c: true}, {t: "En tryckt ordbok.", c: false}, {t: "En gammal radio.", c: false}, {t: "Ett vanligt pussel.", c: false}], r: "Google använder AI för att förstå vad du faktiskt letar efter baserat på kontext." },
+            { q: "Var i mobilen är det mest troligt att du hittar aktiv AI-teknik?", a: [{t: "I din smartphones röstassistent eller ansiktsigenkänning.", c: true}, {t: "I en vanlig förlängningssladd.", c: false}, {t: "I ett par vanliga solglasögon.", c: false}, {t: "I en analog termometer.", c: false}], r: "Både tal och bildigenkänning är klassiska AI-områden." },
+            { q: "Vad innebär begreppet 'maskininlärning' (machine learning)?", a: [{t: "Att datorer lär sig känna igen mönster i data utan att vara explicit programmerade för varje svar.", c: true}, {t: "Att maskiner lär sig att prata svenska genom att läsa en ordbok.", c: false}, {t: "Att en människa skriver in alla instruktioner manuellt.", c: false}, {t: "Att maskiner tränar på gym.", c: false}], r: "Maskininlärning innebär att algoritmerna förbättras genom erfarenhet (data)." },
+            { q: "Hur fungerar maskininlärning i grunden?", a: [{t: "Genom att mata in stora mängder exempel som algoritmen analyserar för att hitta samband.", c: true}, {t: "Genom att datorn gissar slumpmässigt tills den får rätt.", c: false}, {t: "Genom att datorn ringer en människa varje gång.", c: false}, {t: "Genom att ladda ner en mänsklig hjärna.", c: false}], r: "Datan fungerar som läromedel för algoritmen så den kan generalisera." },
+            { q: "Varför sägs 'data' vara 'bränslet' för AI?", a: [{t: "Eftersom AI-modeller behöver exempel för att kunna identifiera mönster och samband.", c: true}, {t: "Eftersom data producerar elektriciteten som datorn behöver.", c: false}, {t: "För att data är namnet på hårddisken.", c: false}, {t: "Eftersom det gör internet snabbare.", c: false}], r: "Utan data har AI:n inget att lära sig ifrån." },
+            { q: "Vad händer med en AI om man matar den med felaktig eller vinklad data?", a: [{t: "Den kommer att lära sig felaktiga mönster och ge opålitliga svar.", c: true}, {t: "Den kommer automatiskt att rätta felen själv.", c: false}, {t: "Datorn kommer att stängas av för att skydda sig.", c: false}, {t: "AI är immun mot felaktig information.", c: false}], r: "Dålig input ger dålig output; detta kallas för bias." },
+            { q: "Vad är en algoritm i grunden?", a: [{t: "En sekvens av instruktioner för att utföra en specifik uppgift.", c: true}, {t: "En typ av datorskärm som visar färger bättre.", c: false}, {t: "Ett sätt att mäta hur tung en dator är.", c: false}, {t: "En matematisk formel för bara division.", c: false}], r: "En algoritm är den logiska vägen från input till output." },
+            { q: "Nämn en tydlig fördel med AI i samhället.", a: [{t: "Effektivisering av repetitiva uppgifter och snabb analys av stora datamängder.", c: true}, {t: "Att alla datorer blir gratis att köpa.", c: false}, {t: "Att det aldrig mer regnar utomhus.", c: false}, {t: "Att människor slipper lära sig läsa.", c: false}], r: "AI är överlägsen på att hitta mönster i enorma mängder data snabbt." },
+            { q: "Vad är en betydande risk med AI?", a: [{t: "Hot mot den personliga integriteten genom ökad övervakning.", c: true}, {t: "Att datorer börjar kräva lön.", c: false}, {t: "Att internet tar slut.", c: false}, {t: "Att robotar äter upp vår mat.", c: false}], r: "AI gör det möjligt att analysera och spåra människor i stor skala." },
+            { q: "Vad menas med 'bias' i ett AI-system?", a: [{t: "Att systemet har inbyggda fördomar på grund av vinklad träningsdata.", c: true}, {t: "Att AI:n är för snabb på att svara.", c: false}, {t: "Att skärmen ändrar färg.", c: false}, {t: "Att programmet kräver ett speciellt lösenord.", c: false}], r: "Om datan är orättvis kommer AI-besluten också att bli orättvisa." },
+            { q: "Vad är en 'Deepfake' och varför är det farligt?", a: [{t: "En AI-genererad video som ser verklig ut men visar något som aldrig hänt.", c: true}, {t: "Ett sätt att laga trasiga datorer på distans.", c: false}, {t: "En robot-kaka.", c: false}, {t: "Snabbare trådlös uppkoppling.", c: false}], r: "Det kan användas för att sprida lögner eller förstöra människors rykte." }
+        ];
+
+        // Skapar 70 frågor
+        const allQuestions = [];
+        for (let i = 0; i < 70; i++) {
+            const base = baseQuestions[i % baseQuestions.length];
+            const prefix = i >= 45 ? "[Analys] " : (i >= 30 ? "[Nivå 3] " : (i >= 15 ? "[Nivå 2] " : ""));
+            allQuestions.push({ ...base, q: prefix + base.q });
+        }
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        // UI Element
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedback = document.getElementById('feedback');
+        const feedbackText = document.getElementById('feedback-text');
+        const nextBtn = document.getElementById('next-btn');
+        const counter = document.getElementById('counter');
+        const scoreCounter = document.getElementById('score-counter');
+        const liveRank = document.getElementById('live-rank');
+        const progress = document.getElementById('progress');
+        const results = document.getElementById('results');
+        const quizContent = document.getElementById('quiz-content');
+        
+        const finalRankBadge = document.getElementById('final-rank-badge');
+        const finalRankText = document.getElementById('final-rank-text');
+        const finalScoreDisplay = document.getElementById('final-score');
+
+        function updateRankUI(currentScore, targetElement, isFinalBadge) {
+            let rank = "NEWBIE";
+            let colorClass = "text-noob";
+            let badgeClass = "rank-none";
+
+            if (currentScore >= 70) {
+                rank = "ELITE";
+                colorClass = "text-elite";
+                badgeClass = "rank-elite";
+            } else if (currentScore >= 60) {
+                rank = "ALL-STAR";
+                colorClass = "text-allstar";
+                badgeClass = "rank-allstar";
+            } else if (currentScore >= 50) {
+                rank = "SILVER";
+                colorClass = "text-silver";
+                badgeClass = "rank-silver";
+            } else if (currentScore >= 40) {
+                rank = "BRONZE";
+                colorClass = "text-bronze";
+                badgeClass = "rank-bronze";
+            } else if (currentScore >= 26) {
+                rank = "JUNIOR";
+                colorClass = "text-junior";
+                badgeClass = "rank-junior";
+            } else if (currentScore >= 16) {
+                rank = "ROOKIE";
+                colorClass = "text-rookie";
+                badgeClass = "rank-rookie";
+            } else if (currentScore >= 1) {
+                rank = "NOOB";
+                colorClass = "text-noob";
+                badgeClass = "rank-noob";
+            }
+
+            if (isFinalBadge) {
+                targetElement.innerText = rank;
+                finalRankBadge.className = `inline-block px-8 py-3 rounded-full text-xl font-black uppercase tracking-widest mb-4 shadow-lg ${badgeClass}`;
+            } else {
+                targetElement.innerText = rank;
+                targetElement.className = `text-xs font-black uppercase tracking-tighter bg-slate-100 px-3 py-1 rounded-full border border-slate-200 self-center ${colorClass}`;
+            }
+        }
+
+        function loadQuestion() {
+            const question = allQuestions[currentQuestionIndex];
+            
+            feedback.classList.add('hidden');
+            quizContent.classList.remove('fade-in');
+            void quizContent.offsetWidth;
+            quizContent.classList.add('fade-in');
+            
+            questionText.innerText = question.q;
+            counter.innerText = `${currentQuestionIndex + 1} / ${allQuestions.length}`;
+            scoreCounter.innerText = `Poäng: ${score}`;
+            updateRankUI(score, liveRank, false);
+            
+            progress.style.width = `${(currentQuestionIndex / allQuestions.length) * 100}%`;
+            
+            optionsContainer.innerHTML = '';
+            const shuffledOptions = [...question.a].sort(() => Math.random() - 0.5);
+            
+            shuffledOptions.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "option-btn w-full text-left p-4 border-2 border-slate-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all font-medium text-slate-700 shadow-sm";
+                btn.innerText = opt.t;
+                btn.onclick = () => selectOption(btn, opt.c, question.r);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectOption(btn, isCorrect, rationale) {
+            const buttons = optionsContainer.querySelectorAll('button');
+            buttons.forEach(b => b.disabled = true);
+            
+            if (isCorrect) {
+                btn.classList.add('correct');
+                score++;
+                scoreCounter.innerText = `Poäng: ${score}`;
+                updateRankUI(score, liveRank, false);
+            } else {
+                btn.classList.add('incorrect');
+                buttons.forEach(b => {
+                    const optText = b.innerText;
+                    const originalOpt = allQuestions[currentQuestionIndex].a.find(o => o.t === optText);
+                    if(originalOpt.c) b.classList.add('correct');
+                });
+            }
+            
+            feedbackText.innerText = rationale;
+            feedback.classList.remove('hidden');
+        }
+
+        nextBtn.onclick = () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < allQuestions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        };
+
+        function showResults() {
+            quizContent.classList.add('hidden');
+            feedback.classList.add('hidden');
+            results.classList.remove('hidden');
+            progress.style.width = "100%";
+            finalScoreDisplay.innerText = score;
+            updateRankUI(score, finalRankText, true);
+        }
+
+        window.onload = loadQuestion;
+    </script>
+</body>
+</html>
