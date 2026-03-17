@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Samhällsekonomi Quiz</title>
+  <title>Samhällsekonomi Quiz - Förbättrad version</title>
   
-  <!-- Laddar in React, ReactDOM, Babel (för att läsa JSX) och Tailwind CSS -->
+  <!-- Laddar in React, ReactDOM, Babel och Tailwind CSS -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -14,19 +14,18 @@
 <body class="bg-slate-100">
   <div id="root"></div>
 
-  <!-- Här börjar själva React-koden -->
   <script type="text/babel">
     const { useState, useEffect } = React;
 
-    // Alla 30 frågor inlagda. 'rationale' visas efter att eleven svarat för att stärka inlärningen.
+    // Här är de uppdaterade frågorna där svarslängden har balanserats för att motverka mönsterigenkänning.
     const allQuestions = [
       {
         question: "Vilka är de fyra huvudaktörerna i det ekonomiska kretsloppet?",
         options: [
           { text: "Hushåll, offentlig sektor, företag och kreditinstitut (banker).", isCorrect: true },
-          { text: "Staten, Riksbanken, EU och kommunerna.", isCorrect: false },
-          { text: "Domstolar, skolor, sjukhus och polisen.", isCorrect: false },
-          { text: "Importörer, exportörer, fabriker och butiker.", isCorrect: false }
+          { text: "Staten, Riksbanken, Europeiska unionen och landets alla kommuner.", isCorrect: false },
+          { text: "Domstolar, skolor, sjukhus och polisen i den lokala förvaltningen.", isCorrect: false },
+          { text: "Importörer, exportörer, fabriker och butiker på den globala marknaden.", isCorrect: false }
         ],
         rationale: "Dessa fyra delar utgör de huvudsakliga blocken i hur pengar och resurser snurrar i samhället."
       },
@@ -34,9 +33,9 @@
         question: "Vad har kreditinstituten (bankerna) för huvudsaklig roll i det ekonomiska kretsloppet?",
         options: [
           { text: "De lånar ut pengar till hushåll och företag samt tar emot sparande.", isCorrect: true },
-          { text: "De bestämmer hur mycket varor företagen får sälja.", isCorrect: false },
-          { text: "De samlar in skatt från medborgarna.", isCorrect: false },
-          { text: "De bestämmer landets styrränta.", isCorrect: false }
+          { text: "De bestämmer exakt hur mycket varor och tjänster företagen får sälja.", isCorrect: false },
+          { text: "De samlar in skatt från medborgarna för att finansiera den offentliga sektorn.", isCorrect: false },
+          { text: "De bestämmer landets styrränta och kontrollerar penningmängden i samhället.", isCorrect: false }
         ],
         rationale: "Bankernas uppgift är att agera mellanhand och förmedla pengar från de som sparar till de som behöver låna."
       },
@@ -44,285 +43,284 @@
         question: "Hur formas oftast priset på en vara i en marknadsekonomi?",
         options: [
           { text: "Priset bestäms av samspelet mellan utbud och efterfrågan.", isCorrect: true },
-          { text: "Staten sätter fasta priser på alla varor varje år.", isCorrect: false },
-          { text: "Priset är alltid detsamma oavsett hur många som vill köpa.", isCorrect: false },
-          { text: "Konsumenterna får bestämma priset ensamma i butiken.", isCorrect: false }
+          { text: "Staten sätter fasta priser på alla viktiga varor varje år.", isCorrect: false },
+          { text: "Priset är alltid detsamma oavsett hur många kunder som vill köpa.", isCorrect: false },
+          { text: "Konsumenterna får rösta fram priset i butiken genom direktdemokrati.", isCorrect: false }
         ],
         rationale: "Om många vill köpa stiger priset, och om få vill köpa sjunker det. Balansen kallas jämviktspris."
       },
       {
         question: "Hur påverkas priset på en vara om det är hög efterfrågan men lågt utbud?",
         options: [
-          { text: "Priset stiger.", isCorrect: true },
+          { text: "Priset stiger kraftigt.", isCorrect: true },
           { text: "Priset sjunker snabbt.", isCorrect: false },
           { text: "Priset påverkas inte.", isCorrect: false },
           { text: "Varan reas alltid ut.", isCorrect: false }
         ],
-        rationale: "När något är sällsynt och många vill ha det, är folk beredda att betala mer, vilket ökar värdet (t.ex. konsertbiljetter)."
+        rationale: "När något är sällsynt och många vill ha det, är folk beredda att betala mer, vilket ökar värdet."
       },
       {
         question: "Vad mäter bruttonationalprodukten (BNP)?",
         options: [
-          { text: "Det totala värdet på alla varor och tjänster som produceras i ett land under ett år.", isCorrect: true },
-          { text: "Hur jämställt ett land är.", isCorrect: false },
-          { text: "Befolkningens genomsnittliga utbildningsnivå och livslängd.", isCorrect: false },
-          { text: "Den totala mängden pengar Riksbanken har tryckt.", isCorrect: false }
+          { text: "Värdet på alla varor och tjänster som produceras i ett land under ett år.", isCorrect: true },
+          { text: "Hur pass jämställt och rättvist fördelat ett land är rent ekonomiskt.", isCorrect: false },
+          { text: "Befolkningens genomsnittliga utbildningsnivå, hälsa och förväntade livslängd.", isCorrect: false },
+          { text: "Den totala mängden kontanter och digitala pengar som Riksbanken har tryckt.", isCorrect: false }
         ],
         rationale: "Genom att jämföra detta värde från år till år får man ett mått på landets ekonomiska tillväxt."
       },
       {
         question: "Varför är ekonomisk tillväxt viktigt för ett samhälle?",
         options: [
-          { text: "Det leder till att invånarna får mer pengar, företagen går bra, fattigdomen minskar och staten kan erbjuda bättre välfärd.", isCorrect: true },
-          { text: "Det garanterar att inflationen försvinner helt.", isCorrect: false },
-          { text: "Det gör att staten slipper besluta om finanspolitik.", isCorrect: false },
-          { text: "Det leder alltid till att inkomstklyftorna försvinner.", isCorrect: false }
+          { text: "Det leder till ökade inkomster, bättre välfärd och att fattigdomen minskar.", isCorrect: true },
+          { text: "Det garanterar att inflationen försvinner helt och hållet från marknaden.", isCorrect: false },
+          { text: "Det gör att staten helt slipper fatta svåra beslut om finanspolitik och skatt.", isCorrect: false },
+          { text: "Det leder automatiskt till att alla ekonomiska inkomstklyftor försvinner direkt.", isCorrect: false }
         ],
         rationale: "Ekonomisk tillväxt innebär mer resurser för både individ, företag och samhälle."
       },
       {
         question: "Varför använder man ofta BNP per capita istället för bara BNP när man jämför länder?",
         options: [
-          { text: "För att man delar BNP på antalet invånare, vilket gör det rättvisare att jämföra stora och små länder.", isCorrect: true },
-          { text: "För att BNP per capita också mäter befolkningens lycka.", isCorrect: false },
-          { text: "För att det tar hänsyn till miljöförstöring.", isCorrect: false },
-          { text: "För att BNP per capita mäter skillnaden mellan män och kvinnor.", isCorrect: false }
+          { text: "För att man delar värdet på antalet invånare, vilket gör jämförelsen mer rättvis.", isCorrect: true },
+          { text: "För att BNP per capita även mäter hur lycklig befolkningen känner sig i snitt.", isCorrect: false },
+          { text: "För att det tar hänsyn till miljöförstöring och hållbar resursanvändning i landet.", isCorrect: false },
+          { text: "För att BNP per capita mäter skillnaden i lön mellan män och kvinnor på sikt.", isCorrect: false }
         ],
-        rationale: "Genom att slå ut BNP på antalet invånare kan man jämföra rikedomen per person i t.ex. enorma Kina och lilla Sverige."
+        rationale: "Genom att slå ut BNP på antalet invånare kan man jämföra rikedomen per person oavsett landets storlek."
       },
       {
         question: "Vad mäter Human Development Index (HDI)?",
         options: [
-          { text: "Utbildningsnivå, förväntad levnadslängd och BNP per capita.", isCorrect: true },
-          { text: "Enbart inkomstspridningen mellan rika och fattiga.", isCorrect: false },
-          { text: "Ett lands teknologiska utveckling.", isCorrect: false },
-          { text: "Bara den förväntade livslängden i landet.", isCorrect: false }
+          { text: "Utbildningsnivå, förväntad levnadslängd och landets köpkraft (BNP per capita).", isCorrect: true },
+          { text: "Enbart den faktiska inkomstspridningen mellan landets allra rikaste och fattigaste.", isCorrect: false },
+          { text: "Ett lands teknologiska utvecklingsgrad och tillgång till snabbt internet för alla.", isCorrect: false },
+          { text: "Bara den förväntade livslängden och antalet sjukhusplatser i landets regioner.", isCorrect: false }
         ],
         rationale: "HDI är ett bredare mått än bara BNP, och väger även in befolkningens hälsa och utbildning."
       },
       {
         question: "Vad betyder ett HDI-värde som ligger väldigt nära 1?",
         options: [
-          { text: "Det är ett rikt land med god hälsa och hög utbildningsnivå bland befolkningen.", isCorrect: true },
-          { text: "Landet har väldigt kort förväntad livslängd.", isCorrect: false },
-          { text: "Det är ett land med extrem jämställdhet.", isCorrect: false },
-          { text: "Landet är i en djup ekonomisk kris.", isCorrect: false }
+          { text: "Det är ett land med hög levnadsstandard, god hälsa och god utbildningsnivå.", isCorrect: true },
+          { text: "Landet har en extremt kort förväntad livslängd och mycket låg läskunnighet.", isCorrect: false },
+          { text: "Det är ett land som har uppnått en total och fullständig ekonomisk jämställdhet.", isCorrect: false },
+          { text: "Landet befinner sig i en djup ekonomisk kris med hyperinflation som följd.", isCorrect: false }
         ],
-        rationale: "Skalan går från 0 till 1, där värden nära 1 (som Sverige och Norge) indikerar en hög mänsklig utveckling."
+        rationale: "Skalan går från 0 till 1, där värden nära 1 indikerar en hög mänsklig utveckling."
       },
       {
         question: "Vilket av följande påståenden stämmer för Gender Inequality Index (GII)?",
         options: [
-          { text: "Det mäter ojämlikhet utifrån hälsa, medbestämmande och yrkesdeltagande, där 0 är mest jämställt.", isCorrect: true },
-          { text: "Ett värde nära 1 betyder att landet är helt jämställt.", isCorrect: false },
-          { text: "Det mäter antalet företag ägda av kvinnor.", isCorrect: false },
-          { text: "Det är ett annat ord för Ginikoefficienten.", isCorrect: false }
+          { text: "Det mäter ojämlikhet utifrån hälsa, medbestämmande och yrkesdeltagande.", isCorrect: true },
+          { text: "Ett värde nära 1 betyder enligt skalan att landet är helt jämställt och fritt.", isCorrect: false },
+          { text: "Det mäter enbart det totala antalet storföretag som ägs eller styrs av kvinnor.", isCorrect: false },
+          { text: "Det är bara ett annat tekniskt ord för den så kallade Ginikoefficienten.", isCorrect: false }
         ],
         rationale: "GII skapades för att synliggöra hur samhället fungerar för män jämfört med kvinnor inom dessa nyckelområden."
       },
       {
         question: "Vad används Ginikoefficienten till?",
         options: [
-          { text: "För att mäta den ekonomiska ojämlikheten (skillnader mellan rika och fattiga) i ett land.", isCorrect: true },
-          { text: "För att mäta inflationen över tid.", isCorrect: false },
-          { text: "För att mäta landets totala BNP.", isCorrect: false },
-          { text: "För att räkna ut styrräntan.", isCorrect: false }
+          { text: "För att mäta de ekonomiska klyftorna mellan rika och fattiga i ett land.", isCorrect: true },
+          { text: "För att mäta hur inflationen och prisnivåerna förändras över en längre tid.", isCorrect: false },
+          { text: "För att mäta landets totala produktion av varor och tjänster under ett år.", isCorrect: false },
+          { text: "För att räkna ut vilken styrränta som krävs för att nå inflationsmålet på 2%.", isCorrect: false }
         ],
         rationale: "En hög Ginikoefficient indikerar att få äger mycket, medan en låg koefficient visar på en mer jämn fördelning."
       },
       {
         question: "Vad är inflation?",
         options: [
-          { text: "När priserna stiger i ett land, vilket leder till att pengarna tappar i värde.", isCorrect: true },
-          { text: "När staten betalar ut för mycket i bidrag.", isCorrect: false },
-          { text: "När företagen anställer mer personal.", isCorrect: false },
-          { text: "När priserna sjunker och folk sparar sina pengar istället för att handla.", isCorrect: false }
+          { text: "När den generella prisnivån stiger och pengarnas värde därmed minskar.", isCorrect: true },
+          { text: "När staten väljer att betala ut för höga bidrag till hushållen i landet.", isCorrect: false },
+          { text: "När företagen anställer mer personal för att öka sin totala produktionstakt.", isCorrect: false },
+          { text: "När priserna sjunker kraftigt och folk sparar pengar istället för att handla.", isCorrect: false }
         ],
         rationale: "När allt blir dyrare (priset stiger) får man köpa färre varor för samma summa pengar."
       },
       {
         question: "Vad menas med att 'köpkraften minskar' när det är inflation?",
         options: [
-          { text: "Att du får färre varor och tjänster för samma mängd pengar.", isCorrect: true },
-          { text: "Att folk tjänar mer pengar.", isCorrect: false },
-          { text: "Att varorna i butikerna tar slut snabbare.", isCorrect: false },
-          { text: "Att affärerna slutar sälja dyra märkeskläder.", isCorrect: false }
+          { text: "Att du får färre varor för samma mängd pengar än du fick tidigare.", isCorrect: true },
+          { text: "Att befolkningen tjänar mer pengar i kronor räknat än året innan.", isCorrect: false },
+          { text: "Att varorna i butikerna tar slut snabbare på grund av hög konsumtion.", isCorrect: false },
+          { text: "Att affärerna slutar sälja exklusiva varor för att efterfrågan sjunker.", isCorrect: false }
         ],
         rationale: "Eftersom priserna gått upp räcker din lön eller din besparing till mindre än vad den gjorde förut."
       },
       {
         question: "Vilket av följande kännetecknar en högkonjunktur?",
         options: [
-          { text: "Arbetslösheten är låg, efterfrågan är hög och BNP växer.", isCorrect: true },
-          { text: "Arbetslösheten stiger och BNP minskar.", isCorrect: false },
-          { text: "Skatteintäkterna till välfärden rasar kraftigt.", isCorrect: false },
-          { text: "Priserna faller drastiskt överallt.", isCorrect: false }
+          { text: "Låg arbetslöshet, hög efterfrågan och en ökande bruttonationalprodukt.", isCorrect: true },
+          { text: "Stigande arbetslöshet och en bruttonationalprodukt som stadigt minskar.", isCorrect: false },
+          { text: "Skatteintäkterna till välfärden minskar kraftigt för varje månad som går.", isCorrect: false },
+          { text: "Priserna på varor och tjänster faller drastiskt på hela den öppna marknaden.", isCorrect: false }
         ],
         rationale: "Under en högkonjunktur går det bra för ekonomin; företag anställer och människor konsumerar."
       },
       {
         question: "Vilka risker finns det om en stark högkonjunktur pågår för länge?",
         options: [
-          { text: "Ekonomin kan 'överhettas', vilket leder till skadlig inflation och i värsta fall en krasch.", isCorrect: true },
-          { text: "Att skatterna automatiskt försvinner.", isCorrect: false },
-          { text: "Att arbetslösheten förblir konstant på noll procent för alltid.", isCorrect: false },
-          { text: "Att import och export upphör.", isCorrect: false }
+          { text: "Ekonomin kan överhettas, vilket leder till skadlig inflation och en kris.", isCorrect: true },
+          { text: "Att alla statliga skatter automatiskt försvinner och ersätts av avgifter.", isCorrect: false },
+          { text: "Att arbetslösheten förblir exakt noll procent under en obegränsad tid framåt.", isCorrect: false },
+          { text: "Att all handel med utlandet upphör helt för att skydda den egna industrin.", isCorrect: false }
         ],
-        rationale: "När efterfrågan blir större än vad som kan produceras stiger priser och löner för snabbt, vilket kan tvinga fram en kris."
+        rationale: "När efterfrågan blir större än vad som kan produceras stiger priser och löner för snabbt."
       },
       {
         question: "Vilket av följande är ett tydligt tecken på en lågkonjunktur?",
         options: [
-          { text: "Arbetslösheten stiger och efterfrågan i samhället är låg.", isCorrect: true },
-          { text: "Fler företag startas än någonsin.", isCorrect: false },
-          { text: "Arbetslösheten är mycket låg.", isCorrect: false },
-          { text: "Skatteintäkterna ökar kraftigt.", isCorrect: false }
+          { text: "Arbetslösheten stiger och den totala efterfrågan i samhället är mycket låg.", isCorrect: true },
+          { text: "Det startas fler innovativa företag än någonsin tidigare i landets historia.", isCorrect: false },
+          { text: "Arbetslösheten ligger på en rekordlåg nivå och företagen skriker efter folk.", isCorrect: false },
+          { text: "Skatteintäkterna till kommuner och stat ökar kraftigt tack vare hög vinst.", isCorrect: false }
         ],
-        rationale: "Eftersom människor håller hårt i pengarna (låg konsumtion) säljer företagen mindre och tvingas säga upp personal."
+        rationale: "Eftersom människor håller hårt i pengarna säljer företagen mindre och tvingas säga upp personal."
       },
       {
         question: "Vad betyder begreppet 'stagflation'?",
         options: [
-          { text: "När ett land befinner sig i lågkonjunktur samtidigt som det råder hög inflation.", isCorrect: true },
-          { text: "En ekonomi som helt saknar bankväsende.", isCorrect: false },
-          { text: "När staten har betalat av hela sin statsskuld.", isCorrect: false },
-          { text: "När BNP ökar stadigt i fem år i rad.", isCorrect: false }
+          { text: "Lågkonjunktur (stagnation) samtidigt som det råder en mycket hög inflation.", isCorrect: true },
+          { text: "En nationell ekonomi som helt saknar fungerande banker och kreditinstitut.", isCorrect: false },
+          { text: "När staten har lyckats betala av hela sin statsskuld till utlandet helt.", isCorrect: false },
+          { text: "När landets BNP ökar stadigt med exakt fem procent under flera år i rad.", isCorrect: false }
         ],
-        rationale: "Detta är ett extremt dåligt läge, eftersom staten och Riksbanken har svårt att veta om de ska gasa eller bromsa ekonomin."
+        rationale: "Detta är ett extremt dåligt läge då de vanliga ekonomiska verktygen motverkar varandra."
       },
       {
         question: "Vad innebär det att riksdag och regering för en expansiv finanspolitik?",
         options: [
-          { text: "Staten försöker stimulera (gasa) ekonomin genom att öka utgifterna och/eller sänka skatterna.", isCorrect: true },
-          { text: "Staten drar ner på alla utgifter för att spara pengar.", isCorrect: false },
-          { text: "Riksbanken sänker styrräntan.", isCorrect: false },
-          { text: "De beslutar att byta från blandekonomi till planekonomi.", isCorrect: false }
+          { text: "Staten försöker stimulera ekonomin genom högre utgifter eller lägre skatter.", isCorrect: true },
+          { text: "Staten väljer att dra ner på alla utgifter för att spara pengar i ladorna.", isCorrect: false },
+          { text: "Riksbanken sänker styrräntan för att göra det billigare att låna för alla.", isCorrect: false },
+          { text: "Regeringen beslutar att omedelbart byta system från blandekonomi till planekonomi.", isCorrect: false }
         ],
-        rationale: "Målet är att öka efterfrågan så att företag kan anställa och hjulen börja snurra igen vid en lågkonjunktur."
+        rationale: "Målet är att öka efterfrågan så att företag kan anställa och hjulen börja snurra igen."
       },
       {
         question: "Vilket är ett typiskt exempel på en åtgärd inom expansiv finanspolitik?",
         options: [
-          { text: "Staten ger extra pengar till sjukvården och höjer tillfälligt bidrag.", isCorrect: true },
-          { text: "Man återinför fastighetsskatten och förmögenhetsskatten.", isCorrect: false },
-          { text: "Riksbanken lånar upp pengar utomlands.", isCorrect: false },
-          { text: "Man halverar antalet anställda på sjukhusen.", isCorrect: false }
+          { text: "Staten ökar anslagen till välfärden eller inför tillfälliga skattesänkningar.", isCorrect: true },
+          { text: "Man återinför höga skatter på fastigheter och förmögenheter för alla rika.", isCorrect: false },
+          { text: "Riksbanken lånar upp stora mängder pengar från banker i andra länder.", isCorrect: false },
+          { text: "Man halverar antalet offentliganställda för att minska statens totala skuld.", isCorrect: false }
         ],
-        rationale: "Genom att tillföra resurser får fler människor pengar att konsumera för, vilket stöttar företagen i kris."
+        rationale: "Genom att tillföra resurser får fler människor pengar att konsumera för."
       },
       {
-        question: "Hur skiljer sig oftast vänster- och högerideologier åt när det gäller expansiv finanspolitik?",
+        question: "Hur skiljer sig oftast vänster- och högerideologier åt gällande expansiv politik?",
         options: [
-          { text: "Vänstern vill investera i välfärd och offentlig sektor; högern vill sänka skatter för att stimulera privata företag.", isCorrect: true },
-          { text: "Vänstern vill trycka pengar, högern vill låna pengar.", isCorrect: false },
-          { text: "Högern vill alltid stoppa all handel med utlandet.", isCorrect: false },
-          { text: "Båda sidor vill exakt samma sak, det finns ingen skillnad.", isCorrect: false }
+          { text: "Vänstern vill öka välfärden; högern vill sänka skatter för att stimulera.", isCorrect: true },
+          { text: "Vänstern vill trycka pengar; högern vill alltid låna pengar från utlandet.", isCorrect: false },
+          { text: "Högern vill alltid stoppa all handel med utlandet för att rädda inhemska jobb.", isCorrect: false },
+          { text: "Båda sidor vill exakt samma sak i detalj; det finns inga ideologiska skillnader.", isCorrect: false }
         ],
-        rationale: "Målet är detsamma (att stimulera), men vänstern gör det via offentliga jobb och bidrag, och högern via skattesänkningar."
+        rationale: "Målet är detsamma (stimulans), men metoderna skiljer sig åt ideologiskt."
       },
       {
         question: "När bedriver staten en åtstramande finanspolitik?",
         options: [
-          { text: "Under en högkonjunktur när ekonomin överhettas och inflationen drar iväg.", isCorrect: true },
-          { text: "Bara under valår.", isCorrect: false },
-          { text: "Vid en extrem lågkonjunktur och depression.", isCorrect: false },
-          { text: "När man vill avskaffa marknadsekonomin.", isCorrect: false }
+          { text: "Under en högkonjunktur när ekonomin riskerar att överhettas av för hög efterfrågan.", isCorrect: true },
+          { text: "Enbart under valår när man vill visa befolkningen att man kan spara pengar.", isCorrect: false },
+          { text: "Vid en extrem lågkonjunktur för att tvinga fram en snabbare ekonomisk kris.", isCorrect: false },
+          { text: "När man har fattat beslut om att helt avskaffa marknadsekonomin som system.", isCorrect: false }
         ],
-        rationale: "För att förhindra krasch och extrem inflation tvingas staten dra åt svångremmen och bromsa tillväxten."
+        rationale: "För att förhindra krasch och inflation tvingas staten dra åt svångremmen."
       },
       {
         question: "Hur verkar en åtstramande finanspolitik (bromsen)?",
         options: [
           { text: "Staten minskar sina utgifter eller höjer skatterna så att efterfrågan dämpas.", isCorrect: true },
-          { text: "Man ökar utgifterna i staten för att anställa fler.", isCorrect: false },
-          { text: "Riksbanken trycker upp extra mycket sedlar.", isCorrect: false },
-          { text: "Man halverar styrräntan.", isCorrect: false }
+          { text: "Man ökar utgifterna kraftigt för att anställa fler inom den offentliga sektorn.", isCorrect: false },
+          { text: "Riksbanken trycker upp extra mycket sedlar för att öka cirkulationen av pengar.", isCorrect: false },
+          { text: "Man väljer att halvera styrräntan för att uppmuntra till fler privata lån.", isCorrect: false }
         ],
-        rationale: "Om folk och företag får mindre pengar att röra sig med minskar konsumtionen och ekonomin kyler ner sig."
+        rationale: "Om folk och företag får mindre pengar att röra sig med minskar konsumtionen."
       },
       {
         question: "Vad är Riksbanken?",
         options: [
-          { text: "Sveriges centralbank, med uppgift att bland annat hålla inflationen stabil.", isCorrect: true },
-          { text: "Den politiska institutionen som bestämmer skatterna.", isCorrect: false },
-          { text: "En helt privat bank dit hushåll kan gå för att låna pengar.", isCorrect: false },
-          { text: "Myndigheten som sköter sjukhusen.", isCorrect: false }
+          { text: "Sveriges centralbank, vars främsta uppgift är att hålla inflationen stabil.", isCorrect: true },
+          { text: "Den politiska institutionen som bestämmer alla skatter och bidrag i landet.", isCorrect: false },
+          { text: "En privatägd bank där privatpersoner kan spara pengar och ta stora bolån.", isCorrect: false },
+          { text: "Myndigheten som sköter driften av landets alla sjukhus och vårdcentraler.", isCorrect: false }
         ],
-        rationale: "Riksbanken ansvarar för landets penningpolitik (t.ex. räntan) och är helt oberoende från regeringen."
+        rationale: "Riksbanken ansvarar för penningpolitiken och är oberoende från regeringen."
       },
       {
         question: "Vad är styrräntan?",
         options: [
-          { text: "Räntan som Riksbanken sätter, vilken i sin tur styr vilka räntor de vanliga bankerna ger sina kunder.", isCorrect: true },
-          { text: "Den skatt man betalar på sina inkomster över en viss nivå.", isCorrect: false },
-          { text: "Hur många procent BNP växer med varje år.", isCorrect: false },
-          { text: "En fastlagd lag som styr hur dyra hus får bli.", isCorrect: false }
+          { text: "Räntan som Riksbanken sätter, vilken styr bankernas räntor till kunderna.", isCorrect: true },
+          { text: "Den skatt man betalar på alla inkomster som överstiger en viss fast nivå.", isCorrect: false },
+          { text: "Ett mått på hur många procent landets BNP växer med under ett kalenderår.", isCorrect: false },
+          { text: "En lag som styr hur dyrt ett hus eller en lägenhet får säljas på marknaden.", isCorrect: false }
         ],
-        rationale: "Styrräntan är Riksbankens främsta verktyg. Förändras den, tvingas oftast de vanliga bankerna justera sina räntor."
+        rationale: "Styrräntan är Riksbankens främsta verktyg för att påverka ekonomin."
       },
       {
         question: "Vad händer oftast i ekonomin när Riksbanken SÄNKER styrräntan?",
         options: [
-          { text: "Det blir billigare att låna och mindre lönsamt att spara, vilket gör att konsumtionen ökar.", isCorrect: true },
-          { text: "Inflationen försvinner helt och hållet inom 24 timmar.", isCorrect: false },
-          { text: "Hushållens skatter höjs automatiskt.", isCorrect: false },
-          { text: "Människor slutar handla och börjar enbart spara pengar.", isCorrect: false }
+          { text: "Lån blir billigare och sparande sämre, vilket gör att konsumtionen ökar.", isCorrect: true },
+          { text: "Inflationen försvinner helt och hållet från samhället inom ett dygn.", isCorrect: false },
+          { text: "Hushållens inkomstskatter höjs automatiskt för att kompensera för räntefallet.", isCorrect: false },
+          { text: "Människor slutar helt att handla och börjar enbart spara pengar i banken.", isCorrect: false }
         ],
-        rationale: "Låga räntor uppmuntrar hushåll och företag att investera och handla, vilket ger en expansiv effekt."
+        rationale: "Låga räntor uppmuntrar till investering och handlande."
       },
       {
         question: "Hur påverkar en HÖJNING av styrräntan inflationen?",
         options: [
-          { text: "Den bromsar inflationen genom att göra lån dyrare, vilket minskar konsumtion och kyler ner ekonomin.", isCorrect: true },
-          { text: "Den ökar inflationen explosionsartat.", isCorrect: false },
-          { text: "Den påverkar inte inflationen alls.", isCorrect: false },
-          { text: "Höjd ränta tvingar regeringen att stänga ner bankerna.", isCorrect: false }
+          { text: "Den bromsar inflationen genom dyrare lån, vilket minskar konsumtionen.", isCorrect: true },
+          { text: "Den gör att inflationen ökar i en mycket snabbare takt än tidigare.", isCorrect: false },
+          { text: "Den har absolut ingen påverkan på inflationen eller prisläget i landet.", isCorrect: false },
+          { text: "Höjd ränta tvingar regeringen att omedelbart stänga ner alla affärsbanker.", isCorrect: false }
         ],
-        rationale: "När folk får dyrare lån drar de ner på sina inköp, vilket gör att företag inte kan höja sina priser lika snabbt."
+        rationale: "När det blir dyrare att låna minskar konsumtionsutrymmet, vilket dämpar prishöjningar."
       },
       {
         question: "Varför är Riksbanken utformad som en 'oberoende' myndighet?",
         options: [
-          { text: "För att politikerna (regering och riksdag) inte ska frestas att sänka räntan före ett val för att köpa röster.", isCorrect: true },
-          { text: "För att de ska kunna bygga sjukhus var de vill.", isCorrect: false },
-          { text: "För att utländska banker äger Riksbanken.", isCorrect: false },
-          { text: "De är egentligen inte oberoende, regeringen detaljstyr dem dagligen.", isCorrect: false }
+          { text: "För att politiker inte ska kunna sänka räntan precis före val för att få röster.", isCorrect: true },
+          { text: "För att myndigheten ska kunna bygga skolor och sjukhus var de vill i landet.", isCorrect: false },
+          { text: "För att utländska storbanker faktiskt äger en majoritet av svenska Riksbanken.", isCorrect: false },
+          { text: "De är faktiskt inte alls oberoende; regeringen styr dem i detalj varje dag.", isCorrect: false }
         ],
-        rationale: "Genom att vara oberoende kan Riksbanken fatta långsiktigt nödvändiga (och ibland impopulära) beslut."
+        rationale: "Oberoendet säkerställer långsiktighet i de ekonomiska besluten."
       },
       {
         question: "Vad kännetecknar en helt renodlad Marknadsekonomi?",
         options: [
-          { text: "Människor och företag bestämmer helt själva utbud och pris utan statlig inblandning.", isCorrect: true },
-          { text: "Staten betalar alla löner och driver alla företag.", isCorrect: false },
-          { text: "Marknaden styr det mesta, men staten äger till exempel skolor och vårdcentraler.", isCorrect: false },
-          { text: "Det finns inga pengar, utan människor byter enbart varor med varandra.", isCorrect: false }
+          { text: "Företag och hushåll bestämmer helt utbud och pris utan statlig inblandning.", isCorrect: true },
+          { text: "Staten betalar alla löner och äger samt driver precis alla företag i landet.", isCorrect: false },
+          { text: "Marknaden styr det mesta, men staten äger och driver skolor och sjukhus.", isCorrect: false },
+          { text: "Det finns inga pengar, utan man byter enbart varor med varandra direkt.", isCorrect: false }
         ],
-        rationale: "I teorin styr endast marknadens egna krafter (utbud och efterfrågan) i detta system."
+        rationale: "I en ren marknadsekonomi styr endast 'den osynliga handen' (marknadskrafterna)."
       },
       {
-        question: "Vilka stora utmaningar finns med det system som kallas Planekonomi?",
+        question: "Vilka stora utmaningar finns med systemet Planekonomi?",
         options: [
-          { text: "Det uppstår ofta brist på varor för att staten har svårt att planera vad folket faktiskt behöver, och motivationen att arbeta försvinner.", isCorrect: true },
-          { text: "Det skapas ofta för stor frihet som leder till massiv miljöförstöring.", isCorrect: false },
-          { text: "Företagen höjer ständigt priserna tills folk inte har råd.", isCorrect: false },
-          { text: "Inflationen blir extremt svår att sänka eftersom bankerna konkurrerar för mycket.", isCorrect: false }
+          { text: "Brist på varor uppstår ofta då staten har svårt att planera folkets behov.", isCorrect: true },
+          { text: "Det skapas ofta en för stor individuell frihet som leder till miljöförstöring.", isCorrect: false },
+          { text: "Företagen höjer ständigt priserna tills ingen i befolkningen har råd att äta.", isCorrect: false },
+          { text: "Inflationen blir extremt svår att sänka eftersom bankerna konkurrerar för hårt.", isCorrect: false }
         ],
-        rationale: "När ingen fri marknad skickar prissignaler är det svårt för staten att uppskatta behov, och fasta löner sänker innovationskraften."
+        rationale: "Utan prissignaler från en fri marknad är det svårt för en centralmakt att veta vad som behövs."
       },
       {
-        question: "Varför har de allra flesta länder, inklusive Sverige, idag valt systemet 'Blandekonomi'?",
+        question: "Varför har de flesta länder valt systemet 'Blandekonomi'?",
         options: [
-          { text: "För att ren marknadsekonomi saknar skyddsnät för de svaga, och ren planekonomi är ineffektiv och begränsande.", isCorrect: true },
-          { text: "För att det är det enda system som FN tillåter enligt lag.", isCorrect: false },
-          { text: "För att blanda in utländska valutor med den inhemska valutan.", isCorrect: false },
-          { text: "Blandekonomi är egentligen ett exakt likadant system som kommunism.", isCorrect: false }
+          { text: "För att kombinera marknadens effektivitet med statens trygghet och välfärd.", isCorrect: true },
+          { text: "För att det är det enda ekonomiska system som FN tillåter enligt internationell lag.", isCorrect: false },
+          { text: "För att man vill blanda in utländska valutor med den inhemska valutan i handeln.", isCorrect: false },
+          { text: "Blandekonomi är egentligen bara ett modernare ord för ett kommunistiskt system.", isCorrect: false }
         ],
-        rationale: "Blandekonomin kombinerar marknadens effektivitet med statens förmåga att säkerställa välfärd och rättvisa."
+        rationale: "Blandekonomin försöker ta det bästa från två världar för att skapa stabilitet."
       }
     ];
 
-    // Helper för att blanda en array (Fisher-Yates)
     const shuffleArray = (array) => {
       const shuffled = [...array];
       for (let i = shuffled.length - 1; i > 0; i--) {
@@ -333,7 +331,7 @@
     };
 
     function QuizApp() {
-      const [gameState, setGameState] = useState('start'); // 'start', 'playing', 'result'
+      const [gameState, setGameState] = useState('start');
       const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
       const [score, setScore] = useState(0);
       
@@ -341,7 +339,6 @@
       const [selectedOption, setSelectedOption] = useState(null);
       const [isAnswered, setIsAnswered] = useState(false);
 
-      // Blanda svarsalternativen varje gång en ny fråga laddas
       useEffect(() => {
         if (gameState === 'playing') {
           const options = allQuestions[currentQuestionIndex].options;
@@ -358,7 +355,7 @@
       };
 
       const handleAnswer = (option) => {
-        if (isAnswered) return; // Förhindra flera klick
+        if (isAnswered) return;
         setSelectedOption(option);
         setIsAnswered(true);
         if (option.isCorrect) {
@@ -374,7 +371,6 @@
         }
       };
 
-      // Rendering: Startskärm
       if (gameState === 'start') {
         return (
           <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4 font-sans text-slate-800">
@@ -382,8 +378,7 @@
               <div className="text-5xl mb-4">📈</div>
               <h1 className="text-3xl font-extrabold mb-4 text-slate-900">Samhällsekonomi Quiz</h1>
               <p className="text-slate-600 mb-8 leading-relaxed">
-                Testa dina kunskaper i samhällsekonomi! Totalt 30 frågor om konjunkturer, räntor och ekonomiska system. 
-                Svarsalternativen blandas varje gång så du kan spela om tills det sitter.
+                Nu med uppdaterade svarsalternativ! Testa dina kunskaper om ekonomiska system, inflation och konjunkturer. Lycka till!
               </p>
               <button 
                 onClick={handleStart}
@@ -396,15 +391,12 @@
         );
       }
 
-      // Rendering: Resultatskärm
       if (gameState === 'result') {
         const percentage = Math.round((score / allQuestions.length) * 100);
         let message = "Bra kämpat!";
         let emoji = "👍";
-        
         if (percentage >= 90) { message = "Strålande resultat!"; emoji = "🏆"; }
         else if (percentage >= 60) { message = "Snyggt jobbat!"; emoji = "⭐"; }
-        else { message = "Övning ger färdighet!"; emoji = "💪"; }
 
         return (
           <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4 font-sans text-slate-800">
@@ -412,7 +404,7 @@
               <div className="text-6xl mb-4">{emoji}</div>
               <h2 className="text-3xl font-extrabold mb-2 text-slate-900">{message}</h2>
               <p className="text-lg text-slate-600 mb-6">
-                Du fick <span className="font-bold text-blue-600">{score}</span> rätt av {allQuestions.length} möjliga. ({percentage}%)
+                Du fick <span className="font-bold text-blue-600">{score}</span> rätt av {allQuestions.length}. ({percentage}%)
               </p>
               <button 
                 onClick={handleStart}
@@ -425,15 +417,12 @@
         );
       }
 
-      // Rendering: Spelskärm (playing)
       const currentQuestion = allQuestions[currentQuestionIndex];
       const progressPercentage = ((currentQuestionIndex) / allQuestions.length) * 100;
 
       return (
         <div className="min-h-screen bg-slate-100 py-8 px-4 font-sans text-slate-800 flex flex-col items-center">
           <div className="max-w-md w-full">
-            
-            {/* Progress bar och Frågeräknare */}
             <div className="mb-6">
               <div className="flex justify-between items-center mb-2 text-sm font-semibold text-slate-500 uppercase tracking-wider">
                 <span>Fråga {currentQuestionIndex + 1} av {allQuestions.length}</span>
@@ -447,23 +436,20 @@
               </div>
             </div>
 
-            {/* Frågan */}
             <div className="bg-white p-6 rounded-2xl shadow-sm mb-6 border border-slate-100">
               <h2 className="text-xl md:text-2xl font-bold leading-snug text-slate-900">
                 {currentQuestion.question}
               </h2>
             </div>
 
-            {/* Svarsalternativ */}
             <div className="flex flex-col gap-3">
               {shuffledOptions.map((option, index) => {
-                // Logik för dynamiska färger efter att användaren svarat
                 let btnClass = "bg-white border-slate-200 hover:bg-slate-50 hover:border-blue-300 text-slate-700";
                 let indicator = "";
 
                 if (isAnswered) {
                   if (option.isCorrect) {
-                    btnClass = "bg-green-100 border-green-500 text-green-900 font-medium shadow-sm ring-1 ring-green-500";
+                    btnClass = "bg-green-100 border-green-500 text-green-900 font-medium ring-1 ring-green-500";
                     indicator = "✓";
                   } else if (option === selectedOption && !option.isCorrect) {
                     btnClass = "bg-red-50 border-red-400 text-red-900 opacity-90";
@@ -487,14 +473,13 @@
               })}
             </div>
 
-            {/* Förklaring (Rationale) och Nästa-knapp */}
             {isAnswered && (
               <div className="mt-6 animate-fade-in-up">
                 <div className={`p-5 rounded-xl mb-6 flex flex-col gap-2 ${selectedOption.isCorrect ? 'bg-green-50 border border-green-100 text-green-800' : 'bg-red-50 border border-red-100 text-red-800'}`}>
-                  <div className="font-bold flex items-center gap-2">
-                    {selectedOption.isCorrect ? "Rätt svar!" : "Tyvärr, det var fel."}
+                  <div className="font-bold flex items-center gap-2 text-base">
+                    {selectedOption.isCorrect ? "Rätt svar!" : "Fel svar!"}
                   </div>
-                  <p className="text-sm leading-relaxed opacity-90">
+                  <p className="text-sm leading-relaxed">
                     <span className="font-semibold block mb-1">Förklaring:</span>
                     {currentQuestion.rationale}
                   </p>
@@ -511,7 +496,6 @@
             )}
           </div>
           
-          {/* Enkel Tailwind-animation (läggs i en style-tagg) */}
           <style dangerouslySetInnerHTML={{__html: `
             @keyframes fadeInUp {
               from { opacity: 0; transform: translateY(10px); }
@@ -525,7 +509,6 @@
       );
     }
 
-    // Montera appen
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<QuizApp />);
   </script>
