@@ -1,326 +1,341 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Trophy, RotateCcw, ChevronRight, AlertCircle, Clock, Play } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Så styrs Sverige</title>
+    <!-- Tailwind CSS för styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React och Babel för att köra JSX i webbläsaren -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide ikoner -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-100">
+    <div id="root"></div>
 
-const QUESTIONS = [
-  // Fråga 1-6: Lagstiftningsprocessen (utan att nämna stegnummer)
-  {
-    question: "När regeringen vill ändra en lag eller införa en ny, börjar de ofta med att tillsätta en grupp experter som ska undersöka frågan grundligt. Vad kallas detta skede?",
-    options: ["En utredning", "En remiss", "En proposition", "En motion"],
-    correctAnswer: "En utredning",
-    hint: "Man tar reda på fakta och ger förslag innan man går vidare."
-  },
-  {
-    question: "När ett färdigt förslag skickas ut till berörda myndigheter och organisationer så att de kan lämna sina synpunkter, kallas det för:",
-    options: ["Remiss", "Utskottshantering", "Betänkande", "Kammardebatt"],
-    correctAnswer: "Remiss",
-    hint: "Det handlar om att lyssna på vad experter utanför regeringen tycker."
-  },
-  {
-    question: "Vad kallas det dokument som innehåller regeringens färdiga förslag och som lämnas över till riksdagen för beslut?",
-    options: ["Proposition", "Motion", "Interpellation", "Grundlag"],
-    correctAnswer: "Proposition",
-    hint: "Det är regeringens motsvarighet till en riksdagsledamots förslag."
-  },
-  {
-    question: "Innan hela riksdagen fattar beslut, förbereds frågan i en mindre grupp med riksdagsledamöter som är experter på just det ämnet. Vad kallas en sådan grupp?",
-    options: ["Utskott", "Departement", "Myndighet", "Kammaren"],
-    correctAnswer: "Utskott",
-    hint: "Det finns 15 sådana grupper i riksdagen, till exempel för utbildning eller försvar."
-  },
-  {
-    question: "När den förberedande gruppen i riksdagen är klar med sin diskussion skriver de ett förslag till hur hela riksdagen ska rösta. Vad kallas detta dokument?",
-    options: ["Betänkande", "Remissvar", "SOU", "Lagrådsremiss"],
-    correctAnswer: "Betänkande",
-    hint: "Det är utskottets rekommendation till kammaren."
-  },
-  {
-    question: "Var sker den slutgiltiga debatten och omröstningen där alla riksdagens 349 ledamöter har möjlighet att delta?",
-    options: ["Kammaren", "Regeringskansliet", "Högsta domstolen", "Partihögkvarteret"],
-    correctAnswer: "Kammaren",
-    hint: "Det kallas också för plenisalen."
-  },
-  // Blandade frågor: Nivåer, EU, Grundlagar
-  {
-    question: "Vilken politisk nivå i Sverige ansvarar främst för hälso- och sjukvård samt kollektivtrafik?",
-    options: ["Regional nivå", "Kommunal nivå", "Statlig nivå", "EU-nivå"],
-    correctAnswer: "Regional nivå",
-    hint: "Tänk på vem som driver sjukhusen och de stora bussbolagen i ett område."
-  },
-  {
-    question: "Varför har Sverige valt att ha grundlagar som är betydligt svårare att ändra än vanliga lagar?",
-    options: ["För att skydda demokratin från förhastade beslut", "För att kungen ska ha sista ordet", "För att EU kräver det för medlemskap", "För att minska riksdagens makt över folket"],
-    correctAnswer: "För att skydda demokratin från förhastade beslut",
-    hint: "Det krävs två beslut med ett val emellan för att ändra dem."
-  },
-  {
-    question: "Vad är den främsta skillnaden i hur en vanlig lag och en grundlag beslutas i riksdagen?",
-    options: ["En grundlag kräver två beslut med ett val emellan", "En vanlig lag kräver att kungen deltar i debatten", "En grundlag måste godkännas av EU-kommissionen", "En vanlig lag kräver alltid en folkomröstning"],
-    correctAnswer: "En grundlag kräver två beslut med ett val emellan",
-    hint: "Tanken är att folket ska få en chans att rösta i ett val innan ändringen genomförs."
-  },
-  // NYA FRÅGOR: Fördelar och nackdelar med EU
-  {
-    question: "EU beskrivs ofta som ett 'fredsprojekt'. Vad var den ursprungliga tanken med att binda ihop ländernas ekonomi?",
-    options: ["Att göra länder beroende av varandra så krig blir omöjligt", "Att skapa en gemensam armé som är starkare än USA:s", "Att införa ett gemensamt språk för att undvika bråk", "Att ge alla kungahus i Europa mer makt över politiken"],
-    correctAnswer: "Att göra länder beroende av varandra så krig blir omöjligt",
-    hint: "Om länder handlar mycket med varandra förlorar alla på att kriga."
-  },
-  {
-    question: "Vad är en vanlig kritik (nackdel) gällande EU:s budget och medlemsavgifter?",
-    options: ["Rika länder betalar mer än de får tillbaka i bidrag", "EU-avgiften används bara till att betala politikers löner", "Sverige tvingas ge bort halva sin skatt till andra länder", "Inga länder får veta hur mycket pengar EU faktiskt använder"],
-    correctAnswer: "Rika länder betalar mer än de får tillbaka i bidrag",
-    hint: "Det handlar om ländernas roll som 'nettobetalare'."
-  },
-  {
-    question: "Vilken fördel innebär den 'fria rörligheten' för dig som svensk medborgare?",
-    options: ["Du kan bosätta dig och söka jobb i valfritt EU-land", "Du får åka gratis med all kollektivtrafik inom Europa", "Du behöver aldrig visa legitimation vid gränspasseringar", "Du får automatiskt medborgarskap i alla 27 länder direkt"],
-    correctAnswer: "Du kan bosätta dig och söka jobb i valfritt EU-land",
-    hint: "Det är en av EU:s fyra så kallade friheter."
-  },
-  {
-    question: "Varför kritiseras EU ibland för att ha ett 'demokratiskt underskott'?",
-    options: ["Många tycker att besluten fattas för långt bort från folket", "Det är inte tillåtet för vanliga medborgare att rösta i EU-val", "Bara de största länderna får sitta med och bestämma i rådet", "EU-kommissionen får bara fatta beslut om ingen protesterar"],
-    correctAnswer: "Många tycker att besluten fattas för långt bort från folket",
-    hint: "Det handlar om känslan av att inte kunna påverka politiken i Bryssel."
-  },
-  {
-    question: "Vilken miljömässig fördel finns det med att Sverige samarbetar inom EU?",
-    options: ["Länderna kan sätta gemensamma och strängare regler för utsläpp", "EU har förbjudit all form av industri som kräver kolkraft", "Sverige får betalt av EU för att ta hand om andras sopor", "Alla EU-medborgare måste enligt lag källsortera varje dag"],
-    correctAnswer: "Länderna kan sätta gemensamma och strängare regler för utsläpp",
-    hint: "Miljöproblem stannar inte vid gränser, därför krävs samarbete."
-  },
-  {
-    question: "Vad innebär det att EU-samarbetet är 'överstatligt', vilket vissa ser som en nackdel?",
-    options: ["Att EU-lagar står över svenska lagar inom vissa områden", "Att EU styrs av en grupp kungar från de största länderna", "Att alla beslut i EU måste godkännas av FN:s säkerhetsråd", "Att länder i EU inte längre får ha egna polismyndigheter"],
-    correctAnswer: "Att EU-lagar står över svenska lagar inom vissa områden",
-    hint: "Detta handlar om landets suveränitet (självbestämmande)."
-  }
-];
+    <script type="text/babel">
+        const { useState, useEffect, useCallback } = React;
 
-const App = () => {
-  const [gameState, setGameState] = useState('start');
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [score, setScore] = useState(0);
-  const [totalSeconds, setTotalSeconds] = useState(0);
-  const [showHint, setShowHint] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [isLocked, setIsLocked] = useState(false);
-  const [shuffledOptions, setShuffledOptions] = useState([]);
+        // Ikon-komponent för att förenkla Lucide-användning utan imports
+        const Icon = ({ name, size = 24, className = "" }) => {
+            return <i data-lucide={name} className={className} style={{ width: size, height: size }}></i>;
+        };
 
-  const formatTime = (totalSecs) => {
-    const minutes = Math.floor(totalSecs / 60);
-    const seconds = totalSecs % 60;
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
+        const QUESTIONS = [
+            // Fråga 1-6: Lagstiftningsprocessen (utan stegnummer)
+            {
+                question: "När regeringen vill ändra en lag, börjar de ofta med att tillsätta en grupp experter som ska undersöka frågan. Vad kallas detta skede?",
+                options: ["En utredning", "En remiss", "En proposition", "En motion"],
+                correctAnswer: "En utredning",
+                hint: "Man tar reda på fakta och ger förslag innan man går vidare."
+            },
+            {
+                question: "När ett färdigt förslag skickas ut till myndigheter och organisationer för att de ska få lämna sina synpunkter, kallas det för:",
+                options: ["Remiss", "Utskottshantering", "Betänkande", "Kammardebatt"],
+                correctAnswer: "Remiss",
+                hint: "Det handlar om att lyssna på experter utanför regeringen."
+            },
+            {
+                question: "Vad kallas det dokument som innehåller regeringens färdiga förslag och som lämnas över till riksdagen?",
+                options: ["Proposition", "Motion", "Interpellation", "Grundlag"],
+                correctAnswer: "Proposition",
+                hint: "Det är regeringens motsvarighet till ett medborgarförslag."
+            },
+            {
+                question: "Innan hela riksdagen fattar beslut, förbereds frågan i en mindre grupp med riksdagsledamöter som är experter. Vad kallas en sådan grupp?",
+                options: ["Utskott", "Departement", "Myndighet", "Kammaren"],
+                correctAnswer: "Utskott",
+                hint: "Det finns 15 sådana grupper i riksdagen."
+            },
+            {
+                question: "När utskottet i riksdagen är klar med sin diskussion skriver de ett förslag till hur riksdagen ska rösta. Vad kallas detta?",
+                options: ["Betänkande", "Remissvar", "SOU", "Lagrådsremiss"],
+                correctAnswer: "Betänkande",
+                hint: "Det är utskottets rekommendation till kammaren."
+            },
+            {
+                question: "Var sker den slutgiltiga debatten och omröstningen där alla riksdagens 349 ledamöter kan delta?",
+                options: ["Kammaren", "Regeringskansliet", "Högsta domstolen", "Partihögkvarteret"],
+                correctAnswer: "Kammaren",
+                hint: "Det kallas också för plenisalen."
+            },
+            // Blandade frågor: Nivåer, Grundlagar, EU
+            {
+                question: "Vilken politisk nivå i Sverige ansvarar främst för hälso- och sjukvård?",
+                options: ["Regional nivå", "Kommunal nivå", "Statlig nivå", "EU-nivå"],
+                correctAnswer: "Regional nivå",
+                hint: "Tänk på vem som driver sjukhusen i ditt län."
+            },
+            {
+                question: "Varför har Sverige grundlagar som är svårare att ändra än vanliga lagar?",
+                options: ["För att skydda demokratin från förhastade beslut", "För att kungen ska bestämma mer", "För att EU kräver det", "För att spara pengar"],
+                correctAnswer: "For att skydda demokratin från förhastade beslut",
+                hint: "Det krävs två beslut med ett val emellan."
+            },
+            {
+                question: "Varför anses grundlagarna vara viktiga för Sveriges demokrati?",
+                options: ["De sätter reglerna för hur landet ska styras", "De bestämmer priset på mat i affärerna", "De ger polisen rätt att skriva egna lagar", "De tvingar alla att rösta på samma parti"],
+                correctAnswer: "De sätter reglerna för hur landet ska styras",
+                hint: "De skyddar våra rättigheter och friheter."
+            },
+            {
+                question: "Vad var den ursprungliga tanken med EU:s fredsprojekt genom ekonomiskt samarbete?",
+                options: ["Att länder blir beroende av varandra så krig blir omöjligt", "Att skapa en gemensam armé mot USA", "Att alla ska prata samma språk", "Att kungen ska få mer makt"],
+                correctAnswer: "Att länder blir beroende av varandra så krig blir omöjligt",
+                hint: "Handel skapar samarbete istället för konflikt."
+            },
+            {
+                question: "Vad är en vanlig kritik (nackdel) gällande EU:s budget?",
+                options: ["Rika länder betalar mer än de får tillbaka", "EU-avgiften används bara till godis", "Sverige ger bort 90% av sin skatt", "Ingen vet var pengarna hamnar"],
+                correctAnswer: "Rika länder betalar mer än de får tillbaka",
+                hint: "Detta kallas att vara en nettobetalare."
+            },
+            {
+                question: "Vilken fördel innebär den 'fria rörligheten' för dig?",
+                options: ["Du kan jobba och studera i valfritt EU-land", "Gratis buss i hela Europa", "Man behöver aldrig visa pass", "Man blir medborgare i alla länder"],
+                correctAnswer: "Du kan jobba och studera i valfritt EU-land",
+                hint: "Det är en av de fyra friheterna."
+            },
+            {
+                question: "Varför pratar man ibland om ett 'demokratiskt underskott' i EU?",
+                options: ["Besluten fattas för långt ifrån folket", "Man får inte rösta i EU-valet", "Bara stora länder får bestämma", "Kommissionen får inte ha möten"],
+                correctAnswer: "Besluten fattas för långt ifrån folket",
+                hint: "Det handlar om bristen på närhet till väljarna."
+            },
+            {
+                question: "Vilken miljöfördel finns med EU-samarbetet?",
+                options: ["Gemensamma regler för utsläpp i alla länder", "EU har förbjudit alla bilar", "Sverige får alla EU:s pengar för miljö", "Källsortering är nu en grundlag"],
+                correctAnswer: "Gemensamma regler för utsläpp i alla länder",
+                hint: "Miljöproblem känner inga gränser."
+            },
+            {
+                question: "Vad innebär det att EU-samarbetet är 'överstatligt'?",
+                options: ["EU-lagar står över svenska lagar inom vissa områden", "Kungen i Belgien styr Sverige", "Alla beslut fattas av FN", "Svenska polisen måste lyda tyska polisen"],
+                correctAnswer: "EU-lagar står över svenska lagar inom vissa områden",
+                hint: "Det handlar om att lämna ifrån sig en del av makten."
+            }
+        ];
 
-  const shuffleArray = (array) => {
-    return [...array].sort(() => Math.random() - 0.5);
-  };
+        const App = () => {
+            const [gameState, setGameState] = useState('start');
+            const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+            const [score, setScore] = useState(0);
+            const [totalSeconds, setTotalSeconds] = useState(0);
+            const [showHint, setShowHint] = useState(false);
+            const [selectedOption, setSelectedOption] = useState(null);
+            const [isLocked, setIsLocked] = useState(false);
+            const [shuffledOptions, setShuffledOptions] = useState([]);
 
-  const startQuiz = () => {
-    setGameState('playing');
-    setCurrentQuestionIndex(0);
-    setScore(0);
-    setTotalSeconds(0);
-    setIsLocked(false);
-    setSelectedOption(null);
-    setShowHint(false);
-    setShuffledOptions(shuffleArray(QUESTIONS[0].options));
-  };
+            const formatTime = (totalSecs) => {
+                const minutes = Math.floor(totalSecs / 60);
+                const seconds = totalSecs % 60;
+                return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            };
 
-  useEffect(() => {
-    let interval;
-    if (gameState === 'playing') {
-      interval = setInterval(() => {
-        setTotalSeconds(prev => prev + 1);
-      }, 1000);
-    } else {
-      clearInterval(interval);
-    }
-    return () => clearInterval(interval);
-  }, [gameState]);
+            const shuffleArray = (array) => {
+                return [...array].sort(() => Math.random() - 0.5);
+            };
 
-  const handleNextQuestion = useCallback(() => {
-    const nextIndex = currentQuestionIndex + 1;
-    if (nextIndex < QUESTIONS.length) {
-      setCurrentQuestionIndex(nextIndex);
-      setIsLocked(false);
-      setSelectedOption(null);
-      setShowHint(false);
-      setShuffledOptions(shuffleArray(QUESTIONS[nextIndex].options));
-    } else {
-      setGameState('finished');
-    }
-  }, [currentQuestionIndex]);
+            const startQuiz = () => {
+                setGameState('playing');
+                setCurrentQuestionIndex(0);
+                setScore(0);
+                setTotalSeconds(0);
+                setIsLocked(false);
+                setSelectedOption(null);
+                setShowHint(false);
+                setShuffledOptions(shuffleArray(QUESTIONS[0].options));
+            };
 
-  const handleOptionClick = (option) => {
-    if (isLocked) return;
-    setSelectedOption(option);
-    setIsLocked(true);
-    if (option === QUESTIONS[currentQuestionIndex].correctAnswer) {
-      setScore(score + 1);
-    }
-  };
+            useEffect(() => {
+                let interval;
+                if (gameState === 'playing') {
+                    interval = setInterval(() => {
+                        setTotalSeconds(prev => prev + 1);
+                    }, 1000);
+                }
+                return () => clearInterval(interval);
+            }, [gameState]);
 
-  const currentQuestion = QUESTIONS[currentQuestionIndex];
+            useEffect(() => {
+                // Uppdatera Lucide-ikoner när komponenten renderas
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            }, [gameState, currentQuestionIndex, showHint]);
 
-  return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4 font-sans text-slate-900">
-      <div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
-        
-        {/* Header */}
-        <div className="bg-indigo-700 p-6 text-white flex justify-between items-center shadow-inner">
-          <div>
-            <h1 className="text-xl font-bold tracking-tight">Sveriges Statsskick</h1>
-            <p className="text-indigo-200 text-sm">Nivåer, Grundlagar & EU</p>
-          </div>
-          {gameState === 'playing' && (
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 bg-indigo-800 px-4 py-1.5 rounded-full border border-indigo-500/50">
-                <Clock size={16} className="text-indigo-300" />
-                <span className="font-mono font-bold text-lg min-w-[3rem]">
-                  {formatTime(totalSeconds)}
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
+            const handleNextQuestion = useCallback(() => {
+                const nextIndex = currentQuestionIndex + 1;
+                if (nextIndex < QUESTIONS.length) {
+                    setCurrentQuestionIndex(nextIndex);
+                    setIsLocked(false);
+                    setSelectedOption(null);
+                    setShowHint(false);
+                    setShuffledOptions(shuffleArray(QUESTIONS[nextIndex].options));
+                } else {
+                    setGameState('finished');
+                }
+            }, [currentQuestionIndex]);
 
-        <div className="p-8">
-          {gameState === 'start' && (
-            <div className="text-center space-y-8 py-6">
-              <div className="relative mx-auto w-24 h-24 bg-indigo-600 rounded-full flex items-center justify-center text-white shadow-lg">
-                <Play size={40} fill="currentColor" className="ml-1" />
-              </div>
-              <div className="space-y-3">
-                <h2 className="text-3xl font-black text-slate-800">Är du redo?</h2>
-                <p className="text-slate-600 max-w-sm mx-auto leading-relaxed text-sm">
-                  Testa dina kunskaper om Sverige och EU. Tidtagningen startar när du klickar på knappen!
-                </p>
-              </div>
-              <button 
-                onClick={startQuiz}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-4 rounded-2xl font-bold transition-all shadow-xl shadow-indigo-200"
-              >
-                Starta Quizzet
-              </button>
-            </div>
-          )}
+            const handleOptionClick = (option) => {
+                if (isLocked) return;
+                setSelectedOption(option);
+                setIsLocked(true);
+                if (option === QUESTIONS[currentQuestionIndex].correctAnswer) {
+                    setScore(score + 1);
+                }
+            };
 
-          {gameState === 'playing' && (
-            <div className="space-y-8">
-              <div className="space-y-5">
-                <div className="flex justify-between items-end">
-                   <span className="text-xs font-bold uppercase tracking-wider text-indigo-600">
-                    Fråga {currentQuestionIndex + 1} av {QUESTIONS.length}
-                  </span>
+            const currentQuestion = QUESTIONS[currentQuestionIndex];
+
+            return (
+                <div className="min-h-screen flex items-center justify-center p-4">
+                    <div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
+                        
+                        {/* Header */}
+                        <div className="bg-indigo-700 p-6 text-white flex justify-between items-center">
+                            <div>
+                                <h1 className="text-xl font-bold tracking-tight">Sveriges Statsskick</h1>
+                                <p className="text-indigo-200 text-sm">Grundlagar, Nivåer & EU</p>
+                            </div>
+                            {gameState === 'playing' && (
+                                <div className="flex items-center gap-3 bg-indigo-800 px-4 py-1.5 rounded-full border border-indigo-500/50">
+                                    <Icon name="clock" size={16} className="text-indigo-300" />
+                                    <span className="font-mono font-bold text-lg">
+                                        {formatTime(totalSeconds)}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="p-8">
+                            {gameState === 'start' && (
+                                <div className="text-center space-y-8 py-6">
+                                    <div className="mx-auto w-24 h-24 bg-indigo-600 rounded-full flex items-center justify-center text-white shadow-lg">
+                                        <Icon name="play" size={40} />
+                                    </div>
+                                    <div className="space-y-3">
+                                        <h2 className="text-3xl font-black text-slate-800">Är du redo?</h2>
+                                        <p className="text-slate-600 max-w-sm mx-auto">
+                                            Quizzet har 15 frågor. Tidtagaruret startar när du trycker på knappen!
+                                        </p>
+                                    </div>
+                                    <button 
+                                        onClick={startQuiz}
+                                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-4 rounded-2xl font-bold transition-all shadow-xl shadow-indigo-200"
+                                    >
+                                        Starta Quizzet
+                                    </button>
+                                </div>
+                            )}
+
+                            {gameState === 'playing' && (
+                                <div className="space-y-8">
+                                    <div className="space-y-5">
+                                        <div className="flex justify-between items-end">
+                                            <span className="text-xs font-bold uppercase tracking-wider text-indigo-600">
+                                                Fråga {currentQuestionIndex + 1} av {QUESTIONS.length}
+                                            </span>
+                                        </div>
+                                        <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                                            <div 
+                                                className="bg-indigo-600 h-full transition-all duration-500"
+                                                style={{ width: `${((currentQuestionIndex + 1) / QUESTIONS.length) * 100}%` }}
+                                            ></div>
+                                        </div>
+                                        <h2 className="text-xl font-bold leading-snug text-slate-800 min-h-[3.5rem]">
+                                            {currentQuestion.question}
+                                        </h2>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-3.5">
+                                        {shuffledOptions.map((option, idx) => {
+                                            const isCorrect = option === currentQuestion.correctAnswer;
+                                            const isSelected = selectedOption === option;
+                                            let style = "w-full p-4 px-6 text-left rounded-2xl border-2 transition-all flex justify-between items-center ";
+                                            
+                                            if (!isLocked) {
+                                                style += "border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/50";
+                                            } else {
+                                                if (isCorrect) style += "border-emerald-500 bg-emerald-50 text-emerald-700 font-bold";
+                                                else if (isSelected) style += "border-rose-500 bg-rose-50 text-rose-700";
+                                                else style += "border-slate-100 opacity-40";
+                                            }
+
+                                            return (
+                                                <button key={idx} onClick={() => handleOptionClick(option)} disabled={isLocked} className={style}>
+                                                    <span>{option}</span>
+                                                    {isLocked && isCorrect && <Icon name="trophy" size={18} className="text-emerald-500" />}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+
+                                    <div className="pt-6 flex justify-between items-center border-t border-slate-100 mt-2">
+                                        <button onClick={() => setShowHint(!showHint)} className="text-indigo-600 text-sm font-bold flex items-center gap-2">
+                                            <Icon name="help-circle" size={18} />
+                                            {showHint ? 'Dölj tips' : 'Visa tips'}
+                                        </button>
+                                        {isLocked && (
+                                            <button onClick={handleNextQuestion} className="bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg">
+                                                {currentQuestionIndex === QUESTIONS.length - 1 ? 'Resultat' : 'Nästa'}
+                                                <Icon name="chevron-right" size={20} />
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {showHint && (
+                                        <div className="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-xl text-sm text-amber-900 animate-pulse">
+                                            <strong>Ledtråd:</strong> {currentQuestion.hint}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {gameState === 'finished' && (
+                                <div className="text-center space-y-10 py-6">
+                                    <div className="space-y-4">
+                                        <div className="bg-emerald-100 w-28 h-28 rounded-full flex items-center justify-center mx-auto text-emerald-600 shadow-inner">
+                                            <Icon name="trophy" size={56} />
+                                        </div>
+                                        <h2 className="text-4xl font-black text-slate-800">Bra jobbat!</h2>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
+                                        <div className="bg-indigo-50 p-6 rounded-3xl border border-indigo-100">
+                                            <div className="text-indigo-400 text-xs uppercase font-black tracking-widest mb-1">Poäng</div>
+                                            <div className="text-3xl font-black text-indigo-700">{score} / {QUESTIONS.length}</div>
+                                        </div>
+                                        <div className="bg-emerald-50 p-6 rounded-3xl border border-emerald-100">
+                                            <div className="text-emerald-400 text-xs uppercase font-black tracking-widest mb-1">Total Tid</div>
+                                            <div className="text-3xl font-black text-emerald-700">{formatTime(totalSeconds)}</div>
+                                        </div>
+                                    </div>
+
+                                    <button 
+                                        onClick={startQuiz}
+                                        className="flex items-center gap-3 bg-slate-900 hover:bg-slate-800 text-white px-10 py-4 rounded-2xl font-bold transition-all mx-auto shadow-2xl"
+                                    >
+                                        <Icon name="rotate-ccw" size={20} />
+                                        Gör om quizen
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
-                
-                <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
-                  <div 
-                    className="bg-indigo-600 h-full transition-all duration-500 ease-out"
-                    style={{ width: `${((currentQuestionIndex + 1) / QUESTIONS.length) * 100}%` }}
-                  ></div>
-                </div>
+            );
+        };
 
-                <h2 className="text-xl font-bold leading-snug text-slate-800 min-h-[3.5rem]">
-                  {currentQuestion.question}
-                </h2>
-              </div>
-
-              <div className="grid grid-cols-1 gap-3.5">
-                {shuffledOptions.map((option, idx) => {
-                  const isCorrect = option === currentQuestion.correctAnswer;
-                  const isSelected = selectedOption === option;
-                  let buttonStyle = "w-full p-4 px-6 text-left rounded-2xl border-2 transition-all duration-200 flex justify-between items-center ";
-                  
-                  if (!isLocked) {
-                    buttonStyle += "border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/50";
-                  } else {
-                    if (isCorrect) {
-                      buttonStyle += "border-emerald-500 bg-emerald-50 text-emerald-700 font-bold";
-                    } else if (isSelected && !isCorrect) {
-                      buttonStyle += "border-rose-500 bg-rose-50 text-rose-700 font-medium";
-                    } else {
-                      buttonStyle += "border-slate-100 opacity-40";
-                    }
-                  }
-
-                  return (
-                    <button 
-                      key={idx}
-                      onClick={() => handleOptionClick(option)}
-                      disabled={isLocked}
-                      className={buttonStyle}
-                    >
-                      <span className="text-[1rem]">{option}</span>
-                      {isLocked && isCorrect && <Trophy size={18} className="text-emerald-500" />}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="pt-6 flex justify-between items-center border-t border-slate-100 mt-2">
-                <button 
-                  onClick={() => setShowHint(!showHint)}
-                  className="text-indigo-600 text-sm font-bold flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-indigo-50"
-                >
-                  <AlertCircle size={18} />
-                  {showHint ? 'Dölj tips' : 'Visa tips'}
-                </button>
-                
-                {isLocked && (
-                  <button 
-                    onClick={handleNextQuestion}
-                    className="bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-indigo-700 transition-all shadow-lg"
-                  >
-                    {currentQuestionIndex === QUESTIONS.length - 1 ? 'Visa resultat' : 'Nästa'}
-                    <ChevronRight size={20} />
-                  </button>
-                )}
-              </div>
-
-              {showHint && (
-                <div className="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-xl text-sm text-amber-900 animate-in slide-in-from-left-2">
-                  <strong>Ledtråd:</strong> {currentQuestion.hint}
-                </div>
-              )}
-            </div>
-          )}
-
-          {gameState === 'finished' && (
-            <div className="text-center space-y-10 py-6">
-              <div className="space-y-4">
-                <div className="bg-emerald-100 w-28 h-28 rounded-full flex items-center justify-center mx-auto text-emerald-600">
-                  <Trophy size={56} />
-                </div>
-                <h2 className="text-4xl font-black text-slate-800">Klart!</h2>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
-                <div className="bg-indigo-50 p-6 rounded-3xl border border-indigo-100 text-center">
-                  <div className="text-indigo-400 text-xs uppercase font-black tracking-widest mb-1">Poäng</div>
-                  <div className="text-3xl font-black text-indigo-700">{score} / {QUESTIONS.length}</div>
-                </div>
-                <div className="bg-emerald-50 p-6 rounded-3xl border border-emerald-100 text-center">
-                  <div className="text-emerald-400 text-xs uppercase font-black tracking-widest mb-1">Total Tid</div>
-                  <div className="text-3xl font-black text-emerald-700">{formatTime(totalSeconds)}</div>
-                </div>
-              </div>
-
-              <button 
-                onClick={startQuiz}
-                className="flex items-center gap-3 bg-slate-900 hover:bg-slate-800 text-white px-10 py-4 rounded-2xl font-bold transition-all mx-auto shadow-2xl"
-              >
-                <RotateCcw size={20} />
-                Försök igen
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default App;
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
