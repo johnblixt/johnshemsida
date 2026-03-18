@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privatekonomi – Vad händer sen?</title>
+  
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <style>
+    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    .bounce-icon { animation: bounce 2s ease-in-out infinite; }
+  </style>
+</head>
+<body class="bg-indigo-50 font-sans">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    const gameData = {
+      chains: [
+        {
+          id: 1,
+          title: 'Sjukdom och ersättning',
+          icon: '🏥',
+          description: 'Dag 1–14–15+',
+          questions: [
+            {
+              situation: 'Du blir sjuk och kan inte gå till jobbet.',
+              question: 'Vad kallas den första dagen du är sjuk?',
+              options: ['Sjuklön', 'Karensdag', 'Sjukpenning'],
+              correct: 1,
+              explanation: 'Den första sjukdagen kallas karensdag och du får ingen ersättning den dagen.'
+            },
+            {
+              situation: 'Det är din första sjukdag (karensdagen).',
+              question: 'Vad får du i ersättning dag 1?',
+              options: ['Full lön', 'Halv lön', 'Ingen ersättning'],
+              correct: 2,
+              explanation: 'Under karensdagen får du ingen ersättning alls.'
+            },
+            {
+              situation: 'Du är fortfarande sjuk dag 2–14.',
+              question: 'Vem betalar ersättning dag 2–14?',
+              options: ['Försäkringskassan', 'Arbetsgivaren', 'Banken'],
+              correct: 1,
+              explanation: 'Din arbetsgivare betalar sjuklön från dag 2 till dag 14.'
+            },
+            {
+              situation: 'Du är sjuk längre än 14 dagar.',
+              question: 'Vem betalar från dag 15 och framåt?',
+              options: ['Arbetsgivaren', 'Banken', 'Försäkringskassan'],
+              correct: 2,
+              explanation: 'Från dag 15 tar Försäkringskassan över betalningen.'
+            }
+          ]
+        },
+        {
+          id: 2,
+          title: 'Faktura → Betalningsanmärkning',
+          icon: '📄',
+          description: 'Vägen till skuldfällan',
+          questions: [
+            {
+              situation: 'Du får en faktura i brevlådan.',
+              question: 'Vad är förfallodatum?',
+              options: ['När fakturan skickas', 'Sista dagen att betala', 'När skulden försvinner'],
+              correct: 1,
+              explanation: 'Förfallodatum är sista dagen du kan betala utan extra avgifter.'
+            },
+            {
+              situation: 'Du missade förfallodatumet.',
+              question: 'Vad händer oftast först om du inte betalar i tid?',
+              options: ['Kronofogden direkt', 'Påminnelse med avgift', 'Lånet skrivs av'],
+              correct: 1,
+              explanation: 'Först får du en påminnelse med en extra avgift.'
+            },
+            {
+              situation: 'Du har fått en påminnelse men fortfarande inte betalat.',
+              question: 'Vart skickas skulden efter påminnelsen?',
+              options: ['Skatteverket', 'Inkasso', 'Socialtjänsten'],
+              correct: 1,
+              explanation: 'Skulden skickas till ett inkassoföretag som lägger på ytterligare avgifter.'
+            },
+            {
+              situation: 'Du har fått en betalningsanmärkning via Kronofogden.',
+              question: 'Vad kan en betalningsanmärkning påverka?',
+              options: ['Ditt betyg i skolan', 'Möjlighet att hyra bostad eller ta lån', 'Ingenting speciellt'],
+              correct: 1,
+              explanation: 'Det blir svårt att hyra lägenhet, ta lån eller teckna mobilabonnemang i flera år.'
+            }
+          ]
+        },
+        {
+          id: 3,
+          title: 'Sparformer',
+          icon: '🐷',
+          description: 'Risk och avkastning',
+          questions: [
+            {
+              situation: 'Du vill spara pengar säkert till en buffert.',
+              question: 'Vilken sparform innebär lägst risk?',
+              options: ['Aktier', 'Fonder', 'Sparkonto'],
+              correct: 2,
+              explanation: 'Sparkonto är säkert och pengarna finns kvar även om börsen går ner.'
+            },
+            {
+              situation: 'Du vill ha chans på hög avkastning långsiktigt.',
+              question: 'Vilken sparform innebär högst risk men möjlighet till mest pengar?',
+              options: ['Sparkonto', 'Aktier', 'Madrassen'],
+              correct: 1,
+              explanation: 'Aktier kan öka mycket i värde, men de kan också sjunka så att du förlorar pengar.'
+            }
+          ]
+        },
+        {
+          id: 4,
+          title: 'Lön och Skatt',
+          icon: '💰',
+          description: 'Brutto och Netto',
+          questions: [
+            {
+              situation: 'Du får ditt anställningsavtal där det står din lön.',
+              question: 'Vad kallas lönen INNAN skatten är dragen?',
+              options: ['Nettolön', 'Bruttolön', 'Fickpengar'],
+              correct: 1,
+              explanation: 'Bruttolön är lönen före skatt.'
+            },
+            {
+              situation: 'Skatten har dragits och pengarna kommer in på kontot.',
+              question: 'Vad kallas lönen du får ut efter skatt?',
+              options: ['Bruttolön', 'Nettolön', 'Ränta'],
+              correct: 1,
+              explanation: 'Nettolön är det du får behålla (Netto = Det som är kvar i nätet).'
+            }
+          ]
+        }
+      ]
+    };
+
+    function App() {
+      const [screen, setScreen] = useState('start');
+      const [currentChainIdx, setCurrentChainIdx] = useState(0);
+      const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
+      const [score, setScore] = useState(0);
+      const [selectedAnswer, setSelectedAnswer] = useState(null);
+      const [isAnswered, setIsAnswered] = useState(false);
+      const [completedChains, setCompletedChains] = useState([]);
+
+      const selectChain = (idx) => {
+        setCurrentChainIdx(idx);
+        setCurrentQuestionIdx(0);
+        setIsAnswered(false);
+        setSelectedAnswer(null);
+        setScreen('question');
+      };
+
+      const handleAnswer = (idx) => {
+        if (isAnswered) return;
+        setSelectedAnswer(idx);
+        setIsAnswered(true);
+        if (idx === gameData.chains[currentChainIdx].questions[currentQuestionIdx].correct) {
+          setScore(score + 1);
+        }
+      };
+
+      const nextQuestion = () => {
+        const chain = gameData.chains[currentChainIdx];
+        if (currentQuestionIdx < chain.questions.length - 1) {
+          setCurrentQuestionIdx(currentQuestionIdx + 1);
+          setIsAnswered(false);
+          setSelectedAnswer(null);
+        } else {
+          if (!completedChains.includes(currentChainIdx)) {
+            setCompletedChains([...completedChains, currentChainIdx]);
+          }
+          setScreen('menu');
+        }
+      };
+
+      // --- START SKÄRM ---
+      if (screen === 'start') {
+        return (
+          <div className="min-h-screen flex items-center justify-center p-6 text-center">
+            <div className="bg-white p-10 rounded-3xl shadow-2xl max-w-lg w-full border-t-8 border-indigo-600">
+              <span className="text-7xl block mb-6 bounce-icon">💰</span>
+              <h1 className="text-4xl font-black text-slate-900 mb-4">Privatekonomi</h1>
+              <p className="text-slate-600 mb-8 text-lg">Lär dig hur pengar, jobb och skulder fungerar genom orsakskedjor!</p>
+              <button onClick={() => setScreen('menu')} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl shadow-lg transition-transform hover:scale-105">
+                Starta Spelet
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      // --- MENY / KEDJEVAL ---
+      if (screen === 'menu') {
+        return (
+          <div className="min-h-screen p-6 max-w-2xl mx-auto">
+            <div className="flex justify-between items-center mb-10 bg-white p-4 rounded-2xl shadow-sm">
+              <span className="font-bold text-indigo-600 text-lg">Poäng: {score}</span>
+              <span className="text-slate-400 text-sm">{completedChains.length} / {gameData.chains.length} kedjor klara</span>
+            </div>
+            <h2 className="text-2xl font-black text-slate-800 mb-6 text-center">Välj en utmaning:</h2>
+            <div className="grid gap-4">
+              {gameData.chains.map((chain, i) => (
+                <button key={i} onClick={() => selectChain(i)} className="bg-white p-6 rounded-2xl shadow-md border-2 border-transparent hover:border-indigo-400 text-left flex items-center gap-6 transition-all">
+                  <span className="text-4xl">{chain.icon}</span>
+                  <div className="flex-grow">
+                    <h3 className="font-bold text-lg">{chain.title}</h3>
+                    <p className="text-slate-500 text-sm">{chain.description}</p>
+                  </div>
+                  {completedChains.includes(i) ? <span className="text-green-500 font-bold">✓</span> : <span className="text-indigo-300">→</span>}
+                </button>
+              ))}
+            </div>
+            {completedChains.length === gameData.chains.length && (
+              <button onClick={() => setScreen('start')} className="mt-10 w-full bg-green-500 text-white font-bold py-4 rounded-xl shadow-md">Börja om 🎉</button>
+            )}
+            <div className="mt-6 text-center">
+                <a href="index.html" className="text-slate-400 hover:text-slate-600 font-medium">Tillbaka till portalen</a>
+            </div>
+          </div>
+        );
+      }
+
+      // --- FRÅGE SKÄRM ---
+      const chain = gameData.chains[currentChainIdx];
+      const q = chain.questions[currentQuestionIdx];
+
+      return (
+        <div className="min-h-screen p-4 flex flex-col items-center pt-10">
+          <div className="max-w-md w-full">
+            <div className="mb-6 flex justify-between items-end">
+              <div>
+                <span className="text-xs font-bold text-indigo-400 uppercase tracking-widest">{chain.title}</span>
+                <div className="h-2 w-32 bg-slate-200 rounded-full mt-1 overflow-hidden">
+                  <div className="h-full bg-indigo-500 transition-all" style={{width: `${((currentQuestionIdx+1)/chain.questions.length)*100}%`}}></div>
+                </div>
+              </div>
+              <span className="text-slate-400 text-sm">{currentQuestionIdx + 1} / {chain.questions.length}</span>
+            </div>
+
+            <div className="bg-white p-6 rounded-3xl shadow-xl mb-6">
+              <div className="bg-amber-50 p-3 rounded-xl mb-4 text-amber-800 text-sm font-medium border border-amber-100 italic">
+                "{q.situation}"
+              </div>
+              <h2 className="text-xl font-bold text-slate-800 leading-tight mb-6">{q.question}</h2>
+              <div className="space-y-3">
+                {q.options.map((opt, i) => (
+                  <button 
+                    key={i} 
+                    onClick={() => handleAnswer(i)} 
+                    disabled={isAnswered}
+                    className={`w-full text-left p-4 rounded-xl font-bold border-2 transition-all ${
+                      !isAnswered ? "bg-white border-slate-100 hover:border-indigo-400 hover:bg-indigo-50" : 
+                      i === q.correct ? "bg-green-50 border-green-500 text-green-700 shadow-inner" : 
+                      i === selectedAnswer ? "bg-red-50 border-red-500 text-red-700" : "bg-white border-slate-50 text-slate-300"
+                    }`}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {isAnswered && (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className={`p-4 rounded-2xl mb-6 text-sm font-medium border ${selectedAnswer === q.correct ? "bg-green-100 border-green-200 text-green-800" : "bg-red-100 border-red-200 text-red-800"}`}>
+                  {selectedAnswer === q.correct ? `🎉 Rätt! ${q.explanation}` : `❌ Tyvärr fel. Rätt svar var: ${q.options[q.correct]}`}
+                </div>
+                <button onClick={nextQuestion} className="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-black transition-all">
+                  {currentQuestionIdx === chain.questions.length - 1 ? "Klara kedjan" : "Nästa steg →"}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
