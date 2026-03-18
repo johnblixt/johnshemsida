@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI-Mästaren: Tid & Precision</title>
+    <title>AI-Mästaren: 70 Utmaningar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .option-btn:disabled { opacity: 0.7; cursor: not-allowed; }
@@ -50,7 +50,7 @@
                 <div class="flex flex-wrap gap-2">
                     <span id="live-rank" class="text-xs font-black uppercase tracking-tighter bg-slate-100 px-3 py-1 rounded-full border border-slate-200 self-center">NEWBIE</span>
                     <span id="score-counter" class="text-sm font-bold text-green-700 bg-green-50 px-3 py-1 rounded-full border border-green-100">Poäng: 0</span>
-                    <span id="counter" class="text-sm font-medium text-slate-500 bg-slate-100 px-3 py-1 rounded-full">1 / 15</span>
+                    <span id="counter" class="text-sm font-medium text-slate-500 bg-slate-100 px-3 py-1 rounded-full">1 / 70</span>
                 </div>
             </div>
 
@@ -77,13 +77,13 @@
                         RANK: <span id="final-rank-text">-</span>
                     </div>
                     <h2 class="text-3xl font-extrabold text-slate-900">Bra jobbat!</h2>
-                    <p class="text-slate-500 mt-2">Du har slutfört AI-testet.</p>
+                    <p class="text-slate-500 mt-2">Du har genomfört hela träningen på 70 frågor.</p>
                 </div>
                 
                 <div class="grid grid-cols-2 gap-4 mb-8">
                     <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                        <p class="text-slate-500 uppercase tracking-wider text-xs font-bold mb-1">Poäng</p>
-                        <p class="text-4xl font-black text-slate-900"><span id="final-score">0</span><span class="text-slate-300 text-xl">/15</span></p>
+                        <p class="text-slate-500 uppercase tracking-wider text-xs font-bold mb-1">Slutpoäng</p>
+                        <p class="text-4xl font-black text-slate-900"><span id="final-score">0</span><span class="text-slate-300 text-xl">/70</span></p>
                     </div>
                     <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
                         <p class="text-slate-500 uppercase tracking-wider text-xs font-bold mb-1">Total Tid</p>
@@ -92,7 +92,7 @@
                 </div>
                 
                 <button onclick="location.reload()" class="bg-blue-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-200 active:scale-95">
-                    Starta om och förbättra tiden
+                    Starta om för bättre Rank
                 </button>
             </div>
         </div>
@@ -254,7 +254,7 @@
 
         let currentQuestionIndex = 0;
         let score = 0;
-        let quizQuestions = [];
+        let allQuestions = [];
         let startTime;
         let timerInterval;
 
@@ -277,7 +277,6 @@
         const finalScoreDisplay = document.getElementById('final-score');
         const finalTimeDisplay = document.getElementById('final-time');
 
-        // Helper to shuffle any array
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -310,12 +309,12 @@
             let colorClass = "text-noob";
             let badgeClass = "rank-none";
 
-            if (currentScore >= 14) { rank = "ELITE"; colorClass = "text-elite"; badgeClass = "rank-elite"; }
-            else if (currentScore >= 12) { rank = "ALL-STAR"; colorClass = "text-allstar"; badgeClass = "rank-allstar"; }
-            else if (currentScore >= 10) { rank = "SILVER"; colorClass = "text-silver"; badgeClass = "rank-silver"; }
-            else if (currentScore >= 8) { rank = "BRONZE"; colorClass = "text-bronze"; badgeClass = "rank-bronze"; }
-            else if (currentScore >= 5) { rank = "JUNIOR"; colorClass = "text-junior"; badgeClass = "rank-junior"; }
-            else if (currentScore >= 3) { rank = "ROOKIE"; colorClass = "text-rookie"; badgeClass = "rank-rookie"; }
+            if (currentScore >= 70) { rank = "ELITE"; colorClass = "text-elite"; badgeClass = "rank-elite"; }
+            else if (currentScore >= 60) { rank = "ALL-STAR"; colorClass = "text-allstar"; badgeClass = "rank-allstar"; }
+            else if (currentScore >= 50) { rank = "SILVER"; colorClass = "text-silver"; badgeClass = "rank-silver"; }
+            else if (currentScore >= 40) { rank = "BRONZE"; colorClass = "text-bronze"; badgeClass = "rank-bronze"; }
+            else if (currentScore >= 26) { rank = "JUNIOR"; colorClass = "text-junior"; badgeClass = "rank-junior"; }
+            else if (currentScore >= 16) { rank = "ROOKIE"; colorClass = "text-rookie"; badgeClass = "rank-rookie"; }
             else if (currentScore >= 1) { rank = "NOOB"; colorClass = "text-noob"; badgeClass = "rank-noob"; }
 
             if (isFinalBadge) {
@@ -328,22 +327,26 @@
         }
 
         function loadQuestion() {
-            const question = quizQuestions[currentQuestionIndex];
+            const question = allQuestions[currentQuestionIndex];
+            
+            // Bestäm prefix dynamiskt baserat på aktuell fråga (progression)
+            const prefix = currentQuestionIndex >= 45 ? "[Analys] " : 
+                           (currentQuestionIndex >= 30 ? "[Nivå 3] " : 
+                           (currentQuestionIndex >= 15 ? "[Nivå 2] " : ""));
             
             feedback.classList.add('hidden');
             quizContent.classList.remove('fade-in');
             void quizContent.offsetWidth; 
             quizContent.classList.add('fade-in');
             
-            questionText.innerText = question.q;
-            counter.innerText = `${currentQuestionIndex + 1} / ${quizQuestions.length}`;
+            questionText.innerText = prefix + question.q;
+            counter.innerText = `${currentQuestionIndex + 1} / ${allQuestions.length}`;
             scoreCounter.innerText = `Poäng: ${score}`;
             updateRankUI(score, liveRank, false);
             
-            progress.style.width = `${(currentQuestionIndex / quizQuestions.length) * 100}%`;
+            progress.style.width = `${(currentQuestionIndex / allQuestions.length) * 100}%`;
             
             optionsContainer.innerHTML = '';
-            // Shuffle options for this specific question
             const shuffledOptions = shuffleArray([...question.a]);
             
             shuffledOptions.forEach(opt => {
@@ -368,7 +371,7 @@
                 btn.classList.add('incorrect');
                 buttons.forEach(b => {
                     const optText = b.innerText;
-                    const originalOpt = quizQuestions[currentQuestionIndex].a.find(o => o.t === optText);
+                    const originalOpt = allQuestions[currentQuestionIndex].a.find(o => o.t === optText);
                     if(originalOpt.c) b.classList.add('correct');
                 });
             }
@@ -379,7 +382,7 @@
 
         nextBtn.onclick = () => {
             currentQuestionIndex++;
-            if (currentQuestionIndex < quizQuestions.length) {
+            if (currentQuestionIndex < allQuestions.length) {
                 loadQuestion();
             } else {
                 showResults();
@@ -398,14 +401,18 @@
         }
 
         function initQuiz() {
-            // 1. Shuffle all questions at start
-            quizQuestions = shuffleArray([...baseQuestions]);
-            // 2. Reset state
+            // Skapar 70 råfrågor utan prefix
+            allQuestions = [];
+            for (let i = 0; i < 70; i++) {
+                allQuestions.push({ ...baseQuestions[i % baseQuestions.length] });
+            }
+            
+            // Blanda frågorna först
+            shuffleArray(allQuestions);
+            
             currentQuestionIndex = 0;
             score = 0;
-            // 3. Start timer
             startTimer();
-            // 4. Load first question
             loadQuestion();
         }
 
