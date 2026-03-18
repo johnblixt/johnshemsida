@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Miljö & Konsumtion - Orsakskedjor</title>
+  
+  <!-- Laddar in React -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  
+  <!-- Laddar in Babel -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- Laddar in Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
+    
+    body { font-family: 'Fredoka', sans-serif; }
+
+    @keyframes glitch {
+      0% { transform: translate(0); }
+      20% { transform: translate(-5px, 5px); }
+      40% { transform: translate(5px, -5px); }
+      60% { transform: translate(-5px, -5px); }
+      80% { transform: translate(5px, 5px); }
+      100% { transform: translate(0); }
+    }
+
+    .wasted-text {
+      font-family: 'Impact', sans-serif;
+      font-size: 80px;
+      color: #af0000;
+      text-shadow: 4px 4px 0px #000;
+      animation: glitch 0.2s infinite;
+      letter-spacing: 5px;
+    }
+
+    .card-zoom { transition: transform 0.3s ease; }
+    .card-zoom:hover { transform: scale(1.02); }
+  </style>
+</head>
+<body class="bg-green-50">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const chains = [
+      {
+        title: "Konsumtionens väg",
+        icon: "👕",
+        color: "bg-blue-500",
+        steps: [
+          {
+            question: "Du köper nya kläder varje månad. Vad leder det till?",
+            situation: "Ökad shoppinglust",
+            options: ["Minskad resursanvändning", "Ökat ekologiskt fotavtryck", "Ingen skillnad för miljön"],
+            correct: 1,
+            explanation: "Varje ny produkt kräver råvaror, energi och transporter, vilket ökar belastningen på planeten."
+          },
+          {
+            question: "Varför ökar det ekologiska fotavtrycket vid produktion?",
+            situation: "Fabriker går på högvarv",
+            options: ["Produktion kräver energi och vatten", "Fabriker renar luften automatiskt", "Återvinning löser allt direkt"],
+            correct: 0,
+            explanation: "Tillverkning kräver enorma mängder vatten, kemikalier och el som ofta kommer från fossila bränslen."
+          },
+          {
+            question: "Vad leder ökad produktion och transporter till i atmosfären?",
+            situation: "Rök ur skorstenar",
+            options: ["Mer syre till växterna", "Mer växthusgaser släpps ut", "Atmosfären blir tjockare och svalare"],
+            correct: 1,
+            explanation: "Förbränning av olja och kol vid frakt och tillverkning ökar halten av koldioxid i luften."
+          },
+          {
+            question: "Vad blir effekten när växthusgaserna fångar solens värme?",
+            situation: "Växthuseffekten stärks",
+            options: ["Jorden blir kallare", "Global uppvärmning", "Havet sjunker"],
+            correct: 1,
+            explanation: "Det fungerar som ett täcke runt jorden – ju mer gaser, desto varmare blir det."
+          }
+        ]
+      },
+      {
+        title: "Bensin & Skogsbränder",
+        icon: "🔥",
+        color: "bg-orange-500",
+        steps: [
+          {
+            question: "Vad händer när vi bränner bensin i våra bilar?",
+            situation: "Avgaser från trafiken",
+            options: ["Koldioxid släpps ut i luften", "Ozonlagret blir tjockare", "Det bildas mer dricksvatten"],
+            correct: 0,
+            explanation: "Fossila bränslen frigör kol som varit lagrat i marken i miljontals år."
+          },
+          {
+            question: "Vad leder den globala uppvärmningen till i skog och mark?",
+            situation: "Extrem torka",
+            options: ["Fler regnbågar", "Fler och större skogsbränder", "Träden växer snabbare"],
+            correct: 1,
+            explanation: "Värme torkar ut växtligheten, vilket gör skogen till ett gigantiskt tändstål."
+          },
+          {
+            question: "Varför blir skogsbränder en 'ond cirkel'?",
+            situation: "Skogen brinner",
+            options: ["Elden kyler ner marken", "Brinnande träd släpper ut lagrad CO2", "Askan stoppar solen"],
+            correct: 1,
+            explanation: "När träden brinner släpper de ut all den koldioxid de tagit upp under hela sin livstid."
+          }
+        ]
+      },
+      {
+        title: "Ekonomi & Slöseri",
+        icon: "📉",
+        color: "bg-purple-500",
+        steps: [
+          {
+            question: "Vad kännetecknar en linjär ekonomi?",
+            situation: "Ta - Tillverka - Släng",
+            options: ["Hållbart resursutnyttjande", "Överutnyttjande av resurser", "Fokus på reparation"],
+            correct: 1,
+            explanation: "Det är ett slösaktigt system där vi tar från naturen och skapar berg av sopor."
+          },
+          {
+            question: "Vad händer när vi överskrider de planetära gränserna?",
+            situation: "Jorden mår dåligt",
+            options: ["Ingenting, tekniken räddar oss", "Oåterkallelig skada på ekosystem", "Naturen blir starkare"],
+            correct: 1,
+            explanation: "När vi förstör för mycket kan vissa förändringar, som utdöda arter, aldrig återställas."
+          }
+        ]
+      }
+    ];
+
+    function App() {
+      const [view, setView] = useState('start'); // start, select, play, feedback, wasted, result
+      const [currentChainIdx, setCurrentChainIdx] = useState(0);
+      const [currentStepIdx, setCurrentStepIdx] = useState(0);
+      const [lives, setLives] = useState(3);
+      const [score, setScore] = useState(0);
+      const [completedChains, setCompletedChains] = useState([]);
+
+      const currentChain = chains[currentChainIdx];
+      const currentStep = currentChain.steps[currentStepIdx];
+
+      const getRank = () => {
+        const total = completedChains.length;
+        if (total >= 3) return { name: "GOLD 🥇", color: "text-yellow-600" };
+        if (total >= 2) return { name: "SILVER 🥈", color: "text-slate-400" };
+        if (total >= 1) return { name: "BRONZE 🥉", color: "text-orange-600" };
+        return { name: "NOOB 🥴", color: "text-slate-500" };
+      };
+
+      const handleAnswer = (idx) => {
+        if (idx === currentStep.correct) {
+          setScore(score + 100);
+          setView('feedback');
+        } else {
+          setLives(lives - 1);
+          setView('wasted');
+          setTimeout(() => {
+            if (lives <= 1) {
+              resetGame();
+            } else {
+              setView('play');
+            }
+          }, 2000);
+        }
+      };
+
+      const nextStep = () => {
+        if (currentStepIdx + 1 < currentChain.steps.length) {
+          setCurrentStepIdx(currentStepIdx + 1);
+          setView('play');
+        } else {
+          if (!completedChains.includes(currentChainIdx)) {
+            setCompletedChains([...completedChains, currentChainIdx]);
+          }
+          setView('select');
+        }
+      };
+
+      const resetGame = () => {
+        setLives(3);
+        setScore(0);
+        setCompletedChains([]);
+        setView('start');
+      };
+
+      if (view === 'wasted') {
+        return (
+          <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
+            <div className="text-center">
+              <div className="wasted-text">WASTED</div>
+              <p className="text-white mt-4 text-xl font-bold">FEL SVAR - DU FÖRLORADE ETT LIV</p>
+              {lives <= 1 && <p className="text-red-500 mt-2">GAME OVER - BÖRJA OM</p>}
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="min-h-screen flex items-center justify-center p-4">
+          <div className="max-w-2xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden border-b-8 border-green-600">
+            
+            {/* Header Stats */}
+            <div className="bg-green-600 p-4 text-white flex justify-between items-center">
+              <div className="flex items-center gap-4">
+                <span className="font-bold">Poäng: {score}</span>
+                <span className="text-red-200">Liv: {"❤️".repeat(lives)}</span>
+              </div>
+              <div className="text-xs uppercase font-bold tracking-widest bg-green-700 px-3 py-1 rounded-full">
+                Rank: <span className={getRank().color + " bg-white/10 px-2 rounded ml-1"}>{getRank().name}</span>
+              </div>
+            </div>
+
+            <div className="p-8">
+              {view === 'start' && (
+                <div className="text-center py-10">
+                  <div className="text-7xl mb-6">🌍</div>
+                  <h1 className="text-4xl font-black text-slate-800 mb-4">Miljö & Konsumtion</h1>
+                  <p className="text-slate-500 mb-8 text-lg leading-relaxed">
+                    Hur påverkar dina vardagliga val planeten? <br/>
+                    Följ orsakskedjorna och se sambanden!
+                  </p>
+                  <button onClick={() => setView('select')} className="bg-orange-500 hover:bg-orange-600 text-white text-2xl font-bold py-5 px-12 rounded-2xl shadow-xl transition-transform hover:scale-105 active:scale-95">
+                    STARTA SPELET
+                  </button>
+                  <div className="mt-6">
+                    <a href="index.html" className="text-slate-400 hover:text-slate-600 underline text-sm font-medium">Tillbaka till portalen</a>
+                  </div>
+                </div>
+              )}
+
+              {view === 'select' && (
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-800 mb-6 text-center">Välj en orsakskedja:</h2>
+                  <div className="grid grid-cols-1 gap-4">
+                    {chains.map((chain, idx) => (
+                      <button 
+                        key={idx} 
+                        onClick={() => { setCurrentChainIdx(idx); setCurrentStepIdx(0); setView('play'); }}
+                        className={`p-6 rounded-2xl flex items-center gap-6 border-2 transition-all card-zoom ${completedChains.includes(idx) ? 'bg-green-50 border-green-500' : 'bg-white border-slate-100 hover:border-blue-400'}`}
+                      >
+                        <span className="text-4xl">{chain.icon}</span>
+                        <div className="text-left">
+                          <h3 className="font-bold text-lg text-slate-800">{chain.title}</h3>
+                          <p className="text-slate-500 text-sm">{chain.steps.length} steg i kedjan</p>
+                        </div>
+                        {completedChains.includes(idx) && <span className="ml-auto text-green-600 font-bold text-xl">✓ KLAR</span>}
+                      </button>
+                    ))}
+                  </div>
+                  {completedChains.length === chains.length && (
+                    <div className="mt-8 bg-yellow-50 p-6 rounded-2xl text-center border-2 border-yellow-200">
+                      <div className="text-4xl mb-2">🎉</div>
+                      <p className="font-bold text-yellow-800 uppercase tracking-tighter">Du har bemästrat alla kedjor!</p>
+                      <button onClick={resetGame} className="mt-4 text-blue-500 font-bold underline">Börja om för att nå Elite?</button>
+                    </div>
+                  )}
+                  <div className="mt-8 text-center">
+                    <a href="index.html" className="text-slate-400 hover:text-slate-600 text-sm">⇠ Gå tillbaka till portalen</a>
+                  </div>
+                </div>
+              )}
+
+              {view === 'play' && (
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <div className="flex justify-between items-center mb-6">
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{currentChain.title}</span>
+                    <span className="text-slate-400 text-xs">Steg {currentStepIdx + 1} av {currentChain.steps.length}</span>
+                  </div>
+                  
+                  <div className="bg-amber-50 border-2 border-amber-200 p-4 rounded-xl mb-6 flex items-center gap-4">
+                    <div className="text-3xl">📋</div>
+                    <div>
+                      <p className="text-[10px] uppercase font-black text-amber-600">Situation</p>
+                      <p className="font-bold text-amber-900">{currentStep.situation}</p>
+                    </div>
+                  </div>
+
+                  <h2 className="text-xl font-bold text-slate-800 mb-8 leading-snug">❓ {currentStep.question}</h2>
+                  
+                  <div className="space-y-3">
+                    {currentStep.options.map((opt, i) => (
+                      <button 
+                        key={i} 
+                        onClick={() => handleAnswer(i)}
+                        className="w-full text-left p-5 rounded-xl border-2 border-slate-100 bg-slate-50 hover:bg-white hover:border-blue-500 font-bold text-slate-700 transition-all active:scale-95 shadow-sm"
+                      >
+                        <span className="inline-block w-8 h-8 bg-slate-200 rounded-full text-center leading-8 mr-4 text-xs">{String.fromCharCode(65 + i)}</span>
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {view === 'feedback' && (
+                <div className="text-center animate-in zoom-in duration-300">
+                  <div className="text-6xl mb-6">✅</div>
+                  <h2 className="text-3xl font-black text-green-600 mb-4">HELT RÄTT!</h2>
+                  <div className="bg-slate-50 p-6 rounded-2xl border-2 border-slate-100 mb-8">
+                    <p className="text-lg text-slate-700 leading-relaxed italic">
+                      "{currentStep.explanation}"
+                    </p>
+                  </div>
+                  <button onClick={nextStep} className="w-full bg-slate-900 hover:bg-black text-white font-bold py-4 rounded-xl text-xl shadow-lg transition-transform active:scale-95">
+                    {currentStepIdx + 1 === currentChain.steps.length ? "KLARA KEDJAN 🏁" : "NÄSTA STEG ➡️"}
+                  </button>
+                </div>
+              )}
+
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
