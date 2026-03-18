@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="sv" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Samhällskunskap Quiz</title>
+  
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js" type="text/javascript"></script>
+
+  <style>
+    * { font-family: 'Fredoka', sans-serif; }
+    body { box-sizing: border-box; }
+    
+    @keyframes bounce-in {
+      0% { transform: scale(0.3); opacity: 0; }
+      50% { transform: scale(1.05); }
+      70% { transform: scale(0.9); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+    
+    @keyframes confetti {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 5px rgba(34, 197, 94, 0.5); }
+      50% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.8), 0 0 30px rgba(34, 197, 94, 0.4); }
+    }
+    
+    @keyframes star-spin {
+      0% { transform: rotate(0deg) scale(0); opacity: 0; }
+      50% { transform: rotate(180deg) scale(1.2); opacity: 1; }
+      100% { transform: rotate(360deg) scale(1); opacity: 1; }
+    }
+    
+    @keyframes slide-up {
+      0% { transform: translateY(30px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    
+    @keyframes path-glow {
+      0%, 100% { filter: drop-shadow(0 0 3px rgba(255,255,255,0.3)); }
+      50% { filter: drop-shadow(0 0 8px rgba(255,255,255,0.6)); }
+    }
+    
+    .bounce-in { animation: bounce-in 0.5s ease-out; }
+    .shake { animation: shake 0.5s ease-in-out; }
+    .pulse-glow { animation: pulse-glow 1s ease-in-out infinite; }
+    .star-spin { animation: star-spin 0.6s ease-out forwards; }
+    .slide-up { animation: slide-up 0.4s ease-out; }
+    
+    .confetti-piece {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      animation: confetti 1s ease-out forwards;
+    }
+    
+    .track-node { transition: all 0.3s ease; }
+    .track-node.active { transform: scale(1.2); }
+    .track-node.completed { animation: pulse-glow 2s ease-in-out infinite; }
+    
+    .answer-btn { transition: all 0.2s ease; }
+    .answer-btn:hover { transform: translateY(-3px); }
+    .answer-btn:active { transform: translateY(1px); }
+  </style>
+</head>
+<body class="h-full overflow-auto">
+  <div id="app" class="min-h-full bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 p-4">
+    
+    <div id="start-screen" class="max-w-md mx-auto pt-8">
+      <div class="text-center mb-8 bounce-in">
+        <div class="text-6xl mb-4">🏛️</div>
+        <h1 id="game-title" class="text-3xl font-bold text-white mb-2">Samhällskunskap Quiz</h1>
+        <p class="text-purple-200">Välj en bana och testa dina kunskaper!</p>
+      </div>
+      
+      <div class="bg-white/10 backdrop-blur rounded-2xl p-4 mb-6 text-white">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="text-center">
+            <div id="player-rank" class="text-lg font-bold mb-1">NOOB</div>
+            <div class="text-xs opacity-75">Rank</div>
+          </div>
+          <div class="text-center">
+            <div id="player-score" class="text-lg font-bold mb-1">0 poäng</div>
+            <div class="text-xs opacity-75">Totalt</div>
+          </div>
+        </div>
+        <div id="progress-bars" class="mt-4 space-y-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xs opacity-75 w-16">📜 Grundlagar:</span>
+            <div class="flex-1 bg-white/20 rounded h-2">
+              <div id="track-0-progress" class="h-full bg-amber-500 rounded transition-all" style="width: 0%"></div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs opacity-75 w-16">⚖️ Lagar:</span>
+            <div class="flex-1 bg-white/20 rounded h-2">
+              <div id="track-1-progress" class="h-full bg-emerald-500 rounded transition-all" style="width: 0%"></div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs opacity-75 w-16">🇪🇺 EU:</span>
+            <div class="flex-1 bg-white/20 rounded h-2">
+              <div id="track-2-progress" class="h-full bg-blue-500 rounded transition-all" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="space-y-4">
+        <button onclick="selectTrack(0)" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-bold py-5 px-6 rounded-2xl shadow-lg transform transition hover:scale-105 flex items-center gap-4"> 
+          <span class="text-4xl">📜</span>
+          <div class="text-left">
+            <div class="text-xl">Sveriges grundlagar</div>
+            <div class="text-sm opacity-80">5 nivåer • Lär dig om grundlagarna</div>
+          </div>
+        </button> 
+        <button onclick="selectTrack(1)" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold py-5 px-6 rounded-2xl shadow-lg transform transition hover:scale-105 flex items-center gap-4"> 
+          <span class="text-4xl">⚖️</span>
+          <div class="text-left">
+            <div class="text-xl">Från idé till lag</div>
+            <div class="text-sm opacity-80">5 nivåer • Följ lagstiftningsprocessen</div>
+          </div>
+        </button> 
+        <button onclick="selectTrack(2)" class="w-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-400 hover:to-indigo-400 text-white font-bold py-5 px-6 rounded-2xl shadow-lg transform transition hover:scale-105 flex items-center gap-4"> 
+          <span class="text-4xl">🇪🇺</span>
+          <div class="text-left">
+            <div class="text-xl">Sverige och EU</div>
+            <div class="text-sm opacity-80">5 nivåer • Utforska EU-samarbetet</div>
+          </div>
+        </button>
+      </div>
+      <div class="mt-8 text-center text-purple-300 text-sm">
+        🎯 Klara alla tre banor för att passa provet • ⭐ Du behöver 3 liv
+      </div>
+      <div class="mt-4 text-center">
+        <button onclick="resetProgress()" class="text-purple-400 text-xs hover:text-white underline transition">Nollställ framsteg</button>
+      </div>
+    </div>
+    
+    <div id="game-screen" class="max-w-md mx-auto pt-4 hidden">
+      <div class="flex justify-between items-center mb-4 px-2">
+        <button onclick="goToStart()" class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-full text-sm font-medium transition"> ← Tillbaka </button>
+        <div class="flex gap-2">
+          <div class="bg-white/20 text-white px-3 py-2 rounded-full font-bold flex items-center gap-1 text-sm">
+            ❤️ <span id="lives">3</span>
+          </div>
+          <div class="bg-white/20 text-white px-3 py-2 rounded-full font-bold flex items-center gap-1 text-sm">
+            ⭐ <span id="session-score">0</span>
+          </div>
+        </div>
+      </div>
+      
+      <div id="track-title" class="text-center text-white font-bold text-xl mb-4"></div>
+      
+      <div class="relative mb-6 px-4">
+        <div class="flex justify-between items-center relative">
+          <div class="absolute top-1/2 left-0 right-0 h-2 bg-white/20 rounded-full -translate-y-1/2"></div>
+          <div id="progress-fill" class="absolute top-1/2 left-0 h-2 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full -translate-y-1/2 transition-all duration-500" style="width: 0%"></div>
+          <div id="track-nodes" class="flex justify-between w-full relative z-10"></div>
+        </div>
+      </div>
+      
+      <div class="text-center mb-4">
+        <span class="bg-white/20 text-white px-4 py-1 rounded-full text-sm"> Nivå <span id="current-level">1</span> av 5 </span>
+      </div>
+      
+      <div id="question-card" class="bg-white rounded-3xl p-6 shadow-2xl slide-up">
+        <div id="question-emoji" class="text-5xl text-center mb-4">❓</div>
+        <h2 id="question-text" class="text-xl font-bold text-gray-800 text-center mb-6"></h2>
+        <div id="answers" class="space-y-3"></div>
+        <div id="feedback" class="mt-4 text-center font-bold text-lg hidden"></div>
+      </div>
+      
+      <div id="confetti-container" class="fixed inset-0 pointer-events-none overflow-hidden"></div>
+    </div>
+    
+    <div id="completion-screen" class="max-w-md mx-auto pt-8 hidden">
+      <div class="bg-white rounded-3xl p-8 shadow-2xl text-center bounce-in">
+        <div class="text-7xl mb-4">🏆</div>
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">Grattis!</h2>
+        <p id="completion-text" class="text-gray-600 mb-4">Du klarade banan! Nu är du redo för provet.</p>
+        <div class="bg-gradient-to-r from-amber-100 to-orange-100 rounded-2xl p-4 mb-6">
+          <div class="text-4xl font-bold text-amber-600">
+            ⭐ <span id="final-score">0</span>
+          </div>
+          <div class="text-amber-700">Totalpoäng</div>
+        </div>
+        <div class="space-y-3">
+          <button onclick="restartTrack()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold py-4 px-6 rounded-xl transition transform hover:scale-105"> 🔄 Spela igen </button> 
+          <button onclick="goToStart()" class="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 text-white font-bold py-4 px-6 rounded-xl transition transform hover:scale-105"> 🗺️ Välj annan bana </button>
+        </div>
+      </div>
+    </div>
+    
+    <div id="wasted-screen" class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50">
+      <div class="text-center">
+        <div class="text-9xl font-black text-red-600 mb-4" style="text-shadow: 0 0 20px rgba(220,38,38,0.8), 0 0 40px rgba(220,38,38,0.5);">WASTED</div>
+        <div class="bg-red-600/30 border-4 border-red-600 rounded-lg p-6 mb-6 max-w-xs mx-auto">
+          <p id="wasted-message" class="text-white text-lg font-bold">Fel svar - Du är Game Over!</p>
+        </div>
+        <div class="space-y-2">
+          <button onclick="restartAllGames()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded text-lg transition"> 🔄 Starta om banan </button> 
+          <button onclick="goToStart()" class="bg-gray-700 hover:bg-gray-800 text-white font-bold py-3 px-6 rounded text-lg transition"> 🏠 Hem </button>
+        </div>
+      </div>
+    </div>
+    
+    <div id="all-complete-screen" class="max-w-md mx-auto pt-8 hidden">
+      <div class="bg-white rounded-3xl p-8 shadow-2xl text-center bounce-in">
+        <div class="text-7xl mb-4">👑</div>
+        <h2 class="text-3xl font-bold text-gray-800 mb-2">Du Klarade Provet!</h2>
+        <p class="text-gray-600 mb-6">Du har klarat alla tre banor och är nu redo för det riktiga provet!</p>
+        <div class="bg-gradient-to-r from-amber-100 via-yellow-100 to-orange-100 rounded-2xl p-6 mb-6">
+          <div id="final-rank-display" class="text-5xl font-black mb-2 text-amber-700"></div>
+          <div id="final-total-score" class="text-3xl font-bold text-amber-600 mb-2"></div>
+          <div class="text-sm text-amber-700">Din slutliga poäng!</div>
+        </div>
+        <button onclick="goToStart()" class="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 text-white font-bold py-4 px-6 rounded-xl transition transform hover:scale-105"> 🏠 Till startsidan </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Game data
+    const tracks = [
+      {
+        name: "Sveriges grundlagar", emoji: "📜", color: "from-amber-500 to-orange-500",
+        levels: [
+          { question: "Vad är en grundlag?", answers: ["En vanlig lag", "En lokal lag", "Den viktigaste typen av lag som andra lagar måste följa", "En lag som bara gäller skolor"], correct: 2, emoji: "📚" },
+          { question: "Varför är grundlagar svårare att ändra än vanliga lagar?", answers: ["För att de aldrig ändras", "För att två riksdagsbeslut och ett val krävs", "För att kungen bestämmer", "För att EU bestämmer"], correct: 1, emoji: "🔒" },
+          { question: "Vilken grundlag handlar om hur Sverige styrs och vilka rättigheter människor har?", answers: ["Successionsordningen", "Regeringsformen", "Skollagen", "Tryckfrihetsförordningen"], correct: 1, emoji: "🏛️" },
+          { question: "Vilken grundlag ger människor rätt att skriva i tidningar utan censur?", answers: ["Yttrandefrihetsgrundlagen", "Successionsordningen", "Regeringsformen", "Tryckfrihetsförordningen"], correct: 3, emoji: "📰" },
+          { question: "Varför är grundlagarna viktiga i en demokrati?", answers: ["De gäller bara politiker", "De styr kommuner", "De skyddar människors rättigheter", "De bestämmer EU"], correct: 2, emoji: "🛡️" }
+        ]
+      },
+      {
+        name: "Från idé till lag", emoji: "⚖️", color: "from-emerald-500 to-teal-500",
+        levels: [
+          { question: "En politiker vill skärpa straffen för ungdomskriminalitet. Vad är första steget?", answers: ["Riksdagen röstar direkt", "Experter inom kriminologi utreder effekterna av skärpta straff", "EU beslutar", "Polisen skriver lagen"], correct: 1, emoji: "🔍", explanation: "Utredningen är helt avgörande!", example: "Experter undersöker: Blir det mindre gängkriminalitet om vi skärper straffen för 13-åringar? Vad säger forskningen? Vilka länder har provat det?" },
+          { question: "Efter utredningen får kriminalvården och polisen säga vad de tycker om förslaget. Vad kallas denna process?", answers: ["Omröstning", "Remiss", "Domstolsbeslut", "Val"], correct: 1, emoji: "💬", explanation: "Remiss betyder att man ber myndigheter och organisationer ge sitt svar.", example: "Kriminalvården säger: 'Vi har inte plats i fängelserna!' Polisen säger: 'Vi stöder detta för att det kan avskräcka!' Dessa svar är mycket viktiga." },
+          { question: "Regeringen får in remissvaren och skriver nu ett formellt lagförslag. Vad heter detta?", answers: ["Motion", "Proposition", "Betänkande", "Dom"], correct: 1, emoji: "📋", explanation: "En proposition är regeringens officiella förslag till en ny lag.", example: "Regeringen skriver: 'Ungdomskriminalitet är ett problem. Vi föreslår straffet höjas från 6 till 12 månader för 16-18-åringar som begår grova brott.'" },
+          { question: "Propositionen skickas till riksdagen. Vad gör utskottet först?", answers: ["Röstar på det direkt", "Skickar det till EU", "Granskar och diskuterar förslaget noggrant", "Förbjuder förslaget"], correct: 2, emoji: "👥", explanation: "Utskottet är som en expertgrupp som läser allt noggrant.", example: "Utskottet för rättsväsen läser propositionen, kallar in experter, tar in mer forskning och skriver ett detaljerat svar om vad de tycker är bra och dåligt." },
+          { question: "Efter utskottets arbete diskuterar alla riksdagsledamöter förslaget. Vad händer sedan?", answers: ["Regeringen bestämmer", "EU röstar", "Ledamöterna röstar om lagen ska bli verklighet", "Domstolen beslutar"], correct: 2, emoji: "🗳️", explanation: "Demokrati handlar om att folkets representanter röstar.", example: "Två tredjedelar måste rösta för att ändra grundlagar. För vanliga lagar räcker enkel majoritet. Om 175 av 349 riksdagsledamöter röstar JA, blir det lag!" },
+          { question: "Lagen blir antagen! Vad är nästa steg innan ungdommar faktiskt får skärkare straff?", answers: ["Inget - lagen gäller direkt", "Regeringen och myndigheterna måste genomföra lagen genom utbildning, system och tillförande av resurser", "EU godkänner den", "Domstolen testar den först"], correct: 1, emoji: "⚙️", explanation: "Att skapa en lag är bara halva jobbet - nu måste man göra den verkligheten!", example: "Fängelserna behöver utbildning för nya straff. Domstolarna behöver tydliga riktlinjer. Polisen behöver veta hur de nya reglerna fungerar. Allt detta tar tid och pengar." }
+        ]
+      },
+      {
+        name: "Sverige och EU", emoji: "🇪🇺", color: "from-blue-500 to-indigo-500",
+        levels: [
+          { question: "Vad är EU?", answers: ["En regering", "Ett företag", "En domstol", "Ett samarbete mellan europeiska länder"], correct: 3, emoji: "🌍" },
+          { question: "Vad innebär fri rörlighet i EU?", answers: ["Man kan resa och arbeta i andra EU-länder", "Man måste flytta", "Man får inte resa", "Man måste arbeta i Sverige"], correct: 0, emoji: "✈️" },
+          { question: "Hur påverkar EU handel mellan länder?", answers: ["Handel blir svårare", "Handel förbjuds", "Tullar tas bort och handel blir lättare", "Bara stora företag får handla"], correct: 2, emoji: "📦" },
+          { question: "Vad är en nackdel som vissa ser med EU?", answers: ["Mindre fred", "Inga regler", "Mindre handel", "Mindre självbestämmande för länder"], correct: 3, emoji: "🤔" },
+          { question: "Vad menas med demokratiskt underskott i EU?", answers: ["Att EU inte har lagar", "Att EU inte samarbetar", "Att EU saknar val", "Att EU:s beslut ibland känns långt från medborgarna"], correct: 3, emoji: "🏛️" }
+        ]
+      }
+    ];
+
+    // Game state
+    let currentTrack = 0;
+    let currentLevel = 0;
+    let sessionScore = 0;
+    let lives = 3;
+    let tracksCompleted = [false, false, false];
+    let totalScore = 0;
+    let playerRank = "NOOB";
+
+    // Ladda sparat spel från localStorage (ersätter dataSdk)
+    function loadProgress() {
+      const savedData = localStorage.getItem('samhallskunskap_quiz_save');
+      if (savedData) {
+        try {
+          const data = JSON.parse(savedData);
+          totalScore = data.totalScore || 0;
+          tracksCompleted = data.tracksCompleted || [false, false, false];
+          playerRank = getRankFromScore(totalScore);
+        } catch (e) {
+          console.error("Kunde inte läsa in sparat data", e);
+        }
+      }
+    }
+
+    // Spara spel till localStorage (ersätter dataSdk)
+    function saveProgress() {
+      localStorage.setItem('samhallskunskap_quiz_save', JSON.stringify({
+        totalScore: totalScore,
+        tracksCompleted: tracksCompleted
+      }));
+    }
+
+    // Rensa framsteg (valfritt för användaren)
+    function resetProgress() {
+        if(confirm("Är du säker på att du vill nollställa alla dina framsteg?")) {
+            localStorage.removeItem('samhallskunskap_quiz_save');
+            totalScore = 0;
+            tracksCompleted = [false, false, false];
+            playerRank = "NOOB";
+            updatePlayerStats();
+        }
+    }
+
+    function getRankFromScore(score) {
+      if (score >= 1500) return "ELITE (1337)";
+      if (score >= 1000) return "SILVER";
+      if (score >= 500) return "BRONZE";
+      return "NOOB";
+    }
+
+    function updatePlayerStats() {
+      document.getElementById('player-rank').textContent = playerRank;
+      document.getElementById('player-score').textContent = totalScore + " poäng";
+      
+      for (let i = 0; i < 3; i++) {
+        const progress = tracksCompleted[i] ? 100 : 0;
+        document.getElementById(`track-${i}-progress`).style.width = progress + "%";
+      }
+    }
+
+    function selectTrack(trackIndex) {
+      currentTrack = trackIndex;
+      currentLevel = 0;
+      sessionScore = 0;
+      lives = 3;
+      
+      document.getElementById('start-screen').classList.add('hidden');
+      document.getElementById('game-screen').classList.remove('hidden');
+      document.getElementById('completion-screen').classList.add('hidden');
+      document.getElementById('wasted-screen').classList.add('hidden');
+      
+      updateGameUI();
+      renderQuestion();
+    }
+
+    function updateGameUI() {
+      const track = tracks[currentTrack];
+      document.getElementById('track-title').innerHTML = `${track.emoji} ${track.name}`;
+      document.getElementById('session-score').textContent = sessionScore;
+      document.getElementById('current-level').textContent = currentLevel + 1;
+      document.getElementById('lives').textContent = lives;
+      
+      // Update progress bar
+      const progressPercent = (currentLevel / 5) * 100;
+      document.getElementById('progress-fill').style.width = `${progressPercent}%`;
+      
+      // Render track nodes
+      const nodesContainer = document.getElementById('track-nodes');
+      nodesContainer.innerHTML = '';
+      
+      for (let i = 0; i < 5; i++) {
+        const node = document.createElement('div');
+        node.className = 'track-node w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm';
+        
+        if (i < currentLevel) {
+          node.className += ' bg-green-500 text-white completed';
+          node.innerHTML = '✓';
+        } else if (i === currentLevel) {
+          node.className += ' bg-white text-purple-600 active ring-4 ring-purple-300';
+          node.textContent = i + 1;
+        } else {
+          node.className += ' bg-white/30 text-white/60';
+          node.textContent = i + 1;
+        }
+        
+        nodesContainer.appendChild(node);
+      }
+    }
+
+    function renderQuestion() {
+      const track = tracks[currentTrack];
+      const level = track.levels[currentLevel];
+      
+      document.getElementById('question-emoji').textContent = level.emoji;
+      document.getElementById('question-text').textContent = level.question;
+      document.getElementById('feedback').classList.add('hidden');
+      
+      const answersContainer = document.getElementById('answers');
+      answersContainer.innerHTML = '';
+      
+      const letters = ['A', 'B', 'C', 'D'];
+      const colors = [
+        'from-rose-500 to-pink-500',
+        'from-blue-500 to-cyan-500',
+        'from-amber-500 to-yellow-500',
+        'from-emerald-500 to-green-500'
+      ];
+      
+      level.answers.forEach((answer, index) => {
+        const btn = document.createElement('button');
+        btn.className = `answer-btn w-full bg-gradient-to-r ${colors[index]} text-white font-semibold py-4 px-5 rounded-xl shadow-md flex items-center gap-3 text-left`;
+        btn.innerHTML = `
+          <span class="bg-white/30 w-8 h-8 rounded-lg flex items-center justify-center font-bold">${letters[index]}</span>
+          <span class="flex-1">${answer}</span>
+        `;
+        btn.onclick = () => checkAnswer(index);
+        answersContainer.appendChild(btn);
+      });
+      
+      // Animate card
+      const card = document.getElementById('question-card');
+      card.classList.remove('slide-up');
+      void card.offsetWidth;
+      card.classList.add('slide-up');
+    }
+
+    function checkAnswer(answerIndex) {
+      const track = tracks[currentTrack];
+      const level = track.levels[currentLevel];
+      const feedback = document.getElementById('feedback');
+      const answersContainer = document.getElementById('answers');
+      const buttons = answersContainer.querySelectorAll('button');
+      
+      if (answerIndex === level.correct) {
+        // Correct answer
+        sessionScore += 100;
+        totalScore += 100;
+        
+        // Highlight correct answer
+        buttons[answerIndex].classList.add('pulse-glow');
+        
+        // Disable all buttons
+        buttons.forEach(btn => btn.disabled = true);
+        
+        // Show explanation in a nice box
+        let explanationHTML = '<div class="bg-green-100 border-4 border-green-500 rounded-2xl p-6 text-left">';
+        explanationHTML += '<div class="text-3xl font-bold text-green-700 mb-3">✅ Helt rätt!</div>';
+        
+        if (level.explanation) {
+          explanationHTML += `<div class="text-xl text-gray-800 font-semibold mb-4">${level.explanation}</div>`;
+        }
+        
+        if (level.example) {
+          explanationHTML += `<div class="text-lg text-gray-700 leading-relaxed">💡 <strong>Exempel:</strong> ${level.example}</div>`;
+        }
+        
+        explanationHTML += '</div>';
+        
+        feedback.innerHTML = explanationHTML;
+        feedback.classList.remove('hidden');
+        feedback.classList.add('bounce-in');
+        
+        // Create confetti
+        createConfetti();
+        
+        // Move to next level after delay
+        setTimeout(() => {
+          currentLevel++;
+          if (currentLevel >= 5) {
+            completeTrack();
+          } else {
+            updateGameUI();
+            renderQuestion();
+          }
+        }, 3500);
+      } else {
+        // Wrong answer - lose a life
+        lives--;
+        
+        if (lives <= 0) {
+          // Game over
+          showWasted();
+        } else {
+          feedback.textContent = `❌ Fel svar – försök igen! (${lives} liv kvar)`;
+          feedback.className = 'mt-4 text-center font-bold text-lg text-red-600 shake';
+          feedback.classList.remove('hidden');
+          
+          // Shake wrong button
+          buttons[answerIndex].classList.add('shake');
+          buttons[answerIndex].style.opacity = '0.5';
+          buttons[answerIndex].disabled = true;
+          
+          updateGameUI();
+          
+          setTimeout(() => {
+            buttons[answerIndex].classList.remove('shake');
+          }, 500);
+        }
+      }
+      
+      document.getElementById('session-score').textContent = sessionScore;
+    }
+
+    function createConfetti() {
+      const container = document.getElementById('confetti-container');
+      const colors = ['#f59e0b', '#10b981', '#6366f1', '#ec4899', '#14b8a6'];
+      
+      for (let i = 0; i < 20; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti-piece';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.top = '60%';
+        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        confetti.style.animationDelay = Math.random() * 0.3 + 's';
+        container.appendChild(confetti);
+        
+        setTimeout(() => confetti.remove(), 1500);
+      }
+    }
+
+    function showWasted() {
+      document.getElementById('game-screen').classList.add('hidden');
+      document.getElementById('wasted-screen').classList.remove('hidden');
+      document.getElementById('wasted-message').textContent = `Du är Game Over! Du misslyckades på nivå ${currentLevel + 1} i ${tracks[currentTrack].name}`;
+    }
+
+    function completeTrack() {
+      tracksCompleted[currentTrack] = true;
+      playerRank = getRankFromScore(totalScore);
+      
+      // Save progress locally
+      saveProgress();
+      
+      // Check if all tracks are done
+      if (tracksCompleted.every(t => t)) {
+        showAllComplete();
+      } else {
+        showCompletion();
+      }
+    }
+
+    function showCompletion() {
+      document.getElementById('game-screen').classList.add('hidden');
+      document.getElementById('completion-screen').classList.remove('hidden');
+      document.getElementById('final-score').textContent = sessionScore;
+      
+      // Big confetti celebration
+      for (let i = 0; i < 3; i++) {
+        setTimeout(createConfetti, i * 300);
+      }
+    }
+
+    function showAllComplete() {
+      document.getElementById('game-screen').classList.add('hidden');
+      document.getElementById('completion-screen').classList.add('hidden');
+      document.getElementById('all-complete-screen').classList.remove('hidden');
+      
+      document.getElementById('final-rank-display').textContent = playerRank;
+      document.getElementById('final-total-score').textContent = totalScore + " ⭐";
+      
+      // Massive confetti celebration
+      for (let i = 0; i < 5; i++) {
+        setTimeout(createConfetti, i * 200);
+      }
+    }
+
+    function goToStart() {
+      document.getElementById('start-screen').classList.remove('hidden');
+      document.getElementById('game-screen').classList.add('hidden');
+      document.getElementById('completion-screen').classList.add('hidden');
+      document.getElementById('wasted-screen').classList.add('hidden');
+      document.getElementById('all-complete-screen').classList.add('hidden');
+      updatePlayerStats();
+    }
+
+    function restartTrack() {
+      currentLevel = 0;
+      sessionScore = 0;
+      lives = 3;
+      
+      document.getElementById('completion-screen').classList.add('hidden');
+      document.getElementById('game-screen').classList.remove('hidden');
+      
+      updateGameUI();
+      renderQuestion();
+    }
+
+    function restartAllGames() {
+      currentLevel = 0;
+      sessionScore = 0;
+      lives = 3;
+      
+      document.getElementById('wasted-screen').classList.add('hidden');
+      document.getElementById('game-screen').classList.remove('hidden');
+      
+      updateGameUI();
+      renderQuestion();
+    }
+
+    // Initialize game on load
+    loadProgress();
+    updatePlayerStats();
+  </script>
+</body>
+</html>
