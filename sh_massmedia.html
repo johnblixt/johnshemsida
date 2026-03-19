@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Medier i demokrati och diktatur</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-color: #f3f4f6;
+            --text-color: #1f2937;
+            --correct-color: #16a34a;
+            --wrong-color: #dc2626;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .quiz-container {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--bg-color);
+        }
+
+        .timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .question-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .btn-grid {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            width: 100%;
+        }
+
+        .btn:hover:not([disabled]) {
+            background-color: #e5e7eb;
+            border-color: #d1d5db;
+        }
+
+        .btn.correct {
+            background-color: #dcfce7;
+            border-color: var(--correct-color);
+            color: var(--correct-color);
+        }
+
+        .btn.wrong {
+            background-color: #fee2e2;
+            border-color: var(--wrong-color);
+            color: var(--wrong-color);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .next-btn, .start-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+
+        .next-btn:hover, .start-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .progress {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        /* Nya stilar för poängräknare och feedback-modal */
+        .score-display {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .header-info {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.hide {
+            display: none;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        #modal-title {
+            font-size: 1.8rem;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .correct-text { color: var(--correct-color); }
+        .wrong-text { color: var(--wrong-color); }
+
+        #modal-explanation {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-bottom: 25px;
+            color: var(--text-color);
+        }
+
+        #result-container {
+            text-align: center;
+        }
+
+        #result-container h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <!-- Start Screen -->
+        <div id="start-screen">
+            <h2>Quiz: Medier i en demokrati & diktatur</h2>
+            <p>Detta prov består av 30 frågor. Både frågorna och svarsalternativen slumpas varje gång. Tiden tas för att se hur snabb du är, men känn ingen stress!</p>
+            <button id="start-btn" class="start-btn">Starta Quizet</button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hide">
+            <div class="header">
+                <div class="progress" id="progress-text">Fråga 1 av 30</div>
+                <div class="header-info">
+                    <div class="score-display">Poäng: <span id="current-score">0</span></div>
+                    <div class="timer" id="timer">00:00</div>
+                </div>
+            </div>
+            
+            <div id="question-container">
+                <div class="question-text" id="question">Här kommer frågan?</div>
+                <div class="btn-grid" id="answer-buttons">
+                    <!-- Knappar genereras via JavaScript -->
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button id="next-btn" class="next-btn hide">Nästa Fråga</button>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="hide">
+            <h2>Resultat</h2>
+            <p id="score-text" style="font-size: 1.2rem; margin-bottom: 10px;"></p>
+            <p id="time-text" style="font-size: 1.1rem; margin-bottom: 20px;"></p>
+            <button id="restart-btn" class="start-btn">Gör provet igen</button>
+        </div>
+
+        <!-- Feedback Modal (Popup) -->
+        <div id="feedback-modal" class="modal-overlay hide">
+            <div class="modal-content">
+                <h3 id="modal-title"></h3>
+                <p id="modal-explanation"></p>
+                <button id="modal-next-btn" class="next-btn">Nästa Fråga</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data för alla 30 frågor, skapade från PDF-filerna
+        const questions = [
+            {
+                question: "Vad är en av massmedias huvuduppgifter i en fungerande demokrati?",
+                answers: [
+                    { text: "Granska de som har makt", correct: true },
+                    { text: "Skapa nya lagar i landet", correct: false },
+                    { text: "Driva in statliga skatter", correct: false },
+                    { text: "Utbilda landets politiker", correct: false }
+                ],
+                explanation: "En av medias viktigaste uppgifter i en demokrati är att fungera som en vakthund och granska maktmissbruk bland till exempel politiker och chefer."
+            },
+            {
+                question: "Vad innebär det att medier fungerar som ett forum för debatt?",
+                answers: [
+                    { text: "Människor kan framföra åsikter", correct: true },
+                    { text: "Medierna bestämmer våra åsikter", correct: false },
+                    { text: "Staten måste godkänna artiklarna", correct: false },
+                    { text: "Endast politiker får prata i TV", correct: false }
+                ],
+                explanation: "Ett debattforum ger utrymme för fri opinionsbildning, där olika människor kan föra fram sina åsikter och försöka påverka varandra."
+            },
+            {
+                question: "Vilken grundlag ger rätt att uttrycka åsikter i skriven text?",
+                answers: [
+                    { text: "Tryckfrihetsförordningen", correct: true },
+                    { text: "Yttrandefrihetsgrundlagen", correct: false },
+                    { text: "Offentlighetsprincipen", correct: false },
+                    { text: "Meddelarfrihetslagen", correct: false }
+                ],
+                explanation: "Tryckfrihetsförordningen är den grundlag i Sverige som garanterar rätten att skriva och publicera texter fritt utan föregående censur."
+            },
+            {
+                question: "Vilken grundlag ger rätt att uttrycka sig fritt i radio och tv?",
+                answers: [
+                    { text: "Yttrandefrihetsgrundlagen", correct: true },
+                    { text: "Tryckfrihetsförordningen", correct: false },
+                    { text: "Offentlighetsprincipen", correct: false },
+                    { text: "Pressetiska grundlagen", correct: false }
+                ],
+                explanation: "Yttrandefrihetsgrundlagen fungerar på liknande sätt som tryckfrihetsförordningen, men skyddar rätten att uttrycka sig i radio, tv och liknande medier."
+            },
+            {
+                question: "Vad innebär meddelarfrihet i det svenska medielandskapet?",
+                answers: [
+                    { text: "Rätt att anonymt lämna uppgifter", correct: true },
+                    { text: "Rätt att läsa alla hemliga papper", correct: false },
+                    { text: "Rätt att sända egen lokalradio", correct: false },
+                    { text: "Rätt att slippa betala TV-avgift", correct: false }
+                ],
+                explanation: "Meddelarfrihet innebär att alla medborgare har rätt att lämna information till media i syfte att publicera den, och rätten att vara anonym."
+            },
+            {
+                question: "Vilken princip ger medborgare rätt att läsa offentliga handlingar?",
+                answers: [
+                    { text: "Offentlighetsprincipen", correct: true },
+                    { text: "Yttrandefrihetsgrundlagen", correct: false },
+                    { text: "Tryckfrihetsförordningen", correct: false },
+                    { text: "Meddelarskyddsprincipen", correct: false }
+                ],
+                explanation: "Offentlighetsprincipen är central för demokratin och innebär att vem som helst får ta del av myndigheters allmänna handlingar."
+            },
+            {
+                question: "Vad är ett viktigt exempel på en pressetisk regel för journalister?",
+                answers: [
+                    { text: "Att alltid presentera olika perspektiv", correct: true },
+                    { text: "Att alltid avslöja sina hemliga källor", correct: false },
+                    { text: "Att enbart skriva det staten godkänner", correct: false },
+                    { text: "Att helt undvika att skriva om politiker", correct: false }
+                ],
+                explanation: "Att vara allsidig och låta olika perspektiv och åsikter komma fram är en central del av de pressetiska reglerna."
+            },
+            {
+                question: "Vad innebär censur när det tillämpas av staten i en diktatur?",
+                answers: [
+                    { text: "Staten kontrollerar vad som publiceras", correct: true },
+                    { text: "Journalister får högre lön av staten", correct: false },
+                    { text: "Medborgare får rösta om nyheterna", correct: false },
+                    { text: "Internet stängs alltid av helt och hållet", correct: false }
+                ],
+                explanation: "Censur innebär att staten övervakar och kontrollerar media och bestämmer vad som får (eller inte får) skrivas och sändas."
+            },
+            {
+                question: "Varför vill många diktaturer ofta begränsa pressfriheten i landet?",
+                answers: [
+                    { text: "Fria medier kan hota maktens ställning", correct: true },
+                    { text: "De vill spara pengar på tryckta tidningar", correct: false },
+                    { text: "De anser att nyheter är tråkiga att läsa", correct: false },
+                    { text: "Fria medier tar för mycket tid för folket", correct: false }
+                ],
+                explanation: "Diktaturer vill oftast begränsa pressfriheten eftersom kritisk granskning och fri spridning av information hotar deras kontroll över makten."
+            },
+            {
+                question: "Hur kan internet framgångsrikt användas av folket i en diktatur?",
+                answers: [
+                    { text: "För att organisera motstånd och protester", correct: true },
+                    { text: "För att rösta elektroniskt i demokratiska val", correct: false },
+                    { text: "För att öppet övervaka ledarna i regeringen", correct: false },
+                    { text: "För att stoppa statens tillgång till hemsidor", correct: false }
+                ],
+                explanation: "Sociala medier och internet kan ge medborgare i diktaturer möjlighet att kringgå statens censur, dela oberoende information och planera protester."
+            },
+            {
+                question: "Vad använder diktaturer ofta för att påverka medborgarnas åsikter?",
+                answers: [
+                    { text: "Statligt styrd och vinklad propaganda", correct: true },
+                    { text: "Fria, öppna och oberoende nyheter", correct: false },
+                    { text: "Hemliga och krypterade chattgrupper", correct: false },
+                    { text: "Utländska demokratiska nyhetsmedier", correct: false }
+                ],
+                explanation: "Propaganda är vinklad och ofta osann information som stater använder för att styra vad människor tänker och tycker."
+            },
+            {
+                question: "Vilken är den största nyhetskällan för personer födda på 2000-talet?",
+                answers: [
+                    { text: "Sociala medier och internetplattformar", correct: true },
+                    { text: "Tryckta dagstidningar i pappersformat", correct: false },
+                    { text: "Statliga tv-kanaler och radioprogram", correct: false },
+                    { text: "Internationella politiska nyhetsmagasin", correct: false }
+                ],
+                explanation: "Statistik visar att sociala medier har gått om traditionella tv-kanaler och tidningar som den främsta nyhetskällan för yngre generationer."
+            },
+            {
+                question: "Vad är en fördel med att läsa och sprida nyheter via sociala medier?",
+                answers: [
+                    { text: "Det är lätt att dela och kommentera", correct: true },
+                    { text: "Informationen är alltid helt och hållet sann", correct: false },
+                    { text: "Man slipper helt från all reklam och annonser", correct: false },
+                    { text: "Algoritmerna visar alltid hela sanningen", correct: false }
+                ],
+                explanation: "En stor fördel med sociala medier är att de skapar en interaktiv miljö där vi enkelt kan dela intressanta nyheter och snabbt uttrycka våra åsikter."
+            },
+            {
+                question: "Vad saknas ofta när nyheter sprids av privatpersoner på sociala medier?",
+                answers: [
+                    { text: "Krav på korrekthet och tydlig saklighet", correct: true },
+                    { text: "Möjlighet att gilla och dela olika inlägg", correct: false },
+                    { text: "Tillgång till stabilt internet och datorer", correct: false },
+                    { text: "Snabba och omedelbara uppdateringar", correct: false }
+                ],
+                explanation: "Till skillnad från professionella nyhetsredaktioner har vanliga konton inga pressetiska krav på sig att presentera korrekta och allsidiga nyheter."
+            },
+            {
+                question: "Vad gör en algoritm när du använder en modern social medieplattform?",
+                answers: [
+                    { text: "Väljer ut innehåll baserat på ditt beteende", correct: true },
+                    { text: "Raderar automatiskt all falsk information", correct: false },
+                    { text: "Tvingar användare att betala för nyheter", correct: false },
+                    { text: "Ser till att alla får exakt samma nyhetsflöde", correct: false }
+                ],
+                explanation: "Algoritmer räknar ut vad du brukar titta på och gilla, för att sedan skräddarsy och visa mer av just den typen av innehåll i ditt flöde."
+            },
+            {
+                question: "Vad innebär det att man som användare har hamnat i en filterbubbla?",
+                answers: [
+                    { text: "Man ser mest åsikter man redan håller med om", correct: true },
+                    { text: "Internetanslutningen begränsas av staten", correct: false },
+                    { text: "Alla nyheter granskas noga innan publicering", correct: false },
+                    { text: "Man får en säkerhetsvarning på sin telefon", correct: false }
+                ],
+                explanation: "Algoritmer kan stänga in dig i en så kallad filterbubbla, där du isoleras från information och åsikter som utmanar dina egna."
+            },
+            {
+                question: "Vad är den största faran med att befinna sig i en ekokammare på nätet?",
+                answers: [
+                    { text: "Man får sällan ta del av andras perspektiv", correct: true },
+                    { text: "Man måste betala extra för att läsa nyheter", correct: false },
+                    { text: "Mobilens batteri laddas ur mycket snabbare", correct: false },
+                    { text: "Det blir helt omöjligt att dela inlägg med vänner", correct: false }
+                ],
+                explanation: "I en ekokammare förstärks enbart liknande åsikter. Faran med detta är att samhället blir mer polariserat när vi slutar lyssna på varandra."
+            },
+            {
+                question: "Vad innebär begreppet källkritik när man pratar om medieanvändning?",
+                answers: [
+                    { text: "Att granska källors trovärdighet och syfte", correct: true },
+                    { text: "Att alltid lita på tryckta dagstidningar", correct: false },
+                    { text: "Att aldrig dela några nyheter på sociala medier", correct: false },
+                    { text: "Att enbart läsa nyheter från statlig public service", correct: false }
+                ],
+                explanation: "Källkritik är metoden vi använder för att bedöma om en avsändare är trovärdig och förstå *varför* de publicerar en viss nyhet."
+            },
+            {
+                question: "Vad menas med desinformation i samband med spridning av nyheter?",
+                answers: [
+                    { text: "Falsk information som sprids för att lura", correct: true },
+                    { text: "Falsk information som sprids av ett misstag", correct: false },
+                    { text: "Sann information som staten försöker att dölja", correct: false },
+                    { text: "Gammal information som inte längre är relevant", correct: false }
+                ],
+                explanation: "Desinformation är direkt skadlig, eftersom den består av fabricerad eller förfalskad information med det uttalade syftet att vilseleda mottagaren."
+            },
+            {
+                question: "Vad betyder misinformation till skillnad från desinformation?",
+                answers: [
+                    { text: "Felaktig information spridd utan avsikt att lura", correct: true },
+                    { text: "Falsk information skapad för att styra politiken", correct: false },
+                    { text: "Information som staten använder som propaganda", correct: false },
+                    { text: "Rätt information som presenteras på ett tråkigt sätt", correct: false }
+                ],
+                explanation: "Misinformation är också felaktig fakta, skillnaden är att den sprids av misstag eller slarv utan något ont uppsåt."
+            },
+            {
+                question: "Vad innebär konfirmationsbias när man läser nyheter på nätet?",
+                answers: [
+                    { text: "Man söker information som bekräftar ens åsikter", correct: true },
+                    { text: "Man letar alltid efter nyheter som motsäger en", correct: false },
+                    { text: "Algoritmer styr exakt vilka annonser man får se", correct: false },
+                    { text: "Staten tvingar medier att sprida lögner till folket", correct: false }
+                ],
+                explanation: "Konfirmationsbias är ett psykologiskt fenomen som gör att vi människor omedvetet dras till och tror på information som stödjer våra fördomar."
+            },
+            {
+                question: "Vad menas med klicklogik i dagens snabba och digitala mediesamhälle?",
+                answers: [
+                    { text: "Innehåll som ger många klick prioriteras högt", correct: true },
+                    { text: "Man måste alltid klicka för att läsa hela artikeln", correct: false },
+                    { text: "Nyheter granskas noga innan man kan klicka på dem", correct: false },
+                    { text: "Det är helt olagligt att använda vilseledande rubriker", correct: false }
+                ],
+                explanation: "Eftersom medier tjänar pengar på annonser (som kräver många besökare) prioriterar klicklogiken ofta sensationella nyheter framför viktiga analyser."
+            },
+            {
+                question: "Vilka medieföretag ingår i det som kallas public service i Sverige?",
+                answers: [
+                    { text: "SVT, Sveriges Radio (SR) och Utbildningsradion", correct: true },
+                    { text: "Aftonbladet, Expressen och Dagens Nyheter", correct: false },
+                    { text: "Facebook, Instagram, Youtube och Tiktok", correct: false },
+                    { text: "Privatägda tv-kanaler som TV4 och Kanal 5", correct: false }
+                ],
+                explanation: "Public service-bolagen i Sverige utgörs i huvudsak av Sveriges Television (SVT), Sveriges Radio (SR) och Utbildningsradion (UR)."
+            },
+            {
+                question: "Vilket tydligt syfte har public service-medier enligt svensk lagstiftning?",
+                answers: [
+                    { text: "Att vara opartiska och verka i allmänhetens tjänst", correct: true },
+                    { text: "Att tjäna så mycket pengar som möjligt på reklam", correct: false },
+                    { text: "Att alltid stödja det parti som styr regeringen", correct: false },
+                    { text: "Att konkurrera ut alla små lokala dagstidningar", correct: false }
+                ],
+                explanation: "Public service syftar till att leverera ett mångsidigt, opartiskt och reklamfritt medieutbud som servar alla medborgare i ett demokratiskt samhälle."
+            },
+            {
+                question: "Vad utgör motsatsen till fri opinionsbildning i ett politiskt samhälle?",
+                answers: [
+                    { text: "Statlig censur och begränsning av yttrandefrihet", correct: true },
+                    { text: "Att exakt vem som helst får starta en egen blogg", correct: false },
+                    { text: "När flera olika partier debatterar öppet i tv", correct: false },
+                    { text: "Att granskande journalister vinner fina priser", correct: false }
+                ],
+                explanation: "Fri opinionsbildning bygger på att medborgare fritt kan byta åsikter. Censur, övervakning och förbud är det direkta hotet mot detta."
+            },
+            {
+                question: "Varför väljer diktaturer ofta att stänga ner internet under pågående protester?",
+                answers: [
+                    { text: "För att förhindra medborgarna från att organisera sig", correct: true },
+                    { text: "För att spara på landets begränsade elförbrukning", correct: false },
+                    { text: "För att tvinga människor att läsa dagstidningar i papper", correct: false },
+                    { text: "För att skydda befolkningen från utländska datavirus", correct: false }
+                ],
+                explanation: "Genom att blockera internet försöker makthavare klippa kommunikationen mellan demonstranter och förhindra att bilder på protesterna sprids till omvärlden."
+            },
+            {
+                question: "Vilken typ av journalistik är tv-programmet Uppdrag Granskning ett exempel på?",
+                answers: [
+                    { text: "Granskande journalistik som söker maktmissbruk", correct: true },
+                    { text: "Sportjournalistik som enbart bevakar lokala lag", correct: false },
+                    { text: "Nöjesjournalistik som fokuserar på kändisars liv", correct: false },
+                    { text: "Kulturjournalistik som recenserar nyutkomna böcker", correct: false }
+                ],
+                explanation: "Uppdrag Granskning är ett känt exempel på djuplodande, granskande journalistik som syftar till att avslöja korruption, lögner eller andra missförhållanden i samhället."
+            },
+            {
+                question: "Vad betyder begreppet övervakning när det handlar om en stats agerande?",
+                answers: [
+                    { text: "Att staten i hemlighet följer människors kommunikation", correct: true },
+                    { text: "Att staten erbjuder helt gratis internet till alla medborgare", correct: false },
+                    { text: "Att staten tvingar alla att titta på precis samma tv-program", correct: false },
+                    { text: "Att staten granskar journalisters utbildningsnivå i skolan", correct: false }
+                ],
+                explanation: "Många diktaturer utnyttjar modern teknik för övervakning, för att spionera på vad människor skriver på nätet och identifiera motståndare."
+            },
+            {
+                question: "Hur finansieras traditionellt sett reklamfria public service-medier i Sverige?",
+                answers: [
+                    { text: "Genom en särskild skatt eller avgift från medborgare", correct: true },
+                    { text: "Genom frivilliga gåvor från stora och rika företag", correct: false },
+                    { text: "Genom storskalig försäljning av personlig användardata", correct: false },
+                    { text: "Genom dyra och exklusiva prenumerationer för rika", correct: false }
+                ],
+                explanation: "I Sverige finansieras public service via en speciell public service-avgift som betalas via den vanliga skatten, vilket gör att man slipper ha reklamavbrott."
+            },
+            {
+                question: "Vad är ett tydligt tecken på god pressetik när en journalist gör ett reportage?",
+                answers: [
+                    { text: "Att man strävar efter att inte kränka folks privatliv", correct: true },
+                    { text: "Att man publicerar namn på brottsoffer direkt efteråt", correct: false },
+                    { text: "Att man vägrar intervjua någon som har en annan åsikt", correct: false },
+                    { text: "Att man i smyg filmar personer utan någon god anledning", correct: false }
+                ],
+                explanation: "Goda pressetiska grundregler säger att journalister noga bör överväga publicitet som kan kränka någons privatliv, särskilt för oskyldiga och oskyddade personer."
+            }
+        ];
+
+        // Variabler för tillstånd (state)
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timerInterval;
+        let timeInSeconds = 0;
+
+        // DOM Element
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const questionElement = document.getElementById('question');
+        const answerButtonsElement = document.getElementById('answer-buttons');
+        const startButton = document.getElementById('start-btn');
+        const restartButton = document.getElementById('restart-btn');
+        const timerElement = document.getElementById('timer');
+        const progressText = document.getElementById('progress-text');
+        const scoreText = document.getElementById('score-text');
+        const timeText = document.getElementById('time-text');
+        
+        // Nya DOM Element för poängräknare och modal
+        const currentScoreElement = document.getElementById('current-score');
+        const feedbackModal = document.getElementById('feedback-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalExplanation = document.getElementById('modal-explanation');
+        const modalNextBtn = document.getElementById('modal-next-btn');
+
+        // Funktion för att blanda en array (Fisher-Yates shuffle)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // Formatera sekunder till MM:SS
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        // Hantera tidtagaruret
+        function startTimer() {
+            timeInSeconds = 0;
+            timerElement.innerText = "00:00";
+            timerInterval = setInterval(() => {
+                timeInSeconds++;
+                timerElement.innerText = formatTime(timeInSeconds);
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        // Starta provet
+        function startQuiz() {
+            startScreen.classList.add('hide');
+            resultScreen.classList.add('hide');
+            quizScreen.classList.remove('hide');
+            
+            // Slumpa ordningen på frågorna så att det inte blir samma mönster varje gång
+            shuffleArray(questions); 
+            
+            currentQuestionIndex = 0;
+            score = 0;
+            currentScoreElement.innerText = score;
+            startTimer();
+            setNextQuestion();
+        }
+
+        // Förbered nästa fråga
+        function setNextQuestion() {
+            resetState();
+            showQuestion(questions[currentQuestionIndex]);
+            progressText.innerText = `Fråga ${currentQuestionIndex + 1} av ${questions.length}`;
+        }
+
+        // Visa frågan och slumpa svarsalternativen
+        function showQuestion(question) {
+            questionElement.innerText = question.question;
+            
+            // Skapa en kopia av svaren och blanda dem så det ser annorlunda ut varje gång
+            const shuffledAnswers = [...question.answers];
+            shuffleArray(shuffledAnswers);
+
+            shuffledAnswers.forEach(answer => {
+                const button = document.createElement('button');
+                button.innerText = answer.text;
+                button.classList.add('btn');
+                if (answer.correct) {
+                    button.dataset.correct = answer.correct;
+                }
+                button.addEventListener('click', selectAnswer);
+                answerButtonsElement.appendChild(button);
+            });
+        }
+
+        // Återställ knappar inför ny fråga
+        function resetState() {
+            while (answerButtonsElement.firstChild) {
+                answerButtonsElement.removeChild(answerButtonsElement.firstChild);
+            }
+        }
+
+        // Hantera när användaren klickar på ett svar
+        function selectAnswer(e) {
+            const selectedButton = e.target;
+            const isCorrect = selectedButton.dataset.correct === "true";
+            
+            if (isCorrect) {
+                score++;
+                currentScoreElement.innerText = score; // Uppdatera poängräknaren i toppen
+                modalTitle.innerText = "Helt rätt! 🎉";
+                modalTitle.className = "correct-text";
+            } else {
+                modalTitle.innerText = "Tyvärr fel! 😕";
+                modalTitle.className = "wrong-text";
+            }
+
+            // Markera rätt och fel svar i bakgrunden
+            Array.from(answerButtonsElement.children).forEach(button => {
+                // Visa alltid vilket som var rätt
+                if (button.dataset.correct === "true") {
+                    button.classList.add('correct');
+                } 
+                // Markera rött endast om användaren klickade på just detta felaktiga svar
+                else if (button === selectedButton) {
+                    button.classList.add('wrong');
+                }
+                button.disabled = true; // Förhindra fler klick
+            });
+
+            // Sätt in texten för förklaringen
+            modalExplanation.innerText = questions[currentQuestionIndex].explanation;
+
+            // Kontrollera om det är sista frågan
+            if (questions.length > currentQuestionIndex + 1) {
+                modalNextBtn.innerText = "Nästa Fråga";
+            } else {
+                modalNextBtn.innerText = "Visa resultat";
+            }
+
+            // Visa popup-rutan med en liten fördröjning så användaren hinner se färgmarkeringarna
+            setTimeout(() => {
+                feedbackModal.classList.remove('hide');
+            }, 600);
+        }
+
+        // Gå till nästa fråga eller avsluta via modalen
+        function handleNextButton() {
+            feedbackModal.classList.add('hide'); // Göm modalen
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                setNextQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        // Visa slutsidan
+        function showResult() {
+            stopTimer();
+            quizScreen.classList.add('hide');
+            resultScreen.classList.remove('hide');
+            
+            scoreText.innerText = `Du fick ${score} rätt av ${questions.length} möjliga!`;
+            timeText.innerText = `Din tid blev: ${formatTime(timeInSeconds)}`;
+            nextButton.innerText = "Nästa Fråga"; // Återställ knapptexten inför nästa gång
+        }
+
+        // Event Listeners
+        startButton.addEventListener('click', startQuiz);
+        restartButton.addEventListener('click', startQuiz);
+        modalNextBtn.addEventListener('click', handleNextButton); // Länka nästa-knappen i modalen
+
+    </script>
+</body>
+</html>
