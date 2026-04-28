@@ -1,1 +1,291 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Vetenskapens grunder</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Fredoka', sans-serif; }
+        .animate-pop { animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes pop {
+            0% { transform: scale(0.95); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+    <div id="root"></div>
 
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        const questionsData = [
+            {
+                id: 1,
+                question: "Vad är den största skillnaden på vetenskap och vanlig kunskap?",
+                correct: "Vetenskapen testas alltid med en noga planerad metod.",
+                others: [
+                    "Vetenskapen bygger bara på vad man råkar uppleva själv.",
+                    "Vetenskapen är subjektiv och ändras mellan olika folk.",
+                    "Vetenskapen kräver inte att man gör några bevisade test."
+                ],
+                hint: "Vetenskap handlar om att bevisa saker noga."
+            },
+            {
+                id: 2,
+                question: "Vad menas med en hypotes i en vetenskaplig undersökning?",
+                correct: "En gissning som man sedan testar på ett vetenskapligt sätt.",
+                others: [
+                    "Ett bevis på att man har hittat sanningen i ett experiment.",
+                    "En förklaring på vad ett resultat betyder efter ett långt test.",
+                    "Ett sätt att samla in information med hjälp av olika mätningar."
+                ],
+                hint: "Det är en smart gissning innan man vet svaret."
+            },
+            {
+                id: 3,
+                question: "Vad betyder ordet korrelation när man pratar om vetenskap?",
+                correct: "När två olika saker verkar hänga ihop med varandra på något sätt.",
+                others: [
+                    "När en sak händer direkt på grund av att en annan sak har hänt.",
+                    "När man gör om samma test flera gånger för att se om det blir rätt.",
+                    "När man hittar ett fel i sitt test som gör att svaret blir felaktigt."
+                ],
+                hint: "Det betyder att saker rör sig samtidigt, men kanske inte orsakar varandra."
+            },
+            {
+                id: 4,
+                question: "Vad är kausalitet i en naturvetenskaplig undersökning?",
+                correct: "När en händelse gör att en annan händelse sker på ett direkt sätt.",
+                others: [
+                    "När man gissar vad som ska hända innan man har börjat sitt stora test.",
+                    "När man har en grupp i ett test som inte får någon behandling alls.",
+                    "När man hittar information som inte stämmer med det man trodde förut."
+                ],
+                hint: "Tänk på orsak och verkan."
+            },
+            {
+                id: 5,
+                question: "Vad menas med en bakomliggande variabel?",
+                correct: "En tredje sak som påverkar de två saker som man tittar noga på.",
+                others: [
+                    "Ett bevis som gör att man vet att resultatet i testet är korrekt.",
+                    "En person som inte får vara med i testet för att det ska bli rätt.",
+                    "Ett sätt att mäta saker på som gör att man inte gör några stora fel."
+                ],
+                hint: "Det är den 'hemliga' orsaken till att två saker verkar hänga ihop."
+            },
+            {
+                id: 6,
+                question: "Varför använder man en kontrollgrupp i ett experiment?",
+                correct: "En grupp som inte får testas för att man ska ha något att jämföra med.",
+                others: [
+                    "En grupp som får den extra behandlingen för att se vad som händer där.",
+                    "En lista med ord som man ska lära sig utantill under en kort studie.",
+                    "En person som ser till att alla i testet sköter sig på ett bra sätt nu."
+                ],
+                hint: "Utan denna grupp vet vi inte om resultatet beror på testet eller slumpen."
+            },
+            {
+                id: 7,
+                question: "Vad betyder begreppet reliabilitet?",
+                correct: "Att mätningen är pålitlig och ger samma svar om man gör om testet.",
+                others: [
+                    "Att man faktiskt mäter precis den sak som man har tänkt att mäta.",
+                    "Att man har en vinklad åsikt som gör att resultatet inte blir helt rätt.",
+                    "Att man glömmer bort att kontrollera sina maskiner innan man börjar."
+                ],
+                hint: "Handlar om att kunna lita på att vågen eller linjalen visar rätt varje gång."
+            },
+            {
+                id: 8,
+                question: "Vad betyder det att en undersökning har hög validitet?",
+                correct: "Att man verkligen mäter den sak som man har planerat att mäta i testet.",
+                others: [
+                    "Att man får samma resultat varje gång man gör om testet på nytt igen.",
+                    "Att man har hittat bevis som stödjer det man trodde från början i testet.",
+                    "Att man har valt ut personer som är väldigt olika varandra till sitt test."
+                ],
+                hint: "Mäter vi rätt sak? Om vi vill veta längd ska vi inte använda en våg."
+            },
+            {
+                id: 9,
+                question: "Vad menas med bias (snedvridning) inom vetenskap?",
+                correct: "Att resultatet blir vinklat för att man har tänkt på ett ensidigt sätt.",
+                others: [
+                    "Att man har gjort ett perfekt test som inte har några fel i sig alls nu.",
+                    "Att man delar med sig av sina svar till andra som vill titta på dem.",
+                    "Att man använder en metod som är godkänd av alla andra i hela världen."
+                ],
+                hint: "När man är partisk eller redan har bestämt sig i förväg."
+            },
+            {
+                id: 10,
+                question: "Vad är en felkälla i ett vetenskapligt experiment?",
+                correct: "Något som gör att resultatet i ett test blir fel utan att man ser det.",
+                others: [
+                    "Ett bevis på att man har gjort rätt när man har mätt olika saker här.",
+                    "En gissning på vad som kommer att hända när man gör ett nytt stort test.",
+                    "En grupp med människor som får testa en ny sak för att se om det funkar."
+                ],
+                hint: "Detta är 'tjuven' som förstör noggrannheten i ditt experiment."
+            }
+        ];
+
+        function App() {
+            const [gameState, setGameState] = useState('start'); // start, playing, result
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [score, setScore] = useState(0);
+            const [selectedAnswer, setSelectedAnswer] = useState(null);
+            const [isAnswered, setIsAnswered] = useState(false);
+            
+            // Slumpa svar varje gång frågan ändras
+            const shuffledOptions = useMemo(() => {
+                const q = questionsData[currentIndex];
+                return [...q.others, q.correct].sort(() => Math.random() - 0.5);
+            }, [currentIndex]);
+
+            const handleStart = () => {
+                setScore(0);
+                setCurrentIndex(0);
+                setGameState('playing');
+                setIsAnswered(false);
+                setSelectedAnswer(null);
+            };
+
+            const handleAnswer = (answer) => {
+                if (isAnswered) return;
+                setSelectedAnswer(answer);
+                setIsAnswered(true);
+                if (answer === questionsData[currentIndex].correct) {
+                    setScore(prev => prev + 1);
+                }
+            };
+
+            const nextQuestion = () => {
+                if (currentIndex + 1 < questionsData.length) {
+                    setCurrentIndex(prev => prev + 1);
+                    setIsAnswered(false);
+                    setSelectedAnswer(null);
+                } else {
+                    setGameState('result');
+                }
+            };
+
+            if (gameState === 'start') {
+                return (
+                    <div class="flex flex-col items-center justify-center min-h-[80vh] px-4 text-center">
+                        <div class="bg-emerald-100 p-6 rounded-full mb-6">
+                            <svg class="w-16 h-16 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                            </svg>
+                        </div>
+                        <h1 class="text-4xl font-bold text-slate-800 mb-4">Vetenskapstestet</h1>
+                        <p class="text-slate-600 mb-8 max-w-md">Testa dina kunskaper om vetenskaplig metod, korrelation och viktiga begrepp i naturkunskap.</p>
+                        <button onClick={handleStart} class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 px-12 rounded-2xl shadow-lg transition-transform active:scale-95 text-xl">
+                            Starta Quizet
+                        </button>
+                    </div>
+                );
+            }
+
+            if (gameState === 'result') {
+                return (
+                    <div class="flex flex-col items-center justify-center min-h-[80vh] px-4 text-center animate-pop">
+                        <h2 class="text-3xl font-bold text-slate-800 mb-2">Bra jobbat!</h2>
+                        <div class="text-6xl font-black text-emerald-500 my-6">{score} / {questionsData.length}</div>
+                        <p class="text-slate-600 mb-8">
+                            {score === questionsData.length ? "Perfekt! Du är en riktig forskare!" : "Snyggt! Träna lite till så sitter alla snart."}
+                        </p>
+                        <div class="flex gap-4">
+                            <button onClick={handleStart} class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-8 rounded-xl shadow-md transition-all">
+                                Försök igen
+                            </button>
+                            <a href="index.html" class="bg-white border-2 border-slate-200 text-slate-600 font-bold py-3 px-8 rounded-xl hover:bg-slate-50 transition-all">
+                                Till Portalen
+                            </a>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQ = questionsData[currentIndex];
+
+            return (
+                <div class="max-w-2xl mx-auto px-4 py-8">
+                    <header class="mb-8">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-emerald-600 font-bold uppercase tracking-widest text-sm">Fråga {currentIndex + 1} av {questionsData.length}</span>
+                            <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm font-bold">Poäng: {score}</span>
+                        </div>
+                        <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                            <div 
+                                class="bg-emerald-500 h-full transition-all duration-500" 
+                                style={{ width: `${((currentIndex + 1) / questionsData.length) * 100}%` }}
+                            ></div>
+                        </div>
+                    </header>
+
+                    <main class="animate-pop">
+                        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 mb-6">
+                            <h2 class="text-2xl font-bold text-slate-800 leading-tight mb-8">
+                                {currentQ.question}
+                            </h2>
+
+                            <div class="grid gap-3">
+                                {shuffledOptions.map((option, i) => {
+                                    let btnClass = "w-full p-5 text-left rounded-2xl border-2 transition-all font-medium text-lg ";
+                                    if (!isAnswered) {
+                                        btnClass += "border-slate-100 hover:border-emerald-300 hover:bg-emerald-50 text-slate-700";
+                                    } else {
+                                        if (option === currentQ.correct) {
+                                            btnClass += "border-emerald-500 bg-emerald-500 text-white shadow-emerald-200 shadow-lg scale-[1.02]";
+                                        } else if (option === selectedAnswer) {
+                                            btnClass += "border-red-400 bg-red-400 text-white opacity-90";
+                                        } else {
+                                            btnClass += "border-slate-100 text-slate-300";
+                                        }
+                                    }
+
+                                    return (
+                                        <button 
+                                            key={i} 
+                                            disabled={isAnswered}
+                                            onClick={() => handleAnswer(option)}
+                                            class={btnClass}
+                                        >
+                                            {option}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {isAnswered && (
+                            <div class="flex flex-col items-center animate-pop">
+                                <div class={`mb-6 p-4 rounded-2xl w-full text-center font-bold ${selectedAnswer === currentQ.correct ? 'text-emerald-600 bg-emerald-100' : 'text-red-600 bg-red-100'}`}>
+                                    {selectedAnswer === currentQ.correct ? "✓ Rätt svar!" : "✗ Tyvärr fel, se rätt svar ovan."}
+                                </div>
+                                <button 
+                                    onClick={nextQuestion}
+                                    class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-5 px-8 rounded-2xl shadow-xl transition-transform active:scale-95 text-xl"
+                                >
+                                    {currentIndex + 1 === questionsData.length ? "Visa resultat" : "Nästa fråga →"}
+                                </button>
+                            </div>
+                        )}
+                    </main>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
