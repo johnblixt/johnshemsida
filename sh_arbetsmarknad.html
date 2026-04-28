@@ -1,1 +1,382 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Arbetsmarknad & Arbetsliv</title>
+    <!-- Tailwind CSS för styling -->
+    <script src="https://cdn.tailwindcss.com/"></script>
+    <!-- React och Babel för att köra JSX i webbläsaren -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide ikoner -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50">
+    <div id="root"></div>
 
+    <script type="text/babel">
+        const { useState, useEffect, useCallback } = React;
+
+        const Icon = ({ name, size = 24, className = "" }) => {
+            return <i data-lucide={name} className={className} style={{ width: size, height: size }}></i>;
+        };
+
+        const QUESTIONS = [
+            {
+                question: "Vad innebär det centrala begreppet arbetsmarknad i vårt samhälle?",
+                options: ["Platsen där jobb erbjuds och söks.", "Platsen där varor köps och säljs.", "Platsen där facket håller sina möten.", "Platsen där staten bestämmer priser."],
+                correctAnswer: "Platsen där jobb erbjuds och söks.",
+                hint: "Tänk på mötet mellan de som vill anställa och de som vill arbeta."
+            },
+            {
+                question: "Vilken verksamhet ingår typiskt i det vi kallar den offentliga sektorn?",
+                options: ["Verksamheter som drivs av det allmänna.", "Företag som drivs för att tjäna pengar.", "Butiker som säljer kläder till kunder.", "Sjukhus som ägs av privata stora banker."],
+                correctAnswer: "Verksamheter som drivs av det allmänna.",
+                hint: "Drivs av stat, region eller kommun med skattemedel."
+            },
+            {
+                question: "Vad regleras specifikt i lagen om anställningsskydd, även känd som LAS?",
+                options: ["Lag som skyddar anställd vid uppsägning.", "Lag som ger rätt till extra betald lön.", "Lag som styr hur mycket man får i skatt.", "Lag som tvingar alla företag ha fackliga."],
+                correctAnswer: "Lag som skyddar anställd vid uppsägning.",
+                hint: "Handlar om trygghet när ett företag behöver minska personal."
+            },
+            {
+                question: "När har en arbetstagare rätt till det som kallas för ett OB-tillägg?",
+                options: ["Extra lön för obekväm arbetstid på natten.", "Extra lön för att man presterar jättebra.", "Extra lön för att man har jobbat jättelänge.", "Extra lön för att man pendlar långt bort."],
+                correctAnswer: "Extra lön för obekväm arbetstid på natten.",
+                hint: "OB står för obekväm arbetstid."
+            },
+            {
+                question: "Vem är det som förhandlar fram och skriver under ett kollektivavtal?",
+                options: ["Fackförening och arbetsgivarorganisation.", "En enskild kund och en lokal butiksägare.", "Regeringen och alla landets domstolar.", "En grupp studenter och en lärare på skolan."],
+                correctAnswer: "Fackförening och arbetsgivarorganisation.",
+                hint: "Det handlar om de två huvudparterna på arbetsmarknaden."
+            },
+            {
+                question: "Vad är ett utmärkande drag för det som vi kallar för svartarbete?",
+                options: ["Arbete utan att betala in skatt till staten.", "Arbete som sker i mörka lokaler utan fönster.", "Arbete som utförs av folk utan utbildning.", "Arbete som kräver att man bär svarta kläder."],
+                correctAnswer: "Arbete utan att betala in skatt till staten.",
+                hint: "Det är olagligt och innebär att man får betalt utan registrering."
+            },
+            {
+                question: "Vad innebär stridsåtgärden lockout som kan ske under en konflikt?",
+                options: ["När arbetsgivaren stänger ute all personal.", "När anställda slutar jobba för att få lön.", "När staten tar över ett privat litet företag.", "När chefen låser in personalen på kontoret."],
+                correctAnswer: "När arbetsgivaren stänger ute all personal.",
+                hint: "Det är arbetsgivarens sätt att svara på en strejk."
+            },
+            {
+                question: "Vilket exempel beskriver bäst fenomenet digitalisering i arbetslivet?",
+                options: ["Att arbete görs med hjälp av modern teknik.", "Att alla papper kastas i papperskorgen nu.", "Att chefen skickar sms till alla anställda.", "Att man bara får betalt i digitala pengar."],
+                correctAnswer: "Att arbete görs med hjälp av modern teknik.",
+                hint: "Tänk på robotar eller självscanning i mataffären."
+            },
+            {
+                question: "Vad kännetecknar en provanställning enligt svensk arbetsmarknad?",
+                options: ["En testperiod innan man får en fast tjänst.", "En utbildning man går för att lära sig mer.", "En period då man jobbar helt utan en lön.", "En anställning som bara gäller under helger."],
+                correctAnswer: "En testperiod innan man får en fast tjänst.",
+                hint: "Syftet är att se om personen passar för jobbet."
+            },
+            {
+                question: "Vad ingår när vi pratar om den fysiska arbetsmiljön på en arbetsplats?",
+                options: ["Den miljö man kan se och ta på med händer.", "Hur man mår psykiskt när man är på jobbet.", "Hur många kollegor man har på sin avdelning.", "Vilken lön man får för det jobb man utför."],
+                correctAnswer: "Den miljö man kan se och ta på med händer.",
+                hint: "Tänk på belysning, ljudnivå och maskiner."
+            },
+            {
+                question: "Vem räknas juridiskt som en arbetsgivare på arbetsmarknaden?",
+                options: ["Den som anställer och betalar ut en lön.", "Den som söker ett nytt jobb på ett företag.", "Den som arbetar på ett litet äldreboende.", "Den som förhandlar för alla arbetstagare."],
+                correctAnswer: "Den som anställer och betalar ut en lön.",
+                hint: "Det är motparten till den som utför själva arbetet."
+            },
+            {
+                question: "Vem är det som i lagens mening kallas för en arbetstagare?",
+                options: ["Den som jobbar och får lön för arbetet.", "Den som betalar ut lön till sin personal.", "Den som äger en restaurang eller en butik.", "Den som medlar mellan de olika parterna."],
+                correctAnswer: "Den som jobbar och får lön för arbetet.",
+                hint: "En person som är anställd för att utföra en uppgift."
+            },
+            {
+                question: "Vad kännetecknar företag som tillhör den privata sektorn?",
+                options: ["Företag som ägs privat för att tjäna pengar.", "Verksamheter som drivs av stat och kommun.", "Organisationer som arbetar helt ideellt.", "Företag som bara drivs med skattepengar."],
+                correctAnswer: "Företag som ägs privat för att tjäna pengar.",
+                hint: "Exempel är ICA, H&M eller en lokal frisörsalong."
+            },
+            {
+                question: "Vad innebär det att arbeta på ett så kallat vikariat?",
+                options: ["Att jobba istället för någon som är borta.", "Att jobba under en viss del av hela året.", "Att jobba när ett företag ringer in en.", "Att jobba med att bygga en helt ny hemsida."],
+                correctAnswer: "Att jobba istället för någon som är borta.",
+                hint: "Man ersätter ofta någon som är sjuk eller föräldraledig."
+            },
+            {
+                question: "Vad är huvuduppgiften för en fackförening på arbetsmarknaden?",
+                options: ["Organisation som hjälper alla arbetstagare.", "Företag som hyr ut folk till andra bolag.", "Grupp av chefer som bestämmer alla löner.", "Myndighet som kontrollerar alla skatter."],
+                correctAnswer: "Organisation som hjälper alla arbetstagare.",
+                hint: "De förhandlar bland annat om löner och villkor."
+            },
+            {
+                question: "Vilket påstående beskriver bäst vad a-kasseersättning är?",
+                options: ["Pengar man får om man blir arbetslös.", "Pengar man får för att man jobbar natt.", "Pengar man får när man har semesterledigt.", "Pengar man får för att man jobbar svart."],
+                correctAnswer: "Pengar man får om man blir arbetslös.",
+                hint: "Det krävs oftast att man har betalat in en avgift tidigare."
+            },
+            {
+                question: "Vad fokuserar man på i den psykiska och sociala arbetsmiljön?",
+                options: ["Hur man mår och behandlas på sin arbetsplats.", "Den miljö man kan se och ta på rent fysiskt.", "Hur hög lönen är efter att man har skattat.", "Vilka lagar som gäller vid en stor uppsägning."],
+                correctAnswer: "Hur man mår och behandlas på sin arbetsplats.",
+                hint: "Det handlar om stämning, stress och relationer."
+            },
+            {
+                question: "Vad är det huvudsakliga syftet med diskrimineringslagen?",
+                options: ["Lag som förbjuder all orättvis behandling.", "Lag som bestämmer exakt hur mycket man vilar.", "Lag som säger att man måste ha kollektivavtal.", "Lag som skyddar anställda vid en nedskärning."],
+                correctAnswer: "Lag som förbjuder all orättvis behandling.",
+                hint: "Man får inte nekas jobb på grund av t.ex. kön eller ålder."
+            },
+            {
+                question: "Vad ger den svenska semesterlagen arbetstagaren för rättighet?",
+                options: ["Lag som ger rätt till ledighet varje år.", "Lag som ger rätt till lön vid varje sjukdom.", "Lag som ger rätt till att få strejka helt fritt.", "Lag som ger rätt till att få jobba mer övertid."],
+                correctAnswer: "Lag som ger rätt till ledighet varje år.",
+                hint: "Enligt lagen har man rätt till minst 25 dagar."
+            },
+            {
+                question: "Vad gör ett bemanningsföretag för något på arbetsmarknaden?",
+                options: ["Företag som hyr ut personal till andra.", "Företag som drivs helt av statliga medel.", "Företag som bara säljer kläder och skor.", "Företag som förhandlar om högre löner."],
+                correctAnswer: "Företag som hyr ut personal till andra.",
+                hint: "Du är anställd av dem men utför jobbet hos en kund."
+            }
+        ];
+
+        const App = () => {
+            const [gameState, setGameState] = useState('start');
+            const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+            const [score, setScore] = useState(0);
+            const [totalSeconds, setTotalSeconds] = useState(0);
+            const [showHint, setShowHint] = useState(false);
+            const [selectedOption, setSelectedOption] = useState(null);
+            const [isLocked, setIsLocked] = useState(false);
+            const [shuffledQuestions, setShuffledQuestions] = useState([]);
+            const [shuffledOptions, setShuffledOptions] = useState([]);
+
+            const shuffleArray = (array) => {
+                return [...array].sort(() => Math.random() - 0.5);
+            };
+
+            const startQuiz = () => {
+                const newShuffledQuestions = shuffleArray(QUESTIONS);
+                setShuffledQuestions(newShuffledQuestions);
+                setGameState('playing');
+                setCurrentQuestionIndex(0);
+                setScore(0);
+                setTotalSeconds(0);
+                setIsLocked(false);
+                setSelectedOption(null);
+                setShowHint(false);
+                setShuffledOptions(shuffleArray(newShuffledQuestions[0].options));
+            };
+
+            const formatTime = (totalSecs) => {
+                const minutes = Math.floor(totalSecs / 60);
+                const seconds = totalSecs % 60;
+                return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            };
+
+            useEffect(() => {
+                let interval;
+                if (gameState === 'playing') {
+                    interval = setInterval(() => {
+                        setTotalSeconds(prev => prev + 1);
+                    }, 1000);
+                }
+                return () => clearInterval(interval);
+            }, [gameState]);
+
+            useEffect(() => {
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            }, [gameState, currentQuestionIndex, showHint]);
+
+            const handleNextQuestion = useCallback(() => {
+                const nextIndex = currentQuestionIndex + 1;
+                if (nextIndex < shuffledQuestions.length) {
+                    setCurrentQuestionIndex(nextIndex);
+                    setIsLocked(false);
+                    setSelectedOption(null);
+                    setShowHint(false);
+                    setShuffledOptions(shuffleArray(shuffledQuestions[nextIndex].options));
+                } else {
+                    setGameState('finished');
+                }
+            }, [currentQuestionIndex, shuffledQuestions]);
+
+            const handleOptionClick = (option) => {
+                if (isLocked) return;
+                setSelectedOption(option);
+                setIsLocked(true);
+                if (option === shuffledQuestions[currentQuestionIndex].correctAnswer) {
+                    setScore(score + 1);
+                }
+            };
+
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+
+            return (
+                <div className="min-h-screen flex items-center justify-center p-4">
+                    <div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
+                        
+                        <div className="bg-yellow-500 p-6 text-yellow-950 flex justify-between items-center">
+                            <div>
+                                <a href="index.html" className="flex items-center gap-1 text-sm font-bold opacity-70 hover:opacity-100 transition-opacity mb-1">
+                                    <Icon name="arrow-left" size={14} /> Portal
+                                </a>
+                                <h1 className="text-xl font-black tracking-tight uppercase leading-tight">Arbetsmarknad Quiz</h1>
+                                <p className="text-xs font-bold opacity-60">STORT TEST: 20 FRÅGOR</p>
+                            </div>
+                            {gameState === 'playing' && (
+                                <div className="flex items-center gap-3 bg-yellow-600/20 px-4 py-1.5 rounded-full border border-yellow-600/30">
+                                    <Icon name="clock" size={16} className="text-yellow-900" />
+                                    <span className="font-mono font-bold text-lg">
+                                        {formatTime(totalSeconds)}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="p-8">
+                            {gameState === 'start' && (
+                                <div className="text-center space-y-8 py-6">
+                                    <div className="mx-auto w-24 h-24 bg-yellow-500 rounded-full flex items-center justify-center text-white shadow-lg">
+                                        <Icon name="play" size={40} />
+                                    </div>
+                                    <div className="space-y-3">
+                                        <h2 className="text-3xl font-black text-slate-800 leading-tight">Är du redo för det stora testet?</h2>
+                                        <p className="text-slate-600 max-w-sm mx-auto">
+                                            Nu testar vi alla 20 begrepp från materialet. Både frågor och svar slumpas varje gång du kör.
+                                        </p>
+                                    </div>
+                                    <button 
+                                        onClick={startQuiz}
+                                        className="bg-yellow-500 hover:bg-yellow-600 text-yellow-950 px-10 py-4 rounded-2xl font-bold transition-all shadow-xl shadow-yellow-200 uppercase tracking-widest"
+                                    >
+                                        Starta Quizzet
+                                    </button>
+                                </div>
+                            )}
+
+                            {gameState === 'playing' && (
+                                <div className="space-y-8">
+                                    <div className="space-y-5">
+                                        <div className="flex justify-between items-end">
+                                            <span className="text-xs font-black uppercase tracking-widest text-yellow-600">
+                                                Fråga {currentQuestionIndex + 1} av {shuffledQuestions.length}
+                                            </span>
+                                        </div>
+                                        <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                                            <div 
+                                                className="bg-yellow-500 h-full transition-all duration-500"
+                                                style={{ width: `${((currentQuestionIndex + 1) / shuffledQuestions.length) * 100}%` }}
+                                            ></div>
+                                        </div>
+                                        <h2 className="text-xl font-bold leading-snug text-slate-800 min-h-[3.5rem]">
+                                            {currentQuestion.question}
+                                        </h2>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-3.5">
+                                        {shuffledOptions.map((option, idx) => {
+                                            const isCorrect = option === currentQuestion.correctAnswer;
+                                            const isSelected = selectedOption === option;
+                                            let style = "w-full p-4 px-6 text-left rounded-2xl border-2 transition-all flex justify-between items-center ";
+                                            
+                                            if (!isLocked) {
+                                                style += "border-slate-200 hover:border-yellow-400 hover:bg-yellow-50";
+                                            } else {
+                                                if (isCorrect) style += "border-emerald-500 bg-emerald-50 text-emerald-700 font-bold";
+                                                else if (isSelected) style += "border-rose-500 bg-rose-50 text-rose-700";
+                                                else style += "border-slate-100 opacity-40";
+                                            }
+
+                                            return (
+                                                <button key={idx} onClick={() => handleOptionClick(option)} disabled={isLocked} className={style}>
+                                                    <span className="flex-1">{option}</span>
+                                                    {isLocked && isCorrect && <Icon name="check-circle-2" size={18} className="text-emerald-500" />}
+                                                    {isLocked && isSelected && !isCorrect && <Icon name="x-circle" size={18} className="text-rose-500" />}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+
+                                    <div className="pt-6 flex justify-between items-center border-t border-slate-100 mt-2">
+                                        <button onClick={() => setShowHint(!showHint)} className="text-yellow-600 text-sm font-bold flex items-center gap-2 hover:bg-yellow-50 p-2 rounded-lg transition-colors">
+                                            <Icon name="help-circle" size={18} />
+                                            {showHint ? 'Dölj tips' : 'Visa tips'}
+                                        </button>
+                                        {isLocked && (
+                                            <button onClick={handleNextQuestion} className="bg-yellow-500 text-yellow-950 px-8 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg hover:bg-yellow-600 transition-colors">
+                                                {currentQuestionIndex === shuffledQuestions.length - 1 ? 'Visa Resultat' : 'Nästa fråga'}
+                                                <Icon name="chevron-right" size={20} />
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {showHint && (
+                                        <div className="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-xl text-sm text-amber-900 animate-in fade-in slide-in-from-left-2 duration-300">
+                                            <strong>Ledtråd:</strong> {currentQuestion.hint}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {gameState === 'finished' && (
+                                <div className="text-center space-y-10 py-6">
+                                    <div className="space-y-4">
+                                        <div className="bg-emerald-100 w-28 h-28 rounded-full flex items-center justify-center mx-auto text-emerald-600 shadow-inner">
+                                            <Icon name="trophy" size={56} />
+                                        </div>
+                                        <h2 className="text-4xl font-black text-slate-800 leading-tight">Snyggt jobbat!</h2>
+                                        <p className="text-slate-500 font-medium">Du har nu gått igenom alla 20 frågor om arbetsmarknaden.</p>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
+                                        <div className="bg-yellow-50 p-6 rounded-3xl border border-yellow-100">
+                                            <div className="text-yellow-600 text-xs uppercase font-black tracking-widest mb-1">Poäng</div>
+                                            <div className="text-3xl font-black text-yellow-700">{score} / {shuffledQuestions.length}</div>
+                                        </div>
+                                        <div className="bg-slate-100 p-6 rounded-3xl border border-slate-200">
+                                            <div className="text-slate-400 text-xs uppercase font-black tracking-widest mb-1">Tid</div>
+                                            <div className="text-3xl font-black text-slate-700">{formatTime(totalSeconds)}</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-col gap-3 max-w-xs mx-auto">
+                                        <button 
+                                            onClick={startQuiz}
+                                            className="flex items-center justify-center gap-3 bg-yellow-500 hover:bg-yellow-600 text-yellow-950 px-10 py-4 rounded-2xl font-bold transition-all shadow-2xl uppercase tracking-widest"
+                                        >
+                                            <Icon name="rotate-ccw" size={20} />
+                                            Gör om quizen
+                                        </button>
+                                        <a 
+                                            href="index.html"
+                                            className="text-slate-400 hover:text-slate-600 text-sm font-bold p-2 transition-colors"
+                                        >
+                                            Tillbaka till portalen
+                                        </a>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
