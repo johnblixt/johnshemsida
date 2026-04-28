@@ -1,1 +1,209 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaktiv Begreppslista - Privatekonomi</title>
+    
+    <!-- Google Fonts: Fredoka -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React & Babel CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
+    <style>
+        body {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* 3D Flip Card Logic */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        .preserve-3d {
+            transform-style: preserve-3d;
+        }
+
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-inner {
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #facc15;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Samtliga begrepp extraherade från PDF och tidigare lista
+        const concepts = [
+            { id: 1, term: "Bruttolön", definition: "Den lön du får innan du har betalat skatt." },
+            { id: 2, term: "Nettolön", definition: "De pengar du får ut på ditt konto efter att skatten är dragen." },
+            { id: 3, term: "Disponibel inkomst", definition: "De pengar du har totalt att använda varje månad (lön efter skatt plus eventuella bidrag)." },
+            { id: 4, term: "Direkt skatt (Inkomstskatt)", definition: "Den skatt som dras direkt från din lön." },
+            { id: 5, term: "Indirekt skatt (Moms)", definition: "Skatt som du betalar när du köper varor eller tjänster." },
+            { id: 6, term: "Punktskatt", definition: "En extra skatt på speciella varor som staten vill att vi ska köpa mindre av, till exempel alkohol eller tobak." },
+            { id: 7, term: "Fasta utgifter", definition: "Kostnader som är samma varje månad och svåra att påverka, till exempel hyra." },
+            { id: 8, term: "Rörliga utgifter", definition: "Kostnader som ändras beroende på hur mycket du köper, till exempel mat och kläder." },
+            { id: 9, term: "Faktura", definition: "Ett papper som visar hur mycket du ska betala för något du köpt." },
+            { id: 10, term: "Förfallodatum", definition: "Den sista dagen en faktura eller räkning måste vara betald." },
+            { id: 11, term: "OCR-nummer", definition: "Ett långt nummer på en faktura som används för att banken ska veta vilken betalning det gäller." },
+            { id: 12, term: "Betalningsanmärkning", definition: "En 'prick' i ett register som visar att man inte har skött sina betalningar. Det kan göra det svårt att hyra lägenhet eller ta lån." },
+            { id: 13, term: "Generellt bidrag", definition: "Ett bidrag som alla i en viss grupp får, till exempel barnbidrag." },
+            { id: 14, term: "Behovsprövat bidrag", definition: "Ett bidrag man bara får om man tjänar lite pengar och verkligen behöver det, till exempel bostadsbidrag." },
+            { id: 15, term: "Karensdag", definition: "Den första dagen du är sjuk från jobbet. Då får du inga pengar alls." },
+            { id: 16, term: "Sjuklön", definition: "Pengar du får från din arbetsgivare om du är sjuk efter karensdagen (dag 2–14)." },
+            { id: 17, term: "Sjukpenning", definition: "Pengar du får från Försäkringskassan om du är sjuk längre än två veckor." },
+            { id: 18, term: "Sparkonto", definition: "Ett säkert sätt att ha pengar på banken." },
+            { id: 19, term: "Aktier", definition: "Att köpa en liten del av ett företag. Kan ge hög vinst men är mer riskabelt." },
+            { id: 20, term: "Fonder", definition: "En blandning av olika aktier eller värdepapper som en expert sköter åt dig." },
+            { id: 21, term: "Lån", definition: "Att låna pengar som man sedan måste betala tillbaka." },
+            { id: 22, term: "Ränta", definition: "Den extra kostnad du betalar för att få låna pengar, eller pengar du får för att du sparar hos banken." },
+            { id: 23, term: "Studiebidrag", definition: "Bidrag från CSN för dig som studerar." },
+            { id: 24, term: "Studielån", definition: "Pengar du lånar från CSN för studier, som ska betalas tillbaka med ofta mycket låg ränta." }
+        ];
+
+        function App() {
+            const [view, setView] = useState('list'); // 'list' eller 'cards'
+            const [currentCardIndex, setCurrentCardIndex] = useState(0);
+            const [isFlipped, setIsFlipped] = useState(false);
+
+            // Funktion för att byta till nästa slumpmässiga kort
+            const handleNextCard = () => {
+                setIsFlipped(false);
+                setTimeout(() => {
+                    let nextIndex;
+                    do {
+                        nextIndex = Math.floor(Math.random() * concepts.length);
+                    } while (nextIndex === currentCardIndex && concepts.length > 1);
+                    setCurrentCardIndex(nextIndex);
+                }, 150);
+            };
+
+            return (
+                <div className="max-w-4xl mx-auto px-4 py-8">
+                    {/* Header & Navigering */}
+                    <header className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                        <a href="index.html" className="text-yellow-600 font-medium hover:text-yellow-700 transition-colors flex items-center">
+                            <span className="mr-1">←</span> Portal
+                        </a>
+                        
+                        <div className="flex bg-yellow-100 p-1 rounded-xl">
+                            <button 
+                                onClick={() => setView('list')}
+                                className={`px-6 py-2 rounded-lg font-semibold transition-all ${view === 'list' ? 'bg-yellow-400 text-slate-800 shadow-sm' : 'text-yellow-700 hover:bg-yellow-200'}`}
+                            >
+                                Lista
+                            </button>
+                            <button 
+                                onClick={() => {
+                                    setView('cards');
+                                    setIsFlipped(false);
+                                }}
+                                className={`px-6 py-2 rounded-lg font-semibold transition-all ${view === 'cards' ? 'bg-yellow-400 text-slate-800 shadow-sm' : 'text-yellow-700 hover:bg-yellow-200'}`}
+                            >
+                                Flashcards
+                            </button>
+                        </div>
+                    </header>
+
+                    <main>
+                        {view === 'list' ? (
+                            <div className="space-y-4 animate-fadeIn">
+                                <h1 className="text-3xl font-bold text-slate-800 mb-6 text-center md:text-left">Begreppslista: Privatekonomi</h1>
+                                {concepts.map((item, index) => (
+                                    <div key={item.id} className="bg-white p-5 rounded-2xl border-l-8 border-yellow-400 shadow-sm hover:shadow-md transition-shadow">
+                                        <div className="flex items-start">
+                                            <span className="bg-yellow-100 text-yellow-800 font-bold px-3 py-1 rounded-lg mr-4 mt-1">
+                                                {index + 1}
+                                            </span>
+                                            <div>
+                                                <h3 className="text-xl font-bold text-slate-800">{item.term}</h3>
+                                                <p className="text-slate-600 mt-2 leading-relaxed">{item.definition}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center animate-fadeIn py-10">
+                                <h1 className="text-3xl font-bold text-slate-800 mb-2">Träna på begrepp</h1>
+                                <p className="text-slate-500 mb-10">Klicka på kortet för att vända det</p>
+                                
+                                {/* Flashcard Container */}
+                                <div className="perspective-1000 w-full max-w-md h-80 relative cursor-pointer group" onClick={() => setIsFlipped(!isFlipped)}>
+                                    <div className={`flip-card-inner relative w-full h-full preserve-3d shadow-xl rounded-3xl ${isFlipped ? 'rotate-y-180' : ''}`}>
+                                        
+                                        {/* Front Side */}
+                                        <div className="absolute inset-0 backface-hidden bg-white rounded-3xl flex flex-col items-center justify-center p-8 text-center border-4 border-yellow-400">
+                                            <span className="text-sm uppercase tracking-widest text-yellow-500 font-bold mb-4">Begrepp</span>
+                                            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 break-words">{concepts[currentCardIndex].term}</h2>
+                                            <div className="absolute bottom-6 text-slate-400 text-xs italic">Klicka för att se svar</div>
+                                        </div>
+
+                                        {/* Back Side */}
+                                        <div className="absolute inset-0 backface-hidden bg-yellow-50 rounded-3xl flex flex-col items-center justify-center p-8 text-center border-4 border-yellow-200 rotate-y-180 overflow-y-auto">
+                                            <span className="text-sm uppercase tracking-widest text-yellow-600 font-bold mb-4">Förklaring</span>
+                                            <p className="text-xl md:text-2xl text-slate-700 leading-snug">{concepts[currentCardIndex].definition}</p>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                {/* Controls */}
+                                <div className="mt-12 flex flex-col items-center gap-4">
+                                    <button 
+                                        onClick={(e) => { e.stopPropagation(); handleNextCard(); }}
+                                        className="bg-yellow-400 hover:bg-yellow-500 text-slate-800 font-bold py-4 px-12 rounded-2xl shadow-lg transition-transform active:scale-95 text-lg"
+                                    >
+                                        Nästa begrepp
+                                    </button>
+                                    <p className="text-slate-400 text-sm">
+                                        Begrepp {currentCardIndex + 1} av {concepts.length}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                    </main>
+
+                    <footer className="mt-20 text-center text-slate-400 text-sm pb-10">
+                        © 2026 Kodningspartner - Interaktivt studiematerial i Samhällskunskap
+                    </footer>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
