@@ -1,1 +1,201 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Begreppslista - Naturkunskap</title>
+    <!-- React och ReactDOM via CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel för JSX-kompilering -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Fredoka -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Fredoka', sans-serif;
+        }
 
+        /* 3D-Flip Logik */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .preserve-3d {
+            transform-style: preserve-3d;
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+        .flip-card {
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .flipped-classes {
+            transform: rotateY(180deg);
+        }
+
+        /* Animation för vybyte */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // Uppdaterad data med nya begrepp och utan engelska översättningar
+        const conceptsData = [
+            { id: 1, sv: "Samband", def: "När två eller flera saker hänger ihop. Till exempel, om det ena förändras så kanske det andra också förändras." },
+            { id: 2, sv: "Kausalitet", def: "När en sak direkt orsakar eller påverkar en annan. Till exempel om jag släpper en penna så kommer den att falla på grund av gravitationen." },
+            { id: 3, sv: "Hypotes", def: "En gissning eller ett antagande som går att testa vetenskapligt." },
+            { id: 4, sv: "Kritiskt tänkande", def: "Att tänka efter noga och inte bara tro på allt man hör eller läser. Att ifrågasätta källor och fundera över vad som är sant." },
+            { id: 5, sv: "Tolkning", def: "Att förklara vad något betyder, till exempel vad resultatet från ett experiment faktiskt visar." },
+            { id: 6, sv: "Slutsats", def: "Det man kommer fram till efter att ha undersökt något. Det är svaret på om din hypotes stämde eller inte." },
+            { id: 7, sv: "Argumentera", def: "Att förklara varför man anser något genom att ge tydliga exempel eller bevis." },
+            { id: 8, sv: "Metod", def: "Ett bestämt sätt att göra något, som att följa specifika steg i ett experiment." },
+            { id: 9, sv: "Reliabilitet", def: "Handlar om hur tillförlitlig en mätning är. Om man gör om undersökningen på samma sätt och får samma resultat är reliabiliteten hög." },
+            { id: 10, sv: "Validitet", def: "Handlar om att man verkligen mäter det man påstår sig mäta. Hög validitet betyder att undersökningen är relevant för frågeställningen." },
+            { id: 11, sv: "Bias (snedvridning)", def: "En systematisk skevhet i insamling eller tolkning av data som gör att resultatet blir felaktigt eller ensidigt." },
+            { id: 12, sv: "Evidens", def: "Bevis som visar att något är sant eller troligt, baserat på vetenskapliga upptäckter eller observationer." },
+            { id: 13, sv: "Experiment", def: "Ett test där man gör något på ett kontrollerat sätt för att ta reda på hur det fungerar." },
+            { id: 14, sv: "Data", def: "Information som samlas in under ett experiment, till exempel siffror, mätningar eller observationer." },
+            { id: 15, sv: "Resultat", def: "Den direkta informationen man får fram efter att ha gjort ett experiment. Visar exakt vad som hände." },
+            { id: 16, sv: "Replikering", def: "Att göra om samma experiment flera gånger för att se om man får samma resultat varje gång." },
+            { id: 17, sv: "Felkälla", def: "Något som kan påverka ett experiment så att resultatet inte blir helt rätt, till exempel trasig utrustning eller slarv vid mätning." },
+            { id: 18, sv: "Kontrollgrupp", def: "En grupp i ett experiment som inte får den behandling man testar. Används för att ha något att jämföra med." },
+            { id: 19, sv: "Pålitlighet", def: "Ett övergripande mått på hur mycket man kan lita på att ett vetenskapligt resultat är korrekt." }
+        ];
+
+        const App = () => {
+            const [view, setView] = useState('lista'); 
+            const [currentCardIndex, setCurrentCardIndex] = useState(0);
+            const [isFlipped, setIsFlipped] = useState(false);
+
+            const handleNextCard = () => {
+                setIsFlipped(false); 
+                setTimeout(() => {
+                    let nextIndex;
+                    do {
+                        nextIndex = Math.floor(Math.random() * conceptsData.length);
+                    } while (nextIndex === currentCardIndex && conceptsData.length > 1);
+                    setCurrentCardIndex(nextIndex);
+                }, 150);
+            };
+
+            return (
+                <div class="max-w-4xl mx-auto px-4 py-8 md:py-12">
+                    {/* Övre navigering */}
+                    <div class="mb-8">
+                        <a href="index.html" class="inline-flex items-center text-slate-500 hover:text-emerald-600 font-medium transition-colors">
+                            <span class="mr-2">←</span> Portal
+                        </a>
+                    </div>
+
+                    <header class="text-center mb-10">
+                        <h1 class="text-3xl md:text-5xl font-bold text-slate-800 mb-6 uppercase tracking-tight">
+                            Vetenskap & Naturkunskap
+                        </h1>
+                        
+                        {/* Toggle Switch - Grönt Tema */}
+                        <div class="inline-flex bg-emerald-100 p-1.5 rounded-2xl shadow-inner border border-emerald-200">
+                            <button 
+                                onClick={() => setView('lista')}
+                                class={`px-8 py-2.5 rounded-xl font-semibold transition-all duration-300 ${view === 'lista' ? 'bg-emerald-500 text-white shadow-md scale-105' : 'text-emerald-800 hover:text-emerald-900'}`}
+                            >
+                                Lista
+                            </button>
+                            <button 
+                                onClick={() => setView('flashcards')}
+                                class={`px-8 py-2.5 rounded-xl font-semibold transition-all duration-300 ${view === 'flashcards' ? 'bg-emerald-500 text-white shadow-md scale-105' : 'text-emerald-800 hover:text-emerald-900'}`}
+                            >
+                                Flashcards
+                            </button>
+                        </div>
+                    </header>
+
+                    <main>
+                        {view === 'lista' ? (
+                            <div class="grid gap-4 animate-fadeIn">
+                                {conceptsData.map((concept, idx) => (
+                                    <div key={concept.id} class="bg-white p-6 rounded-2xl shadow-sm border-l-8 border-emerald-500 flex items-start gap-5 hover:shadow-md transition-shadow">
+                                        <div class="bg-emerald-100 text-emerald-600 font-bold text-xl rounded-full w-10 h-10 flex items-center justify-center shrink-0">
+                                            {idx + 1}
+                                        </div>
+                                        <div>
+                                            <h3 class="text-xl font-bold text-slate-800 mb-1">
+                                                {concept.sv}
+                                            </h3>
+                                            <p class="text-slate-600 leading-relaxed italic md:not-italic">
+                                                {concept.def}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div class="flex flex-col items-center animate-fadeIn">
+                                <div 
+                                    class="perspective-1000 w-full max-w-md h-72 md:h-80 cursor-pointer"
+                                    onClick={() => setIsFlipped(!isFlipped)}
+                                >
+                                    <div class={`relative w-full h-full flip-card preserve-3d ${isFlipped ? 'flipped-classes' : ''}`}>
+                                        
+                                        {/* Framsida */}
+                                        <div class="absolute inset-0 backface-hidden bg-white border-4 border-emerald-500 rounded-[2.5rem] shadow-xl flex flex-col items-center justify-center p-8 text-center">
+                                            <span class="text-emerald-500 font-bold uppercase tracking-widest text-xs mb-4">Begrepp</span>
+                                            <h2 class="text-3xl md:text-4xl font-bold text-slate-800 break-words w-full">
+                                                {conceptsData[currentCardIndex].sv}
+                                            </h2>
+                                            <div class="mt-8 text-slate-300 text-sm animate-pulse">
+                                                Klicka för att se förklaringen
+                                            </div>
+                                        </div>
+
+                                        {/* Baksida */}
+                                        <div class="absolute inset-0 backface-hidden rotate-y-180 bg-emerald-50 border-4 border-emerald-500 rounded-[2.5rem] shadow-xl flex flex-col items-center justify-center p-8 text-center overflow-y-auto">
+                                            <span class="text-emerald-600 font-bold uppercase tracking-widest text-xs mb-4">Definition</span>
+                                            <p class="text-lg md:text-xl text-slate-700 leading-relaxed font-medium">
+                                                {conceptsData[currentCardIndex].def}
+                                            </p>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+
+                                <button 
+                                    onClick={handleNextCard}
+                                    class="mt-10 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 px-12 rounded-2xl shadow-lg transition-all active:scale-95 text-lg hover:shadow-emerald-200 hover:shadow-2xl"
+                                >
+                                    Slumpa nästa kort →
+                                </button>
+                                
+                                <p class="mt-6 text-slate-400 text-sm italic">
+                                    Totalt {conceptsData.length} viktiga begrepp
+                                </p>
+                            </div>
+                        )}
+                    </main>
+
+                    <footer class="mt-16 text-center text-slate-400 text-xs">
+                        Naturvetenskaplig metodik & Begreppsträning &copy; 2024
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
