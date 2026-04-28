@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Sexualitet, biologi och normer</title>
+    <!-- React och ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel för JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Fredoka', sans-serif; }
+        .option-button { transition: all 0.2s ease-in-out; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        const originalQuizData = [
+            {
+                question: "Vad innebär det att sexualitet är ett 'brett ord' enligt presentationen?",
+                options: [
+                    { text: "Det omfattar både läggning, identitet och värderingar.", isCorrect: true },
+                    { text: "Det syftar enbart på vem man blir attraherad av.", isCorrect: false },
+                    { text: "Det beskriver bara de biologiska funktionerna i kroppen.", isCorrect: false },
+                    { text: "Det handlar enbart om de sexuella handlingar man utför.", isCorrect: false }
+                ]
+            },
+            {
+                question: "Vad är skillnaden mellan HB och TQ i förkortningen HBTQ?",
+                options: [
+                    { text: "HB rör sexuell läggning medan TQ rör könsidentitet.", isCorrect: true },
+                    { text: "HB rör könsidentitet medan TQ rör sexuell läggning.", isCorrect: false },
+                    { text: "HB är medicinska termer medan TQ är politiska begrepp.", isCorrect: false },
+                    { text: "HB gäller endast vuxna medan TQ gäller för ungdomar.", isCorrect: false }
+                ]
+            },
+            {
+                question: "Vilken definition beskriver bäst begreppet 'Cisperson'?",
+                options: [
+                    { text: "En person vars könsidentitet stämmer med födelsekönet.", isCorrect: true },
+                    { text: "En person som inte identifierar sig som man eller kvinna.", isCorrect: false },
+                    { text: "En person som genomgått en könsbekräftande behandling.", isCorrect: false },
+                    { text: "En person som attraheras av människor oavsett kön.", isCorrect: false }
+                ]
+            },
+            {
+                question: "Vad innebär 'heteronormen' i samhället?",
+                options: [
+                    { text: "Antagandet att alla är heterosexuella och följer könen.", isCorrect: true },
+                    { text: "En lag som säger att man måste gifta sig med motsatt kön.", isCorrect: false },
+                    { text: "Att alla människor har rätt att välja sin egen läggning.", isCorrect: false },
+                    { text: "Föreställningen att kön inte spelar roll för vem man älskar.", isCorrect: false }
+                ]
+            },
+            {
+                question: "Vad är kärnan i den svenska 'samtyckeslagen' från 2018?",
+                options: [
+                    { text: "Sex ska vara frivilligt och bygga på ömsesidighet.", isCorrect: true },
+                    { text: "Våld eller hot måste bevisas för att räknas som våldtäkt.", isCorrect: false },
+                    { text: "Båda parter måste skriva under ett kontrakt före samlag.", isCorrect: false },
+                    { text: "Det är alltid offrets ansvar att tydligt säga nej direkt.", isCorrect: false }
+                ]
+            },
+            {
+                question: "Vilket av följande är ett tydligt exempel på en 'NEJ-signal'?",
+                options: [
+                    { text: "Att personen blir passiv, tyst eller drar sig undan fysiskt.", isCorrect: true },
+                    { text: "Att personen har ögonkontakt och svarar aktivt på beröring.", isCorrect: false },
+                    { text: "Att personen själv tar initiativet till att klä av sig helt.", isCorrect: false },
+                    { text: "Att personen ger bekräftande ljud eller ler mot sin partner.", isCorrect: false }
+                ]
+            },
+            {
+                question: "Vad illustrerar 'våldspyramiden' i presentationen?",
+                options: [
+                    { text: "Hur lindrigt våld normaliserar och möjliggör grövre våld.", isCorrect: true },
+                    { text: "Statistik över hur många som dör av våld i parrelationer.", isCorrect: false },
+                    { text: "Skillnaden i fysisk styrka mellan män och kvinnor i hemmet.", isCorrect: false },
+                    { text: "En lista på lagar sorterade efter hur hårda straffen är.", isCorrect: false }
+                ]
+            },
+            {
+                question: "Vilken funktion har testosteron hos både män och kvinnor?",
+                options: [
+                    { text: "Det reglerar sexuell lust, muskelmassa och stressreaktion.", isCorrect: true },
+                    { text: "Det ansvarar enbart för produktion av spermier och röst.", isCorrect: false },
+                    { text: "Det styr uteslutande menstruationscykeln och fettlagring.", isCorrect: false },
+                    { text: "Det hjälper enbart till att förbereda livmodern för barn.", isCorrect: false }
+                ]
+            },
+            {
+                question: "Vad är sant om hormonet östrogen?",
+                options: [
+                    { text: "Det påverkar bentäthet, humör och hjärta hos båda könen.", isCorrect: true },
+                    { text: "Det finns uteslutande hos kvinnor och saknas helt hos män.", isCorrect: false },
+                    { text: "Det produceras enbart i testiklarna för att styra muskler.", isCorrect: false },
+                    { text: "Dess enda uppgift är att ge mörkare röst och mer hårväxt.", isCorrect: false }
+                ]
+            },
+            {
+                question: "När under menstruationscykeln är chansen att bli gravid störst?",
+                options: [
+                    { text: "Vid ägglossningen, som vanligtvis sker runt dag 14 i tiden.", isCorrect: true },
+                    { text: "Under de första dagarna när mensen precis har börjat rinna.", isCorrect: false },
+                    { text: "Precis innan mensen ska komma, under den sista fasen i tid.", isCorrect: false },
+                    { text: "Det är exakt samma risk under alla cykelns dagar oavsett.", isCorrect: false }
+                ]
+            },
+            {
+                question: "Hur fungerar ett 'dagen efter-piller' (akut-p-piller)?",
+                options: [
+                    { text: "Det skjuter fram ägglossningen så befruktning ej hinner ske.", isCorrect: true },
+                    { text: "Det fungerar som en tidig abort genom att stöta ut foster.", isCorrect: false },
+                    { text: "Det dödar alla spermier som befinner sig i livmodern direkt.", isCorrect: false },
+                    { text: "Det ger ett permanent skydd mot graviditet resten av året.", isCorrect: false }
+                ]
+            },
+            {
+                question: "Vilken av följande är en myt enligt presentationen?",
+                options: [
+                    { text: "Att det finns en mödomshinna som spricker vid samlag.", isCorrect: true },
+                    { text: "Att man kan få könssjukdomar genom att ha oskyddat oralsex.", isCorrect: false },
+                    { text: "Att kondomer är det enda skyddet som fungerar mot smitta.", isCorrect: false },
+                    { text: "Att man kan bli gravid genom vätskan som kommer före sex.", isCorrect: false }
+                ]
+            },
+            {
+                question: "Vem har rätt att bestämma om en abort ska göras i Sverige?",
+                options: [
+                    { text: "Den gravida personen har ensamrätt att fatta beslutet.", isCorrect: true },
+                    { text: "Båda föräldrarna måste vara överens för att det ska ske.", isCorrect: false },
+                    { text: "En läkare måste godkänna skälet för att abort ska beviljas.", isCorrect: false },
+                    { text: "Socialstyrelsen fattar beslut i varje enskilt fall efteråt.", isCorrect: false }
+                ]
+            },
+            {
+                question: "Vad är sant om sexköp i Sverige enligt lagen?",
+                options: [
+                    { text: "Det är olagligt att köpa sexuella tjänster men lagligt sälja.", isCorrect: true },
+                    { text: "Både köparen och säljaren begår ett brott och kan dömas.", isCorrect: false },
+                    { text: "Det är helt lagligt så länge båda personerna är myndiga nu.", isCorrect: false },
+                    { text: "Det är endast olagligt om handlingen sker på offentlig plats.", isCorrect: false }
+                ]
+            },
+            {
+                question: "Vad är åldersgränsen för sex i Sverige (myndighetsålder)?",
+                options: [
+                    { text: "Man måste ha fyllt 15 år för att lagligt ha sex med vuxna.", isCorrect: true },
+                    { text: "Man måste vara 18 år eftersom man då räknas som myndig.", isCorrect: false },
+                    { text: "Det finns ingen fast gräns så länge båda personerna vill det.", isCorrect: false },
+                    { text: "Gränsen är 12 år om det rör sig om personer i samma ålder.", isCorrect: false }
+                ]
+            },
+            {
+                question: "Varför kan 'avhumanisering' leda till allvarligt våld?",
+                options: [
+                    { text: "Det gör det lättare att utöva våld när man ej ser människan.", isCorrect: true },
+                    { text: "Det leder till att offren frivilligt lämnar sina hem direkt.", isCorrect: false },
+                    { text: "Det orsakar en biologisk förändring i hjärnan hos offren.", isCorrect: false },
+                    { text: "Det innebär att polisen inte behöver följa lagen vid besök.", isCorrect: false }
+                ]
+            },
+            {
+                question: "Hur påverkas hjärnans dopaminsystem av ett porrberoende?",
+                options: [
+                    { text: "Hjärnan anpassar sig och kräver mer för att känna njutning.", isCorrect: true },
+                    { text: "Hjärnan ökar permanent sin produktion av naturligt dopamin.", isCorrect: false },
+                    { text: "Det leder till att man får ett extremt bra minne och fokus.", isCorrect: false },
+                    { text: "Systemet stängs av helt så att man aldrig mer känner hunger.", isCorrect: false }
+                ]
+            },
+            {
+                question: "Vilket är ett tydligt tecken på en 'god relation'?",
+                options: [
+                    { text: "Att det finns tillit, god kommunikation och sårbarhet.", isCorrect: true },
+                    { text: "Att partnern alltid vet var man befinner sig och vem man ser.", isCorrect: false },
+                    { text: "Att man aldrig någonsin bråkar eller tycker olika om saker.", isCorrect: false },
+                    { text: "Att man spenderar precis all sin vakna tid med sin partner.", isCorrect: false }
+                ]
+            },
+            {
+                question: "Varför stannar människor ibland kvar i destruktiva relationer?",
+                options: [
+                    { text: "På grund av låg självkänsla, rädsla för våld eller pengar.", isCorrect: true },
+                    { text: "För att de innerst inne tycker om att bli behandlade dåligt.", isCorrect: false },
+                    { text: "Eftersom lagen kräver att man är gift i minst fem år först.", isCorrect: false },
+                    { text: "För att destruktiva beteenden alltid går över av sig själva.", isCorrect: false }
+                ]
+            },
+            {
+                question: "Vad är 'intersexuell' ett samlingsnamn för?",
+                options: [
+                    { text: "Medicinska tillstånd där kroppen ej kan könsbestämmas enkelt.", isCorrect: true },
+                    { text: "Personer som växlar mellan att vara hetero- och homosexuella.", isCorrect: false },
+                    { text: "En politisk rörelse som vill avskaffa alla kön i samhället.", isCorrect: false },
+                    { text: "Människor som enbart attraheras av personer från andra länder.", isCorrect: false }
+                ]
+            }
+        ];
+
+        function App() {
+            const [gameState, setGameState] = useState('start'); // start, quiz, result
+            const [questions, setQuestions] = useState([]);
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [score, setScore] = useState(0);
+            const [selectedIdx, setSelectedIdx] = useState(null);
+            const [isCorrect, setIsCorrect] = useState(null);
+
+            const shuffle = (array) => {
+                const newArr = [...array];
+                for (let i = newArr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+                }
+                return newArr;
+            };
+
+            const startQuiz = () => {
+                const shuffled = shuffle(originalQuizData).map(q => ({
+                    ...q,
+                    options: shuffle(q.options)
+                }));
+                setQuestions(shuffled);
+                setCurrentIndex(0);
+                setScore(0);
+                setGameState('quiz');
+                setSelectedIdx(null);
+                setIsCorrect(null);
+            };
+
+            const handleAnswer = (option, idx) => {
+                if (selectedIdx !== null) return;
+                
+                setSelectedIdx(idx);
+                setIsCorrect(option.isCorrect);
+                if (option.isCorrect) setScore(s => s + 1);
+
+                setTimeout(() => {
+                    if (currentIndex + 1 < questions.length) {
+                        setCurrentIndex(c => c + 1);
+                        setSelectedIdx(null);
+                        setIsCorrect(null);
+                    } else {
+                        setGameState('result');
+                    }
+                }, 1200);
+            };
+
+            if (gameState === 'start') {
+                return (
+                    <div className="min-h-screen flex items-center justify-center p-4">
+                        <div className="bg-white p-8 rounded-3xl shadow-xl max-w-lg w-full text-center border-t-8 border-emerald-500">
+                            <div className="bg-emerald-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <span className="text-4xl">🧬</span>
+                            </div>
+                            <h1 className="text-3xl font-bold text-slate-800 mb-4">Sexualitet & Normer</h1>
+                            <p className="text-slate-600 mb-8">Testa dina kunskaper om biologi, lagstiftning och sociala normer med detta quiz på 20 frågor.</p>
+                            <button 
+                                onClick={startQuiz}
+                                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-2xl shadow-lg transform transition-transform hover:-translate-y-1"
+                            >
+                                Starta Quizet
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (gameState === 'result') {
+                const percent = Math.round((score / questions.length) * 100);
+                return (
+                    <div className="min-h-screen flex items-center justify-center p-4">
+                        <div className="bg-white p-8 rounded-3xl shadow-xl max-w-lg w-full text-center border-t-8 border-emerald-500">
+                            <h2 className="text-3xl font-bold text-slate-800 mb-2">Quizet är klart!</h2>
+                            <div className="text-6xl font-bold text-emerald-500 my-8">{percent}%</div>
+                            <p className="text-slate-600 mb-8 text-lg">
+                                Du fick <strong>{score}</strong> av <strong>{questions.length}</strong> rätt.
+                            </p>
+                            <button 
+                                onClick={startQuiz}
+                                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-2xl shadow-lg transition-all"
+                            >
+                                Försök igen
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQ = questions[currentIndex];
+
+            return (
+                <div className="min-h-screen p-4 sm:p-8 flex flex-col items-center">
+                    <div className="max-w-2xl w-full">
+                        <div className="flex justify-between items-end mb-6">
+                            <div>
+                                <span className="text-emerald-600 font-bold uppercase tracking-widest text-sm">Fråga {currentIndex + 1} av {questions.length}</span>
+                                <div className="h-2 w-48 bg-slate-200 rounded-full mt-2">
+                                    <div 
+                                        className="h-full bg-emerald-500 rounded-full transition-all duration-300" 
+                                        style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}
+                                    ></div>
+                                </div>
+                            </div>
+                            <div className="text-slate-400 font-bold">Poäng: {score}</div>
+                        </div>
+
+                        <div className="bg-white p-8 rounded-3xl shadow-lg border border-slate-100 mb-6">
+                            <h3 className="text-xl sm:text-2xl font-bold text-slate-800 leading-tight">
+                                {currentQ.question}
+                            </h3>
+                        </div>
+
+                        <div className="grid gap-3">
+                            {currentQ.options.map((opt, i) => {
+                                let btnClass = "bg-white border-2 border-slate-100 text-slate-700 hover:border-emerald-300 hover:bg-emerald-50";
+                                if (selectedIdx === i) {
+                                    btnClass = opt.isCorrect 
+                                        ? "bg-emerald-500 border-emerald-500 text-white shadow-emerald-200 shadow-lg" 
+                                        : "bg-red-500 border-red-500 text-white shadow-red-200 shadow-lg";
+                                } else if (selectedIdx !== null && opt.isCorrect) {
+                                    btnClass = "bg-emerald-100 border-emerald-500 text-emerald-800";
+                                }
+
+                                return (
+                                    <button
+                                        key={i}
+                                        onClick={() => handleAnswer(opt, i)}
+                                        disabled={selectedIdx !== null}
+                                        className={`option-button w-full text-left p-5 rounded-2xl font-semibold text-base sm:text-lg border-2 ${btnClass}`}
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 border-2 ${selectedIdx === i ? 'border-white' : 'border-slate-200'}`}>
+                                                {String.fromCharCode(65 + i)}
+                                            </div>
+                                            {opt.text}
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
