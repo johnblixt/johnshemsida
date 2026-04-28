@@ -1,1 +1,230 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Begreppslista - Arbetsmarknad & Arbetsliv</title>
+    
+    <!-- Google Fonts: Fredoka -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React & Babel CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
+    <style>
+        body {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* Flip Card Logic */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .preserve-3d {
+            transform-style: preserve-3d;
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+        
+        /* Denna klass appliceras när kortet är "flipped" */
+        .flipped {
+            transform: rotateY(180deg);
+        }
+
+        .transition-transform-600 {
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const conceptsData = [
+            { id: 1, term: "Arbetsmarknad", definition: "Platsen där jobb erbjuds och söks. Exempel: Ett företag söker personal och en person söker jobbet." },
+            { id: 2, term: "Arbetsgivare", definition: "Den som anställer och betalar lön. Exempel: En restaurangägare som anställer en servitör." },
+            { id: 3, term: "Arbetstagare", definition: "Den som jobbar och får lön. Exempel: En undersköterska som arbetar på ett äldreboende." },
+            { id: 4, term: "Lön", definition: "Pengar man får för sitt arbete. Exempel: 25 000 kronor i månaden före skatt." },
+            { id: 5, term: "Privat sektor", definition: "Företag som ägs privat och vill tjäna pengar. Exempel: ICA, H&M eller en frisörsalong." },
+            { id: 6, term: "Offentlig sektor", definition: "Verksamheter som drivs av stat, region eller kommun. Exempel: Grundskola, polis eller sjukhus." },
+            { id: 7, term: "Digitalisering", definition: "Att arbete görs med hjälp av datorer och teknik. Exempel: Självscanning i mataffärer." },
+            { id: 8, term: "Tillsvidareanställning (fast anställning)", definition: "En anställning utan slutdatum. Exempel: Du blir anställd och jobbar kvar tills du säger upp dig eller blir uppsagd." },
+            { id: 9, term: "Provanställning", definition: "En testperiod innan fast jobb. Exempel: Sex månaders provanställning." },
+            { id: 10, term: "Vikariat", definition: "Att jobba istället för någon som är borta. Exempel: Du ersätter en person som är föräldraledig." },
+            { id: 11, term: "Projektanställning", definition: "Anställning som gäller under ett projekt. Exempel: Jobba med att bygga en ny hemsida i 8 månader." },
+            { id: 12, term: "Behovsanställning", definition: "Man jobbar när det behövs. Exempel: Du blir inringd när någon är sjuk." },
+            { id: 13, term: "Säsongsanställning", definition: "Anställning under en viss del av året. Exempel: Jobba på en skidort under vintern." },
+            { id: 14, term: "Bemanningsföretag", definition: "Företag som hyr ut personal till andra företag. Exempel: Du är anställd av ett bemanningsföretag men jobbar på Volvo." },
+            { id: 15, term: "A-kasseersättning", definition: "Pengarna man får från a-kassan. Exempel: 80% av din tidigare lön under en period. Du behöver betala in till A-kassan för att få detta." },
+            { id: 16, term: "Fackförening", definition: "Organisation som hjälper arbetstagare. Exempel: Facket förhandlar om högre lön." },
+            { id: 17, term: "Arbetsgivarorganisation", definition: "Organisation som representerar arbetsgivare. Exempel: En organisation som förhandlar med facket." },
+            { id: 18, term: "Kollektivavtal", definition: "Avtal om lön och villkor mellan fack och arbetsgivare. Exempel: Avtal som säger hur mycket OB-tillägg man får." },
+            { id: 19, term: "Förhandling", definition: "När parter diskuterar för att komma överens. Exempel: Fack och arbetsgivare diskuterar löneökning." },
+            { id: 20, term: "Medling", definition: "En neutral person hjälper parter att komma överens. Exempel: En medlare kopplas in vid konflikt." },
+            { id: 21, term: "Strejk", definition: "När anställda slutar jobba för att påverka arbetsgivaren. Exempel: Vårdanställda strejkar för högre lön." },
+            { id: 22, term: "Lockout", definition: "När arbetsgivaren stänger ute personal från jobbet. Exempel: Personal får inte komma till arbetet under konflikt." },
+            { id: 23, term: "Individuell lönesättning", definition: "Lönen bestäms efter hur bra du arbetar. Exempel: Den som presterar bättre får högre lön." },
+            { id: 24, term: "OB-tillägg", definition: "Extra lön för obekväm arbetstid. Exempel: Extra betalt för att jobba natt." },
+            { id: 25, term: "Svartarbete (svartjobb)", definition: "Arbete utan att betala skatt. Exempel: Få betalt kontant utan att det registreras." },
+            { id: 26, term: "Arbetsmiljö", definition: "Hur det är på jobbet, både fysiskt och psykiskt. Exempel: Säker utrustning och bra stämning." },
+            { id: 27, term: "Fysisk arbetsmiljö", definition: "Den miljö man kan se och känna. Exempel: Bra belysning och skyddsutrustning." },
+            { id: 28, term: "Psykisk/social arbetsmiljö", definition: "Hur man mår och behandlas på jobbet. Exempel: Ingen mobbning och rimlig arbetsbelastning." },
+            { id: 29, term: "LAS (Lagen om anställningsskydd)", definition: "Lag som skyddar anställda vid uppsägning. Exempel: Sist in, först ut vid nedskärning." },
+            { id: 30, term: "Arbetsmiljölagen", definition: "Lag som kräver säker arbetsplats. Exempel: Arbetsgivaren måste förebygga olyckor." },
+            { id: 31, term: "Diskrimineringslagen", definition: "Lag som förbjuder orättvis behandling. Exempel: Du får inte nekas jobb på grund av kön." },
+            { id: 32, term: "Arbetstidslagen", definition: "Lag som reglerar arbetstid och vila. Exempel: Max antal arbetstimmar per vecka." },
+            { id: 33, term: "Semesterlagen", definition: "Lag som ger rätt till ledighet. Exempel: Minst 25 dagars semester per år." }
+        ];
+
+        function App() {
+            const [viewMode, setViewMode] = useState('list'); // 'list' or 'cards'
+            const [currentCardIndex, setCurrentCardIndex] = useState(0);
+            const [isFlipped, setIsFlipped] = useState(false);
+
+            // Funktion för att byta till ett slumpmässigt kort
+            const nextRandomCard = () => {
+                setIsFlipped(false); // Återställ flip-state direkt
+                
+                // Vänta lite med att byta index för att animationen ska hinna nollställas om möjligt
+                setTimeout(() => {
+                    let nextIndex;
+                    do {
+                        nextIndex = Math.floor(Math.random() * conceptsData.length);
+                    } while (nextIndex === currentCardIndex && conceptsData.length > 1);
+                    
+                    setCurrentCardIndex(nextIndex);
+                }, 150);
+            };
+
+            const toggleFlip = () => {
+                setIsFlipped(!isFlipped);
+            };
+
+            return (
+                <div className="min-h-screen flex flex-col p-4 md:p-8 max-w-4xl mx-auto">
+                    
+                    {/* Navigation & Header */}
+                    <header className="mb-8">
+                        <a href="index.html" className="text-slate-500 hover:text-yellow-600 transition-colors flex items-center gap-2 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+                            </svg>
+                            Portal
+                        </a>
+                        
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <h1 className="text-3xl font-bold text-slate-800">Arbetsmarknad & Arbetsliv</h1>
+                            
+                            {/* Toggle Switch */}
+                            <div className="flex bg-slate-200 p-1 rounded-xl w-fit">
+                                <button 
+                                    onClick={() => setViewMode('list')}
+                                    className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${viewMode === 'list' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}
+                                >
+                                    Lista
+                                </button>
+                                <button 
+                                    onClick={() => setViewMode('cards')}
+                                    className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${viewMode === 'cards' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}
+                                >
+                                    Flashcards
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Main Content Area */}
+                    <main className="flex-grow">
+                        {viewMode === 'list' ? (
+                            <div className="grid gap-4">
+                                {conceptsData.map((item, index) => (
+                                    <div key={item.id} className="bg-white p-6 rounded-2xl border-l-8 border-yellow-400 shadow-sm hover:shadow-md transition-shadow">
+                                        <div className="flex gap-4">
+                                            <span className="text-yellow-500 font-bold text-xl">{index + 1}.</span>
+                                            <div>
+                                                <h3 className="text-xl font-bold text-slate-800 mb-2">{item.term}</h3>
+                                                <p className="text-slate-600 leading-relaxed">{item.definition}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center py-10">
+                                
+                                {/* Flashcard Container */}
+                                <div 
+                                    className="relative w-full max-w-md aspect-[4/3] cursor-pointer perspective-1000"
+                                    onClick={toggleFlip}
+                                >
+                                    <div className={`relative w-full h-full transition-transform-600 preserve-3d ${isFlipped ? 'flipped' : ''}`}>
+                                        
+                                        {/* Front: Begrepp */}
+                                        <div className="absolute inset-0 backface-hidden bg-yellow-100 rounded-3xl shadow-xl flex flex-col items-center justify-center p-8 border-4 border-yellow-400">
+                                            <span className="text-yellow-600 font-medium mb-4 uppercase tracking-widest text-xs">Begrepp</span>
+                                            <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-800 leading-tight">
+                                                {conceptsData[currentCardIndex].term}
+                                            </h2>
+                                            <p className="mt-8 text-slate-400 text-sm animate-pulse">Klicka för att se förklaring</p>
+                                        </div>
+
+                                        {/* Back: Förklaring */}
+                                        <div className="absolute inset-0 backface-hidden rotate-y-180 bg-white rounded-3xl shadow-xl flex flex-col items-center justify-center p-8 border-4 border-yellow-400">
+                                            <span className="text-yellow-600 font-medium mb-4 uppercase tracking-widest text-xs">Förklaring</span>
+                                            <div className="overflow-y-auto max-h-full">
+                                                <p className="text-lg md:text-xl text-center text-slate-700 leading-relaxed">
+                                                    {conceptsData[currentCardIndex].definition}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                {/* Controls */}
+                                <div className="mt-12 flex flex-col items-center gap-4">
+                                    <button 
+                                        onClick={(e) => { e.stopPropagation(); nextRandomCard(); }}
+                                        className="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-bold py-4 px-10 rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 active:scale-95 flex items-center gap-3"
+                                    >
+                                        Nästa kort
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                        </svg>
+                                    </button>
+                                    <p className="text-slate-400 text-sm">
+                                        Kort {currentCardIndex + 1} av {conceptsData.length}
+                                    </p>
+                                </div>
+
+                            </div>
+                        )}
+                    </main>
+
+                    {/* Footer */}
+                    <footer className="mt-12 text-center text-slate-400 text-sm pb-8">
+                        <p>© Studiematerial för Samhällskunskap - Arbetsmarknad</p>
+                    </footer>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
