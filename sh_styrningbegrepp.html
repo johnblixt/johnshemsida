@@ -1,1 +1,206 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Begreppslista: Så styrs Sverige</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Google Fonts: Fredoka -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Fredoka', sans-serif;
+        }
 
+        /* Flashcard 3D Animation Styles */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .preserve-3d {
+            transform-style: preserve-3d;
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+        .flipped {
+            transform: rotateY(180deg);
+        }
+
+        /* Smooth transitions */
+        .flip-card-inner {
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        const conceptsData = [
+            { id: 1, term: "Regeringsformen", definition: "En av grundlagarna som beskriver hur Sverige styrs, om demokrati och rättigheter." },
+            { id: 2, term: "Kommunfullmäktige", definition: "Kommunens version av riksdagen." },
+            { id: 3, term: "Regionfullmäktige", definition: "Regionens version av riksdagen." },
+            { id: 4, term: "Proportionellt valsystem", definition: "Systemet som gör att partier får platser i riksdagen i förhållande till hur många röster de fått." },
+            { id: 5, term: "Parti", definition: "En grupp människor med liknande idéer om hur landet ska styras." },
+            { id: 6, term: "Opposition", definition: "De partier som inte sitter i regeringen. De granskar regeringen och kommer med egna förslag." },
+            { id: 7, term: "Koalition", definition: "När flera partier samarbetar för att bilda regering." },
+            { id: 8, term: "Majoritetsregering", definition: "Om regeringen har stöd av mer än hälften av riksdagen (majoritet)." },
+            { id: 9, term: "Minoritetsregering", definition: "Om regeringen har stöd av mindre än hälften av riksdagen (minoritet)." },
+            { id: 10, term: "Riksdagsledamot", definition: "En person som sitter i riksdagen. Det finns 349 riksdagsledamöter som är folkvalda." },
+            { id: 11, term: "Parlamentarism", definition: "Ett system där regeringen måste ha stöd från parlamentet för att styra, och kan tvingas avgå om stödet försvinner." },
+            { id: 12, term: "Misstroendeförklaring", definition: "När riksdagen röstar om att avsätta regeringen eller en minister om de inte längre har förtroende för dem." },
+            { id: 13, term: "Statsminister", definition: "Regeringschefen i Sverige, som leder landets regering." },
+            { id: 14, term: "Talman", definition: "Personen som leder riksdagens möten och ser till att allt går rätt till. Är den som utser statsministerkandidat." },
+            { id: 15, term: "Decentralisering", definition: "När makt och beslut flyttas från staten till lokala eller regionala nivåer." },
+            { id: 16, term: "Kommunalt självstyre", definition: "Rätten för kommuner att bestämma över sina egna frågor utan att staten styr. Det kommunala självstyret är en del av regeringsformen." },
+            { id: 17, term: "Riksdag", definition: "Sveriges folkvalda parlament. Här sitter 349 personer som bestämmer lagar, kontrollerar regeringen och beslutar om statens pengar." },
+            { id: 18, term: "Regering", definition: "Gruppen som styr Sverige. De leds av statsministern och genomför riksdagens beslut." },
+            { id: 19, term: "Region", definition: "Ett område i Sverige som sköter sjukvård, bussar/tåg och utveckling i området." },
+            { id: 20, term: "Kommun", definition: "Ett mindre område som sköter vardagsnära saker som skola, äldreomsorg, vatten och avlopp." },
+            { id: 21, term: "Nationella val", definition: "Val vart fjärde år där folket röstar på vilka som ska sitta i riksdagen, regionfullmäktige och kommunfullmäktige." },
+            { id: 22, term: "Utskott", definition: "Små grupper i riksdagen som förbereder olika frågor innan riksdagen bestämmer." },
+            { id: 23, term: "Politisk vilde", definition: "En riksdagsledamot som har lämnat sitt parti men ändå behåller sin plats i riksdagen. Personen är då inte knuten till något parti." },
+            { id: 24, term: "Myndighet", definition: "En myndighet gör det regeringen och riksdagen har bestämt. De tar hand om det praktiska arbetet i samhället. Exempel: Skolverket (skola), Polisen (lag och ordning), Migrationsverket (asyl och invandring)." },
+            { id: 25, term: "Departement", definition: "En del av regeringen. Här arbetar ministrar och tjänstemän med att ta fram förslag, skriva lagar och planera politiken. Exempel: Utbildningsdepartementet, Finansdepartementet." },
+            { id: 26, term: "KU-anmälan", definition: "När någon anmäler regeringen eller en minister till Konstitutionsutskottet (KU). KU granskar om regeringen har följt reglerna och lagarna." }
+        ];
+
+        function App() {
+            const [view, setView] = useState('list'); // 'list' or 'flashcards'
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [isFlipped, setIsFlipped] = useState(false);
+            const [shuffledCards, setShuffledCards] = useState([...conceptsData]);
+
+            const shuffleCards = () => {
+                const newOrder = [...conceptsData].sort(() => Math.random() - 0.5);
+                setShuffledCards(newOrder);
+                setCurrentIndex(0);
+                setIsFlipped(false);
+            };
+
+            const nextCard = () => {
+                setIsFlipped(false);
+                setTimeout(() => {
+                    setCurrentIndex((prev) => (prev + 1) % shuffledCards.length);
+                }, 150); // Slight delay to let the card flip back before changing content
+            };
+
+            return (
+                <div className="max-w-4xl mx-auto px-4 py-8">
+                    {/* Navigation */}
+                    <nav className="mb-8 flex justify-between items-center">
+                        <a href="index.html" className="text-slate-500 hover:text-yellow-600 transition-colors flex items-center gap-2 font-medium">
+                            <span>←</span> Portal
+                        </a>
+                        <div className="bg-white p-1 rounded-full shadow-sm border border-slate-200 flex">
+                            <button 
+                                onClick={() => setView('list')}
+                                className={`px-6 py-2 rounded-full transition-all ${view === 'list' ? 'bg-yellow-400 text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'}`}
+                            >
+                                Lista
+                            </button>
+                            <button 
+                                onClick={() => {
+                                    setView('flashcards');
+                                    shuffleCards();
+                                }}
+                                className={`px-6 py-2 rounded-full transition-all ${view === 'flashcards' ? 'bg-yellow-400 text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'}`}
+                            >
+                                Flashcards
+                            </button>
+                        </div>
+                    </nav>
+
+                    <header className="text-center mb-12">
+                        <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-2">Så styrs Sverige</h1>
+                        <p className="text-slate-500 text-lg">Begreppsträning för Samhällskunskap</p>
+                    </header>
+
+                    {view === 'list' ? (
+                        <div className="grid gap-4">
+                            {conceptsData.map((item, index) => (
+                                <div key={item.id} className="bg-white p-6 rounded-2xl shadow-sm border-l-8 border-yellow-400 hover:shadow-md transition-shadow">
+                                    <div className="flex items-start gap-4">
+                                        <span className="bg-yellow-100 text-yellow-700 font-bold px-3 py-1 rounded-lg text-sm">
+                                            {index + 1}
+                                        </span>
+                                        <div>
+                                            <h3 className="text-xl font-bold text-slate-800 mb-1">{item.term}</h3>
+                                            <p className="text-slate-600 leading-relaxed">{item.definition}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center">
+                            <div className="w-full max-w-lg perspective-1000 h-80 md:h-96 cursor-pointer" onClick={() => setIsFlipped(!isFlipped)}>
+                                <div className={`relative w-full h-full text-center flip-card-inner preserve-3d ${isFlipped ? 'flipped' : ''}`}>
+                                    
+                                    {/* Front Side */}
+                                    <div className="absolute w-full h-full backface-hidden bg-white border-4 border-yellow-100 rounded-3xl shadow-xl flex flex-col items-center justify-center p-8">
+                                        <span className="text-yellow-400 text-sm uppercase tracking-widest font-bold mb-4">Begrepp</span>
+                                        <h2 className="text-3xl md:text-4xl font-bold text-slate-800">{shuffledCards[currentIndex].term}</h2>
+                                        <p className="mt-8 text-slate-400 text-sm italic">Klicka för att se definitionen</p>
+                                    </div>
+
+                                    {/* Back Side */}
+                                    <div className="absolute w-full h-full backface-hidden bg-yellow-50 border-4 border-yellow-400 rounded-3xl shadow-xl flex flex-col items-center justify-center p-8 rotate-y-180 overflow-y-auto">
+                                        <span className="text-yellow-600 text-sm uppercase tracking-widest font-bold mb-4">Definition</span>
+                                        <p className="text-xl md:text-2xl text-slate-700 leading-relaxed">
+                                            {shuffledCards[currentIndex].definition}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mt-12 flex items-center gap-6">
+                                <span className="text-slate-400 font-medium">
+                                    {currentIndex + 1} / {shuffledCards.length}
+                                </span>
+                                <button 
+                                    onClick={nextCard}
+                                    className="bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-4 px-10 rounded-2xl shadow-lg hover:shadow-xl transform transition-all active:scale-95 flex items-center gap-3"
+                                >
+                                    Nästa kort
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                    </svg>
+                                </button>
+                                <button 
+                                    onClick={shuffleCards}
+                                    className="p-4 rounded-2xl bg-slate-200 text-slate-600 hover:bg-slate-300 transition-colors shadow-sm"
+                                    title="Slumpa om"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <footer className="mt-20 pt-8 border-t border-slate-200 text-center text-slate-400 text-sm">
+                        <p>© {new Date().getFullYear()} Utbildningsresurs: Så styrs Sverige</p>
+                    </footer>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
