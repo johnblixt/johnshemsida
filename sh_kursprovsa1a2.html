@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kursprov Sa1a2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .option-btn:disabled { opacity: 0.8; cursor: not-allowed; }
+        .correct { background-color: #d1fae5 !important; border-color: #10b981 !important; color: #065f46 !important; }
+        .incorrect { background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b !important; }
+        .option-btn { transition: all 0.2s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen font-sans text-slate-900">
+    <div class="max-w-3xl mx-auto px-4 py-12">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-3">
+                <h1 class="text-4xl font-extrabold text-indigo-900">Kursprov Sa1a2</h1>
+                <a id="header-notebook-link" href="https://classroom.google.com/c/MjE0OTE2NzA0OTda/a/MjIxMDExODg3MzZa/details" target="_blank" class="inline-flex items-center px-3 py-1 bg-amber-100 text-amber-700 text-sm font-bold rounded-lg border border-amber-200 hover:bg-amber-200 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    Notebook E-A
+                </a>
+            </div>
+            <p class="text-slate-600 text-lg font-medium">Politiska Ideologier, Samhällsekonomi och media</p>
+            
+            <!-- Progress Bar Container -->
+            <div class="mt-8">
+                <div class="flex justify-between mb-2 text-sm font-medium text-indigo-700">
+                    <span id="progress-text">Framsteg: 0%</span>
+                    <span id="question-count">Fråga 1 av 30</span>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-3 shadow-inner">
+                    <div id="progress-fill" class="bg-indigo-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Quiz Container -->
+        <main id="quiz-container" class="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+            <div id="question-area" class="p-8 md:p-12">
+                <div class="flex justify-between items-center mb-8">
+                    <div id="score-badge" class="px-4 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-bold italic">
+                        Poäng: 0
+                    </div>
+                </div>
+                
+                <h2 id="question-text" class="text-2xl md:text-3xl font-bold text-slate-800 leading-snug mb-8">
+                    Laddar fråga...
+                </h2>
+
+                <div id="options-grid" class="grid gap-4">
+                    <!-- Alternativen skapas dynamiskt här -->
+                </div>
+
+                <!-- Feedback Area -->
+                <div id="feedback-area" class="mt-10 hidden border-t border-slate-100 pt-8 animate-fade-in">
+                    <div id="feedback-box" class="p-6 rounded-xl mb-6 border text-left">
+                        <p id="feedback-status" class="font-bold text-xl mb-2"></p>
+                        <p id="feedback-explanation" class="text-slate-700 leading-relaxed"></p>
+                    </div>
+                    <button id="next-btn" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-indigo-200 transition-all active:scale-95">
+                        Nästa fråga
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Result Screen -->
+        <section id="result-screen" class="hidden">
+            <div class="bg-white rounded-2xl shadow-2xl p-12 text-center border border-indigo-100">
+                <div class="mb-6 inline-flex p-4 bg-indigo-100 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h2 class="text-4xl font-black text-slate-800 mb-4">Provet är klart!</h2>
+                <p id="final-score" class="text-2xl text-slate-600 mb-8 font-medium">Du fick 0 av 30 rätt.</p>
+                
+                <!-- Notebook Länk -->
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-6 mb-8">
+                    <h3 class="text-amber-800 font-bold mb-2 text-xl">Fördjupning E-A</h3>
+                    <p class="text-amber-700 mb-4">Analysera mera! Förbered dig för de högre betygsnivåerna i vår Notebook.</p>
+                    <a id="notebook-link" href="https://classroom.google.com/c/MjE0OTE2NzA0OTda/a/MjIxMDExODg3MzZa/details" target="_blank" class="inline-block px-8 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold transition-all shadow-md">
+                        Gå till Notebook för E-A frågor
+                    </a>
+                </div>
+
+                <button onclick="location.reload()" class="px-10 py-4 bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-bold transition-all transform hover:scale-105">
+                    Gör om provet
+                </button>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const quizData = [
+            { 
+                q: "Vilken ideologi betonar individens frihet och privat ägande mest?", 
+                a: ["Liberalism", "Socialism", "Konservatism", "Nationalism"], 
+                c: "Liberalism",
+                e: "Liberalismen utgår från individens fri- och rättigheter. Privat ägande och marknadsekonomi ses som centralt för att människan ska kunna styra sitt eget liv."
+            },
+            { 
+                q: "Vad kallas det när pengar tappar i värde och priser stiger?", 
+                a: ["Deflation", "Inflation", "Amortering", "Räntesats"], 
+                c: "Inflation",
+                e: "Inflation innebär en allmän prisstegring i ekonomin, vilket gör att du får färre varor för samma mängd pengar över tid."
+            },
+            { 
+                q: "Vilken skala mäter värderingar som miljö och jämställdhet?", 
+                a: ["Höger-vänster", "KPI-indexet", "GAL-TAN-skalan", "BNP-prognosen"], 
+                c: "GAL-TAN-skalan",
+                e: "GAL-TAN mäter sociokulturella värderingar (Grön/Alternativ/Libertär vs Traditionell/Auktoritär/Nationalistisk) som komplement till den ekonomiska höger-vänster-skalan."
+            },
+            { 
+                q: "Vad innebär 'Public service' för svensk media?", 
+                a: ["Privatägd reklam-TV", "Statlig styrd censur", "Media i allmänhetens tjänst", "Digitala sociala medier"], 
+                c: "Media i allmänhetens tjänst",
+                e: "Public service (t.ex. SVT/SR) finansieras via en avgift och ska vara oberoende från både staten och kommersiella intressen för att tjäna hela folket."
+            },
+            { 
+                q: "Vad mäter begreppet BNP (Bruttonationalprodukt)?", 
+                a: ["Total arbetslöshet", "All produktion i ett land", "Generell skattenivå", "Mängden invånare"], 
+                c: "All produktion i ett land",
+                e: "BNP är värdet av alla varor och tjänster som produceras i ett land under ett år och används som ett mått på ekonomisk tillväxt."
+            },
+            { 
+                q: "Vilken ideologi strävar efter ett klasslöst samhälle?", 
+                a: ["Ekologism", "Kommunism", "Fascism", "Liberalism"], 
+                c: "Kommunism",
+                e: "Kommunismen vill avskaffa privat ägande av produktionsmedel för att skapa ett samhälle utan ekonomiska klasskillnader."
+            },
+            { 
+                q: "Vad kännetecknar oftast en ekonomisk lågkonjunktur?", 
+                a: ["Låg arbetslöshet", "Hög ekonomisk tillväxt", "Hög arbetslöshet", "Stabila priser"], 
+                c: "Hög arbetslöshet",
+                e: "I en lågkonjunktur minskar efterfrågan på varor, vilket leder till att företag producerar mindre och tvingas säga upp personal."
+            },
+            { 
+                q: "Vilken myndighet ansvarar för att besluta om styrräntan?", 
+                a: ["Svenska regeringen", "Sveriges riksdag", "Sveriges riksbank", "EU-kommissionen"], 
+                c: "Sveriges riksbank",
+                e: "Riksbanken är självständig och använder styrräntan som sitt främsta verktyg för att hålla inflationen stabil kring målet på 2%."
+            },
+            { 
+                q: "Vad innebär rätten att lämna uppgifter anonymt till media?", 
+                a: ["Allmän censur", "Meddelarfrihet", "Pressetiska regler", "Offentlighetsprincip"], 
+                c: "Meddelarfrihet",
+                e: "Meddelarfriheten är en del av grundlagen som skyddar källor så att de vågar lämna information till journalister utan risk för straff."
+            },
+            { 
+                q: "Vad menas med begreppet 'filterbubbla' på internet?", 
+                a: ["Ett tekniskt virus", "En personlig åsiktsbubbla", "En snabb uppkoppling", "Ett reklamfritt nät"], 
+                c: "En personlig åsiktsbubbla",
+                e: "Algoritmer visar oss innehåll vi redan gillar, vilket kan leda till att vi bara ser information som bekräftar våra egna åsikter."
+            },
+            { 
+                q: "Vilken ideologi vill bevara traditioner och förändra långsamt?", 
+                a: ["Liberalism", "Konservatism", "Socialism", "Feminism"], 
+                c: "Konservatism",
+                e: "Konservatismen (från latinets conservare - bevara) betonar vikten av historia, beprövade traditioner och stabilitet framför snabba förändringar."
+            },
+            { 
+                q: "Vad innebär termen 'utbud' på en marknad?", 
+                a: ["Kundernas köpvilja", "Mängden till försäljning", "Priset på en produkt", "Skatten på produkten"], 
+                c: "Mängden till försäljning",
+                e: "Utbud är den mängd varor eller tjänster som producenter är villiga att sälja vid ett visst pris."
+            },
+            { 
+                q: "Vad är huvudsyftet med statlig finanspolitik?", 
+                a: ["Att höja räntan", "Att styra med budgeten", "Att lån ut pengar", "Att sälja aktier"], 
+                c: "Att styra med budgeten",
+                e: "Finanspolitik handlar om hur regeringen använder skatter och utgifter i statsbudgeten för att påverka ekonomins utveckling."
+            },
+            { 
+                q: "Vad kallas rätten att få läsa myndigheters dokument?", 
+                a: ["Svensk pressfrihet", "Offentlighetsprincipen", "Statlig mediecensur", "Kritisk källkritik"], 
+                c: "Offentlighetsprincipen",
+                e: "Offentlighetsprincipen ger medborgare och media rätt till insyn i myndigheternas arbete, vilket motverkar korruption och maktmissbruk."
+            },
+            { 
+                q: "Vilken politisk ideologi prioriterar miljön högst?", 
+                a: ["Ekologism", "Liberalism", "Socialism", "Konservatism"], 
+                c: "Ekologism",
+                e: "Ekologismen ser människan som en del av naturen och menar att hållbarhet och miljöhänsyn måste gå före ekonomisk tillväxt."
+            },
+            { 
+                q: "Vad kännetecknar en renodlad marknadsekonomi?", 
+                a: ["Staten planerar allt", "Priset styrs av köpare/säljare", "Varor är alltid gratis", "Bara banker får sälja"], 
+                c: "Priset styrs av köpare/säljare",
+                e: "I en marknadsekonomi råder fri konkurrens där priset på en vara bestäms i mötet mellan utbud och efterfrågan utan statlig inblandning."
+            },
+            { 
+                q: "Vad menas med begreppet 'desinformation'?", 
+                a: ["Oavsiktliga faktafel", "Medvetet falska fakta", "Gamla nyhetshändelser", "Språkliga översättningsfel"], 
+                c: "Medvetet falska fakta",
+                e: "Desinformation sprids avsiktligt för att lura mottagaren, skapa splittring eller påverka politiska processer."
+            },
+            { 
+                q: "Vem brukar kallas för den 'tredje statsmakten'?", 
+                a: ["Sveriges konung", "Svenska polisen", "Media och journalister", "Allmänna domstolar"], 
+                c: "Media och journalister",
+                e: "Media kallas den tredje statsmakten (efter regering och riksdag) eftersom de har till uppgift att granska de som har makten i samhället."
+            },
+            { 
+                q: "Vad är grundidén med en progressiv skatt?", 
+                a: ["Lika skatt för alla", "Högre skatt vid hög inkomst", "Skattesänkning varje år", "Ingen skatt för företag"], 
+                c: "Högre skatt vid hög inkomst",
+                e: "Progressiv skatt innebär att skattesatsen ökar i takt med inkomsten, i syfte att omfördela resurser och minska ekonomiska klyftor."
+            },
+            { 
+                q: "Vad är ett typiskt tecken på högkonjunktur?", 
+                a: ["Hög arbetslöshet", "Hög konsumtionsvilja", "Många företagskonkurser", "Nollränta i alla banker"], 
+                c: "Hög konsumtionsvilja",
+                e: "Vid högkonjunktur är optimismen stor, folk handlar mycket, produktionen ökar och arbetslösheten sjunker."
+            },
+            { 
+                q: "Vilket parti har en uttalad nationalistisk grund?", 
+                a: ["Socialdemokraterna", "Sverigedemokraterna", "Miljöpartiet", "Vänsterpartiet"], 
+                c: "Sverigedemokraterna",
+                e: "Sverigedemokraterna betonar nationell identitet, traditionell kultur och en restriktiv migrationspolitik som kärnan i sin politik."
+            },
+            { 
+                q: "Vad är kärnan i att utöva god källkritik?", 
+                a: ["Att alltid lita på TV", "Att misstro journalister", "Att granska källans ursprung", "Att läsa populära bloggar"], 
+                c: "Att granska källans ursprung",
+                e: "Källkritik handlar om att bedöma om en källa är äkta, oberoende och ger en korrekt bild av verkligheten innan man tror på den."
+            },
+            { 
+                q: "Vad innebär termen 'ekokammare' i sociala medier?", 
+                a: ["En modern studio", "Miljö med ensidiga åsikter", "Ett ekonomiskt system", "Naturens eget kretslopp"], 
+                c: "Miljö med ensidiga åsikter",
+                e: "En ekokammare uppstår när vi bara omges av personer som delar våra värderingar, vilket gör att vi sällan möter motargument."
+            },
+            { 
+                q: "Hur fungerar en klassisk planekonomi?", 
+                a: ["Företagen planerar själv", "Staten styr all produktion", "En fri blandad marknad", "Man sparar i en budget"], 
+                c: "Staten styr all produktion",
+                e: "I en planekonomi beslutar statliga myndigheter i förväg vad som ska tillverkas, i vilken mängd och till vilket pris."
+            },
+            { 
+                q: "Vad är den tekniska definitionen av 'ränta'?", 
+                a: ["Priset för lånade pengar", "En obligatorisk skatt", "Vinsten i ett företag", "En årlig löneökning"], 
+                c: "Priset för lånade pengar",
+                e: "Ränta är kostnaden du betalar för att låna pengar, eller den avkastning du får när du lånar ut pengar till banken."
+            },
+            { 
+                q: "Vilken ideologi förespråkar stor offentlig välfärd?", 
+                a: ["Liberalism", "Konservatism", "Socialism", "Nationalism"], 
+                c: "Socialism",
+                e: "Socialismen vill minska klasskillnader genom gemensamt ägande och en stark offentlig sektor som finansieras via skatter."
+            },
+            { 
+                q: "Vad är syftet med de pressetiska reglerna?", 
+                a: ["Att förbjuda viss kritik", "Att skydda enskilda individer", "Att sänka pris på tidningar", "Att höja journalisters lön"], 
+                c: "Att skydda enskilda individer",
+                e: "Pressetik är frivilliga regler som media följer för att undvika att skada privatpersoner genom t.ex. namnpublicering utan grund."
+            },
+            { 
+                q: "Vad gör en algoritm på sociala medier?", 
+                a: ["Raderar inaktiva konton", "Styr innehåll efter beteende", "Väljer inlägg manuellt", "Fungerar som reklamfilter"], 
+                c: "Styr innehåll efter beteende",
+                e: "Algoritmen analyserar vad du klickar på och visar mer av det du visat intresse för för att hålla dig kvar på plattformen längre."
+            },
+            { 
+                q: "När uppstår ett så kallat 'budgetunderskott'?", 
+                a: ["Vid för mycket kapital", "Utgifter överstiger inkomster", "När budgeten tappas bort", "När staten sparar pengar"], 
+                c: "Utgifter överstiger inkomster",
+                e: "Budgetunderskott innebär att man spenderar mer pengar än vad man får in i intäkter, vilket leder till att t.ex. staten måste låna pengar."
+            },
+            { 
+                q: "Vad målet med granskande journalistik?", 
+                a: ["Att skapa snygg reklam", "Att avslöja maktmissbruk", "Att sprida politisk propaganda", "Att ge ren underhållning"], 
+                c: "Att avslöja maktmissbruk",
+                e: "Grävande journalistik syftar till att gräva fram dolda missförhållanden, korruption eller lögner hos makthavare."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        const questionText = document.getElementById('question-text');
+        const optionsGrid = document.getElementById('options-grid');
+        const progressFill = document.getElementById('progress-fill');
+        const progressText = document.getElementById('progress-text');
+        const questionCount = document.getElementById('question-count');
+        const scoreBadge = document.getElementById('score-badge');
+        const feedbackArea = document.getElementById('feedback-area');
+        const feedbackBox = document.getElementById('feedback-box');
+        const feedbackStatus = document.getElementById('feedback-status');
+        const feedbackExplanation = document.getElementById('feedback-explanation');
+        const nextBtn = document.getElementById('next-btn');
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function loadQuestion() {
+            const data = quizData[currentQuestion];
+            questionText.textContent = data.q;
+            questionCount.textContent = `Fråga ${currentQuestion + 1} av ${quizData.length}`;
+            
+            const progressPercent = Math.round((currentQuestion / quizData.length) * 100);
+            progressFill.style.width = `${progressPercent}%`;
+            progressText.textContent = `Framsteg: ${progressPercent}%`;
+
+            optionsGrid.innerHTML = '';
+            feedbackArea.classList.add('hidden');
+            
+            const shuffledOptions = shuffleArray(data.a);
+
+            shuffledOptions.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn w-full p-5 text-left border-2 border-slate-200 rounded-xl hover:border-indigo-400 hover:bg-indigo-50 font-semibold text-slate-700 shadow-sm';
+                btn.textContent = option;
+                btn.onclick = () => checkAnswer(option, btn);
+                optionsGrid.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedOption, selectedBtn) {
+            const data = quizData[currentQuestion];
+            const buttons = optionsGrid.querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = true);
+
+            const isCorrect = selectedOption === data.c;
+
+            if (isCorrect) {
+                selectedBtn.classList.add('correct');
+                feedbackStatus.textContent = "✅ Rätt svar!";
+                feedbackStatus.className = "font-bold text-xl mb-2 text-emerald-700";
+                feedbackBox.className = "p-6 rounded-xl mb-6 bg-emerald-50 border-emerald-200 text-left animate-fade-in";
+                score++;
+            } else {
+                selectedBtn.classList.add('incorrect');
+                buttons.forEach(btn => {
+                    if (btn.textContent === data.c) btn.classList.add('correct');
+                });
+                feedbackStatus.textContent = "❌ Fel svar";
+                feedbackStatus.className = "font-bold text-xl mb-2 text-rose-700";
+                feedbackBox.className = "p-6 rounded-xl mb-6 bg-rose-50 border-rose-200 text-left animate-fade-in";
+            }
+
+            feedbackExplanation.textContent = data.e;
+            scoreBadge.textContent = `Poäng: ${score}`;
+            feedbackArea.classList.remove('hidden');
+        }
+
+        nextBtn.onclick = () => {
+            currentQuestion++;
+            if (currentQuestion < quizData.length) {
+                loadQuestion();
+                document.getElementById('quiz-container').scrollIntoView({ behavior: 'smooth' });
+            } else {
+                showResults();
+            }
+        };
+
+        function showResults() {
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.querySelector('header').classList.add('hidden');
+            const resultScreen = document.getElementById('result-screen');
+            resultScreen.classList.remove('hidden');
+            document.getElementById('final-score').textContent = `Du fick ${score} av ${quizData.length} rätt på provet.`;
+        }
+
+        window.onload = loadQuestion;
+    </script>
+</body>
+</html>
