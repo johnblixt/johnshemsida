@@ -1,1 +1,227 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inlämningsuppgift: AI och Framtiden</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Importerar EB Garamond från Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,700;1,400&display=swap');
+        
+        body {
+            font-family: 'EB Garamond', serif;
+            font-size: 1.1rem;
+        }
 
+        .chat-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* Anpassad scrollbar för att matcha temat */
+        .chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .chat-container::-webkit-scrollbar-thumb {
+            background-color: #991b1b;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-red-50 text-slate-900 min-h-screen p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto bg-white shadow-2xl rounded-lg overflow-hidden border border-red-100 mb-12">
+        
+        <!-- Header -->
+        <header class="bg-red-800 p-10 text-white">
+            <h1 class="text-4xl font-bold mb-3 text-center">Inlämningsuppgift: AI och Framtiden</h1>
+            <div class="flex flex-wrap justify-center gap-4 text-sm font-medium opacity-90">
+                <span class="bg-red-900 px-4 py-1 rounded-sm border border-red-700">Plattform: Exam.net (Låst läge)</span>
+                <span class="bg-red-900 px-4 py-1 rounded-sm border border-red-700">Omfång: 300 - 1000 ord</span>
+            </div>
+        </header>
+
+        <main class="p-10 space-y-10">
+            
+            <!-- 1. Instruktioner -->
+            <section>
+                <h2 class="text-2xl font-bold border-b-2 border-red-200 pb-2 mb-4 text-red-900 italic">Instruktioner</h2>
+                <p class="mb-4 leading-relaxed text-lg">
+                    Välj en av följande diskussionsfrågor och diskutera den. I slutet av din diskussion bör du ha ett avslutande resonemang om AI:s framtid.
+                </p>
+                <div class="bg-red-50 border-l-4 border-red-600 p-5 rounded-r-lg">
+                    <p class="text-red-900 font-bold text-lg underline">För högre betyg:</p>
+                    <p class="text-red-800 italic text-lg">Du bör diskutera åtminstone tre av diskussionsfrågorna för att nå de högre betygsstegen.</p>
+                </div>
+            </section>
+
+            <!-- 2. Diskussionsfrågor -->
+            <section>
+                <h2 class="text-2xl font-bold border-b-2 border-red-200 pb-2 mb-4 text-red-900 italic">Diskussionsfrågor</h2>
+                <div class="p-6 bg-stone-50 rounded-lg border border-red-100 shadow-inner">
+                    <ul class="list-disc list-inside space-y-4 text-slate-800 text-lg">
+                        <li class="leading-snug">Kommer AI att ersätta oss människor i arbetslivet och göra många arbetslösa?</li>
+                        <li class="leading-snug">Hur skulle det påverka samhället och människors psykiska hälsa om AI tar över en stor del av jobben?</li>
+                        <li class="leading-snug">Kommer AI att öka de sociala klyftorna i samhället, där några får stora fördelar av tekniken medan andra lämnas utanför?</li>
+                        <li class="leading-snug">Kan en superintelligent AI i framtiden bli ett hot mot mänskligheten?</li>
+                        <li class="leading-snug">Tror du att vi riskerar att förlora kontrollen över AI om den blir för smart?</li>
+                        <li class="leading-snug">Är rädslan för att AI ska “ta över världen” överdriven eller befogad?</li>
+                        <li class="leading-snug">Är vi på väg mot ett övervakningssamhälle med AI, där allt vi gör kan följas och registreras?</li>
+                        <li class="leading-snug">Ger AI-tekniken för mycket makt åt stora företag eller staten, och bör vi vara oroliga för vem som kontrollerar tekniken?</li>
+                        <li class="leading-snug">Är det moraliskt rätt att låta AI avgöra viktiga saker i våra liv – som till exempel vem som får ett jobb eller vilket straff någon ska få?</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 3. AI-Studieassistent (Flyttad upp hit) -->
+            <section class="p-8 border-2 border-red-800 rounded-xl bg-red-50/30 shadow-md">
+                <h2 class="text-2xl font-bold mb-4 text-red-900 italic flex items-center gap-2">
+                    <span>Lär dig om AI-materialet</span>
+                    <span class="text-sm font-normal not-italic bg-red-800 text-white px-2 py-0.5 rounded">Enkel svenska</span>
+                </h2>
+                <p class="mb-6 text-slate-700 italic">Använd chatten för att få idéer. Jag berättar vad experterna tycker och frågar vad du tänker.</p>
+                
+                <div class="bg-white border border-red-200 rounded-lg shadow-inner flex flex-col h-[500px]">
+                    <div id="chat-output" class="chat-container flex-grow p-4 space-y-4 text-sm md:text-base">
+                        <div class="bg-red-100 text-red-900 p-3 rounded-lg max-w-[85%] self-start border border-red-200">
+                            Hej! Jag har läst texterna om AI. Max Tegmark är en forskare som säger att det finns en stor risk att AI kan utrota människan om vi inte är försiktiga. Han säger att det är 50% risk. Vad tänker du när du hör det? Låter det läskigt eller tror du att han överdriver?
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 border-t border-red-100 bg-stone-50">
+                        <div class="flex gap-2">
+                            <input type="text" id="user-input" placeholder="Svara här..." class="flex-grow p-3 rounded-md border border-red-200 focus:outline-none focus:ring-2 focus:ring-red-600 font-sans text-base">
+                            <button onclick="sendMessage()" id="send-btn" class="bg-red-800 text-white px-6 py-2 rounded-md hover:bg-red-700 transition-colors font-bold">Skicka</button>
+                        </div>
+                        <p id="error-msg" class="text-xs text-red-600 mt-2 hidden">Ett fel uppstod. Försök igen.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. Betygskriterier -->
+            <section>
+                <h2 class="text-2xl font-bold border-b-2 border-red-200 pb-2 mb-6 text-red-900 italic">Betygskriterier</h2>
+                <div class="grid gap-6 md:grid-cols-3">
+                    <div class="p-5 border border-red-200 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow">
+                        <h3 class="font-bold text-xl mb-3 text-red-700">E-nivå</h3>
+                        <p class="text-md text-slate-700 leading-relaxed italic border-t border-red-50 pt-2">
+                            "Eleven för enkla resonemang om möjligheter och risker med AI samt dess konsekvenser för samhället."
+                        </p>
+                    </div>
+                    <div class="p-5 border border-red-300 rounded-lg bg-white shadow-sm border-t-4 border-t-red-500 hover:shadow-md transition-shadow">
+                        <h3 class="font-bold text-xl mb-3 text-red-800">C-nivå</h3>
+                        <p class="text-md text-slate-700 leading-relaxed italic border-t border-red-50 pt-2">
+                            "Eleven för utvecklade resonemang om möjligheter och risker med AI samt dess konsekvenser för samhället."
+                        </p>
+                    </div>
+                    <div class="p-5 border border-red-400 rounded-lg bg-white shadow-sm border-t-4 border-t-red-800 hover:shadow-md transition-shadow">
+                        <h3 class="font-bold text-xl mb-3 text-red-900 uppercase tracking-wide">A-nivå</h3>
+                        <p class="text-md text-slate-700 leading-relaxed italic border-t border-red-50 pt-2">
+                            "Eleven för utvecklade och nyanserade resonemang om möjligheter och risker med AI samt dess konsekvenser för samhället."
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="bg-red-900 p-6 text-center text-red-100 text-sm italic border-t border-red-700">
+            Denna uppgift genomförs i låst läge på Exam.net. Skriv enkelt men försök förklara VARFÖR du tycker som du gör.
+        </footer>
+    </div>
+
+    <script>
+        const apiKey = ""; 
+
+        const sourceMaterialContext = `
+        Du är en pedagogisk studieassistent för elever med svagt språk eller lässvårigheter. 
+        Ditt mål är att lära eleven om källmaterialet genom att berätta små saker och ställa frågor.
+        
+        VIKTIGA REGLER:
+        1. Använd MYCKET enkel svenska (lätt svenska). Korta meningar. Inga svåra ord utan förklaring.
+        2. Var proaktiv: Berätta ALLTID en kort sak från materialet (Harari, Tegmark, Musk eller Hinton) och fråga sedan eleven vad hen tycker.
+        3. Om eleven svarar kort, uppmuntra dem att förklara mer genom att ställa en enkel följdfråga (t.ex. "Varför tror du det?").
+        4. Källmaterialet i korthet:
+           - Max Tegmark: AI är farligt (50% risk för utrotning). Vi behöver regler.
+           - Yuval Harari: AI är som en "alien" (främmande). Kan förstöra demokratin med fejknyheter.
+           - Elon Musk: AI kan ta jobben, men då kan vi få "medborgarlön" (pengar gratis av staten).
+           - Geoffrey Hinton: Ångrar att han byggde AI eftersom den kan bli smartare än oss.
+        
+        Svara alltid vänligt och hjälp eleven att samla tankar som de kan använda i sin inlämning.
+        `;
+
+        async function sendMessage() {
+            const inputField = document.getElementById('user-input');
+            const chatOutput = document.getElementById('chat-output');
+            const sendBtn = document.getElementById('send-btn');
+            const errorMsg = document.getElementById('error-msg');
+            
+            const text = inputField.value.trim();
+            if (!text) return;
+
+            inputField.value = '';
+            inputField.disabled = true;
+            sendBtn.disabled = true;
+            errorMsg.classList.add('hidden');
+
+            const userDiv = document.createElement('div');
+            userDiv.className = "bg-slate-100 text-slate-800 p-3 rounded-lg max-w-[85%] self-end ml-auto mb-2 border border-slate-200";
+            userDiv.innerText = text;
+            chatOutput.appendChild(userDiv);
+            chatOutput.scrollTop = chatOutput.scrollHeight;
+
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = "bg-red-50 text-red-900 p-3 rounded-lg max-w-[85%] self-start mb-2 italic animate-pulse";
+            loadingDiv.innerText = "...";
+            chatOutput.appendChild(loadingDiv);
+
+            try {
+                const response = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: text }] }],
+                        systemInstruction: { parts: [{ text: sourceMaterialContext }] }
+                    })
+                });
+
+                const result = await response.json();
+                const aiText = result.candidates?.[0]?.content?.parts?.[0]?.text || "Hoppsan, något gick fel. Kan du skriva igen?";
+
+                chatOutput.removeChild(loadingDiv);
+                const aiDiv = document.createElement('div');
+                aiDiv.className = "bg-red-100 text-red-900 p-3 rounded-lg max-w-[85%] self-start mb-2 border border-red-200 shadow-sm";
+                aiDiv.innerText = aiText;
+                chatOutput.appendChild(aiDiv);
+
+            } catch (error) {
+                chatOutput.removeChild(loadingDiv);
+                errorMsg.classList.remove('hidden');
+            } finally {
+                inputField.disabled = false;
+                sendBtn.disabled = false;
+                inputField.focus();
+                chatOutput.scrollTop = chatOutput.scrollHeight;
+            }
+        }
+
+        async function fetchWithRetry(url, options, retries = 5, backoff = 1000) {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (response.ok) return response;
+                } catch (e) {}
+                await new Promise(resolve => setTimeout(resolve, backoff));
+                backoff *= 2;
+            }
+            throw new Error("Failed");
+        }
+
+        document.getElementById('user-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+
+</body>
+</html>
