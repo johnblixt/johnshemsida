@@ -4,223 +4,239 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inlämningsuppgift: AI och Framtiden</title>
-    <!-- Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Importerar EB Garamond från Google Fonts */
         @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,700;1,400&display=swap');
         
         body {
             font-family: 'EB Garamond', serif;
             font-size: 1.1rem;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .chat-container {
-            max-height: 400px;
-            overflow-y: auto;
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
         }
 
-        /* Anpassad scrollbar för att matcha temat */
-        .chat-container::-webkit-scrollbar {
-            width: 6px;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .chat-container::-webkit-scrollbar-thumb {
-            background-color: #991b1b;
-            border-radius: 10px;
+
+        /* Mobilanpassning för knappar */
+        .btn-option {
+            transition: all 0.2s;
+            text-align: left;
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid #fee2e2;
+            background-color: white;
+            color: #991b1b;
+            font-weight: 600;
+        }
+        
+        .btn-option:active {
+            transform: scale(0.98);
+            background-color: #fef2f2;
         }
     </style>
 </head>
-<body class="bg-red-50 text-slate-900 min-h-screen p-4 md:p-8">
+<body class="bg-red-50 text-slate-900 min-h-screen p-2 md:p-8">
 
     <div class="max-w-4xl mx-auto bg-white shadow-2xl rounded-lg overflow-hidden border border-red-100 mb-12">
         
         <!-- Header -->
-        <header class="bg-red-800 p-10 text-white">
-            <h1 class="text-4xl font-bold mb-3 text-center">Inlämningsuppgift: AI och Framtiden</h1>
-            <div class="flex flex-wrap justify-center gap-4 text-sm font-medium opacity-90">
-                <span class="bg-red-900 px-4 py-1 rounded-sm border border-red-700">Plattform: Exam.net (Låst läge)</span>
-                <span class="bg-red-900 px-4 py-1 rounded-sm border border-red-700">Omfång: 300 - 1000 ord</span>
+        <header class="bg-red-800 p-6 md:p-10 text-white">
+            <h1 class="text-2xl md:text-4xl font-bold mb-3 text-center">Inlämningsuppgift: AI och Framtiden</h1>
+            <div class="flex flex-col md:flex-row justify-center items-center gap-2 md:gap-4 text-xs md:text-sm font-medium opacity-90">
+                <span class="bg-red-900 px-4 py-1 rounded-sm border border-red-700">Exam.net (Låst läge)</span>
+                <span class="bg-red-900 px-4 py-1 rounded-sm border border-red-700">300 - 1000 ord</span>
             </div>
         </header>
 
-        <main class="p-10 space-y-10">
+        <main class="p-6 md:p-10 space-y-8">
             
             <!-- 1. Instruktioner -->
             <section>
-                <h2 class="text-2xl font-bold border-b-2 border-red-200 pb-2 mb-4 text-red-900 italic">Instruktioner</h2>
-                <p class="mb-4 leading-relaxed text-lg">
-                    Välj en av följande diskussionsfrågor och diskutera den. I slutet av din diskussion bör du ha ett avslutande resonemang om AI:s framtid.
+                <h2 class="text-xl md:text-2xl font-bold border-b-2 border-red-200 pb-2 mb-4 text-red-900 italic">Instruktioner</h2>
+                <p class="mb-4 leading-relaxed">
+                    Välj en av diskussionsfrågorna nedan. I slutet av din text ska du skriva vad du tror om framtiden.
                 </p>
-                <div class="bg-red-50 border-l-4 border-red-600 p-5 rounded-r-lg">
-                    <p class="text-red-900 font-bold text-lg underline">För högre betyg:</p>
-                    <p class="text-red-800 italic text-lg">Du bör diskutera åtminstone tre av diskussionsfrågorna för att nå de högre betygsstegen.</p>
+                <div class="bg-red-50 border-l-4 border-red-600 p-4 rounded-r-lg">
+                    <p class="text-red-900 font-bold underline">För högre betyg:</p>
+                    <p class="text-red-800 italic">Skriv om minst tre frågor.</p>
                 </div>
             </section>
 
             <!-- 2. Diskussionsfrågor -->
             <section>
-                <h2 class="text-2xl font-bold border-b-2 border-red-200 pb-2 mb-4 text-red-900 italic">Diskussionsfrågor</h2>
-                <div class="p-6 bg-stone-50 rounded-lg border border-red-100 shadow-inner">
-                    <ul class="list-disc list-inside space-y-4 text-slate-800 text-lg">
-                        <li class="leading-snug">Kommer AI att ersätta oss människor i arbetslivet och göra många arbetslösa?</li>
-                        <li class="leading-snug">Hur skulle det påverka samhället och människors psykiska hälsa om AI tar över en stor del av jobben?</li>
-                        <li class="leading-snug">Kommer AI att öka de sociala klyftorna i samhället, där några får stora fördelar av tekniken medan andra lämnas utanför?</li>
-                        <li class="leading-snug">Kan en superintelligent AI i framtiden bli ett hot mot mänskligheten?</li>
-                        <li class="leading-snug">Tror du att vi riskerar att förlora kontrollen över AI om den blir för smart?</li>
-                        <li class="leading-snug">Är rädslan för att AI ska “ta över världen” överdriven eller befogad?</li>
-                        <li class="leading-snug">Är vi på väg mot ett övervakningssamhälle med AI, där allt vi gör kan följas och registreras?</li>
-                        <li class="leading-snug">Ger AI-tekniken för mycket makt åt stora företag eller staten, och bör vi vara oroliga för vem som kontrollerar tekniken?</li>
-                        <li class="leading-snug">Är det moraliskt rätt att låta AI avgöra viktiga saker i våra liv – som till exempel vem som får ett jobb eller vilket straff någon ska få?</li>
+                <h2 class="text-xl md:text-2xl font-bold border-b-2 border-red-200 pb-2 mb-4 text-red-900 italic">Frågor att välja på</h2>
+                <div class="p-4 bg-stone-50 rounded-lg border border-red-100 shadow-inner text-sm md:text-base">
+                    <ul class="list-disc list-inside space-y-2 text-slate-800">
+                        <li>Kommer AI göra oss arbetslösa?</li>
+                        <li>Hur mår vi om robotar tar över jobben?</li>
+                        <li>Blir det större klyftor (rika/fattiga) med AI?</li>
+                        <li>Kan en super-AI bli ett hot mot oss?</li>
+                        <li>Tappar vi kontrollen om AI blir för smart?</li>
+                        <li>Är rädslan för AI överdriven?</li>
+                        <li>Får vi ett övervakningssamhälle?</li>
+                        <li>Har stora företag för mycket makt över AI?</li>
+                        <li>Är det rätt att låta AI döma människor i domstol?</li>
                     </ul>
                 </div>
             </section>
 
-            <!-- 3. AI-Studieassistent (Flyttad upp hit) -->
-            <section class="p-8 border-2 border-red-800 rounded-xl bg-red-50/30 shadow-md">
-                <h2 class="text-2xl font-bold mb-4 text-red-900 italic flex items-center gap-2">
-                    <span>Lär dig om AI-materialet</span>
-                    <span class="text-sm font-normal not-italic bg-red-800 text-white px-2 py-0.5 rounded">Enkel svenska</span>
-                </h2>
-                <p class="mb-6 text-slate-700 italic">Använd chatten för att få idéer. Jag berättar vad experterna tycker och frågar vad du tänker.</p>
+            <!-- 3. Interaktiv Guide (Mobilvänlig) -->
+            <section class="p-6 border-2 border-red-800 rounded-xl bg-red-50/30 shadow-md">
+                <h2 class="text-xl md:text-2xl font-bold mb-2 text-red-900 italic">Snabbguide: Vad säger experterna?</h2>
+                <p class="mb-4 text-sm text-slate-600">Klicka på alternativen för att lära dig mer om källmaterialet.</p>
                 
-                <div class="bg-white border border-red-200 rounded-lg shadow-inner flex flex-col h-[500px]">
-                    <div id="chat-output" class="chat-container flex-grow p-4 space-y-4 text-sm md:text-base">
-                        <div class="bg-red-100 text-red-900 p-3 rounded-lg max-w-[85%] self-start border border-red-200">
-                            Hej! Jag har läst texterna om AI. Max Tegmark är en forskare som säger att det finns en stor risk att AI kan utrota människan om vi inte är försiktiga. Han säger att det är 50% risk. Vad tänker du när du hör det? Låter det läskigt eller tror du att han överdriver?
-                        </div>
+                <div id="guide-card" class="bg-white border border-red-200 rounded-lg p-5 shadow-sm min-h-[250px] flex flex-col justify-between fade-in">
+                    <!-- Innehållet ändras via JavaScript -->
+                    <div id="guide-content">
+                        <h3 class="font-bold text-red-800 mb-2" id="guide-title">Välkommen!</h3>
+                        <p class="text-slate-700 mb-4" id="guide-text">Här får du hjälp att förstå vad experterna i texten tycker. Vill du börja?</p>
                     </div>
                     
-                    <div class="p-4 border-t border-red-100 bg-stone-50">
-                        <div class="flex gap-2">
-                            <input type="text" id="user-input" placeholder="Svara här..." class="flex-grow p-3 rounded-md border border-red-200 focus:outline-none focus:ring-2 focus:ring-red-600 font-sans text-base">
-                            <button onclick="sendMessage()" id="send-btn" class="bg-red-800 text-white px-6 py-2 rounded-md hover:bg-red-700 transition-colors font-bold">Skicka</button>
-                        </div>
-                        <p id="error-msg" class="text-xs text-red-600 mt-2 hidden">Ett fel uppstod. Försök igen.</p>
+                    <div id="guide-options" class="space-y-2">
+                        <button class="btn-option" onclick="nextStep('tegmark')">Ja, berätta om Max Tegmark!</button>
+                        <button class="btn-option" onclick="nextStep('harari')">Nej, berätta om Yuval Harari!</button>
                     </div>
                 </div>
+                <button id="restart-btn" onclick="resetGuide()" class="mt-4 text-xs text-red-700 underline hidden">Börja om guiden</button>
             </section>
 
             <!-- 4. Betygskriterier -->
             <section>
-                <h2 class="text-2xl font-bold border-b-2 border-red-200 pb-2 mb-6 text-red-900 italic">Betygskriterier</h2>
-                <div class="grid gap-6 md:grid-cols-3">
-                    <div class="p-5 border border-red-200 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow">
-                        <h3 class="font-bold text-xl mb-3 text-red-700">E-nivå</h3>
-                        <p class="text-md text-slate-700 leading-relaxed italic border-t border-red-50 pt-2">
-                            "Eleven för enkla resonemang om möjligheter och risker med AI samt dess konsekvenser för samhället."
-                        </p>
+                <h2 class="text-xl md:text-2xl font-bold border-b-2 border-red-200 pb-2 mb-6 text-red-900 italic">Betygskriterier</h2>
+                <div class="grid gap-4 md:grid-cols-3">
+                    <div class="p-4 border border-red-100 rounded-lg bg-white">
+                        <h3 class="font-bold text-red-700">E-nivå</h3>
+                        <p class="text-sm text-slate-600 italic">Enkla resonemang om risker och möjligheter.</p>
                     </div>
-                    <div class="p-5 border border-red-300 rounded-lg bg-white shadow-sm border-t-4 border-t-red-500 hover:shadow-md transition-shadow">
-                        <h3 class="font-bold text-xl mb-3 text-red-800">C-nivå</h3>
-                        <p class="text-md text-slate-700 leading-relaxed italic border-t border-red-50 pt-2">
-                            "Eleven för utvecklade resonemang om möjligheter och risker med AI samt dess konsekvenser för samhället."
-                        </p>
+                    <div class="p-4 border border-red-300 rounded-lg bg-white border-t-4 border-t-red-500">
+                        <h3 class="font-bold text-red-800">C-nivå</h3>
+                        <p class="text-sm text-slate-600 italic">Utvecklade resonemang om konsekvenser.</p>
                     </div>
-                    <div class="p-5 border border-red-400 rounded-lg bg-white shadow-sm border-t-4 border-t-red-800 hover:shadow-md transition-shadow">
-                        <h3 class="font-bold text-xl mb-3 text-red-900 uppercase tracking-wide">A-nivå</h3>
-                        <p class="text-md text-slate-700 leading-relaxed italic border-t border-red-50 pt-2">
-                            "Eleven för utvecklade och nyanserade resonemang om möjligheter och risker med AI samt dess konsekvenser för samhället."
-                        </p>
+                    <div class="p-4 border border-red-400 rounded-lg bg-white border-t-4 border-t-red-800">
+                        <h3 class="font-bold text-red-900 uppercase">A-nivå</h3>
+                        <p class="text-sm text-slate-600 italic">Nyanserade resonemang från olika perspektiv.</p>
                     </div>
                 </div>
             </section>
         </main>
 
-        <footer class="bg-red-900 p-6 text-center text-red-100 text-sm italic border-t border-red-700">
-            Denna uppgift genomförs i låst läge på Exam.net. Skriv enkelt men försök förklara VARFÖR du tycker som du gör.
+        <footer class="bg-red-900 p-6 text-center text-red-100 text-xs italic">
+            Tips: Använd experternas namn i din text för att visa att du läst källmaterialet.
         </footer>
     </div>
 
     <script>
-        const apiKey = ""; 
+        const steps = {
+            'tegmark': {
+                title: "Max Tegmark (Forskare)",
+                text: "Han säger att det är 50% risk att AI utrotar människor om vi tappar kontrollen. Han jämför oss med djur som dött ut för att vi människor var smartare än dem.",
+                options: [
+                    { text: "A) Läskigt! Hur ska vi stoppa det?", next: 'tegmark_regler' },
+                    { text: "B) Jag tror han överdriver.", next: 'harari' }
+                ]
+            },
+            'tegmark_regler': {
+                title: "Tegmarks lösning",
+                text: "Han vill ha hårda regler, precis som för mediciner. Företag får inte sälja AI förrän de bevisat att den är säker.",
+                options: [
+                    { text: "Smart! Vad säger Harari?", next: 'harari' },
+                    { text: "Berätta om Elon Musk istället.", next: 'musk' }
+                ]
+            },
+            'harari': {
+                title: "Yuval Harari (Författare)",
+                text: "Han kallar AI för 'Alien Intelligence' (främmande intelligens). Han är rädd att AI ska förstöra demokratin med massor av fejknyheter så att ingen vet vad som är sant.",
+                options: [
+                    { text: "A) Kan vi lita på internet då?", next: 'harari_fejk' },
+                    { text: "B) Vad säger Musk om jobb?", next: 'musk' }
+                ]
+            },
+            'harari_fejk': {
+                title: "Sanningen är dyr",
+                text: "Harari säger att 'skräp är billigt men sanning är dyrt'. Det krävs tid och pengar att kolla fakta, men AI kan sprida lögner jättebilligt.",
+                options: [
+                    { text: "Viktigt! Vad säger Musk?", next: 'musk' }
+                ]
+            },
+            'musk': {
+                title: "Elon Musk (Tech-miljardär)",
+                text: "Musk tror att robotar kommer göra alla tråkiga jobb. Då behöver vi inte jobba, men vi behöver få pengar ändå.",
+                options: [
+                    { text: "A) Gratis pengar? Hur då?", next: 'musk_lon' },
+                    { text: "B) Vad säger Geoffrey Hinton?", next: 'hinton' }
+                ]
+            },
+            'musk_lon': {
+                title: "Medborgarlön",
+                text: "Idén är att alla får pengar av staten varje månad, oavsett om man jobbar eller inte. Det kallas 'universell basinkomst'.",
+                options: [
+                    { text: "Intressant! Vad säger Hinton?", next: 'hinton' }
+                ]
+            },
+            'hinton': {
+                title: "Geoffrey Hinton (AI-gudfader)",
+                text: "Han var med och byggde AI men slutade på Google för att han ångrar sig. Han är rädd att AI blir smartare än oss och tar över kontrollen.",
+                options: [
+                    { text: "A) Kan vi stänga av den?", next: 'slut' },
+                    { text: "B) Det låter som en film.", next: 'slut' }
+                ]
+            },
+            'slut': {
+                title: "Nu är du redo!",
+                text: "Du har nu koll på: <br>• Tegmark (risker & regler)<br>• Harari (fejknyheter & demokrati)<br>• Musk (jobb & pengar)<br>• Hinton (tappad kontroll).",
+                options: [
+                    { text: "Börja skriva min text!", next: 'reset' }
+                ]
+            }
+        };
 
-        const sourceMaterialContext = `
-        Du är en pedagogisk studieassistent för elever med svagt språk eller lässvårigheter. 
-        Ditt mål är att lära eleven om källmaterialet genom att berätta små saker och ställa frågor.
-        
-        VIKTIGA REGLER:
-        1. Använd MYCKET enkel svenska (lätt svenska). Korta meningar. Inga svåra ord utan förklaring.
-        2. Var proaktiv: Berätta ALLTID en kort sak från materialet (Harari, Tegmark, Musk eller Hinton) och fråga sedan eleven vad hen tycker.
-        3. Om eleven svarar kort, uppmuntra dem att förklara mer genom att ställa en enkel följdfråga (t.ex. "Varför tror du det?").
-        4. Källmaterialet i korthet:
-           - Max Tegmark: AI är farligt (50% risk för utrotning). Vi behöver regler.
-           - Yuval Harari: AI är som en "alien" (främmande). Kan förstöra demokratin med fejknyheter.
-           - Elon Musk: AI kan ta jobben, men då kan vi få "medborgarlön" (pengar gratis av staten).
-           - Geoffrey Hinton: Ångrar att han byggde AI eftersom den kan bli smartare än oss.
-        
-        Svara alltid vänligt och hjälp eleven att samla tankar som de kan använda i sin inlämning.
-        `;
+        function nextStep(stepKey) {
+            if (stepKey === 'reset') {
+                resetGuide();
+                return;
+            }
 
-        async function sendMessage() {
-            const inputField = document.getElementById('user-input');
-            const chatOutput = document.getElementById('chat-output');
-            const sendBtn = document.getElementById('send-btn');
-            const errorMsg = document.getElementById('error-msg');
+            const step = steps[stepKey];
+            const card = document.getElementById('guide-card');
             
-            const text = inputField.value.trim();
-            if (!text) return;
+            // Animation
+            card.classList.remove('fade-in');
+            void card.offsetWidth; // Trigger reflow
+            card.classList.add('fade-in');
 
-            inputField.value = '';
-            inputField.disabled = true;
-            sendBtn.disabled = true;
-            errorMsg.classList.add('hidden');
+            document.getElementById('guide-title').innerText = step.title;
+            document.getElementById('guide-text').innerHTML = step.text;
+            document.getElementById('restart-btn').classList.remove('hidden');
 
-            const userDiv = document.createElement('div');
-            userDiv.className = "bg-slate-100 text-slate-800 p-3 rounded-lg max-w-[85%] self-end ml-auto mb-2 border border-slate-200";
-            userDiv.innerText = text;
-            chatOutput.appendChild(userDiv);
-            chatOutput.scrollTop = chatOutput.scrollHeight;
+            const optionsDiv = document.getElementById('guide-options');
+            optionsDiv.innerHTML = '';
 
-            const loadingDiv = document.createElement('div');
-            loadingDiv.className = "bg-red-50 text-red-900 p-3 rounded-lg max-w-[85%] self-start mb-2 italic animate-pulse";
-            loadingDiv.innerText = "...";
-            chatOutput.appendChild(loadingDiv);
-
-            try {
-                const response = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: text }] }],
-                        systemInstruction: { parts: [{ text: sourceMaterialContext }] }
-                    })
-                });
-
-                const result = await response.json();
-                const aiText = result.candidates?.[0]?.content?.parts?.[0]?.text || "Hoppsan, något gick fel. Kan du skriva igen?";
-
-                chatOutput.removeChild(loadingDiv);
-                const aiDiv = document.createElement('div');
-                aiDiv.className = "bg-red-100 text-red-900 p-3 rounded-lg max-w-[85%] self-start mb-2 border border-red-200 shadow-sm";
-                aiDiv.innerText = aiText;
-                chatOutput.appendChild(aiDiv);
-
-            } catch (error) {
-                chatOutput.removeChild(loadingDiv);
-                errorMsg.classList.remove('hidden');
-            } finally {
-                inputField.disabled = false;
-                sendBtn.disabled = false;
-                inputField.focus();
-                chatOutput.scrollTop = chatOutput.scrollHeight;
-            }
+            step.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-option';
+                btn.innerText = opt.text;
+                btn.onclick = () => nextStep(opt.next);
+                optionsDiv.appendChild(btn);
+            });
         }
 
-        async function fetchWithRetry(url, options, retries = 5, backoff = 1000) {
-            for (let i = 0; i < retries; i++) {
-                try {
-                    const response = await fetch(url, options);
-                    if (response.ok) return response;
-                } catch (e) {}
-                await new Promise(resolve => setTimeout(resolve, backoff));
-                backoff *= 2;
-            }
-            throw new Error("Failed");
+        function resetGuide() {
+            document.getElementById('guide-title').innerText = "Välkommen!";
+            document.getElementById('guide-text').innerText = "Här får du hjälp att förstå vad experterna i texten tycker. Vill du börja?";
+            document.getElementById('guide-options').innerHTML = `
+                <button class="btn-option" onclick="nextStep('tegmark')">Ja, berätta om Max Tegmark!</button>
+                <button class="btn-option" onclick="nextStep('harari')">Nej, berätta om Yuval Harari!</button>
+            `;
+            document.getElementById('restart-btn').classList.add('hidden');
         }
-
-        document.getElementById('user-input').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendMessage();
-        });
     </script>
 
 </body>
