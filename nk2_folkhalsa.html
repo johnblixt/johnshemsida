@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Folkhälsa – Naturkunskap 2</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Fredoka', sans-serif; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+        .anim-fade { animation: fadeIn 0.3s ease; }
+        .anim-pop { animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+    <a href="index.html" class="fixed top-4 left-4 z-50 text-sm font-medium text-slate-500 hover:text-green-700 bg-white/90 px-3 py-2 rounded-xl shadow-sm transition-colors">← Tillbaka till startsidan</a>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const PRIMARY = '#4ade80';
+        const PRIMARY_DARK = '#16a34a';
+        const PRIMARY_LIGHT = '#f0fdf4';
+
+        const allQuestions = [
+            {
+                question: "Vad menas med begreppet 'hälsa' enligt WHO:s breda definition?",
+                correct: "Ett tillstånd av fullständigt fysiskt, psykiskt och socialt välbefinnande",
+                others: [
+                    "Frånvaro av sjukdom eller synliga funktionsnedsättningar",
+                    "En medicinsk bedömning av kroppens organ och blodvärden",
+                    "En persons förmåga att arbeta och försörja sig ekonomiskt"
+                ],
+                explanation: "WHO definierar hälsa som ett tillstånd av fullständigt fysiskt, psykiskt och socialt välbefinnande – inte bara frånvaro av sjukdom. Det innebär att man kan må dåligt utan att vara sjuk, och tvärtom."
+            },
+            {
+                question: "Vad innebär begreppet 'folkhälsa'?",
+                correct: "Hela befolkningens samlade hälsotillstånd i ett samhälle",
+                others: [
+                    "Den genomsnittliga läkarbesöksfrekvensen i ett land per år",
+                    "Antalet sjukhusplatser i förhållande till befolkningens storlek",
+                    "Hälsoläget hos en liten grupp patienter vid ett sjukhus"
+                ],
+                explanation: "Folkhälsa handlar om hela befolkningens samlade hälsotillstånd och de faktorer som påverkar det. Det skiljer sig från individuell hälsa som fokuserar på en enskild person."
+            },
+            {
+                question: "Vilket av följande är ett exempel på folkhälsoarbete?",
+                correct: "Kommunen erbjuder gratis rökavvänjningsprogram för alla invånare",
+                others: [
+                    "En läkare opererar en enskild patient med hjärtproblem",
+                    "En privatperson väljer att börja träna på gym",
+                    "En tandläkare sätter in en lagning hos en patient"
+                ],
+                explanation: "Folkhälsoarbete riktar sig till hela eller stora delar av befolkningen, inte enskilda individer. Gratis rökavvänjning till alla invånare är ett tydligt exempel på en samhällsinsats för befolkningens hälsa."
+            },
+            {
+                question: "Vad är en folksjukdom?",
+                correct: "En sjukdom som är vanlig och drabbar en stor del av befolkningen",
+                others: [
+                    "En smittsam sjukdom som sprids snabbt via folksamlingar",
+                    "En sjukdom som enbart drabbar äldre och pensionärer",
+                    "En ärftlig sjukdom som går i arv inom samma familj"
+                ],
+                explanation: "En folksjukdom är en sjukdom som är utbredd och drabbar många i befolkningen. Exempel är hjärt-kärlsjukdom, cancer, diabetes och psykisk ohälsa. Det behöver inte vara smittsamt."
+            },
+            {
+                question: "Vad menas med ett folkhälsoproblem?",
+                correct: "En hälsorelaterad företeelse som påverkar många människor negativt i befolkningen",
+                others: [
+                    "En enskild patients allvarliga och livshotande sjukdomsfall",
+                    "En genetisk sjukdom som ärvs inom en och samma familj",
+                    "En psykisk sjukdom som alltid kräver slutenvård på sjukhus"
+                ],
+                explanation: "Ett folkhälsoproblem är något som negativt påverkar hälsan hos en stor del av befolkningen, t.ex. övervikt, psykisk ohälsa eller tobaksbruk. Det är ett problem på samhällsnivå, inte för enskilda individer."
+            },
+            {
+                question: "Vad menas med social position inom folkhälsoforskning?",
+                correct: "En persons plats i samhällets hierarki baserat på utbildning, yrke och inkomst",
+                others: [
+                    "Hur aktiv och populär en person är på sociala medier",
+                    "En persons geografiska hemort och vilken stadsdel de bor i",
+                    "Antalet vänner och familjemedlemmar en person har nära sig"
+                ],
+                explanation: "Social position handlar om var i samhällets hierarki en person befinner sig. Utbildningsnivå, yrke och inkomst är de vanligaste måtten. Forskning visar att hög social position generellt ger bättre hälsa."
+            },
+            {
+                question: "Vad skiljer hälsofrämjande arbete från förebyggande arbete?",
+                correct: "Hälsofrämjande stärker resurser för god hälsa, förebyggande minskar risken för specifik sjukdom",
+                others: [
+                    "Hälsofrämjande vänder sig till sjuka, förebyggande vänder sig till friska",
+                    "Hälsofrämjande bedrivs av läkare, förebyggande av sjuksköterskor",
+                    "Hälsofrämjande kostar alltid mer än förebyggande insatser"
+                ],
+                explanation: "Hälsofrämjande arbete syftar till att stärka faktorer som ger god hälsa, t.ex. motion och gemenskap. Förebyggande arbete riktar sig mot att minska risken för specifika sjukdomar, t.ex. vaccination eller rökstoppsrådgivning."
+            },
+            {
+                question: "Vilket av dessa är ett tydligt exempel på förebyggande arbete?",
+                correct: "Skolan informerar elever om riskerna med rökning för att de inte ska börja",
+                others: [
+                    "En läkare behandlar en patient som redan har fått lungcancer",
+                    "En sjukgymnast rehabiliterar en patient efter en trafikolycka",
+                    "En kirurg opererar bort en tumör hos en cancerpatient"
+                ],
+                explanation: "Förebyggande arbete syftar till att förhindra att sjukdom uppstår. Att informera om rökningens risker innan ungdomar börjar röka är ett klassiskt exempel på primär prevention."
+            },
+            {
+                question: "Vad är riskfaktorer inom folkhälsovetenskap?",
+                correct: "Faktorer som ökar sannolikheten för att en person ska drabbas av sjukdom",
+                others: [
+                    "Faktorer som garanterar att man inte blir sjuk om man undviker dem",
+                    "Mediciner som används för att behandla kroniska folksjukdomar",
+                    "Gener som ärftligt skyddar mot allvarliga sjukdomar"
+                ],
+                explanation: "Riskfaktorer är förhållanden som ökar risken för sjukdom utan att med säkerhet orsaka den. Rökning är en stark riskfaktor för lungcancer, men inte alla rökare får cancer. Desto fler riskfaktorer, desto större risk."
+            },
+            {
+                question: "Vad menas med hälsoklyftor?",
+                correct: "Skillnader i hälsa mellan olika grupper i samhället, ofta kopplade till socioekonomiska faktorer",
+                others: [
+                    "Geografiska skillnader i tillgång till sjukhus och vårdcentraler",
+                    "Skillnader i behandlingsmetoder mellan olika sjukhus i landet",
+                    "Prisskillnader på läkemedel mellan olika regioner i Sverige"
+                ],
+                explanation: "Hälsoklyftor är systematiska och orättvisa skillnader i hälsa mellan grupper. I Sverige lever lågutbildade i genomsnitt kortare och är sjukare än högutbildade – trots att alla har tillgång till samma sjukvård."
+            },
+            {
+                question: "Vad är livsvillkor i folkhälsosammanhang?",
+                correct: "De ekonomiska, sociala och miljömässiga förhållanden som påverkar en persons hälsa",
+                others: [
+                    "De dagliga vanor och personliga val en individ aktivt väljer att göra",
+                    "De genetiska egenskaper en person föds med och inte kan påverka",
+                    "De medicinska behandlingar en person genomgår under sin livstid"
+                ],
+                explanation: "Livsvillkor är de strukturella förhållandena runt en person, t.ex. bostad, arbete, inkomst och närmiljö. De påverkar hälsan utan att individen alltid har valt dem själv, vilket gör dem viktiga i folkhälsoarbetet."
+            },
+            {
+                question: "Vad studerar epidemiologi?",
+                correct: "Fördelningen och orsakerna till sjukdomar i befolkningar",
+                others: [
+                    "Hur läkemedel tas fram och testas i kliniska laboratorier",
+                    "Hur enskilda patienter bäst behandlas på sjukhus",
+                    "Hur genetiska sjukdomar ärvs från föräldrar till barn"
+                ],
+                explanation: "Epidemiologi är läran om sjukdomars förekomst, spridning och orsaker i befolkningar. Epidemiologer ställer frågor som 'Vem drabbas?', 'Var?' och 'Varför?' för att kunna förebygga sjukdom."
+            },
+            {
+                question: "Vad menas med mortalitet?",
+                correct: "Dödligheten i en befolkning – hur stor andel som dör av en viss orsak",
+                others: [
+                    "Hur vanlig en viss sjukdom är i befolkningen vid ett givet tillfälle",
+                    "Hur länge en person i genomsnitt lever med en kronisk sjukdom",
+                    "Antalet nya sjukdomsfall som uppkommer i landet under ett år"
+                ],
+                explanation: "Mortalitet mäter dödsfall och dödlighet. Man kan t.ex. tala om cancermortalitet (andel som dör av cancer) eller mortaliteten hos en viss åldersgrupp. Det är ett viktigt mått i epidemiologi."
+            },
+            {
+                question: "Vad innebär morbiditet?",
+                correct: "Sjukligheten i en befolkning – hur vanligt det är att drabbas av sjukdom",
+                others: [
+                    "Dödligheten kopplad till en specifik sjukdom i befolkningen",
+                    "Antalet nya sjukdomsfall per år i ett visst geografiskt område",
+                    "Skillnaden i förväntad livslängd mellan män och kvinnor"
+                ],
+                explanation: "Morbiditet handlar om sjuklighet, alltså hur vanligt sjukdom är i en befolkning. Hög morbiditet i fetma innebär att många lider av fetma, oavsett om de dör av det eller ej. Det skiljer sig från mortalitet (dödsfall)."
+            },
+            {
+                question: "Vad är incidens inom epidemiologi?",
+                correct: "Antalet nya sjukdomsfall som uppkommer under en viss tidsperiod",
+                others: [
+                    "Det totala antalet sjukdomsfall i en befolkning vid ett givet tillfälle",
+                    "Andelen av befolkningen som har dött av en sjukdom",
+                    "Hur allvarlig en sjukdom är för de som drabbas"
+                ],
+                explanation: "Incidens mäter hur många NYA fall av en sjukdom som uppstår under en period, t.ex. per år. Om incidensen av typ 2-diabetes ökar, innebär det att fler och fler insjuknar varje år."
+            },
+            {
+                question: "Vad menas med prevalens?",
+                correct: "Det totala antalet befintliga sjukdomsfall i en befolkning vid ett visst tillfälle",
+                others: [
+                    "Antalet nya fall av en sjukdom som uppstår i befolkningen under ett år",
+                    "Andelen av befolkningen som tillfrisknat från en sjukdom",
+                    "Risken att drabbas av en viss sjukdom under hela sin livstid"
+                ],
+                explanation: "Prevalens mäter hur många som HAR en sjukdom vid ett givet ögonblick – oavsett när de insjuknade. Hög prevalens av astma bland barn innebär att många barn lider av astma just nu."
+            },
+            {
+                question: "Vad är skillnaden mellan incidens och prevalens?",
+                correct: "Incidens mäter nya fall under en period, prevalens mäter alla befintliga fall vid ett tillfälle",
+                others: [
+                    "Incidens gäller enbart dödliga sjukdomar, prevalens gäller kroniska sjukdomar",
+                    "Incidens mäts i procent av befolkningen, prevalens mäts i absoluta tal",
+                    "Incidens gäller barn och unga, prevalens gäller vuxna och äldre"
+                ],
+                explanation: "Incidens = nya fall under en tidsperiod. Prevalens = alla fall vid ett givet tillfälle. En sjukdom kan ha låg incidens (få nya fall) men hög prevalens om folk lever länge med sjukdomen, t.ex. diabetes."
+            },
+            {
+                question: "Vad innebär hälsojämlikhet?",
+                correct: "Att alla individer och grupper ska ha lika möjligheter till god hälsa",
+                others: [
+                    "Att alla människor ska ha exakt identiskt hälsostatus",
+                    "Att sjukvård alltid fördelas i lika stora delar oberoende av behov",
+                    "Att alla medborgare betalar lika mycket i avgifter för sjukvård"
+                ],
+                explanation: "Hälsojämlikhet handlar om att alla ska ha MÖJLIGHETEN till god hälsa, inte att alla ska vara lika friska. Det innebär att samhällsstrukturer inte ska leda till att vissa grupper systematiskt får sämre hälsa."
+            },
+            {
+                question: "Vad är syftet med ett vaccinationsprogram?",
+                correct: "Att skydda befolkningen mot smittsamma sjukdomar genom att vaccinera en stor andel",
+                others: [
+                    "Att behandla patienter som redan smittats av en smittsam sjukdom",
+                    "Att testa nya läkemedel och vacciner på friska individer",
+                    "Att kartlägga vilka sjukdomar som är vanligast i landet just nu"
+                ],
+                explanation: "Vaccinationsprogram syftar till att ge en stor andel av befolkningen immunitet mot smittsamma sjukdomar. När tillräckligt många är vaccinerade uppstår flockimmunitet, vilket skyddar även de som inte kan vaccineras."
+            },
+            {
+                question: "Varför rekommenderas fysisk aktivitet inom folkhälsoarbetet?",
+                correct: "Regelbunden motion minskar risken för flertalet folksjukdomar som diabetes och hjärt-kärlsjukdom",
+                others: [
+                    "Fysisk aktivitet gör att man aldrig drabbas av några sjukdomar alls",
+                    "Motion ersätter helt behovet av mediciner för alla kroniska sjukdomar",
+                    "Regelbunden träning garanterar att man lever minst 100 år"
+                ],
+                explanation: "Fysisk aktivitet minskar risken för ett flertal folksjukdomar och har positiv effekt på psykisk hälsa. Det är ett av de kraftfullaste och billigaste verktygen i folkhälsoarbetet – men det eliminerar inte sjukdomsrisken helt."
+            },
+            {
+                question: "Vilka räknas som livsstilsfaktorer i folkhälsoforskning?",
+                correct: "Kost, fysisk aktivitet, rökning och alkoholkonsumtion",
+                others: [
+                    "Genetik, biologisk ålder och biologiskt kön",
+                    "Landets BNP, inflation och valutakurs",
+                    "Klimat, geografi och tillgång på naturresurser"
+                ],
+                explanation: "Livsstilsfaktorer är beteenden och vanor som individen till stor del kan påverka. Kost, motion, rökning och alkohol är de fyra stora livsstilsfaktorerna som starkast påverkar folkhälsan."
+            },
+            {
+                question: "En person med hög utbildning och hög inkomst har generellt bättre hälsa. Vad kallas dessa skillnader?",
+                correct: "Hälsoklyftor kopplade till social position",
+                others: [
+                    "Genetiska skillnader som uppstår slumpmässigt mellan individer",
+                    "Naturliga variationer i folkhälsan utan samhällelig orsak",
+                    "Skillnader i sjukdomsfrekvens som beror enbart på ålder"
+                ],
+                explanation: "Det är välbelagt att social position – mätt som utbildning, yrke och inkomst – är starkt kopplad till hälsa. Dessa systematiska skillnader kallas hälsoklyftor och anses vara orättvisa eftersom de beror på sociala villkor."
+            },
+            {
+                question: "Typ 2-diabetes drabbar hundratusentals människor i Sverige. Vad kallas detta?",
+                correct: "Folksjukdom",
+                others: [
+                    "Epidemi",
+                    "Pandemi",
+                    "Zoonos"
+                ],
+                explanation: "Typ 2-diabetes kallas folksjukdom eftersom den är mycket utbredd i befolkningen. En epidemi är en ovanligt snabb spridning av en sjukdom, och en pandemi är en global spridning. Zoonos är en sjukdom som smittar från djur till människa."
+            },
+            {
+                question: "Vilket av dessa är ett tydligt hälsofrämjande arbete?",
+                correct: "Kommunen anlägger cykelbanor och parker för att uppmuntra rörelse och rekreation",
+                others: [
+                    "Sjukhuset erbjuder medicinsk behandling till patienter med högt blodtryck",
+                    "Läkaren diagnostiserar en patient med fetma och skriver ut medicin",
+                    "Primärvården erbjuder screeningprogram för prostatacancer"
+                ],
+                explanation: "Hälsofrämjande arbete handlar om att skapa miljöer och förutsättningar som gör det lättare för folk att leva hälsosamt – t.ex. cykelbana och parker. Det fokuserar på resurser och möjligheter, inte på att behandla sjukdom."
+            },
+            {
+                question: "Varför har personer med lägre social position generellt sämre hälsa?",
+                correct: "Sämre livsvillkor som stress, brist på pengar och osäkra bostäder påverkar hälsan negativt",
+                others: [
+                    "De föds med genetiskt sämre förutsättningar för god hälsa",
+                    "De väljer medvetet och rationellt att leva osundare",
+                    "De bor i områden med tillgång till mer ohälsosam mat"
+                ],
+                explanation: "Forskning visar att sämre livsvillkor – ekonomisk stress, osäkert arbete, sämre bostad, osäkert grannskap – har direkt negativ effekt på hälsan. Det är inte ett fritt val att leva ohälsosamt, utan ett resultat av strukturella faktorer."
+            },
+            {
+                question: "En epidemiolog mäter hur många nya fall av influensa som uppkommer i en stad varje höst. Vilket mått använder de?",
+                correct: "Incidens",
+                others: [
+                    "Prevalens",
+                    "Mortalitet",
+                    "Morbiditet"
+                ],
+                explanation: "Incidens mäter antalet NYA fall under en period. Att räkna hur många som insjuknar i influensa varje höst är ett typiskt incidansmått. Prevalens hade mätt hur många som HAR influensa vid ett givet tillfälle."
+            },
+            {
+                question: "Sverige erbjuder HPV-vaccination till alla ungdomar i grundskolan. Det är ett exempel på:",
+                correct: "Vaccinationsprogram som förebygger infektionssjukdomar",
+                others: [
+                    "Hälsofrämjande arbete som enbart stärker välbefinnandet",
+                    "Epidemiologisk forskning om sjukdomars spridningsmönster",
+                    "Behandling av individer som redan smittats av HPV"
+                ],
+                explanation: "HPV-vaccination i skolan är ett nationellt vaccinationsprogram med syfte att förebygga livmoderhalscancer och andra HPV-relaterade sjukdomar. Det är förebyggande arbete på befolkningsnivå."
+            },
+            {
+                question: "Vad innebär det att folkhälsoarbetet ska vara 'jämlikt'?",
+                correct: "Att insatserna ska minska hälsoskillnaderna mellan olika grupper i samhället",
+                others: [
+                    "Att alla medborgare erbjuds exakt samma behandling oavsett behov",
+                    "Att lika stora ekonomiska resurser avsätts för varje enskild sjukdom",
+                    "Att alla läkare och sjuksköterskor ska ha samma lön och villkor"
+                ],
+                explanation: "Jämlikt folkhälsoarbete innebär att insatser riktas så att hälsoskillnaderna minskar – inte att alla behandlas identiskt. Grupper med sämre förutsättningar kan behöva mer stöd för att uppnå samma hälsonivå."
+            },
+            {
+                question: "Vilket av följande är ett exempel på hur livsvillkor påverkar hälsan?",
+                correct: "En person med osäkert arbete och låg inkomst upplever mer stress och har sämre hälsa",
+                others: [
+                    "En person som äter snabbmat gör det av ett fritt och välgrundat personligt val",
+                    "En persons hälsa försämras enbart på grund av naturligt biologiskt åldrande",
+                    "En persons dåliga hälsa beror alltid på genetiska faktorer hen föds med"
+                ],
+                explanation: "Livsvillkor som anställningstrygghet och inkomst påverkar hälsan direkt. Ekonomisk stress och oro leder till kronisk stress, vilket är en viktig riskfaktor för hjärt-kärlsjukdom, depression och andra folksjukdomar."
+            },
+            {
+                question: "Vad skiljer mortalitet från morbiditet?",
+                correct: "Mortalitet handlar om dödsfall, morbiditet handlar om sjuklighet",
+                others: [
+                    "Mortalitet mäter antalet sjukdomar, morbiditet mäter förväntad livslängd",
+                    "Mortalitet gäller kroniska sjukdomar, morbiditet gäller akuta sjukdomar",
+                    "Mortalitet är ett begrepp inom genetik, morbiditet inom epidemiologi"
+                ],
+                explanation: "Mortalitet = dödlighet (hur många dör). Morbiditet = sjuklighet (hur många lever med sjukdom). En sjukdom kan ha hög morbiditet men låg mortalitet, t.ex. diabetes typ 2 – många har det, men de flesta dör inte direkt av det."
+            },
+            {
+                question: "Vilket påstående stämmer bäst om folkhälsans bestämningsfaktorer?",
+                correct: "Hälsan påverkas av ett samspel mellan livsvillkor, livsstil, sociala nätverk och samhällsfaktorer",
+                others: [
+                    "Hälsan bestäms enbart av genetik och personliga val",
+                    "Sjukvårdens kvalitet är den enskilt viktigaste faktorn för folkhälsan",
+                    "Klimat och geografi avgör i störst utsträckning en befolknings hälsa"
+                ],
+                explanation: "Folkhälsoforskning visar att hälsan är resultatet av ett komplext samspel. Livsvillkor, livsstil, sociala nätverk, genetik och samhällsstrukturer samverkar alla. Sjukvården är viktig men inte den viktigaste enskilda faktorn."
+            }
+        ];
+
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function formatTime(secs) {
+            const m = Math.floor(secs / 60);
+            const s = secs % 60;
+            return `${m}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function getFeedback(score, total) {
+            const p = score / total;
+            if (p >= 0.9) return { text: "Redo för provet! Imponerande!", color: "text-green-600" };
+            if (p >= 0.7) return { text: "Bra jobbat! Öva lite till.", color: "text-green-600" };
+            if (p >= 0.5) return { text: "Halvvägs! Fortsätt träna.", color: "text-yellow-600" };
+            return { text: "Öva lite till – du klarar det!", color: "text-red-500" };
+        }
+
+        function App() {
+            const [phase, setPhase] = useState('start');
+            const [questions, setQuestions] = useState([]);
+            const [qIndex, setQIndex] = useState(0);
+            const [selected, setSelected] = useState(null);
+            const [score, setScore] = useState(0);
+            const [seconds, setSeconds] = useState(0);
+            const [missed, setMissed] = useState([]);
+            const [showModal, setShowModal] = useState(false);
+            const [modalReady, setModalReady] = useState(false);
+            const timerRef = useRef(null);
+
+            useEffect(() => {
+                if (phase === 'quiz') {
+                    timerRef.current = setInterval(() => setSeconds(s => s + 1), 1000);
+                } else {
+                    clearInterval(timerRef.current);
+                }
+                return () => clearInterval(timerRef.current);
+            }, [phase]);
+
+            const startQuiz = () => {
+                const shuffled = shuffleArray(allQuestions).map(q => ({
+                    ...q,
+                    options: shuffleArray([q.correct, ...q.others])
+                }));
+                setQuestions(shuffled);
+                setQIndex(0);
+                setSelected(null);
+                setScore(0);
+                setSeconds(0);
+                setMissed([]);
+                setShowModal(false);
+                setModalReady(false);
+                setPhase('quiz');
+            };
+
+            const handleAnswer = (option) => {
+                if (selected !== null) return;
+                setSelected(option);
+                const current = questions[qIndex];
+                const isCorrect = option === current.correct;
+                if (isCorrect) {
+                    setScore(s => s + 1);
+                } else {
+                    setMissed(m => [...m, current]);
+                }
+                setTimeout(() => {
+                    setShowModal(true);
+                    setTimeout(() => setModalReady(true), 50);
+                }, 600);
+            };
+
+            const nextQuestion = () => {
+                setShowModal(false);
+                setModalReady(false);
+                setSelected(null);
+                if (qIndex + 1 >= questions.length) {
+                    setPhase('result');
+                } else {
+                    setQIndex(i => i + 1);
+                }
+            };
+
+            if (phase === 'start') {
+                return (
+                    <div className="flex flex-col items-center justify-center min-h-screen px-4 text-center">
+                        <div className="bg-white rounded-3xl shadow-xl p-10 max-w-md w-full border border-slate-100 anim-pop">
+                            <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl" style={{ backgroundColor: '#dcfce7' }}>🌿</div>
+                            <h1 className="text-4xl font-bold text-slate-800 mb-3">Folkhälsa</h1>
+                            <p className="text-slate-500 mb-2">Naturkunskap 1a2</p>
+                            <p className="text-slate-600 mb-8 leading-relaxed">Testa dina kunskaper om folkhälsa, epidemiologi och centrala begrepp. Quizet har {allQuestions.length} frågor.</p>
+                            <button onClick={startQuiz} className="w-full py-4 rounded-2xl font-bold text-lg text-green-900 shadow-lg transition-all active:scale-95 hover:brightness-105" style={{ backgroundColor: PRIMARY }}>
+                                Starta Quiz
+                            </button>
+                            <a href="index.html" className="block mt-4 text-slate-400 hover:text-slate-600 text-sm transition-colors">← Tillbaka till startsidan</a>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (phase === 'result') {
+                const fb = getFeedback(score, questions.length);
+                return (
+                    <div className="max-w-2xl mx-auto px-4 py-10 anim-pop">
+                        <div className="bg-white rounded-3xl shadow-xl p-8 border border-slate-100 text-center mb-6">
+                            <div className="text-5xl mb-4">{score >= questions.length * 0.9 ? '🏆' : score >= questions.length * 0.7 ? '🎉' : '💪'}</div>
+                            <h2 className="text-3xl font-bold text-slate-800 mb-2">Quiz klart!</h2>
+                            <div className="text-6xl font-bold my-4" style={{ color: PRIMARY_DARK }}>{score} / {questions.length}</div>
+                            <p className={`text-xl font-bold mb-6 ${fb.color}`}>{fb.text}</p>
+                            <div className="flex gap-4 justify-center mb-4">
+                                <div className="bg-slate-50 rounded-2xl px-6 py-4 border border-slate-100">
+                                    <div className="text-xs uppercase tracking-wider text-slate-400 mb-1">Tid</div>
+                                    <div className="text-2xl font-bold text-slate-700">{formatTime(seconds)}</div>
+                                </div>
+                                <div className="rounded-2xl px-6 py-4 border" style={{ backgroundColor: '#dcfce7', borderColor: '#bbf7d0' }}>
+                                    <div className="text-xs uppercase tracking-wider mb-1" style={{ color: '#16a34a' }}>Rätt</div>
+                                    <div className="text-2xl font-bold" style={{ color: '#15803d' }}>{score} / {questions.length}</div>
+                                </div>
+                            </div>
+                            <button onClick={startQuiz} className="w-full py-4 rounded-2xl font-bold text-green-900 text-lg transition-all active:scale-95 hover:brightness-105" style={{ backgroundColor: PRIMARY }}>
+                                Gör om – blanda om!
+                            </button>
+                            <a href="index.html" className="block mt-3 text-slate-400 hover:text-slate-600 text-sm transition-colors">← Tillbaka till startsidan</a>
+                        </div>
+
+                        {missed.length > 0 && (
+                            <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-6">
+                                <h3 className="text-lg font-bold text-slate-700 mb-4">Frågor du missade ({missed.length} st)</h3>
+                                <div className="grid gap-3">
+                                    {missed.map((q, i) => (
+                                        <div key={i} className="p-4 rounded-2xl border-l-4 bg-red-50 border-red-400">
+                                            <p className="font-medium text-slate-700 mb-1">{q.question}</p>
+                                            <p className="text-sm font-bold" style={{ color: PRIMARY_DARK }}>✓ {q.correct}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                );
+            }
+
+            const current = questions[qIndex];
+            const progress = ((qIndex + 1) / questions.length) * 100;
+
+            return (
+                <div className="max-w-2xl mx-auto px-4 py-8">
+                    <div className="flex justify-between items-center mb-3">
+                        <span className="text-sm font-bold uppercase tracking-wider" style={{ color: PRIMARY_DARK }}>
+                            Fråga {qIndex + 1} av {questions.length}
+                        </span>
+                        <div className="flex items-center gap-4">
+                            <span className="text-sm font-bold text-slate-600">Poäng: {score}</span>
+                            <span className="font-mono font-bold text-slate-700 bg-slate-100 px-3 py-1 rounded-xl text-sm">{formatTime(seconds)}</span>
+                        </div>
+                    </div>
+
+                    <div className="w-full bg-slate-200 h-2 rounded-full mb-6 overflow-hidden">
+                        <div className="h-full rounded-full transition-all duration-500" style={{ width: `${progress}%`, backgroundColor: PRIMARY }}></div>
+                    </div>
+
+                    <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-7 mb-4 anim-fade">
+                        <h2 className="text-xl font-bold text-slate-800 leading-snug mb-6">{current.question}</h2>
+                        <div className="grid gap-3">
+                            {current.options.map((option, i) => {
+                                let cls = "w-full p-4 text-left rounded-2xl border-2 transition-all font-medium text-base ";
+                                if (selected === null) {
+                                    cls += "border-slate-200 hover:border-green-400 hover:bg-green-50 text-slate-700 cursor-pointer";
+                                } else if (option === current.correct) {
+                                    cls += "border-green-500 bg-green-50 text-green-800";
+                                } else if (option === selected) {
+                                    cls += "border-red-400 bg-red-50 text-red-700";
+                                } else {
+                                    cls += "border-slate-100 text-slate-300 cursor-default";
+                                }
+                                return (
+                                    <button key={i} onClick={() => handleAnswer(option)} disabled={selected !== null} className={cls}>
+                                        {option}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {showModal && (
+                        <div className="fixed inset-0 bg-black/40 flex items-end md:items-center justify-center z-50 px-4 pb-4 md:pb-0">
+                            <div className={`bg-white rounded-3xl shadow-2xl p-7 w-full max-w-lg transition-all ${modalReady ? 'anim-pop' : 'opacity-0'}`}>
+                                <div className={`text-center mb-4 text-3xl`}>
+                                    {selected === current.correct ? '✅' : '❌'}
+                                </div>
+                                <h3 className={`text-lg font-bold mb-3 text-center ${selected === current.correct ? 'text-green-700' : 'text-red-600'}`}>
+                                    {selected === current.correct ? 'Rätt svar!' : 'Fel svar'}
+                                </h3>
+                                {selected !== current.correct && (
+                                    <p className="text-sm font-bold text-green-700 mb-3 bg-green-50 p-3 rounded-xl">
+                                        Rätt svar: {current.correct}
+                                    </p>
+                                )}
+                                <p className="text-slate-600 leading-relaxed text-sm mb-6">{current.explanation}</p>
+                                <button onClick={nextQuestion} className="w-full py-4 rounded-2xl font-bold text-green-900 text-lg transition-all active:scale-95 hover:brightness-105" style={{ backgroundColor: PRIMARY }}>
+                                    {qIndex + 1 >= questions.length ? 'Visa resultat' : 'Nästa fråga →'}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

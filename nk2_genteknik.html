@@ -1,1 +1,549 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Genteknik & Genterapi – Naturkunskap 2</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Fredoka', sans-serif; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+        .anim-fade { animation: fadeIn 0.3s ease; }
+        .anim-pop { animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+    <a href="index.html" class="fixed top-4 left-4 z-50 text-sm font-medium text-slate-500 hover:text-green-700 bg-white/90 px-3 py-2 rounded-xl shadow-sm transition-colors">← Tillbaka till startsidan</a>
+    <div id="root"></div>
 
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const PRIMARY = '#4ade80';
+        const PRIMARY_DARK = '#16a34a';
+
+        const allQuestions = [
+            {
+                question: "Vad är CRISPR/Cas9 i gentekniksammanhang?",
+                correct: "En metod för att klippa och redigera DNA på en specifikt utvald plats i genomet",
+                others: [
+                    "En typ av virus som används för att transportera gener in i celler",
+                    "En diagnostisk metod för att kartlägga hela genomet hos en patient",
+                    "En genetisk sjukdom orsakad av mutationer i enzymet Cas9"
+                ],
+                explanation: "CRISPR/Cas9 kallas ibland 'gensaxen'. Det är ett system bestående av guide-RNA och enzymet Cas9 som tillsammans kan hitta och klippa en exakt DNA-sekvens i genomet."
+            },
+            {
+                question: "Vad är syftet med guide-RNA i CRISPR/Cas9-systemet?",
+                correct: "Det styr enzymet Cas9 till rätt plats i DNA-strängen för klippning",
+                others: [
+                    "Det bildar en ny DNA-sträng direkt efter att Cas9 har klippt sönder spiralen",
+                    "Det skyddar Cas9-enzymet från att brytas ned av cellens immunsystem",
+                    "Det aktiverar den genetiska koden i det redigerade området av genomet"
+                ],
+                explanation: "Guide-RNA är ca 20 baser långt och matchar komplementärt mot den DNA-sekvens man vill redigera. Det fungerar som en GPS som leder Cas9 till precis rätt ställe."
+            },
+            {
+                question: "Vilka vetenskapspersoner fick Nobelpriset i kemi 2020 för CRISPR/Cas9?",
+                correct: "Jennifer Doudna och Emmanuelle Charpentier",
+                others: [
+                    "James Watson och Francis Crick",
+                    "Frederick Sanger och Paul Berg",
+                    "Rosalind Franklin och Gregor Mendel"
+                ],
+                explanation: "Jennifer Doudna och Emmanuelle Charpentier delade Nobelpriset i kemi 2020 för sin forskning om CRISPR/Cas9 som ett precisionsinstrument för genomredigering."
+            },
+            {
+                question: "Vad är en PAM-sekvens i CRISPR-sammanhang?",
+                correct: "En kort DNA-sekvens som markerar var Cas9-enzymet kan börja klippa",
+                others: [
+                    "En sekvens som kodar för guide-RNA:t inne i cellkärnan",
+                    "En skyddssekvens som hindrar felaktiga klipp i det mänskliga genomet",
+                    "Den genetiska startsekvensen som finns i varje gen i kroppen"
+                ],
+                explanation: "PAM-sekvensen (t.ex. NGG för Cas9) fungerar som ett igenkänningsmärke. Cas9 kan bara börja klippa i DNA nära en PAM-sekvens, vilket bidrar till att klippningen sker på rätt ställe."
+            },
+            {
+                question: "Vad är genterapi?",
+                correct: "Behandling av sjukdom genom att föra in, reparera eller stänga av genetiskt material i celler",
+                others: [
+                    "En metod för att kartlägga en patients hela arvsmassa inför diagnos",
+                    "En kirurgisk metod för att ta bort muterade celler ur patientens kropp",
+                    "En vaccinationsmetod som ger immunitet mot genetiskt ärftliga sjukdomar"
+                ],
+                explanation: "Genterapi innebär att man manipulerar det genetiska materialet i celler för att behandla sjukdom – inte bota symtom utan angripa grundorsaken på DNA-nivå."
+            },
+            {
+                question: "Vad är skillnaden mellan ex vivo och in vivo genterapi?",
+                correct: "Ex vivo: celler tas ut, modifieras och återförs – in vivo sker modifieringen direkt i kroppen",
+                others: [
+                    "Ex vivo används enbart på djur i laboratorier, in vivo på människor",
+                    "Ex vivo är den nyare metoden, in vivo är äldre och mer riskfylld",
+                    "Ex vivo kräver donatorvävnad, in vivo använder patientens egna celler"
+                ],
+                explanation: "Ex vivo betyder 'utanför kroppen' – celler tas ut, modifieras i laboratoriet och sätts tillbaka. In vivo ('inuti kroppen') innebär att det terapeutiska materialet injiceras direkt in i ett organ eller blodbanorna."
+            },
+            {
+                question: "Vad är en monogen sjukdom?",
+                correct: "En sjukdom som orsakas av en mutation i en enda gen",
+                others: [
+                    "En sjukdom som beror på samspelet mellan många gener och miljöfaktorer",
+                    "En smittsam sjukdom som sprids via genetiskt material i befolkningen",
+                    "En sjukdom som alltid ärvas direkt från modern utan undantag"
+                ],
+                explanation: "Monogena sjukdomar orsakas av ett fel i en enda gen, t.ex. sickelcellanemi (HBB-genen) och cystisk fibros (CFTR-genen). De är ofta sällsynta men allvarliga."
+            },
+            {
+                question: "Vilket av följande är ett tydligt exempel på en monogen sjukdom?",
+                correct: "Sickelcellanemi",
+                others: [
+                    "Diabetes typ 2",
+                    "Alzheimers sjukdom",
+                    "Högt blodtryck"
+                ],
+                explanation: "Sickelcellanemi orsakas av en mutation i genen för hemoglobin (HBB). Diabetes typ 2, Alzheimers och högt blodtryck är multifaktoriella – de beror på många gener och miljöfaktorer."
+            },
+            {
+                question: "Vad är en GMO (genetiskt modifierad organism)?",
+                correct: "En organism vars arvsmassa ändrats med genteknik på ett sätt som inte sker naturligt",
+                others: [
+                    "En organism som odlas utan pesticider enligt ekologiska principer",
+                    "En organism som har anpassat sig naturligt till ett nytt klimat under evolutionen",
+                    "En organism som är klonad direkt från en genidentisk individ"
+                ],
+                explanation: "GMO definieras juridiskt som en organism vars genetiska material förändrats på ett sätt som inte kan ske via naturlig parning eller rekombination. Det gäller växter, djur och mikroorganismer."
+            },
+            {
+                question: "I vilket år godkändes det första GMO-livsmedlet, Flavr Savr-tomaten, för försäljning?",
+                correct: "1994",
+                others: [
+                    "1982",
+                    "2003",
+                    "2010"
+                ],
+                explanation: "Flavr Savr-tomaten godkändes i USA 1994. Den var genetiskt modifierad för att mogna långsammare och hålla sig längre. Det var första GMO-växten som godkändes som livsmedel."
+            },
+            {
+                question: "Vad är CAR-T-cellterapi?",
+                correct: "En genterapi där patientens T-celler modifieras genetiskt för att bättre döda cancerceller",
+                others: [
+                    "En metod för att stärka immunsystemet med syntetiska antikroppar mot cancer",
+                    "En kirurgisk teknik för att avlägsna tumörvävnad i benmärgen",
+                    "En behandling med läkemedel som hämmar uttrycket av cancerrelaterade gener"
+                ],
+                explanation: "CAR-T-cellterapi är en form av immunterapi och genterapi. Patientens T-celler tas ut, modifieras med en chimerisk antigenreceptor (CAR) som identifierar cancerceller, och återförs för att döda tumören."
+            },
+            {
+                question: "Vilka är de två vanligaste DNA-reparationsmekanismerna efter ett CRISPR-klipp?",
+                correct: "NHEJ (snabb men felbenägen) och HDR (noggrann men kräver mall-DNA)",
+                others: [
+                    "PCR (förstärkning av DNA) och sekvensering (avläsning av sekvens)",
+                    "Transkription och translation av det redigerade genomet i cellen",
+                    "Telomerfusion och homolog rekombination i delade stamceller"
+                ],
+                explanation: "NHEJ (Non-Homologous End Joining) reparerar snabbt men introducerar ofta deletioner som stänger av genen. HDR (Homology-Directed Repair) är noggrann och kan sätta in en ny sekvens men kräver en mall."
+            },
+            {
+                question: "Vad innebär basredigering jämfört med vanlig CRISPR/Cas9?",
+                correct: "Enstaka baspar ändras utan att DNA-spiralen klipps av helt",
+                others: [
+                    "Hela geners sekvenser byts ut mot ny DNA-kod på en gång",
+                    "Mutationer görs i guide-RNA:t istället för i den ursprungliga DNA-strängen",
+                    "Flera celler i kroppen redigeras simultant med en enda systemisk infusion"
+                ],
+                explanation: "Basredigering (base editing) är en vidareutveckling av CRISPR som kemiskt modifierar enstaka baspar utan att skapa ett fullständigt dubbelsträngbrott, vilket minskar risken för oavsiktliga mutationer."
+            },
+            {
+                question: "Hur fungerar en virusvektor i genterapi?",
+                correct: "Ett genetiskt avväpnat virus bär in nytt DNA i patientens celler utan att orsaka infektion",
+                others: [
+                    "Viruset attackerar och förstör muterade celler som sedan ersätts av friska donatorsceller",
+                    "Viruset binder till immunsystemet och aktiverar det mot sjukdomsalstrande proteiner",
+                    "Viruset producerar korrigerande enzymer direkt i patientens blodbanor"
+                ],
+                explanation: "Virusvektorer är genetiskt modifierade virus som tagits bort sin förmåga att orsaka sjukdom men behållit sin förmåga att ta sig in i celler. De används för att leverera terapeutiska gener till rätt celler."
+            },
+            {
+                question: "Vad är Casgevy och vad behandlar den?",
+                correct: "Den första CRISPR-baserade genterapi godkänd i EU, för sickelcellanemi och beta-thalassemi",
+                others: [
+                    "Den första RNA-baserade genterapi godkänd i EU, för leversvikt",
+                    "Ett CAR-T-läkemedel mot bröstcancer godkänt av FDA år 2023",
+                    "En genterapi för spinal muskelatrofi med direktinjektion i ryggmärgen"
+                ],
+                explanation: "Casgevy godkändes i EU år 2024 och är den första genterapi baserad på CRISPR/Cas9. Den behandlar sickelcellanemi och beta-thalassemi genom att reaktivera fosterformen av hemoglobin."
+            },
+            {
+                question: "Vad är skillnaden mellan somatisk och kimbaningsgenterapi?",
+                correct: "Somatisk påverkar bara den behandlade personen – kimbaningsgenterapi ärvas av framtida generationer",
+                others: [
+                    "Somatisk genterapi används på djur, kimbaningsgenterapi används på människor",
+                    "Somatisk genterapi är olaglig i EU, kimbaningsgenterapi är tillåten med godkännande",
+                    "Somatisk genterapi gäller stamceller, kimbaningsgenterapi gäller muskelceller"
+                ],
+                explanation: "Somatisk genterapi ändrar kroppsceller hos den behandlade personen och ärvas inte. Kimbaningsgenterapi (på könsceller eller embryon) ärvas av alla framtida generationer och är förbjuden i de flesta länder."
+            },
+            {
+                question: "Vad är en multifaktoriell sjukdom?",
+                correct: "En sjukdom som beror på samspelet mellan flera gener och miljöfaktorer",
+                others: [
+                    "En sjukdom orsakad av en enda mutation i en specifik gen i cellkärnan",
+                    "En sjukdom som alltid ärvas direkt från en av föräldrarna via dominant arv",
+                    "En sjukdom som enbart orsakas av exponering för miljögifter och strålning"
+                ],
+                explanation: "Multifaktoriella sjukdomar som diabetes typ 2, hjärt-kärlsjukdom och cancer beror på samspelet mellan många genetiska varianter och miljöfaktorer. De är svårare att behandla med genterapi än monogena sjukdomar."
+            },
+            {
+                question: "Hur ärvas mitokondriell sjukdom?",
+                correct: "Den ärvas alltid via modern, eftersom mitokondrier enbart ärvs från äggcellen",
+                others: [
+                    "Den ärvas halvt från vardera föräldern precis som vanliga cromosomala gener",
+                    "Den uppstår alltid som en ny mutation, helt oberoende av föräldrarnas arvsanlag",
+                    "Den ärvas via fadern om han bär mutationen i sina spermieceller"
+                ],
+                explanation: "Mitokondrier har ett eget DNA (mtDNA) som ärvs enbart via äggcellen, alltså från modern. Det beror på att spermien i princip inte bidrar med mitokondrier till det befruktade ägget."
+            },
+            {
+                question: "Vad är Bt-bomull och varför är den genetiskt modifierad?",
+                correct: "Bomull modifierad med en gen från Bacillus thuringiensis som gör den giftig för skadeinsekter",
+                others: [
+                    "Bomull modifierad för att klara extrem torka och brist på bevattning i torra klimat",
+                    "Bomull modifierad för att växa dubbelt så snabbt och ge en större skörd",
+                    "Bomull modifierad med en gen som ger resistens mot herbicider och ogräsmedel"
+                ],
+                explanation: "Bt-bomull innehåller en gen från jordbakterien Bacillus thuringiensis som kodar för ett protein giftigt för insekter, t.ex. bomullsmaskar. Det minskar behovet av kemiska insektsmedel."
+            },
+            {
+                question: "Vilken sjukdom behandlades på den första genterapi-patienten år 1990?",
+                correct: "ADA-SCID – en allvarlig form av svår kombinerad immunbrist",
+                others: [
+                    "Hemofili A – blödarsjuka med brist på koagulationsfaktor VIII",
+                    "Cystisk fibros – slemproducerande sjukdom i lungor och matsmältning",
+                    "Huntingtons sjukdom – degenerativ neurologisk sjukdom"
+                ],
+                explanation: "1990 behandlades den fyraåriga Ashanthi DeSilva för ADA-SCID med genterapi – världens första genterapi på en människa. Hennes immunsystem förbättrades, men effekten avtog med tiden."
+            },
+            {
+                question: "Vad hände år 1999 som var ett stort bakslag för genterapiforskningen?",
+                correct: "En patient dog av en svår immunologisk reaktion mot den använda virusvektorn",
+                others: [
+                    "EU förbjöd all genterapi efter att ett modifierat virus läckte från laboratorium",
+                    "En stor genterapi-studie avbröts efter att data visade sig vara förfalskade",
+                    "Nobelpriset för genterapi drogs tillbaka på grund av allvarligt forskningsfusk"
+                ],
+                explanation: "Jesse Gelsinger, 18 år, dog 1999 av massivt organsvikt efter en svår immunreaktion mot adenovirusvektorn i en klinisk studie. Det ledde till hårdare reglering av genterapi globalt."
+            },
+            {
+                question: "Vad var problemet med genterapi mot SCID-X1 runt år 2000, trots att behandlingen fungerade?",
+                correct: "Två av tio behandlade patienter utvecklade leukemi som en allvarlig biverkning",
+                others: [
+                    "Behandlingen visade sig inte ge bestående effekt efter mer än 30 dagar",
+                    "Patienterna fick kvarstående virusinfektioner av den modifierade vektorn",
+                    "Behandlingen kostade mer än sjukvårdssystemet i något land kunde hantera"
+                ],
+                explanation: "Behandlingen mot SCID-X1 var ett genombrott, men retroviruset satte in sig nära en onkogen (LMO2) och aktiverade den, vilket ledde till leukemi hos 2 av 10 patienter."
+            },
+            {
+                question: "Vad är oligonukleotider och hur används de i genterapi?",
+                correct: "Korta RNA-sekvenser som tystar eller påverkar uttrycket av specifika sjukdomsgener",
+                others: [
+                    "Enzymer som klipper ut muterade delar av DNA och ersätter dem med friska sekvenser",
+                    "Syntetiska proteiner som ersätter skadade genprodukter direkt i cellen",
+                    "Virus-protein-komplex som bär in hela DNA-strängar i cellkärnan"
+                ],
+                explanation: "Oligonukleotider, som antisens och siRNA, fungerar på RNA-nivå – de binder till specifika mRNA-sekvenser och hindrar translation till protein. De används t.ex. för att behandla Skelleftesjukan."
+            },
+            {
+                question: "Sedan vilket år produceras humaninsulin av genetiskt modifierade bakterier?",
+                correct: "1982",
+                others: [
+                    "1973",
+                    "1994",
+                    "2003"
+                ],
+                explanation: "1982 godkändes Humulin – humaninsulin tillverkat av genetiskt modifierade E.coli-bakterier. Det var ett historiskt genombrott som ersatte grisinsulin och blev det första GMM-läkemedlet."
+            },
+            {
+                question: "Vad menas med genflöde i samband med GMO i miljön?",
+                correct: "Att modifierade gener sprids från GMO-grödor till vilda växtpopulationer via pollinering",
+                others: [
+                    "Att GMO-växter vandrar och etablerar sig i nya geografiska naturmiljöer",
+                    "Att GMO-djur tränger undan vilda djur från deras naturliga habitat",
+                    "Att enzymer från GMO-växter påverkar och förstör mikroorganismer i marken"
+                ],
+                explanation: "Genflöde innebär att pollen från GMO-grödor befruktar vilda släktingväxter, och att de modifierade generna sprids in i vilda populationer. Det kan ge ekologiska konsekvenser som är svåra att förutsäga."
+            },
+            {
+                question: "Vilken sjukdom behandlas med Zolgensma, ett av världens dyraste läkemedel?",
+                correct: "Spinal muskelatrofi (SMA) hos spädbarn",
+                others: [
+                    "Beta-thalassemi hos äldre barn och vuxna",
+                    "Cystisk fibros med allvarlig lungpåverkan",
+                    "Huntingtons sjukdom hos medelålders patienter"
+                ],
+                explanation: "Zolgensma är en engångsgenterapi mot spinal muskelatrofi (SMA), en genetisk muskelsjukdom hos barn. Läkemedlet kostade ca 20 miljoner kronor per dos och ersätter den defekta SMN1-genen."
+            },
+            {
+                question: "Vad är PGD (preimplantatorisk genetisk diagnostik)?",
+                correct: "Genetisk screening av embryon vid provrörsbefruktning för att välja bort sjukdomsbärare",
+                others: [
+                    "En metod för att analysera en gravid persons arvsmassa via moderkakan",
+                    "En teknik för att reparera genetiska fel i foster under tidig graviditet",
+                    "En screeningmetod som genomförs direkt efter födseln på alla nyfödda"
+                ],
+                explanation: "PGD utförs innan embryot implanteras i livmodern vid IVF. Embryon testas för en specifik mutation och bara de utan mutationen väljs ut – en preventiv åtgärd mot ärftliga sjukdomar."
+            },
+            {
+                question: "Varför är genterapi på könsceller etiskt kontroversiellt?",
+                correct: "Förändringarna ärvas av alla framtida generationer och kan inte tas tillbaka",
+                others: [
+                    "Tekniken är ännu för oprecis för att ens kunna redigera könsceller i laboratoriet",
+                    "Det finns inga genetiska sjukdomar som kan botas om man redigerar könsceller",
+                    "Könsceller är biologiskt unika och dör alltid vid kontakt med genteknikverktyg"
+                ],
+                explanation: "Genterapi på könsceller (spermier, äggceller) eller befruktade ägg är kontroversiell eftersom förändringarna ärvs av alla kommande generationer. Fel eller oavsiktliga effekter kan inte tas tillbaka."
+            },
+            {
+                question: "Vilken gen stängs av i Casgevy-behandlingen och varför?",
+                correct: "BCL11A stängs av för att reaktivera fosterformen av hemoglobin som ersätter det defekta",
+                others: [
+                    "HBB ersätts med en frisk kopia av hemoglobingenen från en donator",
+                    "SOD1 stängs av för att minska oxidativ stress och röda blodkropparnas nedbrytning",
+                    "APOE modifieras för att förhindra att röda blodkroppar fastnar i blodkärlen"
+                ],
+                explanation: "BCL11A undertrycker normalt det fetala hemoglobinet (HbF) efter födseln. Casgevy stänger av BCL11A med CRISPR, vilket reaktiverar HbF – ett hemoglobin som fungerar normalt trots sickelcellmutationen."
+            },
+            {
+                question: "Ungefär hur många genterapier hade godkänts inom EU fram till 2024?",
+                correct: "Ungefär 18 genterapier",
+                others: [
+                    "Exakt 5 genterapier",
+                    "Drygt 50 genterapier",
+                    "Mer än 100 genterapier"
+                ],
+                explanation: "Fram till 2024 hade ca 18 genterapier godkänts inom EU. Trots lång forskningstid har godkännandeprocessen accelererat det senaste decenniet, och fler förväntas godkännas de kommande åren."
+            }
+        ];
+
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function formatTime(secs) {
+            const m = Math.floor(secs / 60);
+            const s = secs % 60;
+            return `${m}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function getFeedback(score, total) {
+            const p = score / total;
+            if (p >= 0.9) return { text: "Redo för provet! Imponerande!", color: "text-green-600" };
+            if (p >= 0.7) return { text: "Bra jobbat! Öva lite till.", color: "text-green-600" };
+            if (p >= 0.5) return { text: "Halvvägs! Fortsätt träna.", color: "text-yellow-600" };
+            return { text: "Öva lite till – du klarar det!", color: "text-red-500" };
+        }
+
+        function App() {
+            const [phase, setPhase] = useState('start');
+            const [questions, setQuestions] = useState([]);
+            const [qIndex, setQIndex] = useState(0);
+            const [selected, setSelected] = useState(null);
+            const [score, setScore] = useState(0);
+            const [seconds, setSeconds] = useState(0);
+            const [missed, setMissed] = useState([]);
+            const [showModal, setShowModal] = useState(false);
+            const [modalReady, setModalReady] = useState(false);
+            const timerRef = useRef(null);
+
+            useEffect(() => {
+                if (phase === 'quiz') {
+                    timerRef.current = setInterval(() => setSeconds(s => s + 1), 1000);
+                } else {
+                    clearInterval(timerRef.current);
+                }
+                return () => clearInterval(timerRef.current);
+            }, [phase]);
+
+            const startQuiz = () => {
+                const shuffled = shuffleArray(allQuestions).map(q => ({
+                    ...q,
+                    options: shuffleArray([q.correct, ...q.others])
+                }));
+                setQuestions(shuffled);
+                setQIndex(0);
+                setSelected(null);
+                setScore(0);
+                setSeconds(0);
+                setMissed([]);
+                setShowModal(false);
+                setModalReady(false);
+                setPhase('quiz');
+            };
+
+            const handleAnswer = (option) => {
+                if (selected !== null) return;
+                setSelected(option);
+                const current = questions[qIndex];
+                if (option === current.correct) {
+                    setScore(s => s + 1);
+                } else {
+                    setMissed(m => [...m, current]);
+                }
+                setTimeout(() => {
+                    setShowModal(true);
+                    setTimeout(() => setModalReady(true), 50);
+                }, 600);
+            };
+
+            const nextQuestion = () => {
+                setShowModal(false);
+                setModalReady(false);
+                setSelected(null);
+                if (qIndex + 1 >= questions.length) {
+                    setPhase('result');
+                } else {
+                    setQIndex(i => i + 1);
+                }
+            };
+
+            if (phase === 'start') {
+                return (
+                    <div className="flex flex-col items-center justify-center min-h-screen px-4 text-center">
+                        <div className="bg-white rounded-3xl shadow-xl p-10 max-w-md w-full border border-slate-100 anim-pop">
+                            <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl" style={{ backgroundColor: '#dcfce7' }}>🧬</div>
+                            <h1 className="text-4xl font-bold text-slate-800 mb-3">Genteknik & Genterapi</h1>
+                            <p className="text-slate-500 mb-2">Naturkunskap 1a2</p>
+                            <p className="text-slate-600 mb-8 leading-relaxed">Testa dina kunskaper om CRISPR/Cas9, genterapi, GMO, genetiska sjukdomar och etiska frågor. {allQuestions.length} frågor.</p>
+                            <button onClick={startQuiz} className="w-full py-4 rounded-2xl font-bold text-lg text-green-900 shadow-lg transition-all active:scale-95 hover:brightness-105" style={{ backgroundColor: PRIMARY }}>
+                                Starta Quiz
+                            </button>
+                            <a href="index.html" className="block mt-4 text-slate-400 hover:text-slate-600 text-sm transition-colors">← Tillbaka till startsidan</a>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (phase === 'result') {
+                const fb = getFeedback(score, questions.length);
+                return (
+                    <div className="max-w-2xl mx-auto px-4 py-10 anim-pop">
+                        <div className="bg-white rounded-3xl shadow-xl p-8 border border-slate-100 text-center mb-6">
+                            <div className="text-5xl mb-4">{score >= questions.length * 0.9 ? '🏆' : score >= questions.length * 0.7 ? '🎉' : '💪'}</div>
+                            <h2 className="text-3xl font-bold text-slate-800 mb-2">Quiz klart!</h2>
+                            <div className="text-6xl font-bold my-4" style={{ color: PRIMARY_DARK }}>{score} / {questions.length}</div>
+                            <p className={`text-xl font-bold mb-6 ${fb.color}`}>{fb.text}</p>
+                            <div className="flex gap-4 justify-center mb-4">
+                                <div className="bg-slate-50 rounded-2xl px-6 py-4 border border-slate-100">
+                                    <div className="text-xs uppercase tracking-wider text-slate-400 mb-1">Tid</div>
+                                    <div className="text-2xl font-bold text-slate-700">{formatTime(seconds)}</div>
+                                </div>
+                                <div className="rounded-2xl px-6 py-4 border" style={{ backgroundColor: '#dcfce7', borderColor: '#bbf7d0' }}>
+                                    <div className="text-xs uppercase tracking-wider mb-1" style={{ color: '#16a34a' }}>Rätt</div>
+                                    <div className="text-2xl font-bold" style={{ color: '#15803d' }}>{score} / {questions.length}</div>
+                                </div>
+                            </div>
+                            <button onClick={startQuiz} className="w-full py-4 rounded-2xl font-bold text-green-900 text-lg transition-all active:scale-95 hover:brightness-105" style={{ backgroundColor: PRIMARY }}>
+                                Gör om – blanda om!
+                            </button>
+                            <a href="index.html" className="block mt-3 text-slate-400 hover:text-slate-600 text-sm transition-colors">← Tillbaka till startsidan</a>
+                        </div>
+
+                        {missed.length > 0 && (
+                            <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-6">
+                                <h3 className="text-lg font-bold text-slate-700 mb-4">Frågor du missade ({missed.length} st)</h3>
+                                <div className="grid gap-3">
+                                    {missed.map((q, i) => (
+                                        <div key={i} className="p-4 rounded-2xl border-l-4 bg-red-50 border-red-400">
+                                            <p className="font-medium text-slate-700 mb-1">{q.question}</p>
+                                            <p className="text-sm font-bold" style={{ color: PRIMARY_DARK }}>✓ {q.correct}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                );
+            }
+
+            const current = questions[qIndex];
+            const progress = ((qIndex + 1) / questions.length) * 100;
+
+            return (
+                <div className="max-w-2xl mx-auto px-4 py-8">
+                    <div className="flex justify-between items-center mb-3">
+                        <span className="text-sm font-bold uppercase tracking-wider" style={{ color: PRIMARY_DARK }}>
+                            Fråga {qIndex + 1} av {questions.length}
+                        </span>
+                        <div className="flex items-center gap-4">
+                            <span className="text-sm font-bold text-slate-600">Poäng: {score}</span>
+                            <span className="font-mono font-bold text-slate-700 bg-slate-100 px-3 py-1 rounded-xl text-sm">{formatTime(seconds)}</span>
+                        </div>
+                    </div>
+
+                    <div className="w-full bg-slate-200 h-2 rounded-full mb-6 overflow-hidden">
+                        <div className="h-full rounded-full transition-all duration-500" style={{ width: `${progress}%`, backgroundColor: PRIMARY }}></div>
+                    </div>
+
+                    <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-7 mb-4 anim-fade">
+                        <h2 className="text-xl font-bold text-slate-800 leading-snug mb-6">{current.question}</h2>
+                        <div className="grid gap-3">
+                            {current.options.map((option, i) => {
+                                let cls = "w-full p-4 text-left rounded-2xl border-2 transition-all font-medium text-base ";
+                                if (selected === null) {
+                                    cls += "border-slate-200 hover:border-green-400 hover:bg-green-50 text-slate-700 cursor-pointer";
+                                } else if (option === current.correct) {
+                                    cls += "border-green-500 bg-green-50 text-green-800";
+                                } else if (option === selected) {
+                                    cls += "border-red-400 bg-red-50 text-red-700";
+                                } else {
+                                    cls += "border-slate-100 text-slate-300 cursor-default";
+                                }
+                                return (
+                                    <button key={i} onClick={() => handleAnswer(option)} disabled={selected !== null} className={cls}>
+                                        {option}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {showModal && (
+                        <div className="fixed inset-0 bg-black/40 flex items-end md:items-center justify-center z-50 px-4 pb-4 md:pb-0">
+                            <div className={`bg-white rounded-3xl shadow-2xl p-7 w-full max-w-lg transition-all ${modalReady ? 'anim-pop' : 'opacity-0'}`}>
+                                <div className="text-center mb-4 text-3xl">
+                                    {selected === current.correct ? '✅' : '❌'}
+                                </div>
+                                <h3 className={`text-lg font-bold mb-3 text-center ${selected === current.correct ? 'text-green-700' : 'text-red-600'}`}>
+                                    {selected === current.correct ? 'Rätt svar!' : 'Fel svar'}
+                                </h3>
+                                {selected !== current.correct && (
+                                    <p className="text-sm font-bold text-green-700 mb-3 bg-green-50 p-3 rounded-xl">
+                                        Rätt svar: {current.correct}
+                                    </p>
+                                )}
+                                <p className="text-slate-600 leading-relaxed text-sm mb-6">{current.explanation}</p>
+                                <button onClick={nextQuestion} className="w-full py-4 rounded-2xl font-bold text-green-900 text-lg transition-all active:scale-95 hover:brightness-105" style={{ backgroundColor: PRIMARY }}>
+                                    {qIndex + 1 >= questions.length ? 'Visa resultat' : 'Nästa fråga →'}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

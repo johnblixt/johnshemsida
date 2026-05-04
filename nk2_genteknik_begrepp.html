@@ -1,1 +1,296 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Begreppslista - Genteknik (NK2)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body { font-family: 'Fredoka', sans-serif; }
+        .flip-card { perspective: 1000px; height: 350px; width: 100%; max-width: 400px; cursor: pointer; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+        .flipped-classes { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+        .flip-card-front { background-color: #4ade80; border: 6px solid white; }
+        .flip-card-back { background-color: white; border: 6px solid #4ade80; transform: rotateY(180deg); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState } = React;
 
+        const concepts = [
+            {
+                term: "Genteknik",
+                definition: "Teknik för att ändra, lägga till eller ta bort specifika delar av en organisms DNA med hjälp av laboratorieverktyg.",
+                sentence: "Tack vare _____ kan vi idag producera humaninsulin i bakterier och behandla allvarliga genetiska sjukdomar."
+            },
+            {
+                term: "DNA",
+                definition: "Det genetiska materialet i alla levande organismer, bestående av två spiralformade strängar bundna med baspar (A-T och G-C).",
+                sentence: "Alla levande celler bär på _____ som innehåller alla instruktioner för hur organismen ska byggas och fungera."
+            },
+            {
+                term: "Gen",
+                definition: "En specifik sekvens av DNA som kodar för tillverkning av ett protein med en viss funktion i kroppen.",
+                sentence: "Mutationen i en enda _____ kan orsaka allvarliga sjukdomar som cystisk fibros och sickelcellanemi."
+            },
+            {
+                term: "CRISPR/Cas9",
+                definition: "En precisionsmekanism för att klippa och redigera DNA på en exakt bestämd plats – guide-RNA styr enzymet Cas9 till rätt sekvens.",
+                sentence: "Med hjälp av _____ kan forskare idag rikta in sig på en enda av de tre miljarder baspar som finns i en cell."
+            },
+            {
+                term: "Guide-RNA",
+                definition: "En kort RNA-sekvens (ca 20 baser) som styr CRISPR-enzymet till rätt plats i genomet genom komplementär basparning.",
+                sentence: "Forskaren designade ett _____ som exakt matchade den DNA-sekvens de ville redigera bort."
+            },
+            {
+                term: "Mutation",
+                definition: "En förändring i DNA-sekvensen som kan uppstå spontant, som följd av strålning eller kemikalier, eller avsiktligt via CRISPR.",
+                sentence: "En _____ i BCL11A-genen används terapeutiskt för att reaktivera fosterformen av hemoglobin hos sickelcellanemi-patienter."
+            },
+            {
+                term: "Genterapi",
+                definition: "Behandling av sjukdom genom att föra in, stänga av, reparera eller ersätta genetiskt material i patientens celler.",
+                sentence: "_____ har gett hopp åt barn med svår kombinerad immunbrist som tidigare saknade ett fungerande immunsystem."
+            },
+            {
+                term: "GMO",
+                definition: "En organism vars arvsmassa ändrats med hjälp av genteknik på ett sätt som inte sker naturligt via parning eller naturlig rekombination.",
+                sentence: "_____ är idag vanligt i jordbruket, t.ex. Bt-bomull och herbicidtolerant sojaböna som odlas på hundratals miljoner hektar."
+            },
+            {
+                term: "Virusvektor",
+                definition: "Ett genetiskt avväpnat virus som används för att transportera in nytt DNA i patientens celler utan att orsaka infektion.",
+                sentence: "En _____ bär det terapeutiska DNA:t och levererar det till rätt celler i patientens kropp."
+            },
+            {
+                term: "CAR-T-cellterapi",
+                definition: "Genterapi där patientens T-celler modifieras med en chimerisk antigenreceptor (CAR) och återförs för att döda cancerceller.",
+                sentence: "_____ har visat remarkabla resultat mot blodcancerformer som tidigare inte svarat på kemoterapi."
+            },
+            {
+                term: "Monogen sjukdom",
+                definition: "En sjukdom orsakad av en mutation i en enda gen, ofta sällsynt och allvarlig, t.ex. sickelcellanemi, hemofili och cystisk fibros.",
+                sentence: "En _____ är lättare att behandla med genterapi än multifaktoriella sjukdomar, eftersom den orsakas av ett enda defekt gen."
+            },
+            {
+                term: "Basredigering",
+                definition: "En vidareutveckling av CRISPR som byter ut enstaka baspar utan att klippa upp DNA-spiralen – ger färre oavsiktliga mutationer.",
+                sentence: "_____ minskar risken för biverkningar eftersom DNA-strängen aldrig klipps helt av under redigeringen."
+            },
+            {
+                term: "Ex vivo",
+                definition: "Genterapimetod där celler tas ut ur patientens kropp, modifieras utanför och sedan återförs efter att modifieringen kontrollerats.",
+                sentence: "Vid _____ genterapi kan läkare verifiera att redigeringen lyckades innan cellerna sätts tillbaka i patienten."
+            },
+            {
+                term: "In vivo",
+                definition: "Genterapimetod där modifieringen sker direkt inne i kroppen via t.ex. injektion i ett organ, utan att celler behöver tas ut.",
+                sentence: "_____ genterapi för näthinnesjukdomar levereras via direktinjektion i ögat på den drabbade patienten."
+            },
+            {
+                term: "Kimbaningsgenterapi",
+                definition: "Genterapi som görs på könsceller eller befruktade ägg och därför ärvas av alla framtida generationer – är förbjuden i de flesta länder.",
+                sentence: "_____ är förbjuden i de flesta länder på grund av de etiska och säkerhetsmässiga riskerna med arvsbar manipulation."
+            },
+            {
+                term: "Oligonukleotider",
+                definition: "Korta syntetiska RNA-sekvenser som reglerar genuttryck genom att tysta eller modifiera hur specifika sjukdomsgener läses av.",
+                sentence: "_____ används för att behandla Skelleftesjukan genom att hindra bildning av det skadliga transtyretinproteinet."
+            },
+            {
+                term: "Genflöde",
+                definition: "Spridning av genetisk information mellan populationer, t.ex. när pollen från GMO-grödor befruktar vilda växtpopulationer.",
+                sentence: "Risken för _____ från GMO-grödor kräver buffertzoner mellan odlingarna och vilda växtpopulationer."
+            },
+            {
+                term: "NHEJ",
+                definition: "Icke-homolog sammanfogning – den vanligaste och snabbaste DNA-reparationsmekanismen efter dubbelsträngbrott, men felbenägen.",
+                sentence: "_____ reparerar snabbt ett CRISPR-klipp men introducerar ofta deletioner som permanent stänger av genen."
+            },
+            {
+                term: "HDR",
+                definition: "Homologistyrd reparation – en noggrann DNA-reparationsmekanism som kräver mall-DNA och möjliggör kontrollerad inläggning av ny sekvens.",
+                sentence: "Forskaren använde _____ för att sätta in den korrekta nukleotiden exakt på klippstället i genomet."
+            },
+            {
+                term: "PGD",
+                definition: "Preimplantatorisk genetisk diagnostik – screening av embryon vid provrörsbefruktning för att välja bort sjukdomsbärare innan implantation.",
+                sentence: "Familjer med ärftliga sjukdomar kan via _____ välja att enbart implantera embryon som inte bär sjukdomsmutationen."
+            }
+        ];
+
+        function shuffleArray(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        function getFeedback(score, total) {
+            const p = score / total;
+            if (p >= 0.9) return "Redo för provet! Fantastiskt bra!";
+            if (p >= 0.7) return "Bra jobbat! Öva lite till på de du missade.";
+            if (p >= 0.5) return "Halvvägs! Fortsätt träna.";
+            return "Öva lite till – du är på rätt väg!";
+        }
+
+        function LucktextView() {
+            const [inputs, setInputs] = useState(concepts.map(() => ''));
+            const [attempts, setAttempts] = useState(concepts.map(() => 0));
+            const [statuses, setStatuses] = useState(concepts.map(() => null));
+            const [done, setDone] = useState(false);
+
+            const normalize = s => s.trim().toLowerCase();
+
+            const submit = (i) => {
+                if (statuses[i] === 'correct' || statuses[i] === 'wrong-final') return;
+                if (normalize(inputs[i]) === normalize(concepts[i].term)) {
+                    const s = [...statuses]; s[i] = 'correct'; setStatuses(s);
+                } else {
+                    const a = [...attempts]; a[i]++; setAttempts(a);
+                    const s = [...statuses]; s[i] = a[i] >= 2 ? 'wrong-final' : 'wrong-once'; setStatuses(s);
+                }
+            };
+
+            const rättaAlla = () => { setStatuses(statuses.map(s => s === 'correct' ? 'correct' : 'wrong-final')); setDone(true); };
+            const börjaOm = () => { setInputs(concepts.map(() => '')); setAttempts(concepts.map(() => 0)); setStatuses(concepts.map(() => null)); setDone(false); };
+
+            const correctCount = statuses.filter(s => s === 'correct').length;
+            const allDone = done || statuses.every(s => s === 'correct' || s === 'wrong-final');
+
+            return (
+                <div>
+                    <div className="mb-6 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Begreppsbank</p>
+                        <div className="flex flex-wrap gap-2">
+                            {concepts.map((c, i) => (
+                                <span key={i} className={`px-3 py-1 rounded-full text-sm font-medium border transition-all ${statuses[i] === 'correct' ? 'line-through text-slate-400 bg-green-50 border-green-200' : 'bg-green-50 border-green-300 text-green-800'}`}>{c.term}</span>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="grid gap-4">
+                        {concepts.map((c, i) => {
+                            const parts = c.sentence.split('_____');
+                            const st = statuses[i];
+                            return (
+                                <div key={i} className={`bg-white p-5 rounded-2xl shadow-sm border-l-8 transition-all ${st === 'correct' ? 'border-green-500' : st === 'wrong-final' ? 'border-red-400' : 'border-green-400'}`}>
+                                    <p className="text-slate-700 mb-3 leading-relaxed">{parts[0]}<span className="font-bold text-green-600">[_____]</span>{parts[1]}</p>
+                                    {st === 'correct' ? (
+                                        <div className="flex flex-wrap items-center gap-2 text-green-600"><span className="font-bold">✓ {c.term}</span><span className="text-sm font-normal text-slate-500">– {c.definition}</span></div>
+                                    ) : st === 'wrong-final' ? (
+                                        <div><p className="text-red-500 text-sm">Rätt svar: <span className="font-bold">{c.term}</span></p><p className="text-slate-500 text-sm mt-1">{c.definition}</p></div>
+                                    ) : (
+                                        <div>
+                                            <div className="flex gap-2">
+                                                <input type="text" value={inputs[i]} onChange={e => { const v = [...inputs]; v[i] = e.target.value; setInputs(v); }} onKeyDown={e => e.key === 'Enter' && submit(i)} placeholder="Skriv begreppet och tryck Enter..." className="flex-1 border-2 border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:border-green-400 text-sm" />
+                                                <button onClick={() => submit(i)} className="bg-green-400 text-green-900 px-4 py-2 rounded-xl font-bold hover:bg-green-500 transition-colors">→</button>
+                                            </div>
+                                            {st === 'wrong-once' && <p className="text-orange-500 text-sm mt-2 font-medium">Är du säker att du stavat rätt?</p>}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <div className="mt-8 flex justify-between items-center">
+                        <button onClick={börjaOm} className="text-slate-500 hover:text-slate-700 font-medium transition-colors">↺ Börja om</button>
+                        {!allDone && <button onClick={rättaAlla} className="bg-slate-800 text-white px-6 py-3 rounded-2xl font-bold hover:bg-slate-700 transition-colors">Rätta alla</button>}
+                    </div>
+                    {allDone && (
+                        <div className="mt-8 bg-green-50 border-2 border-green-400 rounded-3xl p-8 text-center">
+                            <p className="text-5xl font-bold text-green-500 mb-2">{correctCount}/{concepts.length}</p>
+                            <p className="text-xl font-bold text-slate-800 mb-4">{getFeedback(correctCount, concepts.length)}</p>
+                            <button onClick={börjaOm} className="bg-green-400 text-green-900 px-8 py-3 rounded-2xl font-bold hover:bg-green-500 transition-colors">Börja om</button>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        function App() {
+            const [view, setView] = useState('list');
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [isFlipped, setIsFlipped] = useState(false);
+
+            const nextCard = () => {
+                setIsFlipped(false);
+                setTimeout(() => {
+                    let n; do { n = Math.floor(Math.random() * concepts.length); } while (n === currentIndex && concepts.length > 1);
+                    setCurrentIndex(n);
+                }, 150);
+            };
+
+            const activeTab = 'bg-green-400 text-green-900 font-bold shadow-sm';
+            const inactiveTab = 'text-slate-500';
+
+            return (
+                <div className="min-h-screen p-4 md:p-8">
+                    <header className="max-w-2xl mx-auto mb-8 flex items-center justify-between">
+                        <a href="index.html" className="text-slate-500 hover:text-green-600 transition-colors flex items-center gap-2 font-medium text-sm">← Tillbaka till startsidan</a>
+                        <h1 className="text-2xl md:text-3xl font-bold text-center">Genteknik – Naturkunskap 2</h1>
+                        <div className="w-36"></div>
+                    </header>
+
+                    <div className="max-w-sm mx-auto mb-10 flex bg-white p-1 rounded-full shadow-md border border-slate-200">
+                        <button onClick={() => setView('list')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'list' ? activeTab : inactiveTab}`}>Lista</button>
+                        <button onClick={() => setView('flashcards')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'flashcards' ? activeTab : inactiveTab}`}>Flashcards</button>
+                        <button onClick={() => setView('lucktext')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'lucktext' ? activeTab : inactiveTab}`}>Lucktext</button>
+                    </div>
+
+                    <main className="max-w-2xl mx-auto">
+                        {view === 'list' && (
+                            <div className="grid gap-4">
+                                {concepts.map((item, index) => (
+                                    <div key={index} className="bg-white p-5 rounded-2xl border-l-8 border-green-400 shadow-sm hover:shadow-md transition-shadow">
+                                        <div className="flex items-center gap-3 mb-1">
+                                            <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-lg">{index + 1}</span>
+                                            <h3 className="text-lg font-bold">{item.term}</h3>
+                                        </div>
+                                        <p className="text-slate-600 leading-relaxed ml-10">{item.definition}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        {view === 'flashcards' && (
+                            <div className="flex flex-col items-center">
+                                <div className="flip-card mb-8" onClick={() => setIsFlipped(!isFlipped)}>
+                                    <div className={`flip-card-inner ${isFlipped ? 'flipped-classes' : ''}`}>
+                                        <div className="flip-card-front">
+                                            <h2 className="text-3xl font-bold text-slate-900 text-center px-4">{concepts[currentIndex].term}</h2>
+                                            <div className="absolute bottom-6 animate-pulse"><span className="text-[10px] uppercase tracking-[0.2em] text-green-900 font-bold opacity-70">Klicka för svar</span></div>
+                                        </div>
+                                        <div className="flip-card-back">
+                                            <p className="text-xl leading-relaxed text-slate-800 font-medium px-4">{concepts[currentIndex].definition}</p>
+                                            <div className="absolute bottom-6"><span className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">Klicka för att vända</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex flex-col items-center gap-4">
+                                    <button onClick={nextCard} className="bg-slate-900 text-white px-10 py-4 rounded-2xl font-bold shadow-xl hover:bg-slate-800 active:scale-95 transition-all flex items-center gap-3 text-lg">Nästa begrepp <span>→</span></button>
+                                    <p className="text-slate-500 font-medium bg-slate-200 px-4 py-1 rounded-full text-xs">{currentIndex + 1} av {concepts.length}</p>
+                                </div>
+                            </div>
+                        )}
+                        {view === 'lucktext' && <LucktextView />}
+                    </main>
+
+                    <footer className="mt-12 text-center text-slate-400 text-sm italic pb-8">Källa: Naturkunskap 2 – Genteknik begreppslista</footer>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
