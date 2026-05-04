@@ -156,8 +156,8 @@ Varje begreppsfil innehåller **både en begreppslista och flashcards i samma fi
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 ```
 
-### Toggle – Lista vs Flashcards
-- Pill-formad toggle högst upp: **Lista** | **Flashcards**
+### Toggle – Lista vs Flashcards vs Lucktext
+- Pill-formad toggle högst upp: **Lista** | **Flashcards** | **Lucktext**
 - Aktiv vy markeras med ämnets primärfärg
 - Inaktiv vy är grå text
 
@@ -184,8 +184,27 @@ Varje begreppsfil innehåller **både en begreppslista och flashcards i samma fi
 .flip-card-back { transform: rotateY(180deg); }
 ```
 
+### Lucktext-vy
+- Varje begrepp i listan ska ha **en egen mening** — antalet meningar = antalet begrepp
+- Meningarna ska visa begreppet i ett **verkligt sammanhang** så eleven förstår när och hur det används
+- Alla begrepp visas i en **begreppsbank** högst upp som referens
+- Eleven skriver in svaret i textfältet och trycker Enter
+- **Rätt stavning:** begreppet stryks automatiskt över i begreppsbanken, grön ram och förklaring visas
+- **Fel stavning (första gången):** texten "Är du säker att du stavat rätt?" visas i orange — eleven får försöka igen
+- **Fel stavning (andra gången):** röd feedback, fältet förblir redigerbart tills "Rätta alla" trycks
+- **"Rätta alla"-knapp:** rättar alla återstående luckor, visar rätt svar + förklaring för fel svar
+- Slutresultat visas: "X / Y rätt" med betygsliknande feedback
+- "Börja om"-knapp nollställer allt
+- Stavningen måste vara **exakt rätt** — inga gissningar godkänns
+
+### Tillbaka-knapp — gäller ALLA filer
+- Varje fil (quiz, begreppslista, lucktext, uppgifter) ska ha en **tillbaka-knapp** som länkar till `index.html`
+- Placeras högst upp till vänster
+- Text: "← Tillbaka till startsidan"
+- Stil: diskret, matchar ämnets färg vid hover
+
 ### Header i begreppsfil
-- Tillbaka-länk till `index.html` (pil + "Portal")
+- Tillbaka-länk till `index.html` (pil + "Tillbaka till startsidan")
 - Titel centrerad med ämnets namn
 - Tomt div för symmetri (flexbox-trick)
 
@@ -221,7 +240,7 @@ Varje begreppsfil innehåller **både en begreppslista och flashcards i samma fi
 ## När John ber dig skapa en ny begreppslista
 
 1. Han klistrar in begrepp eller text att generera begrepp från
-2. Du skapar en HTML-fil med både **Lista** och **Flashcards** i samma fil
+2. Du skapar en HTML-fil med **Lista**, **Flashcards** och **Lucktext** i samma fil
 3. Du följer strukturen, CSS och teknikstack ovan exakt
 4. Du matchar ämnets färg från tabellen ovan
 5. Du uppdaterar `index.html` med länk till den nya filen
