@@ -3,196 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Begreppslista - Naturkunskap</title>
-    <!-- React och ReactDOM via CDN -->
+    <title>Begreppslista - Vetenskap & Naturkunskap</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <!-- Babel för JSX-kompilering -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Fredoka -->
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Fredoka', sans-serif;
-        }
-
-        /* 3D-Flip Logik */
-        .perspective-1000 {
-            perspective: 1000px;
-        }
-        .preserve-3d {
-            transform-style: preserve-3d;
-        }
-        .backface-hidden {
-            backface-visibility: hidden;
-        }
-        .rotate-y-180 {
-            transform: rotateY(180deg);
-        }
-        .flip-card {
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .flipped-classes {
-            transform: rotateY(180deg);
-        }
-
-        /* Animation för vybyte */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fadeIn {
-            animation: fadeIn 0.4s ease-out forwards;
-        }
+        body { font-family: 'Fredoka', sans-serif; }
+        .flip-card { perspective: 1000px; height: 350px; width: 100%; max-width: 400px; cursor: pointer; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+        .flipped-classes { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+        .flip-card-front { background-color: #22c55e; border: 6px solid white; }
+        .flip-card-back { background-color: white; border: 6px solid #22c55e; transform: rotateY(180deg); }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen">
+<body class="bg-slate-50 text-slate-800">
     <div id="root"></div>
-
     <script type="text/babel">
         const { useState } = React;
 
-        // Uppdaterad data med nya begrepp och utan engelska översättningar
-        const conceptsData = [
-            { id: 1, sv: "Samband", def: "När två eller flera saker hänger ihop. Till exempel, om det ena förändras så kanske det andra också förändras." },
-            { id: 2, sv: "Kausalitet", def: "När en sak direkt orsakar eller påverkar en annan. Till exempel om jag släpper en penna så kommer den att falla på grund av gravitationen." },
-            { id: 3, sv: "Hypotes", def: "En gissning eller ett antagande som går att testa vetenskapligt." },
-            { id: 4, sv: "Kritiskt tänkande", def: "Att tänka efter noga och inte bara tro på allt man hör eller läser. Att ifrågasätta källor och fundera över vad som är sant." },
-            { id: 5, sv: "Tolkning", def: "Att förklara vad något betyder, till exempel vad resultatet från ett experiment faktiskt visar." },
-            { id: 6, sv: "Slutsats", def: "Det man kommer fram till efter att ha undersökt något. Det är svaret på om din hypotes stämde eller inte." },
-            { id: 7, sv: "Argumentera", def: "Att förklara varför man anser något genom att ge tydliga exempel eller bevis." },
-            { id: 8, sv: "Metod", def: "Ett bestämt sätt att göra något, som att följa specifika steg i ett experiment." },
-            { id: 9, sv: "Reliabilitet", def: "Handlar om hur tillförlitlig en mätning är. Om man gör om undersökningen på samma sätt och får samma resultat är reliabiliteten hög." },
-            { id: 10, sv: "Validitet", def: "Handlar om att man verkligen mäter det man påstår sig mäta. Hög validitet betyder att undersökningen är relevant för frågeställningen." },
-            { id: 11, sv: "Bias (snedvridning)", def: "En systematisk skevhet i insamling eller tolkning av data som gör att resultatet blir felaktigt eller ensidigt." },
-            { id: 12, sv: "Evidens", def: "Bevis som visar att något är sant eller troligt, baserat på vetenskapliga upptäckter eller observationer." },
-            { id: 13, sv: "Experiment", def: "Ett test där man gör något på ett kontrollerat sätt för att ta reda på hur det fungerar." },
-            { id: 14, sv: "Data", def: "Information som samlas in under ett experiment, till exempel siffror, mätningar eller observationer." },
-            { id: 15, sv: "Resultat", def: "Den direkta informationen man får fram efter att ha gjort ett experiment. Visar exakt vad som hände." },
-            { id: 16, sv: "Replikering", def: "Att göra om samma experiment flera gånger för att se om man får samma resultat varje gång." },
-            { id: 17, sv: "Felkälla", def: "Något som kan påverka ett experiment så att resultatet inte blir helt rätt, till exempel trasig utrustning eller slarv vid mätning." },
-            { id: 18, sv: "Kontrollgrupp", def: "En grupp i ett experiment som inte får den behandling man testar. Används för att ha något att jämföra med." },
-            { id: 19, sv: "Pålitlighet", def: "Ett övergripande mått på hur mycket man kan lita på att ett vetenskapligt resultat är korrekt." }
+        const concepts = [
+            { term: "Samband", definition: "När två eller flera saker hänger ihop – om det ena förändras påverkas det andra.", sentence: "Forskarna hittade ett _____ mellan stillasittande och ökad risk för hjärt-kärlsjukdomar." },
+            { term: "Kausalitet", definition: "När en sak direkt orsakar eller påverkar en annan.", sentence: "Det finns _____ mellan rökning och lungcancer – rökningen orsakar sjukdomen, det är inte bara ett samband." },
+            { term: "Hypotes", definition: "En gissning eller ett antagande som går att testa vetenskapligt.", sentence: "Inför experimentet formulerade eleven en _____ om att växter växer snabbare med mer ljus." },
+            { term: "Kritiskt tänkande", definition: "Att tänka efter noga och ifrågasätta källor snarare än att tro på allt man hör.", sentence: "_____ innebär att du inte delar en nyhet förrän du kontrollerat om källan är tillförlitlig." },
+            { term: "Tolkning", definition: "Att förklara vad något betyder, till exempel vad ett experimentresultat faktiskt visar.", sentence: "Elevernas _____ av diagrammet skilde sig – en ansåg att det visade en trend, en annan tvivlade." },
+            { term: "Slutsats", definition: "Det man kommer fram till efter att ha undersökt något – svaret på om hypotesen stämde.", sentence: "Gruppens _____ var att plantorna med mest ljus vuxit dubbelt så snabbt som kontrollgruppen." },
+            { term: "Argumentera", definition: "Att förklara varför man anser något genom att ge tydliga exempel eller bevis.", sentence: "Du måste kunna _____ för ditt svar med konkreta fakta och bevis, inte bara åsikter." },
+            { term: "Metod", definition: "Ett bestämt sätt att göra något, som att följa specifika steg i ett experiment.", sentence: "Laborationens _____ beskrev exakt vilka steg som skulle följas för att resultaten skulle bli jämförbara." },
+            { term: "Reliabilitet", definition: "Hur tillförlitlig en mätning är – om man upprepar undersökningen och får samma resultat.", sentence: "Hög _____ uppnås när flera oberoende forskare upprepar ett experiment och får likartade resultat." },
+            { term: "Validitet", definition: "Att man faktiskt mäter det man påstår sig mäta – att undersökningen är relevant för frågeställningen.", sentence: "En undersökning om stress som enbart mäter puls har låg _____ – pulsen mäter inte stress direkt." },
+            { term: "Bias (snedvridning)", definition: "En systematisk skevhet som gör att resultatet blir felaktigt eller ensidigt.", sentence: "Om bara friska personer deltar i en studie om en sjukdom uppstår _____ i resultaten." },
+            { term: "Evidens", definition: "Bevis som visar att något är sant eller troligt, baserat på vetenskapliga observationer.", sentence: "Det finns stark _____ för att regelbunden motion minskar risken för diabetes typ 2." },
+            { term: "Experiment", definition: "Ett test där man gör något på ett kontrollerat sätt för att ta reda på hur det fungerar.", sentence: "I _____ varierade forskarna bara en variabel i taget för att se vad som faktiskt påverkade resultatet." },
+            { term: "Data", definition: "Information som samlas in under ett experiment, till exempel siffror och mätningar.", sentence: "De insamlade _____ visade tydligt att temperaturen steg med 2 grader varje gång trycket ökade." },
+            { term: "Resultat", definition: "Den direkta informationen man får fram efter ett experiment – exakt vad som hände.", sentence: "Experimentets _____ visade att grupp A löste uppgiften 40% snabbare än grupp B." },
+            { term: "Replikering", definition: "Att göra om samma experiment flera gånger för att se om man får samma resultat varje gång.", sentence: "Utan _____ kan ett vetenskapligt fynd inte bekräftas – ett enskilt experiment räcker inte." },
+            { term: "Felkälla", definition: "Något som kan påverka ett experiment så att resultatet inte blir helt rätt.", sentence: "Trasig våg var en _____ som ledde till att alla mätningar av vätskan blev lite för höga." },
+            { term: "Kontrollgrupp", definition: "En grupp i ett experiment som inte får den behandling man testar – används för jämförelse.", sentence: "Hälften av patienterna fick det nya läkemedlet och hälften ingick i _____ och fick placebo." },
+            { term: "Pålitlighet", definition: "Ett övergripande mått på hur mycket man kan lita på att ett vetenskapligt resultat är korrekt.", sentence: "Studiens _____ stärktes av att den var dubbelblind och hade ett stort urval av deltagare." }
         ];
 
-        const App = () => {
-            const [view, setView] = useState('lista'); 
-            const [currentCardIndex, setCurrentCardIndex] = useState(0);
+        function shuffleArray(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        function getFeedback(score, total) {
+            const p = score / total;
+            if (p >= 0.9) return "Redo för provet! Fantastiskt bra!";
+            if (p >= 0.7) return "Bra jobbat! Öva lite till på de du missade.";
+            if (p >= 0.5) return "Halvvägs! Fortsätt träna.";
+            return "Öva lite till – du är på rätt väg!";
+        }
+
+        function LucktextView() {
+            const [inputs, setInputs] = useState(concepts.map(() => ''));
+            const [attempts, setAttempts] = useState(concepts.map(() => 0));
+            const [statuses, setStatuses] = useState(concepts.map(() => null));
+            const [done, setDone] = useState(false);
+
+            const normalize = s => s.trim().toLowerCase();
+
+            const submit = (i) => {
+                if (statuses[i] === 'correct' || statuses[i] === 'wrong-final') return;
+                if (normalize(inputs[i]) === normalize(concepts[i].term)) {
+                    const s = [...statuses]; s[i] = 'correct'; setStatuses(s);
+                } else {
+                    const a = [...attempts]; a[i]++; setAttempts(a);
+                    const s = [...statuses]; s[i] = a[i] >= 2 ? 'wrong-final' : 'wrong-once'; setStatuses(s);
+                }
+            };
+
+            const rättaAlla = () => { setStatuses(statuses.map(s => s === 'correct' ? 'correct' : 'wrong-final')); setDone(true); };
+            const börjaOm = () => { setInputs(concepts.map(() => '')); setAttempts(concepts.map(() => 0)); setStatuses(concepts.map(() => null)); setDone(false); };
+
+            const correctCount = statuses.filter(s => s === 'correct').length;
+            const allDone = done || statuses.every(s => s === 'correct' || s === 'wrong-final');
+
+            return (
+                <div>
+                    <div className="mb-6 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Begreppsbank</p>
+                        <div className="flex flex-wrap gap-2">
+                            {concepts.map((c, i) => (
+                                <span key={i} className={`px-3 py-1 rounded-full text-sm font-medium border transition-all ${statuses[i] === 'correct' ? 'line-through text-slate-400 bg-green-50 border-green-200' : 'bg-green-50 border-green-300 text-green-800'}`}>{c.term}</span>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="grid gap-4">
+                        {concepts.map((c, i) => {
+                            const parts = c.sentence.split('_____');
+                            const st = statuses[i];
+                            return (
+                                <div key={i} className={`bg-white p-5 rounded-2xl shadow-sm border-l-8 transition-all ${st === 'correct' ? 'border-green-500' : st === 'wrong-final' ? 'border-red-400' : 'border-green-500'}`}>
+                                    <p className="text-slate-700 mb-3 leading-relaxed">{parts[0]}<span className="font-bold text-green-600">[_____]</span>{parts[1]}</p>
+                                    {st === 'correct' ? (
+                                        <div className="flex flex-wrap items-center gap-2 text-green-600"><span className="font-bold">✓ {c.term}</span><span className="text-sm font-normal text-slate-500">– {c.definition}</span></div>
+                                    ) : st === 'wrong-final' ? (
+                                        <div><p className="text-red-500 text-sm">Rätt svar: <span className="font-bold">{c.term}</span></p><p className="text-slate-500 text-sm mt-1">{c.definition}</p></div>
+                                    ) : (
+                                        <div>
+                                            <div className="flex gap-2">
+                                                <input type="text" value={inputs[i]} onChange={e => { const v = [...inputs]; v[i] = e.target.value; setInputs(v); }} onKeyDown={e => e.key === 'Enter' && submit(i)} placeholder="Skriv begreppet och tryck Enter..." className="flex-1 border-2 border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:border-green-400 text-sm" />
+                                                <button onClick={() => submit(i)} className="bg-green-500 text-white px-4 py-2 rounded-xl font-bold hover:bg-green-600 transition-colors">→</button>
+                                            </div>
+                                            {st === 'wrong-once' && <p className="text-orange-500 text-sm mt-2 font-medium">Är du säker att du stavat rätt?</p>}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <div className="mt-8 flex justify-between items-center">
+                        <button onClick={börjaOm} className="text-slate-500 hover:text-slate-700 font-medium transition-colors">↺ Börja om</button>
+                        {!allDone && <button onClick={rättaAlla} className="bg-slate-800 text-white px-6 py-3 rounded-2xl font-bold hover:bg-slate-700 transition-colors">Rätta alla</button>}
+                    </div>
+                    {allDone && (
+                        <div className="mt-8 bg-green-50 border-2 border-green-500 rounded-3xl p-8 text-center">
+                            <p className="text-5xl font-bold text-green-500 mb-2">{correctCount}/{concepts.length}</p>
+                            <p className="text-xl font-bold text-slate-800 mb-4">{getFeedback(correctCount, concepts.length)}</p>
+                            <button onClick={börjaOm} className="bg-green-500 text-white px-8 py-3 rounded-2xl font-bold hover:bg-green-600 transition-colors">Börja om</button>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        function App() {
+            const [view, setView] = useState('list');
+            const [currentIndex, setCurrentIndex] = useState(0);
             const [isFlipped, setIsFlipped] = useState(false);
 
-            const handleNextCard = () => {
-                setIsFlipped(false); 
+            const nextCard = () => {
+                setIsFlipped(false);
                 setTimeout(() => {
-                    let nextIndex;
-                    do {
-                        nextIndex = Math.floor(Math.random() * conceptsData.length);
-                    } while (nextIndex === currentCardIndex && conceptsData.length > 1);
-                    setCurrentCardIndex(nextIndex);
+                    let n; do { n = Math.floor(Math.random() * concepts.length); } while (n === currentIndex && concepts.length > 1);
+                    setCurrentIndex(n);
                 }, 150);
             };
 
-            return (
-                <div class="max-w-4xl mx-auto px-4 py-8 md:py-12">
-                    {/* Övre navigering */}
-                    <div class="mb-8">
-                        <a href="index.html" class="inline-flex items-center text-slate-500 hover:text-emerald-600 font-medium transition-colors">
-                            <span class="mr-2">←</span> Portal
-                        </a>
-                    </div>
+            const activeTab = 'bg-green-500 text-white font-bold shadow-sm';
+            const inactiveTab = 'text-slate-500';
 
-                    <header class="text-center mb-10">
-                        <h1 class="text-3xl md:text-5xl font-bold text-slate-800 mb-6 uppercase tracking-tight">
-                            Vetenskap & Naturkunskap
-                        </h1>
-                        
-                        {/* Toggle Switch - Grönt Tema */}
-                        <div class="inline-flex bg-emerald-100 p-1.5 rounded-2xl shadow-inner border border-emerald-200">
-                            <button 
-                                onClick={() => setView('lista')}
-                                class={`px-8 py-2.5 rounded-xl font-semibold transition-all duration-300 ${view === 'lista' ? 'bg-emerald-500 text-white shadow-md scale-105' : 'text-emerald-800 hover:text-emerald-900'}`}
-                            >
-                                Lista
-                            </button>
-                            <button 
-                                onClick={() => setView('flashcards')}
-                                class={`px-8 py-2.5 rounded-xl font-semibold transition-all duration-300 ${view === 'flashcards' ? 'bg-emerald-500 text-white shadow-md scale-105' : 'text-emerald-800 hover:text-emerald-900'}`}
-                            >
-                                Flashcards
-                            </button>
-                        </div>
+            return (
+                <div className="min-h-screen p-4 md:p-8">
+                    <header className="max-w-2xl mx-auto mb-8 flex items-center justify-between">
+                        <a href="index.html" className="text-slate-500 hover:text-green-600 transition-colors flex items-center gap-2 font-medium text-sm">← Tillbaka till startsidan</a>
+                        <h1 className="text-2xl md:text-3xl font-bold text-center">Vetenskap & Naturkunskap</h1>
+                        <div className="w-36"></div>
                     </header>
 
-                    <main>
-                        {view === 'lista' ? (
-                            <div class="grid gap-4 animate-fadeIn">
-                                {conceptsData.map((concept, idx) => (
-                                    <div key={concept.id} class="bg-white p-6 rounded-2xl shadow-sm border-l-8 border-emerald-500 flex items-start gap-5 hover:shadow-md transition-shadow">
-                                        <div class="bg-emerald-100 text-emerald-600 font-bold text-xl rounded-full w-10 h-10 flex items-center justify-center shrink-0">
-                                            {idx + 1}
+                    <div className="max-w-sm mx-auto mb-10 flex bg-white p-1 rounded-full shadow-md border border-slate-200">
+                        <button onClick={() => setView('list')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'list' ? activeTab : inactiveTab}`}>Lista</button>
+                        <button onClick={() => setView('flashcards')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'flashcards' ? activeTab : inactiveTab}`}>Flashcards</button>
+                        <button onClick={() => setView('lucktext')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'lucktext' ? activeTab : inactiveTab}`}>Lucktext</button>
+                    </div>
+
+                    <main className="max-w-2xl mx-auto">
+                        {view === 'list' && (
+                            <div className="grid gap-4">
+                                {concepts.map((item, index) => (
+                                    <div key={index} className="bg-white p-5 rounded-2xl border-l-8 border-green-500 shadow-sm hover:shadow-md transition-shadow">
+                                        <div className="flex items-center gap-3 mb-1">
+                                            <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-lg">{index + 1}</span>
+                                            <h3 className="text-lg font-bold">{item.term}</h3>
                                         </div>
-                                        <div>
-                                            <h3 class="text-xl font-bold text-slate-800 mb-1">
-                                                {concept.sv}
-                                            </h3>
-                                            <p class="text-slate-600 leading-relaxed italic md:not-italic">
-                                                {concept.def}
-                                            </p>
-                                        </div>
+                                        <p className="text-slate-600 leading-relaxed ml-10">{item.definition}</p>
                                     </div>
                                 ))}
                             </div>
-                        ) : (
-                            <div class="flex flex-col items-center animate-fadeIn">
-                                <div 
-                                    class="perspective-1000 w-full max-w-md h-72 md:h-80 cursor-pointer"
-                                    onClick={() => setIsFlipped(!isFlipped)}
-                                >
-                                    <div class={`relative w-full h-full flip-card preserve-3d ${isFlipped ? 'flipped-classes' : ''}`}>
-                                        
-                                        {/* Framsida */}
-                                        <div class="absolute inset-0 backface-hidden bg-white border-4 border-emerald-500 rounded-[2.5rem] shadow-xl flex flex-col items-center justify-center p-8 text-center">
-                                            <span class="text-emerald-500 font-bold uppercase tracking-widest text-xs mb-4">Begrepp</span>
-                                            <h2 class="text-3xl md:text-4xl font-bold text-slate-800 break-words w-full">
-                                                {conceptsData[currentCardIndex].sv}
-                                            </h2>
-                                            <div class="mt-8 text-slate-300 text-sm animate-pulse">
-                                                Klicka för att se förklaringen
-                                            </div>
+                        )}
+                        {view === 'flashcards' && (
+                            <div className="flex flex-col items-center">
+                                <div className="flip-card mb-8" onClick={() => setIsFlipped(!isFlipped)}>
+                                    <div className={`flip-card-inner ${isFlipped ? 'flipped-classes' : ''}`}>
+                                        <div className="flip-card-front">
+                                            <h2 className="text-3xl font-bold text-white text-center px-4">{concepts[currentIndex].term}</h2>
+                                            <div className="absolute bottom-6 animate-pulse"><span className="text-[10px] uppercase tracking-[0.2em] text-green-100 font-bold opacity-80">Klicka för svar</span></div>
                                         </div>
-
-                                        {/* Baksida */}
-                                        <div class="absolute inset-0 backface-hidden rotate-y-180 bg-emerald-50 border-4 border-emerald-500 rounded-[2.5rem] shadow-xl flex flex-col items-center justify-center p-8 text-center overflow-y-auto">
-                                            <span class="text-emerald-600 font-bold uppercase tracking-widest text-xs mb-4">Definition</span>
-                                            <p class="text-lg md:text-xl text-slate-700 leading-relaxed font-medium">
-                                                {conceptsData[currentCardIndex].def}
-                                            </p>
+                                        <div className="flip-card-back">
+                                            <p className="text-xl leading-relaxed text-slate-800 font-medium px-4">{concepts[currentIndex].definition}</p>
+                                            <div className="absolute bottom-6"><span className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">Klicka för att vända</span></div>
                                         </div>
-                                        
                                     </div>
                                 </div>
-
-                                <button 
-                                    onClick={handleNextCard}
-                                    class="mt-10 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 px-12 rounded-2xl shadow-lg transition-all active:scale-95 text-lg hover:shadow-emerald-200 hover:shadow-2xl"
-                                >
-                                    Slumpa nästa kort →
-                                </button>
-                                
-                                <p class="mt-6 text-slate-400 text-sm italic">
-                                    Totalt {conceptsData.length} viktiga begrepp
-                                </p>
+                                <div className="flex flex-col items-center gap-4">
+                                    <button onClick={nextCard} className="bg-slate-900 text-white px-10 py-4 rounded-2xl font-bold shadow-xl hover:bg-slate-800 active:scale-95 transition-all flex items-center gap-3 text-lg">Nästa begrepp <span>→</span></button>
+                                    <p className="text-slate-500 font-medium bg-slate-200 px-4 py-1 rounded-full text-xs">{currentIndex + 1} av {concepts.length}</p>
+                                </div>
                             </div>
                         )}
+                        {view === 'lucktext' && <LucktextView />}
                     </main>
 
-                    <footer class="mt-16 text-center text-slate-400 text-xs">
-                        Naturvetenskaplig metodik & Begreppsträning &copy; 2024
-                    </footer>
+                    <footer className="mt-12 text-center text-slate-400 text-sm italic pb-8">Källa: Naturkunskap – Vetenskap begreppslista</footer>
                 </div>
             );
-        };
+        }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);

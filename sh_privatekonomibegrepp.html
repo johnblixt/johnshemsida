@@ -4,200 +4,211 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interaktiv Begreppslista - Privatekonomi</title>
-    
-    <!-- Google Fonts: Fredoka -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS CDN -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- React & Babel CDN -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
     <style>
-        body {
-            font-family: 'Fredoka', sans-serif;
-        }
-
-        /* 3D Flip Card Logic */
-        .perspective-1000 {
-            perspective: 1000px;
-        }
-
-        .preserve-3d {
-            transform-style: preserve-3d;
-        }
-
-        .backface-hidden {
-            backface-visibility: hidden;
-        }
-
-        .rotate-y-180 {
-            transform: rotateY(180deg);
-        }
-
-        .flip-card-inner {
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Custom scrollbar for a cleaner look */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #facc15;
-            border-radius: 10px;
-        }
+        body { font-family: 'Fredoka', sans-serif; }
+        .flip-card { perspective: 1000px; height: 350px; width: 100%; max-width: 400px; cursor: pointer; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+        .flipped-classes { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+        .flip-card-front { background-color: #fbbf24; border: 6px solid white; }
+        .flip-card-back { background-color: white; border: 6px solid #fbbf24; transform: rotateY(180deg); }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen">
-
+<body class="bg-slate-50 text-slate-800">
     <div id="root"></div>
-
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState } = React;
 
-        // Samtliga begrepp extraherade från PDF och tidigare lista
         const concepts = [
-            { id: 1, term: "Bruttolön", definition: "Den lön du får innan du har betalat skatt." },
-            { id: 2, term: "Nettolön", definition: "De pengar du får ut på ditt konto efter att skatten är dragen." },
-            { id: 3, term: "Disponibel inkomst", definition: "De pengar du har totalt att använda varje månad (lön efter skatt plus eventuella bidrag)." },
-            { id: 4, term: "Direkt skatt (Inkomstskatt)", definition: "Den skatt som dras direkt från din lön." },
-            { id: 5, term: "Indirekt skatt (Moms)", definition: "Skatt som du betalar när du köper varor eller tjänster." },
-            { id: 6, term: "Punktskatt", definition: "En extra skatt på speciella varor som staten vill att vi ska köpa mindre av, till exempel alkohol eller tobak." },
-            { id: 7, term: "Fasta utgifter", definition: "Kostnader som är samma varje månad och svåra att påverka, till exempel hyra." },
-            { id: 8, term: "Rörliga utgifter", definition: "Kostnader som ändras beroende på hur mycket du köper, till exempel mat och kläder." },
-            { id: 9, term: "Faktura", definition: "Ett papper som visar hur mycket du ska betala för något du köpt." },
-            { id: 10, term: "Förfallodatum", definition: "Den sista dagen en faktura eller räkning måste vara betald." },
-            { id: 11, term: "OCR-nummer", definition: "Ett långt nummer på en faktura som används för att banken ska veta vilken betalning det gäller." },
-            { id: 12, term: "Betalningsanmärkning", definition: "En 'prick' i ett register som visar att man inte har skött sina betalningar. Det kan göra det svårt att hyra lägenhet eller ta lån." },
-            { id: 13, term: "Generellt bidrag", definition: "Ett bidrag som alla i en viss grupp får, till exempel barnbidrag." },
-            { id: 14, term: "Behovsprövat bidrag", definition: "Ett bidrag man bara får om man tjänar lite pengar och verkligen behöver det, till exempel bostadsbidrag." },
-            { id: 15, term: "Karensdag", definition: "Den första dagen du är sjuk från jobbet. Då får du inga pengar alls." },
-            { id: 16, term: "Sjuklön", definition: "Pengar du får från din arbetsgivare om du är sjuk efter karensdagen (dag 2–14)." },
-            { id: 17, term: "Sjukpenning", definition: "Pengar du får från Försäkringskassan om du är sjuk längre än två veckor." },
-            { id: 18, term: "Sparkonto", definition: "Ett säkert sätt att ha pengar på banken." },
-            { id: 19, term: "Aktier", definition: "Att köpa en liten del av ett företag. Kan ge hög vinst men är mer riskabelt." },
-            { id: 20, term: "Fonder", definition: "En blandning av olika aktier eller värdepapper som en expert sköter åt dig." },
-            { id: 21, term: "Lån", definition: "Att låna pengar som man sedan måste betala tillbaka." },
-            { id: 22, term: "Ränta", definition: "Den extra kostnad du betalar för att få låna pengar, eller pengar du får för att du sparar hos banken." },
-            { id: 23, term: "Studiebidrag", definition: "Bidrag från CSN för dig som studerar." },
-            { id: 24, term: "Studielån", definition: "Pengar du lånar från CSN för studier, som ska betalas tillbaka med ofta mycket låg ränta." }
+            { term: "Bruttolön", definition: "Den lön du får innan du har betalat skatt.", sentence: "Jobbannonsen lovar 30 000 kronor i _____, men efter skatt är det betydligt mindre du får hem." },
+            { term: "Nettolön", definition: "De pengar du får ut på ditt konto efter att skatten är dragen.", sentence: "Din _____ är det belopp som faktiskt sätts in på ditt konto varje månad." },
+            { term: "Disponibel inkomst", definition: "De pengar du har totalt att använda varje månad (lön efter skatt plus eventuella bidrag).", sentence: "Din _____ avgör hur mycket du kan spendera och spara under månaden." },
+            { term: "Direkt skatt (Inkomstskatt)", definition: "Den skatt som dras direkt från din lön.", sentence: "_____ syns direkt på lönebeskedet som ett avdrag från din bruttolön." },
+            { term: "Indirekt skatt (Moms)", definition: "Skatt som du betalar när du köper varor eller tjänster.", sentence: "Priset på en tröja i affären inkluderar _____, vilket gör att staten tar en del av köpet." },
+            { term: "Punktskatt", definition: "En extra skatt på speciella varor som staten vill att vi ska köpa mindre av.", sentence: "Höga priser på alkohol och tobak beror delvis på _____, som staten använder för att minska konsumtionen." },
+            { term: "Fasta utgifter", definition: "Kostnader som är samma varje månad och svåra att påverka, till exempel hyra.", sentence: "Hyra och abonnemang räknas som _____ eftersom de är lika höga varje månad." },
+            { term: "Rörliga utgifter", definition: "Kostnader som ändras beroende på hur mycket du köper.", sentence: "Mat och kläder är _____ – de varierar beroende på dina val under månaden." },
+            { term: "Faktura", definition: "Ett papper som visar hur mycket du ska betala för något du köpt.", sentence: "Efter renoveringen fick de en _____ från hantverkaren med totalbeloppet att betala." },
+            { term: "Förfallodatum", definition: "Den sista dagen en faktura eller räkning måste vara betald.", sentence: "Om du missar _____ på din räkning kan du drabbas av påminnelseavgifter." },
+            { term: "OCR-nummer", definition: "Ett långt nummer på en faktura som banken använder för att identifiera betalningen.", sentence: "Glöm inte att skriva in _____ när du betalar räkningen, annars vet inte banken vad betalningen gäller." },
+            { term: "Betalningsanmärkning", definition: "En 'prick' i ett register som visar att man inte har skött sina betalningar.", sentence: "En _____ kan göra det svårt att hyra lägenhet eller ta ett lån i framtiden." },
+            { term: "Generellt bidrag", definition: "Ett bidrag som alla i en viss grupp får, till exempel barnbidrag.", sentence: "Barnbidrag är ett _____ som alla familjer med barn under 16 år får, oavsett inkomst." },
+            { term: "Behovsprövat bidrag", definition: "Ett bidrag man bara får om man tjänar lite pengar och verkligen behöver det.", sentence: "Bostadsbidrag är ett _____ – man måste ansöka och visa att inkomsten är låg." },
+            { term: "Karensdag", definition: "Den första dagen du är sjuk från jobbet. Då får du inga pengar alls.", sentence: "Den anställde förlorade en dagslön på _____, den första sjukdagen utan ersättning." },
+            { term: "Sjuklön", definition: "Pengar du får från din arbetsgivare om du är sjuk efter karensdagen (dag 2–14).", sentence: "Från dag två till fjortonde sjukdagen betalar arbetsgivaren ut _____ till den anställde." },
+            { term: "Sjukpenning", definition: "Pengar du får från Försäkringskassan om du är sjuk längre än två veckor.", sentence: "Efter fjorton dagars sjukdom tar Försäkringskassan över och betalar ut _____." },
+            { term: "Sparkonto", definition: "Ett säkert sätt att ha pengar på banken.", sentence: "Hon satte undan 500 kronor i månaden på sitt _____ för att bygga upp en buffert." },
+            { term: "Aktier", definition: "Att köpa en liten del av ett företag. Kan ge hög vinst men är mer riskabelt.", sentence: "Han köpte _____ i teknikföretaget och hoppades att deras värde skulle öka över tid." },
+            { term: "Fonder", definition: "En blandning av olika aktier eller värdepapper som en expert sköter åt dig.", sentence: "Istället för att välja enskilda aktier investerade hon i _____ för att sprida riskerna automatiskt." },
+            { term: "Lån", definition: "Att låna pengar som man sedan måste betala tillbaka.", sentence: "För att köpa bilen tog han ett _____ på banken som han betalar av under tre år." },
+            { term: "Ränta", definition: "Den extra kostnad du betalar för att få låna pengar, eller pengar du får för att du sparar.", sentence: "Banken tar ut _____ på lånet, vilket innebär att du betalar mer tillbaka än du lånade." },
+            { term: "Studiebidrag", definition: "Bidrag från CSN för dig som studerar.", sentence: "Gymnasieelever får _____ från CSN varje månad utan att behöva betala tillbaka det." },
+            { term: "Studielån", definition: "Pengar du lånar från CSN för studier, som ska betalas tillbaka med ofta mycket låg ränta.", sentence: "För att klara hyran under utbildningen tog han ett _____ från CSN som han återbetalar efter examen." }
         ];
 
+        function shuffleArray(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        function getFeedback(score, total) {
+            const p = score / total;
+            if (p >= 0.9) return "Redo för provet! Fantastiskt bra!";
+            if (p >= 0.7) return "Bra jobbat! Öva lite till på de du missade.";
+            if (p >= 0.5) return "Halvvägs! Fortsätt träna.";
+            return "Öva lite till – du är på rätt väg!";
+        }
+
+        function LucktextView() {
+            const [inputs, setInputs] = useState(concepts.map(() => ''));
+            const [attempts, setAttempts] = useState(concepts.map(() => 0));
+            const [statuses, setStatuses] = useState(concepts.map(() => null));
+            const [done, setDone] = useState(false);
+
+            const normalize = s => s.trim().toLowerCase();
+
+            const submit = (i) => {
+                if (statuses[i] === 'correct' || statuses[i] === 'wrong-final') return;
+                if (normalize(inputs[i]) === normalize(concepts[i].term)) {
+                    const s = [...statuses]; s[i] = 'correct'; setStatuses(s);
+                } else {
+                    const a = [...attempts]; a[i]++; setAttempts(a);
+                    const s = [...statuses]; s[i] = a[i] >= 2 ? 'wrong-final' : 'wrong-once'; setStatuses(s);
+                }
+            };
+
+            const rättaAlla = () => { setStatuses(statuses.map(s => s === 'correct' ? 'correct' : 'wrong-final')); setDone(true); };
+            const börjaOm = () => { setInputs(concepts.map(() => '')); setAttempts(concepts.map(() => 0)); setStatuses(concepts.map(() => null)); setDone(false); };
+
+            const correctCount = statuses.filter(s => s === 'correct').length;
+            const allDone = done || statuses.every(s => s === 'correct' || s === 'wrong-final');
+
+            return (
+                <div>
+                    <div className="mb-6 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Begreppsbank</p>
+                        <div className="flex flex-wrap gap-2">
+                            {concepts.map((c, i) => (
+                                <span key={i} className={`px-3 py-1 rounded-full text-sm font-medium border transition-all ${statuses[i] === 'correct' ? 'line-through text-slate-400 bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-300 text-yellow-800'}`}>{c.term}</span>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="grid gap-4">
+                        {concepts.map((c, i) => {
+                            const parts = c.sentence.split('_____');
+                            const st = statuses[i];
+                            return (
+                                <div key={i} className={`bg-white p-5 rounded-2xl shadow-sm border-l-8 transition-all ${st === 'correct' ? 'border-green-500' : st === 'wrong-final' ? 'border-red-400' : 'border-yellow-400'}`}>
+                                    <p className="text-slate-700 mb-3 leading-relaxed">{parts[0]}<span className="font-bold text-yellow-600">[_____]</span>{parts[1]}</p>
+                                    {st === 'correct' ? (
+                                        <div className="flex flex-wrap items-center gap-2 text-green-600"><span className="font-bold">✓ {c.term}</span><span className="text-sm font-normal text-slate-500">– {c.definition}</span></div>
+                                    ) : st === 'wrong-final' ? (
+                                        <div><p className="text-red-500 text-sm">Rätt svar: <span className="font-bold">{c.term}</span></p><p className="text-slate-500 text-sm mt-1">{c.definition}</p></div>
+                                    ) : (
+                                        <div>
+                                            <div className="flex gap-2">
+                                                <input type="text" value={inputs[i]} onChange={e => { const v = [...inputs]; v[i] = e.target.value; setInputs(v); }} onKeyDown={e => e.key === 'Enter' && submit(i)} placeholder="Skriv begreppet och tryck Enter..." className="flex-1 border-2 border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:border-yellow-400 text-sm" />
+                                                <button onClick={() => submit(i)} className="bg-yellow-400 text-yellow-900 px-4 py-2 rounded-xl font-bold hover:bg-yellow-500 transition-colors">→</button>
+                                            </div>
+                                            {st === 'wrong-once' && <p className="text-orange-500 text-sm mt-2 font-medium">Är du säker att du stavat rätt?</p>}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <div className="mt-8 flex justify-between items-center">
+                        <button onClick={börjaOm} className="text-slate-500 hover:text-slate-700 font-medium transition-colors">↺ Börja om</button>
+                        {!allDone && <button onClick={rättaAlla} className="bg-slate-800 text-white px-6 py-3 rounded-2xl font-bold hover:bg-slate-700 transition-colors">Rätta alla</button>}
+                    </div>
+                    {allDone && (
+                        <div className="mt-8 bg-yellow-50 border-2 border-yellow-400 rounded-3xl p-8 text-center">
+                            <p className="text-5xl font-bold text-yellow-500 mb-2">{correctCount}/{concepts.length}</p>
+                            <p className="text-xl font-bold text-slate-800 mb-4">{getFeedback(correctCount, concepts.length)}</p>
+                            <button onClick={börjaOm} className="bg-yellow-400 text-yellow-900 px-8 py-3 rounded-2xl font-bold hover:bg-yellow-500 transition-colors">Börja om</button>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
         function App() {
-            const [view, setView] = useState('list'); // 'list' eller 'cards'
-            const [currentCardIndex, setCurrentCardIndex] = useState(0);
+            const [view, setView] = useState('list');
+            const [currentIndex, setCurrentIndex] = useState(0);
             const [isFlipped, setIsFlipped] = useState(false);
 
-            // Funktion för att byta till nästa slumpmässiga kort
-            const handleNextCard = () => {
+            const nextCard = () => {
                 setIsFlipped(false);
                 setTimeout(() => {
-                    let nextIndex;
-                    do {
-                        nextIndex = Math.floor(Math.random() * concepts.length);
-                    } while (nextIndex === currentCardIndex && concepts.length > 1);
-                    setCurrentCardIndex(nextIndex);
+                    let n; do { n = Math.floor(Math.random() * concepts.length); } while (n === currentIndex && concepts.length > 1);
+                    setCurrentIndex(n);
                 }, 150);
             };
 
+            const activeTab = 'bg-yellow-400 font-bold shadow-sm';
+            const inactiveTab = 'text-slate-500';
+
             return (
-                <div className="max-w-4xl mx-auto px-4 py-8">
-                    {/* Header & Navigering */}
-                    <header className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-                        <a href="index.html" className="text-yellow-600 font-medium hover:text-yellow-700 transition-colors flex items-center">
-                            <span className="mr-1">←</span> Portal
-                        </a>
-                        
-                        <div className="flex bg-yellow-100 p-1 rounded-xl">
-                            <button 
-                                onClick={() => setView('list')}
-                                className={`px-6 py-2 rounded-lg font-semibold transition-all ${view === 'list' ? 'bg-yellow-400 text-slate-800 shadow-sm' : 'text-yellow-700 hover:bg-yellow-200'}`}
-                            >
-                                Lista
-                            </button>
-                            <button 
-                                onClick={() => {
-                                    setView('cards');
-                                    setIsFlipped(false);
-                                }}
-                                className={`px-6 py-2 rounded-lg font-semibold transition-all ${view === 'cards' ? 'bg-yellow-400 text-slate-800 shadow-sm' : 'text-yellow-700 hover:bg-yellow-200'}`}
-                            >
-                                Flashcards
-                            </button>
-                        </div>
+                <div className="min-h-screen p-4 md:p-8">
+                    <header className="max-w-2xl mx-auto mb-8 flex items-center justify-between">
+                        <a href="index.html" className="text-slate-500 hover:text-yellow-600 transition-colors flex items-center gap-2 font-medium text-sm">← Tillbaka till startsidan</a>
+                        <h1 className="text-2xl md:text-3xl font-bold text-center">Privatekonomi</h1>
+                        <div className="w-36"></div>
                     </header>
 
-                    <main>
-                        {view === 'list' ? (
-                            <div className="space-y-4 animate-fadeIn">
-                                <h1 className="text-3xl font-bold text-slate-800 mb-6 text-center md:text-left">Begreppslista: Privatekonomi</h1>
+                    <div className="max-w-sm mx-auto mb-10 flex bg-white p-1 rounded-full shadow-md border border-slate-200">
+                        <button onClick={() => setView('list')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'list' ? activeTab : inactiveTab}`}>Lista</button>
+                        <button onClick={() => setView('flashcards')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'flashcards' ? activeTab : inactiveTab}`}>Flashcards</button>
+                        <button onClick={() => setView('lucktext')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'lucktext' ? activeTab : inactiveTab}`}>Lucktext</button>
+                    </div>
+
+                    <main className="max-w-2xl mx-auto">
+                        {view === 'list' && (
+                            <div className="grid gap-4">
                                 {concepts.map((item, index) => (
-                                    <div key={item.id} className="bg-white p-5 rounded-2xl border-l-8 border-yellow-400 shadow-sm hover:shadow-md transition-shadow">
-                                        <div className="flex items-start">
-                                            <span className="bg-yellow-100 text-yellow-800 font-bold px-3 py-1 rounded-lg mr-4 mt-1">
-                                                {index + 1}
-                                            </span>
-                                            <div>
-                                                <h3 className="text-xl font-bold text-slate-800">{item.term}</h3>
-                                                <p className="text-slate-600 mt-2 leading-relaxed">{item.definition}</p>
-                                            </div>
+                                    <div key={index} className="bg-white p-5 rounded-2xl border-l-8 border-yellow-400 shadow-sm hover:shadow-md transition-shadow">
+                                        <div className="flex items-center gap-3 mb-1">
+                                            <span className="bg-yellow-100 text-yellow-700 text-xs font-bold px-2 py-1 rounded-lg">{index + 1}</span>
+                                            <h3 className="text-lg font-bold">{item.term}</h3>
                                         </div>
+                                        <p className="text-slate-600 leading-relaxed ml-10">{item.definition}</p>
                                     </div>
                                 ))}
                             </div>
-                        ) : (
-                            <div className="flex flex-col items-center justify-center animate-fadeIn py-10">
-                                <h1 className="text-3xl font-bold text-slate-800 mb-2">Träna på begrepp</h1>
-                                <p className="text-slate-500 mb-10">Klicka på kortet för att vända det</p>
-                                
-                                {/* Flashcard Container */}
-                                <div className="perspective-1000 w-full max-w-md h-80 relative cursor-pointer group" onClick={() => setIsFlipped(!isFlipped)}>
-                                    <div className={`flip-card-inner relative w-full h-full preserve-3d shadow-xl rounded-3xl ${isFlipped ? 'rotate-y-180' : ''}`}>
-                                        
-                                        {/* Front Side */}
-                                        <div className="absolute inset-0 backface-hidden bg-white rounded-3xl flex flex-col items-center justify-center p-8 text-center border-4 border-yellow-400">
-                                            <span className="text-sm uppercase tracking-widest text-yellow-500 font-bold mb-4">Begrepp</span>
-                                            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 break-words">{concepts[currentCardIndex].term}</h2>
-                                            <div className="absolute bottom-6 text-slate-400 text-xs italic">Klicka för att se svar</div>
+                        )}
+                        {view === 'flashcards' && (
+                            <div className="flex flex-col items-center">
+                                <div className="flip-card mb-8" onClick={() => setIsFlipped(!isFlipped)}>
+                                    <div className={`flip-card-inner ${isFlipped ? 'flipped-classes' : ''}`}>
+                                        <div className="flip-card-front">
+                                            <h2 className="text-3xl font-bold text-slate-900 text-center px-4">{concepts[currentIndex].term}</h2>
+                                            <div className="absolute bottom-6 animate-pulse"><span className="text-[10px] uppercase tracking-[0.2em] text-yellow-900 font-bold opacity-70">Klicka för svar</span></div>
                                         </div>
-
-                                        {/* Back Side */}
-                                        <div className="absolute inset-0 backface-hidden bg-yellow-50 rounded-3xl flex flex-col items-center justify-center p-8 text-center border-4 border-yellow-200 rotate-y-180 overflow-y-auto">
-                                            <span className="text-sm uppercase tracking-widest text-yellow-600 font-bold mb-4">Förklaring</span>
-                                            <p className="text-xl md:text-2xl text-slate-700 leading-snug">{concepts[currentCardIndex].definition}</p>
+                                        <div className="flip-card-back">
+                                            <p className="text-xl leading-relaxed text-slate-800 font-medium px-4">{concepts[currentIndex].definition}</p>
+                                            <div className="absolute bottom-6"><span className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">Klicka för att vända</span></div>
                                         </div>
-
                                     </div>
                                 </div>
-
-                                {/* Controls */}
-                                <div className="mt-12 flex flex-col items-center gap-4">
-                                    <button 
-                                        onClick={(e) => { e.stopPropagation(); handleNextCard(); }}
-                                        className="bg-yellow-400 hover:bg-yellow-500 text-slate-800 font-bold py-4 px-12 rounded-2xl shadow-lg transition-transform active:scale-95 text-lg"
-                                    >
-                                        Nästa begrepp
-                                    </button>
-                                    <p className="text-slate-400 text-sm">
-                                        Begrepp {currentCardIndex + 1} av {concepts.length}
-                                    </p>
+                                <div className="flex flex-col items-center gap-4">
+                                    <button onClick={nextCard} className="bg-slate-900 text-white px-10 py-4 rounded-2xl font-bold shadow-xl hover:bg-slate-800 active:scale-95 transition-all flex items-center gap-3 text-lg">Nästa begrepp <span>→</span></button>
+                                    <p className="text-slate-500 font-medium bg-slate-200 px-4 py-1 rounded-full text-xs">{currentIndex + 1} av {concepts.length}</p>
                                 </div>
                             </div>
                         )}
+                        {view === 'lucktext' && <LucktextView />}
                     </main>
 
-                    <footer className="mt-20 text-center text-slate-400 text-sm pb-10">
-                        © 2026 Kodningspartner - Interaktivt studiematerial i Samhällskunskap
-                    </footer>
+                    <footer className="mt-12 text-center text-slate-400 text-sm italic pb-8">Källa: Samhällskunskap – Privatekonomi begreppslista</footer>
                 </div>
             );
         }
