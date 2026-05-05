@@ -204,12 +204,19 @@ När begreppslistan skapas, generera matchningspar för varje begrepp med fokus 
 - Om flera begrepp liknar varandra, skapa scenarier som kräver att eleven förstår den exakta skillnaden
 - Exempel: Begrepp 'Statisk elektricitet' → Scenario: 'Du drar av dig en fleecetröja i ett mörkt rum och hör ett knastrande ljud samtidigt som håret ställer sig upp'
 
-### Trovärdiga icke-exempel i begreppslista
-För varje begrepp i begreppslistan, skapa ett trovärdigt icke-exempel som fungerar som en pedagogisk fälla:
-- Korrekt tillämpning: ett scenario som beskriver begreppet i en ny kontext
-- Trovärdigt icke-exempel: en situation som låter logisk men saknar en kritisk komponent, använder rätt ämnesområde men fel mekanism, eller beskriver något som ofta förväxlas med begreppet
-- Förklaring av fällan: förklara exakt vilket logiskt fel som gjordes
-- Exempel: Begrepp 'Allemansrätten' → Icke-exempel: 'Du sågar försiktigt av en liten kvist från en björk för att ta hem' → Förklaring: Allemansrätten förbjuder att skada levande träd
+### Interaktiv Icke-exempel-vy i begreppslista
+Gäller ENDAST begreppslistor. Lägg till en femte vy i toggle-raden: Lista | Flashcards | Lucktext | Scenario | Icke-ex.
+Icke-exempel-vyn är en interaktiv 'Välj rätt tillämpning'-övning där eleven aktivt måste skilja på en korrekt användning och en trovärdig fälla:
+- Visa ett begrepp och två alternativ (A och B)
+- Eleven klickar på det alternativ de tror är korrekt
+- Rätt svar: grön feedback
+- Fel svar: röd feedback
+- Förklaringen visas FÖRST efter att eleven klickat — aldrig innan
+- Variera vilket alternativ (A eller B) som är rätt
+- Fällorna ska använda rätt terminologi men beskriva vanliga missuppfattningar
+- Undvik att kopiera definitioner — använd situationer och scenarier
+- Poängräknare och slutresultat när alla begrepp är genomgångna
+- 'Börja om'-knapp som blandar om ordningen
 
 ### Tillbaka-knapp — gäller ALLA filer
 - Varje fil (quiz, begreppslista, lucktext, uppgifter) ska ha en **tillbaka-knapp** som länkar till `index.html`
