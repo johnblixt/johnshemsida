@@ -25,25 +25,215 @@
         const { useState } = React;
 
         const concepts = [
-            { term: "Samband", definition: "När två eller flera saker hänger ihop – om det ena förändras påverkas det andra.", sentence: "Forskarna hittade ett _____ mellan stillasittande och ökad risk för hjärt-kärlsjukdomar." },
-            { term: "Kausalitet", definition: "När en sak direkt orsakar eller påverkar en annan.", sentence: "Det finns _____ mellan rökning och lungcancer – rökningen orsakar sjukdomen, det är inte bara ett samband." },
-            { term: "Hypotes", definition: "En gissning eller ett antagande som går att testa vetenskapligt.", sentence: "Inför experimentet formulerade eleven en _____ om att växter växer snabbare med mer ljus." },
-            { term: "Kritiskt tänkande", definition: "Att tänka efter noga och ifrågasätta källor snarare än att tro på allt man hör.", sentence: "_____ innebär att du inte delar en nyhet förrän du kontrollerat om källan är tillförlitlig." },
-            { term: "Tolkning", definition: "Att förklara vad något betyder, till exempel vad ett experimentresultat faktiskt visar.", sentence: "Elevernas _____ av diagrammet skilde sig – en ansåg att det visade en trend, en annan tvivlade." },
-            { term: "Slutsats", definition: "Det man kommer fram till efter att ha undersökt något – svaret på om hypotesen stämde.", sentence: "Gruppens _____ var att plantorna med mest ljus vuxit dubbelt så snabbt som kontrollgruppen." },
-            { term: "Argumentera", definition: "Att förklara varför man anser något genom att ge tydliga exempel eller bevis.", sentence: "Du måste kunna _____ för ditt svar med konkreta fakta och bevis, inte bara åsikter." },
-            { term: "Metod", definition: "Ett bestämt sätt att göra något, som att följa specifika steg i ett experiment.", sentence: "Laborationens _____ beskrev exakt vilka steg som skulle följas för att resultaten skulle bli jämförbara." },
-            { term: "Reliabilitet", definition: "Hur tillförlitlig en mätning är – om man upprepar undersökningen och får samma resultat.", sentence: "Hög _____ uppnås när flera oberoende forskare upprepar ett experiment och får likartade resultat." },
-            { term: "Validitet", definition: "Att man faktiskt mäter det man påstår sig mäta – att undersökningen är relevant för frågeställningen.", sentence: "En undersökning om stress som enbart mäter puls har låg _____ – pulsen mäter inte stress direkt." },
-            { term: "Bias (snedvridning)", definition: "En systematisk skevhet som gör att resultatet blir felaktigt eller ensidigt.", sentence: "Om bara friska personer deltar i en studie om en sjukdom uppstår _____ i resultaten." },
-            { term: "Evidens", definition: "Bevis som visar att något är sant eller troligt, baserat på vetenskapliga observationer.", sentence: "Det finns stark _____ för att regelbunden motion minskar risken för diabetes typ 2." },
-            { term: "Experiment", definition: "Ett test där man gör något på ett kontrollerat sätt för att ta reda på hur det fungerar.", sentence: "I _____ varierade forskarna bara en variabel i taget för att se vad som faktiskt påverkade resultatet." },
-            { term: "Data", definition: "Information som samlas in under ett experiment, till exempel siffror och mätningar.", sentence: "De insamlade _____ visade tydligt att temperaturen steg med 2 grader varje gång trycket ökade." },
-            { term: "Resultat", definition: "Den direkta informationen man får fram efter ett experiment – exakt vad som hände.", sentence: "Experimentets _____ visade att grupp A löste uppgiften 40% snabbare än grupp B." },
-            { term: "Replikering", definition: "Att göra om samma experiment flera gånger för att se om man får samma resultat varje gång.", sentence: "Utan _____ kan ett vetenskapligt fynd inte bekräftas – ett enskilt experiment räcker inte." },
-            { term: "Felkälla", definition: "Något som kan påverka ett experiment så att resultatet inte blir helt rätt.", sentence: "Trasig våg var en _____ som ledde till att alla mätningar av vätskan blev lite för höga." },
-            { term: "Kontrollgrupp", definition: "En grupp i ett experiment som inte får den behandling man testar – används för jämförelse.", sentence: "Hälften av patienterna fick det nya läkemedlet och hälften ingick i _____ och fick placebo." },
-            { term: "Pålitlighet", definition: "Ett övergripande mått på hur mycket man kan lita på att ett vetenskapligt resultat är korrekt.", sentence: "Studiens _____ stärktes av att den var dubbelblind och hade ett stort urval av deltagare." }
+            {
+                term: "Samband",
+                definition: "När två eller flera saker hänger ihop – om det ena förändras påverkas det andra.",
+                sentence: "Forskarna hittade ett _____ mellan stillasittande och ökad risk för hjärt-kärlsjukdomar.",
+                scenario: "Forskare noterar att länder med hög köttkonsumtion också tenderar att ha höga växthusgasutsläpp och funderar på om dessa faktorer hänger ihop.",
+                ickeExempel: {
+                    korrekt: "Sambandet mellan stillasittande och hjärt-kärlsjukdom visas av statistiska data.",
+                    icke: "Att stillasittande orsakar hjärt-kärlsjukdom innebär att det finns ett samband.",
+                    forklaring: "Samband visar att saker hänger ihop men säger inget om orsak – kausalitet krävs för att säga att A orsakar B."
+                }
+            },
+            {
+                term: "Kausalitet",
+                definition: "När en sak direkt orsakar eller påverkar en annan.",
+                sentence: "Det finns _____ mellan rökning och lungcancer – rökningen orsakar sjukdomen, det är inte bara ett samband.",
+                scenario: "Experiment visar att rökning faktiskt triggar de cellförändringar som leder till lungcancer – inte bara att rökare råkar drabbas av andra skäl.",
+                ickeExempel: {
+                    korrekt: "Kausalitet mellan rökning och lungcancer innebär att rökningen är den direkta orsaken.",
+                    icke: "Att rika länder har hög köttkonsumtion och hög medellivslängd bevisar att kött orsakar lång livslängd.",
+                    forklaring: "Korrelation är inte kausalitet – rika länder lever länge av många orsaker som inte har med kött att göra."
+                }
+            },
+            {
+                term: "Hypotes",
+                definition: "En gissning eller ett antagande som går att testa vetenskapligt.",
+                sentence: "Inför experimentet formulerade eleven en _____ om att växter växer snabbare med mer ljus.",
+                scenario: "Innan experimentet börjar formulerar eleven ett testbart påstående: 'Plantor som får rött ljus växer snabbare än plantor i blått ljus.'",
+                ickeExempel: {
+                    korrekt: "Påståendet 'vatten kokar vid lägre temperatur på hög höjd' är en hypotes som kan testas.",
+                    icke: "Påståendet 'choklad är den godaste maten' är en hypotes som kan testas vetenskapligt.",
+                    forklaring: "Hypoteser måste vara objektivt testbara – subjektiva påståenden om smak och preferenser kan inte testas vetenskapligt."
+                }
+            },
+            {
+                term: "Kritiskt tänkande",
+                definition: "Att tänka efter noga och ifrågasätta källor snarare än att tro på allt man hör.",
+                sentence: "_____ innebär att du inte delar en nyhet förrän du kontrollerat om källan är tillförlitlig.",
+                scenario: "En elev läser om en studie som säger att ett kosttillskott botar förkylning, men kontrollerar vem som finansierade studien och hur stor urvalsgruppen var.",
+                ickeExempel: {
+                    korrekt: "Att kontrollera källans trovärdighet och leta efter konkurrerande studier innan man delar en nyhet är kritiskt tänkande.",
+                    icke: "Att alltid misstro allt och aldrig tro på någon forskning är kritiskt tänkande.",
+                    forklaring: "Kritiskt tänkande handlar om att utvärdera evidens noggrant – inte om blankt misstroende utan bedömning."
+                }
+            },
+            {
+                term: "Tolkning",
+                definition: "Att förklara vad något betyder, till exempel vad ett experimentresultat faktiskt visar.",
+                sentence: "Elevernas _____ av diagrammet skilde sig – en ansåg att det visade en trend, en annan tvivlade.",
+                scenario: "En grupp elever får se ett diagram och ska förklara vad det säger om sambandet mellan temperatur och syreprocent i vatten.",
+                ickeExempel: {
+                    korrekt: "Att förklara att diagrammet visar ett negativt samband mellan koffein och sömnlängd är en tolkning.",
+                    icke: "Att kopiera siffrorna från ett diagram utan att förklara vad de betyder är en tolkning.",
+                    forklaring: "Tolkning kräver att man förklarar vad data *betyder* – att bara reproducera siffror är redovisning, inte tolkning."
+                }
+            },
+            {
+                term: "Slutsats",
+                definition: "Det man kommer fram till efter att ha undersökt något – svaret på om hypotesen stämde.",
+                sentence: "Gruppens _____ var att plantorna med mest ljus vuxit dubbelt så snabbt som kontrollgruppen.",
+                scenario: "Efter tre veckors experiment sammanfattar gruppen vad deras data faktiskt visar och besvarar om deras ursprungliga antagande stämde.",
+                ickeExempel: {
+                    korrekt: "Att dra slutsatsen 'plantor med mer ljus växte 40% snabbare' baserat på experimentets data är korrekt.",
+                    icke: "Att skriva ned sin hypotes i slutet av rapporten och kalla det slutsats är korrekt metod.",
+                    forklaring: "En slutsats baseras på faktiska resultat och svarar om hypotesen stämde – man skriver inte bara av hypotesen."
+                }
+            },
+            {
+                term: "Argumentera",
+                definition: "Att förklara varför man anser något genom att ge tydliga exempel eller bevis.",
+                sentence: "Du måste kunna _____ för ditt svar med konkreta fakta och bevis, inte bara åsikter.",
+                scenario: "En elev hävdar att solenergi är bättre än kärnkraft och stöder påståendet med data om koldioxidutsläpp, kostnad per kWh och säkerhetsstatistik.",
+                ickeExempel: {
+                    korrekt: "Att stödja påståendet 'solenergi är bättre' med kostnadsdata och utsläppsstatistik är att argumentera.",
+                    icke: "Att säga 'solenergi är bättre för alla vet att det är sant' är att argumentera.",
+                    forklaring: "Att hänvisa till vad 'alla vet' är inte ett argument – att argumentera kräver konkreta bevis och fakta."
+                }
+            },
+            {
+                term: "Metod",
+                definition: "Ett bestämt sätt att göra något, som att följa specifika steg i ett experiment.",
+                sentence: "Laborationens _____ beskrev exakt vilka steg som skulle följas för att resultaten skulle bli jämförbara.",
+                scenario: "Alla grupper i klassen följer exakt samma steg-för-steg-instruktioner för att mäta pH i vatten, vilket gör att resultaten kan jämföras.",
+                ickeExempel: {
+                    korrekt: "Att följa ett standardiserat protokoll för att mäta blodtryck är en del av en vetenskaplig metod.",
+                    icke: "En forskares personliga uppfattning om hur ett experiment bör genomföras är metodiken.",
+                    forklaring: "Metod är ett strukturerat, replikerbart förfarande – personliga uppfattningar och improvisation är inte en vetenskaplig metod."
+                }
+            },
+            {
+                term: "Reliabilitet",
+                definition: "Hur tillförlitlig en mätning är – om man upprepar undersökningen och får samma resultat.",
+                sentence: "Hög _____ uppnås när flera oberoende forskare upprepar ett experiment och får likartade resultat.",
+                scenario: "Tre olika laboratorier genomför samma experiment och får nästan identiska resultat, vilket stärker förtroendet för mätinstrumentet.",
+                ickeExempel: {
+                    korrekt: "Att kunna upprepa ett experiment och få samma resultat tyder på hög reliabilitet.",
+                    icke: "En studie som mäter exakt det den påstår sig mäta har hög reliabilitet.",
+                    forklaring: "Att mäta rätt sak är validitet – reliabilitet handlar om reproducerbarhet, alltså att man får samma resultat varje gång."
+                }
+            },
+            {
+                term: "Validitet",
+                definition: "Att man faktiskt mäter det man påstår sig mäta – att undersökningen är relevant för frågeställningen.",
+                sentence: "En undersökning om stress som enbart mäter puls har låg _____ – pulsen mäter inte stress direkt.",
+                scenario: "En studie mäter 'välbefinnande' enbart via puls, men stress, relationer och livstillfredsställelse mäts inte alls.",
+                ickeExempel: {
+                    korrekt: "En välmångsstudie som inkluderar psykologiska, sociala och fysiska mätningar har högre validitet.",
+                    icke: "En studie som ger samma resultat varje gång den upprepas har hög validitet.",
+                    forklaring: "Samma resultat varje gång är reliabilitet – validitet handlar om att mäta det man faktiskt påstår sig mäta."
+                }
+            },
+            {
+                term: "Bias (snedvridning)",
+                definition: "En systematisk skevhet som gör att resultatet blir felaktigt eller ensidigt.",
+                sentence: "Om bara friska personer deltar i en studie om en sjukdom uppstår _____ i resultaten.",
+                scenario: "En studie om löpningens hälsoeffekter finansieras av ett sportföretag och inkluderar bara löpare som mår bra – inte de som slutat träna.",
+                ickeExempel: {
+                    korrekt: "Om enbart friska personer deltar i en studie om diabetes uppstår bias i resultaten.",
+                    icke: "En enstaka felmätning i ett annars korrekt experiment är ett exempel på bias.",
+                    forklaring: "En enstaka mätfel är en felkälla – bias är en systematisk skevhet som påverkar hela studien i en viss riktning."
+                }
+            },
+            {
+                term: "Evidens",
+                definition: "Bevis som visar att något är sant eller troligt, baserat på vetenskapliga observationer.",
+                sentence: "Det finns stark _____ för att regelbunden motion minskar risken för diabetes typ 2.",
+                scenario: "Tusentals studier, genomförda av oberoende forskargrupper i olika länder, visar alla att vaccination minskar risken för allvarlig sjukdom.",
+                ickeExempel: {
+                    korrekt: "Stark evidens för att rökning orsakar cancer baseras på tusentals oberoende studier.",
+                    icke: "En personlig berättelse om att ett kosttillskott botade en person är evidens för att tillskottet fungerar.",
+                    forklaring: "Anekdotiska berättelser är inte vetenskaplig evidens – evidens kräver kontrollerade studier med reproducerbara resultat."
+                }
+            },
+            {
+                term: "Experiment",
+                definition: "Ett test där man gör något på ett kontrollerat sätt för att ta reda på hur det fungerar.",
+                sentence: "I _____ varierade forskarna bara en variabel i taget för att se vad som faktiskt påverkade resultatet.",
+                scenario: "Gruppen ändrar bara ljusmängden och håller temperatur, vattenmängd och jordtyp konstanta för att isolera vad som påverkar växtens tillväxt.",
+                ickeExempel: {
+                    korrekt: "Att variera en variabel i taget och mäta effekten är grunden i ett experiment.",
+                    icke: "Att observera hur växter växer i naturen utan att kontrollera omgivningen är ett experiment.",
+                    forklaring: "Naturobservation utan kontroll av variabler är fältstudie – ett experiment kräver kontrollerade förhållanden."
+                }
+            },
+            {
+                term: "Data",
+                definition: "Information som samlas in under ett experiment, till exempel siffror och mätningar.",
+                sentence: "De insamlade _____ visade tydligt att temperaturen steg med 2 grader varje gång trycket ökade.",
+                scenario: "Gruppen noterar temperaturvärden, pH-nivåer och tillväxtmätningar i ett protokoll under tre veckors tid.",
+                ickeExempel: {
+                    korrekt: "De siffror och mätningar som samlas in under ett experiment kallas data.",
+                    icke: "Slutsatsen man drar av experimentet är data.",
+                    forklaring: "Data är råinformation som samlas in – slutsatsen dras *utifrån* data, inte tvärtom."
+                }
+            },
+            {
+                term: "Resultat",
+                definition: "Den direkta informationen man får fram efter ett experiment – exakt vad som hände.",
+                sentence: "Experimentets _____ visade att grupp A löste uppgiften 40% snabbare än grupp B.",
+                scenario: "Gruppen redovisar exakt vad som hände under experimentet: grupp A:s plantor växte i genomsnitt 8 cm, grupp B:s 4 cm.",
+                ickeExempel: {
+                    korrekt: "Att grupp A löste uppgiften 40% snabbare än grupp B är experimentets resultat.",
+                    icke: "Att grupp A löste uppgiften snabbare tack vare bättre koncentration är resultatet.",
+                    forklaring: "Att förklara varför det hände är en tolkning – resultatet är enbart vad som faktiskt mättes."
+                }
+            },
+            {
+                term: "Replikering",
+                definition: "Att göra om samma experiment flera gånger för att se om man får samma resultat varje gång.",
+                sentence: "Utan _____ kan ett vetenskapligt fynd inte bekräftas – ett enskilt experiment räcker inte.",
+                scenario: "Efter en spännande studie försöker fyra oberoende forskargrupper runt om i världen genomföra exakt samma experiment för att se om de får samma utfall.",
+                ickeExempel: {
+                    korrekt: "Att tre oberoende laboratorier bekräftar samma fynd stärker studiens trovärdighet via replikering.",
+                    icke: "Att samma forskargrupp gör om sitt eget experiment tre gånger i rad är fullständig replikering.",
+                    forklaring: "Verklig replikering kräver oberoende grupper i olika miljöer – att samma grupp gör om det är repetition, inte fullständig replikering."
+                }
+            },
+            {
+                term: "Felkälla",
+                definition: "Något som kan påverka ett experiment så att resultatet inte blir helt rätt.",
+                sentence: "Trasig våg var en _____ som ledde till att alla mätningar av vätskan blev lite för höga.",
+                scenario: "Halvvägs igenom experimentet märker eleven att vågen inte är kalibrerad och att alla vätskemätningar kan vara 5% för höga.",
+                ickeExempel: {
+                    korrekt: "En icke-kalibrerad våg som ger felaktiga mätvärden är en felkälla i ett experiment.",
+                    icke: "Att en hypotes visade sig vara fel betyder att det fanns en felkälla i experimentet.",
+                    forklaring: "En hypotes kan motbevisas utan att det finns felkällor – felkällan är något som påverkar mätningarna, inte om hypotesen stämmer."
+                }
+            },
+            {
+                term: "Kontrollgrupp",
+                definition: "En grupp i ett experiment som inte får den behandling man testar – används för jämförelse.",
+                sentence: "Hälften av patienterna fick det nya läkemedlet och hälften ingick i _____ och fick placebo.",
+                scenario: "Hälften av patienterna får det nya läkemedlet, medan den andra hälften får sockerpiller – bägge vet inte vilket de fått.",
+                ickeExempel: {
+                    korrekt: "En grupp patienter som enbart fick placebo är kontrollgruppen som jämförs med de som fick läkemedlet.",
+                    icke: "Den grupp i experimentet som fick mest av det man testar är kontrollgruppen.",
+                    forklaring: "Kontrollgruppen får *inte* det man testar – de som fick störst dos är experimentgruppen."
+                }
+            },
+            {
+                term: "Pålitlighet",
+                definition: "Ett övergripande mått på hur mycket man kan lita på att ett vetenskapligt resultat är korrekt.",
+                sentence: "Studiens _____ stärktes av att den var dubbelblind och hade ett stort urval av deltagare.",
+                scenario: "En stor dubbelblind studie med 10 000 deltagare, publicerad i en peer-reviewed tidskrift och replikerad av tre oberoende grupper, anses ha hög trovärdighet.",
+                ickeExempel: {
+                    korrekt: "En dubbelblind studie med stort urval och oberoende replikering har hög pålitlighet.",
+                    icke: "En studie publicerad av ett prestigefyllt universitet har automatiskt hög pålitlighet.",
+                    forklaring: "Universitetets prestige garanterar inte pålitlighet – det kräver korrekt metod, stort urval och oberoende replikering."
+                }
+            }
         ];
 
         function shuffleArray(arr) {
@@ -111,7 +301,7 @@
                                     ) : (
                                         <div>
                                             <div className="flex gap-2">
-                                                <input type="text" value={inputs[i]} onChange={e => { const v = [...inputs]; v[i] = e.target.value; setInputs(v); }} onKeyDown={e => e.key === 'Enter' && submit(i)} placeholder="Skriv begreppet och tryck Enter..." className="flex-1 border-2 border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:border-green-400 text-sm" />
+                                                <input type="text" value={inputs[i]} onChange={e => { const v = [...inputs]; v[i] = e.target.value; setInputs(v); }} onKeyDown={e => e.key === 'Enter' && submit(i)} placeholder="Skriv begreppet och tryck Enter..." className="flex-1 border-2 border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:border-green-500 text-sm" />
                                                 <button onClick={() => submit(i)} className="bg-green-500 text-white px-4 py-2 rounded-xl font-bold hover:bg-green-600 transition-colors">→</button>
                                             </div>
                                             {st === 'wrong-once' && <p className="text-orange-500 text-sm mt-2 font-medium">Är du säker att du stavat rätt?</p>}
@@ -132,6 +322,133 @@
                             <button onClick={börjaOm} className="bg-green-500 text-white px-8 py-3 rounded-2xl font-bold hover:bg-green-600 transition-colors">Börja om</button>
                         </div>
                     )}
+                </div>
+            );
+        }
+
+        function ScenarioView() {
+            const [shuffledIdxs] = useState(() => shuffleArray(concepts.map((_, i) => i)));
+            const [current, setCurrent] = useState(0);
+            const [answered, setAnswered] = useState(null);
+            const [selected, setSelected] = useState(null);
+            const [score, setScore] = useState(0);
+            const [done, setDone] = useState(false);
+            const [termOptions, setTermOptions] = useState(() => shuffleArray(concepts.map(c => c.term)));
+
+            const conceptIdx = shuffledIdxs[current];
+            const concept = concepts[conceptIdx];
+
+            const handleSelect = (term) => {
+                if (answered !== null) return;
+                setSelected(term);
+                const isCorrect = term === concept.term;
+                setAnswered(isCorrect ? 'correct' : 'wrong');
+                if (isCorrect) setScore(s => s + 1);
+            };
+
+            const next = () => {
+                if (current + 1 >= concepts.length) { setDone(true); return; }
+                setCurrent(c => c + 1);
+                setAnswered(null);
+                setSelected(null);
+                setTermOptions(shuffleArray(concepts.map(c => c.term)));
+            };
+
+            const reset = () => {
+                setCurrent(0);
+                setAnswered(null);
+                setSelected(null);
+                setScore(0);
+                setDone(false);
+                setTermOptions(shuffleArray(concepts.map(c => c.term)));
+            };
+
+            if (done) return (
+                <div className="text-center">
+                    <div className="bg-green-50 border-2 border-green-500 rounded-3xl p-8 mb-6">
+                        <p className="text-5xl font-bold text-green-500 mb-2">{score}/{concepts.length}</p>
+                        <p className="text-xl font-bold text-slate-800 mb-4">{getFeedback(score, concepts.length)}</p>
+                        <button onClick={reset} className="bg-green-500 text-white px-8 py-3 rounded-2xl font-bold hover:bg-green-600 transition-colors">Börja om</button>
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="max-w-2xl mx-auto">
+                    <div className="flex justify-between items-center mb-3">
+                        <span className="font-bold text-green-700">Poäng: {score}</span>
+                        <span className="text-slate-400 text-sm">{current + 1} / {concepts.length}</span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+                        <div className="bg-green-500 h-2 rounded-full transition-all" style={{width: `${((current + 1) / concepts.length) * 100}%`}}></div>
+                    </div>
+                    <div className="bg-white p-6 rounded-3xl shadow-lg mb-6">
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Vilket begrepp beskrivs?</p>
+                        <p className="text-lg text-slate-800 leading-relaxed italic">"{concept.scenario}"</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 mb-6">
+                        {termOptions.map((term, i) => (
+                            <button key={i} onClick={() => handleSelect(term)} disabled={answered !== null}
+                                className={`p-4 rounded-2xl font-bold border-2 text-left transition-all ${
+                                    answered === null ? 'bg-white border-slate-200 hover:border-green-500 hover:bg-green-50' :
+                                    term === concept.term ? 'bg-green-50 border-green-500 text-green-700' :
+                                    term === selected ? 'bg-red-50 border-red-500 text-red-700' :
+                                    'bg-white border-slate-100 text-slate-300'
+                                }`}>
+                                {term}
+                            </button>
+                        ))}
+                    </div>
+                    {answered !== null && (
+                        <div>
+                            <div className={`p-4 rounded-2xl text-sm font-medium mb-4 ${answered === 'correct' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>
+                                {answered === 'correct' ? `✓ Rätt! ${concept.definition}` : `✗ Fel. Rätt svar: ${concept.term} – ${concept.definition}`}
+                            </div>
+                            <button onClick={next} className="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-slate-800 transition-all">
+                                {current + 1 >= concepts.length ? 'Se resultat' : 'Nästa scenario →'}
+                            </button>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        function IckeExempelView() {
+            const [revealed, setRevealed] = useState(concepts.map(() => false));
+
+            const toggle = (i) => { const r = [...revealed]; r[i] = !r[i]; setRevealed(r); };
+
+            return (
+                <div className="grid gap-5">
+                    {concepts.map((c, i) => (
+                        <div key={i} className="bg-white rounded-2xl shadow-sm border-l-8 border-green-500 overflow-hidden">
+                            <div className="p-5">
+                                <div className="flex items-center gap-3 mb-3">
+                                    <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-lg">{i + 1}</span>
+                                    <h3 className="text-lg font-bold">{c.term}</h3>
+                                </div>
+                                <div className="mb-3 p-3 bg-green-50 rounded-xl">
+                                    <p className="text-xs font-bold text-green-700 uppercase tracking-wider mb-1">✓ Korrekt tillämpning</p>
+                                    <p className="text-slate-700 text-sm">{c.ickeExempel.korrekt}</p>
+                                </div>
+                                <button onClick={() => toggle(i)} className={`w-full py-2 rounded-xl font-bold text-sm transition-all ${revealed[i] ? 'bg-red-100 text-red-700' : 'bg-slate-800 text-white hover:bg-slate-700'}`}>
+                                    {revealed[i] ? 'Dölj icke-exempel' : 'Visa icke-exempel 🪤'}
+                                </button>
+                            </div>
+                            {revealed[i] && (
+                                <div className="px-5 pb-5">
+                                    <div className="mb-3 p-3 bg-red-50 rounded-xl">
+                                        <p className="text-xs font-bold text-red-700 uppercase tracking-wider mb-1">✗ Trovärdigt icke-exempel (fälla)</p>
+                                        <p className="text-slate-700 text-sm">{c.ickeExempel.icke}</p>
+                                    </div>
+                                    <div className="p-3 bg-amber-50 rounded-xl">
+                                        <p className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-1">Förklaring av fällan</p>
+                                        <p className="text-slate-700 text-sm">{c.ickeExempel.forklaring}</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ))}
                 </div>
             );
         }
@@ -160,10 +477,12 @@
                         <div className="w-36"></div>
                     </header>
 
-                    <div className="max-w-sm mx-auto mb-10 flex bg-white p-1 rounded-full shadow-md border border-slate-200">
+                    <div className="max-w-2xl mx-auto mb-10 flex bg-white p-1 rounded-full shadow-md border border-slate-200">
                         <button onClick={() => setView('list')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'list' ? activeTab : inactiveTab}`}>Lista</button>
                         <button onClick={() => setView('flashcards')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'flashcards' ? activeTab : inactiveTab}`}>Flashcards</button>
                         <button onClick={() => setView('lucktext')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'lucktext' ? activeTab : inactiveTab}`}>Lucktext</button>
+                        <button onClick={() => setView('scenario')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'scenario' ? activeTab : inactiveTab}`}>Scenario</button>
+                        <button onClick={() => setView('icke')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'icke' ? activeTab : inactiveTab}`}>Icke-ex.</button>
                     </div>
 
                     <main className="max-w-2xl mx-auto">
@@ -201,6 +520,8 @@
                             </div>
                         )}
                         {view === 'lucktext' && <LucktextView />}
+                        {view === 'scenario' && <ScenarioView />}
+                        {view === 'icke' && <IckeExempelView />}
                     </main>
 
                     <footer className="mt-12 text-center text-slate-400 text-sm italic pb-8">Källa: Naturkunskap – Vetenskap begreppslista</footer>

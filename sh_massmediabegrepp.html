@@ -25,26 +25,226 @@
         const { useState } = React;
 
         const concepts = [
-            { term: "Pressfrihet", definition: "Journalisters rätt att skriva och rapportera fritt utan censur, hot eller straff.", sentence: "_____ är en förutsättning för en fungerande demokrati – utan den kan makthavare agera utan insyn." },
-            { term: "Yttrandefrihet", definition: "Människors rätt att uttrycka sina åsikter i tal, text och bild.", sentence: "_____ innebär att du lagligen får kritisera politiska beslut och uttrycka kontroversiella åsikter." },
-            { term: "Fri opinionsbildning", definition: "Möjligheten att fritt bilda, uttrycka och sprida åsikter i samhället.", sentence: "_____ kräver att medborgare kan ta del av olika perspektiv och själva dra slutsatser." },
-            { term: "Granskande journalistik", definition: "När medier undersöker och avslöjar maktmissbruk och missförhållanden.", sentence: "Tack vare _____ avslöjades skandalen med kommunalrådet som tagit emot mutor." },
-            { term: "Public service", definition: "Medier som ska vara sakliga, opartiska och arbeta i allmänhetens tjänst.", sentence: "SVT och SR är _____ och finansieras av skattemedel för att ge alla tillgång till oberoende nyheter." },
-            { term: "Pressetik", definition: "Etiska regler för journalistik, t.ex. korrekthet, allsidighet och skydd av privatliv.", sentence: "Tidningen bröt mot _____ när de publicerade offrens namn utan samtycke." },
-            { term: "Källkritik", definition: "Att granska och värdera källors trovärdighet och syfte.", sentence: "Innan du delar ett inlägg på sociala medier bör du tillämpa _____ och kontrollera vem som skrivit det." },
-            { term: "Meddelarfrihet", definition: "Rätten att lämna information till medier utan att bli straffad.", sentence: "Sjuksköterskan använde sig av _____ när hon berättade för SVT om de farliga förhållandena på avdelningen." },
-            { term: "Offentlighetsprincipen", definition: "Rätten att ta del av offentliga handlingar och dokument.", sentence: "Journalisten begärde ut kommunens avtal med hjälp av _____ och hittade oegentligheter." },
-            { term: "Censur", definition: "När staten eller makthavare kontrollerar eller stoppar information.", sentence: "Regimen utövade _____ och blockerade alla nyheter om protesterna från att nå befolkningen." },
-            { term: "Propaganda", definition: "Vinklad information som sprids för att påverka människors åsikter.", sentence: "Under valrörelsen spreds _____ i sociala medier för att svartmåla motståndarkandidaterna." },
-            { term: "Övervakning", definition: "När staten eller andra aktörer följer människors kommunikation och beteende.", sentence: "Debatten om statlig _____ handlar om balansen mellan säkerhet och personlig integritet." },
-            { term: "Nyhetsvärdering", definition: "Processen där man avgör vilka händelser som blir nyheter.", sentence: "Redaktörens _____ avgör varför en mindre olycka i Sverige kan bli stor nyhet medan en katastrof utomlands knappt nämns." },
-            { term: "Algoritm", definition: "Datorprogram som styr vilket innehåll du får se, baserat på ditt beteende.", sentence: "TikToks _____ anpassar din flöde baserat på vad du tittar på, och visar allt mer liknande innehåll." },
-            { term: "Filterbubbla", definition: "När algoritmer gör att du mest ser sådant som bekräftar dina åsikter.", sentence: "Ju mer du följer likasinnade konton, desto mer riskerar du att hamna i en _____ på sociala medier." },
-            { term: "Ekokammare", definition: "En miljö där liknande åsikter förstärks och motstånd saknas.", sentence: "Kommentarsfältet var en _____ där alla höll med varandra och kritik ifrågasattes aggressivt." },
-            { term: "Desinformation", definition: "Falsk information som sprids medvetet för att vilseleda.", sentence: "Ryska aktörer spred _____ om valdatabrott för att undergräva förtroendet för demokratiska val." },
-            { term: "Misinformation", definition: "Felaktig information som sprids utan avsikt att lura.", sentence: "Mamman delade _____ om vacciner för att hon trodde att det stämde, men hon hade inte kontrollerat källan." },
-            { term: "Konfirmationsbias", definition: "Tendensen att söka och tro på information som bekräftar det man redan tycker.", sentence: "_____ gör att vi tenderar att dela artiklar som stöder våra egna åsikter, utan att kritiskt granska dem." },
-            { term: "Klicklogik", definition: "När medier prioriterar innehåll som ger många klick snarare än samhällsnytta.", sentence: "_____ driver tidningarna att skriva sensationella rubriker som lockar läsare, även om innehållet är trivialt." }
+            {
+                term: "Pressfrihet",
+                definition: "Journalisters rätt att skriva och rapportera fritt utan censur, hot eller straff.",
+                sentence: "_____ är en förutsättning för en fungerande demokrati – utan den kan makthavare agera utan insyn.",
+                scenario: "En journalist publicerar en kritisk granskning av en minister utan att riskera straff, hot eller att tidningen stängs ner av staten.",
+                ickeExempel: {
+                    korrekt: "Pressfrihet innebär att journalister kan publicera granskande reportage om makthavare utan hot om straff.",
+                    icke: "Pressfrihet innebär att journalister aldrig kan bli stämda för vad de skriver.",
+                    forklaring: "Pressfrihet skyddar mot statlig censur men journalister kan fortfarande hållas ansvariga för t.ex. förtal och ärekränkning via domstol."
+                }
+            },
+            {
+                term: "Yttrandefrihet",
+                definition: "Människors rätt att uttrycka sina åsikter i tal, text och bild.",
+                sentence: "_____ innebär att du lagligen får kritisera politiska beslut och uttrycka kontroversiella åsikter.",
+                scenario: "En person håller ett offentligt tal och kritiserar öppet landets migrationspolitik utan att riskera juridiska påföljder från staten.",
+                ickeExempel: {
+                    korrekt: "Yttrandefrihet skyddar rätten att offentligt kritisera regering och myndigheter utan statlig bestraffning.",
+                    icke: "Yttrandefrihet innebär att arbetsgivaren inte kan säga upp dig för vad du säger på sociala medier.",
+                    forklaring: "Yttrandefrihet skyddar mot statlig inblandning – en privat arbetsgivare kan ha egna regler om anställdas offentliga uttalanden."
+                }
+            },
+            {
+                term: "Fri opinionsbildning",
+                definition: "Möjligheten att fritt bilda, uttrycka och sprida åsikter i samhället.",
+                sentence: "_____ kräver att medborgare kan ta del av olika perspektiv och själva dra slutsatser.",
+                scenario: "Medborgare kan bilda föreningar, starta tidningar, protestera och sprida sina idéer utan att staten hindrar dem eller kontrollerar vilka åsikter som är tillåtna.",
+                ickeExempel: {
+                    korrekt: "Fri opinionsbildning innebär att partier, organisationer och medborgare fritt kan sprida sina politiska idéer.",
+                    icke: "Fri opinionsbildning kräver att alla åsikter ges lika mycket sändningstid i offentliga medier.",
+                    forklaring: "Fri opinionsbildning handlar om frihet att sprida åsikter – inte om rätt till statligt finansierad plats i medier. Redaktioner väljer fortfarande vad de publicerar."
+                }
+            },
+            {
+                term: "Granskande journalistik",
+                definition: "När medier undersöker och avslöjar maktmissbruk och missförhållanden.",
+                sentence: "Tack vare _____ avslöjades skandalen med kommunalrådet som tagit emot mutor.",
+                scenario: "En redaktion ägnar månader åt att granska offentliga dokument och intervjua källor, och avslöjar att ett statligt bolag betalat ut bonusar i strid med reglementet.",
+                ickeExempel: {
+                    korrekt: "Granskande journalistik innebär att redaktioner granskar makthavare och avslöjar missförhållanden.",
+                    icke: "En reporter som intervjuar en minister om deras policy bedriver granskande journalistik.",
+                    forklaring: "Att intervjua en minister om deras officiella ståndpunkt är nyhetsrapportering – granskande journalistik innebär aktiv granskning och avslöjande av dold information eller missförhållanden."
+                }
+            },
+            {
+                term: "Public service",
+                definition: "Medier som ska vara sakliga, opartiska och arbeta i allmänhetens tjänst.",
+                sentence: "SVT och SR är _____ och finansieras av skattemedel för att ge alla tillgång till oberoende nyheter.",
+                scenario: "En tv-kanal finansieras av allmänheten och har ett uppdrag att rapportera sakligt om alla politiska partier utan att gynna något av dem.",
+                ickeExempel: {
+                    korrekt: "SVT är public service – finansierat av allmänheten med krav på saklighet och opartiskhet.",
+                    icke: "En privat nyhetstidning som strävar efter att vara objektiv och opartisk är public service.",
+                    forklaring: "Public service kräver specifikt offentlig finansiering och ett juridiskt uppdrag från staten – en privat tidning kan vara seriös men faller inte under public service-begreppet."
+                }
+            },
+            {
+                term: "Pressetik",
+                definition: "Etiska regler för journalistik, t.ex. korrekthet, allsidighet och skydd av privatliv.",
+                sentence: "Tidningen bröt mot _____ när de publicerade offrens namn utan samtycke.",
+                scenario: "En redaktion beslutar att inte publicera ett brottsoffers identitet eftersom det saknar allmänt intresse och kan skada personen allvarligt.",
+                ickeExempel: {
+                    korrekt: "Pressetik innebär t.ex. att skydda identiteten hos brottsoffer och kontrollera uppgifter innan publicering.",
+                    icke: "Pressetik innebär att journalister aldrig publicerar något som kan uppfattas som negativt om privatpersoner.",
+                    forklaring: "Pressetik förbjuder inte all negativ rapportering – det är etiska riktlinjer för hur man hanterar t.ex. privatpersoners integritet och korrekthet, inte ett allmänt förbud mot kritik."
+                }
+            },
+            {
+                term: "Källkritik",
+                definition: "Att granska och värdera källors trovärdighet och syfte.",
+                sentence: "Innan du delar ett inlägg på sociala medier bör du tillämpa _____ och kontrollera vem som skrivit det.",
+                scenario: "En elev läser en artikel om klimatförändringar och kontrollerar vem som publicerat den, om uppgifterna stöds av andra källor och om skribenten har dolda intressen.",
+                ickeExempel: {
+                    korrekt: "Källkritik innebär att granska vem som publicerat en uppgift, varför och om den bekräftas av oberoende källor.",
+                    icke: "Källkritik innebär att alltid misstro alla nyheter och aldrig lita på media.",
+                    forklaring: "Källkritik handlar om att bedöma trovärdighet noggrant – inte om generellt misstroende. Trovärdiga sources med god dokumentation ska man kunna lita på."
+                }
+            },
+            {
+                term: "Meddelarfrihet",
+                definition: "Rätten att lämna information till medier utan att bli straffad.",
+                sentence: "Sjuksköterskan använde sig av _____ när hon berättade för SVT om de farliga förhållandena på avdelningen.",
+                scenario: "En offentliganställd tjänsteman tipsar en journalist om en myndighets felaktiga beslut och kan inte avskedas enbart för att ha kontaktat media.",
+                ickeExempel: {
+                    korrekt: "Meddelarfrihet skyddar offentliganställda som tipsar media om missförhållanden på jobbet.",
+                    icke: "Meddelarfrihet gäller alla anställda i alla sektorer och skyddar allt informationsutlämnande.",
+                    forklaring: "Meddelarfrihet gäller primärt offentliganställda och har undantag för sekretessbelagda uppgifter – privat anställda och hemliga uppgifter täcks inte fullt ut."
+                }
+            },
+            {
+                term: "Offentlighetsprincipen",
+                definition: "Rätten att ta del av offentliga handlingar och dokument.",
+                sentence: "Journalisten begärde ut kommunens avtal med hjälp av _____ och hittade oegentligheter.",
+                scenario: "En medborgare ringer till en myndighet och begär att få läsa alla e-postmeddelanden som rör ett visst upphandlingsbeslut.",
+                ickeExempel: {
+                    korrekt: "Offentlighetsprincipen ger vem som helst rätt att begära ut allmänna handlingar från myndigheter.",
+                    icke: "Offentlighetsprincipen innebär att myndigheter måste publicera alla sina dokument på sin webbplats.",
+                    forklaring: "Offentlighetsprincipen ger rätt att begära ut handlingar – det är inte detsamma som att myndigheterna aktivt måste publicera allt proaktivt på nätet."
+                }
+            },
+            {
+                term: "Censur",
+                definition: "När staten eller makthavare kontrollerar eller stoppar information.",
+                sentence: "Regimen utövade _____ och blockerade alla nyheter om protesterna från att nå befolkningen.",
+                scenario: "Landets regering blockerar alla utländska nyhetswebbplatser och kräver att inhemska tidningar skickar in sina artiklar för godkännande innan publicering.",
+                ickeExempel: {
+                    korrekt: "Censur utövas när staten blockerar nyheter och kräver förhandsgranskning av publiceringar.",
+                    icke: "En plattform som tar bort inlägg som bryter mot deras användarvillkor om hat utövar censur.",
+                    forklaring: "Censur avser statlig kontroll av information – privata plattformars modereringsregler är inte detsamma som statlig censur, även om de begränsar visst innehåll."
+                }
+            },
+            {
+                term: "Propaganda",
+                definition: "Vinklad information som sprids för att påverka människors åsikter.",
+                sentence: "Under valrörelsen spreds _____ i sociala medier för att svartmåla motståndarkandidaterna.",
+                scenario: "En regim sprider filmer som visar landets armé som hjältar och fienden som monster för att få befolkningen att stödja kriget.",
+                ickeExempel: {
+                    korrekt: "Propaganda är medvetet vinklad information som sprids i ett syfte att påverka och manipulera.",
+                    icke: "En tidningsartikel som har en viss vinkel eller perspektiv på en nyhetshändelse är propaganda.",
+                    forklaring: "Journalistiska texter har alltid en vinkel men det gör dem inte till propaganda – propaganda är medvetet manipulativ och sprids med syfte att vilseleda snarare än informera."
+                }
+            },
+            {
+                term: "Övervakning",
+                definition: "När staten eller andra aktörer följer människors kommunikation och beteende.",
+                sentence: "Debatten om statlig _____ handlar om balansen mellan säkerhet och personlig integritet.",
+                scenario: "Polisen ansöker om tillstånd att läsa en misstänkt persons e-post och spåra deras rörelser via mobilnätets data.",
+                ickeExempel: {
+                    korrekt: "Statlig övervakning innebär att myndigheter följer medborgares kommunikation och rörelser.",
+                    icke: "Att en granne håller koll på vad som händer utanför fönstret är statlig övervakning.",
+                    forklaring: "En grannes observationer är inte statlig övervakning – statlig övervakning avser att offentliga myndigheter med legala verktyg systematiskt följer medborgares beteende."
+                }
+            },
+            {
+                term: "Nyhetsvärdering",
+                definition: "Processen där man avgör vilka händelser som blir nyheter.",
+                sentence: "Redaktörens _____ avgör varför en mindre olycka i Sverige kan bli stor nyhet medan en katastrof utomlands knappt nämns.",
+                scenario: "Redaktionen på en dagstidning diskuterar vilka av dagens hundratals händelser som ska ges plats på förstasidan och hur stor plats de ska få.",
+                ickeExempel: {
+                    korrekt: "Nyhetsvärdering är redaktionens bedömning av vilka händelser som är tillräckligt viktiga eller intressanta för att bli nyheter.",
+                    icke: "Nyhetsvärdering innebär att alla händelser bedöms helt objektivt utan redaktionell påverkan.",
+                    forklaring: "Nyhetsvärdering är alltid en subjektiv redaktionell process påverkad av kultur, publicistiska traditioner och kommersiella intressen – den är aldrig helt objektiv."
+                }
+            },
+            {
+                term: "Algoritm",
+                definition: "Datorprogram som styr vilket innehåll du får se, baserat på ditt beteende.",
+                sentence: "TikToks _____ anpassar din flöde baserat på vad du tittar på, och visar allt mer liknande innehåll.",
+                scenario: "En plattforms system märker att en användare tittat länge på videor om träning och börjar visa fler träningsvideor, alltmer extrema och specialiserade.",
+                ickeExempel: {
+                    korrekt: "En algoritm på sociala medier styr vad du ser i flödet utifrån ditt tidigare beteende.",
+                    icke: "En redaktör på en nyhetstidning som väljer ut vilka artiklar som publiceras är en algoritm.",
+                    forklaring: "En redaktör är en människa som gör manuella redaktionella val – en algoritm är ett automatiserat datorprogram som fattar beslut baserat på data."
+                }
+            },
+            {
+                term: "Filterbubbla",
+                definition: "När algoritmer gör att du mest ser sådant som bekräftar dina åsikter.",
+                sentence: "Ju mer du följer likasinnade konton, desto mer riskerar du att hamna i en _____ på sociala medier.",
+                scenario: "En person som bara följer klimatskeptiker på sociala medier ser aldrig klimatforskarnas budskap och tror att tvivlarna är majoritetens ståndpunkt.",
+                ickeExempel: {
+                    korrekt: "En filterbubbla uppstår när algoritmer anpassar flödet så att du bara ser åsikter som liknar dina egna.",
+                    icke: "Att välja att läsa tidningar med en viss politisk profil innebär att man befinner sig i en filterbubbla.",
+                    forklaring: "Att aktivt välja en tidning är ett medvetet val – filterbubblan är ett osynligt algoritmfenomen där systemet omedvetet begränsar vad du exponeras för."
+                }
+            },
+            {
+                term: "Ekokammare",
+                definition: "En miljö där liknande åsikter förstärks och motstånd saknas.",
+                sentence: "Kommentarsfältet var en _____ där alla höll med varandra och kritik ifrågesattes aggressivt.",
+                scenario: "En onlinegrupp med likasinnade förstärker varandras övertygelser ständigt – avvikande åsikter möts av hårt motstånd och utestängning.",
+                ickeExempel: {
+                    korrekt: "En ekokammare är en grupp där liknande åsikter förstärks och avvikande röster tystas ned.",
+                    icke: "En filterbubbla och en ekokammare är exakt samma fenomen.",
+                    forklaring: "Filterbubblan är algoritmdriven och teknisk – ekokammaren är ett socialt fenomen där grupper aktivt förstärker varandra. De kan samexistera men är inte identiska."
+                }
+            },
+            {
+                term: "Desinformation",
+                definition: "Falsk information som sprids medvetet för att vilseleda.",
+                sentence: "Ryska aktörer spred _____ om valdatabrott för att undergräva förtroendet för demokratiska val.",
+                scenario: "En organisation skapar och sprider medvetet falska påståenden om ett vaccin för att skapa rädsla och minska vaccinationsviljan i befolkningen.",
+                ickeExempel: {
+                    korrekt: "Desinformation är medvetet falsk information som sprids i syfte att vilseleda och manipulera.",
+                    icke: "En journalist som av misstag publicerar en felaktig uppgift sprider desinformation.",
+                    forklaring: "Desinformation kräver ett medvetet syfte att vilseleda – en oavsiktlig faktafel är misinformation, inte desinformation."
+                }
+            },
+            {
+                term: "Misinformation",
+                definition: "Felaktig information som sprids utan avsikt att lura.",
+                sentence: "Mamman delade _____ om vacciner för att hon trodde att det stämde, men hon hade inte kontrollerat källan.",
+                scenario: "En person delar en artikel om ett hälsoråd som visat sig vara felaktigt – de trodde det var sant och hade ingen avsikt att vilseleda.",
+                ickeExempel: {
+                    korrekt: "Misinformation är felaktig information som sprids utan avsikt att lura – personen tror att det är sant.",
+                    icke: "Misinformation och desinformation är samma sak eftersom båda innebär att felaktig information sprids.",
+                    forklaring: "Skillnaden är avsikten – desinformation sprids medvetet för att vilseleda, medan misinformation sprids av en person som tror att uppgifterna är sanna."
+                }
+            },
+            {
+                term: "Konfirmationsbias",
+                definition: "Tendensen att söka och tro på information som bekräftar det man redan tycker.",
+                sentence: "_____ gör att vi tenderar att dela artiklar som stöder våra egna åsikter, utan att kritiskt granska dem.",
+                scenario: "En person som redan tror att ett parti är korrupt tolkar varje negativ nyhet om det partiet som bevis och avfärdar all positiv rapportering som propaganda.",
+                ickeExempel: {
+                    korrekt: "Konfirmationsbias gör att vi lättare accepterar information som stämmer med vår världsbild och avfärdar det som motbevisar den.",
+                    icke: "Konfirmationsbias innebär att man medvetet ljuger för sig själv om vad som stämmer.",
+                    forklaring: "Konfirmationsbias är en omedveten kognitiv tendens – inte ett medvetet beslut att ljuga för sig själv. Det sker automatiskt utan att personen är medveten om det."
+                }
+            },
+            {
+                term: "Klicklogik",
+                definition: "När medier prioriterar innehåll som ger många klick snarare än samhällsnytta.",
+                sentence: "_____ driver tidningarna att skriva sensationella rubriker som lockar läsare, även om innehållet är trivialt.",
+                scenario: "En nyhetsredaktion väljer att lyfta en kändisskandal istället för en viktig valanalys eftersom undersökningar visar att kändisnyheten genererar tio gånger fler klick.",
+                ickeExempel: {
+                    korrekt: "Klicklogik styr medier att prioritera sensationellt innehåll som ger klick över samhällsviktiga nyheter.",
+                    icke: "En tidning som skriver engagerande och välläst journalistik drivs av klicklogik.",
+                    forklaring: "Att skriva engagerande och välläst journalistik om viktiga frågor är inte klicklogik – klicklogik är specifikt när kommersiella klickmål prioriteras framför samhällsnytta och journalistisk kvalitet."
+                }
+            }
         ];
 
         function shuffleArray(arr) {
@@ -137,6 +337,128 @@
             );
         }
 
+        function ScenarioView() {
+            const [shuffledIdxs] = useState(() => shuffleArray(concepts.map((_, i) => i)));
+            const [current, setCurrent] = useState(0);
+            const [answered, setAnswered] = useState(null);
+            const [selected, setSelected] = useState(null);
+            const [score, setScore] = useState(0);
+            const [done, setDone] = useState(false);
+            const [termOptions, setTermOptions] = useState(() => shuffleArray(concepts.map(c => c.term)));
+
+            const conceptIdx = shuffledIdxs[current];
+            const concept = concepts[conceptIdx];
+
+            const handleSelect = (term) => {
+                if (answered !== null) return;
+                setSelected(term);
+                const isCorrect = term === concept.term;
+                setAnswered(isCorrect ? 'correct' : 'wrong');
+                if (isCorrect) setScore(s => s + 1);
+            };
+
+            const next = () => {
+                if (current + 1 >= concepts.length) { setDone(true); return; }
+                setCurrent(c => c + 1);
+                setAnswered(null);
+                setSelected(null);
+                setTermOptions(shuffleArray(concepts.map(c => c.term)));
+            };
+
+            const reset = () => {
+                setCurrent(0); setAnswered(null); setSelected(null); setScore(0); setDone(false);
+                setTermOptions(shuffleArray(concepts.map(c => c.term)));
+            };
+
+            if (done) return (
+                <div className="text-center">
+                    <div className="bg-yellow-50 border-2 border-yellow-400 rounded-3xl p-8 mb-6">
+                        <p className="text-5xl font-bold text-yellow-500 mb-2">{score}/{concepts.length}</p>
+                        <p className="text-xl font-bold text-slate-800 mb-4">{getFeedback(score, concepts.length)}</p>
+                        <button onClick={reset} className="bg-yellow-400 text-yellow-900 px-8 py-3 rounded-2xl font-bold hover:bg-yellow-500 transition-colors">Börja om</button>
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="max-w-2xl mx-auto">
+                    <div className="flex justify-between items-center mb-3">
+                        <span className="font-bold text-yellow-700">Poäng: {score}</span>
+                        <span className="text-slate-400 text-sm">{current + 1} / {concepts.length}</span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+                        <div className="bg-yellow-400 h-2 rounded-full transition-all" style={{width: `${((current + 1) / concepts.length) * 100}%`}}></div>
+                    </div>
+                    <div className="bg-white p-6 rounded-3xl shadow-lg mb-6">
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Vilket begrepp beskrivs?</p>
+                        <p className="text-lg text-slate-800 leading-relaxed italic">"{concept.scenario}"</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 mb-6">
+                        {termOptions.map((term, i) => (
+                            <button key={i} onClick={() => handleSelect(term)} disabled={answered !== null}
+                                className={`p-4 rounded-2xl font-bold border-2 text-left transition-all ${
+                                    answered === null ? 'bg-white border-slate-200 hover:border-yellow-400 hover:bg-yellow-50' :
+                                    term === concept.term ? 'bg-green-50 border-green-500 text-green-700' :
+                                    term === selected ? 'bg-red-50 border-red-500 text-red-700' :
+                                    'bg-white border-slate-100 text-slate-300'
+                                }`}>
+                                {term}
+                            </button>
+                        ))}
+                    </div>
+                    {answered !== null && (
+                        <div>
+                            <div className={`p-4 rounded-2xl text-sm font-medium mb-4 ${answered === 'correct' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>
+                                {answered === 'correct' ? `✓ Rätt! ${concept.definition}` : `✗ Fel. Rätt svar: ${concept.term} – ${concept.definition}`}
+                            </div>
+                            <button onClick={next} className="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-slate-800 transition-all">
+                                {current + 1 >= concepts.length ? 'Se resultat' : 'Nästa scenario →'}
+                            </button>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        function IckeExempelView() {
+            const [revealed, setRevealed] = useState(concepts.map(() => false));
+            const toggle = (i) => { const r = [...revealed]; r[i] = !r[i]; setRevealed(r); };
+
+            return (
+                <div className="grid gap-5">
+                    {concepts.map((c, i) => (
+                        <div key={i} className="bg-white rounded-2xl shadow-sm border-l-8 border-yellow-400 overflow-hidden">
+                            <div className="p-5">
+                                <div className="flex items-center gap-3 mb-3">
+                                    <span className="bg-yellow-100 text-yellow-700 text-xs font-bold px-2 py-1 rounded-lg">{i + 1}</span>
+                                    <h3 className="text-lg font-bold">{c.term}</h3>
+                                </div>
+                                <div className="mb-3 p-3 bg-yellow-50 rounded-xl">
+                                    <p className="text-xs font-bold text-yellow-700 uppercase tracking-wider mb-1">✓ Korrekt tillämpning</p>
+                                    <p className="text-slate-700 text-sm">{c.ickeExempel.korrekt}</p>
+                                </div>
+                                <button onClick={() => toggle(i)} className={`w-full py-2 rounded-xl font-bold text-sm transition-all ${revealed[i] ? 'bg-red-100 text-red-700' : 'bg-slate-800 text-white hover:bg-slate-700'}`}>
+                                    {revealed[i] ? 'Dölj icke-exempel' : 'Visa icke-exempel 🪤'}
+                                </button>
+                            </div>
+                            {revealed[i] && (
+                                <div className="px-5 pb-5">
+                                    <div className="mb-3 p-3 bg-red-50 rounded-xl">
+                                        <p className="text-xs font-bold text-red-700 uppercase tracking-wider mb-1">✗ Trovärdigt icke-exempel (fälla)</p>
+                                        <p className="text-slate-700 text-sm">{c.ickeExempel.icke}</p>
+                                    </div>
+                                    <div className="p-3 bg-amber-50 rounded-xl">
+                                        <p className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-1">Förklaring av fällan</p>
+                                        <p className="text-slate-700 text-sm">{c.ickeExempel.forklaring}</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
         function App() {
             const [view, setView] = useState('list');
             const [currentIndex, setCurrentIndex] = useState(0);
@@ -150,7 +472,7 @@
                 }, 150);
             };
 
-            const activeTab = 'bg-yellow-400 font-bold shadow-sm';
+            const activeTab = 'bg-yellow-400 text-yellow-900 font-bold shadow-sm';
             const inactiveTab = 'text-slate-500';
 
             return (
@@ -161,10 +483,12 @@
                         <div className="w-36"></div>
                     </header>
 
-                    <div className="max-w-sm mx-auto mb-10 flex bg-white p-1 rounded-full shadow-md border border-slate-200">
+                    <div className="max-w-2xl mx-auto mb-10 flex bg-white p-1 rounded-full shadow-md border border-slate-200">
                         <button onClick={() => setView('list')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'list' ? activeTab : inactiveTab}`}>Lista</button>
                         <button onClick={() => setView('flashcards')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'flashcards' ? activeTab : inactiveTab}`}>Flashcards</button>
                         <button onClick={() => setView('lucktext')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'lucktext' ? activeTab : inactiveTab}`}>Lucktext</button>
+                        <button onClick={() => setView('scenario')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'scenario' ? activeTab : inactiveTab}`}>Scenario</button>
+                        <button onClick={() => setView('icke')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'icke' ? activeTab : inactiveTab}`}>Icke-ex.</button>
                     </div>
 
                     <main className="max-w-2xl mx-auto">
@@ -202,6 +526,8 @@
                             </div>
                         )}
                         {view === 'lucktext' && <LucktextView />}
+                        {view === 'scenario' && <ScenarioView />}
+                        {view === 'icke' && <IckeExempelView />}
                     </main>
 
                     <footer className="mt-12 text-center text-slate-400 text-sm italic pb-8">Källa: Samhällskunskap – Massmedia begreppslista</footer>

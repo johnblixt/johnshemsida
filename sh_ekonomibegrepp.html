@@ -25,26 +25,226 @@
         const { useState } = React;
 
         const concepts = [
-            { term: "Resurser", definition: "Det vi behöver för att producera saker, till exempel pengar, arbete och naturtillgångar.", sentence: "Olja, arbetskraft och kapital är alla _____ som används för att skapa varor och tjänster." },
-            { term: "Utbud", definition: "Hur mycket det finns att sälja av en vara eller tjänst.", sentence: "När skörden var god ökade _____ av äpplen och priserna sjönk i butikerna." },
-            { term: "Efterfrågan", definition: "Hur mycket människor vill köpa av något.", sentence: "Den kalla vintern ökade _____ på varma jackor, vilket drev upp priserna." },
-            { term: "Prisbildning", definition: "Priset bestäms av utbud och efterfrågan.", sentence: "_____ innebär att priset stiger när efterfrågan är hög och utbudet lågt." },
-            { term: "Marknadsekonomi", definition: "Företag och människor bestämmer själva vad som ska säljas och till vilket pris.", sentence: "I en _____ bestämmer konkurrensen och konsumenternas val vilka produkter som överlever på marknaden." },
-            { term: "Planekonomi", definition: "Staten bestämmer vad som ska produceras, hur mycket och till vilket pris.", sentence: "I Sovjetunionen tillämpades _____, där staten satte produktionsmål och priser utan hänsyn till marknaden." },
-            { term: "Blandekonomi", definition: "En blandning av marknadsekonomi och planekonomi, som i Sverige.", sentence: "Sverige har en _____ – marknaden styr mycket, men staten reglerar och erbjuder välfärd." },
-            { term: "Ekonomiska kretsloppet", definition: "Visar hur pengar rör sig mellan staten, banker, företag och människor.", sentence: "_____ illustrerar hur löner, skatter och konsumtion skapar ett flöde av pengar i samhället." },
-            { term: "Offentlig sektor", definition: "Staten, regioner och kommuner som driver skola, vård och andra tjänster.", sentence: "Lärare och sjuksköterskor på kommunala skolor och sjukhus arbetar inom den _____." },
-            { term: "Banker", definition: "Lånar ut och tar emot pengar och påverkar ekonomin genom räntor.", sentence: "_____ spelar en central roll i ekonomin genom att kanalisera sparande till investeringar via utlåning." },
-            { term: "BNP (Bruttonationalprodukt)", definition: "Värdet av allt som produceras i ett land under ett år.", sentence: "Sveriges _____ mäts varje år och används för att bedöma landets ekonomiska välmående." },
-            { term: "Tillväxt", definition: "När BNP ökar och ekonomin växer.", sentence: "Ekonomisk _____ skapar fler jobb och ökar levnadsstandarden – men kan också belasta miljön." },
-            { term: "Högkonjunktur", definition: "En period med hög tillväxt, fler jobb och stark efterfrågan.", sentence: "Under _____ 2000-talets mitt byggdes det rekordmånga bostäder i Sverige och arbetslösheten sjönk." },
-            { term: "Lågkonjunktur", definition: "En period med låg tillväxt, ökad arbetslöshet och svag efterfrågan.", sentence: "Finanskrisen 2008 utlöste en global _____ med massvarsel och fallande börser." },
-            { term: "Produktivitet", definition: "Hur effektivt man arbetar; att producera mer på samma tid.", sentence: "Ny teknik ökade fabrikens _____, och man tillverkade dubbelt så många enheter på samma arbetstimmar." },
-            { term: "Inflation", definition: "När priserna stiger och pengarna blir mindre värda.", sentence: "Hög _____ urholkar köpkraften – de pengar du sparade räcker inte lika långt nästa år." },
-            { term: "Ränta", definition: "Priset på pengar – du betalar ränta när du lånar och får ränta när du sparar.", sentence: "Bankens höjning av _____ på bolånen innebär att husägare får betala mer varje månad." },
-            { term: "Styrränta (Reporänta)", definition: "Den ränta som Riksbanken bestämmer och som påverkar alla andra räntor.", sentence: "Riksbanken höjde _____ för att bromsa inflationen, vilket ledde till dyrare lån för hushållen." },
-            { term: "Penningpolitik", definition: "När Riksbanken ändrar räntan för att påverka ekonomin.", sentence: "Riksbanken använder _____ och sänker räntan för att stimulera ekonomin vid lågkonjunktur." },
-            { term: "Finanspolitik", definition: "När staten ändrar skatter eller offentliga utgifter för att påverka ekonomin.", sentence: "Regeringen bedrev expansiv _____ och ökade infrastruktursinvesteringarna för att skapa jobb." }
+            {
+                term: "Resurser",
+                definition: "Det vi behöver för att producera saker, till exempel pengar, arbete och naturtillgångar.",
+                sentence: "Olja, arbetskraft och kapital är alla _____ som används för att skapa varor och tjänster.",
+                scenario: "Ett land har rika skogstillgångar, många yrkesutbildade arbetare och tillgång till kapital – allt detta används för att producera papper och möbler.",
+                ickeExempel: {
+                    korrekt: "Skog, arbetskraft och kapital är resurser som används för att producera möbler.",
+                    icke: "En färdig stol i en möbelbutik är en resurs för tillverkning.",
+                    forklaring: "Resurser är insatsvaror i produktionen – den färdiga stolen är en slutprodukt, inte en resurs."
+                }
+            },
+            {
+                term: "Utbud",
+                definition: "Hur mycket det finns att sälja av en vara eller tjänst.",
+                sentence: "När skörden var god ökade _____ av äpplen och priserna sjönk i butikerna.",
+                scenario: "En torr sommar förstör stora delar av spannmålsskörden och det finns plötsligt mycket mindre vete att sälja på marknaden.",
+                ickeExempel: {
+                    korrekt: "Ökad skord av äpplen ökar utbudet och sänker priset.",
+                    icke: "Att fler konsumenter vill köpa en vara ökar utbudet.",
+                    forklaring: "Att fler vill köpa ökar efterfrågan, inte utbudet – utbudet är hur mycket säljarna erbjuder, inte hur mycket köparna vill ha."
+                }
+            },
+            {
+                term: "Efterfrågan",
+                definition: "Hur mycket människor vill köpa av något.",
+                sentence: "Den kalla vintern ökade _____ på varma jackor, vilket drev upp priserna.",
+                scenario: "En hälsotrend gör att allt fler vill köpa ekologiska livsmedel, och butikerna säljer slut på varor som tidigare låg kvar.",
+                ickeExempel: {
+                    korrekt: "Kall vinter ökar efterfrågan på varma kläder och driver upp priserna.",
+                    icke: "Att ett företag producerar fler produkter ökar efterfrågan på marknaden.",
+                    forklaring: "Att producera mer ökar utbudet – efterfrågan styrs av konsumenternas vilja och förmåga att köpa, inte av producenternas beslut."
+                }
+            },
+            {
+                term: "Prisbildning",
+                definition: "Priset bestäms av utbud och efterfrågan.",
+                sentence: "_____ innebär att priset stiger när efterfrågan är hög och utbudet lågt.",
+                scenario: "En populär konsert är slutsåld – på andrahandsmarknaden säljs biljetterna för tre gånger originalpriset eftersom många vill ha dem men få finns kvar.",
+                ickeExempel: {
+                    korrekt: "Priset på konsertbiljetter stiger när efterfrågan är hög och utbudet lågt – det är prisbildning.",
+                    icke: "Staten bestämmer matpriserna i affärerna för att hålla dem stabila – det är prisbildning.",
+                    forklaring: "Statlig prissättning är planekonomi – prisbildning i marknadsekonomisk mening sker genom mötet mellan utbud och efterfrågan utan statlig styrning."
+                }
+            },
+            {
+                term: "Marknadsekonomi",
+                definition: "Företag och människor bestämmer själva vad som ska säljas och till vilket pris.",
+                sentence: "I en _____ bestämmer konkurrensen och konsumenternas val vilka produkter som överlever på marknaden.",
+                scenario: "Två telefonföretag tävlar om kunder genom att erbjuda bättre produkter till lägre priser – inget statligt organ bestämmer vad de ska sälja eller till vilket pris.",
+                ickeExempel: {
+                    korrekt: "I marknadsekonomi bestämmer konkurrens och konsumentval vilka produkter som överlever.",
+                    icke: "Sverige är en ren marknadsekonomi eftersom staten inte blandar sig i ekonomin.",
+                    forklaring: "Sverige är en blandekonomi – staten reglerar och erbjuder välfärd. En helt oreglerad marknadsekonomi utan statlig inblandning existerar knappt i praktiken."
+                }
+            },
+            {
+                term: "Planekonomi",
+                definition: "Staten bestämmer vad som ska produceras, hur mycket och till vilket pris.",
+                sentence: "I Sovjetunionen tillämpades _____, där staten satte produktionsmål och priser utan hänsyn till marknaden.",
+                scenario: "En central myndighet beslutar hur många bilar, par skor och bröd som ska produceras i landet under nästa år, och sätter fasta priser på alla varor.",
+                ickeExempel: {
+                    korrekt: "I Sovjet satte staten produktionsmål och priser på alla varor – det var planekonomi.",
+                    icke: "Att staten äger ett enda statligt bolag i övrigt marknadsstyrt land är planekonomi.",
+                    forklaring: "Att staten äger enstaka bolag inom en marknadsekonomi är inte planekonomi – planekonomi kräver central styrning av hela landets produktion och prissättning."
+                }
+            },
+            {
+                term: "Blandekonomi",
+                definition: "En blandning av marknadsekonomi och planekonomi, som i Sverige.",
+                sentence: "Sverige har en _____ – marknaden styr mycket, men staten reglerar och erbjuder välfärd.",
+                scenario: "Privata företag konkurrerar fritt om kunder, men staten finansierar sjukvård och skola med skattemedel och reglerar t.ex. minimilöner och miljökrav.",
+                ickeExempel: {
+                    korrekt: "Sverige är en blandekonomi – marknaden styr produktionen men staten erbjuder offentliga tjänster och reglering.",
+                    icke: "Sverige är en blandekonomi eftersom det finns både rika och fattiga medborgare.",
+                    forklaring: "Inkomstskillnader beror inte på ekonomiskt system – blandekonomi definieras av att marknadsmekanismer kombineras med statlig reglering och välfärd."
+                }
+            },
+            {
+                term: "Ekonomiska kretsloppet",
+                definition: "Visar hur pengar rör sig mellan staten, banker, företag och människor.",
+                sentence: "_____ illustrerar hur löner, skatter och konsumtion skapar ett flöde av pengar i samhället.",
+                scenario: "En fabriksanställd får lön, betalar skatt, köper mat i en butik vars ägare betalar moms – pengarna rör sig konstant mellan hushåll, företag och stat.",
+                ickeExempel: {
+                    korrekt: "Det ekonomiska kretsloppet visar hur pengar flödar mellan hushåll, företag, stat och banker.",
+                    icke: "Det ekonomiska kretsloppet visar hur ett enskilt hushåll hanterar sin privatekonomi.",
+                    forklaring: "Det ekonomiska kretsloppet beskriver makroekonomiska flöden i hela samhället – inte en enskild persons budget."
+                }
+            },
+            {
+                term: "Offentlig sektor",
+                definition: "Staten, regioner och kommuner som driver skola, vård och andra tjänster.",
+                sentence: "Lärare och sjuksköterskor på kommunala skolor och sjukhus arbetar inom den _____.",
+                scenario: "En polis, en skolkurator och en brandman – alla tre finansieras av skattemedel och arbetar för att tillhandahålla samhällstjänster till medborgarna.",
+                ickeExempel: {
+                    korrekt: "Polisen, kommunala skolor och regionens sjukhus tillhör den offentliga sektorn.",
+                    icke: "En privat vårdklinik som tar emot patienter med offentlig finansiering tillhör den offentliga sektorn.",
+                    forklaring: "En privat klinik tillhör den privata sektorn även om den utför tjänster med offentlig finansiering – sektortillhörigheten bestäms av ägandet, inte finansieringsformen."
+                }
+            },
+            {
+                term: "Banker",
+                definition: "Lånar ut och tar emot pengar och påverkar ekonomin genom räntor.",
+                sentence: "_____ spelar en central roll i ekonomin genom att kanalisera sparande till investeringar via utlåning.",
+                scenario: "En privatperson sätter in pengar på ett sparkonto, och banken lånar sedan ut dessa pengar till ett företag som vill expandera.",
+                ickeExempel: {
+                    korrekt: "Banker tar emot sparande och lånar ut kapital till hushåll och företag, vilket driver ekonomisk aktivitet.",
+                    icke: "Riksbanken är en vanlig bank som tar emot sparpengar från privatpersoner.",
+                    forklaring: "Riksbanken är Sveriges centralbank och hanterar penningpolitik – den tar inte emot sparpengar från privatpersoner, det gör affärsbankerna."
+                }
+            },
+            {
+                term: "BNP (Bruttonationalprodukt)",
+                definition: "Värdet av allt som produceras i ett land under ett år.",
+                sentence: "Sveriges _____ mäts varje år och används för att bedöma landets ekonomiska välmående.",
+                scenario: "Statistiker räknar ihop värdet av alla varor och tjänster producerade i landet under ett år – från bilar och mjölk till sjukvård och undervisningstimmar.",
+                ickeExempel: {
+                    korrekt: "BNP är summan av värdet av allt som produceras i landet under ett år.",
+                    icke: "BNP mäter hur lyckliga och välmående landets invånare är.",
+                    forklaring: "BNP mäter ekonomisk produktion i monetära termer – det fångar inte välmående, lycka, ojämlikhet eller hållbarhet."
+                }
+            },
+            {
+                term: "Tillväxt",
+                definition: "När BNP ökar och ekonomin växer.",
+                sentence: "Ekonomisk _____ skapar fler jobb och ökar levnadsstandarden – men kan också belasta miljön.",
+                scenario: "Landets BNP ökar med 3% jämfört med förra året – fler företag öppnar, fler jobb skapas och hushållen har mer pengar att spendera.",
+                ickeExempel: {
+                    korrekt: "Ekonomisk tillväxt innebär att BNP ökar och att ekonomin producerar mer värde än året innan.",
+                    icke: "Om befolkningen ökar i ett land sker automatiskt ekonomisk tillväxt.",
+                    forklaring: "Befolkningstillväxt leder inte automatiskt till ekonomisk tillväxt – det är ökning av produktionen per capita eller totalt BNP som räknas."
+                }
+            },
+            {
+                term: "Högkonjunktur",
+                definition: "En period med hög tillväxt, fler jobb och stark efterfrågan.",
+                sentence: "Under _____ 2000-talets mitt byggdes det rekordmånga bostäder i Sverige och arbetslösheten sjönk.",
+                scenario: "Fabriker kör övertid, butikerna redovisar rekordomsättning, arbetslösheten är på historiskt låg nivå och bostadsrätter säljs för höga priser.",
+                ickeExempel: {
+                    korrekt: "Under en högkonjunktur är sysselsättningen hög, BNP växer snabbt och efterfrågan är stark.",
+                    icke: "En period med hög inflation är alltid en högkonjunktur.",
+                    forklaring: "Hög inflation kan uppstå i många situationer – t.ex. vid stigande energipriser – utan att ekonomin växer. Högkonjunktur definieras av stark tillväxt och hög sysselsättning."
+                }
+            },
+            {
+                term: "Lågkonjunktur",
+                definition: "En period med låg tillväxt, ökad arbetslöshet och svag efterfrågan.",
+                sentence: "Finanskrisen 2008 utlöste en global _____ med massvarsel och fallande börser.",
+                scenario: "Företag varslar personal, konsumenter minskar sina inköp, BNP sjunker och tomma butikslokaler börjar dyka upp i städerna.",
+                ickeExempel: {
+                    korrekt: "Under lågkonjunkturen 2008–2009 steg arbetslösheten kraftigt och BNP föll.",
+                    icke: "En tillfällig säsongsnedgång i ett branscher under sommaren är en lågkonjunktur.",
+                    forklaring: "Säsongssvängningar är normala och förutsägbara – lågkonjunktur är en bredare, ihållande nedgång i hela ekonomin som berör sysselsättning och BNP."
+                }
+            },
+            {
+                term: "Produktivitet",
+                definition: "Hur effektivt man arbetar; att producera mer på samma tid.",
+                sentence: "Ny teknik ökade fabrikens _____, och man tillverkade dubbelt så många enheter på samma arbetstimmar.",
+                scenario: "En fabrik installerar robotar som gör att samma antal anställda kan producera dubbelt så många produkter per dag som tidigare.",
+                ickeExempel: {
+                    korrekt: "Ny teknik som låter samma antal anställda producera dubbelt så mycket är en produktivitetsökning.",
+                    icke: "Att anställa dubbelt så många arbetare och producera dubbelt så mycket är ökad produktivitet.",
+                    forklaring: "Att fördubbla personal och produktion innebär samma produktivitet per person – produktivitet handlar om att producera mer per insats, inte bara totalt mer."
+                }
+            },
+            {
+                term: "Inflation",
+                definition: "När priserna stiger och pengarna blir mindre värda.",
+                sentence: "Hög _____ urholkar köpkraften – de pengar du sparade räcker inte lika långt nästa år.",
+                scenario: "Det som kostade 100 kronor förra året kostar nu 108 kronor – lönen har inte ökat lika mycket och hushållet märker att pengarna räcker till färre varor.",
+                ickeExempel: {
+                    korrekt: "Inflation innebär att den allmänna prisnivån stiger och pengars köpkraft minskar.",
+                    icke: "Om priset på en enda vara, som bensin, stiger kraftigt är det inflation.",
+                    forklaring: "Inflation är en bred uppgång i den allmänna prisnivån – enstaka prisökningar på specifika varor är inte inflation i sig, utan kan bero på utbud och efterfrågan för just den varan."
+                }
+            },
+            {
+                term: "Ränta",
+                definition: "Priset på pengar – du betalar ränta när du lånar och får ränta när du sparar.",
+                sentence: "Bankens höjning av _____ på bolånen innebär att husägare får betala mer varje månad.",
+                scenario: "En familj har ett bolån på 2 miljoner kronor – när banken höjer räntesatsen från 2% till 4% stiger deras månadskostnad med tusentals kronor.",
+                ickeExempel: {
+                    korrekt: "Räntan är priset för att låna pengar – ju högre ränta, desto dyrare är lånet.",
+                    icke: "Räntan är det belopp du betalar tillbaka utöver det du lånat, alltid fast oavsett lånets storlek.",
+                    forklaring: "Räntekostnaden beror på lånets storlek – räntan är en procentsats på det lånade beloppet, inte ett fast belopp."
+                }
+            },
+            {
+                term: "Styrränta (Reporänta)",
+                definition: "Den ränta som Riksbanken bestämmer och som påverkar alla andra räntor.",
+                sentence: "Riksbanken höjde _____ för att bromsa inflationen, vilket ledde till dyrare lån för hushållen.",
+                scenario: "Riksbanken höjer en nyckelränta för att göra det dyrare att låna pengar, vilket minskar konsumtion och pressar ner inflationen.",
+                ickeExempel: {
+                    korrekt: "Riksbanken höjer styrräntan för att dämpa inflation – det påverkar bolåneräntor och konsumtion.",
+                    icke: "Styrräntan bestäms av riksdagen genom omröstning.",
+                    forklaring: "Styrräntan bestäms av Riksbankens direktion – riksdagen beslutar inte om räntan, det är penningpolitik som sköts av den oberoende centralbanken."
+                }
+            },
+            {
+                term: "Penningpolitik",
+                definition: "När Riksbanken ändrar räntan för att påverka ekonomin.",
+                sentence: "Riksbanken använder _____ och sänker räntan för att stimulera ekonomin vid lågkonjunktur.",
+                scenario: "Riksbanken sänker styrräntan under en ekonomisk nedgång för att uppmuntra hushåll och företag att låna och investera mer.",
+                ickeExempel: {
+                    korrekt: "Riksbankens beslut att sänka styrräntan för att stimulera ekonomin är ett exempel på penningpolitik.",
+                    icke: "Regeringens beslut att höja skatterna för att minska budgetunderskottet är penningpolitik.",
+                    forklaring: "Skattebeslut är finanspolitik som genomförs av regeringen och riksdagen – penningpolitik handlar om centralbankers ränteverktyg."
+                }
+            },
+            {
+                term: "Finanspolitik",
+                definition: "När staten ändrar skatter eller offentliga utgifter för att påverka ekonomin.",
+                sentence: "Regeringen bedrev expansiv _____ och ökade infrastruktursinvesteringarna för att skapa jobb.",
+                scenario: "Under en lågkonjunktur ökar regeringen anslaget till vägbyggen och offentliga jobb för att stimulera ekonomin och minska arbetslösheten.",
+                ickeExempel: {
+                    korrekt: "Att regeringen sänker skatterna eller ökar offentliga utgifter för att stimulera ekonomin är finanspolitik.",
+                    icke: "Riksbankens beslut att köpa statsobligationer för att stimulera ekonomin är finanspolitik.",
+                    forklaring: "Riksbankens åtgärder är penningpolitik – finanspolitik är regeringens och riksdagens verktyg via skatter och offentliga utgifter."
+                }
+            }
         ];
 
         function shuffleArray(arr) {
@@ -137,6 +337,128 @@
             );
         }
 
+        function ScenarioView() {
+            const [shuffledIdxs] = useState(() => shuffleArray(concepts.map((_, i) => i)));
+            const [current, setCurrent] = useState(0);
+            const [answered, setAnswered] = useState(null);
+            const [selected, setSelected] = useState(null);
+            const [score, setScore] = useState(0);
+            const [done, setDone] = useState(false);
+            const [termOptions, setTermOptions] = useState(() => shuffleArray(concepts.map(c => c.term)));
+
+            const conceptIdx = shuffledIdxs[current];
+            const concept = concepts[conceptIdx];
+
+            const handleSelect = (term) => {
+                if (answered !== null) return;
+                setSelected(term);
+                const isCorrect = term === concept.term;
+                setAnswered(isCorrect ? 'correct' : 'wrong');
+                if (isCorrect) setScore(s => s + 1);
+            };
+
+            const next = () => {
+                if (current + 1 >= concepts.length) { setDone(true); return; }
+                setCurrent(c => c + 1);
+                setAnswered(null);
+                setSelected(null);
+                setTermOptions(shuffleArray(concepts.map(c => c.term)));
+            };
+
+            const reset = () => {
+                setCurrent(0); setAnswered(null); setSelected(null); setScore(0); setDone(false);
+                setTermOptions(shuffleArray(concepts.map(c => c.term)));
+            };
+
+            if (done) return (
+                <div className="text-center">
+                    <div className="bg-yellow-50 border-2 border-yellow-400 rounded-3xl p-8 mb-6">
+                        <p className="text-5xl font-bold text-yellow-500 mb-2">{score}/{concepts.length}</p>
+                        <p className="text-xl font-bold text-slate-800 mb-4">{getFeedback(score, concepts.length)}</p>
+                        <button onClick={reset} className="bg-yellow-400 text-yellow-900 px-8 py-3 rounded-2xl font-bold hover:bg-yellow-500 transition-colors">Börja om</button>
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="max-w-2xl mx-auto">
+                    <div className="flex justify-between items-center mb-3">
+                        <span className="font-bold text-yellow-700">Poäng: {score}</span>
+                        <span className="text-slate-400 text-sm">{current + 1} / {concepts.length}</span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+                        <div className="bg-yellow-400 h-2 rounded-full transition-all" style={{width: `${((current + 1) / concepts.length) * 100}%`}}></div>
+                    </div>
+                    <div className="bg-white p-6 rounded-3xl shadow-lg mb-6">
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Vilket begrepp beskrivs?</p>
+                        <p className="text-lg text-slate-800 leading-relaxed italic">"{concept.scenario}"</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 mb-6">
+                        {termOptions.map((term, i) => (
+                            <button key={i} onClick={() => handleSelect(term)} disabled={answered !== null}
+                                className={`p-4 rounded-2xl font-bold border-2 text-left transition-all ${
+                                    answered === null ? 'bg-white border-slate-200 hover:border-yellow-400 hover:bg-yellow-50' :
+                                    term === concept.term ? 'bg-green-50 border-green-500 text-green-700' :
+                                    term === selected ? 'bg-red-50 border-red-500 text-red-700' :
+                                    'bg-white border-slate-100 text-slate-300'
+                                }`}>
+                                {term}
+                            </button>
+                        ))}
+                    </div>
+                    {answered !== null && (
+                        <div>
+                            <div className={`p-4 rounded-2xl text-sm font-medium mb-4 ${answered === 'correct' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>
+                                {answered === 'correct' ? `✓ Rätt! ${concept.definition}` : `✗ Fel. Rätt svar: ${concept.term} – ${concept.definition}`}
+                            </div>
+                            <button onClick={next} className="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-slate-800 transition-all">
+                                {current + 1 >= concepts.length ? 'Se resultat' : 'Nästa scenario →'}
+                            </button>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        function IckeExempelView() {
+            const [revealed, setRevealed] = useState(concepts.map(() => false));
+            const toggle = (i) => { const r = [...revealed]; r[i] = !r[i]; setRevealed(r); };
+
+            return (
+                <div className="grid gap-5">
+                    {concepts.map((c, i) => (
+                        <div key={i} className="bg-white rounded-2xl shadow-sm border-l-8 border-yellow-400 overflow-hidden">
+                            <div className="p-5">
+                                <div className="flex items-center gap-3 mb-3">
+                                    <span className="bg-yellow-100 text-yellow-700 text-xs font-bold px-2 py-1 rounded-lg">{i + 1}</span>
+                                    <h3 className="text-lg font-bold">{c.term}</h3>
+                                </div>
+                                <div className="mb-3 p-3 bg-yellow-50 rounded-xl">
+                                    <p className="text-xs font-bold text-yellow-700 uppercase tracking-wider mb-1">✓ Korrekt tillämpning</p>
+                                    <p className="text-slate-700 text-sm">{c.ickeExempel.korrekt}</p>
+                                </div>
+                                <button onClick={() => toggle(i)} className={`w-full py-2 rounded-xl font-bold text-sm transition-all ${revealed[i] ? 'bg-red-100 text-red-700' : 'bg-slate-800 text-white hover:bg-slate-700'}`}>
+                                    {revealed[i] ? 'Dölj icke-exempel' : 'Visa icke-exempel 🪤'}
+                                </button>
+                            </div>
+                            {revealed[i] && (
+                                <div className="px-5 pb-5">
+                                    <div className="mb-3 p-3 bg-red-50 rounded-xl">
+                                        <p className="text-xs font-bold text-red-700 uppercase tracking-wider mb-1">✗ Trovärdigt icke-exempel (fälla)</p>
+                                        <p className="text-slate-700 text-sm">{c.ickeExempel.icke}</p>
+                                    </div>
+                                    <div className="p-3 bg-amber-50 rounded-xl">
+                                        <p className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-1">Förklaring av fällan</p>
+                                        <p className="text-slate-700 text-sm">{c.ickeExempel.forklaring}</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
         function App() {
             const [view, setView] = useState('list');
             const [currentIndex, setCurrentIndex] = useState(0);
@@ -150,7 +472,7 @@
                 }, 150);
             };
 
-            const activeTab = 'bg-yellow-400 font-bold shadow-sm';
+            const activeTab = 'bg-yellow-400 text-yellow-900 font-bold shadow-sm';
             const inactiveTab = 'text-slate-500';
 
             return (
@@ -161,10 +483,12 @@
                         <div className="w-36"></div>
                     </header>
 
-                    <div className="max-w-sm mx-auto mb-10 flex bg-white p-1 rounded-full shadow-md border border-slate-200">
+                    <div className="max-w-2xl mx-auto mb-10 flex bg-white p-1 rounded-full shadow-md border border-slate-200">
                         <button onClick={() => setView('list')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'list' ? activeTab : inactiveTab}`}>Lista</button>
                         <button onClick={() => setView('flashcards')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'flashcards' ? activeTab : inactiveTab}`}>Flashcards</button>
                         <button onClick={() => setView('lucktext')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'lucktext' ? activeTab : inactiveTab}`}>Lucktext</button>
+                        <button onClick={() => setView('scenario')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'scenario' ? activeTab : inactiveTab}`}>Scenario</button>
+                        <button onClick={() => setView('icke')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'icke' ? activeTab : inactiveTab}`}>Icke-ex.</button>
                     </div>
 
                     <main className="max-w-2xl mx-auto">
@@ -202,6 +526,8 @@
                             </div>
                         )}
                         {view === 'lucktext' && <LucktextView />}
+                        {view === 'scenario' && <ScenarioView />}
+                        {view === 'icke' && <IckeExempelView />}
                     </main>
 
                     <footer className="mt-12 text-center text-slate-400 text-sm italic pb-8">Källa: Samhällskunskap – Samhällsekonomi begreppslista</footer>

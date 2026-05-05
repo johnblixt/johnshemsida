@@ -25,26 +25,226 @@
         const { useState } = React;
 
         const concepts = [
-            { term: "Ideologi", definition: "Idéer om hur samhället ska styras och hur det borde se ut.", sentence: "Socialdemokraternas _____ bygger på tanken om ett samhälle med små ekonomiska klyftor och stark välfärd." },
-            { term: "Blockpolitik", definition: "När partier samarbetar i grupper, t.ex. höger (borgerliga) eller vänster (rödgröna).", sentence: "Under många år präglade _____ svensk politik, där de rödgröna och de borgerliga blockade mot varandra." },
-            { term: "Stödparti", definition: "Ett parti som stödjer regeringen men ingår inte i den.", sentence: "Sverigedemokraterna fungerade som _____ åt den borgerliga regeringen utan att ha ministerposter." },
-            { term: "Höger-vänsterskalan", definition: "En skala som visar partiers syn på ekonomi, skatt och fördelning.", sentence: "Moderaterna placeras till höger och Vänsterpartiet till vänster på _____." },
-            { term: "GAL-TAN-skalan", definition: "En skala som visar värderingar från grönt/liberalt till traditionellt/nationalistiskt.", sentence: "Miljöpartiet hamnar på GAL-sidan och Sverigedemokraterna på TAN-sidan av _____." },
-            { term: "Socialism", definition: "En ideologi som vill minska skillnader mellan rika och fattiga, staten ska äga viktiga delar av samhället.", sentence: "_____ förespråkar att skatter och offentliga tjänster används för att utjämna ekonomiska klyftor." },
-            { term: "Liberalism", definition: "En ideologi som betonar individens frihet, privat ägande och marknadsekonomi.", sentence: "_____ värnar om den personliga friheten och menar att marknaden, inte staten, ska styra ekonomin." },
-            { term: "Konservatism", definition: "En ideologi som vill bevara traditioner, religion och kultur, och förändra samhället långsamt.", sentence: "_____ betonar att förändringar ska ske försiktigt för att bevara det som fungerar i samhället." },
-            { term: "Ekologism", definition: "En ideologi som sätter miljö och hållbar utveckling i centrum.", sentence: "Miljöpartiet grundar sin politik på _____, med fokus på klimat och ekologisk hållbarhet." },
-            { term: "Feminism", definition: "En ideologi som vill ha jämställdhet mellan kvinnor och män.", sentence: "_____ kräver lika lön, lika möjligheter och ett slut på strukturell diskriminering av kvinnor." },
-            { term: "Nationalism", definition: "En ideologi som betonar nationell gemenskap, språk och kultur.", sentence: "_____ lyfter fram det gemensamma språket och kulturen som det viktigaste kittet i ett samhälle." },
-            { term: "Kommunism", definition: "En ideologi som vill skapa ett klasslöst samhälle genom att staten äger allt.", sentence: "I Kina under Mao tillämpades _____, där staten kontrollerade produktionsmedlen och privat ägande förbjöds." },
-            { term: "Fascism", definition: "En ideologi som är emot demokrati och vill ha en stark ledare som styr.", sentence: "Mussolinis Italien på 1930-talet är ett historiskt exempel på _____, där en diktator styrde utan opposition." },
-            { term: "Nazism", definition: "En ideologi som liknar fascism men bygger på rasistiska idéer om en 'överlägsen ras'.", sentence: "Hitlers Tyskland byggde på _____, som ledde till Förintelsen och andra världskriget." },
-            { term: "Populism", definition: "En politisk stil som säger sig tala för 'folket' mot 'eliten', ofta med enkla lösningar.", sentence: "Politikern använde sig av _____ och lovade att 'vanligt folk' äntligen skulle få sin röst hörd mot etablissemanget." },
-            { term: "Solidaritet", definition: "Tanken att människor ska hjälpa och stötta varandra i samhället.", sentence: "_____ är en grundvärdering inom socialdemokratin – de starka ska hjälpa de svaga." },
-            { term: "Välfärdsstat", definition: "Ett samhälle där staten ansvarar för vård, skola och omsorg.", sentence: "Sverige anses vara en typisk _____ där medborgarna finansierar gemensam vård och utbildning via skatten." },
-            { term: "Partiprogram", definition: "Ett dokument där ett parti skriver sina idéer, mål och förslag.", sentence: "Inför valet lanserade partiet ett nytt _____ med löften om sänkta skatter och mer pengar till skolan." },
-            { term: "Folkrörelser", definition: "Stora grupper av människor som driver förändring, t.ex. arbetarrörelsen.", sentence: "Arbetarrörelsen är en av Sveriges viktigaste _____ och lade grunden för den moderna välfärdsstaten." },
-            { term: "Tidöavtalet", definition: "Ett avtal mellan M, KD, L och SD om gemensam politik.", sentence: "_____ reglerade samarbetet mellan den borgerliga regeringen och Sverigedemokraterna efter valet 2022." }
+            {
+                term: "Ideologi",
+                definition: "Idéer om hur samhället ska styras och hur det borde se ut.",
+                sentence: "Socialdemokraternas _____ bygger på tanken om ett samhälle med små ekonomiska klyftor och stark välfärd.",
+                scenario: "Ett parti presenterar en sammanhängande vision om hur ekonomin, välfärden och rättvisan ska organiseras i samhället – alla politiska förslag bygger på samma grundvärderingar.",
+                ickeExempel: {
+                    korrekt: "Socialdemokraternas ideologi bygger på jämlikhet, solidaritet och stark offentlig välfärd.",
+                    icke: "En politikers personliga åsikt om ett enskilt skatteförslag är en ideologi.",
+                    forklaring: "En enstaka åsikt är inte en ideologi – en ideologi är ett sammanhängande system av idéer om hur hela samhället bör organiseras."
+                }
+            },
+            {
+                term: "Blockpolitik",
+                definition: "När partier samarbetar i grupper, t.ex. höger (borgerliga) eller vänster (rödgröna).",
+                sentence: "Under många år präglade _____ svensk politik, där de rödgröna och de borgerliga blockade mot varandra.",
+                scenario: "Fyra partier med liknande värderingar samordnar sina positioner, presenterar gemensam budget och avtalar om att inte stödja det andra blockets kandidat till statsministerposten.",
+                ickeExempel: {
+                    korrekt: "Blockpolitik innebär att partier samarbetar i grupper – de rödgröna mot de borgerliga.",
+                    icke: "Att ett enskilt parti förhandlar med ett annat om ett specifikt lagförslag är blockpolitik.",
+                    forklaring: "Enstaka förhandlingar om sakfrågor är inte blockpolitik – blockpolitik är ett bredare mönster där partier systematiskt samarbetar som grupp mot en annan grupp."
+                }
+            },
+            {
+                term: "Stödparti",
+                definition: "Ett parti som stödjer regeringen men ingår inte i den.",
+                sentence: "Sverigedemokraterna fungerade som _____ åt den borgerliga regeringen utan att ha ministerposter.",
+                scenario: "Ett parti röstar med regeringen i riksdagen och möjliggör att budgeten går igenom, men ingen av partiets ledamöter sitter i regeringen eller har ministrars mandat.",
+                ickeExempel: {
+                    korrekt: "Sverigedemokraterna var stödparti till den borgerliga regeringen – de stödde den i riksdagen utan att delta i regeringen.",
+                    icke: "Ett parti som ibland röstar med regeringen om enstaka frågor är ett stödparti.",
+                    forklaring: "Att ibland rösta med regeringen räcker inte – ett stödparti har ett mer formellt avtal om att ge regeringen ett stabilt parlamentariskt underlag."
+                }
+            },
+            {
+                term: "Höger-vänsterskalan",
+                definition: "En skala som visar partiers syn på ekonomi, skatt och fördelning.",
+                sentence: "Moderaterna placeras till höger och Vänsterpartiet till vänster på _____.",
+                scenario: "En politisk analys rangordnar alla riksdagspartier utifrån deras inställning till skattenivåer, välfärdsutgifter och statens roll i ekonomin.",
+                ickeExempel: {
+                    korrekt: "Höger-vänsterskalan rangordnar partier utifrån ekonomiska frågor som skattetryck och statlig styrning.",
+                    icke: "Höger-vänsterskalan mäter partiers syn på invandring och nationell identitet.",
+                    forklaring: "Invandring och identitetsfrågor mäts bättre på GAL-TAN-skalan – höger-vänsterskalan handlar primärt om ekonomi, fördelning och statens roll."
+                }
+            },
+            {
+                term: "GAL-TAN-skalan",
+                definition: "En skala som visar värderingar från grönt/liberalt till traditionellt/nationalistiskt.",
+                sentence: "Miljöpartiet hamnar på GAL-sidan och Sverigedemokraterna på TAN-sidan av _____.",
+                scenario: "Forskare placerar partier utifrån deras syn på miljö, invandring, HBTQ-rättigheter och nationell identitet – frågor som inte fångas av den ekonomiska höger-vänsterskalan.",
+                ickeExempel: {
+                    korrekt: "GAL-TAN-skalan mäter värderingsfrågor som miljö, invandring och kulturell öppenhet.",
+                    icke: "GAL-TAN-skalan mäter hur höga skatter ett parti vill ha.",
+                    forklaring: "Skattenivåer mäts på höger-vänsterskalan – GAL-TAN handlar om värderingsfrågor kring livsstil, identitet och samhällsöppenhet."
+                }
+            },
+            {
+                term: "Socialism",
+                definition: "En ideologi som vill minska skillnader mellan rika och fattiga, staten ska äga viktiga delar av samhället.",
+                sentence: "_____ förespråkar att skatter och offentliga tjänster används för att utjämna ekonomiska klyftor.",
+                scenario: "En politisk rörelse kämpar för att staten ska äga järnvägar och sjukvård, och att progressiv skatt ska finansiera gratis utbildning för alla.",
+                ickeExempel: {
+                    korrekt: "Socialism förespråkar statligt ägande av nyckelindustrier och omfördelning via skatter för att minska klyftor.",
+                    icke: "Att en stat erbjuder gratis skola finansierad av skatter är socialism.",
+                    forklaring: "Gratis skola är en välfärdsreform som finns i de flesta demokratier – socialism kräver ett bredare system med statligt ägande och radikal omfördelning."
+                }
+            },
+            {
+                term: "Liberalism",
+                definition: "En ideologi som betonar individens frihet, privat ägande och marknadsekonomi.",
+                sentence: "_____ värnar om den personliga friheten och menar att marknaden, inte staten, ska styra ekonomin.",
+                scenario: "Ett parti driver politiken att avveckla statliga monopol, sänka skatter och ge individen maximal frihet att välja skola, sjukvård och pensionssparande på marknaden.",
+                ickeExempel: {
+                    korrekt: "Liberalism betonar individens frihet, fria marknader och begränsad statlig inblandning.",
+                    icke: "En ideologi som förespråkar fri invandring men stark statlig ekonomisk styrning är liberalism.",
+                    forklaring: "Fri invandring kan förespråkas av liberaler, men stark statlig ekonomisk styrning är motsatsen till liberal ekonomisk politik – det kombineras sällan konsekvent under etiketten liberalism."
+                }
+            },
+            {
+                term: "Konservatism",
+                definition: "En ideologi som vill bevara traditioner, religion och kultur, och förändra samhället långsamt.",
+                sentence: "_____ betonar att förändringar ska ske försiktigt för att bevara det som fungerar i samhället.",
+                scenario: "Ett parti motsätter sig snabba samhällsreformer, värnar om traditionella institutioner som kyrka och familj och menar att beprövade lösningar är bättre än radikala experiment.",
+                ickeExempel: {
+                    korrekt: "Konservatism värnar om traditioner och vill förändra samhället försiktigt och stegvis.",
+                    icke: "Att ett parti vill bevara höga skattenivåer och inte sänka dem är konservatism.",
+                    forklaring: "Att vilja behålla hög skatt kan vara socialdemokratisk politik – konservatism handlar om att bevara traditionella värderingar och institutioner, inte specifika skattesatser."
+                }
+            },
+            {
+                term: "Ekologism",
+                definition: "En ideologi som sätter miljö och hållbar utveckling i centrum.",
+                sentence: "Miljöpartiet grundar sin politik på _____, med fokus på klimat och ekologisk hållbarhet.",
+                scenario: "En politisk rörelse kräver att alla politiska beslut ska bedömas utifrån miljökonsekvenser och att ekonomisk tillväxt aldrig får prioriteras före planetens gränser.",
+                ickeExempel: {
+                    korrekt: "Ekologism sätter naturens gränser och hållbar utveckling i centrum för all politik.",
+                    icke: "Att ett parti vill bygga fler cykelbanor i städerna är ekologism.",
+                    forklaring: "Enstaka miljöåtgärder innebär inte att partiet har ekologism som ideologi – ekologism är ett heltäckande politiskt system där miljön är överordnad andra hänsyn."
+                }
+            },
+            {
+                term: "Feminism",
+                definition: "En ideologi som vill ha jämställdhet mellan kvinnor och män.",
+                sentence: "_____ kräver lika lön, lika möjligheter och ett slut på strukturell diskriminering av kvinnor.",
+                scenario: "En rörelse kartlägger hur strukturer i arbetslivet, politiken och kulturen systematiskt missgynnar kvinnor och kräver lagstiftning och normer som ger verklig jämlikhet.",
+                ickeExempel: {
+                    korrekt: "Feminism kräver lika lön, lika möjligheter och avskaffandet av strukturell diskriminering av kvinnor.",
+                    icke: "Feminism handlar om att kvinnor ska ha mer makt än män för att kompensera för historisk diskriminering.",
+                    forklaring: "Feminism strävar efter jämlikhet och lika rättigheter – inte att vända på maktbalansen till kvinnors fördel på mäns bekostnad."
+                }
+            },
+            {
+                term: "Nationalism",
+                definition: "En ideologi som betonar nationell gemenskap, språk och kultur.",
+                sentence: "_____ lyfter fram det gemensamma språket och kulturen som det viktigaste kittet i ett samhälle.",
+                scenario: "En politisk rörelse förespråkar att landets kultur, språk och traditioner ska skyddas och att nationell sammanhållning värderas högt i politiska beslut.",
+                ickeExempel: {
+                    korrekt: "Nationalism betonar nationell identitet, gemensamt språk och kultur som samhällets fundament.",
+                    icke: "Att vara stolt över sitt land och dess historia är nationalism.",
+                    forklaring: "Nationalkänsla och patriotism är vanliga känslor – nationalism som ideologi är ett politiskt program som sätter nationen som det överordnade politiska organiserande principen."
+                }
+            },
+            {
+                term: "Kommunism",
+                definition: "En ideologi som vill skapa ett klasslöst samhälle genom att staten äger allt.",
+                sentence: "I Kina under Mao tillämpades _____, där staten kontrollerade produktionsmedlen och privat ägande förbjöds.",
+                scenario: "Alla fabriker, jordbruk och bostäder ägs av staten, privat egendom avskaffas och målet är ett samhälle utan klasser där alla delar lika.",
+                ickeExempel: {
+                    korrekt: "Kommunism syftar till ett klasslöst samhälle med kollektivt ägande av produktionsmedlen.",
+                    icke: "Socialism och kommunism är samma sak eftersom båda vill minska skillnader.",
+                    forklaring: "Socialism och kommunism delar vissa mål men skiljer sig åt – kommunism kräver statligt ägande av allt och avskaffande av klasser, medan socialism rymmer ett bredare spektrum av reformer."
+                }
+            },
+            {
+                term: "Fascism",
+                definition: "En ideologi som är emot demokrati och vill ha en stark ledare som styr.",
+                sentence: "Mussolinis Italien på 1930-talet är ett historiskt exempel på _____, där en diktator styrde utan opposition.",
+                scenario: "En rörelse förespråkar att nationens styrka kräver en stark obestridlig ledare, avskaffad politisk opposition och att statens intresse alltid går före individens fri- och rättigheter.",
+                ickeExempel: {
+                    korrekt: "Fascism förespråkar en stark auktoritär ledare, nationalism och avskaffad politisk opposition.",
+                    icke: "Att en demokratisk ledare har ett starkt personligt mandat och fattar snabba beslut är fascism.",
+                    forklaring: "En stark demokratisk ledare vald i fria val är inte fascism – fascism avskaffar demokratin och oppositionen, inte bara är en stark ledarstil."
+                }
+            },
+            {
+                term: "Nazism",
+                definition: "En ideologi som liknar fascism men bygger på rasistiska idéer om en 'överlägsen ras'.",
+                sentence: "Hitlers Tyskland byggde på _____, som ledde till Förintelsen och andra världskriget.",
+                scenario: "En rörelse kombinerar ultranationalism med rasistisk pseudovetenskap som hävdar att en viss folkgrupp är biologiskt överlägsen och att andra grupper ska förföljas eller utrotas.",
+                ickeExempel: {
+                    korrekt: "Nazism kombinerade fascistisk auktoritarism med rasistisk ideologi om en 'arisk övermänniska'.",
+                    icke: "Fascism och nazism är exakt samma ideologi med samma idéer.",
+                    forklaring: "Nazism och fascism liknar varandra men skiljer sig – nazismens kärna är rasbiologin och antisemitismen, medan fascism kan existera utan dessa specifika rasistiska idéer."
+                }
+            },
+            {
+                term: "Populism",
+                definition: "En politisk stil som säger sig tala för 'folket' mot 'eliten', ofta med enkla lösningar.",
+                sentence: "Politikern använde sig av _____ och lovade att 'vanligt folk' äntligen skulle få sin röst hörd mot etablissemanget.",
+                scenario: "En politiker hävdar att alla landets problem orsakas av en korrupt elit som motarbetar det vanliga folket, och lovar enkla snabblösningar utan att förklara svårigheterna.",
+                ickeExempel: {
+                    korrekt: "Populism framställer komplexa problem som enkla, pekar ut en elit och hävdar sig tala för det 'riktiga folket'.",
+                    icke: "Att ett parti vill lyssna mer på medborgarna och minska byråkratin är populism.",
+                    forklaring: "Att vilja lyssna på medborgarna är demokratisk grundtanke – populism karaktäriseras av att ställa 'folket' mot 'eliten' på ett förenklat och polariserande sätt."
+                }
+            },
+            {
+                term: "Solidaritet",
+                definition: "Tanken att människor ska hjälpa och stötta varandra i samhället.",
+                sentence: "_____ är en grundvärdering inom socialdemokratin – de starka ska hjälpa de svaga.",
+                scenario: "Skattebetalare utan barn finansierar skolan, friska betalar försäkringar som sjuka behöver – samhällets resurser delas så att alla får hjälp när de behöver det.",
+                ickeExempel: {
+                    korrekt: "Solidaritet innebär att starka delar med sig till svaga – t.ex. att välbärgade via skatt finansierar stöd till behövande.",
+                    icke: "Att ge pengar till en välgörenhetsorganisation en gång är solidaritet som politisk princip.",
+                    forklaring: "Välgörenhet är frivillig och individuell – solidaritet som politisk princip handlar om strukturella system där samhället kollektivt tar ansvar för alla medborgare."
+                }
+            },
+            {
+                term: "Välfärdsstat",
+                definition: "Ett samhälle där staten ansvarar för vård, skola och omsorg.",
+                sentence: "Sverige anses vara en typisk _____ där medborgarna finansierar gemensam vård och utbildning via skatten.",
+                scenario: "Staten finansierar gratis sjukvård, kostnadsfri utbildning upp till universitetsnivå och ger ekonomiskt stöd till arbetslösa och pensionärer via ett skattebaserat system.",
+                ickeExempel: {
+                    korrekt: "Sverige är en välfärdsstat där staten via skattemedel erbjuder universell sjukvård, skola och socialt skyddsnät.",
+                    icke: "En stat som erbjuder militärt skydd och rättsväsende är en välfärdsstat.",
+                    forklaring: "Militär och rättsväsende tillhör statens grundläggande funktioner i alla stater – välfärdsstat kräver dessutom sociala tjänster som sjukvård, utbildning och socialförsäkringar."
+                }
+            },
+            {
+                term: "Partiprogram",
+                definition: "Ett dokument där ett parti skriver sina idéer, mål och förslag.",
+                sentence: "Inför valet lanserade partiet ett nytt _____ med löften om sänkta skatter och mer pengar till skolan.",
+                scenario: "Inför valet publicerar ett parti ett dokument som beskriver partiets syn på ekonomi, skola, miljö och migration – en samlad vision för hur landet ska styras.",
+                ickeExempel: {
+                    korrekt: "Ett partis partiprogram beskriver partiets samlade ideologi och politik i ett dokument.",
+                    icke: "En ministers uttalande i en enskild fråga är partiets partiprogram.",
+                    forklaring: "En ministers uttalande är en enstaka politisk ståndpunkt – ett partiprogram är ett formellt, av partiet antaget dokument som beskriver hela partiets politiska linje."
+                }
+            },
+            {
+                term: "Folkrörelser",
+                definition: "Stora grupper av människor som driver förändring, t.ex. arbetarrörelsen.",
+                sentence: "Arbetarrörelsen är en av Sveriges viktigaste _____ och lade grunden för den moderna välfärdsstaten.",
+                scenario: "Tiotusentals vanliga medborgare organiserar sig, håller möten och driver krav på politiska förändringar – utan att vara ett politiskt parti men med stor samhällelig påverkan.",
+                ickeExempel: {
+                    korrekt: "Arbetarrörelsen är en folkrörelse som organiserade miljontals arbetstagare och drev fram bättre villkor.",
+                    icke: "En organisation med 50 aktiva medlemmar som lobbar för ett enskilt lagförslag är en folkrörelse.",
+                    forklaring: "Folkrörelser karaktäriseras av bred folklig förankring och stor medlemsbas – en liten lobbyorganisation har inte den bredd och djup i samhället som definierar en folkrörelse."
+                }
+            },
+            {
+                term: "Tidöavtalet",
+                definition: "Ett avtal mellan M, KD, L och SD om gemensam politik.",
+                sentence: "_____ reglerade samarbetet mellan den borgerliga regeringen och Sverigedemokraterna efter valet 2022.",
+                scenario: "Efter riksdagsvalet 2022 undertecknar fyra partier ett detaljerat dokument som reglerar vilken politik som ska föras under mandatperioden och hur partierna ska samarbeta.",
+                ickeExempel: {
+                    korrekt: "Tidöavtalet är det samarbetsavtal mellan M, KD, L och SD som reglerade den borgerliga regeringens politik från 2022.",
+                    icke: "Tidöavtalet är ett avtal där alla riksdagspartier kommit överens om att samarbeta.",
+                    forklaring: "Tidöavtalet gäller specifikt M, KD, L och SD – inte alla riksdagspartier. De rödgröna partierna stod utanför och var i opposition."
+                }
+            }
         ];
 
         function shuffleArray(arr) {
@@ -137,6 +337,128 @@
             );
         }
 
+        function ScenarioView() {
+            const [shuffledIdxs] = useState(() => shuffleArray(concepts.map((_, i) => i)));
+            const [current, setCurrent] = useState(0);
+            const [answered, setAnswered] = useState(null);
+            const [selected, setSelected] = useState(null);
+            const [score, setScore] = useState(0);
+            const [done, setDone] = useState(false);
+            const [termOptions, setTermOptions] = useState(() => shuffleArray(concepts.map(c => c.term)));
+
+            const conceptIdx = shuffledIdxs[current];
+            const concept = concepts[conceptIdx];
+
+            const handleSelect = (term) => {
+                if (answered !== null) return;
+                setSelected(term);
+                const isCorrect = term === concept.term;
+                setAnswered(isCorrect ? 'correct' : 'wrong');
+                if (isCorrect) setScore(s => s + 1);
+            };
+
+            const next = () => {
+                if (current + 1 >= concepts.length) { setDone(true); return; }
+                setCurrent(c => c + 1);
+                setAnswered(null);
+                setSelected(null);
+                setTermOptions(shuffleArray(concepts.map(c => c.term)));
+            };
+
+            const reset = () => {
+                setCurrent(0); setAnswered(null); setSelected(null); setScore(0); setDone(false);
+                setTermOptions(shuffleArray(concepts.map(c => c.term)));
+            };
+
+            if (done) return (
+                <div className="text-center">
+                    <div className="bg-yellow-50 border-2 border-yellow-400 rounded-3xl p-8 mb-6">
+                        <p className="text-5xl font-bold text-yellow-500 mb-2">{score}/{concepts.length}</p>
+                        <p className="text-xl font-bold text-slate-800 mb-4">{getFeedback(score, concepts.length)}</p>
+                        <button onClick={reset} className="bg-yellow-400 text-yellow-900 px-8 py-3 rounded-2xl font-bold hover:bg-yellow-500 transition-colors">Börja om</button>
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="max-w-2xl mx-auto">
+                    <div className="flex justify-between items-center mb-3">
+                        <span className="font-bold text-yellow-700">Poäng: {score}</span>
+                        <span className="text-slate-400 text-sm">{current + 1} / {concepts.length}</span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+                        <div className="bg-yellow-400 h-2 rounded-full transition-all" style={{width: `${((current + 1) / concepts.length) * 100}%`}}></div>
+                    </div>
+                    <div className="bg-white p-6 rounded-3xl shadow-lg mb-6">
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Vilket begrepp beskrivs?</p>
+                        <p className="text-lg text-slate-800 leading-relaxed italic">"{concept.scenario}"</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 mb-6">
+                        {termOptions.map((term, i) => (
+                            <button key={i} onClick={() => handleSelect(term)} disabled={answered !== null}
+                                className={`p-4 rounded-2xl font-bold border-2 text-left transition-all ${
+                                    answered === null ? 'bg-white border-slate-200 hover:border-yellow-400 hover:bg-yellow-50' :
+                                    term === concept.term ? 'bg-green-50 border-green-500 text-green-700' :
+                                    term === selected ? 'bg-red-50 border-red-500 text-red-700' :
+                                    'bg-white border-slate-100 text-slate-300'
+                                }`}>
+                                {term}
+                            </button>
+                        ))}
+                    </div>
+                    {answered !== null && (
+                        <div>
+                            <div className={`p-4 rounded-2xl text-sm font-medium mb-4 ${answered === 'correct' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>
+                                {answered === 'correct' ? `✓ Rätt! ${concept.definition}` : `✗ Fel. Rätt svar: ${concept.term} – ${concept.definition}`}
+                            </div>
+                            <button onClick={next} className="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-slate-800 transition-all">
+                                {current + 1 >= concepts.length ? 'Se resultat' : 'Nästa scenario →'}
+                            </button>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        function IckeExempelView() {
+            const [revealed, setRevealed] = useState(concepts.map(() => false));
+            const toggle = (i) => { const r = [...revealed]; r[i] = !r[i]; setRevealed(r); };
+
+            return (
+                <div className="grid gap-5">
+                    {concepts.map((c, i) => (
+                        <div key={i} className="bg-white rounded-2xl shadow-sm border-l-8 border-yellow-400 overflow-hidden">
+                            <div className="p-5">
+                                <div className="flex items-center gap-3 mb-3">
+                                    <span className="bg-yellow-100 text-yellow-700 text-xs font-bold px-2 py-1 rounded-lg">{i + 1}</span>
+                                    <h3 className="text-lg font-bold">{c.term}</h3>
+                                </div>
+                                <div className="mb-3 p-3 bg-yellow-50 rounded-xl">
+                                    <p className="text-xs font-bold text-yellow-700 uppercase tracking-wider mb-1">✓ Korrekt tillämpning</p>
+                                    <p className="text-slate-700 text-sm">{c.ickeExempel.korrekt}</p>
+                                </div>
+                                <button onClick={() => toggle(i)} className={`w-full py-2 rounded-xl font-bold text-sm transition-all ${revealed[i] ? 'bg-red-100 text-red-700' : 'bg-slate-800 text-white hover:bg-slate-700'}`}>
+                                    {revealed[i] ? 'Dölj icke-exempel' : 'Visa icke-exempel 🪤'}
+                                </button>
+                            </div>
+                            {revealed[i] && (
+                                <div className="px-5 pb-5">
+                                    <div className="mb-3 p-3 bg-red-50 rounded-xl">
+                                        <p className="text-xs font-bold text-red-700 uppercase tracking-wider mb-1">✗ Trovärdigt icke-exempel (fälla)</p>
+                                        <p className="text-slate-700 text-sm">{c.ickeExempel.icke}</p>
+                                    </div>
+                                    <div className="p-3 bg-amber-50 rounded-xl">
+                                        <p className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-1">Förklaring av fällan</p>
+                                        <p className="text-slate-700 text-sm">{c.ickeExempel.forklaring}</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
         function App() {
             const [view, setView] = useState('list');
             const [currentIndex, setCurrentIndex] = useState(0);
@@ -150,7 +472,7 @@
                 }, 150);
             };
 
-            const activeTab = 'bg-yellow-400 font-bold shadow-sm';
+            const activeTab = 'bg-yellow-400 text-yellow-900 font-bold shadow-sm';
             const inactiveTab = 'text-slate-500';
 
             return (
@@ -161,10 +483,12 @@
                         <div className="w-36"></div>
                     </header>
 
-                    <div className="max-w-sm mx-auto mb-10 flex bg-white p-1 rounded-full shadow-md border border-slate-200">
+                    <div className="max-w-2xl mx-auto mb-10 flex bg-white p-1 rounded-full shadow-md border border-slate-200">
                         <button onClick={() => setView('list')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'list' ? activeTab : inactiveTab}`}>Lista</button>
                         <button onClick={() => setView('flashcards')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'flashcards' ? activeTab : inactiveTab}`}>Flashcards</button>
                         <button onClick={() => setView('lucktext')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'lucktext' ? activeTab : inactiveTab}`}>Lucktext</button>
+                        <button onClick={() => setView('scenario')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'scenario' ? activeTab : inactiveTab}`}>Scenario</button>
+                        <button onClick={() => setView('icke')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'icke' ? activeTab : inactiveTab}`}>Icke-ex.</button>
                     </div>
 
                     <main className="max-w-2xl mx-auto">
@@ -202,6 +526,8 @@
                             </div>
                         )}
                         {view === 'lucktext' && <LucktextView />}
+                        {view === 'scenario' && <ScenarioView />}
+                        {view === 'icke' && <IckeExempelView />}
                     </main>
 
                     <footer className="mt-12 text-center text-slate-400 text-sm italic pb-8">Källa: Samhällskunskap – Ideologier begreppslista</footer>

@@ -25,30 +25,270 @@
         const { useState } = React;
 
         const concepts = [
-            { term: "Bruttolön", definition: "Den lön du får innan du har betalat skatt.", sentence: "Jobbannonsen lovar 30 000 kronor i _____, men efter skatt är det betydligt mindre du får hem." },
-            { term: "Nettolön", definition: "De pengar du får ut på ditt konto efter att skatten är dragen.", sentence: "Din _____ är det belopp som faktiskt sätts in på ditt konto varje månad." },
-            { term: "Disponibel inkomst", definition: "De pengar du har totalt att använda varje månad (lön efter skatt plus eventuella bidrag).", sentence: "Din _____ avgör hur mycket du kan spendera och spara under månaden." },
-            { term: "Direkt skatt (Inkomstskatt)", definition: "Den skatt som dras direkt från din lön.", sentence: "_____ syns direkt på lönebeskedet som ett avdrag från din bruttolön." },
-            { term: "Indirekt skatt (Moms)", definition: "Skatt som du betalar när du köper varor eller tjänster.", sentence: "Priset på en tröja i affären inkluderar _____, vilket gör att staten tar en del av köpet." },
-            { term: "Punktskatt", definition: "En extra skatt på speciella varor som staten vill att vi ska köpa mindre av.", sentence: "Höga priser på alkohol och tobak beror delvis på _____, som staten använder för att minska konsumtionen." },
-            { term: "Fasta utgifter", definition: "Kostnader som är samma varje månad och svåra att påverka, till exempel hyra.", sentence: "Hyra och abonnemang räknas som _____ eftersom de är lika höga varje månad." },
-            { term: "Rörliga utgifter", definition: "Kostnader som ändras beroende på hur mycket du köper.", sentence: "Mat och kläder är _____ – de varierar beroende på dina val under månaden." },
-            { term: "Faktura", definition: "Ett papper som visar hur mycket du ska betala för något du köpt.", sentence: "Efter renoveringen fick de en _____ från hantverkaren med totalbeloppet att betala." },
-            { term: "Förfallodatum", definition: "Den sista dagen en faktura eller räkning måste vara betald.", sentence: "Om du missar _____ på din räkning kan du drabbas av påminnelseavgifter." },
-            { term: "OCR-nummer", definition: "Ett långt nummer på en faktura som banken använder för att identifiera betalningen.", sentence: "Glöm inte att skriva in _____ när du betalar räkningen, annars vet inte banken vad betalningen gäller." },
-            { term: "Betalningsanmärkning", definition: "En 'prick' i ett register som visar att man inte har skött sina betalningar.", sentence: "En _____ kan göra det svårt att hyra lägenhet eller ta ett lån i framtiden." },
-            { term: "Generellt bidrag", definition: "Ett bidrag som alla i en viss grupp får, till exempel barnbidrag.", sentence: "Barnbidrag är ett _____ som alla familjer med barn under 16 år får, oavsett inkomst." },
-            { term: "Behovsprövat bidrag", definition: "Ett bidrag man bara får om man tjänar lite pengar och verkligen behöver det.", sentence: "Bostadsbidrag är ett _____ – man måste ansöka och visa att inkomsten är låg." },
-            { term: "Karensdag", definition: "Den första dagen du är sjuk från jobbet. Då får du inga pengar alls.", sentence: "Den anställde förlorade en dagslön på _____, den första sjukdagen utan ersättning." },
-            { term: "Sjuklön", definition: "Pengar du får från din arbetsgivare om du är sjuk efter karensdagen (dag 2–14).", sentence: "Från dag två till fjortonde sjukdagen betalar arbetsgivaren ut _____ till den anställde." },
-            { term: "Sjukpenning", definition: "Pengar du får från Försäkringskassan om du är sjuk längre än två veckor.", sentence: "Efter fjorton dagars sjukdom tar Försäkringskassan över och betalar ut _____." },
-            { term: "Sparkonto", definition: "Ett säkert sätt att ha pengar på banken.", sentence: "Hon satte undan 500 kronor i månaden på sitt _____ för att bygga upp en buffert." },
-            { term: "Aktier", definition: "Att köpa en liten del av ett företag. Kan ge hög vinst men är mer riskabelt.", sentence: "Han köpte _____ i teknikföretaget och hoppades att deras värde skulle öka över tid." },
-            { term: "Fonder", definition: "En blandning av olika aktier eller värdepapper som en expert sköter åt dig.", sentence: "Istället för att välja enskilda aktier investerade hon i _____ för att sprida riskerna automatiskt." },
-            { term: "Lån", definition: "Att låna pengar som man sedan måste betala tillbaka.", sentence: "För att köpa bilen tog han ett _____ på banken som han betalar av under tre år." },
-            { term: "Ränta", definition: "Den extra kostnad du betalar för att få låna pengar, eller pengar du får för att du sparar.", sentence: "Banken tar ut _____ på lånet, vilket innebär att du betalar mer tillbaka än du lånade." },
-            { term: "Studiebidrag", definition: "Bidrag från CSN för dig som studerar.", sentence: "Gymnasieelever får _____ från CSN varje månad utan att behöva betala tillbaka det." },
-            { term: "Studielån", definition: "Pengar du lånar från CSN för studier, som ska betalas tillbaka med ofta mycket låg ränta.", sentence: "För att klara hyran under utbildningen tog han ett _____ från CSN som han återbetalar efter examen." }
+            {
+                term: "Bruttolön",
+                definition: "Den lön du får innan du har betalat skatt.",
+                sentence: "Jobbannonsen lovar 30 000 kronor i _____, men efter skatt är det betydligt mindre du får hem.",
+                scenario: "En arbetsgivare erbjuder 35 000 kronor i månaden – det är beloppet INNAN skatt räknas av och är siffran som syns i jobbannonsen.",
+                ickeExempel: {
+                    korrekt: "Bruttolönen är det belopp du tjänar innan skatten dras – t.ex. 35 000 kr i jobbannonsen.",
+                    icke: "Det belopp som sätts in på ditt konto varje månad är din bruttolön.",
+                    forklaring: "Det som sätts in på kontot är nettolönen – bruttolönen är det högre belopp du tjänar innan skatten dragits av."
+                }
+            },
+            {
+                term: "Nettolön",
+                definition: "De pengar du får ut på ditt konto efter att skatten är dragen.",
+                sentence: "Din _____ är det belopp som faktiskt sätts in på ditt konto varje månad.",
+                scenario: "En person tjänar 30 000 kr i brutto men betalar 7 500 kr i skatt – de 22 500 kr som hamnar på kontot är den faktiska månadsinkomsten.",
+                ickeExempel: {
+                    korrekt: "Nettolönen är vad du faktiskt får ut på kontot efter att skatten dragits.",
+                    icke: "Nettolönen är detsamma som bruttolönen men utan sociala avgifter.",
+                    forklaring: "Sociala avgifter betalas av arbetsgivaren ovanpå lönen – nettolön är bruttolön minus den inkomstskatt du som anställd betalar."
+                }
+            },
+            {
+                term: "Disponibel inkomst",
+                definition: "De pengar du har totalt att använda varje månad (lön efter skatt plus eventuella bidrag).",
+                sentence: "Din _____ avgör hur mycket du kan spendera och spara under månaden.",
+                scenario: "En student har 8 000 kr i nettolön från deltidsjobb plus 1 320 kr i studiebidrag – summan av dessa är det hen faktiskt har att röra sig med.",
+                ickeExempel: {
+                    korrekt: "Disponibel inkomst är nettolön plus eventuella bidrag – det totala beloppet du faktiskt kan använda.",
+                    icke: "Disponibel inkomst är samma sak som nettolön.",
+                    forklaring: "Nettolön är lönen efter skatt – disponibel inkomst inkluderar också bidrag, barnbidrag eller andra inkomster och ger en mer komplett bild av vad du har att använda."
+                }
+            },
+            {
+                term: "Direkt skatt (Inkomstskatt)",
+                definition: "Den skatt som dras direkt från din lön.",
+                sentence: "_____ syns direkt på lönebeskedet som ett avdrag från din bruttolön.",
+                scenario: "På lönebeskedet syns en post där 30% av bruttolönen dragits direkt av arbetsgivaren och skickats till skattemyndigheten.",
+                ickeExempel: {
+                    korrekt: "Inkomstskatt är direkt skatt som dras av din lön innan du får ut pengarna.",
+                    icke: "Momsen du betalar i affären är direkt skatt.",
+                    forklaring: "Moms är en indirekt skatt du betalar via priset på varor och tjänster – direkt skatt dras direkt från din lön eller inkomst."
+                }
+            },
+            {
+                term: "Indirekt skatt (Moms)",
+                definition: "Skatt som du betalar när du köper varor eller tjänster.",
+                sentence: "Priset på en tröja i affären inkluderar _____, vilket gör att staten tar en del av köpet.",
+                scenario: "Du köper en jacka för 1 000 kr – av detta är 200 kr moms som butiken betalar vidare till staten, men du som köpare betalar det via priset.",
+                ickeExempel: {
+                    korrekt: "Moms är indirekt skatt inbakad i priset på varor och tjänster du köper.",
+                    icke: "Den kommunalskatt som dras från din lön är en indirekt skatt.",
+                    forklaring: "Kommunalskatt är en direkt skatt på din inkomst – indirekt skatt är skatt som betalas via priset på köpta varor och tjänster."
+                }
+            },
+            {
+                term: "Punktskatt",
+                definition: "En extra skatt på speciella varor som staten vill att vi ska köpa mindre av.",
+                sentence: "Höga priser på alkohol och tobak beror delvis på _____, som staten använder för att minska konsumtionen.",
+                scenario: "Staten lägger en extra avgift ovanpå priset på cigaretter och alkohol för att dels minska konsumtionen, dels finansiera sjukvårdskostnader relaterade till dessa produkter.",
+                ickeExempel: {
+                    korrekt: "Punktskatt på cigaretter och alkohol används för att minska konsumtionen av dessa produkter.",
+                    icke: "Moms på alla varor i en affär är en form av punktskatt.",
+                    forklaring: "Moms är en generell indirekt skatt på alla varor – punktskatt är en specifik extra skatt på utvalda produkter, vanligtvis sådana med negativa samhällseffekter."
+                }
+            },
+            {
+                term: "Fasta utgifter",
+                definition: "Kostnader som är samma varje månad och svåra att påverka, till exempel hyra.",
+                sentence: "Hyra och abonnemang räknas som _____ eftersom de är lika höga varje månad.",
+                scenario: "Varje månad betalar en person exakt 7 200 kr i hyra, 299 kr i mobilabonnemang och 149 kr för streaming – dessa poster ändrar sig inte oavsett vad personen gör.",
+                ickeExempel: {
+                    korrekt: "Hyra och mobilabonnemang är fasta utgifter – de är lika höga varje månad.",
+                    icke: "Matkostnader är en fast utgift eftersom man alltid behöver äta.",
+                    forklaring: "Att man alltid behöver äta gör inte mat till en fast utgift – matkostnaden varierar beroende på vad man handlar och är en rörlig utgift."
+                }
+            },
+            {
+                term: "Rörliga utgifter",
+                definition: "Kostnader som ändras beroende på hur mycket du köper.",
+                sentence: "Mat och kläder är _____ – de varierar beroende på dina val under månaden.",
+                scenario: "En person spenderar 3 000 kr på mat en månad och 1 500 kr nästa, beroende på matvanor och eventuella bjudningar – posten ändras hela tiden.",
+                ickeExempel: {
+                    korrekt: "Mat och kläder är rörliga utgifter eftersom de varierar beroende på dina val.",
+                    icke: "Räntan på ett bolån med rörlig ränta är en fast utgift.",
+                    forklaring: "Rörlig bolåneränta förändras med marknaden och är inte en fast utgift – en fast ränta under en viss period är däremot en fast utgift."
+                }
+            },
+            {
+                term: "Faktura",
+                definition: "Ett papper som visar hur mycket du ska betala för något du köpt.",
+                sentence: "Efter renoveringen fick de en _____ från hantverkaren med totalbeloppet att betala.",
+                scenario: "Efter att ha anlitat en elektriker får hushållet ett dokument som specificerar utfört arbete, material, timmar och det totala belopp som ska betalas.",
+                ickeExempel: {
+                    korrekt: "En faktura från elektriker specificerar utfört arbete och det belopp som ska betalas.",
+                    icke: "Kvittot du får i kassan när du betalar i affären är en faktura.",
+                    forklaring: "Ett kvitto bekräftar att betalning redan skett – en faktura är en begäran om betalning som ännu inte gjorts."
+                }
+            },
+            {
+                term: "Förfallodatum",
+                definition: "Den sista dagen en faktura eller räkning måste vara betald.",
+                sentence: "Om du missar _____ på din räkning kan du drabbas av påminnelseavgifter.",
+                scenario: "En elräkning har sista betalningsdag den 25:e varje månad – betalar man efter detta datum tillkommer en påminnelseavgift på 60 kr.",
+                ickeExempel: {
+                    korrekt: "Förfallodatum är den sista dagen du kan betala en räkning utan påminnelseavgift.",
+                    icke: "Förfallodatum är det datum en faktura skickades ut.",
+                    forklaring: "Fakturans utskicksdatum är inte förfallodatum – förfallodatum är den specifika deadline du måste betala innan för att undvika avgifter."
+                }
+            },
+            {
+                term: "OCR-nummer",
+                definition: "Ett långt nummer på en faktura som banken använder för att identifiera betalningen.",
+                sentence: "Glöm inte att skriva in _____ när du betalar räkningen, annars vet inte banken vad betalningen gäller.",
+                scenario: "På elräkningen finns ett 15-siffrigt nummer som du måste fylla i vid bankbetalning – utan det kan din betalning inte kopplas till rätt faktura.",
+                ickeExempel: {
+                    korrekt: "OCR-nummer identifierar vilken faktura en betalning avser – utan det vet inte mottagaren vems betalning det är.",
+                    icke: "OCR-numret är detsamma som bankens kontonummer till vilket du betalar.",
+                    forklaring: "Kontonumret är dit pengarna skickas – OCR-numret är en unik referenskod som identifierar just din betalning och kopplar den till rätt faktura."
+                }
+            },
+            {
+                term: "Betalningsanmärkning",
+                definition: "En 'prick' i ett register som visar att man inte har skött sina betalningar.",
+                sentence: "En _____ kan göra det svårt att hyra lägenhet eller ta ett lån i framtiden.",
+                scenario: "En person som missade att betala en räkning och sedan fick skulden till Kronofogden registrerades med en anmärkning som banker och hyresvärdar kan se.",
+                ickeExempel: {
+                    korrekt: "En betalningsanmärkning registreras när en skuld gått till Kronofogden och syns för banker och hyresvärdar.",
+                    icke: "Om du glömmer betala en räkning en gång och betalar påminnelseavgiften får du en betalningsanmärkning.",
+                    forklaring: "Att betala sent och betala påminnelseavgift ger normalt inte betalningsanmärkning – det krävs vanligtvis att skulden kvarstår och hamnar hos Kronofogden."
+                }
+            },
+            {
+                term: "Generellt bidrag",
+                definition: "Ett bidrag som alla i en viss grupp får, till exempel barnbidrag.",
+                sentence: "Barnbidrag är ett _____ som alla familjer med barn under 16 år får, oavsett inkomst.",
+                scenario: "Alla familjer med barn under 16 år i landet får automatiskt ett månatligt bidrag från staten, oavsett om familjen är rik eller fattig.",
+                ickeExempel: {
+                    korrekt: "Barnbidraget är ett generellt bidrag som alla familjer med barn under 16 år får utan inkomstprövning.",
+                    icke: "Bostadsbidrag som ges till alla barnfamiljer är ett generellt bidrag.",
+                    forklaring: "Bostadsbidraget är behovsprövat – man måste ansöka och ha låg inkomst för att få det. Barnbidraget är generellt och ges till alla utan prövning."
+                }
+            },
+            {
+                term: "Behovsprövat bidrag",
+                definition: "Ett bidrag man bara får om man tjänar lite pengar och verkligen behöver det.",
+                sentence: "Bostadsbidrag är ett _____ – man måste ansöka och visa att inkomsten är låg.",
+                scenario: "En ensamstående förälder ansöker om bostadsbidrag, bifogar löneuppgifter och beviljads bidrag eftersom inkomsten understiger gränsen.",
+                ickeExempel: {
+                    korrekt: "Bostadsbidraget är behovsprövat – du måste visa låg inkomst för att beviljas det.",
+                    icke: "Barnbidraget är behovsprövat eftersom det ges till barnfamiljer men inte till barnlösa.",
+                    forklaring: "Barnbidraget ges till alla med barn under 16 år oavsett inkomst – det är ett generellt bidrag, inte behovsprövat."
+                }
+            },
+            {
+                term: "Karensdag",
+                definition: "Den första dagen du är sjuk från jobbet. Då får du inga pengar alls.",
+                sentence: "Den anställde förlorade en dagslön på _____, den första sjukdagen utan ersättning.",
+                scenario: "En person vaknar med hög feber och stannar hemma – den dagen får hen ingen sjuklön eller sjukpenning, utan bär hela inkomstbortfallet själv.",
+                ickeExempel: {
+                    korrekt: "Karensdagen är dag 1 vid sjukdom – du får ingen sjuklön eller sjukpenning denna dag.",
+                    icke: "Karensdagen är den dag då sjukpenningen från Försäkringskassan börjar betalas ut.",
+                    forklaring: "Sjukpenning från Försäkringskassan börjar efter dag 14 – karensdagen är dag 1 utan ersättning, och sjuklönen från arbetsgivaren gäller dag 2–14."
+                }
+            },
+            {
+                term: "Sjuklön",
+                definition: "Pengar du får från din arbetsgivare om du är sjuk efter karensdagen (dag 2–14).",
+                sentence: "Från dag två till fjortonde sjukdagen betalar arbetsgivaren ut _____ till den anställde.",
+                scenario: "En anställd är sjuk i en vecka – dag 2 till 7 betalar arbetsgivaren ut en andel av lönen som ersättning för sjukdomen.",
+                ickeExempel: {
+                    korrekt: "Sjuklön betalas av arbetsgivaren dag 2–14 vid sjukdom.",
+                    icke: "Sjuklönen betalas av Försäkringskassan från dag 2 vid sjukdom.",
+                    forklaring: "Försäkringskassan betalar sjukpenning från dag 15 och framåt – sjuklönen dag 2–14 betalas av arbetsgivaren."
+                }
+            },
+            {
+                term: "Sjukpenning",
+                definition: "Pengar du får från Försäkringskassan om du är sjuk längre än två veckor.",
+                sentence: "Efter fjorton dagars sjukdom tar Försäkringskassan över och betalar ut _____.",
+                scenario: "En person som är sjuk i tre veckor får sjuklön från arbetsgivaren de första 14 dagarna, men från dag 15 tar Försäkringskassan över betalningarna.",
+                ickeExempel: {
+                    korrekt: "Sjukpenning betalas av Försäkringskassan från dag 15 vid längre sjukdom.",
+                    icke: "Sjukpenning och sjuklön är samma sak – båda betalas av arbetsgivaren.",
+                    forklaring: "Sjuklön betalas av arbetsgivaren dag 2–14 medan sjukpenning betalas av Försäkringskassan från dag 15 – de är olika system med olika betalare."
+                }
+            },
+            {
+                term: "Sparkonto",
+                definition: "Ett säkert sätt att ha pengar på banken.",
+                sentence: "Hon satte undan 500 kronor i månaden på sitt _____ för att bygga upp en buffert.",
+                scenario: "En person sätter in 1 000 kr i månaden på ett konto med låg ränta och inga risker – pengarna är alltid tillgängliga och det nominella värdet minskar aldrig.",
+                ickeExempel: {
+                    korrekt: "Ett sparkonto är säkert – pengarna finns alltid kvar och nominellt värde minskar inte.",
+                    icke: "Ett sparkonto ger alltid hög avkastning och är bättre än aktier på lång sikt.",
+                    forklaring: "Sparkonton ger vanligtvis lägre avkastning än aktier på lång sikt – säkerheten är fördelen, inte hög avkastning."
+                }
+            },
+            {
+                term: "Aktier",
+                definition: "Att köpa en liten del av ett företag. Kan ge hög vinst men är mer riskabelt.",
+                sentence: "Han köpte _____ i teknikföretaget och hoppades att deras värde skulle öka över tid.",
+                scenario: "En person köper andelar i ett börsnoterat företag – om företaget går bra ökar värdet och personen tjänar pengar, men om det går dåligt kan de förlora pengar.",
+                ickeExempel: {
+                    korrekt: "Aktier är ägarandelar i ett företag – värdet kan stiga men också falla och pengarna är inte garanterade.",
+                    icke: "Aktier är ett säkert sparande eftersom börsen alltid stiger på lång sikt.",
+                    forklaring: "Historiskt har börsen gett god avkastning på lång sikt, men aktier är ändå riskfyllda – enskilda bolag kan gå i konkurs och man kan förlora hela investeringen."
+                }
+            },
+            {
+                term: "Fonder",
+                definition: "En blandning av olika aktier eller värdepapper som en expert sköter åt dig.",
+                sentence: "Istället för att välja enskilda aktier investerade hon i _____ för att sprida riskerna automatiskt.",
+                scenario: "En person investerar pengar i ett paket som innehåller hundratals olika aktier – en förvaltare väljer ut vilka och sprider risken så att en enda aktie inte kan orsaka stor förlust.",
+                ickeExempel: {
+                    korrekt: "Fonder sprider risken genom att investera i många olika värdepapper – en fond kan innehålla hundratals aktier.",
+                    icke: "En fond är ett konto hos banken där pengarna är skyddade av staten.",
+                    forklaring: "Statlig insättningsgaranti gäller bankkonton – fonder är investeringsprodukter vars värde kan falla och de omfattas inte av insättningsgarantin."
+                }
+            },
+            {
+                term: "Lån",
+                definition: "Att låna pengar som man sedan måste betala tillbaka.",
+                sentence: "För att köpa bilen tog han ett _____ på banken som han betalar av under tre år.",
+                scenario: "En person lånar 150 000 kr av banken för att köpa en bil och betalar tillbaka med månadsbetalningar under tre år, plus ränta.",
+                ickeExempel: {
+                    korrekt: "Ett lån innebär att man får pengar nu men måste betala tillbaka hela beloppet plus ränta.",
+                    icke: "Studiebidraget från CSN är ett lån eftersom det ges för studier.",
+                    forklaring: "Studiebidraget ska inte betalas tillbaka – det är ett bidrag. Studielånet är däremot ett lån som ska återbetalas."
+                }
+            },
+            {
+                term: "Ränta",
+                definition: "Den extra kostnad du betalar för att få låna pengar, eller pengar du får för att du sparar.",
+                sentence: "Banken tar ut _____ på lånet, vilket innebär att du betalar mer tillbaka än du lånade.",
+                scenario: "En person lånar 100 000 kr och betalar tillbaka 108 000 kr – de extra 8 000 kr är kostnaden för att ha haft tillgång till pengarna under lånets löptid.",
+                ickeExempel: {
+                    korrekt: "Räntan är kostnaden för att låna pengar – du betalar tillbaka mer än du lånade.",
+                    icke: "Räntan är den avgift banken tar för att administrera ditt konto.",
+                    forklaring: "Kontoavgifter är administrativa avgifter – räntan är specifikt kostnaden kopplad till att låna eller spara pengar, uttryckt som en procentsats."
+                }
+            },
+            {
+                term: "Studiebidrag",
+                definition: "Bidrag från CSN för dig som studerar.",
+                sentence: "Gymnasieelever får _____ från CSN varje månad utan att behöva betala tillbaka det.",
+                scenario: "En 16-åring som går på gymnasiet får automatiskt 1 320 kr varje månad från staten – pengarna behöver inte betalas tillbaka och kräver ingen ansökan.",
+                ickeExempel: {
+                    korrekt: "Studiebidrag från CSN ges till gymnasieelever och behöver inte betalas tillbaka.",
+                    icke: "Studiebidraget och studielånet är samma sak – båda ges från CSN för studier.",
+                    forklaring: "Studiebidraget är ett bidrag som inte ska betalas tillbaka – studielånet är ett lån som ska återbetalas med ränta efter studierna."
+                }
+            },
+            {
+                term: "Studielån",
+                definition: "Pengar du lånar från CSN för studier, som ska betalas tillbaka med ofta mycket låg ränta.",
+                sentence: "För att klara hyran under utbildningen tog han ett _____ från CSN som han återbetalar efter examen.",
+                scenario: "En universitetsstudent lånar extra pengar från CSN för att täcka levnadskostnader och börjar betala tillbaka beloppet med ränta ett par år efter examen.",
+                ickeExempel: {
+                    korrekt: "Studielånet från CSN ska betalas tillbaka med låg ränta efter avslutade studier.",
+                    icke: "Studielånet behöver inte betalas tillbaka om man tar examen inom utsatt tid.",
+                    forklaring: "Studielånet ska alltid betalas tillbaka – det finns inget system där det skrivs av vid examen. Det är ett lån, inte ett villkorligt bidrag."
+                }
+            }
         ];
 
         function shuffleArray(arr) {
@@ -141,6 +381,128 @@
             );
         }
 
+        function ScenarioView() {
+            const [shuffledIdxs] = useState(() => shuffleArray(concepts.map((_, i) => i)));
+            const [current, setCurrent] = useState(0);
+            const [answered, setAnswered] = useState(null);
+            const [selected, setSelected] = useState(null);
+            const [score, setScore] = useState(0);
+            const [done, setDone] = useState(false);
+            const [termOptions, setTermOptions] = useState(() => shuffleArray(concepts.map(c => c.term)));
+
+            const conceptIdx = shuffledIdxs[current];
+            const concept = concepts[conceptIdx];
+
+            const handleSelect = (term) => {
+                if (answered !== null) return;
+                setSelected(term);
+                const isCorrect = term === concept.term;
+                setAnswered(isCorrect ? 'correct' : 'wrong');
+                if (isCorrect) setScore(s => s + 1);
+            };
+
+            const next = () => {
+                if (current + 1 >= concepts.length) { setDone(true); return; }
+                setCurrent(c => c + 1);
+                setAnswered(null);
+                setSelected(null);
+                setTermOptions(shuffleArray(concepts.map(c => c.term)));
+            };
+
+            const reset = () => {
+                setCurrent(0); setAnswered(null); setSelected(null); setScore(0); setDone(false);
+                setTermOptions(shuffleArray(concepts.map(c => c.term)));
+            };
+
+            if (done) return (
+                <div className="text-center">
+                    <div className="bg-yellow-50 border-2 border-yellow-400 rounded-3xl p-8 mb-6">
+                        <p className="text-5xl font-bold text-yellow-500 mb-2">{score}/{concepts.length}</p>
+                        <p className="text-xl font-bold text-slate-800 mb-4">{getFeedback(score, concepts.length)}</p>
+                        <button onClick={reset} className="bg-yellow-400 text-yellow-900 px-8 py-3 rounded-2xl font-bold hover:bg-yellow-500 transition-colors">Börja om</button>
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="max-w-2xl mx-auto">
+                    <div className="flex justify-between items-center mb-3">
+                        <span className="font-bold text-yellow-700">Poäng: {score}</span>
+                        <span className="text-slate-400 text-sm">{current + 1} / {concepts.length}</span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+                        <div className="bg-yellow-400 h-2 rounded-full transition-all" style={{width: `${((current + 1) / concepts.length) * 100}%`}}></div>
+                    </div>
+                    <div className="bg-white p-6 rounded-3xl shadow-lg mb-6">
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Vilket begrepp beskrivs?</p>
+                        <p className="text-lg text-slate-800 leading-relaxed italic">"{concept.scenario}"</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 mb-6">
+                        {termOptions.map((term, i) => (
+                            <button key={i} onClick={() => handleSelect(term)} disabled={answered !== null}
+                                className={`p-4 rounded-2xl font-bold border-2 text-left transition-all ${
+                                    answered === null ? 'bg-white border-slate-200 hover:border-yellow-400 hover:bg-yellow-50' :
+                                    term === concept.term ? 'bg-green-50 border-green-500 text-green-700' :
+                                    term === selected ? 'bg-red-50 border-red-500 text-red-700' :
+                                    'bg-white border-slate-100 text-slate-300'
+                                }`}>
+                                {term}
+                            </button>
+                        ))}
+                    </div>
+                    {answered !== null && (
+                        <div>
+                            <div className={`p-4 rounded-2xl text-sm font-medium mb-4 ${answered === 'correct' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>
+                                {answered === 'correct' ? `✓ Rätt! ${concept.definition}` : `✗ Fel. Rätt svar: ${concept.term} – ${concept.definition}`}
+                            </div>
+                            <button onClick={next} className="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-slate-800 transition-all">
+                                {current + 1 >= concepts.length ? 'Se resultat' : 'Nästa scenario →'}
+                            </button>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        function IckeExempelView() {
+            const [revealed, setRevealed] = useState(concepts.map(() => false));
+            const toggle = (i) => { const r = [...revealed]; r[i] = !r[i]; setRevealed(r); };
+
+            return (
+                <div className="grid gap-5">
+                    {concepts.map((c, i) => (
+                        <div key={i} className="bg-white rounded-2xl shadow-sm border-l-8 border-yellow-400 overflow-hidden">
+                            <div className="p-5">
+                                <div className="flex items-center gap-3 mb-3">
+                                    <span className="bg-yellow-100 text-yellow-700 text-xs font-bold px-2 py-1 rounded-lg">{i + 1}</span>
+                                    <h3 className="text-lg font-bold">{c.term}</h3>
+                                </div>
+                                <div className="mb-3 p-3 bg-yellow-50 rounded-xl">
+                                    <p className="text-xs font-bold text-yellow-700 uppercase tracking-wider mb-1">✓ Korrekt tillämpning</p>
+                                    <p className="text-slate-700 text-sm">{c.ickeExempel.korrekt}</p>
+                                </div>
+                                <button onClick={() => toggle(i)} className={`w-full py-2 rounded-xl font-bold text-sm transition-all ${revealed[i] ? 'bg-red-100 text-red-700' : 'bg-slate-800 text-white hover:bg-slate-700'}`}>
+                                    {revealed[i] ? 'Dölj icke-exempel' : 'Visa icke-exempel 🪤'}
+                                </button>
+                            </div>
+                            {revealed[i] && (
+                                <div className="px-5 pb-5">
+                                    <div className="mb-3 p-3 bg-red-50 rounded-xl">
+                                        <p className="text-xs font-bold text-red-700 uppercase tracking-wider mb-1">✗ Trovärdigt icke-exempel (fälla)</p>
+                                        <p className="text-slate-700 text-sm">{c.ickeExempel.icke}</p>
+                                    </div>
+                                    <div className="p-3 bg-amber-50 rounded-xl">
+                                        <p className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-1">Förklaring av fällan</p>
+                                        <p className="text-slate-700 text-sm">{c.ickeExempel.forklaring}</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
         function App() {
             const [view, setView] = useState('list');
             const [currentIndex, setCurrentIndex] = useState(0);
@@ -154,7 +516,7 @@
                 }, 150);
             };
 
-            const activeTab = 'bg-yellow-400 font-bold shadow-sm';
+            const activeTab = 'bg-yellow-400 text-yellow-900 font-bold shadow-sm';
             const inactiveTab = 'text-slate-500';
 
             return (
@@ -165,10 +527,12 @@
                         <div className="w-36"></div>
                     </header>
 
-                    <div className="max-w-sm mx-auto mb-10 flex bg-white p-1 rounded-full shadow-md border border-slate-200">
+                    <div className="max-w-2xl mx-auto mb-10 flex bg-white p-1 rounded-full shadow-md border border-slate-200">
                         <button onClick={() => setView('list')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'list' ? activeTab : inactiveTab}`}>Lista</button>
                         <button onClick={() => setView('flashcards')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'flashcards' ? activeTab : inactiveTab}`}>Flashcards</button>
                         <button onClick={() => setView('lucktext')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'lucktext' ? activeTab : inactiveTab}`}>Lucktext</button>
+                        <button onClick={() => setView('scenario')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'scenario' ? activeTab : inactiveTab}`}>Scenario</button>
+                        <button onClick={() => setView('icke')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'icke' ? activeTab : inactiveTab}`}>Icke-ex.</button>
                     </div>
 
                     <main className="max-w-2xl mx-auto">
@@ -206,6 +570,8 @@
                             </div>
                         )}
                         {view === 'lucktext' && <LucktextView />}
+                        {view === 'scenario' && <ScenarioView />}
+                        {view === 'icke' && <IckeExempelView />}
                     </main>
 
                     <footer className="mt-12 text-center text-slate-400 text-sm italic pb-8">Källa: Samhällskunskap – Privatekonomi begreppslista</footer>

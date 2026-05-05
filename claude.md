@@ -197,6 +197,20 @@ Varje begreppsfil innehåller **både en begreppslista och flashcards i samma fi
 - "Börja om"-knapp nollställer allt
 - Stavningen måste vara **exakt rätt** — inga gissningar godkänns
 
+### Scenario-matchning i begreppslista
+När begreppslistan skapas, generera matchningspar för varje begrepp med fokus på begreppets kärna snarare än ytliga detaljer.
+- Begrepp: den tekniska termen
+- Scenario: en kort situation som beskriver begreppet utan att använda nyckelord från begreppsnamnet
+- Om flera begrepp liknar varandra, skapa scenarier som kräver att eleven förstår den exakta skillnaden
+- Exempel: Begrepp 'Statisk elektricitet' → Scenario: 'Du drar av dig en fleecetröja i ett mörkt rum och hör ett knastrande ljud samtidigt som håret ställer sig upp'
+
+### Trovärdiga icke-exempel i begreppslista
+För varje begrepp i begreppslistan, skapa ett trovärdigt icke-exempel som fungerar som en pedagogisk fälla:
+- Korrekt tillämpning: ett scenario som beskriver begreppet i en ny kontext
+- Trovärdigt icke-exempel: en situation som låter logisk men saknar en kritisk komponent, använder rätt ämnesområde men fel mekanism, eller beskriver något som ofta förväxlas med begreppet
+- Förklaring av fällan: förklara exakt vilket logiskt fel som gjordes
+- Exempel: Begrepp 'Allemansrätten' → Icke-exempel: 'Du sågar försiktigt av en liten kvist från en björk för att ta hem' → Förklaring: Allemansrätten förbjuder att skada levande träd
+
 ### Tillbaka-knapp — gäller ALLA filer
 - Varje fil (quiz, begreppslista, lucktext, uppgifter) ska ha en **tillbaka-knapp** som länkar till `index.html`
 - Placeras högst upp till vänster

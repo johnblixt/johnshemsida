@@ -25,39 +25,237 @@
         const { useState } = React;
 
         const concepts = [
-            { term: "Arbetsmarknad", definition: "Platsen där jobb erbjuds och söks.", sentence: "På _____ möts arbetsgivare som söker personal och arbetssökande som vill ha jobb." },
-            { term: "Arbetsgivare", definition: "Den som anställer och betalar lön.", sentence: "Restaurangägaren är _____ och ansvarar för att betala lön och följa arbetsrättsliga regler." },
-            { term: "Arbetstagare", definition: "Den som jobbar och får lön.", sentence: "Undersköterskan är _____ som utför arbetet och har rätt till lön och semester." },
-            { term: "Lön", definition: "Pengar man får för sitt arbete.", sentence: "En förhandling med chefen ledde till att hennes _____ höjdes med 2 000 kronor i månaden." },
-            { term: "Privat sektor", definition: "Företag som ägs privat och vill tjäna pengar.", sentence: "ICA och H&M tillhör den _____ och drivs med målet att gå med vinst." },
-            { term: "Offentlig sektor", definition: "Verksamheter som drivs av stat, region eller kommun.", sentence: "Sjukhus, polis och grundskola tillhör den _____ och finansieras med skattemedel." },
-            { term: "Digitalisering", definition: "Att arbete görs med hjälp av datorer och teknik.", sentence: "Självscanning i mataffärer är ett exempel på _____ som ersatt manuellt kassaarbete." },
-            { term: "Tillsvidareanställning (fast anställning)", definition: "En anställning utan slutdatum.", sentence: "Efter provanställningen erbjöds hon en _____ utan bestämt slutdatum." },
-            { term: "Provanställning", definition: "En testperiod innan fast jobb.", sentence: "De första sex månaderna på jobbet var en _____, varefter hon fick fast anställning." },
-            { term: "Vikariat", definition: "Att jobba istället för någon som är borta.", sentence: "Under mammaledigheten fick en kollega ett _____ för att täcka upp hennes arbetsuppgifter." },
-            { term: "Projektanställning", definition: "Anställning som gäller under ett projekt.", sentence: "Webbutvecklaren hade en _____ och slutade när hemsidan var klar efter åtta månader." },
-            { term: "Behovsanställning", definition: "Man jobbar när det behövs.", sentence: "Med en _____ ringer chefen bara in dig när det är sjukfrånvaro bland ordinarie personal." },
-            { term: "Säsongsanställning", definition: "Anställning under en viss del av året.", sentence: "Skidorten erbjöd _____ till liftvakter och instruktörer under vintermånaderna." },
-            { term: "Bemanningsföretag", definition: "Företag som hyr ut personal till andra företag.", sentence: "Fabriksarbetaren var anställd av ett _____ men jobbade varje dag på Volvos monteringslinje." },
-            { term: "A-kasseersättning", definition: "Pengarna man får från a-kassan vid arbetslöshet.", sentence: "Efter att ha blivit varslad fick han _____ som täckte en del av den förlorade lönen." },
-            { term: "Fackförening", definition: "Organisation som hjälper arbetstagare.", sentence: "Tack vare _____ lyckades personalen förhandla fram löneökningar och bättre villkor." },
-            { term: "Arbetsgivarorganisation", definition: "Organisation som representerar arbetsgivare i förhandlingar.", sentence: "Företaget var med i en _____ som skötte löneförhandlingarna mot facket." },
-            { term: "Kollektivavtal", definition: "Avtal om lön och villkor mellan fack och arbetsgivare.", sentence: "Tack vare _____ är alla anställda garanterade OB-tillägg för arbete på helger." },
-            { term: "Förhandling", definition: "När parter diskuterar för att komma överens.", sentence: "Facket och arbetsgivaren möttes till en _____ om nästa års löneökning." },
-            { term: "Medling", definition: "En neutral person hjälper parter att komma överens.", sentence: "När förhandlingarna kört fast kopplades en statlig _____ in för att lösa konflikten." },
-            { term: "Strejk", definition: "När anställda slutar jobba för att påverka arbetsgivaren.", sentence: "Vårdpersonalen gick ut i _____ för att pressa arbetsgivaren på högre löner och bättre schema." },
-            { term: "Lockout", definition: "När arbetsgivaren stänger ute personal från jobbet.", sentence: "Arbetsgivaren svarade med _____ och nekade personalen tillträde till arbetsplatsen under konflikten." },
-            { term: "Individuell lönesättning", definition: "Lönen bestäms efter hur bra du arbetar.", sentence: "Med _____ kan en anställd som presterar bättre förhandla sig till en högre lön." },
-            { term: "OB-tillägg", definition: "Extra lön för obekväm arbetstid.", sentence: "Sjuksköterskan fick _____ för nattskiftet, vilket ökade hennes månadslön avsevärt." },
-            { term: "Svartarbete (svartjobb)", definition: "Arbete utan att betala skatt.", sentence: "Att ta betalt kontant utan kvitto kan vara _____ och leder till att skatten undviks." },
-            { term: "Arbetsmiljö", definition: "Hur det är på jobbet, både fysiskt och psykiskt.", sentence: "En dålig _____ med hög stress och buller kan leda till att anställda sjukskriver sig." },
-            { term: "Fysisk arbetsmiljö", definition: "Den miljö man kan se och känna, som belysning och säkerhetsutrustning.", sentence: "Byggarbetaren bar hjälm och skyddsskor som en del av den _____ på arbetsplatsen." },
-            { term: "Psykisk/social arbetsmiljö", definition: "Hur man mår och behandlas på jobbet.", sentence: "Mobbning och orättvis behandling är tecken på en dålig _____ som arbetsgivaren måste åtgärda." },
-            { term: "LAS (Lagen om anställningsskydd)", definition: "Lag som skyddar anställda vid uppsägning.", sentence: "Enligt _____ gäller principen 'sist in, först ut' när ett företag måste varsla personal." },
-            { term: "Arbetsmiljölagen", definition: "Lag som kräver att arbetsplatsen är säker.", sentence: "Arbetsgivaren bröt mot _____ eftersom maskinerna saknade nödvändiga skyddsanordningar." },
-            { term: "Diskrimineringslagen", definition: "Lag som förbjuder orättvis behandling på grund av t.ex. kön eller etnicitet.", sentence: "Att neka någon jobb på grund av deras religion strider mot _____." },
-            { term: "Arbetstidslagen", definition: "Lag som reglerar hur många timmar man får jobba.", sentence: "Arbetsgivaren bröt mot _____ när han tvingade personalen att jobba övertid utan ersättning." },
-            { term: "Semesterlagen", definition: "Lag som ger rätt till minst 25 dagars semester per år.", sentence: "Tack vare _____ har alla anställda i Sverige rätt till minst 25 betalda semesterdagar om året." }
+            {
+                term: "Arbetsmarknad",
+                definition: "Platsen där jobb erbjuds och söks.",
+                sentence: "På _____ möts arbetsgivare som söker personal och arbetssökande som vill ha jobb.",
+                scenario: "En ekonomijournalist rapporterar om att antalet lediga jobb ökat med 20% och att fler människor nu söker arbete – ett tecken på ökad aktivitet i det system där utbud och efterfrågan på arbetskraft möts.",
+                ickeExempel: { korrekt: "Statistik visar att efterfrågan på undersköterskor överstiger antalet sökande – ett tecken på obalans i systemet där arbete erbjuds och söks.", icke: "Chefen på en fabrik annonserar ut ett nytt jobb i lokaltidningen för att hitta en ny maskinoperatör.", forklaring: "En enda jobbannons är inte arbetsmarknaden – arbetsmarknaden är det övergripande systemet där alla köpare och säljare av arbete möts, inte en enskild rekryteringssituation." }
+            },
+            {
+                term: "Arbetsgivare",
+                definition: "Den som anställer och betalar lön.",
+                sentence: "Restaurangägaren är _____ och ansvarar för att betala lön och följa arbetsrättsliga regler.",
+                scenario: "En person driver ett städföretag med åtta anställda. Han ansvarar för att skriva anställningsavtal, betala ut löner och se till att arbetsplatsen uppfyller lagkrav.",
+                ickeExempel: { korrekt: "Chefen på ett bageri anställer tre bagare, tecknar kollektivavtal med facket och betalar arbetsgivaravgifter till staten.", icke: "En konsult fakturerar ett företag för ett uppdrag hon utfört på distans, och företaget betalar ut hennes arvode.", forklaring: "En konsult som fakturerar är egenföretagare, inte anställd – och den som betalar fakturan är köpare av en tjänst, inte arbetsgivare i juridisk mening." }
+            },
+            {
+                term: "Arbetstagare",
+                definition: "Den som jobbar och får lön.",
+                sentence: "Undersköterskan är _____ som utför arbetet och har rätt till lön och semester.",
+                scenario: "En person har skrivit under ett anställningskontrakt och arbetar varje vecka för sin chef mot att varje månad få en bestämd summa pengar insatt på kontot.",
+                ickeExempel: { korrekt: "En sjuksköterska som arbetar heltid på ett sjukhus och får sin lön utbetald av regionen är arbetstagare.", icke: "En konsult som driver eget AB och fakturerar sina kunder för varje projekt är också arbetstagare eftersom hon utför arbete åt andra.", forklaring: "Egenföretagare är inte arbetstagare – arbetstagare har ett anställningsförhållande med en arbetsgivare, medan en konsult med eget AB är egen företagare utan anställningsskydd." }
+            },
+            {
+                term: "Lön",
+                definition: "Pengar man får för sitt arbete.",
+                sentence: "En förhandling med chefen ledde till att hennes _____ höjdes med 2 000 kronor i månaden.",
+                scenario: "En man har arbetat 160 timmar under månaden. I slutet av månaden sätts en bestämd summa in på hans konto som kompensation för det arbete han utfört åt sin arbetsgivare.",
+                ickeExempel: { korrekt: "En gymnasielärare får varje månad en fast summa pengar utbetald av kommunen som kompensation för sitt arbete.", icke: "En egenföretagare tar ut pengar ur sitt företag i slutet av månaden som belöning för det arbete hon utfört.", forklaring: "Egenföretagarens uttag är inte lön i juridisk mening – lön är ersättning inom ett anställningsförhållande, medan egenföretagare tar ut vinst eller arvode från sin verksamhet." }
+            },
+            {
+                term: "Privat sektor",
+                definition: "Företag som ägs privat och vill tjäna pengar.",
+                sentence: "ICA och H&M tillhör den _____ och drivs med målet att gå med vinst.",
+                scenario: "En stor klädkedja öppnar en ny butik i en stad. Företaget ägs av aktieägare och syftar till att generera vinst åt ägarna, inte till att tillhandahålla en samhällsservice.",
+                ickeExempel: { korrekt: "IKEA och Spotify är exempel på verksamheter som drivs av privata ägare med vinstintresse och som inte finansieras av skattepengar.", icke: "Systembolaget ägs visserligen av staten men drivs affärsmässigt med marknadspriser och tillhör därför den privata sektorn.", forklaring: "Systembolaget ägs av staten och räknas till offentlig sektor – det är ägandeformen, inte affärsmodellen eller prissättningen, som avgör om en verksamhet är privat eller offentlig." }
+            },
+            {
+                term: "Offentlig sektor",
+                definition: "Verksamheter som drivs av stat, region eller kommun.",
+                sentence: "Sjukhus, polis och grundskola tillhör den _____ och finansieras med skattemedel.",
+                scenario: "En lärare undervisar i grundskolan. En läkare träffar patienter på en kommunal vårdcentral. En polis patrullerar gatorna. Alla dessa arbetar inom verksamheter som drivs och finansieras av det allmänna.",
+                ickeExempel: { korrekt: "Sjukhus, polismyndigheten och Försäkringskassan finansieras med skatter och styrs av det allmänna utan vinstintresse.", icke: "En privat friskola som tar emot kommunal skolpeng tillhör den offentliga sektorn eftersom den är skattefinansierad.", forklaring: "Ägandeformen avgör, inte finansieringsformen – en privat friskola som tar emot skolpeng är fortfarande ett privat företag och tillhör den privata sektorn." }
+            },
+            {
+                term: "Digitalisering",
+                definition: "Att arbete görs med hjälp av datorer och teknik.",
+                sentence: "Självscanning i mataffärer är ett exempel på _____ som ersatt manuellt kassaarbete.",
+                scenario: "En bank stänger hälften av sina fysiska kontor. De flesta ärenden sköts nu via appar och hemsidor, och antalet banktjänstemän som hanterar kundmöten personligen har minskat kraftigt.",
+                ickeExempel: { korrekt: "En fabrik installerar robotar och datorstyrd utrustning som ersätter manuella moment och automatiserar produktionsprocessen.", icke: "En butik byter ut sina papperskvitton mot digitala kvitton via e-post för att minska pappersanvändningen.", forklaring: "Att byta till digitala kvitton är en ytlig administrativ förändring, inte digitalisering i arbetsmarknadssammanhang – digitalisering handlar om hur arbetsprocesser och jobb fundamentalt förändras av tekniken." }
+            },
+            {
+                term: "Tillsvidareanställning (fast anställning)",
+                definition: "En anställning utan slutdatum.",
+                sentence: "Efter provanställningen erbjöds hon en _____ utan bestämt slutdatum.",
+                scenario: "En person har arbetat på ett företag i sex månader och chefen är nöjd. De skriver nu ett nytt avtal som inte har något slutdatum – personen kan stanna så länge båda parter är nöjda och lagen medger.",
+                ickeExempel: { korrekt: "En programmerare får ett anställningsavtal utan slutdatum och kan bara sägas upp om det finns saklig grund enligt LAS.", icke: "En butikschef erbjuder en uppskattad medarbetare att arbeta 'på obestämd tid' muntligt, och handshake-avtalet gäller tills vidare.", forklaring: "Muntliga avtal om att arbeta 'tills vidare' ger inte automatiskt en tillsvidareanställning med fullt rättsligt skydd – det krävs ett skriftligt anställningsavtal för att LAS-skyddet ska gälla." }
+            },
+            {
+                term: "Provanställning",
+                definition: "En testperiod innan fast jobb.",
+                sentence: "De första sex månaderna på jobbet var en _____, varefter hon fick fast anställning.",
+                scenario: "En nyanställd undersköterska börjar på ett äldreboende. Hennes chef berättar att de under de första sex månaderna kan avsluta anställningen utan att behöva ange sakliga skäl, och att hon efter det kan erbjudas fast anställning.",
+                ickeExempel: { korrekt: "En ny medarbetare anställs på en advokatbyrå med sex månaders prov, under vilken båda parter kan avsluta anställningen med kortare uppsägningstid.", icke: "En arbetsgivare anställer en person för ett sommarprojekt på tre månader och kallar de första månaderna för en 'provperiod'.", forklaring: "En projektanställning på bestämd tid är inte en provanställning – provanställning är en specifik juridisk form som ger rätt att avsluta utan saklig grund, medan en projektanställning är tidsbestämd från start." }
+            },
+            {
+                term: "Vikariat",
+                definition: "Att jobba istället för någon som är borta.",
+                sentence: "Under mammaledigheten fick en kollega ett _____ för att täcka upp hennes arbetsuppgifter.",
+                scenario: "En lärare är föräldraledig i ett år. Skolan anställer en ersättare för att undervisa samma klasser tills den ordinarie läraren återvänder.",
+                ickeExempel: { korrekt: "En sjuksköterska täcker upp för en kollega som är sjukskriven under tre månader och är anställd specifikt för att ersätta den bortvarna.", icke: "En extra resurs anställs på ett kontor för att hantera en tillfällig arbetstopp inför en stor kampanj.", forklaring: "Att anställas för en arbetstopp är en behovsanställning eller projektanställning – vikariat förutsätter att det finns en specifik namngiven person vars ordinarie tjänst man täcker upp." }
+            },
+            {
+                term: "Projektanställning",
+                definition: "Anställning som gäller under ett projekt.",
+                sentence: "Webbutvecklaren hade en _____ och slutade när hemsidan var klar efter åtta månader.",
+                scenario: "Ett konsultföretag vinner ett kontrakt för att renovera ett sjukhus. Företaget anställer extra ingenjörer och projektledare för exakt den tid det tar att genomföra arbetet.",
+                ickeExempel: { korrekt: "En IT-konsult anställs av ett företag för att implementera ett nytt affärssystem, med automatisk avslutning när projektet är levererat.", icke: "En programmerare anställs på ett halvår med möjlighet till förlängning baserat på om företaget har fortsatt behov av henne.", forklaring: "Anställning 'på halvår med möjlig förlängning' är en allmän visstidsanställning – projektanställning är kopplad till ett specifikt projekts varaktighet, inte till ett kalendermässigt tidsintervall." }
+            },
+            {
+                term: "Behovsanställning",
+                definition: "Man jobbar när det behövs.",
+                sentence: "Med en _____ ringer chefen bara in dig när det är sjukfrånvaro bland ordinarie personal.",
+                scenario: "En restaurang ringer in extra serveringspersonal när det är fullbokat, men de dagar det är lugnt behövs ingen extra personal. Medarbetarna är anställda men jobbar bara de timmar de faktiskt kallas in.",
+                ickeExempel: { korrekt: "En lagerarbetare kallas in för att arbeta de dagar det är hög belastning, utan garanterade timmar i veckan.", icke: "En sommarvikarie är anställd under juni, juli och augusti och arbetar varje vardag under dessa månader med schemalagda tider.", forklaring: "En sommarvikarie med schemalagda arbetstider under en bestämd period är en säsongsanställning – behovsanställning saknar garanterade timmar och innebär att man jobbar enbart vid behov." }
+            },
+            {
+                term: "Säsongsanställning",
+                definition: "Anställning under en viss del av året.",
+                sentence: "Skidorten erbjöd _____ till liftvakter och instruktörer under vintermånaderna.",
+                scenario: "En person jobbar varje sommar i en glasskiosk vid havet. Varje vår skrivs ett nytt kontrakt för perioden juni till augusti, varefter anställningen löper ut automatiskt.",
+                ickeExempel: { korrekt: "En lagerarbetare anställs inför julhandeln för att arbeta under november och december, sedan avslutas anställningen.", icke: "En butikssäljare kallas in extra helger under julhandeln, men jobbar sin ordinarie tjänst resten av året.", forklaring: "En ordinarie anställd som jobbar extra helger är inte säsongsanställd – säsongsanställning innebär att man enbart är anställd under en bestämd säsong utan annan pågående anställning." }
+            },
+            {
+                term: "Bemanningsföretag",
+                definition: "Företag som hyr ut personal till andra företag.",
+                sentence: "Fabriksarbetaren var anställd av ett _____ men jobbade varje dag på Volvos monteringslinje.",
+                scenario: "En livsmedelsbutik behöver extra kassapersonal under jul. Istället för att anställa folk direkt kontaktar butiken ett externt företag som skickar dit anställda vars egentliga arbetsgivare är det externa företaget.",
+                ickeExempel: { korrekt: "En fabrik hyr in tio svetsare från ett externt företag under en intensiv produktionsperiod – svetsarna är anställda av bemanningsföretaget, inte fabriken.", icke: "En restaurang anlitar en konsult för att se över menyn och optimera kökets rutiner mot en fast projektavgift.", forklaring: "En konsult som säljer sin expertis är inte ett bemanningsföretag – bemanningsföretag hyr ut personal för operativt löpande arbete, inte konsulttjänster för specialistrådgivning." }
+            },
+            {
+                term: "A-kasseersättning",
+                definition: "Pengarna man får från a-kassan vid arbetslöshet.",
+                sentence: "Efter att ha blivit varslad fick han _____ som täckte en del av den förlorade lönen.",
+                scenario: "En person har jobbat på ett företag i fem år men blivit varslad vid en neddragning. Under de månader hon söker nytt arbete får hon en dagersättning från den organisation hon betalat in till under anställningstiden.",
+                ickeExempel: { korrekt: "En snickare som blivit varslad ansöker hos sin a-kassa och får en dagersättning som täcker en del av den förlorade lönen under jobbsökningstiden.", icke: "En person som aldrig jobbat och inte är med i a-kassan söker ersättning hos Arbetsförmedlingen för att klara sin försörjning.", forklaring: "Den som inte arbetat och inte är medlem i a-kassan har inte rätt till a-kasseersättning – de kan istället ansöka om ekonomiskt bistånd från socialtjänsten eller grundersättning från Alfa-kassan." }
+            },
+            {
+                term: "Fackförening",
+                definition: "Organisation som hjälper arbetstagare.",
+                sentence: "Tack vare _____ lyckades personalen förhandla fram löneökningar och bättre villkor.",
+                scenario: "En grupp sjuksköterskor är missnöjda med sina löner och arbetsvillkor. De kontaktar den organisation de alla är med i, som sedan förhandlar med sjukhuset å deras vägnar.",
+                ickeExempel: { korrekt: "LO och dess förbund förhandlar kollektivavtal med arbetsgivarna och stödjer anställda som drabbas av orättvis behandling.", icke: "En grupp missnöjda anställda bildar en intern arbetsgrupp som lämnar in ett brev med krav till chefen.", forklaring: "En intern arbetsgrupp utan juridisk status och förhandlingsrätt är inte en fackförening – fackföreningar är formella organisationer med laglig förhandlingsrätt och rätt att ingå avtal på arbetstagarnas vägnar." }
+            },
+            {
+                term: "Arbetsgivarorganisation",
+                definition: "Organisation som representerar arbetsgivare i förhandlingar.",
+                sentence: "Företaget var med i en _____ som skötte löneförhandlingarna mot facket.",
+                scenario: "Hundratals restaurangföretagare är oroliga för att fackets krav på löneökningar ska slå hårt mot deras lönsamhet. De samlas i en gemensam organisation som sedan förhandlar för dem alla mot facket.",
+                ickeExempel: { korrekt: "Almega representerar tjänsteföretag i kollektivavtalsförhandlingar med LO och hjälper arbetsgivarna tolka arbetsrättsliga regler.", icke: "Handelskammaren är en organisation som lobbyar för företagens intressen gentemot politiker och myndigheter i näringspolitiska frågor.", forklaring: "En handelskammare driver näringspolitisk lobbying, inte arbetsrättsliga förhandlingar – arbetsgivarorganisationens specifika roll är relationen med facken och kollektivavtalen." }
+            },
+            {
+                term: "Kollektivavtal",
+                definition: "Avtal om lön och villkor mellan fack och arbetsgivare.",
+                sentence: "Tack vare _____ är alla anställda garanterade OB-tillägg för arbete på helger.",
+                scenario: "Facket och arbetsgivarorganisationen har förhandlat klart. Det gemensamma dokument de skrivit under reglerar nu automatiskt löner, semester och övertidsersättning för alla anställda i branschen.",
+                ickeExempel: { korrekt: "Alla butiksanställda i en detaljhandelskedja omfattas automatiskt av det branschavtal som facket och arbetsgivarorganisationen skrivit under.", icke: "En arbetsgivare och en enskild anställd skriver under ett personligt avtal om lönenivå och semesterdagar utöver vad lagen kräver.", forklaring: "Ett individuellt anställningsavtal är inte ett kollektivavtal – kollektivavtal slutas mellan organisationer och gäller alla i branschen, medan ett individuellt avtal bara gäller den enskilda personen." }
+            },
+            {
+                term: "Förhandling",
+                definition: "När parter diskuterar för att komma överens.",
+                sentence: "Facket och arbetsgivaren möttes till en _____ om nästa års löneökning.",
+                scenario: "Fackets representanter och företagsledningen sätter sig vid ett bord för att diskutera nästa års löner. Båda sidor presenterar sina krav och motargument tills de hittar en gemensam lösning.",
+                ickeExempel: { korrekt: "Facket och arbetsgivaren möts i tre rundor av lönesamtal och når till slut en överenskommelse om en 3,5-procentig höjning.", icke: "Arbetsgivaren meddelar via e-post att lönen höjs med 2% för alla anställda nästa år utan att fråga om synpunkter.", forklaring: "En ensidig lönebeskrivning från arbetsgivaren är inte en förhandling – förhandling förutsätter att båda parter aktivt diskuterar och söker en gemensam överenskommelse." }
+            },
+            {
+                term: "Medling",
+                definition: "En neutral person hjälper parter att komma överens.",
+                sentence: "När förhandlingarna kört fast kopplades en statlig _____ in för att lösa konflikten.",
+                scenario: "Löneförhandlingarna mellan facket och arbetsgivaren har brutit samman och ingen sida vill ge sig. Staten skickar in en tredje, oberoende aktör vars uppgift är att hjälpa parterna hitta en kompromiss utan att ta ställning.",
+                ickeExempel: { korrekt: "Medlingsinstitutet skickar en mediator till en bransch där fack och arbetsgivare inte kunnat enas, och under medlarens ledning nås ett avtal.", icke: "En fackklubbsordförande erbjuder sig att lyssna på arbetsgivarens synpunkter och fungera som mellanhand i konflikten.", forklaring: "En facklig representant är inte neutral och kan inte medla – medling kräver en oberoende utomstående part utan egna intressen i förhandlingens utfall." }
+            },
+            {
+                term: "Strejk",
+                definition: "När anställda slutar jobba för att påverka arbetsgivaren.",
+                sentence: "Vårdpersonalen gick ut i _____ för att pressa arbetsgivaren på högre löner och bättre schema.",
+                scenario: "Busschaufförer i hela landet vägrar att köra sina bussar under tre dagar för att pressa trafikbolagen att acceptera deras krav på kortare arbetstider och högre löner.",
+                ickeExempel: { korrekt: "Lärare på kommunala skolor lade ned arbetet under en vecka i protest mot löneförslaget, vilket tvingade arbetsgivaren till nya förhandlingar.", icke: "En anställd sjukskriver sig strategiskt under en period med hög arbetsbelastning för att sätta press på arbetsgivaren att förbättra villkoren.", forklaring: "Strategisk sjukskrivning är inte strejk – strejk är ett kollektivt, öppet och lagligt arbetsuppehåll, medan enskild frånvaro inte är ett erkänt fackligt stridsmedel." }
+            },
+            {
+                term: "Lockout",
+                definition: "När arbetsgivaren stänger ute personal från jobbet.",
+                sentence: "Arbetsgivaren svarade med _____ och nekade personalen tillträde till arbetsplatsen under konflikten.",
+                scenario: "Facket hotar med strejk. Arbetsgivarorganisationen svarar med att meddela att om strejken bryter ut, kommer personalen i hela branschen att nekas tillträde till sina arbetsplatser.",
+                ickeExempel: { korrekt: "Under en arbetskonflikt meddelar ett rederi att alla hamnarbetare i landet utestängs från arbetsplatsen för att utöva tryck mot facket.", icke: "Arbetsgivaren säger upp tio anställda under en period av dålig ekonomi för att spara pengar och minska personalstyrkan.", forklaring: "Uppsägningar på grund av ekonomi är inte lockout – lockout är ett stridsmedel under pågående arbetskonflikt där arbetsgivaren stänger ute personal för att pressa facket till avtal." }
+            },
+            {
+                term: "Individuell lönesättning",
+                definition: "Lönen bestäms efter hur bra du arbetar.",
+                sentence: "Med _____ kan en anställd som presterar bättre förhandla sig till en högre lön.",
+                scenario: "På ett teknikföretag kan ingenjörer med samma utbildning och erfarenhet ha vitt skilda löner beroende på hur chefen bedömer deras individuella prestationer och bidrag till teamet.",
+                ickeExempel: { korrekt: "En säljare får lönepåslag baserat på chefens utvärdering av hennes prestationer och kundnöjdhet, inte utifrån en fast branschlönetabell.", icke: "Alla anställda i branschen fick 2,5% löneökning enligt det kollektivavtal som slöts mellan facket och arbetsgivarna.", forklaring: "Kollektivavtalsstyrd löneökning är det motsatta till individuell lönesättning – individuell lönesättning innebär att varje persons lön sätts utifrån individuell prestation, inte kollektiva schablonhöjningar." }
+            },
+            {
+                term: "OB-tillägg",
+                definition: "Extra lön för obekväm arbetstid.",
+                sentence: "Sjuksköterskan fick _____ för nattskiftet, vilket ökade hennes månadslön avsevärt.",
+                scenario: "En undersköterska arbetar en söndag natt och märker att hennes lön för den veckan är högre än vanligt, trots att hon jobbat lika många timmar som en vanlig vardag.",
+                ickeExempel: { korrekt: "En servitör som jobbar helger och sena kvällar får ett procentuellt påslag på sin grundlön för de obekväma arbetstiderna.", icke: "En chef som jobbar extra hårt under ett intensivt kvartal och levererar goda resultat får en prestationsbonus för sina insatser.", forklaring: "En prestationsbonus baseras på prestation och resultat, inte på arbetstiden – OB-tillägg är specifikt kopplat till när arbetet utförs (nätter, helger, röda dagar), inte hur bra man presterar." }
+            },
+            {
+                term: "Svartarbete (svartjobb)",
+                definition: "Arbete utan att betala skatt.",
+                sentence: "Att ta betalt kontant utan kvitto kan vara _____ och leder till att skatten undviks.",
+                scenario: "En person anlitar en elektriker som erbjuder sig att göra jobbet billigare om betalningen sker kontant utan faktura. Ingen av parterna redovisar affären till Skatteverket.",
+                ickeExempel: { korrekt: "En hantverkare utför en renovering och tar betalt kontant utan att registrera inkomsten eller betala moms och inkomstskatt.", icke: "En person hjälper sin granne att flytta möbler och flytta bohaget utan ersättning som en tjänst av välvilja.", forklaring: "Att hjälpa utan ersättning är inte svartarbete – svartarbete förutsätter att det sker en ekonomisk transaktion som medvetet undanhålls från skattemyndigheterna." }
+            },
+            {
+                term: "Arbetsmiljö",
+                definition: "Hur det är på jobbet, både fysiskt och psykiskt.",
+                sentence: "En dålig _____ med hög stress och buller kan leda till att anställda sjukskriver sig.",
+                scenario: "En inspektör från Arbetsmiljöverket besöker ett kontor och undersöker allt från ergonomi och belysning till hur stämningen är på arbetsplatsen och om personalen upplever stress och orättvis behandling.",
+                ickeExempel: { korrekt: "En fabrik genomför en riskbedömning av både bullernivåer och personalens upplevelse av arbetsbelastningen som del av sitt systematiska arbetsmiljöarbete.", icke: "Företaget inför fri frukt och gemensamma lunchmöten för att förbättra stämningen, och anser att det löser arbetsmiljöproblemen.", forklaring: "Personalförmåner som frukt och gemensamma luncher är inte systematiskt arbetsmiljöarbete – arbetsmiljö kräver riskbedömningar, konkreta åtgärder och uppföljning enligt lag." }
+            },
+            {
+                term: "Fysisk arbetsmiljö",
+                definition: "Den miljö man kan se och känna, som belysning och säkerhetsutrustning.",
+                sentence: "Byggarbetaren bar hjälm och skyddsskor som en del av den _____ på arbetsplatsen.",
+                scenario: "En byggarbetare bär hjälm och skyddsglasögon. Arbetsplatsen har varningsskyltar, räcken och god belysning. Chefen ser till att alla bullriga maskiner har skyddsanordningar.",
+                ickeExempel: { korrekt: "En lagerarbetare har tillgång till lyfthjälpmedel, halkfria golv och rätt belysning – allt som påverkar kroppen och säkerheten på arbetsplatsen.", icke: "En anställd känner sig stressad av hög arbetsbelastning och konflikter med chefen, vilket påverkar hennes hälsa negativt och är ett arbetsmiljöproblem.", forklaring: "Stress och konflikter hör till den psykosociala arbetsmiljön, inte den fysiska – fysisk arbetsmiljö handlar om de materiella och synliga förhållandena, inte om relationer och mående." }
+            },
+            {
+                term: "Psykisk/social arbetsmiljö",
+                definition: "Hur man mår och behandlas på jobbet.",
+                sentence: "Mobbning och orättvis behandling är tecken på en dålig _____ som arbetsgivaren måste åtgärda.",
+                scenario: "Medarbetarna på ett kontor mår allt sämre. En kollega utpekas och isoleras systematiskt av sina kollegor. Ledningen ignorerar klagomålen. Sjukfrånvaron ökar dramatiskt.",
+                ickeExempel: { korrekt: "En medarbetare utsätts för kränkande kommentarer från sin chef och känner sig systematiskt exkluderad från möten – arbetsgivaren brister i den psykosociala arbetsmiljön.", icke: "En anställd halkar på ett vått golv utan varningsskylt och skadar sig – arbetsgivaren brister i den psykosociala arbetsmiljön.", forklaring: "Halkolyckor på grund av vått golv hör till den fysiska arbetsmiljön, inte den psykosociala – psykisk/social arbetsmiljö handlar om relationer, mående och behandling, inte om fysiska faror." }
+            },
+            {
+                term: "LAS (Lagen om anställningsskydd)",
+                definition: "Lag som skyddar anställda vid uppsägning.",
+                sentence: "Enligt _____ gäller principen 'sist in, först ut' när ett företag måste varsla personal.",
+                scenario: "En fabrik tvingas dra ned sin personal. Chefen vill behålla de mest produktiva medarbetarna, men lagen kräver att den som anställdes senast måste gå först oavsett prestation.",
+                ickeExempel: { korrekt: "En anställd med fem års anställningstid har rätt till längre uppsägningstid och starkare skydd mot avskedande än en kollega som anställdes förra månaden.", icke: "En anställd som beter sig illa på jobbet kan sägas upp med kort varsel eftersom Arbetsförmedlingen godkänner uppsägningen.", forklaring: "Arbetsförmedlingen godkänner inte uppsägningar – uppsägning på grund av personliga skäl kräver saklig grund och regleras av LAS, och eventuella tvister avgörs av Arbetsdomstolen." }
+            },
+            {
+                term: "Arbetsmiljölagen",
+                definition: "Lag som kräver att arbetsplatsen är säker.",
+                sentence: "Arbetsgivaren bröt mot _____ eftersom maskinerna saknade nödvändiga skyddsanordningar.",
+                scenario: "En tillsynsperson från Arbetsmiljöverket besöker en fabrik och hittar maskiner som saknar skyddsanordningar. Arbetsgivaren åläggs att åtgärda bristerna eller riskera böter.",
+                ickeExempel: { korrekt: "Arbetsmiljöverket kan utfärda förelägganden mot en arbetsgivare som inte genomfört riskbedömningar eller åtgärdat farliga arbetsförhållanden.", icke: "En anställd sägs upp utan saklig grund och skyddar sin anställning med hjälp av lagen om arbetsplatsers säkerhetskrav.", forklaring: "Orättvis uppsägning regleras av LAS (Lagen om anställningsskydd), inte Arbetsmiljölagen – Arbetsmiljölagen handlar om säkerheten och hälsan på arbetsplatsen, inte om anställningstrygghet." }
+            },
+            {
+                term: "Diskrimineringslagen",
+                definition: "Lag som förbjuder orättvis behandling på grund av t.ex. kön eller etnicitet.",
+                sentence: "Att neka någon jobb på grund av deras religion strider mot _____.",
+                scenario: "En kompetent kvinna söker en chefsposition men nekas trots bästa meriter. Det visar sig att arbetsgivaren medvetet undviker att anställa kvinnor i ledande roller.",
+                ickeExempel: { korrekt: "En arbetsgivare som väljer bort sökande med utländskt klingande namn bryter mot lagen som förbjuder etnisk diskriminering i anställningssituationer.", icke: "En arbetsgivare kräver att alla som söker ett liftjobb måste ha körkort och god fysik, vilket utesluter många äldre och rörelsehindrade sökande.", forklaring: "Sakliga yrkeskrav som är nödvändiga för jobbet är inte diskriminering – diskrimineringslagen förbjuder orättvis behandling baserad på skyddade grunder, inte rimliga och relevanta kompetenskrav." }
+            },
+            {
+                term: "Arbetstidslagen",
+                definition: "Lag som reglerar hur många timmar man får jobba.",
+                sentence: "Arbetsgivaren bröt mot _____ när han tvingade personalen att jobba övertid utan ersättning.",
+                scenario: "En chef försöker tvinga sin personal att jobba övertid varje kväll utan ersättning. En medarbetare påpekar att det strider mot de regler som styr hur lång arbetstiden maximalt får vara per vecka.",
+                ickeExempel: { korrekt: "Arbetstidslagen begränsar hur mycket övertid en arbetsgivare kan kräva per vecka och ger rätt till vila mellan arbetspass.", icke: "En anställd som jobbar mer än sin kontrakterade tid utan extra betalt skyddas av lagen om nationell minimilön.", forklaring: "Sverige har ingen minimilönslag – löner och övertidsersättning regleras primärt av kollektivavtal, och begränsningar av arbetstiden regleras av arbetstidslagen, inte en minimilönslag." }
+            },
+            {
+                term: "Semesterlagen",
+                definition: "Lag som ger rätt till minst 25 dagars semester per år.",
+                sentence: "Tack vare _____ har alla anställda i Sverige rätt till minst 25 betalda semesterdagar om året.",
+                scenario: "En nyanställd undrar om hon har rätt till semester redan under sitt första år. Hennes chef berättar att lagen ger alla anställda rätt till ett visst antal betalda lediga dagar per år.",
+                ickeExempel: { korrekt: "En anställd som arbetat hela året har rätt till minst 25 betalda semesterdagar och kan ta ut dem som sammanhängande ledighet.", icke: "En egenföretagare har samma rätt som anställda till minst 25 dagars betald semester per år enligt den lag som gäller för alla som arbetar i Sverige.", forklaring: "Semesterlagen gäller enbart anställda, inte egenföretagare – egenföretagare bestämmer själva om sin ledighet och har inget lagstadgat semesterskydd." }
+            }
         ];
 
         function shuffleArray(arr) {
@@ -150,6 +348,109 @@
             );
         }
 
+        function ScenarioView() {
+            const [shuffledIdxs] = useState(() => shuffleArray(concepts.map((_, i) => i)));
+            const [current, setCurrent] = useState(0);
+            const [answered, setAnswered] = useState(null);
+            const [selected, setSelected] = useState(null);
+            const [score, setScore] = useState(0);
+            const [done, setDone] = useState(false);
+            const [termOptions] = useState(() => shuffleArray(concepts.map(c => c.term)));
+
+            if (done) {
+                return (
+                    <div className="bg-yellow-50 border-2 border-yellow-400 rounded-3xl p-8 text-center">
+                        <p className="text-5xl font-bold text-yellow-500 mb-2">{score}/{concepts.length}</p>
+                        <p className="text-xl font-bold text-slate-800 mb-4">{getFeedback(score, concepts.length)}</p>
+                        <button onClick={() => { setCurrent(0); setAnswered(null); setSelected(null); setScore(0); setDone(false); }} className="bg-yellow-400 text-yellow-900 px-8 py-3 rounded-2xl font-bold hover:bg-yellow-500 transition-colors">Gör om</button>
+                    </div>
+                );
+            }
+
+            const idx = shuffledIdxs[current];
+            const concept = concepts[idx];
+
+            const handleSelect = (term) => {
+                if (answered !== null) return;
+                setSelected(term);
+                setAnswered(term === concept.term ? 'correct' : 'wrong');
+                if (term === concept.term) setScore(s => s + 1);
+            };
+
+            const next = () => {
+                if (current + 1 >= concepts.length) { setDone(true); return; }
+                setCurrent(c => c + 1);
+                setAnswered(null);
+                setSelected(null);
+            };
+
+            return (
+                <div>
+                    <div className="mb-4 flex items-center justify-between">
+                        <span className="text-sm text-slate-500">{current + 1} av {concepts.length}</span>
+                        <span className="text-sm font-bold text-yellow-700 bg-yellow-50 px-3 py-1 rounded-full border border-yellow-200">Poäng: {score}</span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+                        <div className="bg-yellow-400 h-2 rounded-full transition-all duration-500" style={{width: `${((current) / concepts.length) * 100}%`}}></div>
+                    </div>
+                    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Vilket begrepp beskrivs?</p>
+                        <p className="text-lg leading-relaxed text-slate-800">{concept.scenario}</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 mb-6">
+                        {termOptions.map((term, i) => {
+                            let cls = "p-3 rounded-xl border-2 text-sm font-medium text-center cursor-pointer transition-all border-slate-200 hover:border-yellow-400 hover:bg-yellow-50";
+                            if (answered !== null && term === concept.term) cls = "p-3 rounded-xl border-2 text-sm font-medium text-center bg-green-50 border-green-500 text-green-700";
+                            else if (answered !== null && term === selected && selected !== concept.term) cls = "p-3 rounded-xl border-2 text-sm font-medium text-center bg-red-50 border-red-400 text-red-600";
+                            return <button key={i} onClick={() => handleSelect(term)} className={cls}>{term}</button>;
+                        })}
+                    </div>
+                    {answered && (
+                        <div className={`p-4 rounded-2xl mb-4 ${answered === 'correct' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
+                            <p className={`font-bold mb-1 ${answered === 'correct' ? 'text-green-700' : 'text-red-600'}`}>{answered === 'correct' ? '✓ Rätt!' : '✗ Fel'}</p>
+                            <p className="text-sm text-slate-600">Rätt svar: <span className="font-bold">{concept.term}</span> – {concept.definition}</p>
+                        </div>
+                    )}
+                    {answered && <button onClick={next} className="w-full bg-slate-900 text-white py-3 rounded-2xl font-bold hover:bg-slate-800 transition-colors">{current + 1 >= concepts.length ? 'Se resultat' : 'Nästa →'}</button>}
+                </div>
+            );
+        }
+
+        function IckeExempelView() {
+            const [revealed, setRevealed] = useState(concepts.map(() => false));
+            const toggle = (i) => { const r = [...revealed]; r[i] = !r[i]; setRevealed(r); };
+            return (
+                <div className="grid gap-5">
+                    {concepts.map((c, i) => (
+                        <div key={i} className="bg-white rounded-2xl shadow-sm border-l-8 border-yellow-400 overflow-hidden">
+                            <div className="p-5 pb-3">
+                                <div className="flex items-center gap-3 mb-1">
+                                    <span className="bg-yellow-100 text-yellow-700 text-xs font-bold px-2 py-1 rounded-lg">{i + 1}</span>
+                                    <h3 className="text-lg font-bold">{c.term}</h3>
+                                </div>
+                            </div>
+                            <div className="px-5 pb-3">
+                                <div className="bg-yellow-50 rounded-xl p-4 mb-3">
+                                    <p className="text-xs font-bold text-yellow-700 uppercase tracking-wider mb-1">Korrekt tillämpning</p>
+                                    <p className="text-sm text-slate-700">{c.ickeExempel.korrekt}</p>
+                                </div>
+                                <button onClick={() => toggle(i)} className="w-full text-left bg-slate-100 hover:bg-red-50 rounded-xl p-4 mb-3 transition-colors border border-slate-200 hover:border-red-200">
+                                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{revealed[i] ? 'Trovärdigt icke-exempel' : '⚠ Visa icke-exempel (pedagogisk fälla)'}</p>
+                                    {revealed[i] && <p className="text-sm text-slate-700">{c.ickeExempel.icke}</p>}
+                                </button>
+                                {revealed[i] && (
+                                    <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
+                                        <p className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-1">Förklaring av fällan</p>
+                                        <p className="text-sm text-slate-700">{c.ickeExempel.forklaring}</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
         function App() {
             const [view, setView] = useState('list');
             const [currentIndex, setCurrentIndex] = useState(0);
@@ -163,7 +464,7 @@
                 }, 150);
             };
 
-            const activeTab = 'bg-yellow-400 font-bold shadow-sm';
+            const activeTab = 'bg-yellow-400 text-yellow-900 font-bold shadow-sm';
             const inactiveTab = 'text-slate-500';
 
             return (
@@ -174,10 +475,12 @@
                         <div className="w-36"></div>
                     </header>
 
-                    <div className="max-w-sm mx-auto mb-10 flex bg-white p-1 rounded-full shadow-md border border-slate-200">
+                    <div className="max-w-2xl mx-auto mb-10 flex bg-white p-1 rounded-full shadow-md border border-slate-200">
                         <button onClick={() => setView('list')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'list' ? activeTab : inactiveTab}`}>Lista</button>
                         <button onClick={() => setView('flashcards')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'flashcards' ? activeTab : inactiveTab}`}>Flashcards</button>
                         <button onClick={() => setView('lucktext')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'lucktext' ? activeTab : inactiveTab}`}>Lucktext</button>
+                        <button onClick={() => setView('scenario')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'scenario' ? activeTab : inactiveTab}`}>Scenario</button>
+                        <button onClick={() => setView('icke')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'icke' ? activeTab : inactiveTab}`}>Icke-ex.</button>
                     </div>
 
                     <main className="max-w-2xl mx-auto">
@@ -215,6 +518,8 @@
                             </div>
                         )}
                         {view === 'lucktext' && <LucktextView />}
+                        {view === 'scenario' && <ScenarioView />}
+                        {view === 'icke' && <IckeExempelView />}
                     </main>
 
                     <footer className="mt-12 text-center text-slate-400 text-sm italic pb-8">Källa: Samhällskunskap – Arbetsmarknad begreppslista</footer>

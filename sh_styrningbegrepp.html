@@ -25,32 +25,188 @@
         const { useState } = React;
 
         const concepts = [
-            { term: "Regeringsformen", definition: "En av grundlagarna som beskriver hur Sverige styrs, om demokrati och rättigheter.", sentence: "_____ är den viktigaste av Sveriges grundlagar och slår fast att all offentlig makt utgår från folket." },
-            { term: "Kommunfullmäktige", definition: "Kommunens version av riksdagen.", sentence: "Det är _____ som fattar de viktigaste besluten i en kommun, till exempel om skolbudgeten." },
-            { term: "Regionfullmäktige", definition: "Regionens version av riksdagen.", sentence: "Sjukvårdens budget i Västra Götaland beslutas av _____, som väljs av regionens invånare." },
-            { term: "Proportionellt valsystem", definition: "Systemet som gör att partier får platser i riksdagen i förhållande till hur många röster de fått.", sentence: "Tack vare det _____ speglar riksdagens sammansättning hur folket faktiskt röstade." },
-            { term: "Parti", definition: "En grupp människor med liknande idéer om hur landet ska styras.", sentence: "Socialdemokraterna är ett _____ som länge förespråkat en stark välfärdsstat." },
-            { term: "Opposition", definition: "De partier som inte sitter i regeringen. De granskar regeringen och kommer med egna förslag.", sentence: "Det är _____s uppgift att granska regeringens beslut och lägga fram alternativa förslag." },
-            { term: "Koalition", definition: "När flera partier samarbetar för att bilda regering.", sentence: "Eftersom inget parti fick egen majoritet bildade tre partier en _____ för att styra landet gemensamt." },
-            { term: "Majoritetsregering", definition: "Om regeringen har stöd av mer än hälften av riksdagen.", sentence: "En _____ kan driva igenom sin politik utan att förhandla med oppositionen." },
-            { term: "Minoritetsregering", definition: "Om regeringen har stöd av mindre än hälften av riksdagen.", sentence: "En _____ måste söka stöd från andra partier för att få igenom sina förslag i riksdagen." },
-            { term: "Riksdagsledamot", definition: "En person som sitter i riksdagen. Det finns 349 folkvalda.", sentence: "En _____ representerar sina väljare i riksdagen och deltar i omröstningar om ny lagstiftning." },
-            { term: "Parlamentarism", definition: "Ett system där regeringen måste ha stöd från parlamentet för att styra.", sentence: "Tack vare _____ kan riksdagen fälla en regering som förlorat majoritetens förtroende." },
-            { term: "Misstroendeförklaring", definition: "När riksdagen röstar om att avsätta regeringen eller en minister.", sentence: "Om riksdagen riktar en _____ mot statsministern måste hela regeringen avgå." },
-            { term: "Statsminister", definition: "Regeringschefen i Sverige, som leder landets regering.", sentence: "Det är _____ som håller i det dagliga styrandet av landet och leder regeringsmötena." },
-            { term: "Talman", definition: "Personen som leder riksdagens möten och utser statsministerkandidat.", sentence: "Det är _____s uppgift att ge statsministeruppdraget till den ledare som troligtvis kan bilda regering." },
-            { term: "Decentralisering", definition: "När makt och beslut flyttas från staten till lokala eller regionala nivåer.", sentence: "_____ innebär att kommunerna själva får bestämma om saker som äldreomsorg och skola." },
-            { term: "Kommunalt självstyre", definition: "Rätten för kommuner att bestämma över sina egna frågor utan att staten styr.", sentence: "Tack vare _____ kan en liten kommun fatta egna beslut om lokala skatter och service." },
-            { term: "Riksdag", definition: "Sveriges folkvalda parlament med 349 ledamöter som bestämmer lagar och kontrollerar regeringen.", sentence: "Det är _____ som stiftar lagar och beslutar om statens budget varje år." },
-            { term: "Regering", definition: "Gruppen som styr Sverige. De leds av statsministern och genomför riksdagens beslut.", sentence: "_____ ansvarar för att riksdagens beslut omsätts i praktisk politik och skriver propositioner." },
-            { term: "Region", definition: "Ett område i Sverige som sköter sjukvård, kollektivtrafik och regional utveckling.", sentence: "Det är _____ som ansvarar för sjukhus, vårdcentraler och bussar i ditt område." },
-            { term: "Kommun", definition: "Ett mindre område som sköter skola, äldreomsorg, vatten och avlopp.", sentence: "Din _____ ansvarar för förskolan, grundskolan och sophämtningen i ditt bostadsområde." },
-            { term: "Nationella val", definition: "Val vart fjärde år där folket röstar på riksdag, regionfullmäktige och kommunfullmäktige.", sentence: "Vart fjärde år hålls _____ där alla röstberättigade väljer representanter på tre nivåer samtidigt." },
-            { term: "Utskott", definition: "Små grupper i riksdagen som förbereder frågor innan riksdagen beslutar.", sentence: "Lagförslaget om skolreformen bearbetades av utbildnings_____ innan hela riksdagen röstade om det." },
-            { term: "Politisk vilde", definition: "En riksdagsledamot som lämnat sitt parti men behåller sin plats i riksdagen.", sentence: "Efter konflikten med partiledningen valde ledamoten att bli _____ och röstade fritt utan partibindning." },
-            { term: "Myndighet", definition: "Gör det regeringen och riksdagen har bestämt. Tar hand om det praktiska arbetet i samhället.", sentence: "Skolverket är en _____ som ansvarar för att genomföra riksdagens och regeringens skolpolitik." },
-            { term: "Departement", definition: "En del av regeringen där ministrar och tjänstemän tar fram lagförslag och planerar politiken.", sentence: "Utbildningsdepartementet är det _____ som arbetar med frågor om skola och högre utbildning." },
-            { term: "KU-anmälan", definition: "När någon anmäler regeringen till Konstitutionsutskottet som granskar om reglerna följts.", sentence: "Oppositionen lämnade in en _____ mot ministern för att undersöka om hon brutit mot regeringsformen." }
+            {
+                term: "Regeringsformen",
+                definition: "En av grundlagarna som beskriver hur Sverige styrs, om demokrati och rättigheter.",
+                sentence: "_____ är den viktigaste av Sveriges grundlagar och slår fast att all offentlig makt utgår från folket.",
+                scenario: "Sverige ska ändra hur länge en statsminister kan sitta kvar i makten. Det visar sig att detta kräver ett beslut som regleras i landets mest grundläggande lag om hur makten ska utövas och fördelas.",
+                ickeExempel: { korrekt: "En journalist åberopar sin rätt att publicera känslig information om en minister med stöd av landets grundläggande styrdokument.", icke: "Riksdagen beslutar om nästa årsbudget med hänvisning till landets viktigaste lag om hur pengarna ska fördelas.", forklaring: "Budgetbeslut regleras inte i regeringsformen utan i riksdagsordningen och budgetlagen – regeringsformen handlar om statsskicket och grundläggande fri- och rättigheter, inte ekonomistyrning." }
+            },
+            {
+                term: "Kommunfullmäktige",
+                definition: "Kommunens version av riksdagen.",
+                sentence: "Det är _____ som fattar de viktigaste besluten i en kommun, till exempel om skolbudgeten.",
+                scenario: "Invånarna i en stad är upprörda över att kommunen vill stänga ned ett äldreboende. De organiserar sig för att påverka den folkvalde grupp som fattar de slutliga besluten om kommunens verksamheter.",
+                ickeExempel: { korrekt: "Kommunen beslutar att bygga ett nytt simhallskomplex – beslutet tas av den valda folkförsamlingen på kommunal nivå.", icke: "Kommunchefen beslutar att stänga en park för renovering under sommaren.", forklaring: "Kommunchefen är tjänsteman och fattar inte politiska beslut – det är kommunfullmäktige, de folkvalda politikerna, som fattar de viktiga besluten om kommunens verksamhet." }
+            },
+            {
+                term: "Regionfullmäktige",
+                definition: "Regionens version av riksdagen.",
+                sentence: "Sjukvårdens budget i Västra Götaland beslutas av _____, som väljs av regionens invånare.",
+                scenario: "En ny sjukhusenhet ska byggas i länet. Beslutet om hur regionens pengar ska fördelas tas av en vald folkförsamling som representerar regionens invånare.",
+                ickeExempel: { korrekt: "Regionen beslutar att investera i nya ambulanser och det beslutet fattas av den folkvalda församlingen på regional nivå.", icke: "Regionstyrelsen beslutar ensam om att flytta en vårdcentral till en annan ort utan att rådfråga de folkvalda.", forklaring: "Regionstyrelsen är ett verkställande organ men de viktigaste besluten om regionens verksamhet fattas av regionfullmäktige, inte styrelsen ensam." }
+            },
+            {
+                term: "Proportionellt valsystem",
+                definition: "Systemet som gör att partier får platser i riksdagen i förhållande till hur många röster de fått.",
+                sentence: "Tack vare det _____ speglar riksdagens sammansättning hur folket faktiskt röstade.",
+                scenario: "I ett land röstar 40% på parti A, 35% på parti B och 25% på parti C. Parlamentet fylls sedan med ledamöter i exakt samma fördelning som folkviljan visade.",
+                ickeExempel: { korrekt: "Parti A fick 42% av rösterna och fick ungefär 146 av de 349 platserna i riksdagen.", icke: "Det parti som vann flest valkretsar fick alla riksdagsplatser trots att de bara fått 38% av rösterna totalt.", forklaring: "Det sistnämnda är ett majoritärt valsystem, inte ett proportionellt – i ett proportionellt system fördelas mandaten efter röstandel, inte efter vinnare i enskilda valkretsar." }
+            },
+            {
+                term: "Parti",
+                definition: "En grupp människor med liknande idéer om hur landet ska styras.",
+                sentence: "Socialdemokraterna är ett _____ som länge förespråkat en stark välfärdsstat.",
+                scenario: "En grupp politiker som alla vill sänka skatterna och minska statens roll i samhällsekonomin bildar en gemensam organisation för att ställa upp i valet med ett gemensamt politiskt program.",
+                ickeExempel: { korrekt: "Miljöpartiet är en politisk organisation vars medlemmar delar synen att klimatfrågan ska vara vägledande för all politik och som ställer upp i val.", icke: "En grupp grannvänner som är missnöjda med kommunens gatuunderhåll skriver ett gemensamt brev med krav till kommunen.", forklaring: "En lös grupp med en enstaka klagan utgör inte ett parti – ett parti kräver organisation, gemensam ideologi och målet att erövra politisk makt genom val." }
+            },
+            {
+                term: "Opposition",
+                definition: "De partier som inte sitter i regeringen. De granskar regeringen och kommer med egna förslag.",
+                sentence: "Det är _____s uppgift att granska regeringens beslut och lägga fram alternativa förslag.",
+                scenario: "Regeringen lägger fram ett förslag om att sänka bensinskatten. Flera partier som inte deltar i regeringen håller presskonferenser där de kritiserar förslaget och presenterar alternativa lösningar.",
+                ickeExempel: { korrekt: "Socialdemokraterna håller en alternativ statsministerdebatt med egna förslag om bostadspolitiken efter att man förlorat valet.", icke: "En minister i regeringen kritiserar öppet statsministerns beslut om migrationspolitiken på en presskonferens.", forklaring: "En minister som kritiserar sin egen regering inifrån utgör inte opposition – oppositionen är de partier som står utanför regeringen och granskar den utifrån." }
+            },
+            {
+                term: "Koalition",
+                definition: "När flera partier samarbetar för att bilda regering.",
+                sentence: "Eftersom inget parti fick egen majoritet bildade tre partier en _____ för att styra landet gemensamt.",
+                scenario: "Inget enskilt parti har tillräckligt stöd för att regera ensamt. Tre partier med delvis olika åsikter förhandlar fram ett gemensamt styrdokument och delar på ministerposter.",
+                ickeExempel: { korrekt: "Tre partier med olika profiler skriver under ett samarbetsavtal och bildar gemensamt en regering med delade ministerposter.", icke: "Två partier i riksdagen röstar ibland ihop om specifika frågor utan att ha kommit överens om att styra landet gemensamt.", forklaring: "Tillfälliga röstgemenskaper i enstaka frågor utgör inte en koalition – en koalition innebär att partierna formellt bildar en gemensam regering med ett gemensamt styrprogram." }
+            },
+            {
+                term: "Majoritetsregering",
+                definition: "Om regeringen har stöd av mer än hälften av riksdagen.",
+                sentence: "En _____ kan driva igenom sin politik utan att förhandla med oppositionen.",
+                scenario: "Ett parti fick 52% av mandaten i parlamentet och kan nu driva igenom sina förslag utan att behöva söka stöd från andra partier vid varje omröstning.",
+                ickeExempel: { korrekt: "En regering som kontrollerar 180 av 349 mandat i riksdagen kan anta budgeten utan kompromisser med oppositionen.", icke: "En regering som vunnit valet med flest röster kallar sig självklart majoritetregering eftersom de fick mest stöd.", forklaring: "Det är inte störst andel röster utan majoritet av mandaten i riksdagen (fler än 174) som avgör om det är en majoritetsregering – vinnare av flest röster är inte automatiskt majoritetsregering." }
+            },
+            {
+                term: "Minoritetsregering",
+                definition: "Om regeringen har stöd av mindre än hälften av riksdagen.",
+                sentence: "En _____ måste söka stöd från andra partier för att få igenom sina förslag i riksdagen.",
+                scenario: "En statsminister bildar regering trots att hennes parti bara har 42% av riksdagsplatserna. Hon måste förhandla med andra partier inför varje viktigare omröstning för att inte förlora.",
+                ickeExempel: { korrekt: "En statsminister styr landet trots att hennes koalition kontrollerar färre än hälften av mandaten och måste söka tillfälliga stödröster.", icke: "En statsminister vars parti fick 48% av rösterna i valet leder en svag minoritetsregering eftersom de inte nådde 50%.", forklaring: "Röstandel i valet är inte samma sak som mandatandel i riksdagen – det är andelen riksdagsmandat, inte procentandelen av rösterna, som avgör om det är en minoritetsregering." }
+            },
+            {
+                term: "Riksdagsledamot",
+                definition: "En person som sitter i riksdagen. Det finns 349 folkvalda.",
+                sentence: "En _____ representerar sina väljare i riksdagen och deltar i omröstningar om ny lagstiftning.",
+                scenario: "En person som bor i Malmö kandiderade för ett parti, fick tillräckligt med röster och sitter nu i landets folkvalda parlament där hon röstar om lagstiftning och granskar regeringen.",
+                ickeExempel: { korrekt: "En politiker som valts in i riksdagen representerar sina väljare under en mandatperiod och deltar i utskottsarbete och pleniomröstningar.", icke: "En kommunpolitiker som valts in i kommunfullmäktige i Stockholm representerar sina väljare på nationell nivå.", forklaring: "Kommunfullmäktigeledamöter är folkvalda på kommunal nivå – riksdagsledamöter sitter enbart i det nationella parlamentet och har ett helt annat uppdrag." }
+            },
+            {
+                term: "Parlamentarism",
+                definition: "Ett system där regeringen måste ha stöd från parlamentet för att styra.",
+                sentence: "Tack vare _____ kan riksdagen fälla en regering som förlorat majoritetens förtroende.",
+                scenario: "Landets statsminister förlorar stödet i det folkvalda parlamentet. Enligt landets styrsystem måste statsministern nu avgå och nya förhandlingar inleds om vem som ska leda landet.",
+                ickeExempel: { korrekt: "Riksdagen röstar mot regeringens budget och statsministern tvingas omförhandla sin politik för att behålla stödet.", icke: "Presidenten i landet tillsätter och avskedar ministrar utan att parlamentet kan påverka detta.", forklaring: "Det sistnämnda är presidentialism, inte parlamentarism – i ett parlamentariskt system är regeringen beroende av parlamentets förtroende, i ett presidentielt system är det presidenten som har den verkställande makten." }
+            },
+            {
+                term: "Misstroendeförklaring",
+                definition: "När riksdagen röstar om att avsätta regeringen eller en minister.",
+                sentence: "Om riksdagen riktar en _____ mot statsministern måste hela regeringen avgå.",
+                scenario: "En minister har under lång tid hanterat sin roll på ett sätt som väcker allvarlig kritik. En majoritet av ledamöterna röstar formellt för att hon ska lämna sin post omedelbart.",
+                ickeExempel: { korrekt: "Riksdagen riktar en formell omröstning mot en minister efter att det framkommit att hon brutit mot grundlagen, och hon tvingas avgå.", icke: "Oppositionen håller en presskonferens och kräver att ministern ska avgå på grund av dåliga beslut.", forklaring: "En presskonferens med avgångskrav är politisk kritik, inte en misstroendeförklaring – en misstroendeförklaring kräver en formell omröstning i riksdagen med majoritet för att ha rättslig verkan." }
+            },
+            {
+                term: "Statsminister",
+                definition: "Regeringschefen i Sverige, som leder landets regering.",
+                sentence: "Det är _____ som håller i det dagliga styrandet av landet och leder regeringsmötena.",
+                scenario: "Det är dags för de veckovisa mötena där landets ledande politiker träffas för att fatta gemensamma beslut om budgetar, lagstiftning och internationella relationer. Den person som leder dessa möten är landets högsta verkställande ämbetsman.",
+                ickeExempel: { korrekt: "Statsministern presenterar regeringens klimatpaket och leder arbetet med att genomföra riksdagens beslut om koldioxidminskning.", icke: "Riksdagens talman kallas ibland statsminister eftersom han leder riksdagens arbete och utser statsministerkandidater.", forklaring: "Talmannen leder riksdagens möten men är inte statsminister – statsministern leder regeringen, inte riksdagen. Det är två helt olika roller med olika uppgifter." }
+            },
+            {
+                term: "Talman",
+                definition: "Personen som leder riksdagens möten och utser statsministerkandidat.",
+                sentence: "Det är _____s uppgift att ge statsministeruppdraget till den ledare som troligtvis kan bilda regering.",
+                scenario: "Efter ett val visar det sig att inget parti har majoritet. En hög ämbetsman i riksdagen kallas att bestämma vem som ska få första chansen att försöka bilda en regering.",
+                ickeExempel: { korrekt: "Talmannen genomför omröstningar med riksdagens ledamöter för att utröna om det finns stöd för en statsministerkandidat.", icke: "Riksdagens talman beslutar ensam vilken lag som ska antas och skickar sedan beslutet till regeringen för genomförande.", forklaring: "Talmannen leder och strukturerar riksdagens arbete men beslutar inte om lagstiftning – det gör riksdagens ledamöter gemensamt genom omröstning." }
+            },
+            {
+                term: "Decentralisering",
+                definition: "När makt och beslut flyttas från staten till lokala eller regionala nivåer.",
+                sentence: "_____ innebär att kommunerna själva får bestämma om saker som äldreomsorg och skola.",
+                scenario: "Staten beslutar att kommunerna själva ska få bestämma hur pengarna till skolan ska fördelas lokalt, istället för att staten detaljstyr varje skola från centralt håll.",
+                ickeExempel: { korrekt: "Regionerna tar över ansvaret för att organisera kollektivtrafiken, vilket tidigare sköttes av ett nationellt statligt verk.", icke: "Staten ger kommunerna tydligare direktiv om exakt hur de ska driva sina skolor och sin äldreomsorg.", forklaring: "Tydligare direktiv uppifrån är centralisering, inte decentralisering – decentralisering innebär att beslutsfattandet flyttas nedåt i systemet, inte att man specificerar styrning mer i detalj." }
+            },
+            {
+                term: "Kommunalt självstyre",
+                definition: "Rätten för kommuner att bestämma över sina egna frågor utan att staten styr.",
+                sentence: "Tack vare _____ kan en liten kommun fatta egna beslut om lokala skatter och service.",
+                scenario: "En liten kustkommun vill erbjuda kostnadsfria kulturskolor till alla barn. Kommunen fattar detta beslut själv och finansierar det med lokala skatteintäkter, utan att staten blandar sig i.",
+                ickeExempel: { korrekt: "En kommun beslutar att sänka den lokala fastighetsavgiften och använda pengarna till att stärka hemtjänsten – ett beslut som fattas och finansieras helt lokalt.", icke: "En kommun ansöker om statliga bidrag för att bygga ut bredband på landsbygden och genomför sedan projektet.", forklaring: "Att ansöka om och genomföra projekt med statliga bidrag innebär statlig inblandning – kommunalt självstyre handlar om att fatta och finansiera egna beslut utan statlig inblandning." }
+            },
+            {
+                term: "Riksdag",
+                definition: "Sveriges folkvalda parlament med 349 ledamöter som bestämmer lagar och kontrollerar regeringen.",
+                sentence: "Det är _____ som stiftar lagar och beslutar om statens budget varje år.",
+                scenario: "Ett nytt förslag om att ändra hastighetsgränser på motorvägar behandlas av en specialistgrupp, sedan debatteras det i ett plenum med 349 folkvalda representanter som röstar om det ska bli lag.",
+                ickeExempel: { korrekt: "Riksdagen antar en ny skollag efter att utbildningsutskottet granskat lagförslaget och hela kammaren röstat ja.", icke: "Regeringen beslutar om ett nytt hastighetsgränssystem för motorvägar och inför det omedelbart utan riksdagens inblandning.", forklaring: "Regeringen kan inte ensam stifta lagar – att ändra lagar är riksdagens uppgift, inte regeringens. Regeringen kan utfärda förordningar inom befintlig lagstiftning men inte skapa ny lag." }
+            },
+            {
+                term: "Regering",
+                definition: "Gruppen som styr Sverige. De leds av statsministern och genomför riksdagens beslut.",
+                sentence: "_____ ansvarar för att riksdagens beslut omsätts i praktisk politik och skriver propositioner.",
+                scenario: "Riksdagen har beslutat att Sverige ska minska sina utsläpp med 50% till 2030. En grupp ministrar och tjänstemän arbetar nu med att ta fram konkreta åtgärder och förordningar för att genomföra detta.",
+                ickeExempel: { korrekt: "Regeringen presenterar en proposition med detaljerade planer för hur riksdagens klimatbeslut ska förverkligas i praktiken.", icke: "Riksdagen stiftar en ny miljölag och de folkvalda röstar om vad lagen ska innehålla – det är riksdagens och regeringens gemensamma arbete.", forklaring: "Det är riksdagen som stiftar lagar, inte regeringen – regeringen genomför och verkställer politiken medan den lagstiftande makten enbart ligger hos riksdagen." }
+            },
+            {
+                term: "Region",
+                definition: "Ett område i Sverige som sköter sjukvård, kollektivtrafik och regional utveckling.",
+                sentence: "Det är _____ som ansvarar för sjukhus, vårdcentraler och bussar i ditt område.",
+                scenario: "En patient i Norrland behöver en avancerad hjärtoperation och transporteras till ett universitetssjukhus. Det geografiska område som ansvarar för den vård hon får reglerar hur sjukhus och ambulanser är organiserade.",
+                ickeExempel: { korrekt: "Västra Götalandsregionen beslutar om att bygga ut cancervården och organiserar kollektivtrafiken i Göteborgsområdet.", icke: "Kommunen i Göteborg ansvarar för att driva Sahlgrenska universitetssjukhuset och organisera all sjukvård i stadens omgivning.", forklaring: "Sjukvård är regionens ansvar, inte kommunens – kommunen ansvarar för socialtjänst, skola och äldreomsorg, medan regionen ansvarar för sjukvård och regional kollektivtrafik." }
+            },
+            {
+                term: "Kommun",
+                definition: "Ett mindre område som sköter skola, äldreomsorg, vatten och avlopp.",
+                sentence: "Din _____ ansvarar för förskolan, grundskolan och sophämtningen i ditt bostadsområde.",
+                scenario: "Föräldrarna till ett barn som börjar förskoleklass kontaktar det geografiska förvaltningsområde som ansvarar för grundskolan, äldreomsorgen och sophämtningen i deras bostadsområde.",
+                ickeExempel: { korrekt: "Kommunen i Uppsala beslutar om en ny förskola och tar ansvar för att rekrytera lärare och anordna plats för alla barn.", icke: "Regionen i ett län ansvarar för hemtjänsten och de kommunala äldreboendena för länets invånare.", forklaring: "Hemtjänst och äldreboenden är kommunens ansvar, inte regionens – regionen ansvarar för sjukvård och kollektivtrafik, medan kommunen ansvarar för socialtjänst och äldreomsorg." }
+            },
+            {
+                term: "Nationella val",
+                definition: "Val vart fjärde år där folket röstar på riksdag, regionfullmäktige och kommunfullmäktige.",
+                sentence: "Vart fjärde år hålls _____ där alla röstberättigade väljer representanter på tre nivåer samtidigt.",
+                scenario: "Vart fjärde år går miljoner medborgare till vallokaler och lämnar sina röster till tre separata nivåer av folkvalda representanter – på lokal, regional och nationell nivå – vid ett och samma tillfälle.",
+                ickeExempel: { korrekt: "I september 2022 röstade svenska folket om vilka partier som skulle representera dem i riksdagen, regionfullmäktige och kommunfullmäktige.", icke: "I en folkomröstning om euron fick alla medborgare rösta om ett viktigt nationellt beslut – det är ett exempel på nationella val.", forklaring: "Folkomröstningar är direkta demokratiska omröstningar om enstaka sakfrågor, inte nationella val – nationella val handlar om att välja representanter som sedan fattar beslut på väljarnas vägnar." }
+            },
+            {
+                term: "Utskott",
+                definition: "Små grupper i riksdagen som förbereder frågor innan riksdagen beslutar.",
+                sentence: "Lagförslaget om skolreformen bearbetades av utbildnings_____ innan hela riksdagen röstade om det.",
+                scenario: "Riksdagen ska besluta om en komplicerad ny lag om dataskydd. Innan hela riksdagen röstar skickas lagförslaget till en mindre specialistgrupp bland ledamöterna som granskar det noggrant i detalj.",
+                ickeExempel: { korrekt: "Finansutskottet granskar statens budgetproposition och ger riksdagen ett betänkande med rekommendationer om hur pengarna bör fördelas.", icke: "Riksdagens juridiska sekretariat granskar alla lagförslag och beslutar om de är förenliga med grundlagen.", forklaring: "Det juridiska sekretariatet är en stödresurs, inte ett beslutsfattande organ – utskottet är en grupp riksdagsledamöter med politiskt mandat att bereda och rekommendera beslut." }
+            },
+            {
+                term: "Politisk vilde",
+                definition: "En riksdagsledamot som lämnat sitt parti men behåller sin plats i riksdagen.",
+                sentence: "Efter konflikten med partiledningen valde ledamoten att bli _____ och röstade fritt utan partibindning.",
+                scenario: "En riksdagsledamot är djupt oenig med sitt partis nya ledning och väljer att formellt lämna partiet. Han behåller dock sin plats i riksdagen och röstar fortsättningsvis enligt eget samvete.",
+                ickeExempel: { korrekt: "En riksdagsledamot lämnar sitt parti men sitter kvar och röstar fritt utan partibindning under resten av mandatperioden.", icke: "En politiker utesluts ur sitt parti och tvingas lämna riksdagen eftersom riksdagsplatsen tillhör partiet.", forklaring: "Riksdagsplatsen tillhör individen, inte partiet – en utesluten eller utträdande riksdagsledamot kan sitta kvar i riksdagen utan partibeteckning som politisk vilde." }
+            },
+            {
+                term: "Myndighet",
+                definition: "Gör det regeringen och riksdagen har bestämt. Tar hand om det praktiska arbetet i samhället.",
+                sentence: "Skolverket är en _____ som ansvarar för att genomföra riksdagens och regeringens skolpolitik.",
+                scenario: "Riksdagen beslutar att alla barn har rätt till modersmålsundervisning. En statlig organisation med egna kontor och personal ansvarar nu för att detta faktiskt genomförs och att kommunerna följer reglerna.",
+                ickeExempel: { korrekt: "Migrationsverket genomför den migrationspolitik som riksdagen och regeringen bestämt och hanterar asylansökningar i praktiken.", icke: "Finansdepartementet planerar och genomför statens budget och skickar direktiv om skattepolitiken till kommunerna.", forklaring: "Finansdepartementet är en del av regeringen som bereder politiska beslut – myndigheter genomför besluten i praktiken och är fristående förvaltningsorgan, inte delar av departementet." }
+            },
+            {
+                term: "Departement",
+                definition: "En del av regeringen där ministrar och tjänstemän tar fram lagförslag och planerar politiken.",
+                sentence: "Utbildningsdepartementet är det _____ som arbetar med frågor om skola och högre utbildning.",
+                scenario: "Utbildningsministern och hennes medarbetare håller på att skriva ett lagförslag om gymnasiereformen. De samlar in underlag, remissar och expertutlåtanden för att ta fram ett färdigt förslag till riksdagen.",
+                ickeExempel: { korrekt: "Justitiedepartementet tar fram ett förslag till ny brottsbalk och skickar det som proposition till riksdagen för beslut.", icke: "Polismyndigheten tar fram en ny nationell strategi för hur det brottsförebyggande arbetet ska bedrivas i hela landet.", forklaring: "Polismyndigheten är en myndighet som genomför politiken i praktiken – departementet bereder och planerar politiska beslut, medan myndigheten utför dem." }
+            },
+            {
+                term: "KU-anmälan",
+                definition: "När någon anmäler regeringen till Konstitutionsutskottet som granskar om reglerna följts.",
+                sentence: "Oppositionen lämnade in en _____ mot ministern för att undersöka om hon brutit mot regeringsformen.",
+                scenario: "En minister har delat ut ett statligt kontrakt utan att följa de regler som gäller för offentlig upphandling. Oppositionen anmäler formellt detta till den riksdagskommitté som har i uppgift att granska om spelreglerna för regeringsmakten följts.",
+                ickeExempel: { korrekt: "Oppositionen anmäler till KU att en minister fattat ett beslut utan att informera riksdagen på det sätt konstitutionen kräver.", icke: "En journalist anmäler en minister till JO för att hon nekat pressen tillgång till allmänna handlingar.", forklaring: "JO (Justitieombudsmannen) granskar myndigheters agerande mot enskilda medborgare, medan KU (Konstitutionsutskottet) granskar om regeringens ministrar följt grundlagen – viktiga men olika granskningsorgan." }
+            }
         ];
 
         function shuffleArray(arr) {
@@ -143,6 +299,109 @@
             );
         }
 
+        function ScenarioView() {
+            const [shuffledIdxs] = useState(() => shuffleArray(concepts.map((_, i) => i)));
+            const [current, setCurrent] = useState(0);
+            const [answered, setAnswered] = useState(null);
+            const [selected, setSelected] = useState(null);
+            const [score, setScore] = useState(0);
+            const [done, setDone] = useState(false);
+            const [termOptions] = useState(() => shuffleArray(concepts.map(c => c.term)));
+
+            if (done) {
+                return (
+                    <div className="bg-yellow-50 border-2 border-yellow-400 rounded-3xl p-8 text-center">
+                        <p className="text-5xl font-bold text-yellow-500 mb-2">{score}/{concepts.length}</p>
+                        <p className="text-xl font-bold text-slate-800 mb-4">{getFeedback(score, concepts.length)}</p>
+                        <button onClick={() => { setCurrent(0); setAnswered(null); setSelected(null); setScore(0); setDone(false); }} className="bg-yellow-400 text-yellow-900 px-8 py-3 rounded-2xl font-bold hover:bg-yellow-500 transition-colors">Gör om</button>
+                    </div>
+                );
+            }
+
+            const idx = shuffledIdxs[current];
+            const concept = concepts[idx];
+
+            const handleSelect = (term) => {
+                if (answered !== null) return;
+                setSelected(term);
+                setAnswered(term === concept.term ? 'correct' : 'wrong');
+                if (term === concept.term) setScore(s => s + 1);
+            };
+
+            const next = () => {
+                if (current + 1 >= concepts.length) { setDone(true); return; }
+                setCurrent(c => c + 1);
+                setAnswered(null);
+                setSelected(null);
+            };
+
+            return (
+                <div>
+                    <div className="mb-4 flex items-center justify-between">
+                        <span className="text-sm text-slate-500">{current + 1} av {concepts.length}</span>
+                        <span className="text-sm font-bold text-yellow-700 bg-yellow-50 px-3 py-1 rounded-full border border-yellow-200">Poäng: {score}</span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+                        <div className="bg-yellow-400 h-2 rounded-full transition-all duration-500" style={{width: `${((current) / concepts.length) * 100}%`}}></div>
+                    </div>
+                    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Vilket begrepp beskrivs?</p>
+                        <p className="text-lg leading-relaxed text-slate-800">{concept.scenario}</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 mb-6">
+                        {termOptions.map((term, i) => {
+                            let cls = "p-3 rounded-xl border-2 text-sm font-medium text-center cursor-pointer transition-all border-slate-200 hover:border-yellow-400 hover:bg-yellow-50";
+                            if (answered !== null && term === concept.term) cls = "p-3 rounded-xl border-2 text-sm font-medium text-center bg-green-50 border-green-500 text-green-700";
+                            else if (answered !== null && term === selected && selected !== concept.term) cls = "p-3 rounded-xl border-2 text-sm font-medium text-center bg-red-50 border-red-400 text-red-600";
+                            return <button key={i} onClick={() => handleSelect(term)} className={cls}>{term}</button>;
+                        })}
+                    </div>
+                    {answered && (
+                        <div className={`p-4 rounded-2xl mb-4 ${answered === 'correct' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
+                            <p className={`font-bold mb-1 ${answered === 'correct' ? 'text-green-700' : 'text-red-600'}`}>{answered === 'correct' ? '✓ Rätt!' : '✗ Fel'}</p>
+                            <p className="text-sm text-slate-600">Rätt svar: <span className="font-bold">{concept.term}</span> – {concept.definition}</p>
+                        </div>
+                    )}
+                    {answered && <button onClick={next} className="w-full bg-slate-900 text-white py-3 rounded-2xl font-bold hover:bg-slate-800 transition-colors">{current + 1 >= concepts.length ? 'Se resultat' : 'Nästa →'}</button>}
+                </div>
+            );
+        }
+
+        function IckeExempelView() {
+            const [revealed, setRevealed] = useState(concepts.map(() => false));
+            const toggle = (i) => { const r = [...revealed]; r[i] = !r[i]; setRevealed(r); };
+            return (
+                <div className="grid gap-5">
+                    {concepts.map((c, i) => (
+                        <div key={i} className="bg-white rounded-2xl shadow-sm border-l-8 border-yellow-400 overflow-hidden">
+                            <div className="p-5 pb-3">
+                                <div className="flex items-center gap-3 mb-1">
+                                    <span className="bg-yellow-100 text-yellow-700 text-xs font-bold px-2 py-1 rounded-lg">{i + 1}</span>
+                                    <h3 className="text-lg font-bold">{c.term}</h3>
+                                </div>
+                            </div>
+                            <div className="px-5 pb-3">
+                                <div className="bg-yellow-50 rounded-xl p-4 mb-3">
+                                    <p className="text-xs font-bold text-yellow-700 uppercase tracking-wider mb-1">Korrekt tillämpning</p>
+                                    <p className="text-sm text-slate-700">{c.ickeExempel.korrekt}</p>
+                                </div>
+                                <button onClick={() => toggle(i)} className="w-full text-left bg-slate-100 hover:bg-red-50 rounded-xl p-4 mb-3 transition-colors border border-slate-200 hover:border-red-200">
+                                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{revealed[i] ? 'Trovärdigt icke-exempel' : '⚠ Visa icke-exempel (pedagogisk fälla)'}</p>
+                                    {revealed[i] && <p className="text-sm text-slate-700">{c.ickeExempel.icke}</p>}
+                                </button>
+                                {revealed[i] && (
+                                    <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
+                                        <p className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-1">Förklaring av fällan</p>
+                                        <p className="text-sm text-slate-700">{c.ickeExempel.forklaring}</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
         function App() {
             const [view, setView] = useState('list');
             const [currentIndex, setCurrentIndex] = useState(0);
@@ -156,7 +415,7 @@
                 }, 150);
             };
 
-            const activeTab = 'bg-yellow-400 font-bold shadow-sm';
+            const activeTab = 'bg-yellow-400 text-yellow-900 font-bold shadow-sm';
             const inactiveTab = 'text-slate-500';
 
             return (
@@ -167,10 +426,12 @@
                         <div className="w-36"></div>
                     </header>
 
-                    <div className="max-w-sm mx-auto mb-10 flex bg-white p-1 rounded-full shadow-md border border-slate-200">
+                    <div className="max-w-2xl mx-auto mb-10 flex bg-white p-1 rounded-full shadow-md border border-slate-200">
                         <button onClick={() => setView('list')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'list' ? activeTab : inactiveTab}`}>Lista</button>
                         <button onClick={() => setView('flashcards')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'flashcards' ? activeTab : inactiveTab}`}>Flashcards</button>
                         <button onClick={() => setView('lucktext')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'lucktext' ? activeTab : inactiveTab}`}>Lucktext</button>
+                        <button onClick={() => setView('scenario')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'scenario' ? activeTab : inactiveTab}`}>Scenario</button>
+                        <button onClick={() => setView('icke')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'icke' ? activeTab : inactiveTab}`}>Icke-ex.</button>
                     </div>
 
                     <main className="max-w-2xl mx-auto">
@@ -208,6 +469,8 @@
                             </div>
                         )}
                         {view === 'lucktext' && <LucktextView />}
+                        {view === 'scenario' && <ScenarioView />}
+                        {view === 'icke' && <IckeExempelView />}
                     </main>
 
                     <footer className="mt-12 text-center text-slate-400 text-sm italic pb-8">Källa: Samhällskunskap – Så styrs Sverige begreppslista</footer>

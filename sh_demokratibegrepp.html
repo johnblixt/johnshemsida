@@ -25,26 +25,226 @@
         const { useState } = React;
 
         const concepts = [
-            { term: "Demokrati", definition: "Folkstyre – när folket bestämmer.", sentence: "Sverige styrs som en _____, vilket innebär att folket väljer sina representanter vart fjärde år." },
-            { term: "Diktatur", definition: "Motsatsen till demokrati – när en person eller en grupp har all makt i landet.", sentence: "Nordkorea är ett exempel på en _____, där en enda ledare styr landet med total kontroll." },
-            { term: "Yttrandefrihetsgrundlagen", definition: "Grundlagen som säger att du får säga vad du tycker.", sentence: "_____ skyddar din rätt att kritisera politiker och uttrycka åsikter utan att staten kan straffa dig." },
-            { term: "Tryckfrihetsförordningen", definition: "Grundlagen som säger att du får skriva vad du vill i tidningar och böcker.", sentence: "Tidningar och böcker är skyddade av _____, som garanterar rätten att publicera fritt utan statlig censur." },
-            { term: "Meddelarfrihet", definition: "Du får lämna information till media utan att chefen får straffa dig.", sentence: "En anställd som tipsar en journalist om missförhållanden på jobbet är skyddad av _____." },
-            { term: "Censur", definition: "När staten stoppar information från att spridas.", sentence: "Regimer som blockerar sociala medier och förhindrar nyheter från att spridas utövar _____." },
-            { term: "Offentlighetsprincipen", definition: "Alla har rätt att läsa dokument från myndigheter.", sentence: "Med hjälp av _____ kan journalister begära ut protokoll och beslut från svenska myndigheter." },
-            { term: "Fri opinionsbildning", definition: "Alla får bilda och sprida sina åsikter.", sentence: "_____ är en grundpelare i demokratin – utan den kan medborgarna inte diskutera och påverka politiken." },
-            { term: "Flerpartisystem", definition: "Det finns flera partier att välja mellan i val.", sentence: "I ett _____ kan väljarna rösta på flera olika politiska alternativ, inte bara ett." },
-            { term: "Majoritetsprincipen", definition: "Det förslag som flest röstar på vinner.", sentence: "Riksdagen tillämpar _____, vilket innebär att det förslag som får flest röster går igenom." },
-            { term: "Allmän rösträtt", definition: "Alla vuxna får rösta.", sentence: "_____ innebär att alla medborgare som fyllt 18 år har rätt att rösta, oavsett kön eller bakgrund." },
-            { term: "Förtroendevalda", definition: "Personer som valts av folket för att fatta beslut.", sentence: "Riksdagsledamöter är _____ som folket har röstat fram för att representera dem i parlamentet." },
-            { term: "Representativ demokrati", definition: "Vi väljer personer som bestämmer åt oss.", sentence: "Sverige är en _____ – vi röstar på politiker som sedan fattar beslut å våra vägnar." },
-            { term: "Direkt demokrati", definition: "Folket röstar själva i en fråga.", sentence: "I _____ röstar medborgarna direkt i varje politisk fråga utan att gå via valda representanter." },
-            { term: "Folkomröstning", definition: "När folket får rösta direkt om en specifik fråga.", sentence: "År 1994 hölls en _____ i Sverige om landet skulle gå med i Europeiska unionen." },
-            { term: "Parlamentarism", definition: "Regeringen måste ha riksdagens stöd för att få styra.", sentence: "Tack vare _____ kan riksdagen fälla en regering som förlorat parlamentets förtroende." },
-            { term: "Monarki", definition: "Landet har en kung eller drottning som statschef.", sentence: "Sverige är en konstitutionell _____, men kungen har ingen politisk makt – den innehas av riksdagen." },
-            { term: "Republik", definition: "Landet har en president som statschef.", sentence: "Frankrike är en _____ där presidenten väljs av folket och fungerar som statschef." },
-            { term: "Statschef", definition: "Den som är högst upp i landet (t.ex. kung eller president).", sentence: "I Sverige är kungen _____, men han representerar landet utan att fatta politiska beslut." },
-            { term: "Proportionellt valsystem", definition: "Partier får lika många platser som röster i valet.", sentence: "Med ett _____ speglar riksdagens sammansättning hur folket faktiskt röstade, utan att röster går till spillo." }
+            {
+                term: "Demokrati",
+                definition: "Folkstyre – när folket bestämmer.",
+                sentence: "Sverige styrs som en _____, vilket innebär att folket väljer sina representanter vart fjärde år.",
+                scenario: "Medborgarna i ett land väljer vart fjärde år vilka som ska styra, kan byta ut ledarna och har rätt att uttrycka sina åsikter fritt.",
+                ickeExempel: {
+                    korrekt: "Sverige är en demokrati eftersom folket väljer riksdag och regering i fria val.",
+                    icke: "Ett land där folket kan rösta i val men bara ett parti får ställa upp är en demokrati.",
+                    forklaring: "Demokrati kräver fria, verkliga val med reell konkurrens – ett valsystem med bara ett parti är ett skenval utan demokratisk substans."
+                }
+            },
+            {
+                term: "Diktatur",
+                definition: "Motsatsen till demokrati – när en person eller en grupp har all makt i landet.",
+                sentence: "Nordkorea är ett exempel på en _____, där en enda ledare styr landet med total kontroll.",
+                scenario: "En ledare styr landet utan val, förbjuder opposition och kontrollerar media – medborgare som kritiserar riskerar fängelse.",
+                ickeExempel: {
+                    korrekt: "Nordkorea är en diktatur eftersom en enda familj styr utan demokratiska val och opposition förbjuds.",
+                    icke: "Ett land med en stark president som har mycket makt men väljs i fria val är en diktatur.",
+                    forklaring: "En stark president vald i genuint fria val är inte en diktator – diktaturen kännetecknas av avsaknad av fria val och reell maktdelning."
+                }
+            },
+            {
+                term: "Yttrandefrihetsgrundlagen",
+                definition: "Grundlagen som säger att du får säga vad du tycker.",
+                sentence: "_____ skyddar din rätt att kritisera politiker och uttrycka åsikter utan att staten kan straffa dig.",
+                scenario: "En person håller ett tal på torget och kritiserar öppet regeringens politik utan att riskera straff – detta skyddas av en av landets grundlagar.",
+                ickeExempel: {
+                    korrekt: "Yttrandefrihetsgrundlagen skyddar rätten att offentligt kritisera politiker och myndigheter.",
+                    icke: "Yttrandefrihetsgrundlagen innebär att du aldrig kan straffas för vad du säger, oavsett vad det är.",
+                    forklaring: "Yttrandefrihetsgrundlagen har undantag – t.ex. hets mot folkgrupp och förtal är fortfarande straffbart."
+                }
+            },
+            {
+                term: "Tryckfrihetsförordningen",
+                definition: "Grundlagen som säger att du får skriva vad du vill i tidningar och böcker.",
+                sentence: "Tidningar och böcker är skyddade av _____, som garanterar rätten att publicera fritt utan statlig censur.",
+                scenario: "En journalist publicerar en kritisk artikel om ett statligt bolag i en tidning utan att behöva be staten om tillåtelse.",
+                ickeExempel: {
+                    korrekt: "Tryckfrihetsförordningen skyddar tidningars rätt att publicera nyheter utan statlig förhandsgranskning.",
+                    icke: "Tryckfrihetsförordningen gäller för allt som publiceras på internet, inklusive sociala medier.",
+                    forklaring: "Tryckfrihetsförordningen gäller specifikt för periodiska skrifter med utgivningsbevis – vanliga sociala medier-inlägg skyddas av yttrandefrihetsgrundlagen istället."
+                }
+            },
+            {
+                term: "Meddelarfrihet",
+                definition: "Du får lämna information till media utan att chefen får straffa dig.",
+                sentence: "En anställd som tipsar en journalist om missförhållanden på jobbet är skyddad av _____.",
+                scenario: "En sjukhusanställd berättar för en journalist om farliga förhållanden på sin avdelning och kan inte avskedas för detta.",
+                ickeExempel: {
+                    korrekt: "Meddelarfrihet skyddar en offentliganställd som tipsar media om missförhållanden på sin arbetsplats.",
+                    icke: "Meddelarfrihet innebär att du kan avslöja hemliga uppgifter från försvaret utan rättsliga konsekvenser.",
+                    forklaring: "Meddelarfriheten har undantag för kvalificerade sekretessbelagda uppgifter som rör rikets säkerhet – sådana läckor kan fortfarande vara straffbara."
+                }
+            },
+            {
+                term: "Censur",
+                definition: "När staten stoppar information från att spridas.",
+                sentence: "Regimer som blockerar sociala medier och förhindrar nyheter från att spridas utövar _____.",
+                scenario: "Myndigheterna granskar alla tidningsartiklar innan de trycks och stryker information de inte vill att befolkningen ska känna till.",
+                ickeExempel: {
+                    korrekt: "Censur sker när ett land blockerar nyhetswebbplatser och förhandsgranskar tidningsartiklar.",
+                    icke: "När en tidning väljer att inte publicera en artikel för att den inte uppfyller deras etiska krav är det censur.",
+                    forklaring: "Redaktionellt urval är inte censur – censur innebär att staten eller en yttre makt stoppar information, inte att en redaktion gör egna bedömningar."
+                }
+            },
+            {
+                term: "Offentlighetsprincipen",
+                definition: "Alla har rätt att läsa dokument från myndigheter.",
+                sentence: "Med hjälp av _____ kan journalister begära ut protokoll och beslut från svenska myndigheter.",
+                scenario: "En medborgare ringer till kommunen och begär att få se alla kontrakt kommunen har tecknat med ett visst byggföretag.",
+                ickeExempel: {
+                    korrekt: "Offentlighetsprincipen ger vem som helst rätt att begära ut myndigheters allmänna handlingar.",
+                    icke: "Offentlighetsprincipen innebär att alla statliga dokument alltid är tillgängliga och inga handlingar kan hemlighållas.",
+                    forklaring: "Offentlighetsprincipen har sekretessundantag – handlingar som rör rikets säkerhet eller enskildas personuppgifter kan skyddas från insyn."
+                }
+            },
+            {
+                term: "Fri opinionsbildning",
+                definition: "Alla får bilda och sprida sina åsikter.",
+                sentence: "_____ är en grundpelare i demokratin – utan den kan medborgarna inte diskutera och påverka politiken.",
+                scenario: "Partier, organisationer och enskilda medborgare kan fritt kampanja, starta debatter och sprida sina politiska idéer utan statlig kontroll.",
+                ickeExempel: {
+                    korrekt: "Fri opinionsbildning innebär att politiska partier och organisationer fritt kan sprida sina idéer och kampanja.",
+                    icke: "Fri opinionsbildning innebär att alla åsikter alltid är lagliga att sprida, utan några gränser.",
+                    forklaring: "Fri opinionsbildning är grundläggande men begränsas av lagar mot t.ex. hets mot folkgrupp – fullständig åsiktsfrihet utan undantag existerar inte."
+                }
+            },
+            {
+                term: "Flerpartisystem",
+                definition: "Det finns flera partier att välja mellan i val.",
+                sentence: "I ett _____ kan väljarna rösta på flera olika politiska alternativ, inte bara ett.",
+                scenario: "Väljarna kan rösta på åtta olika partier med vitt skilda ideologier och program – inget parti dominerar utan konkurrens.",
+                ickeExempel: {
+                    korrekt: "Sverige har ett flerpartisystem med åtta riksdagspartier som konkurrerar i val.",
+                    icke: "Ett land där två partier dominerar helt och aldrig något annat parti vinner är ett flerpartisystem.",
+                    forklaring: "Att fler än ett parti existerar räcker inte – ett äkta flerpartisystem kräver reell konkurrens där olika partier faktiskt kan vinna makt."
+                }
+            },
+            {
+                term: "Majoritetsprincipen",
+                definition: "Det förslag som flest röstar på vinner.",
+                sentence: "Riksdagen tillämpar _____, vilket innebär att det förslag som får flest röster går igenom.",
+                scenario: "Vid en omröstning i riksdagen om ett lagförslag vinner det förslag som får fler än hälften av rösterna.",
+                ickeExempel: {
+                    korrekt: "Majoritetsprincipen innebär att det förslag som får flest röster i riksdagen vinner omröstningen.",
+                    icke: "Majoritetsprincipen innebär att alla beslut måste ha enhälligt stöd för att gälla.",
+                    forklaring: "Enhällighet är konsensusprincipen – majoritetsprincipen räcker med mer än hälften av rösterna, inte alla."
+                }
+            },
+            {
+                term: "Allmän rösträtt",
+                definition: "Alla vuxna får rösta.",
+                sentence: "_____ innebär att alla medborgare som fyllt 18 år har rätt att rösta, oavsett kön eller bakgrund.",
+                scenario: "I ett land får alla medborgare som uppnått rösträttsåldern rösta i val, oavsett inkomst, utbildning, kön eller etnisk bakgrund.",
+                ickeExempel: {
+                    korrekt: "Allmän rösträtt innebär att alla medborgare över 18 år får rösta oavsett kön, inkomst eller utbildning.",
+                    icke: "Allmän rösträtt innebär att alla som bor i landet, inklusive turister och tillfälliga besökare, får rösta.",
+                    forklaring: "Allmän rösträtt gäller medborgare (och i Sverige vid kommunval även permanent bosatta) – inte alla som befinner sig i landet tillfälligt."
+                }
+            },
+            {
+                term: "Förtroendevalda",
+                definition: "Personer som valts av folket för att fatta beslut.",
+                sentence: "Riksdagsledamöter är _____ som folket har röstat fram för att representera dem i parlamentet.",
+                scenario: "Invånarna i en kommun röstar och väljer 61 personer som sedan ska fatta beslut om skola, äldreomsorg och lokal infrastruktur.",
+                ickeExempel: {
+                    korrekt: "Kommunfullmäktiges ledamöter är förtroendevalda som folket röstat fram för att fatta lokala beslut.",
+                    icke: "En tjänsteman på en myndighet som utsetts av regeringen är en förtroendevald.",
+                    forklaring: "Tjänstemän utses av myndigheter eller regering, inte av folket i val – förtroendevalda är specifikt de som väljs direkt av medborgarna."
+                }
+            },
+            {
+                term: "Representativ demokrati",
+                definition: "Vi väljer personer som bestämmer åt oss.",
+                sentence: "Sverige är en _____ – vi röstar på politiker som sedan fattar beslut å våra vägnar.",
+                scenario: "Medborgarna röstar vart fjärde år och ger ett mandat till valda representanter att stifta lagar och fatta beslut under mandatperioden.",
+                ickeExempel: {
+                    korrekt: "I representativ demokrati väljer medborgarna politiker som sedan fattar beslut å deras vägnar.",
+                    icke: "Representativ demokrati innebär att medborgarna regelbundet röstar om alla viktiga samhällsfrågor.",
+                    forklaring: "Att rösta om alla frågor direkt är direkt demokrati – i representativ demokrati delegeras beslutsfattandet till valda representanter."
+                }
+            },
+            {
+                term: "Direkt demokrati",
+                definition: "Folket röstar själva i en fråga.",
+                sentence: "I _____ röstar medborgarna direkt i varje politisk fråga utan att gå via valda representanter.",
+                scenario: "Medborgarna i en schweizisk kanton röstar via en folkomröstning direkt om ett förslag till ny lag, utan att gå via parlamentet.",
+                ickeExempel: {
+                    korrekt: "Schweiz använder direkt demokrati i form av folkomröstningar om konkreta lagfrågor.",
+                    icke: "Ett land som håller val vart fjärde år och låter medborgarna välja sina representanter tillämpar direkt demokrati.",
+                    forklaring: "Val av representanter är representativ demokrati – direkt demokrati innebär att medborgarna röstar direkt om sakfrågor, inte om vem som ska representera dem."
+                }
+            },
+            {
+                term: "Folkomröstning",
+                definition: "När folket får rösta direkt om en specifik fråga.",
+                sentence: "År 1994 hölls en _____ i Sverige om landet skulle gå med i Europeiska unionen.",
+                scenario: "Befolkningen tillfrågas om en stor politisk fråga – t.ex. om landet ska gå med i en union – och resultatet styr politikernas beslut.",
+                ickeExempel: {
+                    korrekt: "1994 hölls en folkomröstning i Sverige om EU-medlemskap där folket fick säga sin mening direkt.",
+                    icke: "Ett riksdagsval där folket väljer sina representanter är en form av folkomröstning.",
+                    forklaring: "Riksdagsval är inte en folkomröstning – en folkomröstning handlar om en specifik sakfråga, inte om vem som ska styra."
+                }
+            },
+            {
+                term: "Parlamentarism",
+                definition: "Regeringen måste ha riksdagens stöd för att få styra.",
+                sentence: "Tack vare _____ kan riksdagen fälla en regering som förlorat parlamentets förtroende.",
+                scenario: "En regering förlorar en avgörande omröstning i parlamentet och tvingas avgå eftersom den inte längre har stöd av majoriteten.",
+                ickeExempel: {
+                    korrekt: "Parlamentarism innebär att regeringen måste ha riksdagens förtroende för att kunna styra.",
+                    icke: "I parlamentarism väljer folket direkt vem som ska vara statsminister.",
+                    forklaring: "I parlamentarism utses statsministern av parlamentet (talmannen), inte direkt av folket – det är presidentsystem där folket väljer regeringschefen direkt."
+                }
+            },
+            {
+                term: "Monarki",
+                definition: "Landet har en kung eller drottning som statschef.",
+                sentence: "Sverige är en konstitutionell _____, men kungen har ingen politisk makt – den innehas av riksdagen.",
+                scenario: "Landet har en kungafamilj som representerar nationen vid statsbesök och ceremonier, men all politisk makt ligger hos parlamentet.",
+                ickeExempel: {
+                    korrekt: "Sverige är en konstitutionell monarki där kungen är statschef men saknar politisk makt.",
+                    icke: "Ett land med en kung som styr landet och fattar politiska beslut är en konstitutionell monarki.",
+                    forklaring: "En kung med verklig politisk makt är en absolut monarki – konstitutionell monarki innebär att kungamakten begränsas av en grundlag och parlamentet styr."
+                }
+            },
+            {
+                term: "Republik",
+                definition: "Landet har en president som statschef.",
+                sentence: "Frankrike är en _____ där presidenten väljs av folket och fungerar som statschef.",
+                scenario: "En nations högsta representant är en folkvald president med mandattid, inte en ärftlig monark.",
+                ickeExempel: {
+                    korrekt: "Frankrike är en republik med en folkvald president som statschef.",
+                    icke: "Alla republiker är demokratier eftersom de inte har en kung.",
+                    forklaring: "Att sakna kung gör ett land till en republik, men inte nödvändigtvis till en demokrati – det finns diktaturer som också är republiker."
+                }
+            },
+            {
+                term: "Statschef",
+                definition: "Den som är högst upp i landet (t.ex. kung eller president).",
+                sentence: "I Sverige är kungen _____, men han representerar landet utan att fatta politiska beslut.",
+                scenario: "En person representerar landet officiellt vid statsbesök och utomlands, men har ingen daglig politisk makt i landet.",
+                ickeExempel: {
+                    korrekt: "I Sverige är kungen statschef men saknar politisk makt – den innehas av riksdag och regering.",
+                    icke: "Statsministern är statschef i Sverige.",
+                    forklaring: "Statsministern är regeringschefen men inte statschef – i Sverige är kungen statschef, medan statsministern leder regeringsarbetet."
+                }
+            },
+            {
+                term: "Proportionellt valsystem",
+                definition: "Partier får lika många platser som röster i valet.",
+                sentence: "Med ett _____ speglar riksdagens sammansättning hur folket faktiskt röstade, utan att röster går till spillo.",
+                scenario: "Ett parti som får 20% av rösterna får ungefär 20% av platserna i parlamentet – stora och små partier representeras i proportion till sina väljarandelar.",
+                ickeExempel: {
+                    korrekt: "I proportionellt valsystem speglar parlamentets sammansättning hur folket röstat – ett parti med 20% röster får ungefär 20% av platserna.",
+                    icke: "I proportionellt valsystem vinner alltid det parti som har flest röster alla platser i parlamentet.",
+                    forklaring: "Att vinnaren tar allt är ett majoritetssystem (winner-takes-all) – proportionellt valsystem fördela platser i proportion till rösterna."
+                }
+            }
         ];
 
         function shuffleArray(arr) {
@@ -82,17 +282,8 @@
                 }
             };
 
-            const rättaAlla = () => {
-                setStatuses(statuses.map(s => s === 'correct' ? 'correct' : 'wrong-final'));
-                setDone(true);
-            };
-
-            const börjaOm = () => {
-                setInputs(concepts.map(() => ''));
-                setAttempts(concepts.map(() => 0));
-                setStatuses(concepts.map(() => null));
-                setDone(false);
-            };
+            const rättaAlla = () => { setStatuses(statuses.map(s => s === 'correct' ? 'correct' : 'wrong-final')); setDone(true); };
+            const börjaOm = () => { setInputs(concepts.map(() => '')); setAttempts(concepts.map(() => 0)); setStatuses(concepts.map(() => null)); setDone(false); };
 
             const correctCount = statuses.filter(s => s === 'correct').length;
             const allDone = done || statuses.every(s => s === 'correct' || s === 'wrong-final');
@@ -107,7 +298,6 @@
                             ))}
                         </div>
                     </div>
-
                     <div className="grid gap-4">
                         {concepts.map((c, i) => {
                             const parts = c.sentence.split('_____');
@@ -116,26 +306,13 @@
                                 <div key={i} className={`bg-white p-5 rounded-2xl shadow-sm border-l-8 transition-all ${st === 'correct' ? 'border-green-500' : st === 'wrong-final' ? 'border-red-400' : 'border-yellow-400'}`}>
                                     <p className="text-slate-700 mb-3 leading-relaxed">{parts[0]}<span className="font-bold text-yellow-600">[_____]</span>{parts[1]}</p>
                                     {st === 'correct' ? (
-                                        <div className="flex flex-wrap items-center gap-2 text-green-600">
-                                            <span className="font-bold">✓ {c.term}</span>
-                                            <span className="text-sm font-normal text-slate-500">– {c.definition}</span>
-                                        </div>
+                                        <div className="flex flex-wrap items-center gap-2 text-green-600"><span className="font-bold">✓ {c.term}</span><span className="text-sm font-normal text-slate-500">– {c.definition}</span></div>
                                     ) : st === 'wrong-final' ? (
-                                        <div>
-                                            <p className="text-red-500 text-sm">Rätt svar: <span className="font-bold">{c.term}</span></p>
-                                            <p className="text-slate-500 text-sm mt-1">{c.definition}</p>
-                                        </div>
+                                        <div><p className="text-red-500 text-sm">Rätt svar: <span className="font-bold">{c.term}</span></p><p className="text-slate-500 text-sm mt-1">{c.definition}</p></div>
                                     ) : (
                                         <div>
                                             <div className="flex gap-2">
-                                                <input
-                                                    type="text"
-                                                    value={inputs[i]}
-                                                    onChange={e => { const v = [...inputs]; v[i] = e.target.value; setInputs(v); }}
-                                                    onKeyDown={e => e.key === 'Enter' && submit(i)}
-                                                    placeholder="Skriv begreppet och tryck Enter..."
-                                                    className="flex-1 border-2 border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:border-yellow-400 text-sm"
-                                                />
+                                                <input type="text" value={inputs[i]} onChange={e => { const v = [...inputs]; v[i] = e.target.value; setInputs(v); }} onKeyDown={e => e.key === 'Enter' && submit(i)} placeholder="Skriv begreppet och tryck Enter..." className="flex-1 border-2 border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:border-yellow-400 text-sm" />
                                                 <button onClick={() => submit(i)} className="bg-yellow-400 text-yellow-900 px-4 py-2 rounded-xl font-bold hover:bg-yellow-500 transition-colors">→</button>
                                             </div>
                                             {st === 'wrong-once' && <p className="text-orange-500 text-sm mt-2 font-medium">Är du säker att du stavat rätt?</p>}
@@ -145,12 +322,10 @@
                             );
                         })}
                     </div>
-
                     <div className="mt-8 flex justify-between items-center">
                         <button onClick={börjaOm} className="text-slate-500 hover:text-slate-700 font-medium transition-colors">↺ Börja om</button>
                         {!allDone && <button onClick={rättaAlla} className="bg-slate-800 text-white px-6 py-3 rounded-2xl font-bold hover:bg-slate-700 transition-colors">Rätta alla</button>}
                     </div>
-
                     {allDone && (
                         <div className="mt-8 bg-yellow-50 border-2 border-yellow-400 rounded-3xl p-8 text-center">
                             <p className="text-5xl font-bold text-yellow-500 mb-2">{correctCount}/{concepts.length}</p>
@@ -158,6 +333,128 @@
                             <button onClick={börjaOm} className="bg-yellow-400 text-yellow-900 px-8 py-3 rounded-2xl font-bold hover:bg-yellow-500 transition-colors">Börja om</button>
                         </div>
                     )}
+                </div>
+            );
+        }
+
+        function ScenarioView() {
+            const [shuffledIdxs] = useState(() => shuffleArray(concepts.map((_, i) => i)));
+            const [current, setCurrent] = useState(0);
+            const [answered, setAnswered] = useState(null);
+            const [selected, setSelected] = useState(null);
+            const [score, setScore] = useState(0);
+            const [done, setDone] = useState(false);
+            const [termOptions, setTermOptions] = useState(() => shuffleArray(concepts.map(c => c.term)));
+
+            const conceptIdx = shuffledIdxs[current];
+            const concept = concepts[conceptIdx];
+
+            const handleSelect = (term) => {
+                if (answered !== null) return;
+                setSelected(term);
+                const isCorrect = term === concept.term;
+                setAnswered(isCorrect ? 'correct' : 'wrong');
+                if (isCorrect) setScore(s => s + 1);
+            };
+
+            const next = () => {
+                if (current + 1 >= concepts.length) { setDone(true); return; }
+                setCurrent(c => c + 1);
+                setAnswered(null);
+                setSelected(null);
+                setTermOptions(shuffleArray(concepts.map(c => c.term)));
+            };
+
+            const reset = () => {
+                setCurrent(0); setAnswered(null); setSelected(null); setScore(0); setDone(false);
+                setTermOptions(shuffleArray(concepts.map(c => c.term)));
+            };
+
+            if (done) return (
+                <div className="text-center">
+                    <div className="bg-yellow-50 border-2 border-yellow-400 rounded-3xl p-8 mb-6">
+                        <p className="text-5xl font-bold text-yellow-500 mb-2">{score}/{concepts.length}</p>
+                        <p className="text-xl font-bold text-slate-800 mb-4">{getFeedback(score, concepts.length)}</p>
+                        <button onClick={reset} className="bg-yellow-400 text-yellow-900 px-8 py-3 rounded-2xl font-bold hover:bg-yellow-500 transition-colors">Börja om</button>
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="max-w-2xl mx-auto">
+                    <div className="flex justify-between items-center mb-3">
+                        <span className="font-bold text-yellow-700">Poäng: {score}</span>
+                        <span className="text-slate-400 text-sm">{current + 1} / {concepts.length}</span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+                        <div className="bg-yellow-400 h-2 rounded-full transition-all" style={{width: `${((current + 1) / concepts.length) * 100}%`}}></div>
+                    </div>
+                    <div className="bg-white p-6 rounded-3xl shadow-lg mb-6">
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Vilket begrepp beskrivs?</p>
+                        <p className="text-lg text-slate-800 leading-relaxed italic">"{concept.scenario}"</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 mb-6">
+                        {termOptions.map((term, i) => (
+                            <button key={i} onClick={() => handleSelect(term)} disabled={answered !== null}
+                                className={`p-4 rounded-2xl font-bold border-2 text-left transition-all ${
+                                    answered === null ? 'bg-white border-slate-200 hover:border-yellow-400 hover:bg-yellow-50' :
+                                    term === concept.term ? 'bg-green-50 border-green-500 text-green-700' :
+                                    term === selected ? 'bg-red-50 border-red-500 text-red-700' :
+                                    'bg-white border-slate-100 text-slate-300'
+                                }`}>
+                                {term}
+                            </button>
+                        ))}
+                    </div>
+                    {answered !== null && (
+                        <div>
+                            <div className={`p-4 rounded-2xl text-sm font-medium mb-4 ${answered === 'correct' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>
+                                {answered === 'correct' ? `✓ Rätt! ${concept.definition}` : `✗ Fel. Rätt svar: ${concept.term} – ${concept.definition}`}
+                            </div>
+                            <button onClick={next} className="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-slate-800 transition-all">
+                                {current + 1 >= concepts.length ? 'Se resultat' : 'Nästa scenario →'}
+                            </button>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        function IckeExempelView() {
+            const [revealed, setRevealed] = useState(concepts.map(() => false));
+            const toggle = (i) => { const r = [...revealed]; r[i] = !r[i]; setRevealed(r); };
+
+            return (
+                <div className="grid gap-5">
+                    {concepts.map((c, i) => (
+                        <div key={i} className="bg-white rounded-2xl shadow-sm border-l-8 border-yellow-400 overflow-hidden">
+                            <div className="p-5">
+                                <div className="flex items-center gap-3 mb-3">
+                                    <span className="bg-yellow-100 text-yellow-700 text-xs font-bold px-2 py-1 rounded-lg">{i + 1}</span>
+                                    <h3 className="text-lg font-bold">{c.term}</h3>
+                                </div>
+                                <div className="mb-3 p-3 bg-yellow-50 rounded-xl">
+                                    <p className="text-xs font-bold text-yellow-700 uppercase tracking-wider mb-1">✓ Korrekt tillämpning</p>
+                                    <p className="text-slate-700 text-sm">{c.ickeExempel.korrekt}</p>
+                                </div>
+                                <button onClick={() => toggle(i)} className={`w-full py-2 rounded-xl font-bold text-sm transition-all ${revealed[i] ? 'bg-red-100 text-red-700' : 'bg-slate-800 text-white hover:bg-slate-700'}`}>
+                                    {revealed[i] ? 'Dölj icke-exempel' : 'Visa icke-exempel 🪤'}
+                                </button>
+                            </div>
+                            {revealed[i] && (
+                                <div className="px-5 pb-5">
+                                    <div className="mb-3 p-3 bg-red-50 rounded-xl">
+                                        <p className="text-xs font-bold text-red-700 uppercase tracking-wider mb-1">✗ Trovärdigt icke-exempel (fälla)</p>
+                                        <p className="text-slate-700 text-sm">{c.ickeExempel.icke}</p>
+                                    </div>
+                                    <div className="p-3 bg-amber-50 rounded-xl">
+                                        <p className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-1">Förklaring av fällan</p>
+                                        <p className="text-slate-700 text-sm">{c.ickeExempel.forklaring}</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ))}
                 </div>
             );
         }
@@ -175,8 +472,7 @@
                 }, 150);
             };
 
-            const primary = 'bg-yellow-400';
-            const activeTab = 'bg-yellow-400 font-bold shadow-sm';
+            const activeTab = 'bg-yellow-400 text-yellow-900 font-bold shadow-sm';
             const inactiveTab = 'text-slate-500';
 
             return (
@@ -187,10 +483,12 @@
                         <div className="w-36"></div>
                     </header>
 
-                    <div className="max-w-sm mx-auto mb-10 flex bg-white p-1 rounded-full shadow-md border border-slate-200">
+                    <div className="max-w-2xl mx-auto mb-10 flex bg-white p-1 rounded-full shadow-md border border-slate-200">
                         <button onClick={() => setView('list')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'list' ? activeTab : inactiveTab}`}>Lista</button>
                         <button onClick={() => setView('flashcards')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'flashcards' ? activeTab : inactiveTab}`}>Flashcards</button>
                         <button onClick={() => setView('lucktext')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'lucktext' ? activeTab : inactiveTab}`}>Lucktext</button>
+                        <button onClick={() => setView('scenario')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'scenario' ? activeTab : inactiveTab}`}>Scenario</button>
+                        <button onClick={() => setView('icke')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'icke' ? activeTab : inactiveTab}`}>Icke-ex.</button>
                     </div>
 
                     <main className="max-w-2xl mx-auto">
@@ -228,6 +526,8 @@
                             </div>
                         )}
                         {view === 'lucktext' && <LucktextView />}
+                        {view === 'scenario' && <ScenarioView />}
+                        {view === 'icke' && <IckeExempelView />}
                     </main>
 
                     <footer className="mt-12 text-center text-slate-400 text-sm italic pb-8">Källa: Samhällskunskap – Demokrati begreppslista</footer>
