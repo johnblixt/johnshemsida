@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NK – Hållbarhet Begreppslista</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: 'Fredoka', sans-serif; }
+    .flip-card { perspective: 1000px; height: 350px; width: 100%; max-width: 400px; cursor: pointer; }
+    .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+    .flipped-classes { transform: rotateY(180deg); }
+    .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+    .flip-card-front { background-color: #22c55e; border: 6px solid white; }
+    .flip-card-back { background-color: white; border: 6px solid #22c55e; transform: rotateY(180deg); }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const PRIMARY = "#22c55e";
+const PRIMARY_LIGHT = "#dcfce7";
+const PRIMARY_DARK = "#14532d";
+
+const concepts = [
+  {
+    term: "Hållbar utveckling",
+    definition: "Utveckling som gör att människor kan leva bra idag utan att förstöra för framtiden.",
+    sentence: "FN:s definition av _____ handlar om att nutidens behov tillgodoses utan att framtida generationer hindras från att tillgodose sina.",
+    scenario: "En stad planerar sin energiförsörjning och väljer lösningar som fungerar för invånarna idag men som inte utarmar naturresurser eller skadar klimatet för barnens skull.",
+    ickeExempel: {
+      korrekt: "Att bygga ett samhälle där ekonomi, miljö och social rättvisa balanseras så att framtida generationer också kan leva bra.",
+      icke: "Att maximera ekonomisk tillväxt nu och använda vinsten till att reparera miljöskador i framtiden.",
+      forklaring: "Hållbar utveckling innebär att inte skapa skadorna från början – inte att skapa skador nu och hoppas på att vi kan reparera dem senare."
+    }
+  },
+  {
+    term: "Ekologisk hållbarhet",
+    definition: "Att ta hand om naturen, djuren och växterna så att de kan fortsätta finnas.",
+    sentence: "Att skydda naturreservat och bevara hotade arter är exempel på _____, den dimension av hållbarhet som handlar om naturens välmående.",
+    scenario: "Ett skogsbolag avverkar bara så mycket skog per år som hinner växa tillbaka, och lämnar ytor orörda för att djur och växter ska kunna leva kvar.",
+    ickeExempel: {
+      korrekt: "Att fiska inom kvoter som tillåter fiskbestånden att återhämta sig naturligt.",
+      icke: "Att bygga ett hållbart ekonomiskt system som gynnar alla medborgare i ett land.",
+      forklaring: "Ekonomiskt välmående för medborgare handlar om social eller ekonomisk hållbarhet – ekologisk hållbarhet fokuserar specifikt på naturens och ekosystemens välmående."
+    }
+  },
+  {
+    term: "Social hållbarhet",
+    definition: "Att alla människor får må bra, ha lika rättigheter och trygghet.",
+    sentence: "Satsningar på skola, sjukvård och jämlikhet är kärnan i _____, den dimension av hållbarhet som sätter människors välmående i centrum.",
+    scenario: "En kommun arbetar aktivt för att alla invånare – oavsett bakgrund eller inkomst – ska ha tillgång till bra bostäder, utbildning och hälsovård.",
+    ickeExempel: {
+      korrekt: "Att säkerställa att alla barn i ett land har tillgång till gratis utbildning och sjukvård.",
+      icke: "Att se till att ett företag är lönsamt på lång sikt utan att ta för stora risker.",
+      forklaring: "Långsiktig företagslönsamhet och riskhantering handlar om ekonomisk hållbarhet – social hållbarhet fokuserar på människors rättigheter, hälsa och rättvisa."
+    }
+  },
+  {
+    term: "Ekonomisk hållbarhet",
+    definition: "Att använda pengar och resurser på ett sätt som håller länge och inte skadar miljön.",
+    sentence: "_____ kräver att företag och länder tänker långsiktigt och inte förbrukar resurser snabbare än de kan förnyas.",
+    scenario: "Ett företag investerar i energieffektivisering och förnybar energi istället för att ta billiga genvägar med fossila bränslen, för att säkra sin verksamhet även på 30 års sikt.",
+    ickeExempel: {
+      korrekt: "Att driva ett företag som är lönsamt utan att förbruka naturresurser snabbare än de förnyas.",
+      icke: "Att dela ut pengar jämnt till alla medborgare så att alla har lika mycket.",
+      forklaring: "Jämn fördelning av pengar är en fråga om social rättvisa och social hållbarhet – ekonomisk hållbarhet handlar om att resurser och ekonomisk aktivitet ska fungera långsiktigt utan att skada miljön."
+    }
+  },
+  {
+    term: "Parisavtalet",
+    definition: "Ett internationellt avtal där länderna lovar att minska utsläppen så att den globala uppvärmningen blir under 2 grader, helst inte mer än 1,5 grader.",
+    sentence: "Enligt _____ från 2015 ska alla länder som skrivit på minska sina växthusgasutsläpp och rapportera sina framsteg regelbundet.",
+    scenario: "Nästan alla världens länder samlas och undertecknar ett juridiskt bindande löfte om att minska koldioxidutsläppen tillräckligt för att jordens temperatur inte ska stiga med mer än en viss gräns.",
+    ickeExempel: {
+      korrekt: "Ett globalt avtal där länder förbinder sig att minska utsläpp för att hålla uppvärmningen under 2°C.",
+      icke: "Ett avtal mellan europeiska länder om att förbjuda fossila bränslen senast år 2030.",
+      forklaring: "Parisavtalet är ett globalt avtal med nästan alla världens länder – inte bara Europa. Det sätter inte heller ett totalförbud mot fossila bränslen utan kräver att varje land minskar sina utsläpp."
+    }
+  },
+  {
+    term: "Globala målen",
+    definition: "17 mål som ingår i Agenda 2030, till exempel att stoppa fattigdom och skydda miljön.",
+    sentence: "FN:s _____ ska vara uppnådda år 2030 och täcker allt från hunger och hälsa till klimatåtgärder och rättvis fred.",
+    scenario: "En organisation arbetar mot att avskaffa extrem fattigdom i ett land, förbättra tillgången till rent vatten och minska ojämlikheten – allt som en del av ett ramverk med 17 punkter.",
+    ickeExempel: {
+      korrekt: "17 FN-mål för att till 2030 bekämpa fattigdom, ojämlikhet och klimatförändring globalt.",
+      icke: "En lista med regler som EU-länder måste följa för att minska sina koldioxidutsläpp.",
+      forklaring: "Globala målen är FN:s mål som gäller för hela världen – inte bara EU. De handlar om mycket mer än utsläpp och är inte juridiskt tvingande regler utan gemensamma mål."
+    }
+  },
+  {
+    term: "Ekologiskt fotavtryck",
+    definition: "Ett mått på hur mycket natur och resurser vi använder.",
+    sentence: "En persons _____ kan minskas genom att äta mindre kött, flyga mer sällan och köpa begagnat istället för nytt.",
+    scenario: "Forskare beräknar hur mycket produktiv mark och hav som behövs för att försörja en genomsnittlig persons konsumtion av mat, prylar, energi och för att absorbera deras avfall.",
+    ickeExempel: {
+      korrekt: "Att beräkna hur många hektar natur som krävs för att hålla en persons livsstil – inklusive mat, energi och avfall.",
+      icke: "Att mäta hur stora koldioxidutsläpp ett land har per invånare.",
+      forklaring: "Koldioxidutsläpp per person är ett koldioxidavtryck – det ekologiska fotavtrycket är bredare och mäter hela resursanvändningen, inte bara utsläpp."
+    }
+  },
+  {
+    term: "Klimaträttvisa",
+    definition: "Att de länder och människor som släpper ut mest tar störst ansvar och hjälper de mest drabbade.",
+    sentence: "_____ är en central fråga i klimatförhandlingar eftersom fattiga länder ofta drabbas hårdast trots att de bidragit minst till utsläppen.",
+    scenario: "Rika industrinationer som historiskt orsakat merparten av koldioxidutsläppen lovas finansiellt stöd till låginkomstländer vars kustsamhällen nu drabbas av stigande havsnivåer.",
+    ickeExempel: {
+      korrekt: "Att rika länder, som historiskt bidragit mest till utsläppen, tar störst ekonomiskt ansvar för att hjälpa drabbade länder.",
+      icke: "Att alla länder betalar exakt lika mycket till en global klimatfond oavsett hur stora deras utsläpp är.",
+      forklaring: "Lika betalning oavsett utsläpp är raka motsatsen till klimaträttvisa – principen bygger på att ansvar ska vara proportionerligt mot hur mycket man bidragit till problemet."
+    }
+  },
+  {
+    term: "Förnybara naturresurser",
+    definition: "Resurser som naturen gör nya av, till exempel sol, vind, skog och fisk.",
+    sentence: "Sol och vind räknas som _____ eftersom de ständigt fylls på av naturen och inte tar slut vid normal användning.",
+    scenario: "En bonde skördar timmer från en skog där lika många träd planteras som avverkas varje år, vilket gör att skogen aldrig minskar.",
+    ickeExempel: {
+      korrekt: "Solenergi och vind är förnybara resurser eftersom de ständigt regenereras av naturen.",
+      icke: "Naturgas är en förnybar resurs eftersom den finns i stora mängder under marken.",
+      forklaring: "Stora mängder betyder inte förnybar – naturgas är en fossil resurs som bildas under miljontals år och inte förnyas i mänsklig tidsskala."
+    }
+  },
+  {
+    term: "Icke-förnybara naturresurser",
+    definition: "Resurser som tar slut om vi använder dem, till exempel olja, kol och metaller.",
+    sentence: "Olja, kol och koppar är _____ – de bildades under miljontals år och kan inte ersättas när de är förbrukade.",
+    scenario: "En gruva utvinner kobolt ur marken för att tillverka batterier. När fyndigheten är tömd finns det inte mer – ny kobolt bildas inte i mänsklig tidsskala.",
+    ickeExempel: {
+      korrekt: "Olja är en icke-förnybar resurs – den bildades under miljontals år och kan inte ersättas när den är slut.",
+      icke: "Fisk i havet är en icke-förnybar resurs eftersom bestånden minskar när vi fiskar för mycket.",
+      forklaring: "Fisk är principiellt en förnybar resurs – den kan reproducera sig om vi fiskar inom rimliga gränser. Den blir inte icke-förnybar av att vi fiskar för mycket, utan för att vi inte förvaltar den hållbart."
+    }
+  },
+  {
+    term: "Livscykelanalys (LCA)",
+    definition: "Att undersöka hur en produkt påverkar miljön från tillverkning till avfall.",
+    sentence: "En _____ av en elbil visar att tillverkningen av batteriet orsakar stora utsläpp, trots att bilen sedan kör på ren el.",
+    scenario: "Inför lanseringen av en ny plastflaska analyserar ett företag miljöpåverkan från utvinning av råolja, plastproduktion, transport, användning och slutlig sophantering.",
+    ickeExempel: {
+      korrekt: "Att kartlägga en produkts totala miljöpåverkan från råvaruutvinning till sophantering.",
+      icke: "Att räkna ut hur länge en produkt håller innan den går sönder och behöver bytas ut.",
+      forklaring: "Hur länge en produkt håller är hållbarhet i teknisk mening – en LCA är en miljöanalys som mäter resursanvändning och utsläpp i varje steg av produktens liv."
+    }
+  },
+  {
+    term: "Cirkulär ekonomi",
+    definition: "Att använda saker längre, laga dem och återvinna så att de inte blir sopor.",
+    sentence: "I en _____ designas produkter från början för att kunna repareras, återanvändas och till slut återvinnas utan att skapa avfall.",
+    scenario: "Ett klädföretag tar tillbaka gamla kläder från kunder, reparerar dem och säljer dem igen – och material från trasiga plagg används till att sy nya.",
+    ickeExempel: {
+      korrekt: "Att designa produkter för att kunna repareras och återvinnas så att material stannar i kretslopp.",
+      icke: "Att köpa produkter tillverkade i länder med lägre lön för att hålla priserna nere.",
+      forklaring: "Billig produktion i lågkostnadsländer handlar om ekonomisk effektivitet – cirkulär ekonomi handlar om att hålla material i kretslopp och minimera avfall, oavsett var produktionen sker."
+    }
+  },
+  {
+    term: "Biologisk mångfald",
+    definition: "Att det finns många olika arter av djur, växter och naturtyper.",
+    sentence: "En regnskog med tusentals olika arter har hög _____, vilket gör ekosystemet mer stabilt och motståndskraftigt.",
+    scenario: "Forskare inventerar ett område och noterar att det finns hundratals insektsarter, dussintals fågelarter och mängder av olika växtarter – alla beroende av varandra.",
+    ickeExempel: {
+      korrekt: "En regnskog med tusentals olika arter av insekter, växter och fåglar är ett exempel på hög biologisk mångfald.",
+      icke: "En åker med miljarder vetemogna ax har hög biologisk mångfald eftersom det finns enormt många individer.",
+      forklaring: "Biologisk mångfald handlar om variationen av arter – inte antalet individer av en enda art. En monokulturåker med bara vete har extremt låg biologisk mångfald."
+    }
+  },
+  {
+    term: "Ekosystemtjänster",
+    definition: "Det som naturen ger oss gratis, till exempel mat, rent vatten och syre.",
+    sentence: "Bin som pollinerar våra grödor är ett exempel på _____ – tjänster naturen utför utan att vi behöver betala för dem.",
+    scenario: "En stads dricksvatten renas naturligt när det filtreras genom våtmarker och skogsmark uppströms, vilket sparar miljontals kronor i artificiella reningsanläggningar.",
+    ickeExempel: {
+      korrekt: "Pollinering av grödor av bin, rening av vatten i våtmarker och lagring av kol i skogar är ekosystemtjänster.",
+      icke: "Tjänster som naturguider erbjuder på nationalparker och naturreservat är ekosystemtjänster.",
+      forklaring: "Naturguiders arbete är en kommersiell tjänst som människor erbjuder – ekosystemtjänster är processer som naturen själv utför utan mänsklig inblandning."
+    }
+  },
+  {
+    term: "Hot mot biologisk mångfald",
+    definition: "Saker som skadar djur och växter, till exempel skogsavverkning, gifter och klimatförändringar.",
+    sentence: "Avskogning, spridning av bekämpningsmedel och klimatförändringar räknas alla som _____ och bidrar till att allt fler arter utrotas.",
+    scenario: "En tropisk skog huggs ner för att ge plats åt en palmoljeodling – hundratals växt- och djurarter förlorar sin livsmiljö och riskerar att dö ut.",
+    ickeExempel: {
+      korrekt: "Avskogning, klimatförändringar och spridning av gifter är direkta hot mot biologisk mångfald.",
+      icke: "Att skydda ett naturreservat från jakt och exploatering är ett hot mot biologisk mångfald.",
+      forklaring: "Skydd av naturreservat är en åtgärd för att bevara biologisk mångfald – inte ett hot mot den. Hot är sådant som minskar mångfalden, inte sådant som skyddar den."
+    }
+  },
+  {
+    term: "Växthuseffekten",
+    definition: "En process där gaser i luften håller kvar värme på jorden.",
+    sentence: "Den naturliga _____ gör jorden tillräckligt varm för liv, men mänskliga utsläpp förstärker den och höjer temperaturen mer än vad som är hållbart.",
+    scenario: "Solenergi når jordens yta och värmer upp den – men istället för att all värme strålar ut i rymden, fångas en del upp av gaser i atmosfären och stannar kvar nära ytan.",
+    ickeExempel: {
+      korrekt: "Att växthusgaser som koldioxid och metan fångar upp värme i atmosfären och hindrar den från att lämna jorden.",
+      icke: "Att ozonlagret i stratosfären skyddar oss från farlig UV-strålning från solen.",
+      forklaring: "Ozonskiktet skyddar mot UV-strålning – det är en annan process. Växthuseffekten handlar om att gaser håller kvar värme nära jordytan, vilket är ett separat fenomen."
+    }
+  },
+  {
+    term: "Förnybara energikällor",
+    definition: "Energi som kommer från källor som inte tar slut, till exempel sol, vind och vatten.",
+    sentence: "Sverige producerar stor del av sin el från _____ som vattenkraft och vindkraft, vilket minskar beroendet av fossila bränslen.",
+    scenario: "En vindpark på havet producerar el utan att förbruka någon råvara – vinden blåser konstant och energikällan tar inte slut oavsett hur länge turbinerna snurrar.",
+    ickeExempel: {
+      korrekt: "Sol, vind och vattenkraft är förnybara energikällor eftersom de ständigt regenereras av naturen.",
+      icke: "Kärnkraft är en förnybar energikälla eftersom den inte producerar koldioxid vid elproduktionen.",
+      forklaring: "Kärnkraft producerar visserligen lite koldioxid men är inte förnybar – uran är en ändlig resurs som utvinns ur marken och tar slut. Förnybar innebär att energikällan konstant regenereras."
+    }
+  },
+  {
+    term: "Icke-förnybara energikällor",
+    definition: "Energi från källor som tar slut, till exempel olja, kol och kärnkraft.",
+    sentence: "Olja och kol är _____ eftersom de är fossila resurser som bildats under miljontals år och inte kan ersättas när de är slut.",
+    scenario: "En stad driver sina bussar på diesel – ett bränsle som utvinns ur begränsade oljefyndigheter. När världens oljereserver tar slut finns ingen naturlig process som snabbt skapar ny olja.",
+    ickeExempel: {
+      korrekt: "Olja och kol är icke-förnybara energikällor eftersom de bildas under miljontals år och inte kan ersättas i mänsklig tidsskala.",
+      icke: "Biogas från matrester är en icke-förnybar energikälla eftersom det tar tid att producera.",
+      forklaring: "Att det tar tid att producera gör inte något till icke-förnybart – biogas produceras av organiskt material som kontinuerligt förnyas. Icke-förnybart innebär att resursen bildas på geologisk tidsskala och inte kan ersättas."
+    }
+  },
+  {
+    term: "Klimatanpassning",
+    definition: "Att förbereda sig för och minska skador från klimatförändringar.",
+    sentence: "Att bygga högre vallar längs kusten och plantera värmetåliga grödor är exempel på _____ – åtgärder för att hantera de klimatförändringar som redan sker.",
+    scenario: "En kuststad vet att havsnivån kommer att stiga de kommande decennierna och börjar bygga barriärer, omplanera bebyggelse och skapa grönområden som absorberar översvämningsvatten.",
+    ickeExempel: {
+      korrekt: "Att bygga vallar mot översvämning och plantera värmetåliga grödor för att hantera ett varmare klimat.",
+      icke: "Att byta ut kolkraftverk mot solkraft för att minska koldioxidutsläppen.",
+      forklaring: "Att byta energikälla för att minska utsläpp är en klimatåtgärd (mitigation) – klimatanpassning handlar om att anpassa sig till de förändringar som redan sker eller förväntas ske, inte om att minska utsläppen."
+    }
+  },
+  {
+    term: "Klimatåtgärder",
+    definition: "Saker vi gör för att minska utsläpp och bromsa klimatförändringarna.",
+    sentence: "Att investera i solenergi, resa kollektivt och äta mer växtbaserat räknas som _____ eftersom de minskar utsläppen av växthusgaser.",
+    scenario: "En regering beslutar om att subventionera elbilar, bygga ut kollektivtrafiken och fasa ut kolkraft – allt för att minska landets koldioxidutsläpp och bromsa den globala uppvärmningen.",
+    ickeExempel: {
+      korrekt: "Att fasa ut fossila bränslen, investera i förnybar energi och minska köttkonsumtion för att minska utsläppen.",
+      icke: "Att flytta kustbebyggelse till högre mark för att undvika skador från stigande havsnivåer.",
+      forklaring: "Att flytta bebyggelse bort från hotat område är klimatanpassning – man anpassar sig till förändringarna. Klimatåtgärder handlar om att minska de utsläpp som orsakar förändringarna från första början."
+    }
+  }
+];
+
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function getFeedback(score, total) {
+  const p = score / total;
+  if (p >= 0.9) return "Redo för provet! Fantastiskt bra! 🌟";
+  if (p >= 0.7) return "Bra jobbat! Öva lite till på de du missade. 👍";
+  if (p >= 0.5) return "Halvvägs! Fortsätt träna. 📚";
+  return "Öva lite till – du är på rätt väg! 💪";
+}
+
+// ── LUCKTEXT ──
+function LucktextView() {
+  const [inputs, setInputs] = useState(concepts.map(() => ''));
+  const [attempts, setAttempts] = useState(concepts.map(() => 0));
+  const [statuses, setStatuses] = useState(concepts.map(() => null));
+  const [done, setDone] = useState(false);
+
+  const normalize = s => s.trim().toLowerCase();
+
+  const submit = (i) => {
+    if (statuses[i] === 'correct' || statuses[i] === 'wrong-final') return;
+    if (normalize(inputs[i]) === normalize(concepts[i].term)) {
+      const s = [...statuses]; s[i] = 'correct'; setStatuses(s);
+    } else {
+      const a = [...attempts]; a[i]++; setAttempts(a);
+      const s = [...statuses]; s[i] = a[i] >= 2 ? 'wrong-final' : 'wrong-once'; setStatuses(s);
+    }
+  };
+
+  const rättaAlla = () => { setStatuses(statuses.map(s => s === 'correct' ? 'correct' : 'wrong-final')); setDone(true); };
+  const börjaOm = () => { setInputs(concepts.map(() => '')); setAttempts(concepts.map(() => 0)); setStatuses(concepts.map(() => null)); setDone(false); };
+
+  const correctCount = statuses.filter(s => s === 'correct').length;
+  const allDone = done || statuses.every(s => s === 'correct' || s === 'wrong-final');
+
+  return (
+    <div>
+      <div className="mb-6 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Begreppsbank</p>
+        <div className="flex flex-wrap gap-2">
+          {concepts.map((c, i) => (
+            <span key={i} className={`px-3 py-1 rounded-full text-sm font-medium border transition-all ${statuses[i] === 'correct' ? 'line-through text-slate-400 bg-green-50 border-green-200' : 'bg-green-50 border-green-300 text-green-800'}`}>{c.term}</span>
+          ))}
+        </div>
+      </div>
+      <div className="grid gap-4">
+        {concepts.map((c, i) => {
+          const parts = c.sentence.split('_____');
+          const st = statuses[i];
+          return (
+            <div key={i} className={`bg-white p-5 rounded-2xl shadow-sm border-l-8 transition-all ${st === 'correct' ? 'border-green-500' : st === 'wrong-final' ? 'border-red-400' : 'border-green-400'}`}>
+              <p className="text-slate-700 mb-3 leading-relaxed">{parts[0]}<span className="font-bold text-green-600">[_____]</span>{parts[1]}</p>
+              {st === 'correct' ? (
+                <div className="flex flex-wrap items-center gap-2 text-green-600"><span className="font-bold">✓ {c.term}</span><span className="text-sm font-normal text-slate-500">– {c.definition}</span></div>
+              ) : st === 'wrong-final' ? (
+                <div><p className="text-red-500 text-sm">Rätt svar: <span className="font-bold">{c.term}</span></p><p className="text-slate-500 text-sm mt-1">{c.definition}</p></div>
+              ) : (
+                <div>
+                  <div className="flex gap-2">
+                    <input type="text" value={inputs[i]} onChange={e => { const v = [...inputs]; v[i] = e.target.value; setInputs(v); }} onKeyDown={e => e.key === 'Enter' && submit(i)} placeholder="Skriv begreppet och tryck Enter..." className="flex-1 border-2 border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:border-green-400 text-sm" />
+                    <button onClick={() => submit(i)} className="bg-green-500 text-white px-4 py-2 rounded-xl font-bold hover:bg-green-600 transition-colors">→</button>
+                  </div>
+                  {st === 'wrong-once' && <p className="text-orange-500 text-sm mt-2 font-medium">Är du säker att du stavat rätt?</p>}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <div className="mt-8 flex justify-between items-center">
+        <button onClick={börjaOm} className="text-slate-500 hover:text-slate-700 font-medium transition-colors">↺ Börja om</button>
+        {!allDone && <button onClick={rättaAlla} className="bg-slate-800 text-white px-6 py-3 rounded-2xl font-bold hover:bg-slate-700 transition-colors">Rätta alla</button>}
+      </div>
+      {allDone && (
+        <div className="mt-8 bg-green-50 border-2 border-green-400 rounded-3xl p-8 text-center">
+          <p className="text-5xl font-bold text-green-500 mb-2">{correctCount}/{concepts.length}</p>
+          <p className="text-xl font-bold text-slate-800 mb-4">{getFeedback(correctCount, concepts.length)}</p>
+          <button onClick={börjaOm} className="bg-green-500 text-white px-8 py-3 rounded-2xl font-bold hover:bg-green-600 transition-colors">Börja om</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── SCENARIO ──
+function ScenarioView() {
+  const [shuffledIdxs] = useState(() => shuffleArray(concepts.map((_, i) => i)));
+  const [current, setCurrent] = useState(0);
+  const [answered, setAnswered] = useState(null);
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [done, setDone] = useState(false);
+  const [termOptions, setTermOptions] = useState(() => shuffleArray(concepts.map(c => c.term)));
+
+  const conceptIdx = shuffledIdxs[current];
+  const concept = concepts[conceptIdx];
+
+  const handleSelect = (term) => {
+    if (answered !== null) return;
+    setSelected(term);
+    const isCorrect = term === concept.term;
+    setAnswered(isCorrect ? 'correct' : 'wrong');
+    if (isCorrect) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (current + 1 >= concepts.length) { setDone(true); return; }
+    setCurrent(c => c + 1);
+    setAnswered(null);
+    setSelected(null);
+    setTermOptions(shuffleArray(concepts.map(c => c.term)));
+  };
+
+  const reset = () => {
+    setCurrent(0); setAnswered(null); setSelected(null); setScore(0); setDone(false);
+    setTermOptions(shuffleArray(concepts.map(c => c.term)));
+  };
+
+  if (done) return (
+    <div className="text-center">
+      <div className="bg-green-50 border-2 border-green-400 rounded-3xl p-8 mb-6">
+        <p className="text-5xl font-bold text-green-500 mb-2">{score}/{concepts.length}</p>
+        <p className="text-xl font-bold text-slate-800 mb-4">{getFeedback(score, concepts.length)}</p>
+        <button onClick={reset} className="bg-green-500 text-white px-8 py-3 rounded-2xl font-bold hover:bg-green-600 transition-colors">Börja om</button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="max-w-2xl mx-auto">
+      <div className="flex justify-between items-center mb-3">
+        <span className="font-bold text-green-700">Poäng: {score}</span>
+        <span className="text-slate-400 text-sm">{current + 1} / {concepts.length}</span>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+        <div className="bg-green-500 h-2 rounded-full transition-all" style={{width: `${((current + 1) / concepts.length) * 100}%`}}></div>
+      </div>
+      <div className="bg-white p-6 rounded-3xl shadow-lg mb-6">
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Vilket begrepp beskrivs?</p>
+        <p className="text-lg text-slate-800 leading-relaxed italic">"{concept.scenario}"</p>
+      </div>
+      <div className="grid grid-cols-2 gap-3 mb-6">
+        {termOptions.map((term, i) => (
+          <button key={i} onClick={() => handleSelect(term)} disabled={answered !== null}
+            className={`p-4 rounded-2xl font-bold border-2 text-left transition-all text-sm ${
+              answered === null ? 'bg-white border-slate-200 hover:border-green-400 hover:bg-green-50' :
+              term === concept.term ? 'bg-green-50 border-green-500 text-green-700' :
+              term === selected ? 'bg-red-50 border-red-500 text-red-700' :
+              'bg-white border-slate-100 text-slate-300'
+            }`}>
+            {term}
+          </button>
+        ))}
+      </div>
+      {answered !== null && (
+        <div>
+          <div className={`p-4 rounded-2xl text-sm font-medium mb-4 ${answered === 'correct' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>
+            {answered === 'correct' ? `✓ Rätt! ${concept.definition}` : `✗ Fel. Rätt svar: ${concept.term} – ${concept.definition}`}
+          </div>
+          <button onClick={next} className="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-slate-800 transition-all">
+            {current + 1 >= concepts.length ? 'Se resultat' : 'Nästa scenario →'}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── ICKE-EXEMPEL ──
+function IckeExempelView() {
+  const makeOpts = (c) => {
+    const flip = Math.random() > 0.5;
+    return flip
+      ? [{ text: c.ickeExempel.korrekt, isCorrect: true }, { text: c.ickeExempel.icke, isCorrect: false }]
+      : [{ text: c.ickeExempel.icke, isCorrect: false }, { text: c.ickeExempel.korrekt, isCorrect: true }];
+  };
+  const freshState = () => {
+    const ord = shuffleArray(concepts.map((_, i) => i));
+    return { ord, cur: 0, opts: makeOpts(concepts[ord[0]]), answered: null, selIdx: null, score: 0, done: false };
+  };
+  const [s, setS] = useState(freshState);
+  const concept = concepts[s.ord[s.cur]];
+
+  const handleSelect = (idx) => {
+    if (s.answered !== null) return;
+    const isCorrect = s.opts[idx].isCorrect;
+    setS(prev => ({ ...prev, answered: isCorrect ? 'correct' : 'wrong', selIdx: idx, score: prev.score + (isCorrect ? 1 : 0) }));
+  };
+
+  const next = () => {
+    const nextCur = s.cur + 1;
+    if (nextCur >= concepts.length) { setS(prev => ({ ...prev, done: true })); return; }
+    setS(prev => ({ ...prev, cur: nextCur, opts: makeOpts(concepts[prev.ord[nextCur]]), answered: null, selIdx: null }));
+  };
+
+  const reset = () => setS(freshState);
+
+  if (s.done) return (
+    <div className="text-center">
+      <div className="bg-green-50 border-2 border-green-400 rounded-3xl p-8 mb-6">
+        <p className="text-5xl font-bold text-green-500 mb-2">{s.score}/{concepts.length}</p>
+        <p className="text-xl font-bold text-slate-800 mb-4">{getFeedback(s.score, concepts.length)}</p>
+        <button onClick={reset} className="bg-green-500 text-white px-8 py-3 rounded-2xl font-bold hover:bg-green-600 transition-colors">Börja om</button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="max-w-2xl mx-auto">
+      <div className="flex justify-between items-center mb-3">
+        <span className="font-bold text-green-700">Poäng: {s.score}</span>
+        <span className="text-slate-400 text-sm">{s.cur + 1} / {concepts.length}</span>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+        <div className="bg-green-500 h-2 rounded-full transition-all" style={{width: `${((s.cur + 1) / concepts.length) * 100}%`}}></div>
+      </div>
+      <div className="bg-white p-6 rounded-3xl shadow-lg mb-6">
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Vilket är rätt tillämpning?</p>
+        <h2 className="text-2xl font-bold text-green-700">{concept.term}</h2>
+        <p className="text-sm text-slate-500 mt-1 leading-relaxed">{concept.definition}</p>
+      </div>
+      <div className="grid gap-3 mb-6">
+        {s.opts.map((opt, i) => (
+          <button key={i} onClick={() => handleSelect(i)} disabled={s.answered !== null}
+            className={`p-4 rounded-2xl border-2 text-left transition-all ${
+              s.answered === null ? 'bg-white border-slate-200 hover:border-green-400 hover:bg-green-50' :
+              opt.isCorrect ? 'bg-green-50 border-green-500 text-green-700' :
+              i === s.selIdx ? 'bg-red-50 border-red-500 text-red-700' :
+              'bg-white border-slate-100 text-slate-300'
+            }`}>
+            <span className="font-bold mr-2">{i === 0 ? 'A' : 'B'}.</span>{opt.text}
+          </button>
+        ))}
+      </div>
+      {s.answered !== null && (
+        <div>
+          <div className={`p-4 rounded-2xl text-sm mb-4 ${s.answered === 'correct' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>
+            <p className="font-bold mb-1">{s.answered === 'correct' ? '✓ Rätt!' : '✗ Fel!'}</p>
+            <p>{concept.ickeExempel.forklaring}</p>
+          </div>
+          <button onClick={next} className="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-slate-800 transition-all">
+            {s.cur + 1 >= concepts.length ? 'Se resultat' : 'Nästa begrepp →'}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── APP ──
+function App() {
+  const [view, setView] = useState('list');
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isFlipped, setIsFlipped] = useState(false);
+
+  const nextCard = () => {
+    setIsFlipped(false);
+    setTimeout(() => {
+      let n; do { n = Math.floor(Math.random() * concepts.length); } while (n === currentIndex && concepts.length > 1);
+      setCurrentIndex(n);
+    }, 150);
+  };
+
+  const activeTab = 'bg-green-500 text-white font-bold shadow-sm';
+  const inactiveTab = 'text-slate-500 hover:text-slate-700';
+
+  return (
+    <div className="min-h-screen p-4 md:p-8">
+      <header className="max-w-2xl mx-auto mb-8 flex items-center justify-between">
+        <a href="../index.html" className="text-slate-500 hover:text-green-600 transition-colors flex items-center gap-2 font-medium text-sm">← Tillbaka till startsidan</a>
+        <h1 className="text-2xl md:text-3xl font-bold text-center text-green-700">Hållbarhet</h1>
+        <div className="w-36"></div>
+      </header>
+
+      <div className="max-w-2xl mx-auto mb-10 flex bg-white p-1 rounded-full shadow-md border border-slate-200 overflow-x-auto">
+        {[['list','Lista'],['flashcards','Flashcards'],['lucktext','Lucktext'],['scenario','Scenario'],['icke','Icke-ex.']].map(([key, label]) => (
+          <button key={key} onClick={() => setView(key)} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm whitespace-nowrap px-2 ${view === key ? activeTab : inactiveTab}`}>{label}</button>
+        ))}
+      </div>
+
+      <main className="max-w-2xl mx-auto">
+
+        {view === 'list' && (
+          <div className="grid gap-4">
+            {concepts.map((item, index) => (
+              <div key={index} className="bg-white p-5 rounded-2xl border-l-8 border-green-500 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3 mb-1">
+                  <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-lg">{index + 1}</span>
+                  <h3 className="text-lg font-bold">{item.term}</h3>
+                </div>
+                <p className="text-slate-600 leading-relaxed ml-10">{item.definition}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {view === 'flashcards' && (
+          <div className="flex flex-col items-center">
+            <div className="flip-card mb-8" onClick={() => setIsFlipped(!isFlipped)}>
+              <div className={`flip-card-inner ${isFlipped ? 'flipped-classes' : ''}`}>
+                <div className="flip-card-front">
+                  <h2 className="text-3xl font-bold text-white text-center px-4">{concepts[currentIndex].term}</h2>
+                  <div className="absolute bottom-6 animate-pulse"><span className="text-[10px] uppercase tracking-[0.2em] text-white font-bold opacity-80">Klicka för svar</span></div>
+                </div>
+                <div className="flip-card-back">
+                  <p className="text-xl leading-relaxed text-slate-800 font-medium px-4">{concepts[currentIndex].definition}</p>
+                  <div className="absolute bottom-6"><span className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">Klicka för att vända</span></div>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col items-center gap-4">
+              <button onClick={nextCard} className="bg-slate-900 text-white px-10 py-4 rounded-2xl font-bold shadow-xl hover:bg-slate-800 active:scale-95 transition-all flex items-center gap-3 text-lg">Nästa begrepp <span>→</span></button>
+              <p className="text-slate-500 font-medium bg-slate-200 px-4 py-1 rounded-full text-xs">{currentIndex + 1} av {concepts.length}</p>
+            </div>
+          </div>
+        )}
+
+        {view === 'lucktext' && <LucktextView />}
+        {view === 'scenario' && <ScenarioView />}
+        {view === 'icke' && <IckeExempelView />}
+      </main>
+
+      <footer className="mt-12 text-center text-slate-400 text-sm italic pb-8">Källa: Naturkunskap – Hållbar Utveckling begreppslista</footer>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+</body>
+</html>
