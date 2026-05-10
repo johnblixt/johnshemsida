@@ -517,7 +517,7 @@
                         </div>
                         <div className="flex items-start gap-3">
                             <span className="bg-green-500 text-white text-xs font-black px-2 py-0.5 rounded-full mt-0.5">2</span>
-                            <p className="text-green-800 text-sm">5 skrivfrågor — betygskriterier E/C/A + AI-feedback via Claude</p>
+                            <p className="text-green-800 text-sm">5 skrivfrågor — betygskriterier E/C/A + feedback via Gemini</p>
                         </div>
                     </div>
                     <button onClick={onStart} className="bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-12 rounded-2xl shadow-lg transition-all active:scale-95 text-xl">
@@ -629,68 +629,17 @@
         }
 
         function WritingSection() {
-            const [apiKey, setApiKey] = useState('');
             const [answers, setAnswers] = useState(writtenQuestions.map(() => ''));
-            const [feedbacks, setFeedbacks] = useState(writtenQuestions.map(() => null));
-            const [loading, setLoading] = useState(writtenQuestions.map(() => false));
 
             const updateAnswer = (i, val) => {
                 const a = [...answers]; a[i] = val; setAnswers(a);
-            };
-
-            const getFeedback = async (i) => {
-                const q = writtenQuestions[i];
-                const answer = answers[i].trim();
-                if (!answer) { alert('Skriv ett svar innan du ber om feedback.'); return; }
-                if (!apiKey.trim()) { alert('Ange din Anthropic API-nyckel ovan för att använda AI-feedback.'); return; }
-                const l = [...loading]; l[i] = true; setLoading(l);
-
-                try {
-                    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'x-api-key': apiKey.trim(),
-                            'anthropic-version': '2023-06-01',
-                            'anthropic-dangerous-direct-browser-access': 'true'
-                        },
-                        body: JSON.stringify({
-                            model: 'claude-sonnet-4-5',
-                            max_tokens: 700,
-                            system: 'Du är en hjälpsam och uppmuntrande gymnasielärare i Naturkunskap 1a1. Du bedömer elevens svar mot kursplanens betygskriterier (Skolverket). Ge alltid feedback på svenska. Var ärlig men konstruktiv.',
-                            messages: [{
-                                role: 'user',
-                                content: `Fråga: ${q.prompt}\n\nBetygskriterier:\nE: ${q.criteria.E}\nC: ${q.criteria.C}\nA: ${q.criteria.A}\n\nElevens svar:\n"${answer}"\n\nGe feedback i detta format:\n**Bedömning:** Ange vilken betygsnivå svaret närmast motsvarar (E, C eller A) och motivera kort varför.\n\n**Vad som är bra:** Beskriv konkret vad eleven gjort bra.\n\n**För att nå nästa nivå:** Ge konkreta råd om vad som saknas eller kan utvecklas.\n\nHåll feedbacken på ca 150–200 ord och avsluta med ett uppmuntrande ord.`
-                            }]
-                        })
-                    });
-                    if (!resp.ok) { const err = await resp.json(); throw new Error(err.error?.message || 'API-fel'); }
-                    const data = await resp.json();
-                    const f = [...feedbacks]; f[i] = data.content[0].text; setFeedbacks(f);
-                } catch (e) {
-                    const f = [...feedbacks]; f[i] = `Fel: ${e.message}`; setFeedbacks(f);
-                } finally {
-                    const l2 = [...loading]; l2[i] = false; setLoading(l2);
-                }
             };
 
             return (
                 <div className="max-w-3xl mx-auto px-4 py-12 pt-20">
                     <div className="text-center mb-10">
                         <h2 className="text-3xl font-bold text-slate-800 mb-2">Del 2 – Skrivfrågor</h2>
-                        <p className="text-slate-600 max-w-xl mx-auto">Svara på frågorna nedan. Varje fråga visar vad som krävs för betyg E, C och A. Klicka <em>Få feedback</em> för AI-bedömning av ditt svar.</p>
-                    </div>
-
-                    <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-10">
-                        <label className="block text-amber-900 font-bold mb-2 text-sm">Anthropic API-nyckel (krävs för AI-feedback)</label>
-                        <input
-                            type="password"
-                            value={apiKey}
-                            onChange={e => setApiKey(e.target.value)}
-                            placeholder="sk-ant-..."
-                            className="w-full border border-amber-300 rounded-xl px-4 py-2 text-sm font-mono bg-white focus:outline-none focus:ring-2 focus:ring-amber-400"
-                        />
-                        <p className="text-amber-700 text-xs mt-2">Nyckeln sparas enbart i webbläsarens minne och skickas direkt till Anthropic — inget lagras på server.</p>
+                        <p className="text-slate-600 max-w-xl mx-auto">Svara på frågorna nedan. Varje fråga visar vad som krävs för betyg E, C och A. Klicka <em>Få feedback från Gemini</em> för att öppna Gemini med din prompt förifylld.</p>
                     </div>
 
                     {writtenQuestions.map((q, i) => (
@@ -699,10 +648,7 @@
                             q={q}
                             idx={i}
                             answer={answers[i]}
-                            feedback={feedbacks[i]}
-                            isLoading={loading[i]}
                             onAnswer={val => updateAnswer(i, val)}
-                            onFeedback={() => getFeedback(i)}
                         />
                     ))}
 
@@ -719,7 +665,22 @@
             );
         }
 
-        function WritingQuestion({ q, idx, answer, feedback, isLoading, onAnswer, onFeedback }) {
+        function WritingQuestion({ q, idx, answer, onAnswer }) {
+            const openGemini = () => {
+                const prompt = `Fråga: ${q.prompt}
+
+Betygskriterier:
+E: ${q.criteria.E}
+C: ${q.criteria.C}
+A: ${q.criteria.A}
+
+Elevens svar:
+"${answer}"
+
+Du är en konstruktiv och uppmuntrande lärare. Ge feedback på elevens svar utifrån betygskriterierna ovan. Fokusera på: vad som är bra i svaret, vad som är otydligt eller behöver utvecklas, konkreta tips på hur eleven kan förbättra svaret för att nå nästa betygsnivå. Ställ följdfrågor som hjälper eleven att tänka vidare. Var specifik och konstruktiv.`;
+                window.open('https://gemini.google.com/app?q=' + encodeURIComponent(prompt), '_blank');
+            };
+
             return (
                 <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-8 mb-8">
                     <div className="flex items-center gap-3 mb-4">
@@ -750,39 +711,18 @@
                     />
 
                     <button
-                        onClick={onFeedback}
-                        disabled={isLoading}
-                        className="mt-4 bg-green-500 hover:bg-green-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold py-3 px-8 rounded-xl transition-all no-print"
+                        onClick={openGemini}
+                        className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl transition-all no-print flex items-center gap-2"
                     >
-                        {isLoading ? (
-                            <span className="flex items-center gap-2">
-                                <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-                                </svg>
-                                Analyserar...
-                            </span>
-                        ) : 'Få feedback'}
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" fill="none"/>
+                            <path d="M12 1C5.93 1 1 5.93 1 12s4.93 11 11 11 11-4.93 11-11S18.07 1 12 1zm0 2c4.96 0 9 4.04 9 9s-4.04 9-9 9-9-4.04-9-9 4.04-9 9-9zm-.5 4v5.25L8.5 15l1.06 1.06L13 12.62V7h-1.5z" fill="none"/>
+                            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="1.5"/>
+                            <path d="M12 6.5c-3.04 0-5.5 2.46-5.5 5.5s2.46 5.5 5.5 5.5 5.5-2.46 5.5-5.5-2.46-5.5-5.5-5.5zm2.5 8l-3-1.75V8h1.25v4.1l2.5 1.45L14.5 14.5z" fill="none"/>
+                        </svg>
+                        Få feedback från Gemini
                     </button>
 
-                    {feedback && (
-                        <div className="mt-6 bg-green-50 border border-green-200 rounded-2xl p-6 animate-pop">
-                            <h4 className="font-bold text-green-800 mb-3 flex items-center gap-2">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                                </svg>
-                                AI-feedback
-                            </h4>
-                            <div className="text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">{feedback}</div>
-                            <button
-                                onClick={onFeedback}
-                                disabled={isLoading}
-                                className="mt-4 text-green-700 text-sm font-bold hover:underline no-print"
-                            >
-                                Reviderat svar? Få ny feedback →
-                            </button>
-                        </div>
-                    )}
                 </div>
             );
         }
