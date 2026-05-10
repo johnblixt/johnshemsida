@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slutprov – Naturkunskap 1a1</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'EB Garamond', serif; }
+        .animate-pop { animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes pop {
+            0% { transform: scale(0.95); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @media print {
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+    <a href="index.html" class="no-print fixed top-4 left-4 z-50 text-sm font-medium text-slate-500 hover:text-green-700 bg-white/90 px-3 py-2 rounded-xl shadow-sm transition-colors">← Tillbaka till startsidan</a>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        function shuffle(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        const allQuestions = [
+            // HÅLLBAR UTVECKLING
+            {
+                id: 1, area: "Hållbar utveckling",
+                question: "Vad innebär begreppet 'planetära gränser' och varför är det centralt för hållbar utveckling?",
+                correct: "Naturliga gränsvärden för jordens system som inte bör överskridas för att bevara stabila levnadsvillkor.",
+                others: [
+                    "En ekonomisk teori om hur länder ska fördela naturresurser rättvist sinsemellan.",
+                    "Den maximala mängd koldioxid ett enskilt land får släppa ut enligt Parisavtalet.",
+                    "En modell för hur individer ska begränsa sin personliga konsumtion i vardagen."
+                ],
+                explanation: "Planetära gränser definierar de biologiska och fysikaliska gränser inom vilka mänskligheten kan verka säkert. Att överskrida dem — som klimat, biologisk mångfald eller kvävekretslopp — riskerar att destabilisera jordens system."
+            },
+            {
+                id: 2, area: "Hållbar utveckling",
+                question: "Varför anses biologisk mångfald vara avgörande för ekosystemens stabilitet?",
+                correct: "Fler arter skapar mer robusta ekosystem som bättre klarar störningar, sjukdomar och klimatförändringar.",
+                others: [
+                    "Biologisk mångfald är viktig enbart för turistnäringen och naturupplevelser.",
+                    "Fler arter ger fler möjligheter att exploatera naturen ekonomiskt och industriellt.",
+                    "Biologisk mångfald minskar risken för naturkatastrofer som orkaner och jordbävningar."
+                ],
+                explanation: "I ett ekosystem med hög biologisk mångfald kan andra arter ta över om en art försvinner (redundans). Detta gör ekosystemet mer resilient mot störningar som torka, sjukdomar eller klimatförändringar."
+            },
+            {
+                id: 3, area: "Hållbar utveckling",
+                question: "Vad är den grundläggande principen bakom cirkulär ekonomi jämfört med linjär ekonomi?",
+                correct: "I cirkulär ekonomi hålls resurser i cirkulation genom återbruk och återvinning — ingenting är avfall.",
+                others: [
+                    "Cirkulär ekonomi innebär att pengar cirkulerar fritt i samhället utan statlig inblandning.",
+                    "Linjär ekonomi är mer miljövänlig eftersom den är enklare och mer effektiv att hantera.",
+                    "Cirkulär ekonomi kräver att alla produkter måste vara biologiskt nedbrytbara."
+                ],
+                explanation: "Linjär ekonomi följer mönstret ta–tillverka–kasta. Cirkulär ekonomi bryter detta: produkter designas för reparation, återanvändning och återvinning, vilket minskar resursuttaget radikalt."
+            },
+            {
+                id: 4, area: "Hållbar utveckling",
+                question: "Vad kritiserar begreppet 'klimaträttvisa' i den globala klimatdebatten?",
+                correct: "Att de länder som bidragit minst till klimatförändringen ofta drabbas hårdast av dess konsekvenser.",
+                others: [
+                    "Att rika länder betalar för lite i klimatavgifter jämfört med vad de egentligen borde.",
+                    "Att klimatförändringar drabbar alla länder exakt lika oavsett geografiskt läge.",
+                    "Att FN:s klimatavtal inte är tillräckligt juridiskt bindande för rika industriländer."
+                ],
+                explanation: "Klimaträttvisa belyser orättvisan att låginkomstländer — som bidragit minst till utsläppen — drabbas hårdast av torka, översvämningar och havsstigning, medan industriländerna historiskt stått för merparten av utsläppen."
+            },
+            {
+                id: 5, area: "Hållbar utveckling",
+                question: "En livscykelanalys (LCA) undersöker:",
+                correct: "En produkts totala miljöpåverkan från råvaruuttag till avfall, inklusive produktion, transport och användning.",
+                others: [
+                    "Hur länge en produkt håller innan den måste kasseras och ersättas av en ny.",
+                    "De ekonomiska kostnaderna för att tillverka och distribuera en produkt globalt.",
+                    "Hur populär och välsåld en produkt är under hela sin livstid på marknaden."
+                ],
+                explanation: "LCA kartlägger en produkts miljöpåverkan i alla faser: råvaruutvinning, tillverkning, transport, användning och avfallshantering. Det synliggör dolda miljökostnader."
+            },
+            {
+                id: 6, area: "Hållbar utveckling",
+                question: "Vilket påstående om Agenda 2030 och de globala målen (SDG) är korrekt?",
+                correct: "Agenda 2030 innehåller 17 mål som täcker ekonomisk, social och ekologisk hållbarhet i ett integrerat ramverk.",
+                others: [
+                    "Agenda 2030 fokuserar enbart på att minska koldioxidutsläpp i industriländerna.",
+                    "De globala målen är frivilliga riktlinjer enbart för FN:s 50 rikaste medlemsländer.",
+                    "Agenda 2030 ersatte Kyotoprotokollet som det primära bindande klimatavtalet."
+                ],
+                explanation: "Agenda 2030 är ett FN-ramverk med 17 mål och 169 delmål som täcker fattigdom, hälsa, utbildning, klimat, hav och ekosystem. Det är unikt i att integrera alla tre hållbarhetsdimensioner."
+            },
+            {
+                id: 7, area: "Hållbar utveckling",
+                question: "Varför är den förstärkta växthuseffekten ett problem om den naturliga är nödvändig för livet?",
+                correct: "Den naturliga växthuseffekten håller jordens temperatur stabil; den förstärkta driver en för snabb uppvärmning som ekosystem och samhällen inte hinner anpassa sig till.",
+                others: [
+                    "Alla former av växthuseffekt är skadliga för mänskligheten och bör elimineras helt.",
+                    "Den förstärkta växthuseffekten förstör ozonlagret direkt och ökar UV-strålningen.",
+                    "Växthuseffekten är ett problem enbart i tropiska regioner nära ekvatorn."
+                ],
+                explanation: "Utan naturlig växthuseffekt vore jordens temperatur ca –18 °C. Problemet är att mänskliga utsläpp förstärker effekten och höjer temperaturen snabbare än ekosystem och infrastruktur kan hantera."
+            },
+            {
+                id: 8, area: "Hållbar utveckling",
+                question: "Vad menas med ekologiskt fotavtryck?",
+                correct: "Den produktiva mark- och vattenyta som krävs för att upprätthålla en persons konsumtion och absorbera dess avfall.",
+                others: [
+                    "Den faktiska markareal som en person äger och brukar för livsmedelsproduktion.",
+                    "Enbart den mängd koldioxid en enskild person släpper ut under ett kalenderår.",
+                    "Storleken på den skog som måste planteras för att kompensera en persons flygresor."
+                ],
+                explanation: "Ekologiskt fotavtryck mäter hur mycket biologiskt produktiv yta som krävs för att tillgodose en livsstil. Om jordens befolkning levde som en genomsnittlig svensk skulle vi behöva ungefär fyra jordklot."
+            },
+            {
+                id: 9, area: "Hållbar utveckling",
+                question: "Albedo-feedbackmekanismen i Arktis innebär att:",
+                correct: "Smältande vit is exponerar mörkt hav som absorberar mer solenergi, vilket accelererar uppvärmningen ytterligare.",
+                others: [
+                    "Mer havsis bildas när havet värms upp och kyler ned klimatet igen naturligt.",
+                    "Havets albedo ökar när isen smälter, vilket bromsar den globala uppvärmningen.",
+                    "Feedbackmekanismen är självreglerande och stabiliserar temperaturen automatiskt."
+                ],
+                explanation: "Is reflekterar ca 80 % av solljuset (högt albedo), medan öppet hav absorberar ca 94 % (lågt albedo). När isen smälter absorberas mer värme, vilket smälter ännu mer is — en förstärkande feedbackloop."
+            },
+            {
+                id: 10, area: "Hållbar utveckling",
+                question: "Förnybara kontra icke-förnybara resurser — vilken beskrivning är mest korrekt?",
+                correct: "Förnybara resurser återbildas i en mänsklig tidsskala (som skog och solenergi); icke-förnybara tog miljoner år att bildas och finns i begränsad mängd.",
+                others: [
+                    "Förnybara resurser är alltid billigare att producera och använda än icke-förnybara.",
+                    "Icke-förnybara resurser är alltid miljöfarliga; förnybara är alltid helt miljövänliga.",
+                    "Förnybara resurser förekommer bara i naturen; icke-förnybara är alltid konstgjorda."
+                ],
+                explanation: "Förnybarhet handlar om tidsskala. Sol, vind och skog kan nyttjas utan att ta slut om vi inte använder dem snabbare än de bildas. Olja, kol och naturgas är fossila och tar miljontals år att bildas."
+            },
+            // SEX & RELATIONER
+            {
+                id: 11, area: "Sex & Relationer",
+                question: "Vad är grundprincipen i den svenska samtyckeslagen (2018)?",
+                correct: "Sex kräver frivilligt och aktivt deltagande; avsaknad av samtycke är brottsligt oavsett om offret verbalt sagt 'nej'.",
+                others: [
+                    "Sexualbrott kräver att offret aktivt och upprepat sagt 'nej' med ord för att räknas som brott.",
+                    "Samtycke ges automatiskt om parterna befinner sig i ett etablerat förhållande.",
+                    "Lagen gäller bara vuxna över 18 år; för yngre gäller andra regler."
+                ],
+                explanation: "Den svenska samtyckeslagen innebär ett skifte från 'nej-modell' till 'ja-modell': sex kräver frivilligt deltagande. Passivitet, rädsla eller tystnad räknas inte som samtycke."
+            },
+            {
+                id: 12, area: "Sex & Relationer",
+                question: "Vad är skillnaden mellan könsidentitet och sexuell läggning?",
+                correct: "Könsidentitet är vilket kön man känner sig som inifrån; sexuell läggning handlar om vem man känner romantisk eller sexuell attraktion till.",
+                others: [
+                    "Könsidentitet är biologiskt bestämt; sexuell läggning är alltid ett medvetet val.",
+                    "De är samma sak — båda handlar om biologisk könstillhörighet och anatomi.",
+                    "Sexuell läggning förändras ständigt under livet; könsidentitet är alltid oföränderlig."
+                ],
+                explanation: "Dessa är separata dimensioner av identitet. En transperson kan vara heterosexuell, homosexuell eller bisexuell. En cisperson kan ha vilken sexuell läggning som helst. De påverkar inte varandra direkt."
+            },
+            {
+                id: 13, area: "Sex & Relationer",
+                question: "Vad illustrerar våldspyramidens modell?",
+                correct: "Hur normaliserade vardagskränkningar och kontrollbeteenden gradvis kan eskalera till grövre former av fysiskt och sexuellt våld.",
+                others: [
+                    "Att fysiskt våld alltid är allvarligare än psykologiskt eller verbalt våld hierarkiskt.",
+                    "Att sexuellt våld statistiskt sett är vanligare i samhällets lägre ekonomiska skikt.",
+                    "Hur snabbt ett isolerat våldsbrott eskalerar till ett varaktigt mönster av kriminalitet."
+                ],
+                explanation: "Våldspyramiden visar att grunden — normalisering av kränkningar, kontroll och nedsättande kommentarer — möjliggör grövre våld i toppen. Det belyser vikten av att ta 'små' kränkningar på allvar."
+            },
+            {
+                id: 14, area: "Sex & Relationer",
+                question: "Hur påverkar heteronormen individer som inte identifierar sig som heterosexuella eller cisgender?",
+                correct: "Det skapar en samhällsnorm som gör HBTQ-personers identiteter osynliga, avvikande eller svåra att uttrycka öppet.",
+                others: [
+                    "Heteronormen skyddar minoriteters rättigheter genom att ge tydliga och stabila sociala regler.",
+                    "Heteronormen är ett biologiskt fenomen grundat i fortplantning och kan inte förändras.",
+                    "Det påverkar enbart hur folk klär sig ytligt, utan djupare psykologiska effekter."
+                ],
+                explanation: "Heteronormen är den outtalade föreställningen att heterosexualitet och binärt kön är det 'normala'. Det gör att HBTQ-personer måste 'komma ut', förklara sig och navigera i en värld som inte är designad för dem."
+            },
+            {
+                id: 15, area: "Sex & Relationer",
+                question: "Vilket påstående om testosteron och östrogen är korrekt?",
+                correct: "Båda hormonerna finns hos alla kön, men i olika proportioner — testosteron dominerar hos biologiska män, östrogen hos biologiska kvinnor.",
+                others: [
+                    "Testosteron finns enbart hos biologiska män; östrogen produceras enbart hos biologiska kvinnor.",
+                    "Hormonnivåerna är identiska hos alla kön och spelar ingen biologisk roll för kroppen.",
+                    "Östrogen produceras enbart under graviditet och menstruationscykeln, annars inte alls."
+                ],
+                explanation: "Alla könshormoner produceras av alla kön, men i olika mängder. Testosteron påverkar muskeluppbyggnad och sexuell lust. Östrogen reglerar menstruationscykeln och benstyrkan. Obalans kan ge symptom hos alla."
+            },
+            {
+                id: 16, area: "Sex & Relationer",
+                question: "Under vilken fas av menstruationscykeln är risken för befruktning som störst?",
+                correct: "Runt ägglossning, ungefär dag 12–16 i en 28-dagarscykel, när ett moget ägg frigörs.",
+                others: [
+                    "Under menstruationens första dagar, då slemhinnan stöts ut och kroppen är som mest aktiv.",
+                    "Konstant lika hög under hela cykeln — man kan bli gravid vilken dag som helst.",
+                    "Under de sista dagarna strax innan nästa menstruation börjar, när hormonnivåerna sjunker."
+                ],
+                explanation: "Ägglossningen inträffar mitt i cykeln (ca dag 14). Ägg överlever 12–24 timmar, men spermier kan överleva upp till 5 dagar i livmodern, vilket gör dagarna kring ägglossning till fertilitetstoppen."
+            },
+            {
+                id: 17, area: "Sex & Relationer",
+                question: "Varför är begreppet 'mödomshinna' medicinskt missvisande?",
+                correct: "Det är elastiska veck (slidkrans) som inte 'brister' — de sträcks vid samlag och varierar enormt mellan individer.",
+                others: [
+                    "Slidkransen existerar inte alls anatomiskt — det är en ren kulturell myt utan biologisk grund.",
+                    "Slidkransen brister alltid vid det första samlaget, men det är helt normalt och ofarligt.",
+                    "Det är ett äldre medicinskt term för exakt samma anatomiska struktur som hymen."
+                ],
+                explanation: "Slidkransvecken är elastisk slemhinna som omger slidöppningen. De 'brister' inte vid samlag utan sträcks. Blödning vid första samlaget är inte universellt och beror på friktion, spänning eller anatomisk variation."
+            },
+            {
+                id: 18, area: "Sex & Relationer",
+                question: "Avhumanisering som mekanism vid relationsvåld syftar på:",
+                correct: "Att psykologiskt se en annan person som mindre mänsklig, vilket underlättar att rättfärdiga och utöva våld mot dem.",
+                others: [
+                    "Att robotisera relationer genom att systematiskt undertrycka sina egna känslor.",
+                    "En psykologisk skyddsmekanism hos offret som hjälper dem att distansera sig från traumat.",
+                    "Ett juridiskt begrepp som beskriver förövarens mentala tillstånd under en rättegång."
+                ],
+                explanation: "Avhumanisering är en psykologisk process där gärningspersonen nedvärderar offrets mänsklighet för att övervinna inbyggda spärrar mot att skada andra. Det är en central mekanism bakom systematiskt våld."
+            },
+            {
+                id: 19, area: "Sex & Relationer",
+                question: "Vilket påstående om sexuellt överförbara infektioner (STI) är korrekt?",
+                correct: "Flera STI:er saknar symptom men kan ändå överföras, orsaka komplikationer och skada reproduktiv hälsa om de inte behandlas.",
+                others: [
+                    "STI kan alltid diagnosticeras av personen själv utan att behöva uppsöka sjukvården.",
+                    "Kondomanvändning ger 100 % skydd mot alla sexuellt överförbara infektioner utan undantag.",
+                    "STI-testning är bara nödvändig om man haft oskyddat sex med många olika partners."
+                ],
+                explanation: "Till exempel klamydia är ofta asymtomatisk men kan leda till infertilitet om obehandlat. Regelbunden testning rekommenderas sexuellt aktiva. Kondom skyddar effektivt men inte fullständigt mot alla STI."
+            },
+            {
+                id: 20, area: "Sex & Relationer",
+                question: "Vilka egenskaper kännetecknar en hälsosam relation enligt forskning om relationshälsa?",
+                correct: "Ömsesidig respekt, god kommunikation, förtroende och att båda parter kan behålla sin individualitet och egna intressen.",
+                others: [
+                    "Att partnerna aldrig är oense eller argumenterar — fullständig harmoni är tecknet på en bra relation.",
+                    "Att en partner tar alla viktiga beslut för att undvika konflikter och missförstånd.",
+                    "Att man tillbringar all tillgänglig tid tillsammans och gradvis avvecklar egna vänskapskretsar."
+                ],
+                explanation: "Forskning visar att friska relationer präglas av jämlikhet, respekt och trygghet. Konflikter är normala — det viktiga är hur de hanteras. Kontrollerande beteenden och isolering är varningstecken."
+            },
+            // VETENSKAP
+            {
+                id: 21, area: "Vetenskap",
+                question: "Vad är den precisa skillnaden mellan korrelation och kausalitet?",
+                correct: "Korrelation innebär att två variabler samvarierar; kausalitet innebär att den ena direkt orsakar den andra.",
+                others: [
+                    "Korrelation innebär att A orsakar B; kausalitet är ett statistiskt starkare samband.",
+                    "De är synonymer som används i olika vetenskapliga discipliner för samma fenomen.",
+                    "Korrelation är alltid falskt och missvisande; kausalitet är den enda sanna relationen."
+                ],
+                explanation: "Att ishockeyspelande och höga inkomster korrelerar bevisar inte att hockey ger hög lön. En bakomliggande variabel (socioekonomisk bakgrund) kan förklara båda. Korrelation är ett första steg, inte ett bevis."
+            },
+            {
+                id: 22, area: "Vetenskap",
+                question: "Varför är replikering avgörande för vetenskaplig trovärdighet?",
+                correct: "Om oberoende forskare reproducerar samma resultat med samma metod stärks bevisens generaliserbarhet och risken för slump minskar.",
+                others: [
+                    "Replikering krävs enbart för medicinska studier och kliniska prövningar, inte för naturvetenskapliga.",
+                    "Replikering innebär att man kopierar andras data och analys utan att genomföra ett nytt experiment.",
+                    "Det räcker att en och samma forskargrupp uppnår konsekvent resultat internt."
+                ],
+                explanation: "Replikeringskrisen visade att många publicerade studier inte kunde reproduceras av oberoende laboratorier. Extern validering är grunden för att en teori ska accepteras som vetenskaplig."
+            },
+            {
+                id: 23, area: "Vetenskap",
+                question: "En studie mäter elevers stressnivåer med ett frågeformulär om sömnkvalitet. Vad är det primära metodproblemet?",
+                correct: "Validitetsproblem: sömnkvalitet är inte samma sak som stress — man riskerar att mäta fel sak.",
+                others: [
+                    "Reliabilitetsproblem: formuläret är för kort för att ge stabila och pålitliga svar.",
+                    "Bortfallsproblem: eleverna kan ha missat att fylla i alla frågor korrekt.",
+                    "Etikproblem: elever bör inte tillfrågas om sömnvanor utan föräldrarnas samtycke."
+                ],
+                explanation: "Validitet handlar om att mäta rätt sak. Sömnkvalitet och stress hänger ihop men är inte identiska. En person kan sova dåligt av andra skäl än stress. För att mäta stress behövs ett validerat stressinstrument."
+            },
+            {
+                id: 24, area: "Vetenskap",
+                question: "Vad är det primära syftet med en kontrollgrupp i ett experiment?",
+                correct: "Att ha en jämförelsebas som inte utsatts för den testade variabeln, för att isolera just den variabelns effekt.",
+                others: [
+                    "Att ha en grupp som godkänner och kvalitetsgranskar experimentets metodval.",
+                    "Att kontrollera att alla deltagare förstår och följer experimentets instruktioner korrekt.",
+                    "Att säkerställa att alla deltagare behandlas lika i etisk och juridisk mening."
+                ],
+                explanation: "Utan kontrollgrupp vet man inte om en observerad förändring beror på behandlingen eller på andra faktorer (tid, placebo, naturlig variation). Kontrollgruppen möjliggör jämförelse under identiska förhållanden."
+            },
+            {
+                id: 25, area: "Vetenskap",
+                question: "Vad innebär kritiskt tänkande i en naturvetenskaplig kontext?",
+                correct: "Att systematiskt ifrågasätta antaganden, söka motbevis och utvärdera källors trovärdighet och metodik.",
+                others: [
+                    "Att alltid ifrågasätta vetenskaplig konsensus och prioritera alternativa förklaringsmodeller.",
+                    "Att automatiskt acceptera expertutlåtanden från etablerade institutioner utan egna frågor.",
+                    "Att enbart lita på egna personliga erfarenheter snarare än vetenskapliga studiers resultat."
+                ],
+                explanation: "Kritiskt tänkande innebär inte att avfärda vetenskap — det innebär att ställa frågor om metod, urval, finansiering och reproducerbarhet. Det är vetenskapens inbyggda självkorrigeringsmekanik."
+            },
+            {
+                id: 26, area: "Vetenskap",
+                question: "En studie visar att länder med fler piratflaggor per capita har lägre global temperatur. Vad är den vetenskapligt korrekta slutsatsen?",
+                correct: "Det är en skenkorrelation — en tredje variabel (tid och ekonomisk förändring) förklarar troligen båda variablerna.",
+                others: [
+                    "Piratflaggor påverkar klimatsystemet negativt, vilket bör utredas med kontrollerade experiment.",
+                    "Studien bevisar ett negativt orsakssamband som bör ligga till grund för klimatpolitik.",
+                    "Resultatet är omedelbart giltigt eftersom det uppvisar hög statistisk signifikans."
+                ],
+                explanation: "Detta klassiska exempel illustrerar skenkorrelation. Antalet piratflaggor och global temperatur förändras båda över tid av helt oberoende skäl. Korrelation bevisar aldrig kausalitet."
+            },
+            {
+                id: 27, area: "Vetenskap",
+                question: "Vad menas med bias (snedvridning) i en vetenskaplig studie?",
+                correct: "Systematisk felaktighet som uppstår när forskarens förväntningar, urval eller finansiering påverkar resultaten i en viss riktning.",
+                others: [
+                    "Slumpmässiga mätfel som uppstår naturligt i alla vetenskapliga mätningar.",
+                    "En positiv egenskap som visar att forskaren har en klar och testbar hypotes.",
+                    "Bias är enbart relevant i samhällsvetenskapliga studier, inte i naturvetenskapliga."
+                ],
+                explanation: "Bias är systematisk, inte slumpmässig. Bekräftelsebias gör att man tolkar bevis som stöder hypotesen. Selektionsbias uppstår om urvalet inte är representativt. Finansieringsbias uppstår när parter med egenintressen finansierar studier."
+            },
+            {
+                id: 28, area: "Vetenskap",
+                question: "Hur skiljer sig evidensbaserad kunskap från anekdotisk kunskap?",
+                correct: "Evidensbaserad kunskap bygger på systematiska studier med replikerbara, kontrollerade resultat; anekdoter är enskilda upplevelser utan kontroll.",
+                others: [
+                    "Anekdotisk kunskap är mer tillförlitlig eftersom den baseras på faktiska verkliga upplevelser.",
+                    "De är lika tillförlitliga beroende på sammanhang och vem som berättar anekdoten.",
+                    "Evidensbaserad kunskap kräver alltid kontrollerade laboratorieexperiment för att vara giltig."
+                ],
+                explanation: "Anekdoter är värdefulla som inspiration till hypoteser, men de kontrollerar inte för bakomliggande faktorer. 'Min mormor rökte och blev 100 år' kontrollerar inte för genetik, miljö eller överlevnadsbias."
+            },
+            {
+                id: 29, area: "Vetenskap",
+                question: "En vetenskaplig hypotes ska vara:",
+                correct: "Testbar och falsifierbar — den ska kunna motbevisas av ett experiment eller en observation.",
+                others: [
+                    "Sann redan innan testet genomförs, annars är undersökningen meningslös.",
+                    "Baserad på minst tio tidigare publicerade studier för att anses vetenskapligt giltig.",
+                    "Skriven och godkänd av en certifierad forskare med akademisk examen."
+                ],
+                explanation: "Falsifierbarhet (Popper) är centralt: en hypotes måste kunna motbevisas. 'Gud styr allt' är inte vetenskaplig eftersom inget kan motbevisa den. 'Koffein förbättrar reaktionstid' är testbar och falsifierbar."
+            },
+            {
+                id: 30, area: "Vetenskap",
+                question: "Vad menas med att naturvetenskapen är självkorrigerande?",
+                correct: "Nya bevis och metodförbättringar kan leda till att gamla teorier revideras eller förkastas — ingen teori är permanent sann.",
+                others: [
+                    "Naturvetenskapliga teorier är eviga sanningar som aldrig kan eller bör ändras.",
+                    "Vetenskapsmän rättar systematiskt varandras stavfel och formateringsfel i publikationer.",
+                    "Det innebär att vetenskapen automatiskt alltid når det korrekta svaret om man väntar länge nog."
+                ],
+                explanation: "Vetenskapens styrka ligger i att den kan ha fel och korrigera sig. Newtons mekanik fungerade i 200 år tills relativitetsteorin gav en bättre modell. Teorier förkastas när bevis talar emot dem."
+            }
+        ];
+
+        const writtenQuestions = [
+            {
+                id: 1,
+                title: "Naturvetenskap och samhälle",
+                prompt: "Diskutera frågor med naturvetenskapligt innehåll som har betydelse för individ och samhälle — t.ex. klimatförändringar, vaccinationer eller genteknik.",
+                criteria: {
+                    E: "Ger enkla förklaringar av det naturvetenskapliga innehållet och använder enkla argument för en ståndpunkt.",
+                    C: "Ställer utforskande frågor, ger utförligare förklaringar och använder välgrundade argument med tydliga kopplingar mellan naturvetenskap och samhälle.",
+                    A: "Ger komplexa och nyanserade förklaringar, väger olika perspektiv mot varandra och använder välgrundade och nyanserade argument med hög precision."
+                }
+            },
+            {
+                id: 2,
+                title: "Sexualitet, hälsa och kroppen",
+                prompt: "Redogör för hur människokroppen fungerar i växelverkan med omgivningen kopplat till sexualitet och relationer, och diskutera konsekvenser för individens sexuella hälsa och folkhälsan.",
+                criteria: {
+                    E: "Redogör översiktligt för kroppens funktioner och ger enkla exempel på konsekvenser för sexuell hälsa.",
+                    C: "Redogör utförligt och kopplar biologiska processer till sexuell hälsa. Diskuterar konsekvenser med välgrundade argument.",
+                    A: "Redogör utförligt och nyanserat, väger in individ-, grupp- och samhällsperspektiv och argumenterar nyanserat om komplexa konsekvenser."
+                }
+            },
+            {
+                id: 3,
+                title: "Naturvetenskap och hållbar utveckling",
+                prompt: "Ge exempel på hur naturvetenskap kopplas till hållbar utveckling och föreslå konkreta handlingsalternativ för individer, företag eller samhälle.",
+                criteria: {
+                    E: "Ger enkla exempel och drar enkla slutsatser med enkla argument för handlingsalternativen.",
+                    C: "Ger tydliga exempel med välgrundade slutsatser och välgrundade argument för föreslagna handlingsalternativ.",
+                    A: "Ger komplexa exempel, drar välgrundade och nyanserade slutsatser och argumenterar nyanserat med hänsyn till motstridiga intressen."
+                }
+            },
+            {
+                id: 4,
+                title: "Naturvetenskapens historia och samhällspåverkan",
+                prompt: "Diskutera hur naturvetenskapliga teorier kan granskas kritiskt och vilken betydelse de haft för samhällets framväxt.",
+                criteria: {
+                    E: "Diskuterar översiktligt utifrån något enstaka exempel på en naturvetenskaplig teoris samhällsbetydelse.",
+                    C: "Diskuterar utförligt utifrån flera exempel och kopplar vetenskapens historia till samhällsförändringar.",
+                    A: "Diskuterar utförligt och nyanserat utifrån flera exempel, problematiserar vetenskapens roll och belyser spänningar mellan vetenskap och samhälle."
+                }
+            },
+            {
+                id: 5,
+                title: "Vetenskaplig metod och källkritik",
+                prompt: "Beskriv hur naturvetenskap organiseras och används för kritisk granskning, och redogör för hur en naturvetenskaplig undersökning genomförs.",
+                criteria: {
+                    E: "Beskriver översiktligt den vetenskapliga metoden och redogör för en undersökning med enkla förklaringar.",
+                    C: "Beskriver utförligt metoden med korrekta begrepp och redogör nyanserat för en undersökning inklusive felkällor och begränsningar.",
+                    A: "Beskriver utförligt och nyanserat, kopplar metod till validitet och reliabilitet och för ett välgrundat resonemang om vetenskapens gränser."
+                }
+            }
+        ];
+
+        function useTimer(running) {
+            const [seconds, setSeconds] = useState(0);
+            const ref = useRef(null);
+            useEffect(() => {
+                if (running) { ref.current = setInterval(() => setSeconds(s => s + 1), 1000); }
+                else { clearInterval(ref.current); }
+                return () => clearInterval(ref.current);
+            }, [running]);
+            const reset = () => setSeconds(0);
+            const fmt = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+            return { seconds, fmt: fmt(seconds), reset };
+        }
+
+        function App() {
+            const [screen, setScreen] = useState('start');
+            const [questions, setQuestions] = useState([]);
+            const [currentIdx, setCurrentIdx] = useState(0);
+            const [score, setScore] = useState(0);
+            const [selected, setSelected] = useState(null);
+            const [showModal, setShowModal] = useState(false);
+            const [missed, setMissed] = useState([]);
+            const [shuffledOpts, setShuffledOpts] = useState([]);
+            const [quizTime, setQuizTime] = useState(0);
+            const timer = useTimer(screen === 'quiz');
+
+            const startQuiz = () => {
+                const shuffled = shuffle(allQuestions);
+                setQuestions(shuffled);
+                setCurrentIdx(0);
+                setScore(0);
+                setSelected(null);
+                setShowModal(false);
+                setMissed([]);
+                timer.reset();
+                setScreen('quiz');
+            };
+
+            useEffect(() => {
+                if (questions.length > 0 && screen === 'quiz') {
+                    const q = questions[currentIdx];
+                    setShuffledOpts(shuffle([q.correct, ...q.others]));
+                }
+            }, [currentIdx, questions, screen]);
+
+            const handleAnswer = (opt) => {
+                if (selected !== null) return;
+                setSelected(opt);
+                const q = questions[currentIdx];
+                if (opt === q.correct) { setScore(s => s + 1); }
+                else { setMissed(m => [...m, q]); }
+                setTimeout(() => setShowModal(true), 600);
+            };
+
+            const nextQuestion = () => {
+                setShowModal(false);
+                setSelected(null);
+                if (currentIdx + 1 < questions.length) { setCurrentIdx(i => i + 1); }
+                else { setQuizTime(timer.seconds); setScreen('quizResult'); }
+            };
+
+            if (screen === 'start') return <StartScreen onStart={startQuiz} />;
+            if (screen === 'quiz') {
+                const q = questions[currentIdx];
+                return <QuizScreen q={q} idx={currentIdx} total={questions.length} score={score} timerFmt={timer.fmt} opts={shuffledOpts} selected={selected} showModal={showModal} onAnswer={handleAnswer} onNext={nextQuestion} />;
+            }
+            if (screen === 'quizResult') return <QuizResult score={score} total={questions.length} time={quizTime} missed={missed} onRetry={startQuiz} onContinue={() => setScreen('writing')} />;
+            if (screen === 'writing') return <WritingSection />;
+            return null;
+        }
+
+        function StartScreen({ onStart }) {
+            return (
+                <div className="flex flex-col items-center justify-center min-h-screen px-4 text-center">
+                    <div className="bg-green-100 p-6 rounded-full mb-6">
+                        <svg className="w-16 h-16 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                        </svg>
+                    </div>
+                    <h1 className="text-4xl font-bold text-slate-800 mb-2">Slutprov</h1>
+                    <p className="text-xl text-green-700 font-bold mb-4 italic">Naturkunskap 1a1</p>
+                    <p className="text-slate-600 mb-6 max-w-lg leading-relaxed">
+                        <strong>Del 1:</strong> 30 flervalsfrågor som täcker hållbar utveckling, sex & relationer och vetenskaplig metod på fördjupad nivå.<br/>
+                        <strong>Del 2:</strong> 5 skrivfrågor med tydliga E/C/A-kriterier och AI-driven feedback.
+                    </p>
+                    <div className="bg-green-50 border border-green-200 rounded-2xl p-5 mb-8 max-w-md text-left space-y-2">
+                        <div className="flex items-start gap-3">
+                            <span className="bg-green-500 text-white text-xs font-black px-2 py-0.5 rounded-full mt-0.5">1</span>
+                            <p className="text-green-800 text-sm">30 flervalsfrågor — timer, poängräknare, förklaring efter varje svar</p>
+                        </div>
+                        <div className="flex items-start gap-3">
+                            <span className="bg-green-500 text-white text-xs font-black px-2 py-0.5 rounded-full mt-0.5">2</span>
+                            <p className="text-green-800 text-sm">5 skrivfrågor — betygskriterier E/C/A + AI-feedback via Claude</p>
+                        </div>
+                    </div>
+                    <button onClick={onStart} className="bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-12 rounded-2xl shadow-lg transition-all active:scale-95 text-xl">
+                        Starta Del 1 →
+                    </button>
+                </div>
+            );
+        }
+
+        function QuizScreen({ q, idx, total, score, timerFmt, opts, selected, showModal, onAnswer, onNext }) {
+            const progress = ((idx + 1) / total) * 100;
+            return (
+                <div className="max-w-2xl mx-auto px-4 py-8 pt-16">
+                    <header className="mb-6">
+                        <div className="flex justify-between items-center mb-3">
+                            <span className="text-green-600 font-bold uppercase tracking-widest text-sm">Fråga {idx + 1} av {total}</span>
+                            <div className="flex gap-3 items-center">
+                                <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-sm font-mono">{timerFmt}</span>
+                                <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-bold">Poäng: {score}</span>
+                            </div>
+                        </div>
+                        <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                            <div className="bg-green-500 h-full transition-all duration-500" style={{ width: `${progress}%` }}></div>
+                        </div>
+                        <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-2 inline-block">{q.area}</span>
+                    </header>
+
+                    <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 mb-6 animate-pop">
+                        <h2 className="text-xl font-bold text-slate-800 leading-tight mb-8">{q.question}</h2>
+                        <div className="grid gap-3">
+                            {opts.map((opt, i) => {
+                                let cls = "w-full p-5 text-left rounded-2xl border-2 transition-all font-medium text-base ";
+                                if (selected === null) {
+                                    cls += "border-slate-100 hover:border-green-300 hover:bg-green-50 text-slate-700 cursor-pointer";
+                                } else if (opt === q.correct) {
+                                    cls += "border-green-500 bg-green-50 text-green-800 font-bold";
+                                } else if (opt === selected) {
+                                    cls += "border-red-400 bg-red-50 text-red-700";
+                                } else {
+                                    cls += "border-slate-100 text-slate-300";
+                                }
+                                return (
+                                    <button key={i} disabled={selected !== null} onClick={() => onAnswer(opt)} className={cls}>
+                                        {opt}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {showModal && (
+                        <div className="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-40 p-4 animate-pop">
+                            <div className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl">
+                                <div className={`text-2xl font-black mb-3 ${selected === q.correct ? 'text-green-600' : 'text-red-600'}`}>
+                                    {selected === q.correct ? '✓ Rätt svar!' : '✗ Fel svar'}
+                                </div>
+                                <p className="text-slate-700 text-lg leading-relaxed mb-6">{q.explanation}</p>
+                                <button onClick={onNext} className="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-slate-800 transition-all">
+                                    {idx + 1 < total ? 'Nästa fråga →' : 'Visa resultat →'}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        function QuizResult({ score, total, time, missed, onRetry, onContinue }) {
+            const pct = Math.round((score / total) * 100);
+            const fmt = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+            let grade, gradeColor;
+            if (pct >= 80) { grade = "Utmärkt — redo för provet!"; gradeColor = "text-green-600"; }
+            else if (pct >= 60) { grade = "Bra jobbat, öva lite mer!"; gradeColor = "text-yellow-600"; }
+            else { grade = "Repetera och försök igen."; gradeColor = "text-red-600"; }
+
+            return (
+                <div className="max-w-2xl mx-auto px-4 py-12 pt-20 animate-pop">
+                    <div className="text-center mb-10">
+                        <h2 className="text-3xl font-bold text-slate-800 mb-2">Del 1 klar!</h2>
+                        <div className="text-7xl font-black text-green-500 my-6">{score}<span className="text-3xl text-slate-400">/{total}</span></div>
+                        <p className={`text-xl font-bold mb-2 ${gradeColor}`}>{grade}</p>
+                        <p className="text-slate-500 text-sm">Tid: {fmt(time)}</p>
+                    </div>
+
+                    {missed.length > 0 && (
+                        <div className="bg-red-50 border border-red-200 rounded-2xl p-6 mb-8">
+                            <h3 className="font-bold text-red-800 mb-4">Frågor att repetera ({missed.length} st):</h3>
+                            <div className="space-y-4">
+                                {missed.map(q => (
+                                    <div key={q.id} className="border-l-4 border-red-400 pl-4">
+                                        <p className="text-slate-700 font-medium text-sm">{q.question}</p>
+                                        <p className="text-green-700 text-sm mt-1">✓ {q.correct}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="flex flex-col gap-4">
+                        <button onClick={onContinue} className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-2xl text-lg shadow-lg transition-all">
+                            Fortsätt till Del 2 – Skrivfrågor →
+                        </button>
+                        <button onClick={onRetry} className="w-full bg-white border-2 border-slate-200 text-slate-600 font-bold py-3 rounded-2xl hover:bg-slate-50 transition-all">
+                            Gör om Del 1
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
+        function WritingSection() {
+            const [apiKey, setApiKey] = useState('');
+            const [answers, setAnswers] = useState(writtenQuestions.map(() => ''));
+            const [feedbacks, setFeedbacks] = useState(writtenQuestions.map(() => null));
+            const [loading, setLoading] = useState(writtenQuestions.map(() => false));
+
+            const updateAnswer = (i, val) => {
+                const a = [...answers]; a[i] = val; setAnswers(a);
+            };
+
+            const getFeedback = async (i) => {
+                const q = writtenQuestions[i];
+                const answer = answers[i].trim();
+                if (!answer) { alert('Skriv ett svar innan du ber om feedback.'); return; }
+                if (!apiKey.trim()) { alert('Ange din Anthropic API-nyckel ovan för att använda AI-feedback.'); return; }
+                const l = [...loading]; l[i] = true; setLoading(l);
+
+                try {
+                    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-api-key': apiKey.trim(),
+                            'anthropic-version': '2023-06-01',
+                            'anthropic-dangerous-direct-browser-access': 'true'
+                        },
+                        body: JSON.stringify({
+                            model: 'claude-sonnet-4-5',
+                            max_tokens: 700,
+                            system: 'Du är en hjälpsam och uppmuntrande gymnasielärare i Naturkunskap 1a1. Du bedömer elevens svar mot kursplanens betygskriterier (Skolverket). Ge alltid feedback på svenska. Var ärlig men konstruktiv.',
+                            messages: [{
+                                role: 'user',
+                                content: `Fråga: ${q.prompt}\n\nBetygskriterier:\nE: ${q.criteria.E}\nC: ${q.criteria.C}\nA: ${q.criteria.A}\n\nElevens svar:\n"${answer}"\n\nGe feedback i detta format:\n**Bedömning:** Ange vilken betygsnivå svaret närmast motsvarar (E, C eller A) och motivera kort varför.\n\n**Vad som är bra:** Beskriv konkret vad eleven gjort bra.\n\n**För att nå nästa nivå:** Ge konkreta råd om vad som saknas eller kan utvecklas.\n\nHåll feedbacken på ca 150–200 ord och avsluta med ett uppmuntrande ord.`
+                            }]
+                        })
+                    });
+                    if (!resp.ok) { const err = await resp.json(); throw new Error(err.error?.message || 'API-fel'); }
+                    const data = await resp.json();
+                    const f = [...feedbacks]; f[i] = data.content[0].text; setFeedbacks(f);
+                } catch (e) {
+                    const f = [...feedbacks]; f[i] = `Fel: ${e.message}`; setFeedbacks(f);
+                } finally {
+                    const l2 = [...loading]; l2[i] = false; setLoading(l2);
+                }
+            };
+
+            return (
+                <div className="max-w-3xl mx-auto px-4 py-12 pt-20">
+                    <div className="text-center mb-10">
+                        <h2 className="text-3xl font-bold text-slate-800 mb-2">Del 2 – Skrivfrågor</h2>
+                        <p className="text-slate-600 max-w-xl mx-auto">Svara på frågorna nedan. Varje fråga visar vad som krävs för betyg E, C och A. Klicka <em>Få feedback</em> för AI-bedömning av ditt svar.</p>
+                    </div>
+
+                    <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-10">
+                        <label className="block text-amber-900 font-bold mb-2 text-sm">Anthropic API-nyckel (krävs för AI-feedback)</label>
+                        <input
+                            type="password"
+                            value={apiKey}
+                            onChange={e => setApiKey(e.target.value)}
+                            placeholder="sk-ant-..."
+                            className="w-full border border-amber-300 rounded-xl px-4 py-2 text-sm font-mono bg-white focus:outline-none focus:ring-2 focus:ring-amber-400"
+                        />
+                        <p className="text-amber-700 text-xs mt-2">Nyckeln sparas enbart i webbläsarens minne och skickas direkt till Anthropic — inget lagras på server.</p>
+                    </div>
+
+                    {writtenQuestions.map((q, i) => (
+                        <WritingQuestion
+                            key={q.id}
+                            q={q}
+                            idx={i}
+                            answer={answers[i]}
+                            feedback={feedbacks[i]}
+                            isLoading={loading[i]}
+                            onAnswer={val => updateAnswer(i, val)}
+                            onFeedback={() => getFeedback(i)}
+                        />
+                    ))}
+
+                    <div className="mt-12 text-center no-print">
+                        <button onClick={() => window.print()} className="bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-10 rounded-2xl shadow-lg transition-all text-lg">
+                            Skriv ut svar
+                        </button>
+                    </div>
+
+                    <footer className="mt-16 text-center border-t border-slate-200 pt-8">
+                        <p className="text-slate-400 text-xs italic">Källa: Naturkunskap 1a1 begreppslista</p>
+                    </footer>
+                </div>
+            );
+        }
+
+        function WritingQuestion({ q, idx, answer, feedback, isLoading, onAnswer, onFeedback }) {
+            return (
+                <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-8 mb-8">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center font-black text-lg flex-shrink-0">{idx + 1}</div>
+                        <h3 className="text-xl font-bold text-slate-800">{q.title}</h3>
+                    </div>
+                    <p className="text-slate-700 text-lg leading-relaxed mb-6">{q.prompt}</p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+                        {[
+                            { level: 'E', bg: 'bg-slate-50', border: 'border-slate-200', text: 'text-slate-600', badge: 'bg-slate-200 text-slate-700' },
+                            { level: 'C', bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', badge: 'bg-blue-200 text-blue-800' },
+                            { level: 'A', bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-700', badge: 'bg-green-200 text-green-800' }
+                        ].map(({ level, bg, border, text, badge }) => (
+                            <div key={level} className={`rounded-xl border p-3 ${bg} ${border}`}>
+                                <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-black mb-2 ${badge}`}>Betyg {level}</span>
+                                <p className={`text-xs leading-relaxed ${text}`}>{q.criteria[level]}</p>
+                            </div>
+                        ))}
+                    </div>
+
+                    <textarea
+                        value={answer}
+                        onChange={e => onAnswer(e.target.value)}
+                        placeholder="Skriv ditt svar här..."
+                        rows={8}
+                        className="w-full border-2 border-slate-200 rounded-2xl p-4 text-base font-serif leading-relaxed focus:outline-none focus:border-green-400 transition-colors resize-y"
+                    />
+
+                    <button
+                        onClick={onFeedback}
+                        disabled={isLoading}
+                        className="mt-4 bg-green-500 hover:bg-green-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold py-3 px-8 rounded-xl transition-all no-print"
+                    >
+                        {isLoading ? (
+                            <span className="flex items-center gap-2">
+                                <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                                </svg>
+                                Analyserar...
+                            </span>
+                        ) : 'Få feedback'}
+                    </button>
+
+                    {feedback && (
+                        <div className="mt-6 bg-green-50 border border-green-200 rounded-2xl p-6 animate-pop">
+                            <h4 className="font-bold text-green-800 mb-3 flex items-center gap-2">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                </svg>
+                                AI-feedback
+                            </h4>
+                            <div className="text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">{feedback}</div>
+                            <button
+                                onClick={onFeedback}
+                                disabled={isLoading}
+                                className="mt-4 text-green-700 text-sm font-bold hover:underline no-print"
+                            >
+                                Reviderat svar? Få ny feedback →
+                            </button>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
