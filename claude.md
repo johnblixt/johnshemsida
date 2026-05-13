@@ -276,3 +276,13 @@ Icke-exempel-vyn är en interaktiv 'Välj rätt tillämpning'-övning där eleve
 - ❌ Lagring av elevresultat
 - ❌ Reklam
 - ❌ Komplicerad backend – allt körs lokalt i webbläsaren
+
+---
+
+## Pluggmaterial — Textfiler
+
+### PDF-visning i Fördjupning-vyn
+- Bädda ALDRIG in PDF:er med iframe — det fungerar inte på Netlify
+- Visa istället snygga kort för varje PDF med: en ikon, en kort beskrivande titel och en tydlig 'Öppna dokument →'-knapp som öppnar PDF:en i en ny flik
+- Korten ska vara mobilanpassade och matcha ämnets färg
+- Lägg till en kort instruktionstext högst upp i Fördjupning-vyn: 'Tryck på ett dokument för att öppna det. Du kan zooma och bläddra fritt.'
