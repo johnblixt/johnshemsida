@@ -17,10 +17,9 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
         
         body { font-family: 'Inter', sans-serif; }
-        .serif-font { font-family: 'EB Garamond', serif; }
 
         .option-button {
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -74,12 +73,12 @@
             {
                 question: "Vad krävs rent praktiskt för att riksdagen ska kunna ändra en av våra grundlagar?",
                 options: [
-                    "Två likadana beslut med ett riksdagsval mellan beslutstillfällena.",
+                    "Tvä likadana beslut med ett riksdagsval mellan beslutstillfällena.",
                     "Att minst 90% av alla ledamöter i riksdagen röstar ja vid ett tillfälle.",
                     "Ett direkt godkännande från kungen och därefter en folkomröstning.",
                     "Ett beslut i riksdagen som sedan måste godkännas av EU-parlamentet."
                 ],
-                correctAnswer: "Två likadana beslut med ett riksdagsval mellan beslutstillfällena.",
+                correctAnswer: "Tvä likadana beslut med ett riksdagsval mellan beslutstillfällena.",
                 hint: "Folket måste få en chans att säga sitt i ett val innan den slutgiltiga ändringen görs."
             },
             {
@@ -517,7 +516,6 @@
             const [selectedOption, setSelectedOption] = useState(null);
             const [isLocked, setIsLocked] = useState(false);
             
-            // Slumpa frågorna när spelet startar
             const shuffleQuestions = useCallback(() => {
                 const shuffled = [...QUESTION_BANK]
                     .sort(() => Math.random() - 0.5)
@@ -609,7 +607,7 @@
                                     <div className="space-y-4">
                                         <h2 className="text-3xl font-extrabold text-slate-800">Är du redo för utmaningen?</h2>
                                         <p className="text-slate-500 max-w-sm mx-auto leading-relaxed">
-                                            Vi har förberett 40 varierade frågor för att se till att du verkligen kan grunderna inför provet. Inga frågor kommer i samma ordning som förra gången!
+                                            Vi har förberett 40 varierade frågor för att se till att du verkligen kan grunderna inför provet.
                                         </p>
                                     </div>
                                     <button 
@@ -638,8 +636,9 @@
                                                 style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
                                             ></div>
                                         </div>
-                                        <h2 className="text-xl md:text-2xl font-bold leading-tight text-slate-800 serif-font italic">
-                                            "{currentQuestion.question}"
+                                        {/* Uppdaterad fråga: Nu vanlig sans-serif text utan kursiv stil */}
+                                        <h2 className="text-xl md:text-2xl font-bold leading-tight text-slate-800">
+                                            {currentQuestion.question}
                                         </h2>
                                     </div>
 
