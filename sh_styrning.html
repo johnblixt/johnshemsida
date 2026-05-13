@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 // --- INLINE SVG ICONS ---
+// Dessa är inbyggda direkt för att undvika "removeChild"-fel från externa bibliotek
 const Icon = ({ name, className = "" }) => {
   const paths = {
     clock: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />,
@@ -9,12 +10,13 @@ const Icon = ({ name, className = "" }) => {
     arrowRight: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />,
     refresh: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />,
     check: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />,
-    x: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+    x: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />,
+    brain: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.674M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
   };
 
   return (
     <svg className={`w-5 h-5 ${className}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      {paths[name]}
+      {paths[name] || <circle cx="12" cy="12" r="10" />}
     </svg>
   );
 };
@@ -24,79 +26,60 @@ const QUESTION_BANK = [
   // 1. Grundlagarnas syfte
   { q: "Vilket är det främsta målet med att ha grundlagar i Sverige?", a: ["Att skydda demokratin och sätta ramarna för hur landet styrs.", "Att bestämma vilka straff som gäller för vanliga småbrott.", "Att ge kungen absolut makt i krislägen.", "Att kontrollera vad kommunerna gör med sina skattepengar."], correct: "Att skydda demokratin och sätta ramarna för hur landet styrs.", hint: "Grundlagarna är demokratins fundament." },
   { q: "Vad gör grundlagarna mer betydelsefulla än andra lagar?", a: ["De står över alla andra lagar och är svårare att ändra.", "De är skrivna på ett äldre språk som polisen föredrar.", "De ändras varje gång det blir en ny regering.", "De gäller bara för kungen och ministrarna."], correct: "De står över alla andra lagar och är svårare att ändra.", hint: "Inget får bryta mot en grundlag." },
-  
   // 2. Varför svåra att ändra
   { q: "Varför krävs det två riksdagsbeslut med ett val emellan för att ändra en grundlag?", a: ["För att hindra snabba beslut som kan skada demokratin.", "För att det tar lång tid att skriva om så viktiga böcker.", "För att kungen måste hinna godkänna ändringen personligen.", "För att alla partier måste vara 100% eniga."], correct: "För att hindra snabba beslut som kan skada demokratin.", hint: "Det är en säkerhetsspärr mot maktmissbruk." },
   { q: "Vad är syftet med att folket får rösta i ett val mellan två beslut om grundlagsändring?", a: ["Att väljarna ska få chansen att säga sitt om förslaget genom sitt val av parti.", "Att riksdagen ska få semester mellan de svåra besluten.", "Att EU ska hinna kontrollera om lagen är bra för Europa.", "Att man ska se om kungen fortfarande vill vara statschef."], correct: "Att väljarna ska få chansen att säga sitt om förslaget genom sitt val av parti.", hint: "Demokrati bygger på folkets röst." },
-
   // 3. Regeringsformen
   { q: "Vilken grundlag säger att 'all offentlig makt utgår från folket'?", a: ["Regeringsformen", "Successionsordningen", "Yttrandefrihetsgrundlagen", "Tryckfrihetsförordningen"], correct: "Regeringsformen", hint: "Det är den viktigaste grundlagen för statsskicket." },
   { q: "Vilken grundlag innehåller reglerna för hur riksdagsvalet ska gå till?", a: ["Regeringsformen", "Ordningslagen", "Successionsordningen", "Tryckfrihetsförordningen"], correct: "Regeringsformen", hint: "Den styr hur hela Sverige organiseras." },
-
   // 4. Tryck- och Yttrandefrihet
   { q: "Vilken grundlag skyddar din rätt att skriva vad du vill i tidningar och böcker utan förhandscensur?", a: ["Tryckfrihetsförordningen", "Successionsordningen", "Regeringsformen", "Brottsbalken"], correct: "Tryckfrihetsförordningen", hint: "Tänk på ordet 'Tryck'." },
   { q: "Vad innebär förbudet mot censur i praktiken?", a: ["Att staten inte får granska eller stoppa material innan det publiceras.", "Att alla måste tycka likadant som regeringen.", "Att man får säga elaka saker utan att någonsin bli straffad efteråt.", "Att tidningar måste fråga kungen om lov innan de skriver om honom."], correct: "Att staten inte får granska eller stoppa material innan det publiceras.", hint: "Frihet att publicera utan statlig kontroll." },
-
   // 5. Successionsordningen
   { q: "Vilken grundlag styr vem som blir Sveriges statschef?", a: ["Successionsordningen", "Regeringsformen", "Vägtrafikförordningen", "Yttrandefrihetsgrundlagen"], correct: "Successionsordningen", hint: "Handlar om tronföljden." },
   { q: "Vad bestäms i Successionsordningen?", a: ["Vem som ärver tronen och blir kung eller drottning.", "Hur ofta vi ska ha val till riksdagen.", "Hur mycket pengar kungen får varje år.", "Vem som får bli statsminister."], correct: "Vem som ärver tronen och blir kung eller drottning.", hint: "Succession betyder efterträdare." },
-
   // 6. Viktigaste grundlagen
   { q: "Vilken grundlag anses ofta vara den viktigaste eftersom den lägger grunden för demokratin?", a: ["Regeringsformen", "Successionsordningen", "Tryckfrihetsförordningen", "Yttrandefrihetsgrundlagen"], correct: "Regeringsformen", hint: "Det är 'lagen om hur vi styr'." },
   { q: "Varför ses Regeringsformen som den viktigaste av de fyra grundlagarna?", a: ["Den beskriver hur riksdagen och regeringen utses och fungerar.", "Den är den äldsta lagen i hela Europa.", "Den ger kungen rätt att bestämma över alla lagar.", "Den förbjuder alla andra partier förutom det största."], correct: "Den beskriver hur riksdagen och regeringen utses och fungerar.", hint: "Den sätter ramarna för makten." },
-
   // 7. Lag krockar med grundlag
   { q: "Vad händer om riksdagen röstar ja till en lag som bryter mot en grundlag?", a: ["Den vanliga lagen gäller inte eftersom grundlagen har företräde.", "Lagen gäller ändå om statsministern tycker den är bra.", "Man får använda lagen i ett år innan man måste ändra grundlagen.", "Kungen får bestämma vilken av lagarna som ska följas."], correct: "Den vanliga lagen gäller inte eftersom grundlagen har företräde.", hint: "Grundlagen vinner alltid." },
   { q: "Vem kontrollerar att nya lagar inte krockar med våra grundlagar?", a: ["Lagrådet och domstolar i samband med att de används.", "Kungen vid sitt morgonmöte.", "En slumpmässigt utvald grupp medborgare.", "Polisen när de patrullerar."], correct: "Lagrådet och domstolar i samband med att de används.", hint: "Det krävs juridisk expertis." },
-
   // 8. Motion
   { q: "Vad kallas ett lagförslag som kommer från en enskild riksdagsledamot?", a: ["Motion", "Proposition", "Remiss", "Betänkande"], correct: "Motion", hint: "Ledamöter 'motionerar'." },
   { q: "Vem lämnar in en motion?", a: ["En eller flera riksdagsledamöter.", "Hela regeringen tillsammans.", "Endast kungen personligen.", "Chefen för Polismyndigheten."], correct: "En eller flera riksdagsledamöter.", hint: "Det är riksdagens egna förslag." },
-
   // 9. Proposition
   { q: "Vad kallas de lagförslag som regeringen lämnar till riksdagen?", a: ["Proposition", "Motion", "Interpellation", "Diktamen"], correct: "Proposition", hint: "Regeringen 'proponerar'." },
   { q: "Varför kommer de flesta stora lagförslag i form av propositioner?", a: ["Regeringen har tillgång till experter och myndigheter som kan utreda frågorna noga.", "Regeringen är de enda som får skriva lagar i Sverige.", "Det är kungen som tvingar regeringen att skriva dem.", "För att riksdagsledamöterna inte får skriva egna förslag."], correct: "Regeringen har tillgång till experter och myndigheter som kan utreda frågorna noga.", hint: "De har resurserna." },
-
   // 10. Statlig utredning
   { q: "Varför tillsätter man ofta en utredning innan en ny lag skapas?", a: ["För att experter ska undersöka fakta och se vilka konsekvenser lagen får.", "För att politikerna ska hinna ändra sig om de blir rädda.", "För att kungen ska få tid att läsa igenom förslaget i lugn och ro.", "För att lagen måste godkännas av en domstol i smyg först."], correct: "För att experter ska undersöka fakta och se vilka konsekvenser lagen får.", hint: "Kunskap före beslut." },
   { q: "Vem brukar sitta med i en statlig utredning?", a: ["Experter inom ämnet, tjänstemän och ibland politiker.", "Endast personer som aldrig har röstat i ett val.", "Slumpmässigt utvalda elever från gymnasiet.", "Representanter från andra länders regeringar."], correct: "Experter inom ämnet, tjänstemän och ibland politiker.", hint: "Kunskap och erfarenhet." },
-
   // 11. Remiss
   { q: "Vad innebär det att ett förslag skickas på remiss?", a: ["Att myndigheter och experter får lämna sina synpunkter på förslaget.", "Att kungen får läsa förslaget innan det skickas till riksdagen.", "Att man skickar förslaget till EU för översättning.", "Att man lägger förslaget i papperskorgen för att glömma det."], correct: "Att myndigheter och experter får lämna sina synpunkter på förslaget.", hint: "Man frågar de som vet." },
   { q: "Varför är remiss-steget viktigt för demokratin?", a: ["Det låter de som berörs av lagen få säga vad de tycker innan beslut tas.", "Det gör att lagar tar längre tid att skapa vilket sparar pengar.", "Det tvingar alla att hålla med regeringen i slutändan.", "Det ger polisen rätt att ändra i lagen som de vill."], correct: "Det låter de som berörs av lagen få säga vad de tycker innan beslut tas.", hint: "Inflytande för experter och organisationer." },
-
   // 12. Utskott
   { q: "Vad är ett utskott i riksdagen?", a: ["En mindre grupp ledamöter som är specialiserade på ett visst område.", "En grupp poliser som vaktar riksdagshuset.", "De ledamöter som inte fick vara med och rösta i kammaren.", "En annan benämning på hela regeringskansliet."], correct: "En mindre grupp ledamöter som är specialiserade på ett visst område.", hint: "Riksdagens 'verkstäder'." },
   { q: "Vad skriver utskottet när de är klara med ett lagförslag?", a: ["Ett betänkande där de föreslår hur riksdagen ska rösta.", "En helt ny grundlag som ersätter den gamla.", "Ett brev till kungen där de ber om lov.", "En insändare i lokaltidningen."], correct: "Ett betänkande där de föreslår hur riksdagen ska rösta.", hint: "Deras rekommendation." },
-
   // 13. Omröstning
-  { q: "Var sker den sista debatten och omröstningen om en ny lag?", i: false, a: ["I kammaren (plenisalen) i riksdagen.", "Hemma hos statsministern.", "I Högsta domstolen.", "På Sergels torg."], correct: "I kammaren (plenisalen) i riksdagen.", hint: "Där alla 349 ledamöter samlas." },
+  { q: "Var sker den sista debatten och omröstningen om en ny lag?", a: ["I kammaren (plenisalen) i riksdagen.", "Hemma hos statsministern.", "I Högsta domstolen.", "På Sergels torg."], correct: "I kammaren (plenisalen) i riksdagen.", hint: "Där alla 349 ledamöter samlas." },
   { q: "Hur många ledamöter sitter i riksdagen och har rösträtt?", a: ["349 stycken.", "100 stycken.", "450 stycken.", "Det beror på hur många som är vakna."], correct: "349 stycken.", hint: "Ett udda nummer för att undvika oavgjort." },
-
   // 14. Genomförande
   { q: "Vem har ansvaret för att se till att en ny lag faktiskt börjar användas i samhället?", a: ["Regeringen och dess myndigheter.", "Kungen och hans familj.", "De riksdagsledamöter som röstade nej.", "Domstolarna helt på egen hand."], correct: "Regeringen och dess myndigheter.", hint: "Verkställande makt." },
   { q: "Vad ska hända efter att riksdagen klubbat igenom en ny lag?", a: ["Regeringen ger myndigheter i uppdrag att utföra beslutet.", "Man väntar tio år för att se om lagen behövs.", "Lagen skickas tillbaka till utskottet för en ny utredning.", "Man lottar ut vem som ska följa lagen först."], correct: "Regeringen ger myndigheter i uppdrag att utföra beslutet.", hint: "Från beslut till handling." },
-
   // 15. Riksdagens uppgifter
   { q: "Vilka är riksdagens två viktigaste arbetsuppgifter?", a: ["Att stifta lagar och bestämma om statens budget.", "Att utse kungen och styra polisen.", "Att döma brottslingar och bygga sjukhus.", "Att sköta utrikespolitik och skriva tidningar."], correct: "Att stifta lagar och bestämma om statens budget.", hint: "Lagar och pengar." },
   { q: "Vem kontrollerar att regeringen sköter sitt arbete ordentligt?", a: ["Riksdagen.", "Kungen.", "Skatteverket.", "Ingen alls."], correct: "Riksdagen.", hint: "Parlamentarisk kontroll." },
-
   // 16. EU Definition
   { q: "Vad är EU (Europeiska Unionen) bäst beskrivet som?", a: ["Ett nära samarbete mellan självständiga länder i Europa.", "Ett enda jättestort land med bara en regering.", "En armé som ska erövra andra delar av världen.", "En klubb för kungar och drottningar."], correct: "Ett nära samarbete mellan självständiga länder i Europa.", hint: "Medlemsstater som samarbetar." },
-  { q: "Varför skapades föregångaren till EU från början?", a: ["För att skapa fred genom att göra länderna ekonomiskt beroende av varandra.", "För att tvinga alla att prata franska.", "För att vinna krig mot USA.", "För att bygga en mur runt Europa."], correct: "För att skapa fred genom att göra länderna ekonomiskt beroende av varandra.", hint: "Handel istället för krig." },
-
+  { q: "Varför skapades föregångaren till EU från början?", a: ["För att skapa fred genom att göra länderna ekonomiskt beroende av varandra.", "För att tvinga alla att prata franska.", "För att winna krig mot USA.", "För att bygga en mur runt Europa."], correct: "För att skapa fred genom att göra länderna ekonomiskt beroende av varandra.", hint: "Handel istället för krig." },
   // 17. Fri rörlighet
   { q: "Vad innebär EU:s princip om 'fri rörlighet'?", a: ["Att människor kan flytta, studera och jobba i vilket EU-land de vill.", "Att alla tåg i Europa är gratis för medborgare.", "Att man inte behöver visa legitimation någonstans i världen.", "Att man får köra bil hur fort man vill på alla vägar."], correct: "Att människor kan flytta, studera och jobba i vilket EU-land de vill.", hint: "Gränslös rörlighet för personer." },
   { q: "Vilken fördel ger fri rörlighet dig som elev i framtiden?", a: ["Du kan söka sommarjobb eller universitet i ett annat EU-land utan krångliga tillstånd.", "Du får automatiskt högsta betyg i alla språk.", "Du får ett extra pass som ger dig gratis mat i Paris.", "Du behöver aldrig mer gå i skolan om du flyttar till Spanien."], correct: "Du kan söka sommarjobb eller universitet i ett annat EU-land utan krångliga tillstånd.", hint: "Möjligheter utanför Sverige." },
-
   // 18. Handel/Tull
   { q: "Hur har EU påverkat handeln mellan medlemsländerna?", a: ["Genom att ta bort tullavgifter och göra det billigare att köpa varor från varandra.", "Genom att förbjuda handel med länder utanför Europa.", "Genom att tvinga alla att sälja sina varor gratis till kungen.", "Genom att införa jättehöga skatter på allt som skickas över gränsen."], correct: "Genom att ta bort tullavgifter och göra det billigare att köpa varor från varandra.", hint: "Inga extra avgifter vid gränsen." },
   { q: "Vad är en 'tullavgift'?", a: ["En skatt man betalar för att få föra in en vara i ett land.", "En avgift för att få använda en tunnel i bergen.", "En bot man får om man kör för fort i en rondell.", "Ett medlemskap i en fackförening."], correct: "En skatt man betalar för att få föra in en vara i ett land.", hint: "EU har tagit bort dessa mellan medlemsländer." },
-
   // 19. Demokratiskt underskott
   { q: "Vad menas med att EU ibland kritiseras för ett 'demokratiskt underskott'?", a: ["Att besluten fattas långt ifrån folket och är svåra att påverka.", "Att det inte finns tillräckligt med pengar för att ordna val.", "Att det bara är kungen som får bestämma i EU.", "Att man inte får rösta i EU-valet om man bor i Sverige."], correct: "Att besluten fattas långt ifrån folket och är svåra att påverka.", hint: "Avstånd till makten." },
   { q: "Varför upplever vissa att EU är odemokratiskt?", a: ["För att de tycker att de som bestämmer i Bryssel inte lyssnar på vanliga människor.", "För att EU inte har några politiker alls.", "För att alla beslut måste godkännas av en hemlig grupp i källaren.", "För att man bara får rösta om man är rik."], correct: "För att de tycker att de som bestämmer i Bryssel inte lyssnar på vanliga människor.", hint: "Känslan av maktlöshet." },
-
   // 20. EU-rätt vs Svensk rätt
   { q: "Vad händer om en svensk lag säger en sak och en EU-lag säger något annat inom ett område där EU får bestämma?", a: ["EU-lagen står över den svenska lagen.", "Den svenska lagen gäller alltid först i Sverige.", "Länderna får lottas om vilken lag som ska användas.", "Båda lagarna slutar gälla omedelbart."], correct: "EU-lagen står över den svenska lagen.", hint: "EU-rättens företräde." },
   { q: "Varför står EU-lagar över nationella lagar inom vissa områden?", a: ["För att reglerna ska vara lika för alla länder i samarbetet.", "För att EU-politikerna är smartare än de svenska.", "För att kungen har lovat att lyda EU i allt.", "För att Sverige inte längre är ett eget land."], correct: "För att reglerna ska vara lika för alla länder i samarbetet.", hint: "Samarbetet kräver gemensamma regler." },
@@ -104,15 +87,15 @@ const QUESTION_BANK = [
 
 export default function App() {
   const [gameState, setGameState] = useState('start');
+  const [shuffledQuestions, setShuffledQuestions] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [score, setScore] = useState(0);
-  const [shuffledQuestions, setShuffledQuestions] = useState([]);
   const [selected, setSelected] = useState(null);
   const [isLocked, setIsLocked] = useState(false);
   const [showHint, setShowHint] = useState(false);
   const [timer, setTimer] = useState(0);
 
-  // Initialize and shuffle
+  // Hanterar omstart och slumpning av frågor
   const initGame = useCallback(() => {
     const shuffled = [...QUESTION_BANK]
       .sort(() => Math.random() - 0.5)
@@ -120,14 +103,16 @@ export default function App() {
         ...q,
         options: [...q.a].sort(() => Math.random() - 0.5)
       }));
+    
+    // Säkerställ att vi sätter frågorna FÖRE vi byter till 'playing'
     setShuffledQuestions(shuffled);
-    setGameState('playing');
     setCurrentIdx(0);
     setScore(0);
     setTimer(0);
     setIsLocked(false);
     setSelected(null);
     setShowHint(false);
+    setGameState('playing');
   }, []);
 
   useEffect(() => {
@@ -154,8 +139,9 @@ export default function App() {
   };
 
   const nextQuestion = () => {
-    if (currentIdx + 1 < shuffledQuestions.length) {
-      setCurrentIdx(i => i + 1);
+    const nextIdx = currentIdx + 1;
+    if (nextIdx < shuffledQuestions.length) {
+      setCurrentIdx(nextIdx);
       setSelected(null);
       setIsLocked(false);
       setShowHint(false);
@@ -216,7 +202,15 @@ export default function App() {
     );
   }
 
+  // Säkerhetskontroll för att undvika krasch om listan är tom
   const q = shuffledQuestions[currentIdx];
+  if (!q) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 text-slate-500">
+        Laddar frågor...
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 p-4 flex flex-col items-center justify-center">
@@ -262,7 +256,7 @@ export default function App() {
 
               return (
                 <button 
-                  key={i} 
+                  key={`${currentIdx}-${i}`} 
                   onClick={() => handleSelect(opt)}
                   disabled={isLocked}
                   className={btnClass}
@@ -280,14 +274,14 @@ export default function App() {
               onClick={() => setShowHint(!showHint)}
               className="text-slate-400 hover:text-indigo-600 font-bold text-sm flex items-center gap-2 transition-colors"
             >
-              <Icon name="lightbulb" className="w-4 h-4" />
+              <Icon name="brain" className="w-4 h-4" />
               {showHint ? "Dölj ledtråd" : "Ledtråd"}
             </button>
 
             {isLocked && (
               <button 
                 onClick={nextQuestion}
-                className="px-8 py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all flex items-center gap-2 animate-fade-in"
+                className="px-8 py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all flex items-center gap-2"
               >
                 {currentIdx + 1 === shuffledQuestions.length ? "Resultat" : "Nästa"}
                 <Icon name="arrowRight" />
