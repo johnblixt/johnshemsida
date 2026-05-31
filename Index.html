@@ -6,52 +6,140 @@
     <title>Johns Repetitionsportal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Laddar in EB Garamond för en klassisk stil */
         @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-        
-        body { 
-            font-family: 'EB Garamond', serif; 
+
+        body {
+            font-family: 'EB Garamond', serif;
             font-size: 1.1rem;
         }
 
-        .area-card { 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        .area-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             flex-direction: column;
             height: 100%;
         }
-        
+
         .area-card:hover { transform: translateY(-3px); }
-        
-        .hero-image { 
-            width: 100%; 
-            height: auto; 
-            display: block; 
+
+        .hero-image {
+            width: 100%;
+            height: auto;
+            display: block;
         }
 
         .btn-action { transition: all 0.2s ease; }
         .btn-action:hover { filter: brightness(1.1); transform: scale(1.02); }
-        
+
         h1, h2, h3 { font-weight: 700; }
 
-        /* Behållare för att tvinga ner knappar till botten */
         .button-container {
             display: flex;
             flex-direction: column;
             gap: 0.75rem;
             margin-top: auto;
         }
+
+        /* ── Mobile navigator styles ── */
+        .mob-step-panel {
+            position: absolute;
+            inset: 0;
+            overflow-y: auto;
+            padding: 24px 16px 48px;
+            transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #ffffff;
+        }
+        .mob-subject-btn {
+            width: 100%;
+            padding: 22px 20px;
+            margin-bottom: 14px;
+            border: none;
+            border-radius: 20px;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            font-family: 'EB Garamond', serif;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .mob-subject-btn:active { transform: scale(0.97); }
+        .mob-area-btn {
+            width: 100%;
+            padding: 18px 18px 18px 16px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 16px;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+            font-family: 'EB Garamond', serif;
+            transition: transform 0.15s ease;
+        }
+        .mob-area-btn:active { transform: scale(0.97); }
+        .mob-action-link {
+            display: block;
+            width: 100%;
+            padding: 20px 24px;
+            margin-bottom: 14px;
+            border-radius: 18px;
+            text-align: center;
+            text-decoration: none;
+            font-family: 'EB Garamond', serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+            transition: transform 0.15s ease, filter 0.15s ease;
+            box-sizing: border-box;
+        }
+        .mob-action-link:active { transform: scale(0.97); filter: brightness(0.93); }
+        .mob-course-label {
+            font-family: 'EB Garamond', serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin: 20px 4px 8px;
+        }
+        .mob-course-label:first-child { margin-top: 0; }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-800">
 
-    <div class="max-w-6xl mx-auto px-6 py-12">
+    <!-- ═══════════════════════════════════════════════════
+         MOBILNAVIGERING — visas automatiskt under 768 px
+         ═══════════════════════════════════════════════════ -->
+    <div id="mobile-nav" class="md:hidden bg-white" style="min-height:100dvh;display:flex;flex-direction:column;">
+
+        <!-- Sticky topplisten: tillbaka-pil + brödsmula -->
+        <div style="position:sticky;top:0;z-index:20;background:#ffffff;border-bottom:2px solid #f1f5f9;padding:14px 16px;display:flex;align-items:center;gap:8px;min-height:60px;">
+            <button id="mob-back-btn" onclick="mobileGoBack()" style="display:none;background:none;border:none;cursor:pointer;font-size:1.9rem;color:#475569;padding:2px 12px 2px 0;line-height:1;flex-shrink:0;touch-action:manipulation;">←</button>
+            <div id="mob-breadcrumb" style="font-family:'EB Garamond',serif;font-size:1.1rem;color:#334155;font-weight:600;line-height:1.35;flex:1;"></div>
+        </div>
+
+        <!-- Steg-container med slide-animation -->
+        <div style="flex:1;overflow:hidden;position:relative;">
+            <div id="mob-step-1" class="mob-step-panel" style="transform:translateX(0);"></div>
+            <div id="mob-step-2" class="mob-step-panel" style="transform:translateX(100%);"></div>
+            <div id="mob-step-3" class="mob-step-panel" style="transform:translateX(100%);"></div>
+        </div>
+
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         DESKTOPVERSION — visas från 768 px och uppåt
+         ═══════════════════════════════════════════════════ -->
+    <div class="hidden md:block max-w-6xl mx-auto px-6 py-12">
         <!-- Header: Bild och Text -->
         <header class="flex flex-col md:flex-row items-center gap-8 md:gap-12 mb-20">
             <div class="flex-1 text-center md:text-left order-2 md:order-1">
                 <h1 class="text-5xl md:text-7xl font-black text-slate-900 mb-6 tracking-tight italic">Välkommen till Johns hemsida!</h1>
                 <p class="text-xl md:text-2xl text-slate-600 leading-relaxed mb-6">Här övar vi inför prov. <span class="text-yellow-600 font-bold">Gult</span> för Samhällskunskap, <span class="text-green-600 font-bold">Grönt</span> för Naturkunskap och <span class="text-red-600 font-bold">Rött</span> för AI.</p>
-                
+
                 <div class="bg-indigo-50 border-l-4 border-indigo-500 p-6 rounded-r-xl inline-block shadow-sm text-left">
                     <p class="text-indigo-800 font-bold italic text-lg leading-relaxed">
                         Öva på att hämta svar från minnet istället för att bara läsa, så fastnar kunskapen mycket bättre. Sätt ett alarm på mobilen och träna 15 minuter varje dag, så lär du dig mer på kortare tid!
@@ -290,7 +378,6 @@
                 </div>
             </div>
         </div>
-</div>
 
         <!-- Lärar-sektion -->
         <div class="mb-24">
@@ -299,7 +386,7 @@
                 <div class="flex-1 text-center md:text-left">
                     <h2 class="text-2xl font-bold italic text-indigo-900 mb-2">Är du lärare och vill skapa din egna hemsida?</h2>
                     <p class="text-indigo-700 leading-relaxed mb-4">
-                        Den här hemsidan är byggd helt utan kodkunskap — med hjälp av AI och GitHub. 
+                        Den här hemsidan är byggd helt utan kodkunskap — med hjälp av AI och GitHub.
                         Följ den steg-för-steg-guiden och du har din egna hemsida redo på under en timme.
                     </p>
                     <a href="larare-guide.html" class="btn-action inline-block bg-indigo-600 text-white font-bold py-3 px-8 rounded-xl hover:bg-indigo-700 transition-colors text-base uppercase">
@@ -310,11 +397,201 @@
         </div>
 
         <!-- Footer -->
-        <!-- Footer -->
         <footer class="mt-24 text-center border-t border-slate-200 pt-12">
             <div class="w-16 h-1 bg-slate-200 mx-auto mb-6 rounded-full"></div>
             <p class="text-slate-400 text-xs uppercase tracking-[0.2em] font-black italic">Designad av John</p>
         </footer>
     </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         MOBILNAVIGERING — JavaScript
+         ═══════════════════════════════════════════════════ -->
+    <script>
+    var MOB_SUBJECTS = [
+      {
+        id: 'sh', name: 'Samhällskunskap', emoji: '🏛️',
+        color: '#fbbf24', bgLight: '#fef9c3', textDark: '#78350f',
+        areas: [
+          { name: '1. Demokrati',          course: 'Sa1a1', color: '#fbbf24', bgLight: '#fef9c3', textDark: '#78350f', quizLabel: 'Starta Quiz',   quiz: 'sh_demokrati.html',      material: 'sh_demokrati_material.html',    begrepp: 'sh_demokratibegrepp.html' },
+          { name: '2. Så styrs Sverige',   course: 'Sa1a1', color: '#fbbf24', bgLight: '#fef9c3', textDark: '#78350f', quizLabel: 'Starta Quiz',   quiz: 'sh_styrning_val.html',    material: 'sh_styrning_material.html',     begrepp: 'sh_styrningbegrepp.html' },
+          { name: '3. Privatekonomi',      course: 'Sa1a1', color: '#fbbf24', bgLight: '#fef9c3', textDark: '#78350f', quizLabel: 'Starta Quiz',   quiz: 'sh_privatekonomi.html',   material: 'sh_privatekonomi_material.html', begrepp: 'sh_privatekonomibegrepp.html' },
+          { name: '4. Arbetsmarknad',      course: 'Sa1a1', color: '#fbbf24', bgLight: '#fef9c3', textDark: '#78350f', quizLabel: 'Starta Quiz',   quiz: 'sh_arbetsmarknad.html',   material: 'sh_arbetsmarknad_material.html', begrepp: 'sh_arbetsmarknadbegrepp.html' },
+          { name: 'Politiska Ideologier',  course: 'Sa1a2', color: '#fb923c', bgLight: '#ffedd5', textDark: '#7c2d12', quizLabel: 'Starta Quiz',   quiz: 'sh_ideologier.html',      material: 'sh_ideologier_material.html',    begrepp: 'sh_ideologibegrepp.html' },
+          { name: 'Massmedia & Källkritik',course: 'Sa1a2', color: '#fb923c', bgLight: '#ffedd5', textDark: '#7c2d12', quizLabel: 'Starta Quiz',   quiz: 'sh_massmedia.html',       material: 'sh_massmedia_material.html',     begrepp: 'sh_massmediabegrepp.html' },
+          { name: 'Samhällsekonomi',       course: 'Sa1a2', color: '#fb923c', bgLight: '#ffedd5', textDark: '#7c2d12', quizLabel: 'Starta Quiz',   quiz: 'sh_ekonomi.html',         material: 'sh_ekonomi_material.html',       begrepp: 'sh_ekonomibegrepp.html' },
+          { name: 'Kursprov Sa1a2',        course: 'Sa1a2', color: '#fb923c', bgLight: '#ffedd5', textDark: '#7c2d12', quizLabel: 'Starta Kursprov', quiz: 'sh_kursprovsa1a2.html', material: null, begrepp: null }
+        ]
+      },
+      {
+        id: 'nk', name: 'Naturkunskap', emoji: '🌱',
+        color: '#22c55e', bgLight: '#dcfce7', textDark: '#14532d',
+        areas: [
+          { name: '1. Hållbar utveckling', course: 'NK1a1', color: '#22c55e', bgLight: '#dcfce7', textDark: '#14532d', quizLabel: 'Starta Quiz',    quiz: 'nk_hallbarhet_val.html',  material: 'nk_hallbarhet_material.html',  begrepp: 'nk_hallbarhet_begrepp.html' },
+          { name: '2. Sex & Relationer',   course: 'NK1a1', color: '#22c55e', bgLight: '#dcfce7', textDark: '#14532d', quizLabel: 'Starta Quiz',    quiz: 'sex.html',                material: 'nk_sex_material.html',         begrepp: 'nk_sex_begrepp.html' },
+          { name: '3. Vetenskap',          course: 'NK1a1', color: '#22c55e', bgLight: '#dcfce7', textDark: '#14532d', quizLabel: 'Starta Quiz',    quiz: 'nk_vetenskap.html',       material: 'nk_vetenskap_material.html',   begrepp: 'nk_vetenskap_begrepp.html' },
+          { name: 'Slutprov 1a1',          course: 'NK1a1', color: '#16a34a', bgLight: '#dcfce7', textDark: '#14532d', quizLabel: 'Starta Slutprov', quiz: 'nk1a1_slutprov.html',    material: null, begrepp: null },
+          { name: 'Genteknik',             course: 'NK1a2', color: '#4ade80', bgLight: '#f0fdf4', textDark: '#14532d', quizLabel: 'Starta Quiz',    quiz: 'nk2_genteknik.html',      material: 'nk2_genteknik_material.html',  begrepp: 'nk2_genteknik_begrepp.html' },
+          { name: 'Folkhälsa',             course: 'NK1a2', color: '#4ade80', bgLight: '#f0fdf4', textDark: '#14532d', quizLabel: 'Starta Quiz',    quiz: 'nk2_folkhalsa.html',      material: 'nk2_folkhalsa_material.html',  begrepp: 'nk2_folkhalsa_begrepp.html' },
+          { name: 'Hållbar utveckling',    course: 'NK1a2', color: '#4ade80', bgLight: '#f0fdf4', textDark: '#14532d', quizLabel: 'Starta Quiz',    quiz: 'nk2_hallbarhet.html',     material: 'nk2_hallbarhet_material.html', begrepp: 'nk2_hallbarhet_begrepp.html' },
+          { name: 'Vetenskap',             course: 'NK1a2', color: '#4ade80', bgLight: '#f0fdf4', textDark: '#14532d', quizLabel: 'Starta Quiz',    quiz: 'nk2_vetenskap.html',      material: 'nk2_vetenskap_material.html',  begrepp: 'nk2_vetenskap_begrepp.html' }
+        ]
+      },
+      {
+        id: 'ai', name: 'Artificiell Intelligens', emoji: '🤖',
+        color: '#ef4444', bgLight: '#fee2e2', textDark: '#7f1d1d',
+        areas: [
+          { name: 'Kunskap om AI',        course: 'AI', color: '#ef4444', bgLight: '#fee2e2', textDark: '#7f1d1d', quizLabel: 'AI-Mästaren', quiz: 'ai_quiz.html', material: 'ai_material.html', begrepp: 'ai_begrepp.html' },
+          { name: 'Framtiden för AI',     course: 'AI', color: '#ef4444', bgLight: '#fee2e2', textDark: '#7f1d1d', quizLabel: null, quiz: null, material: null, begrepp: null, tasks: 'ai_framtiden.html' },
+          { name: 'Människa vs AI',       course: 'AI', color: '#ef4444', bgLight: '#fee2e2', textDark: '#7f1d1d', quizLabel: null, quiz: null, material: null, begrepp: null, tasks: 'ai_manniska.html' },
+          { name: 'Programmering med AI', course: 'AI', color: '#ef4444', bgLight: '#fee2e2', textDark: '#7f1d1d', quizLabel: null, quiz: null, material: null, begrepp: null, tasks: 'ai_prog.html' }
+        ]
+      }
+    ];
+
+    var mobCurrentStep = 1;
+    var mobSelectedSubjectIdx = null;
+    var mobSelectedAreaIdx = null;
+
+    function mobUpdateHeader() {
+      var bc = document.getElementById('mob-breadcrumb');
+      var backBtn = document.getElementById('mob-back-btn');
+      if (mobCurrentStep === 1) {
+        bc.textContent = 'Välj ett ämne';
+        backBtn.style.display = 'none';
+      } else if (mobCurrentStep === 2) {
+        var s = MOB_SUBJECTS[mobSelectedSubjectIdx];
+        bc.innerHTML = '<span style="color:' + s.color + ';font-weight:800;">' + s.name + '</span>';
+        backBtn.style.display = 'block';
+      } else {
+        var s2 = MOB_SUBJECTS[mobSelectedSubjectIdx];
+        var a = s2.areas[mobSelectedAreaIdx];
+        bc.innerHTML = '<span style="color:' + s2.color + ';font-weight:800;">' + s2.name + '</span>'
+          + ' <span style="color:#cbd5e1;margin:0 4px;">›</span> '
+          + '<span style="color:#334155;">' + a.name + '</span>';
+        backBtn.style.display = 'block';
+      }
+    }
+
+    function mobSlide(fromStep, toStep) {
+      var direction = toStep > fromStep ? 1 : -1;
+      var fromEl = document.getElementById('mob-step-' + fromStep);
+      var toEl   = document.getElementById('mob-step-' + toStep);
+
+      toEl.style.transition = 'none';
+      toEl.style.transform  = 'translateX(' + (direction * 100) + '%)';
+      toEl.offsetHeight; // force reflow
+
+      fromEl.style.transition = 'transform 0.32s cubic-bezier(0.4,0,0.2,1)';
+      toEl.style.transition   = 'transform 0.32s cubic-bezier(0.4,0,0.2,1)';
+      fromEl.style.transform  = 'translateX(' + (direction * -100) + '%)';
+      toEl.style.transform    = 'translateX(0)';
+      toEl.scrollTop = 0;
+
+      mobCurrentStep = toStep;
+      mobUpdateHeader();
+    }
+
+    function mobileGoBack() {
+      if (mobCurrentStep === 2) {
+        mobSlide(2, 1);
+        mobSelectedSubjectIdx = null;
+      } else if (mobCurrentStep === 3) {
+        mobSlide(3, 2);
+        mobSelectedAreaIdx = null;
+      }
+    }
+
+    function mobileSelectSubject(idx) {
+      mobSelectedSubjectIdx = idx;
+      renderMobStep2();
+      mobSlide(1, 2);
+    }
+
+    function mobileSelectArea(idx) {
+      mobSelectedAreaIdx = idx;
+      renderMobStep3();
+      mobSlide(2, 3);
+    }
+
+    function renderMobStep1() {
+      var el = document.getElementById('mob-step-1');
+      var html = '<h1 style="font-family:\'EB Garamond\',serif;font-size:2rem;font-weight:800;color:#0f172a;margin-bottom:4px;font-style:italic;">Johns Portal</h1>'
+        + '<p style="color:#64748b;font-family:\'EB Garamond\',serif;font-size:1.05rem;margin-bottom:28px;">Välj ett ämne för att komma igång.</p>';
+
+      for (var i = 0; i < MOB_SUBJECTS.length; i++) {
+        var s = MOB_SUBJECTS[i];
+        html += '<button class="mob-subject-btn" onclick="mobileSelectSubject(' + i + ')" style="background:' + s.bgLight + ';">'
+          + '<span style="font-size:2.2rem;flex-shrink:0;">' + s.emoji + '</span>'
+          + '<span style="font-size:1.45rem;font-weight:700;color:' + s.textDark + ';flex:1;font-family:\'EB Garamond\',serif;">' + s.name + '</span>'
+          + '<span style="font-size:1.5rem;color:' + s.color + ';flex-shrink:0;">›</span>'
+          + '</button>';
+      }
+      el.innerHTML = html;
+    }
+
+    function renderMobStep2() {
+      var s = MOB_SUBJECTS[mobSelectedSubjectIdx];
+      var el = document.getElementById('mob-step-2');
+
+      var courses = [];
+      for (var i = 0; i < s.areas.length; i++) {
+        var c = s.areas[i].course;
+        if (courses.indexOf(c) === -1) courses.push(c);
+      }
+
+      var html = '<h2 style="font-family:\'EB Garamond\',serif;font-size:1.6rem;font-weight:700;color:#0f172a;margin-bottom:4px;">Välj arbetsområde</h2>'
+        + '<p style="color:#64748b;font-family:\'EB Garamond\',serif;font-size:1rem;margin-bottom:16px;">Vad vill du öva på?</p>';
+
+      for (var ci = 0; ci < courses.length; ci++) {
+        var course = courses[ci];
+        if (courses.length > 1) {
+          html += '<div class="mob-course-label">' + course + '</div>';
+        }
+        for (var ai = 0; ai < s.areas.length; ai++) {
+          var area = s.areas[ai];
+          if (area.course !== course) continue;
+          html += '<button class="mob-area-btn" onclick="mobileSelectArea(' + ai + ')" style="background:' + area.bgLight + ';border-left:5px solid ' + area.color + ';">'
+            + '<span style="font-size:1.15rem;font-weight:700;color:' + area.textDark + ';flex:1;text-align:left;font-family:\'EB Garamond\',serif;">' + area.name + '</span>'
+            + '<span style="font-size:1.4rem;color:' + area.color + ';margin-left:12px;flex-shrink:0;">›</span>'
+            + '</button>';
+        }
+      }
+      el.innerHTML = html;
+    }
+
+    function renderMobStep3() {
+      var s = MOB_SUBJECTS[mobSelectedSubjectIdx];
+      var a = s.areas[mobSelectedAreaIdx];
+      var el = document.getElementById('mob-step-3');
+
+      var lightColors = ['#fbbf24', '#4ade80'];
+      var quizTextColor = lightColors.indexOf(a.color) !== -1 ? a.textDark : '#ffffff';
+
+      var html = '<div style="background:' + a.bgLight + ';border-radius:16px;padding:20px 18px;margin-bottom:28px;border-left:5px solid ' + a.color + ';">'
+        + '<div style="font-family:\'EB Garamond\',serif;font-size:0.8rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:' + a.color + ';margin-bottom:6px;">' + a.course + '</div>'
+        + '<div style="font-family:\'EB Garamond\',serif;font-size:1.65rem;font-weight:800;color:' + a.textDark + ';line-height:1.2;">' + a.name + '</div>'
+        + '</div>'
+        + '<p style="color:#64748b;font-family:\'EB Garamond\',serif;font-size:1.05rem;margin-bottom:20px;">Vad vill du göra?</p>';
+
+      if (a.quiz) {
+        html += '<a href="' + a.quiz + '" class="mob-action-link" style="background:' + a.color + ';color:' + quizTextColor + ';">🎯 ' + a.quizLabel + '</a>';
+      }
+      if (a.tasks) {
+        html += '<a href="' + a.tasks + '" class="mob-action-link" style="background:' + a.color + ';color:#ffffff;">✏️ Uppgifter</a>';
+      }
+      if (a.material) {
+        html += '<a href="' + a.material + '" class="mob-action-link" style="background:#f1f5f9;color:#475569;border:2px solid #e2e8f0;">📚 Pluggmaterial</a>';
+      }
+      if (a.begrepp) {
+        html += '<a href="' + a.begrepp + '" class="mob-action-link" style="background:#f1f5f9;color:#475569;border:2px solid #e2e8f0;">📖 Öva på begrepp</a>';
+      }
+
+      el.innerHTML = html;
+    }
+
+    renderMobStep1();
+    mobUpdateHeader();
+    </script>
+
 </body>
 </html>
