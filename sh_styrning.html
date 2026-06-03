@@ -7,718 +7,311 @@
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
         :root {
-            --bg: #0f0f13;
-            --surface: #17171e;
-            --surface2: #1e1e28;
-            --border: #2a2a38;
-            --accent: #e8c547;
-            --accent2: #c4a030;
-            --text: #e8e8f0;
-            --muted: #7878a0;
-            --correct: #3ecf8e;
-            --wrong: #e55;
-            --correct-bg: #0d2e1f;
-            --wrong-bg: #2e0d0d;
+            --bg: #0f0f13; --surface: #17171e; --surface2: #1e1e28; --border: #2a2a38;
+            --accent: #e8c547; --accent2: #c4a030; --text: #e8e8f0; --muted: #7878a0;
+            --correct: #3ecf8e; --wrong: #e55; --correct-bg: #0d2e1f; --wrong-bg: #2e0d0d;
         }
-
-        body {
-            font-family: 'DM Sans', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem;
-        }
-
-        .screen {
-            width: 100%;
-            max-width: 640px;
-            animation: rise 0.4s cubic-bezier(.22,1,.36,1) both;
-        }
-
-        @keyframes rise {
-            from { opacity: 0; transform: translateY(20px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ---- START SCREEN ---- */
-        .start-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 3rem 2.5rem;
-            text-align: center;
-        }
-
-        .badge {
-            display: inline-block;
-            background: var(--accent);
-            color: #000;
-            font-size: .7rem;
-            font-weight: 700;
-            letter-spacing: .12em;
-            text-transform: uppercase;
-            padding: .35rem .9rem;
-            border-radius: 100px;
-            margin-bottom: 1.5rem;
-        }
-
-        .start-card h1 {
-            font-family: 'Fraunces', serif;
-            font-size: clamp(2rem, 6vw, 2.8rem);
-            font-weight: 900;
-            line-height: 1.1;
-            margin-bottom: 1rem;
-            color: var(--text);
-        }
-
-        .start-card h1 em {
-            font-style: italic;
-            color: var(--accent);
-        }
-
-        .start-card p {
-            color: var(--muted);
-            line-height: 1.7;
-            font-size: .95rem;
-            margin-bottom: 2.5rem;
-            max-width: 420px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .pill-row {
-            display: flex;
-            gap: .6rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 2.5rem;
-        }
-
-        .pill {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 100px;
-            padding: .4rem 1rem;
-            font-size: .8rem;
-            color: var(--muted);
-        }
-
-        .btn-start {
-            display: inline-flex;
-            align-items: center;
-            gap: .6rem;
-            background: var(--accent);
-            color: #000;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 1rem;
-            font-weight: 700;
-            padding: .9rem 2.2rem;
-            border-radius: 100px;
-            border: none;
-            cursor: pointer;
-            transition: background .15s, transform .1s;
-            width: 100%;
-            justify-content: center;
-        }
-
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+        .screen { width: 100%; max-width: 640px; animation: rise 0.4s cubic-bezier(.22,1,.36,1) both; }
+        @keyframes rise { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .start-card { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 3rem 2.5rem; text-align: center; }
+        .badge { display: inline-block; background: var(--accent); color: #000; font-size: .7rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: .35rem .9rem; border-radius: 100px; margin-bottom: 1.5rem; }
+        .start-card h1 { font-family: 'Fraunces', serif; font-size: clamp(2rem, 6vw, 2.8rem); font-weight: 900; line-height: 1.1; margin-bottom: 1rem; color: var(--text); }
+        .start-card h1 em { font-style: italic; color: var(--accent); }
+        .start-card p { color: var(--muted); line-height: 1.7; font-size: .95rem; margin-bottom: 2.5rem; max-width: 420px; margin-left: auto; margin-right: auto; }
+        .pill-row { display: flex; gap: .6rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.5rem; }
+        .pill { background: var(--surface2); border: 1px solid var(--border); border-radius: 100px; padding: .4rem 1rem; font-size: .8rem; color: var(--muted); }
+        .btn-start { display: inline-flex; align-items: center; gap: .6rem; background: var(--accent); color: #000; font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 700; padding: .9rem 2.2rem; border-radius: 100px; border: none; cursor: pointer; transition: background .15s, transform .1s; width: 100%; justify-content: center; }
         .btn-start:hover { background: #f0d060; }
         .btn-start:active { transform: scale(.98); }
-
-        /* ---- QUIZ SCREEN ---- */
-        .quiz-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.5rem;
-        }
-
-        .q-counter {
-            font-size: .75rem;
-            font-weight: 700;
-            letter-spacing: .1em;
-            text-transform: uppercase;
-            color: var(--muted);
-        }
-
+        .quiz-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+        .q-counter { font-size: .75rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
         .q-counter span { color: var(--accent); }
-
-        .timer {
-            font-family: 'Fraunces', serif;
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--muted);
-            letter-spacing: .05em;
-        }
-
-        .progress-track {
-            height: 3px;
-            background: var(--border);
-            border-radius: 99px;
-            margin-bottom: 2rem;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--accent);
-            border-radius: 99px;
-            transition: width .5s cubic-bezier(.22,1,.36,1);
-        }
-
-        .question-text {
-            font-family: 'Fraunces', serif;
-            font-size: clamp(1.15rem, 3.5vw, 1.45rem);
-            font-weight: 700;
-            line-height: 1.45;
-            margin-bottom: 1.8rem;
-            color: var(--text);
-        }
-
-        .options {
-            display: flex;
-            flex-direction: column;
-            gap: .7rem;
-            margin-bottom: 1.8rem;
-        }
-
-        .opt-btn {
-            background: var(--surface);
-            border: 1.5px solid var(--border);
-            border-radius: 14px;
-            padding: 1rem 1.2rem;
-            color: var(--text);
-            font-family: 'DM Sans', sans-serif;
-            font-size: .93rem;
-            font-weight: 500;
-            text-align: left;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: .9rem;
-            transition: border-color .15s, background .15s;
-            line-height: 1.4;
-        }
-
-        .opt-btn:not([disabled]):hover {
-            border-color: var(--accent);
-            background: var(--surface2);
-        }
-
-        .opt-btn .letter {
-            flex-shrink: 0;
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
-            background: var(--surface2);
-            border: 1.5px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: .75rem;
-            font-weight: 700;
-            color: var(--muted);
-            transition: background .15s, border-color .15s, color .15s;
-        }
-
-        .opt-btn.correct {
-            border-color: var(--correct);
-            background: var(--correct-bg);
-            color: var(--correct);
-        }
-
-        .opt-btn.correct .letter {
-            background: var(--correct);
-            border-color: var(--correct);
-            color: #000;
-        }
-
-        .opt-btn.wrong {
-            border-color: var(--wrong);
-            background: var(--wrong-bg);
-            color: var(--wrong);
-        }
-
-        .opt-btn.wrong .letter {
-            background: var(--wrong);
-            border-color: var(--wrong);
-            color: #fff;
-        }
-
+        .timer { font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 700; color: var(--muted); letter-spacing: .05em; }
+        .progress-track { height: 3px; background: var(--border); border-radius: 99px; margin-bottom: 2rem; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent); border-radius: 99px; transition: width .5s cubic-bezier(.22,1,.36,1); }
+        .question-text { font-family: 'Fraunces', serif; font-size: clamp(1.15rem, 3.5vw, 1.45rem); font-weight: 700; line-height: 1.45; margin-bottom: 1.8rem; color: var(--text); }
+        .options { display: flex; flex-direction: column; gap: .7rem; margin-bottom: 1.8rem; }
+        .opt-btn { background: var(--surface); border: 1.5px solid var(--border); border-radius: 14px; padding: 1rem 1.2rem; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: .93rem; font-weight: 500; text-align: left; cursor: pointer; display: flex; align-items: flex-start; gap: .9rem; transition: border-color .15s, background .15s; line-height: 1.4; }
+        .opt-btn:not([disabled]):hover { border-color: var(--accent); background: var(--surface2); }
+        .opt-btn .letter { flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px; background: var(--surface2); border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: .75rem; font-weight: 700; color: var(--muted); transition: background .15s, border-color .15s, color .15s; }
+        .opt-btn.correct { border-color: var(--correct); background: var(--correct-bg); color: var(--correct); }
+        .opt-btn.correct .letter { background: var(--correct); border-color: var(--correct); color: #000; }
+        .opt-btn.wrong { border-color: var(--wrong); background: var(--wrong-bg); color: var(--wrong); }
+        .opt-btn.wrong .letter { background: var(--wrong); border-color: var(--wrong); color: #fff; }
         .opt-btn.dim { opacity: .3; }
-
-        .quiz-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-top: 1.2rem;
-            border-top: 1px solid var(--border);
-        }
-
-        .hint-toggle {
-            background: none;
-            border: none;
-            color: var(--muted);
-            font-family: 'DM Sans', sans-serif;
-            font-size: .85rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: .4rem;
-            padding: 0;
-            transition: color .15s;
-        }
-
+        .quiz-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 1.2rem; border-top: 1px solid var(--border); }
+        .hint-toggle { background: none; border: none; color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: .85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: .4rem; padding: 0; transition: color .15s; }
         .hint-toggle:hover { color: var(--accent); }
-
-        .btn-next {
-            background: var(--accent);
-            color: #000;
-            border: none;
-            border-radius: 100px;
-            padding: .65rem 1.6rem;
-            font-family: 'DM Sans', sans-serif;
-            font-size: .9rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: .5rem;
-            transition: background .15s;
-        }
-
+        .btn-next { background: var(--accent); color: #000; border: none; border-radius: 100px; padding: .65rem 1.6rem; font-family: 'DM Sans', sans-serif; font-size: .9rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: .5rem; transition: background .15s; }
         .btn-next:hover { background: #f0d060; }
-
-        .hint-box {
-            margin-top: 1rem;
-            background: #1e1a08;
-            border: 1px solid #3a3010;
-            border-radius: 12px;
-            padding: .9rem 1.1rem;
-            font-size: .85rem;
-            color: #c8a84a;
-            line-height: 1.6;
-            animation: rise .25s ease both;
-        }
-
-        .hint-box strong {
-            display: block;
-            font-size: .7rem;
-            letter-spacing: .1em;
-            text-transform: uppercase;
-            color: #7a6020;
-            margin-bottom: .35rem;
-        }
-
-        /* ---- END SCREEN ---- */
-        .end-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 3rem 2.5rem;
-            text-align: center;
-        }
-
-        .score-big {
-            font-family: 'Fraunces', serif;
-            font-size: 5rem;
-            font-weight: 900;
-            line-height: 1;
-            color: var(--accent);
-            margin-bottom: .3rem;
-        }
-
-        .score-label {
-            font-size: .8rem;
-            letter-spacing: .1em;
-            text-transform: uppercase;
-            color: var(--muted);
-            margin-bottom: 1.5rem;
-        }
-
-        .end-card h2 {
-            font-family: 'Fraunces', serif;
-            font-size: 1.8rem;
-            font-weight: 900;
-            margin-bottom: .6rem;
-        }
-
-        .end-card p {
-            color: var(--muted);
-            font-size: .95rem;
-            line-height: 1.6;
-            margin-bottom: 2rem;
-        }
-
-        .stats-row {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-box {
-            flex: 1;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 1rem;
-        }
-
-        .stat-box .label {
-            font-size: .7rem;
-            letter-spacing: .1em;
-            text-transform: uppercase;
-            color: var(--muted);
-            display: block;
-            margin-bottom: .4rem;
-        }
-
-        .stat-box .value {
-            font-family: 'Fraunces', serif;
-            font-size: 1.5rem;
-            font-weight: 900;
-            color: var(--text);
-        }
-
-        .btn-restart {
-            display: inline-flex;
-            align-items: center;
-            gap: .6rem;
-            background: var(--surface2);
-            border: 1.5px solid var(--border);
-            color: var(--text);
-            font-family: 'DM Sans', sans-serif;
-            font-size: 1rem;
-            font-weight: 600;
-            padding: .9rem 2rem;
-            border-radius: 100px;
-            cursor: pointer;
-            width: 100%;
-            justify-content: center;
-            transition: border-color .15s, background .15s;
-        }
-
-        .btn-restart:hover {
-            border-color: var(--accent);
-            background: #1a1a10;
-        }
+        .hint-box { margin-top: 1rem; background: #1e1a08; border: 1px solid #3a3010; border-radius: 12px; padding: .9rem 1.1rem; font-size: .85rem; color: #c8a84a; line-height: 1.6; animation: rise .25s ease both; }
+        .hint-box strong { display: block; font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: #7a6020; margin-bottom: .35rem; }
+        .end-card { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 3rem 2.5rem; text-align: center; }
+        .score-big { font-family: 'Fraunces', serif; font-size: 5rem; font-weight: 900; line-height: 1; color: var(--accent); margin-bottom: .3rem; }
+        .score-label { font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.5rem; }
+        .end-card h2 { font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: 900; margin-bottom: .6rem; }
+        .end-card p { color: var(--muted); font-size: .95rem; line-height: 1.6; margin-bottom: 2rem; }
+        .stats-row { display: flex; gap: 1rem; margin-bottom: 2rem; }
+        .stat-box { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 1rem; }
+        .stat-box .label { font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: .4rem; }
+        .stat-box .value { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 900; color: var(--text); }
+        .btn-restart { display: inline-flex; align-items: center; gap: .6rem; background: var(--surface2); border: 1.5px solid var(--border); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600; padding: .9rem 2rem; border-radius: 100px; cursor: pointer; width: 100%; justify-content: center; transition: border-color .15s, background .15s; }
+        .btn-restart:hover { border-color: var(--accent); background: #1a1a10; }
+        .lang-opt { display:block;width:100%;text-align:left;padding:8px 14px;font-size:13px;border:none;background:none;cursor:pointer;color:#1e293b;font-family:'DM Sans',sans-serif; }
+        .lang-opt:hover { background:#f8fafc; }
+        .trans-line { margin-top:5px; padding-top:5px; border-top:1px solid rgba(255,255,255,0.08); font-size:0.82em; color:var(--muted); line-height:1.5; }
+        .trans-badge { display:inline-block;font-size:10px;background:rgba(255,255,255,0.07);border-radius:4px;padding:1px 5px;margin-right:5px; }
     </style>
 </head>
 <body>
-<div id="app"></div>
 
+<!-- Language Selector -->
+<div style="position:fixed;top:1rem;right:1rem;z-index:9999;">
+  <button onclick="toggleLangMenu(event)" style="background:rgba(30,30,40,0.95);border:0.5px solid #3a3a50;border-radius:8px;font-size:13px;padding:6px 12px;cursor:pointer;color:#e8e8f0;display:flex;align-items:center;gap:6px;white-space:nowrap;font-family:'DM Sans',sans-serif;">
+    🌐 Välj språk
+  </button>
+  <div id="lang-menu" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:white;border:0.5px solid #cbd5e1;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.3);overflow:hidden;min-width:160px;">
+    <button class="lang-opt" onclick="selectLang('sv')">🇸🇪 Svenska</button>
+    <button class="lang-opt" onclick="selectLang('ar')">🇸🇦 Arabiska</button>
+    <button class="lang-opt" onclick="selectLang('fa')">🇮🇷 Persiska</button>
+    <button class="lang-opt" onclick="selectLang('en')">🇬🇧 Engelska</button>
+    <button class="lang-opt" onclick="selectLang('bs')">🇧🇦 Bosniska</button>
+    <button class="lang-opt" onclick="selectLang('tr')">🇹🇷 Turkiska</button>
+  </div>
+</div>
+
+<div id="app"></div>
 <script>
+let currentLang = 'sv';
+const LANG_FLAGS  = { en:'🇬🇧', ar:'🇸🇦', fa:'🇮🇷', bs:'🇧🇦', tr:'🇹🇷' };
+const LANG_LABELS = { en:'Engelska', ar:'Arabiska', fa:'Persiska', bs:'Bosniska', tr:'Turkiska' };
+const RTL = ['ar','fa'];
+
+function trans(sv, key, idx) {
+  if (currentLang === 'sv') return '';
+  const tq = TRANS_Q[currentLang];
+  let text = '';
+  if (idx !== undefined && tq && tq[idx]) text = tq[idx][key];
+  else if (typeof key === 'string' && UI[currentLang]) text = UI[currentLang][key] || '';
+  if (!text) return '';
+  const isRTL = RTL.includes(currentLang);
+  const bm = isRTL ? 'margin-left:5px;margin-right:0;' : '';
+  return `<div class="trans-line"${isRTL?' style="direction:rtl;text-align:right;"':''}>
+    <span class="trans-badge" style="${bm}">${LANG_FLAGS[currentLang]} ${LANG_LABELS[currentLang]}</span>${text}
+  </div>`;
+}
+
+function uiStr(key) {
+  if (currentLang === 'sv' || !UI[currentLang]) return UI.sv[key] || '';
+  return UI[currentLang][key] || UI.sv[key] || '';
+}
+
+const UI = {
+  sv: { badge:'Samhällskunskap', startBtn:'Kör igång', counter:'Fråga', hintLabel:'Tips', showHint:'Visa tips', hideHint:'Dölj tips', nextBtn:'Nästa', resultBtn:'Se resultat', correctLabel:'rätta svar', h2_90:'Strålande!', h2_70:'Bra kämpat!', h2_low:'Fortsätt träna!', msg_90:'Imponerande! Du är redo för provet.', msg_70:'Bra jobbat! Läs igenom det du missade en gång till.', msg_low:'Fortsätt öva – varje runda gör dig skarpare.', statResult:'Resultat', statTime:'Tid', restartBtn:'Kör igen med ny ordning' },
+  en: { badge:'Civics', startBtn:'Get started', counter:'Question', hintLabel:'Hint', showHint:'Show hint', hideHint:'Hide hint', nextBtn:'Next', resultBtn:'See results', correctLabel:'correct answers', h2_90:'Brilliant!', h2_70:'Well done!', h2_low:'Keep practising!', msg_90:'Impressive! You are ready for the test.', msg_70:'Good work! Read through what you missed once more.', msg_low:'Keep practising – every round makes you sharper.', statResult:'Result', statTime:'Time', restartBtn:'Play again with new order' },
+  ar: { badge:'العلوم الاجتماعية', startBtn:'ابدأ', counter:'سؤال', hintLabel:'تلميح', showHint:'إظهار التلميح', hideHint:'إخفاء التلميح', nextBtn:'التالي', resultBtn:'عرض النتائج', correctLabel:'إجابات صحيحة', h2_90:'رائع!', h2_70:'أحسنت!', h2_low:'واصل التدريب!', msg_90:'مثير للإعجاب! أنت مستعد للاختبار.', msg_70:'عمل جيد! راجع ما فاتك مرة أخرى.', msg_low:'واصل التدريب – كل جولة تجعلك أكثر حدة.', statResult:'النتيجة', statTime:'الوقت', restartBtn:'العب مرة أخرى بترتيب جديد' },
+  fa: { badge:'علوم اجتماعی', startBtn:'شروع', counter:'سوال', hintLabel:'راهنمایی', showHint:'نمایش راهنما', hideHint:'پنهان کردن راهنما', nextBtn:'بعدی', resultBtn:'نمایش نتایج', correctLabel:'پاسخ صحیح', h2_90:'عالی!', h2_70:'آفرین!', h2_low:'به تمرین ادامه بده!', msg_90:'شگفت‌انگیز! آماده امتحان هستی.', msg_70:'کار خوب! یک بار دیگر مطالبی که از دست دادی را مرور کن.', msg_low:'به تمرین ادامه بده – هر دور تیزترت می‌کند.', statResult:'نتیجه', statTime:'زمان', restartBtn:'دوباره با ترتیب جدید بازی کن' },
+  bs: { badge:'Društvene nauke', startBtn:'Kreni', counter:'Pitanje', hintLabel:'Savjet', showHint:'Prikaži savjet', hideHint:'Sakrij savjet', nextBtn:'Sljedeće', resultBtn:'Vidi rezultate', correctLabel:'tačnih odgovora', h2_90:'Sjajno!', h2_70:'Bravo!', h2_low:'Nastavi vježbati!', msg_90:'Impresivno! Spreman si za test.', msg_70:'Dobar rad! Prođi još jednom kroz ono što si propustio.', msg_low:'Nastavi vježbati – svaka runda te izoštruje.', statResult:'Rezultat', statTime:'Vrijeme', restartBtn:'Igraj ponovo s novim redoslijedom' },
+  tr: { badge:'Sosyal Bilgiler', startBtn:'Başla', counter:'Soru', hintLabel:'İpucu', showHint:'İpucunu göster', hideHint:'İpucunu gizle', nextBtn:'Sonraki', resultBtn:'Sonuçları gör', correctLabel:'doğru cevap', h2_90:'Muhteşem!', h2_70:'Aferin!', h2_low:'Pratik yapmaya devam et!', msg_90:'Etkileyici! Sınava hazırsın.', msg_70:'İyi iş! Kaçırdıklarını bir kez daha gözden geçir.', msg_low:'Pratik yapmaya devam et – her tur seni keskinleştirir.', statResult:'Sonuç', statTime:'Süre', restartBtn:'Yeni sırayla tekrar oyna' }
+};
+
 const QUESTIONS = [
-    {
-        q: "Grundlagarna finns till för att...",
-        opts: [
-            "...lista straff för alla sorters brott som finns i Sverige.",
-            "...skydda demokratin och stå över alla övriga lagar.",
-            "...tala om för kommunerna hur de ska sköta sin ekonomi.",
-            "...förklara hur sjukhus och skolor ska organiseras."
-        ],
-        correct: 1,
-        hint: "Grundlagarna sätter spelreglerna för demokratin – de gäller framför alla andra lagar."
-    },
-    {
-        q: "Att ändra en grundlag kräver mer än att ändra en vanlig lag. Varför?",
-        opts: [
-            "Kungen och statsministern måste båda skriva under.",
-            "EU behöver godkänna ändringen i förväg.",
-            "Ingen tillfällig majoritet ska kunna rucka på demokratins grunder.",
-            "Alla röstberättigade måste delta i en folkomröstning."
-        ],
-        correct: 2,
-        hint: "Det är en inbyggd bromsmekanism mot att demokratin avskaffas bakvägen."
-    },
-    {
-        q: "Vad innehåller Regeringsformen?",
-        opts: [
-            "Regler för hur mycket skatt vi ska betala.",
-            "Direktiv om hur polisen får använda våld.",
-            "Bestämmelsen att all offentlig makt kommer från folket.",
-            "En lista på vilka partier som får ställa upp i val."
-        ],
-        correct: 2,
-        hint: "Regeringsformen slår fast folksuveräniteten – makten utgår från medborgarna."
-    },
-    {
-        q: "Tryckfrihetsförordningen och Yttrandefrihetsgrundlagen handlar båda om...",
-        opts: [
-            "...rätten att uttrycka sig fritt utan att staten censurerar i förväg.",
-            "...krav på att journalister ska ha formell utbildning.",
-            "...skyldigheten att skriva positivt om den sittande regeringen.",
-            "...förbud mot att ifrågasätta redan fattade politiska beslut."
-        ],
-        correct: 0,
-        hint: "Ingen myndighet får granska och stoppa ett innehåll innan det publiceras."
-    },
-    {
-        q: "Successionsordningen reglerar...",
-        opts: [
-            "...hur statsministern utses efter ett val.",
-            "...vem som tar över tronen och blir statschef.",
-            "...hur man löser konflikter mellan olika vanliga lagar.",
-            "...fördelningen av makt mellan stat och kommuner."
-        ],
-        correct: 1,
-        hint: "Succession = tronföljd. Lagen bestämmer vem som ärver kungakronan."
-    },
-    {
-        q: "Vilken av de fyra grundlagarna anses vara den mest centrala?",
-        opts: [
-            "Yttrandefrihetsgrundlagen – utan yttrandefrihet finns ingen demokrati.",
-            "Regeringsformen – den lägger hela grunden för statsskicket.",
-            "Successionsordningen – kungen är formellt sett landets chef.",
-            "Tryckfrihetsförordningen – mediernas makt är avgörande idag."
-        ],
-        correct: 1,
-        hint: "Regeringsformen är grunden i grunden – den styr hur Sverige styrs."
-    },
-    {
-        q: "En ny vanlig lag visar sig strida mot en grundlag. Vad gäller?",
-        opts: [
-            "Den vanliga lagen gäller om tillräckligt många stödjer den.",
-            "En domstol kastar tärning om vilken lag som ska användas.",
-            "Frågan skickas till EU för avgörande.",
-            "Den vanliga lagen gäller inte – grundlagen går alltid före."
-        ],
-        correct: 3,
-        hint: "Grundlagar är överordnade. En lag som strider mot dem kan inte tillämpas."
-    },
-    {
-        q: "En riksdagsledamot lämnar in ett eget lagförslag. Vad kallas det?",
-        opts: [
-            "Motion – ett sätt för enskilda ledamöter att driva frågor.",
-            "Betänkande – en rapport från ett expertorgan i riksdagen.",
-            "Proposition – ett förslag som alltid ska godkännas av regeringen.",
-            "Remiss – ett dokument som skickas till polisen för synpunkter."
-        ],
-        correct: 0,
-        hint: "Motioner är riksdagsledamöternas egna initiativ – inte regeringens."
-    },
-    {
-        q: "Vad är en proposition?",
-        opts: [
-            "Ett förslag som folket röstar om direkt i en folkomröstning.",
-            "En namninsamling mot ett lagförslag.",
-            "Ett lagförslag som regeringen lämnar till riksdagen för beslut.",
-            "Ett EU-krav som riksdagen måste hantera skyndsamt."
-        ],
-        correct: 2,
-        hint: "Propositioner kommer från regeringen – det är deras sätt att föreslå ny lagstiftning."
-    },
-    {
-        q: "Varför görs en statlig utredning innan en ny lag tas fram?",
-        opts: [
-            "För att räkna ut exakt vad lagen kommer kosta för företagen.",
-            "För att fackmän och experter ska granska frågan ordentligt.",
-            "För att domstolarna ska kunna bedöma förslaget i förväg.",
-            "För att politikerna ska kunna förhandla utan insyn utifrån."
-        ],
-        correct: 1,
-        hint: "Utredningen ser till att beslutet vilar på fakta, inte på magkänsla."
-    },
-    {
-        q: "Varför skickar regeringen ett lagförslag på remiss?",
-        opts: [
-            "Så att kungen hinner läsa och föreslå ändringar.",
-            "Så att medborgarna kan rösta om det digitalt.",
-            "Så att det hinner översättas till engelska.",
-            "Så att myndigheter och organisationer kan lämna synpunkter."
-        ],
-        correct: 3,
-        hint: "Remissen är demokratins sätt att samla in kunniga röster innan beslut tas."
-    },
-    {
-        q: "Vad gör riksdagens utskott med ett lagförslag?",
-        opts: [
-            "De fördjupar sig i förslaget och bereder riksdagens beslut.",
-            "De ser till att lagen träder i kraft så fort som möjligt.",
-            "De lägger ner förslaget direkt om de anser att regeringen gjort fel.",
-            "De skriver om hela lagen utifrån sina egna politiska åsikter."
-        ],
-        correct: 0,
-        hint: "Utskotten är riksdagens arbetsgrupper – de gör förarbetet innan hela kammaren röstar."
-    },
-    {
-        q: "Vad är det absolut sista steget innan ett förslag blir lag?",
-        opts: [
-            "Statsministern fattar det slutliga beslutet på egen hand.",
-            "Högsta domstolen godkänner eller avslår förslaget.",
-            "Riksdagens 349 ledamöter röstar ja eller nej i kammaren.",
-            "Folket röstar om förslaget i nästa riksdagsval."
-        ],
-        correct: 2,
-        hint: "Omröstningen i riksdagens kammare är det sista och avgörande steget."
-    },
-    {
-        q: "Riksdagen har röstat ja till en ny lag. Vad händer sedan?",
-        opts: [
-            "Ingenting i tre år – man inväntar statistik om huruvida det behövdes.",
-            "Regeringen och myndigheterna ser till att lagen faktiskt börjar gälla.",
-            "EU måste lämna ett slutgodkännande innan lagen kan tillämpas.",
-            "Oppositionen får lämna in ett nytt förslag om de inte är nöjda."
-        ],
-        correct: 1,
-        hint: "Att verkställa riksdagens beslut är regeringens och myndigheternas jobb."
-    },
-    {
-        q: "Riksdagens allra viktigaste uppgift är att...",
-        opts: [
-            "...ingå avtal med andra länder och ha hand om försvaret.",
-            "...gripa brottslingar och se till att de döms.",
-            "...bestämma hur kommunernas skolor och sjukhus ska skötas.",
-            "...stifta lagar och besluta hur statens pengar ska användas."
-        ],
-        correct: 3,
-        hint: "Riksdagen har den lagstiftande makten och budgetmakten."
-    },
-    {
-        q: "Vad är EU?",
-        opts: [
-            "En gemensam armé för Europas länder.",
-            "Ett enat land styrt från Bryssel.",
-            "Ett djupgående samarbete mellan självständiga europeiska länder.",
-            "En biståndsorganisation för ekonomiskt svaga länder."
-        ],
-        correct: 2,
-        hint: "Länderna behåller sin självständighet men samarbetar nära inom EU."
-    },
-    {
-        q: "Vad innebär den fria rörligheten för EU-medborgare?",
-        opts: [
-            "Att kollektivtrafiken är gratis med EU-pass.",
-            "Att man utan hinder kan resa, bo och arbeta i andra EU-länder.",
-            "Att arbetsgivare kan tvinga personal att flytta utomlands.",
-            "Att EU kan beordra dig att bosätta dig i ett annat land."
-        ],
-        correct: 1,
-        hint: "Gränserna ska inte hindra dig från att söka jobb eller studera i ett annat EU-land."
-    },
-    {
-        q: "Vad har EU:s inre marknad betytt för handeln i Europa?",
-        opts: [
-            "Det har blivit enklare och billigare – tullavgifterna mellan länderna är borta.",
-            "Det har blivit svårare för små företag eftersom bara stora bolag tillåts sälja.",
-            "Det har blivit dyrare för att företagen betalar extra skatt direkt till EU.",
-            "Ingenting har förändrats – varje land behåller sina egna handelsregler."
-        ],
-        correct: 0,
-        hint: "Inga tullar = lägre priser och enklare handel inom EU."
-    },
-    {
-        q: "Vad brukar kritiker mena med att EU lider av ett 'demokratiskt underskott'?",
-        opts: [
-            "Att EU hindrar svenska partier från att delta i EU-parlamentsvalet.",
-            "Att länderna inte tillåts ha synpunkter på EU:s ledarskap.",
-            "Att EU saknar budget för att genomföra demokratiska val.",
-            "Att beslut fattas långt bort i Bryssel och känns svåra att påverka som vanlig medborgare."
-        ],
-        correct: 3,
-        hint: "Avståndet till makten gör att många medborgare känner att EU är svårt att påverka."
-    },
-    {
-        q: "En EU-förordning strider mot en svensk lag. Vad gäller då?",
-        opts: [
-            "Varje land väljer fritt vilken regel de vill följa det aktuella året.",
-            "Den svenska lagen gäller alltid, oavsett vad EU säger.",
-            "EU-rätten har företräde, för att samarbetet ska fungera lika i alla länder.",
-            "Det händer ingenting – EU ger bara råd, de stiftar inga egna lagar."
-        ],
-        correct: 2,
-        hint: "EU-rättens företräde säkerställer att spelreglerna är desamma i hela unionen."
-    }
+    { q: "Grundlagarna finns till för att...", opts: ["...lista straff för alla sorters brott som finns i Sverige.", "...skydda demokratin och stå över alla övriga lagar.", "...tala om för kommunerna hur de ska sköta sin ekonomi.", "...förklara hur sjukhus och skolor ska organiseras."], correct: 1, hint: "Grundlagarna sätter spelreglerna för demokratin – de gäller framför alla andra lagar." },
+    { q: "Att ändra en grundlag kräver mer än att ändra en vanlig lag. Varför?", opts: ["Kungen och statsministern måste båda skriva under.", "EU behöver godkänna ändringen i förväg.", "Ingen tillfällig majoritet ska kunna rucka på demokratins grunder.", "Alla röstberättigade måste delta i en folkomröstning."], correct: 2, hint: "Det är en inbyggd bromsmekanism mot att demokratin avskaffas bakvägen." },
+    { q: "Vad innehåller Regeringsformen?", opts: ["Regler för hur mycket skatt vi ska betala.", "Direktiv om hur polisen får använda våld.", "Bestämmelsen att all offentlig makt kommer från folket.", "En lista på vilka partier som får ställa upp i val."], correct: 2, hint: "Regeringsformen slår fast folksuveräniteten – makten utgår från medborgarna." },
+    { q: "Tryckfrihetsförordningen och Yttrandefrihetsgrundlagen handlar båda om...", opts: ["...rätten att uttrycka sig fritt utan att staten censurerar i förväg.", "...krav på att journalister ska ha formell utbildning.", "...skyldigheten att skriva positivt om den sittande regeringen.", "...förbud mot att ifrågasätta redan fattade politiska beslut."], correct: 0, hint: "Ingen myndighet får granska och stoppa ett innehåll innan det publiceras." },
+    { q: "Successionsordningen reglerar...", opts: ["...hur statsministern utses efter ett val.", "...vem som tar över tronen och blir statschef.", "...hur man löser konflikter mellan olika vanliga lagar.", "...fördelningen av makt mellan stat och kommuner."], correct: 1, hint: "Succession = tronföljd. Lagen bestämmer vem som ärver kungakronan." },
+    { q: "Vilken av de fyra grundlagarna anses vara den mest centrala?", opts: ["Yttrandefrihetsgrundlagen – utan yttrandefrihet finns ingen demokrati.", "Regeringsformen – den lägger hela grunden för statsskicket.", "Successionsordningen – kungen är formellt sett landets chef.", "Tryckfrihetsförordningen – mediernas makt är avgörande idag."], correct: 1, hint: "Regeringsformen är grunden i grunden – den styr hur Sverige styrs." },
+    { q: "En ny vanlig lag visar sig strida mot en grundlag. Vad gäller?", opts: ["Den vanliga lagen gäller om tillräckligt många stödjer den.", "En domstol kastar tärning om vilken lag som ska användas.", "Frågan skickas till EU för avgörande.", "Den vanliga lagen gäller inte – grundlagen går alltid före."], correct: 3, hint: "Grundlagar är överordnade. En lag som strider mot dem kan inte tillämpas." },
+    { q: "En riksdagsledamot lämnar in ett eget lagförslag. Vad kallas det?", opts: ["Motion – ett sätt för enskilda ledamöter att driva frågor.", "Betänkande – en rapport från ett expertorgan i riksdagen.", "Proposition – ett förslag som alltid ska godkännas av regeringen.", "Remiss – ett dokument som skickas till polisen för synpunkter."], correct: 0, hint: "Motioner är riksdagsledamöternas egna initiativ – inte regeringens." },
+    { q: "Vad är en proposition?", opts: ["Ett förslag som folket röstar om direkt i en folkomröstning.", "En namninsamling mot ett lagförslag.", "Ett lagförslag som regeringen lämnar till riksdagen för beslut.", "Ett EU-krav som riksdagen måste hantera skyndsamt."], correct: 2, hint: "Propositioner kommer från regeringen – det är deras sätt att föreslå ny lagstiftning." },
+    { q: "Varför görs en statlig utredning innan en ny lag tas fram?", opts: ["För att räkna ut exakt vad lagen kommer kosta för företagen.", "För att fackmän och experter ska granska frågan ordentligt.", "För att domstolarna ska kunna bedöma förslaget i förväg.", "För att politikerna ska kunna förhandla utan insyn utifrån."], correct: 1, hint: "Utredningen ser till att beslutet vilar på fakta, inte på magkänsla." },
+    { q: "Varför skickar regeringen ett lagförslag på remiss?", opts: ["Så att kungen hinner läsa och föreslå ändringar.", "Så att medborgarna kan rösta om det digitalt.", "Så att det hinner översättas till engelska.", "Så att myndigheter och organisationer kan lämna synpunkter."], correct: 3, hint: "Remissen är demokratins sätt att samla in kunniga röster innan beslut tas." },
+    { q: "Vad gör riksdagens utskott med ett lagförslag?", opts: ["De fördjupar sig i förslaget och bereder riksdagens beslut.", "De ser till att lagen träder i kraft så fort som möjligt.", "De lägger ner förslaget direkt om de anser att regeringen gjort fel.", "De skriver om hela lagen utifrån sina egna politiska åsikter."], correct: 0, hint: "Utskotten är riksdagens arbetsgrupper – de gör förarbetet innan hela kammaren röstar." },
+    { q: "Vad är det absolut sista steget innan ett förslag blir lag?", opts: ["Statsministern fattar det slutliga beslutet på egen hand.", "Högsta domstolen godkänner eller avslår förslaget.", "Riksdagens 349 ledamöter röstar ja eller nej i kammaren.", "Folket röstar om förslaget i nästa riksdagsval."], correct: 2, hint: "Omröstningen i riksdagens kammare är det sista och avgörande steget." },
+    { q: "Riksdagen har röstat ja till en ny lag. Vad händer sedan?", opts: ["Ingenting i tre år – man inväntar statistik om huruvida det behövdes.", "Regeringen och myndigheterna ser till att lagen faktiskt börjar gälla.", "EU måste lämna ett slutgodkännande innan lagen kan tillämpas.", "Oppositionen får lämna in ett nytt förslag om de inte är nöjda."], correct: 1, hint: "Att verkställa riksdagens beslut är regeringens och myndigheternas jobb." },
+    { q: "Riksdagens allra viktigaste uppgift är att...", opts: ["...ingå avtal med andra länder och ha hand om försvaret.", "...gripa brottslingar och se till att de döms.", "...bestämma hur kommunernas skolor och sjukhus ska skötas.", "...stifta lagar och besluta hur statens pengar ska användas."], correct: 3, hint: "Riksdagen har den lagstiftande makten och budgetmakten." },
+    { q: "Vad är EU?", opts: ["En gemensam armé för Europas länder.", "Ett enat land styrt från Bryssel.", "Ett djupgående samarbete mellan självständiga europeiska länder.", "En biståndsorganisation för ekonomiskt svaga länder."], correct: 2, hint: "Länderna behåller sin självständighet men samarbetar nära inom EU." },
+    { q: "Vad innebär den fria rörligheten för EU-medborgare?", opts: ["Att kollektivtrafiken är gratis med EU-pass.", "Att man utan hinder kan resa, bo och arbeta i andra EU-länder.", "Att arbetsgivare kan tvinga personal att flytta utomlands.", "Att EU kan beordra dig att bosätta dig i ett annat land."], correct: 1, hint: "Gränserna ska inte hindra dig från att söka jobb eller studera i ett annat EU-land." },
+    { q: "Vad har EU:s inre marknad betytt för handeln i Europa?", opts: ["Det har blivit enklare och billigare – tullavgifterna mellan länderna är borta.", "Det har blivit svårare för små företag eftersom bara stora bolag tillåts sälja.", "Det har blivit dyrare för att företagen betalar extra skatt direkt till EU.", "Ingenting har förändrats – varje land behåller sina egna handelsregler."], correct: 0, hint: "Inga tullar = lägre priser och enklare handel inom EU." },
+    { q: "Vad brukar kritiker mena med att EU lider av ett 'demokratiskt underskott'?", opts: ["Att EU hindrar svenska partier från att delta i EU-parlamentsvalet.", "Att länderna inte tillåts ha synpunkter på EU:s ledarskap.", "Att EU saknar budget för att genomföra demokratiska val.", "Att beslut fattas långt bort i Bryssel och känns svåra att påverka som vanlig medborgare."], correct: 3, hint: "Avståndet till makten gör att många medborgare känner att EU är svårt att påverka." },
+    { q: "En EU-förordning strider mot en svensk lag. Vad gäller då?", opts: ["Varje land väljer fritt vilken regel de vill följa det aktuella året.", "Den svenska lagen gäller alltid, oavsett vad EU säger.", "EU-rätten har företräde, för att samarbetet ska fungera lika i alla länder.", "Det händer ingenting – EU ger bara råd, de stiftar inga egna lagar."], correct: 2, hint: "EU-rättens företräde säkerställer att spelreglerna är desamma i hela unionen." }
 ];
 
-let state = {
-    phase: 'start', // start | quiz | end
-    questions: [],
-    idx: 0,
-    score: 0,
-    selected: null,
-    locked: false,
-    showHint: false,
-    timer: 0,
-    timerInterval: null
+const TRANS_Q = {
+  en: [
+    { q:"The fundamental laws exist to...", opts:["...list punishments for all types of crimes in Sweden.","...protect democracy and override all other laws.","...tell municipalities how to manage their finances.","...explain how hospitals and schools should be organised."], hint:"The fundamental laws set the rules of democracy – they take precedence over all other laws." },
+    { q:"Changing a fundamental law requires more than changing an ordinary law. Why?", opts:["The king and the prime minister must both sign.","The EU must approve the change in advance.","No temporary majority should be able to shake the foundations of democracy.","All eligible voters must participate in a referendum."], hint:"It is a built-in brake mechanism against democracy being abolished through the back door." },
+    { q:"What does the Instrument of Government contain?", opts:["Rules for how much tax we should pay.","Directives on how the police may use force.","The provision that all public power comes from the people.","A list of which parties are allowed to stand in elections."], hint:"The Instrument of Government establishes popular sovereignty – power derives from the citizens." },
+    { q:"The Freedom of the Press Act and the Fundamental Law on Freedom of Expression both deal with...", opts:["...the right to express yourself freely without the state censoring in advance.","...requirements for journalists to have formal training.","...the obligation to write positively about the current government.","...a ban on questioning already made political decisions."], hint:"No authority may review and stop content before it is published." },
+    { q:"The Act of Succession regulates...", opts:["...how the prime minister is appointed after an election.","...who takes over the throne and becomes head of state.","...how to resolve conflicts between different ordinary laws.","...the distribution of power between state and municipalities."], hint:"Succession = order of succession to the throne. The law determines who inherits the crown." },
+    { q:"Which of the four fundamental laws is considered the most central?", opts:["The Fundamental Law on Freedom of Expression – without freedom of expression there is no democracy.","The Instrument of Government – it lays the entire foundation for the form of government.","The Act of Succession – the king is formally the head of the country.","The Freedom of the Press Act – the power of the media is crucial today."], hint:"The Instrument of Government is the foundation of foundations – it governs how Sweden is governed." },
+    { q:"A new ordinary law turns out to conflict with a fundamental law. What applies?", opts:["The ordinary law applies if enough people support it.","A court rolls dice about which law to use.","The matter is sent to the EU for a decision.","The ordinary law does not apply – the fundamental law always takes precedence."], hint:"Fundamental laws are supreme. A law that conflicts with them cannot be applied." },
+    { q:"A member of parliament submits their own legislative proposal. What is it called?", opts:["Motion – a way for individual members to push issues.","Report – a report from an expert body in parliament.","Government bill – a proposal that must always be approved by the government.","Consultation – a document sent to the police for comments."], hint:"Motions are members of parliament's own initiatives – not the government's." },
+    { q:"What is a government bill (proposition)?", opts:["A proposal that people vote on directly in a referendum.","A petition against a legislative proposal.","A legislative proposal that the government submits to parliament for decision.","An EU requirement that parliament must handle urgently."], hint:"Government bills come from the government – it is their way of proposing new legislation." },
+    { q:"Why is a government inquiry conducted before a new law is drafted?", opts:["To calculate exactly what the law will cost businesses.","So that specialists and experts can properly examine the matter.","So that the courts can assess the proposal in advance.","So that politicians can negotiate without external scrutiny."], hint:"The inquiry ensures that the decision rests on facts, not gut feeling." },
+    { q:"Why does the government send a legislative proposal out for consultation (remiss)?", opts:["So that the king has time to read and suggest changes.","So that citizens can vote on it digitally.","So that it has time to be translated into English.","So that authorities and organisations can submit views."], hint:"The consultation is democracy's way of gathering informed voices before decisions are made." },
+    { q:"What do parliament's committees do with a legislative proposal?", opts:["They examine the proposal in depth and prepare parliament's decision.","They ensure the law enters into force as quickly as possible.","They immediately drop the proposal if they believe the government has made a mistake.","They rewrite the entire law based on their own political views."], hint:"Committees are parliament's working groups – they do the preparatory work before the full chamber votes." },
+    { q:"What is the absolute last step before a proposal becomes law?", opts:["The prime minister makes the final decision alone.","The Supreme Court approves or rejects the proposal.","Parliament's 349 members vote yes or no in the chamber.","The people vote on the proposal at the next parliamentary election."], hint:"The vote in parliament's chamber is the last and decisive step." },
+    { q:"Parliament has voted yes to a new law. What happens next?", opts:["Nothing for three years – statistics on whether it was needed are awaited.","The government and authorities ensure the law actually comes into force.","The EU must give final approval before the law can be applied.","The opposition gets to submit a new proposal if they are not satisfied."], hint:"Implementing parliament's decisions is the job of the government and authorities." },
+    { q:"Parliament's most important task is to...", opts:["...enter into agreements with other countries and manage the defence.","...arrest criminals and ensure they are convicted.","...determine how municipalities' schools and hospitals should be run.","...enact laws and decide how the state's money should be used."], hint:"Parliament has the legislative power and the power of the purse." },
+    { q:"What is the EU?", opts:["A joint army for Europe's countries.","A united country governed from Brussels.","A deep cooperation between independent European countries.","An aid organisation for economically weak countries."], hint:"The countries retain their independence but cooperate closely within the EU." },
+    { q:"What does freedom of movement mean for EU citizens?", opts:["That public transport is free with an EU passport.","That you can without obstacles travel, live and work in other EU countries.","That employers can force staff to move abroad.","That the EU can order you to settle in another country."], hint:"Borders should not prevent you from looking for work or studying in another EU country." },
+    { q:"What has the EU's internal market meant for trade in Europe?", opts:["It has become simpler and cheaper – customs duties between countries are gone.","It has become harder for small businesses because only large companies are allowed to sell.","It has become more expensive because companies pay extra tax directly to the EU.","Nothing has changed – each country keeps its own trading rules."], hint:"No tariffs = lower prices and easier trade within the EU." },
+    { q:"What do critics usually mean when they say the EU suffers from a 'democratic deficit'?", opts:["That the EU prevents Swedish parties from participating in EU parliamentary elections.","That the countries are not allowed to comment on the EU's leadership.","That the EU lacks the budget to conduct democratic elections.","That decisions are made far away in Brussels and feel hard to influence as an ordinary citizen."], hint:"The distance to power makes many citizens feel that the EU is difficult to influence." },
+    { q:"An EU regulation conflicts with a Swedish law. What applies?", opts:["Each country freely chooses which rule they want to follow that year.","The Swedish law always applies, regardless of what the EU says.","EU law takes precedence, so that the cooperation works equally in all countries.","Nothing happens – the EU only gives advice, they do not enact their own laws."], hint:"The primacy of EU law ensures that the rules of the game are the same throughout the union." }
+  ],
+  ar: [
+    { q:"القوانين الأساسية موجودة من أجل...", opts:["...سرد العقوبات لجميع أنواع الجرائم في السويد.","...حماية الديمقراطية والسمو على جميع القوانين الأخرى.","...إخبار البلديات بكيفية إدارة مواردها المالية.","...شرح كيفية تنظيم المستشفيات والمدارس."], hint:"تضع القوانين الأساسية قواعد الديمقراطية – وهي تسود على جميع القوانين الأخرى." },
+    { q:"تغيير قانون أساسي يتطلب أكثر من تغيير قانون عادي. لماذا؟", opts:["يجب أن يوقع كل من الملك ورئيس الوزراء.","يجب أن يوافق الاتحاد الأوروبي على التغيير مسبقاً.","لا ينبغي لأي أغلبية مؤقتة أن تزعزع أسس الديمقراطية.","يجب أن يشارك جميع الناخبين في استفتاء."], hint:"إنها آلية فرملة مدمجة ضد إلغاء الديمقراطية من الباب الخلفي." },
+    { q:"ماذا يحتوي شكل الحكومة (الدستور)؟", opts:["قواعد تحديد مقدار الضرائب التي يجب علينا دفعها.","توجيهات حول كيفية استخدام الشرطة للقوة.","النص على أن جميع السلطة العامة تأتي من الشعب.","قائمة بالأحزاب المسموح لها بالمشاركة في الانتخابات."], hint:"يرسخ شكل الحكومة سيادة الشعب – فالسلطة تنبثق من المواطنين." },
+    { q:"قانون حرية الصحافة والقانون الأساسي لحرية التعبير كلاهما يتعلقان بـ...", opts:["...الحق في التعبير بحرية دون أن تفرض الدولة رقابة مسبقة.","...اشتراط أن يكون للصحفيين تدريب رسمي.","...الالتزام بالكتابة بشكل إيجابي عن الحكومة الحالية.","...حظر التشكيك في القرارات السياسية المتخذة بالفعل."], hint:"لا يحق لأي سلطة مراجعة محتوى وإيقافه قبل نشره." },
+    { q:"قانون التوارث ينظم...", opts:["...كيفية تعيين رئيس الوزراء بعد الانتخابات.","...من يتولى العرش ويصبح رئيس الدولة.","...كيفية حل النزاعات بين القوانين العادية المختلفة.","...توزيع السلطة بين الدولة والبلديات."], hint:"التوارث = خلافة العرش. يحدد القانون من يرث التاج." },
+    { q:"أي القوانين الأساسية الأربعة يُعدّ الأكثر مركزية؟", opts:["القانون الأساسي لحرية التعبير – بدون حرية التعبير لا توجد ديمقراطية.","شكل الحكومة – فهو يضع الأساس الكامل لنظام الحكم.","قانون التوارث – الملك هو رسمياً رئيس البلاد.","قانون حرية الصحافة – قوة الإعلام حاسمة اليوم."], hint:"شكل الحكومة هو أساس الأسس – فهو ينظم كيفية إدارة السويد." },
+    { q:"تبين أن قانوناً عادياً جديداً يتعارض مع قانون أساسي. ما الذي يُطبَّق؟", opts:["يُطبَّق القانون العادي إذا دعمه عدد كافٍ من الناس.","تقوم المحكمة بقرعة لتحديد القانون الذي يجب استخدامه.","تُرسَل المسألة إلى الاتحاد الأوروبي للبت فيها.","القانون العادي لا يُطبَّق – القانون الأساسي يسود دائماً."], hint:"القوانين الأساسية سامية. القانون الذي يتعارض معها لا يمكن تطبيقه." },
+    { q:"عضو في البرلمان يقدم مقترحاً تشريعياً خاصاً به. ماذا يسمى؟", opts:["اقتراح – طريقة للأعضاء الأفراد لدفع القضايا.","تقرير – تقرير من هيئة خبراء في البرلمان.","مشروع قانون حكومي – اقتراح يجب دائماً موافقة الحكومة عليه.","استشارة – وثيقة ترسل إلى الشرطة للتعليق."], hint:"المقترحات هي مبادرات أعضاء البرلمان الخاصة – وليست من الحكومة." },
+    { q:"ما هو مشروع القانون الحكومي (البروبوزيشون)؟", opts:["اقتراح يصوت عليه الناس مباشرة في استفتاء.","عريضة ضد اقتراح تشريعي.","اقتراح تشريعي تقدمه الحكومة إلى البرلمان لاتخاذ قرار.","متطلب من الاتحاد الأوروبي يجب أن يتعامل معه البرلمان بشكل عاجل."], hint:"مشاريع القوانين الحكومية تأتي من الحكومة – هذه هي طريقتها لاقتراح تشريعات جديدة." },
+    { q:"لماذا تُجرى تحقيقات حكومية قبل صياغة قانون جديد؟", opts:["لحساب ما سيكلفه القانون الشركات بالضبط.","حتى يتمكن المختصون والخبراء من دراسة المسألة بشكل صحيح.","حتى تتمكن المحاكم من تقييم الاقتراح مسبقاً.","حتى يتمكن السياسيون من التفاوض دون رقابة خارجية."], hint:"يضمن التحقيق أن القرار يستند إلى الحقائق وليس الحدس." },
+    { q:"لماذا ترسل الحكومة مقترحاً تشريعياً للتشاور (ريميس)؟", opts:["حتى يتسنى للملك قراءته واقتراح تعديلات.","حتى يتمكن المواطنون من التصويت عليه إلكترونياً.","حتى يكون هناك وقت لترجمته إلى الإنجليزية.","حتى تتمكن الهيئات والمنظمات من تقديم آرائها."], hint:"التشاور هو أسلوب الديمقراطية في جمع الأصوات المستنيرة قبل اتخاذ القرارات." },
+    { q:"ماذا تفعل لجان البرلمان بمقترح تشريعي؟", opts:["تتعمق في الاقتراح وتُعدّ قرار البرلمان.","تضمن دخول القانون حيز التنفيذ في أسرع وقت ممكن.","تُسقط الاقتراح على الفور إذا رأت أن الحكومة أخطأت.","تُعيد كتابة القانون بالكامل بناءً على آرائها السياسية الخاصة."], hint:"اللجان هي مجموعات عمل البرلمان – تقوم بالعمل التحضيري قبل تصويت المجلس الكامل." },
+    { q:"ما هي الخطوة الأخيرة المطلقة قبل أن يصبح الاقتراح قانوناً؟", opts:["يتخذ رئيس الوزراء القرار النهائي بنفسه.","تُوافق المحكمة العليا أو ترفض الاقتراح.","يصوت 349 عضواً في البرلمان بنعم أو لا في القاعة.","يصوت الشعب على الاقتراح في الانتخابات البرلمانية القادمة."], hint:"التصويت في قاعة البرلمان هو الخطوة الأخيرة والحاسمة." },
+    { q:"صوّت البرلمان بنعم على قانون جديد. ماذا يحدث بعد ذلك؟", opts:["لا شيء لمدة ثلاث سنوات – ننتظر إحصاءات حول ما إذا كان ذلك ضرورياً.","تتأكد الحكومة والسلطات من أن القانون يدخل حيز التنفيذ فعلياً.","يجب أن يمنح الاتحاد الأوروبي موافقته النهائية قبل تطبيق القانون.","يحق للمعارضة تقديم اقتراح جديد إذا لم تكن راضية."], hint:"تنفيذ قرارات البرلمان هو مهمة الحكومة والسلطات." },
+    { q:"المهمة الأهم على الإطلاق للبرلمان هي...", opts:["...إبرام اتفاقيات مع دول أخرى والاعتناء بالدفاع.","...القبض على المجرمين والتأكد من إدانتهم.","...تحديد كيفية إدارة مدارس وهيأت البلديات.","...سن القوانين وتحديد كيفية استخدام أموال الدولة."], hint:"يمتلك البرلمان السلطة التشريعية وسلطة الميزانية." },
+    { q:"ما هو الاتحاد الأوروبي؟", opts:["جيش مشترك لدول أوروبا.","دولة موحدة تحكمها بروكسل.","تعاون عميق بين الدول الأوروبية المستقلة.","منظمة إغاثة للدول ذات الضعف الاقتصادي."], hint:"تحتفظ الدول باستقلالها لكنها تتعاون بشكل وثيق داخل الاتحاد الأوروبي." },
+    { q:"ماذا تعني حرية التنقل لمواطني الاتحاد الأوروبي؟", opts:["أن وسائل النقل العام مجانية بجواز سفر الاتحاد الأوروبي.","أنه يمكنك دون عوائق السفر والإقامة والعمل في دول الاتحاد الأوروبي الأخرى.","أن أصحاب العمل يمكنهم إجبار الموظفين على الانتقال إلى الخارج.","أن الاتحاد الأوروبي يمكنه أمرك بالاستقرار في دولة أخرى."], hint:"لا ينبغي للحدود أن تمنعك من البحث عن عمل أو الدراسة في دولة أخرى من الاتحاد الأوروبي." },
+    { q:"ماذا يعني السوق الداخلية للاتحاد الأوروبي للتجارة في أوروبا؟", opts:["أصبح الأمر أبسط وأرخص – اختفت الرسوم الجمركية بين الدول.","أصبح الأمر أصعب على الشركات الصغيرة لأنه لا يُسمح إلا للشركات الكبيرة بالبيع.","أصبح الأمر أكثر تكلفة لأن الشركات تدفع ضرائب إضافية مباشرة للاتحاد الأوروبي.","لم يتغير شيء – يحتفظ كل بلد بقواعده التجارية الخاصة."], hint:"لا رسوم جمركية = أسعار أقل وتجارة أسهل داخل الاتحاد الأوروبي." },
+    { q:"ماذا يعني المنتقدون عادةً عندما يقولون إن الاتحاد الأوروبي يعاني من 'عجز ديمقراطي'؟", opts:["أن الاتحاد الأوروبي يمنع الأحزاب السويدية من المشاركة في انتخابات البرلمان الأوروبي.","أن الدول لا يُسمح لها بالتعليق على قيادة الاتحاد الأوروبي.","أن الاتحاد الأوروبي يفتقر إلى الميزانية لإجراء انتخابات ديمقراطية.","أن القرارات تُتخذ بعيداً في بروكسل ويصعب التأثير فيها كمواطن عادي."], hint:"البعد عن السلطة يجعل كثيراً من المواطنين يشعرون بصعوبة التأثير على الاتحاد الأوروبي." },
+    { q:"لائحة تصدرها الاتحاد الأوروبي تتعارض مع قانون سويدي. ما الذي يُطبَّق؟", opts:["يختار كل بلد بحرية أي قاعدة يريد اتباعها ذلك العام.","القانون السويدي يُطبَّق دائماً بصرف النظر عما يقوله الاتحاد الأوروبي.","يتمتع قانون الاتحاد الأوروبي بالأولوية لضمان عمل التعاون بالتساوي في جميع البلدان.","لا يحدث شيء – الاتحاد الأوروبي يقدم توصيات فقط ولا يسن قوانينه الخاصة."], hint:"أولوية قانون الاتحاد الأوروبي تضمن أن قواعد اللعبة هي نفسها في جميع أنحاء الاتحاد." }
+  ],
+  fa: [
+    { q:"قوانین اساسی برای... وجود دارند", opts:["...فهرست کردن مجازات‌ها برای همه انواع جرایم در سوئد.","...حمایت از دموکراسی و برتری بر همه قوانین دیگر.","...به شهرداری‌ها گفتن که چگونه امور مالی خود را مدیریت کنند.","...توضیح اینکه بیمارستان‌ها و مدارس چگونه باید سازماندهی شوند."], hint:"قوانین اساسی قوانین بازی دموکراسی را تعیین می‌کنند – آنها بر همه قوانین دیگر تقدم دارند." },
+    { q:"تغییر قانون اساسی بیشتر از تغییر قانون عادی نیاز دارد. چرا؟", opts:["پادشاه و نخست‌وزیر هر دو باید امضا کنند.","اتحادیه اروپا باید تغییر را از قبل تأیید کند.","هیچ اکثریت موقتی نباید بتواند پایه‌های دموکراسی را متزلزل کند.","همه واجدان شرایط رأی‌دهی باید در یک همه‌پرسی شرکت کنند."], hint:"این یک مکانیزم ترمز داخلی در برابر لغو دموکراسی از راه درب پشتی است." },
+    { q:"شکل حکومت (قانون اساسی) چه دارد؟", opts:["قوانینی برای اینکه چه مقدار مالیات باید بپردازیم.","دستورالعمل‌هایی درباره اینکه پلیس چگونه می‌تواند از زور استفاده کند.","حکم اینکه تمام قدرت عمومی از مردم ناشی می‌شود.","فهرستی از اینکه کدام احزاب مجاز به شرکت در انتخابات هستند."], hint:"شکل حکومت حاکمیت مردم را تثبیت می‌کند – قدرت از شهروندان ناشی می‌شود." },
+    { q:"قانون آزادی مطبوعات و قانون اساسی آزادی بیان هر دو درباره... هستند", opts:["...حق بیان آزاد بدون اینکه دولت از قبل سانسور کند.","...الزام روزنامه‌نگاران به داشتن آموزش رسمی.","...تعهد به نوشتن مثبت درباره دولت فعلی.","...ممنوعیت زیر سوال بردن تصمیمات سیاسی که قبلاً گرفته شده."], hint:"هیچ مقامی حق ندارد محتوایی را قبل از انتشار بررسی و متوقف کند." },
+    { q:"قانون جانشینی تنظیم می‌کند...", opts:["...اینکه نخست‌وزیر پس از انتخابات چگونه منصوب می‌شود.","...اینکه چه کسی تخت را می‌گیرد و رئیس کشور می‌شود.","...اینکه چگونه درگیری‌ها بین قوانین عادی مختلف حل‌وفصل می‌شوند.","...توزیع قدرت بین دولت و شهرداری‌ها."], hint:"جانشینی = ترتیب جانشینی تخت. قانون تعیین می‌کند چه کسی تاج را به ارث می‌برد." },
+    { q:"کدام یک از چهار قانون اساسی مرکزی‌ترین به شمار می‌آید؟", opts:["قانون اساسی آزادی بیان – بدون آزادی بیان دموکراسی وجود ندارد.","شکل حکومت – تمام پایه نظام حکومتی را می‌گذارد.","قانون جانشینی – پادشاه به طور رسمی رئیس کشور است.","قانون آزادی مطبوعات – قدرت رسانه‌ها امروز حیاتی است."], hint:"شکل حکومت پایه‌ی پایه‌هاست – تنظیم می‌کند که سوئد چگونه اداره می‌شود." },
+    { q:"معلوم می‌شود که یک قانون عادی جدید با قانون اساسی تعارض دارد. چه چیزی اعمال می‌شود؟", opts:["اگر تعداد کافی آن را حمایت کنند قانون عادی اعمال می‌شود.","یک دادگاه برای تعیین اینکه کدام قانون باید استفاده شود تاس می‌اندازد.","موضوع برای تصمیم‌گیری به اتحادیه اروپا ارسال می‌شود.","قانون عادی اعمال نمی‌شود – قانون اساسی همیشه مقدم است."], hint:"قوانین اساسی برتر هستند. قانونی که با آنها تعارض داشته باشد قابل اجرا نیست." },
+    { q:"یک نماینده پارلمان پیشنهاد قانونی خود را ارائه می‌دهد. چه نامیده می‌شود؟", opts:["موشن – روشی برای اعضای منفرد برای پیش بردن مسائل.","گزارش – گزارش از یک نهاد کارشناسی در پارلمان.","پروپوزیشون – پیشنهادی که باید همیشه توسط دولت تصویب شود.","مشاوره – سندی که برای نظر به پلیس ارسال می‌شود."], hint:"موشن‌ها ابتکارات خود نمایندگان پارلمان هستند – نه از طرف دولت." },
+    { q:"پروپوزیشون (لایحه دولتی) چیست؟", opts:["پیشنهادی که مردم مستقیماً در همه‌پرسی درباره آن رأی می‌دهند.","طومار علیه پیشنهاد قانونی.","پیشنهاد قانونی که دولت برای تصمیم‌گیری به پارلمان ارائه می‌دهد.","الزامی از اتحادیه اروپا که پارلمان باید فوری با آن برخورد کند."], hint:"لوایح دولتی از دولت می‌آیند – این روش آنها برای پیشنهاد قانون‌گذاری جدید است." },
+    { q:"چرا قبل از تهیه یک قانون جدید تحقیقات دولتی انجام می‌شود؟", opts:["برای محاسبه دقیق اینکه قانون چه هزینه‌ای برای شرکت‌ها خواهد داشت.","تا متخصصان و کارشناسان بتوانند موضوع را به درستی بررسی کنند.","تا دادگاه‌ها بتوانند پیشنهاد را از قبل ارزیابی کنند.","تا سیاستمداران بتوانند بدون نظارت خارجی مذاکره کنند."], hint:"تحقیقات اطمینان می‌دهد که تصمیم بر اساس واقعیت‌ها و نه احساس باشد." },
+    { q:"چرا دولت یک پیشنهاد قانونی را برای مشاوره (ریمیس) ارسال می‌کند؟", opts:["تا پادشاه وقت داشته باشد آن را بخواند و پیشنهاد تغییرات بدهد.","تا شهروندان بتوانند به صورت دیجیتالی رأی بدهند.","تا وقت برای ترجمه آن به انگلیسی باشد.","تا مقامات و سازمان‌ها بتوانند نظرات خود را ارائه دهند."], hint:"مشاوره روش دموکراسی برای جمع‌آوری نظرات آگاهانه قبل از تصمیم‌گیری است." },
+    { q:"کمیته‌های پارلمان با یک پیشنهاد قانونی چه می‌کنند؟", opts:["آنها پیشنهاد را به طور عمیق بررسی می‌کنند و تصمیم پارلمان را آماده می‌کنند.","آنها اطمینان می‌دهند که قانون در اسرع وقت لازم‌الاجرا می‌شود.","اگر معتقدند دولت اشتباه کرده، پیشنهاد را فوراً کنار می‌گذارند.","آنها کل قانون را بر اساس دیدگاه‌های سیاسی خودشان بازنویسی می‌کنند."], hint:"کمیته‌ها گروه‌های کاری پارلمان هستند – کار مقدماتی را قبل از رأی‌گیری مجلس کامل انجام می‌دهند." },
+    { q:"آخرین مرحله مطلق قبل از اینکه یک پیشنهاد به قانون تبدیل شود چیست؟", opts:["نخست‌وزیر به تنهایی تصمیم نهایی را می‌گیرد.","دیوان عالی پیشنهاد را تأیید یا رد می‌کند.","349 نماینده پارلمان در صحن با بله یا خیر رأی می‌دهند.","مردم در انتخابات پارلمانی بعدی درباره پیشنهاد رأی می‌دهند."], hint:"رأی‌گیری در صحن پارلمان آخرین و قطعی‌ترین مرحله است." },
+    { q:"پارلمان به یک قانون جدید رأی مثبت داده است. بعد چه اتفاقی می‌افتد؟", opts:["برای سه سال هیچ اتفاقی نمی‌افتد – منتظر آمار درباره اینکه آیا لازم بود می‌مانیم.","دولت و مقامات اطمینان می‌دهند که قانون واقعاً لازم‌الاجرا می‌شود.","اتحادیه اروپا باید تأییدیه نهایی را قبل از اجرای قانون بدهد.","اگر مخالفان راضی نباشند حق دارند پیشنهاد جدیدی ارائه دهند."], hint:"اجرای تصمیمات پارلمان وظیفه دولت و مقامات است." },
+    { q:"مهم‌ترین وظیفه پارلمان...", opts:["...انعقاد توافقنامه با سایر کشورها و مدیریت دفاع است.","...دستگیری مجرمان و اطمینان از محکومیت آنهاست.","...تعیین اینکه مدارس و بیمارستان‌های شهرداری‌ها چگونه اداره شوند.","...تصویب قوانین و تصمیم‌گیری درباره نحوه استفاده از پول دولت."], hint:"پارلمان قدرت قانون‌گذاری و قدرت بودجه را دارد." },
+    { q:"اتحادیه اروپا چیست؟", opts:["یک ارتش مشترک برای کشورهای اروپا.","یک کشور متحد که از بروکسل اداره می‌شود.","یک همکاری عمیق بین کشورهای مستقل اروپایی.","یک سازمان کمک‌رسانی به کشورهای ضعیف از نظر اقتصادی."], hint:"کشورها استقلال خود را حفظ می‌کنند اما در داخل اتحادیه اروپا با هم همکاری نزدیک دارند." },
+    { q:"آزادی تردد برای شهروندان اتحادیه اروپا به چه معناست؟", opts:["اینکه حمل‌ونقل عمومی با گذرنامه اتحادیه اروپا رایگان است.","اینکه می‌توانید بدون مانع در کشورهای دیگر اتحادیه اروپا سفر کنید، زندگی کنید و کار کنید.","اینکه کارفرمایان می‌توانند کارکنان را مجبور به رفتن به خارج کنند.","اینکه اتحادیه اروپا می‌تواند به شما دستور بدهد در کشور دیگری مستقر شوید."], hint:"مرزها نباید مانع از جستجوی کار یا تحصیل در کشور دیگری از اتحادیه اروپا باشند." },
+    { q:"بازار داخلی اتحادیه اروپا برای تجارت در اروپا چه معنایی داشته است؟", opts:["ساده‌تر و ارزان‌تر شده است – تعرفه‌های گمرکی بین کشورها رفته است.","برای شرکت‌های کوچک سخت‌تر شده است چون فقط شرکت‌های بزرگ مجاز به فروش هستند.","گران‌تر شده است چون شرکت‌ها مستقیماً به اتحادیه اروپا مالیات اضافی می‌پردازند.","هیچ چیز تغییر نکرده – هر کشور قوانین تجاری خود را حفظ می‌کند."], hint:"بدون تعرفه = قیمت‌های پایین‌تر و تجارت آسان‌تر در داخل اتحادیه اروپا." },
+    { q:"منتقدان معمولاً منظورشان از اینکه اتحادیه اروپا از 'کسری دموکراتیک' رنج می‌برد چیست؟", opts:["اینکه اتحادیه اروپا از شرکت احزاب سوئدی در انتخابات پارلمان اروپا جلوگیری می‌کند.","اینکه به کشورها اجازه داده نمی‌شود درباره رهبری اتحادیه اروپا نظر بدهند.","اینکه اتحادیه اروپا بودجه لازم برای برگزاری انتخابات دموکراتیک را ندارد.","اینکه تصمیمات دور از ما در بروکسل گرفته می‌شود و به عنوان شهروند عادی احساس می‌شود که تأثیرگذاری بر آنها دشوار است."], hint:"فاصله از قدرت باعث می‌شود بسیاری از شهروندان احساس کنند تأثیرگذاری بر اتحادیه اروپا دشوار است." },
+    { q:"یک مقررات اتحادیه اروپا با یک قانون سوئدی تعارض دارد. چه چیزی اعمال می‌شود؟", opts:["هر کشور آزادانه انتخاب می‌کند که کدام قانون را در آن سال دنبال کند.","قانون سوئدی همیشه اعمال می‌شود، صرف نظر از اینکه اتحادیه اروپا چه می‌گوید.","قانون اتحادیه اروپا تقدم دارد تا همکاری در همه کشورها یکسان کار کند.","هیچ اتفاقی نمی‌افتد – اتحادیه اروپا فقط توصیه می‌دهد، قوانین خود را وضع نمی‌کند."], hint:"تقدم قانون اتحادیه اروپا تضمین می‌کند که قوانین بازی در سراسر اتحادیه یکسان باشند." }
+  ],
+  bs: [
+    { q:"Temeljni zakoni postoje da bi...", opts:["...nabrajali kazne za sve vrste zločina u Švedskoj.","...zaštitili demokratiju i bili nadređeni svim ostalim zakonima.","...rekli opštinama kako da upravljaju finansijama.","...objasnili kako bolnice i škole trebaju biti organizovane."], hint:"Temeljni zakoni postavljaju pravila demokratije – nadređeni su svim ostalim zakonima." },
+    { q:"Promjena temeljnog zakona zahtijeva više od promjene običnog zakona. Zašto?", opts:["I kralj i predsjednik vlade moraju potpisati.","EU mora unaprijed odobriti izmjenu.","Nijedna privremena većina ne smije ugroziti temelje demokratije.","Svi glasači moraju sudjelovati u referendumu."], hint:"To je ugrađeni mehanizam kočenja protiv ukidanja demokratije na stražnja vrata." },
+    { q:"Šta sadrži Instrument vlasti (Ustav)?", opts:["Pravila koliko poreza trebamo plaćati.","Direktive o tome kako policija smije koristiti silu.","Odredbu da sva javna vlast dolazi od naroda.","Listu kojim strankama je dopušteno nastupiti na izborima."], hint:"Instrument vlasti utvrđuje narodnu suverenost – vlast proizlazi iz građana." },
+    { q:"Zakon o slobodi štampe i Temeljni zakon o slobodi govora oba se bave...", opts:["...pravom da se slobodno izražavaš bez prethodne državne cenzure.","...zahtjevom da novinari imaju formalno obrazovanje.","...obavezom pisanja pozitivno o trenutnoj vladi.","...zabranom preispitivanja već donesenih političkih odluka."], hint:"Nijedan organ vlasti ne smije pregledati i zaustaviti sadržaj prije objavljivanja." },
+    { q:"Zakon o nasljeđivanju uređuje...", opts:["...kako se imenuje predsjednik vlade nakon izbora.","...ko preuzima prijestolje i postaje šef države.","...kako se rješavaju sukobi između različitih običnih zakona.","...raspodjelu vlasti između države i opština."], hint:"Nasljeđivanje = red nasljeđivanja prijestolja. Zakon određuje ko nasljeđuje krunu." },
+    { q:"Koji od četiri temeljna zakona smatra se najcentralnijim?", opts:["Temeljni zakon o slobodi govora – bez slobode govora nema demokratije.","Instrument vlasti – on postavlja cijeli temelj za oblik vladavine.","Zakon o nasljeđivanju – kralj je formalno šef zemlje.","Zakon o slobodi štampe – moć medija je ključna danas."], hint:"Instrument vlasti je temelj temelja – uređuje kako se Švedska upravlja." },
+    { q:"Ispostavilo se da novi obični zakon protivriječi temeljnom zakonu. Šta se primjenjuje?", opts:["Obični zakon se primjenjuje ako ga dovoljno ljudi podržava.","Sud baca kocku koji zakon treba koristiti.","Pitanje se šalje EU-u na odluku.","Obični zakon se ne primjenjuje – temeljni zakon uvijek ima prednost."], hint:"Temeljni zakoni su nadređeni. Zakon koji im protivriječi ne može se primjenjivati." },
+    { q:"Parlamentarni zastupnik podnosi vlastiti zakonski prijedlog. Kako se zove?", opts:["Prijedlog – način za pojedinog zastupnika da potakne pitanja.","Izvještaj – izvještaj od stručnog tijela u parlamentu.","Vladina uredba – prijedlog koji uvijek mora odobriti vlada.","Savjetovanje – dokument koji se šalje policiji za komentare."], hint:"Prijedlozi su vlastite inicijative parlamentarnih zastupnika – ne vlade." },
+    { q:"Šta je vladina uredba (propozicija)?", opts:["Prijedlog o kojem narod glasuje direktno na referendumu.","Peticija protiv zakonskog prijedloga.","Zakonski prijedlog koji vlada podnosi parlamentu na odluku.","EU zahtjev kojim se parlament mora hitno pozabaviti."], hint:"Vladine uredbe dolaze od vlade – to je njihov način predlaganja novog zakonodavstva." },
+    { q:"Zašto se provodi državna istraga prije izrade novog zakona?", opts:["Da se tačno izračuna što će zakon koštati preduzeća.","Kako bi stručnjaci i eksperti mogli temeljito ispitati pitanje.","Da sudovi mogu unaprijed procijeniti prijedlog.","Da bi političari mogli pregovarati bez vanjske kontrole."], hint:"Istraga osigurava da se odluka temelji na činjenicama, a ne na intuiciji." },
+    { q:"Zašto vlada šalje zakonski prijedlog na savjetovanje (remiss)?", opts:["Da bi kralj imao vremena pročitati i predložiti izmjene.","Da bi građani mogli digitalno glasovati o njemu.","Da bi imao vremena za prevođenje na engleski.","Da bi organi vlasti i organizacije mogli iznijeti svoja mišljenja."], hint:"Savjetovanje je demokratski način prikupljanja informiranih glasova prije donošenja odluka." },
+    { q:"Šta parlamenti odbori rade sa zakonskim prijedlogom?", opts:["Detaljno proučavaju prijedlog i pripremaju odluku parlamenta.","Osiguravaju da zakon što prije stupi na snagu.","Odmah odbacuju prijedlog ako smatraju da je vlada pogriješila.","Prepisuju cijeli zakon na osnovu vlastitih političkih stavova."], hint:"Odbori su radne grupe parlamenta – rade pripremni posao prije glasanja cijele skupštine." },
+    { q:"Koji je apsolutno posljednji korak prije nego prijedlog postane zakon?", opts:["Predsjednik vlade sam donosi konačnu odluku.","Vrhovni sud odobrava ili odbija prijedlog.","349 članova parlamenta glasa da ili ne u skupštini.","Narod glasa o prijedlogu na sljedećim parlamentarnim izborima."], hint:"Glasanje u skupštini parlamenta je posljednji i odlučujući korak." },
+    { q:"Parlament je glasao za novi zakon. Šta se potom događa?", opts:["Ništa tri godine – čeka se statistika o tome je li to bilo potrebno.","Vlada i organi vlasti osiguravaju da zakon stvarno stupi na snagu.","EU mora dati konačno odobrenje prije nego zakon može biti primijenjen.","Opozicija smije podnijeti novi prijedlog ako nije zadovoljna."], hint:"Provođenje odluka parlamenta je posao vlade i organa vlasti." },
+    { q:"Najvažniji zadatak parlamenta je da...", opts:["...sklapa sporazume s drugim zemljama i brine o odbrani.","...hapsi kriminalce i osigurava njihovu osudu.","...određuje kako se trebaju voditi škole i bolnice opština.","...donosi zakone i odlučuje kako se trebaju koristiti državni novci."], hint:"Parlament ima zakonodavnu vlast i vlast nad budžetom." },
+    { q:"Šta je EU?", opts:["Zajednička vojska evropskih zemalja.","Jedinstvena zemlja kojom se upravlja iz Brisela.","Duboka saradnja između nezavisnih evropskih zemalja.","Humanitarna organizacija za ekonomski slabe zemlje."], hint:"Zemlje zadržavaju svoju nezavisnost ali blisko surađuju unutar EU-a." },
+    { q:"Šta znači sloboda kretanja za EU građane?", opts:["Da je javni prijevoz besplatan s EU pasošem.","Da možeš bez prepreka putovati, živjeti i raditi u drugim EU zemljama.","Da poslodavci mogu primorati osoblje da se preseli u inozemstvo.","Da EU može narediti da se nastaniš u drugoj zemlji."], hint:"Granice ne smiju spriječiti da tražiš posao ili studiš u drugoj EU zemlji." },
+    { q:"Što je EU-ovo unutarnje tržište značilo za trgovinu u Evropi?", opts:["Postalo je jednostavnije i jeftinije – carine između zemalja su nestale.","Postalo je teže za mala preduzeća jer samo velikim kompanijama je dozvoljeno prodavati.","Postalo je skuplje jer kompanije plaćaju dodatni porez direktno EU-u.","Ništa se nije promijenilo – svaka zemlja zadržava vlastita pravila trgovanja."], hint:"Nema carina = niže cijene i lakša trgovina unutar EU-a." },
+    { q:"Što kritičari obično misle kad kažu da EU pati od 'demokratskog deficita'?", opts:["Da EU spriječava švedske stranke da sudjeluju u izborima za Europski parlament.","Da zemljama nije dozvoljeno komentirati EU-ovo vodstvo.","Da EU nema budžet za provođenje demokratskih izbora.","Da se odluke donose daleko u Briselu i teško ih je utjecati kao običan građanin."], hint:"Udaljenost od vlasti čini da mnogi građani osjećaju da je teško utjecati na EU." },
+    { q:"EU uredba protivriječi švedskom zakonu. Šta se primjenjuje?", opts:["Svaka zemlja slobodno bira koje pravilo želi slijediti te godine.","Švedski zakon uvijek se primjenjuje, bez obzira što EU kaže.","EU pravo ima prednost, kako bi saradnja funkcionisala jednako u svim zemljama.","Ne događa se ništa – EU samo daje savjete, ne donosi vlastite zakone."], hint:"Primat EU prava osigurava da su pravila igre ista u cijeloj uniji." }
+  ],
+  tr: [
+    { q:"Temel yasalar... için vardır", opts:["...İsveç'teki tüm suç türleri için cezaları listelemek.","...demokrasiyi korumak ve tüm diğer yasaların üzerinde olmak.","...belediyelere finanslarını nasıl yöneteceklerini söylemek.","...hastane ve okulların nasıl organize edileceğini açıklamak."], hint:"Temel yasalar demokrasinin kurallarını belirler – tüm diğer yasaların önünde gelirler." },
+    { q:"Temel bir yasayı değiştirmek, sıradan bir yasayı değiştirmekten daha fazlasını gerektirir. Neden?", opts:["Hem kral hem de başbakan imzalamalıdır.","AB'nin değişikliği önceden onaylaması gerekir.","Hiçbir geçici çoğunluk demokrasinin temellerini sarsamaz olmalı.","Tüm seçmenler bir referanduma katılmalıdır."], hint:"Bu, demokrasinin arka kapıdan kaldırılmasına karşı yerleşik bir fren mekanizmasıdır." },
+    { q:"Yönetim Biçimi (Anayasa) ne içerir?", opts:["Ne kadar vergi ödemamız gerektiğine dair kurallar.","Polisin güç kullanımına ilişkin yönergeler.","Tüm kamusal gücün halktan geldiğine dair hüküm.","Seçimlere katılmasına izin verilen partilerin listesi."], hint:"Yönetim Biçimi halk egemenliğini ortaya koyar – güç vatandaşlardan kaynaklanır." },
+    { q:"Basın Özgürlüğü Yasası ve Temel İfade Özgürlüğü Yasası her ikisi de... ile ilgilidir", opts:["...devletin önceden sansür uygulamadan özgürce ifade etme hakkı.","...gazetecilerin resmi eğitime sahip olması zorunluluğu.","...mevcut hükümet hakkında olumlu yazma yükümlülüğü.","...daha önce alınmış siyasi kararları sorgulamayı yasaklamak."], hint:"Hiçbir otorite bir içeriği yayınlanmadan önce inceleyip durduramaz." },
+    { q:"Veraset Yasası... düzenler", opts:["...seçimlerden sonra başbakanın nasıl atandığını.","...tahta kimin geçeceğini ve devlet başkanı kimin olacağını.","...farklı sıradan yasalar arasındaki çatışmaların nasıl çözüleceğini.","...devlet ve belediyeler arasındaki güç dağılımını."], hint:"Veraset = taht veraset sırası. Yasa tacı kimin miras alacağını belirler." },
+    { q:"Dört temel yasadan hangisi en merkezi olarak kabul edilir?", opts:["Temel İfade Özgürlüğü Yasası – ifade özgürlüğü olmadan demokrasi olmaz.","Yönetim Biçimi – devlet biçiminin tüm temelini atar.","Veraset Yasası – kral resmi olarak ülkenin başıdır.","Basın Özgürlüğü Yasası – medyanın gücü bugün belirleyicidir."], hint:"Yönetim Biçimi temellerin temelidir – İsveç'in nasıl yönetildiğini düzenler." },
+    { q:"Yeni bir sıradan yasanın temel bir yasayla çeliştiği ortaya çıkıyor. Ne geçerlidir?", opts:["Yeterince fazla kişi destekliyorsa sıradan yasa geçerlidir.","Bir mahkeme hangi yasanın kullanılacağına dair zar atar.","Konu karar için AB'ye gönderilir.","Sıradan yasa geçerli değildir – temel yasa her zaman önce gelir."], hint:"Temel yasalar üstündür. Bunlarla çelişen bir yasa uygulanamaz." },
+    { q:"Bir milletvekili kendi yasa teklifini sunar. Buna ne denir?", opts:["Önerge – bireysel üyelerin konuları ilerletmesinin bir yolu.","Rapor – parlamentodaki bir uzman organın raporu.","Hükümet tasarısı – her zaman hükümet tarafından onaylanması gereken teklif.","İstişare – polise yorum için gönderilen belge."], hint:"Önergeler milletvekillerinin kendi girişimleridir – hükümetin değil." },
+    { q:"Hükümet tasarısı (propozisyon) nedir?", opts:["Halkın bir referandumda doğrudan oy kullandığı teklif.","Bir yasa teklifine karşı dilekçe.","Hükümetin karar için parlamentoya sunduğu yasa teklifi.","Parlamentonun acilen ele alması gereken bir AB gereksinimi."], hint:"Hükümet tasarıları hükümetten gelir – yeni mevzuat önermelerinin yoludur." },
+    { q:"Yeni bir yasa hazırlanmadan önce neden devlet soruşturması yapılır?", opts:["Yasanın işletmelere tam olarak neye mal olacağını hesaplamak için.","Uzman ve uzmanların konuyu düzgün bir şekilde inceleyebilmesi için.","Mahkemelerin teklifi önceden değerlendirebilmesi için.","Politikacıların dışarıdan denetim olmadan müzakere edebilmesi için."], hint:"Soruşturma, kararın sezgiye değil gerçeklere dayandığını sağlar." },
+    { q:"Hükümet neden bir yasa teklifini görüş için gönderir (remiss)?", opts:["Kralın okuma ve değişiklik önerme zamanı olsun diye.","Vatandaşların dijital olarak oy kullanabilmesi için.","İngilizceye çevrilmesi için zaman olsun diye.","Yetkililerin ve kuruluşların görüş bildirebilmesi için."], hint:"Görüş alma, kararlar alınmadan önce bilgili sesleri toplamak için demokrasinin yoludur." },
+    { q:"Parlamentonun komiteleri bir yasa tekliflyle ne yapar?", opts:["Teklifi derinlemesine inceler ve parlamentonun kararını hazırlarlar.","Yasanın mümkün olan en kısa sürede yürürlüğe girmesini sağlarlar.","Hükümetin hata yaptığına inanıyorlarsa teklifi hemen düşürürler.","Yasanın tamamını kendi siyasi görüşlerine göre yeniden yazarlar."], hint:"Komiteler parlamentonun çalışma gruplarıdır – tam meclis oylamadan önce hazırlık işini yaparlar." },
+    { q:"Bir teklifin yasa haline gelmesinden önce mutlak son adım nedir?", opts:["Başbakan kararı tek başına verir.","Yüksek Mahkeme teklifi onaylar veya reddeder.","Parlamentonun 349 üyesi mecliste evet ya da hayır oyu kullanır.","Halk bir sonraki parlamento seçiminde teklif üzerinde oy kullanır."], hint:"Meclis genel kurulundaki oylama son ve belirleyici adımdır." },
+    { q:"Parlamento yeni bir yasa için evet oyu kullandı. Sonra ne olur?", opts:["Üç yıl boyunca hiçbir şey olmaz – gerekli olup olmadığına dair istatistikler beklenir.","Hükümet ve yetkililer yasanın gerçekten yürürlüğe girmesini sağlar.","AB, yasa uygulanabilmeden önce nihai onay vermelidir.","Muhalefet memnun değilse yeni bir teklif sunabilir."], hint:"Parlamentonun kararlarını uygulamak hükümet ve yetkililerin işidir." },
+    { q:"Parlamentonun en önemli görevi...", opts:["...diğer ülkelerle anlaşmalar yapmak ve savunmayla ilgilenmektir.","...suçluları yakalamak ve mahkûm edilmelerini sağlamaktır.","...belediyelerin okullarının ve hastanelerinin nasıl yönetileceğine karar vermektir.","...yasalar çıkarmak ve devletin parasının nasıl kullanılacağına karar vermektir."], hint:"Parlamentonun yasama gücü ve bütçe gücü vardır." },
+    { q:"AB nedir?", opts:["Avrupa ülkelerinin ortak ordusu.","Brüksel'den yönetilen birleşik bir ülke.","Bağımsız Avrupa ülkeleri arasında derin bir işbirliği.","Ekonomik açıdan zayıf ülkeler için yardım kuruluşu."], hint:"Ülkeler bağımsızlıklarını korur ancak AB içinde yakın işbirliği yapar." },
+    { q:"AB vatandaşları için serbest dolaşım ne anlama gelir?", opts:["AB pasaportuyla toplu taşımanın ücretsiz olması.","Diğer AB ülkelerinde engelsiz olarak seyahat edebilmek, yaşayabilmek ve çalışabilmek.","İşverenlerin personeli yurt dışına taşınmaya zorlayabilmesi.","AB'nin sizi başka bir ülkeye yerleşmeye zorlayabilmesi."], hint:"Sınırlar başka bir AB ülkesinde iş aramanızı veya okumanızı engellememelidir." },
+    { q:"AB'nin iç pazarı Avrupa'daki ticaret için ne anlama geldi?", opts:["Daha basit ve ucuz hale geldi – ülkeler arasındaki gümrük vergileri kalktı.","Küçük işletmeler için daha zor hale geldi çünkü sadece büyük şirketlerin satmasına izin veriliyor.","Şirketler doğrudan AB'ye ekstra vergi ödediği için daha pahalı hale geldi.","Hiçbir şey değişmedi – her ülke kendi ticaret kurallarını korur."], hint:"Gümrük yok = AB içinde daha düşük fiyatlar ve daha kolay ticaret." },
+    { q:"Eleştirmenler AB'nin 'demokratik açık'tan muzdarip olduğunu söylerken genellikle ne demek isterler?", opts:["AB'nin İsveç partilerinin AB Parlamentosu seçimlerine katılmasını engellediğini.","Ülkelere AB'nin liderliği hakkında yorum yapmasına izin verilmediğini.","AB'nin demokratik seçimler düzenlemek için bütçeye sahip olmadığını.","Kararların uzakta Brüksel'de alındığını ve sıradan bir vatandaş olarak bunları etkilemenin zor hissettirdiğini."], hint:"Güçten uzaklık, pek çok vatandaşın AB'yi etkilemenin zor olduğunu hissetmesine yol açar." },
+    { q:"Bir AB tüzüğü İsveç yasasıyla çelişiyor. Ne geçerlidir?", opts:["Her ülke o yıl hangi kuralı takip etmek istediğini özgürce seçer.","AB ne derse desin İsveç yasası her zaman geçerlidir.","İşbirliğinin tüm ülkelerde eşit çalışması için AB hukuku önceliklidir.","Hiçbir şey olmaz – AB sadece tavsiye verir, kendi yasalarını çıkarmaz."], hint:"AB hukukunun önceliği, oyunun kurallarının tüm birlikte aynı olmasını sağlar." }
+  ]
 };
+
+let state = { phase:'start', questions:[], idx:0, score:0, selected:null, locked:false, showHint:false, timer:0, timerInterval:null };
 
 function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
 
 function startGame() {
     clearInterval(state.timerInterval);
-    state.questions = shuffle(QUESTIONS).map(q => ({
-        ...q,
-        shuffledOpts: shuffle(q.opts.map((text, i) => ({ text, origIdx: i })))
-    }));
-    state.idx = 0;
-    state.score = 0;
-    state.selected = null;
-    state.locked = false;
-    state.showHint = false;
-    state.timer = 0;
-    state.phase = 'quiz';
+    state.questions = shuffle(QUESTIONS).map(q => ({ ...q, shuffledOpts: shuffle(q.opts.map((text, i) => ({ text, origIdx: i }))) }));
+    state.idx = 0; state.score = 0; state.selected = null; state.locked = false; state.showHint = false; state.timer = 0; state.phase = 'quiz';
     state.timerInterval = setInterval(() => { state.timer++; renderTimer(); }, 1000);
     render();
 }
 
-function fmt(t) {
-    return `${Math.floor(t/60)}:${String(t%60).padStart(2,'0')}`;
-}
-
-function renderTimer() {
-    const el = document.getElementById('timer-display');
-    if (el) el.textContent = fmt(state.timer);
-}
+function fmt(t) { return `${Math.floor(t/60)}:${String(t%60).padStart(2,'0')}`; }
+function renderTimer() { const el = document.getElementById('timer-display'); if (el) el.textContent = fmt(state.timer); }
 
 function selectOpt(shuffledIdx) {
     if (state.locked) return;
-    state.selected = shuffledIdx;
-    state.locked = true;
+    state.selected = shuffledIdx; state.locked = true;
     const q = state.questions[state.idx];
     if (q.shuffledOpts[shuffledIdx].origIdx === q.correct) state.score++;
     renderQuiz();
 }
 
 function nextQ() {
-    state.idx++;
-    state.selected = null;
-    state.locked = false;
-    state.showHint = false;
-    if (state.idx >= state.questions.length) {
-        clearInterval(state.timerInterval);
-        state.phase = 'end';
-        render();
-    } else {
-        renderQuiz();
-    }
+    state.idx++; state.selected = null; state.locked = false; state.showHint = false;
+    if (state.idx >= state.questions.length) { clearInterval(state.timerInterval); state.phase = 'end'; render(); }
+    else renderQuiz();
 }
 
-function toggleHint() {
-    state.showHint = !state.showHint;
-    renderQuiz();
-}
+function toggleHint() { state.showHint = !state.showHint; renderQuiz(); }
 
 const LETTERS = ['A','B','C','D'];
 
-function render() {
-    if (state.phase === 'start') renderStart();
-    else if (state.phase === 'quiz') renderQuiz();
-    else renderEnd();
+function getTransQ(origQ) {
+    if (currentLang === 'sv') return null;
+    const tArr = TRANS_Q[currentLang];
+    if (!tArr) return null;
+    const idx = QUESTIONS.indexOf(origQ);
+    return idx >= 0 ? tArr[idx] : null;
 }
+
+function transLine(text) {
+    if (!text || currentLang === 'sv') return '';
+    const isRTL = RTL.includes(currentLang);
+    const bm = isRTL ? 'margin-left:5px;margin-right:0;' : '';
+    return `<div class="trans-line"${isRTL?' style="direction:rtl;text-align:right;"':''}>
+      <span class="trans-badge" style="${bm}">${LANG_FLAGS[currentLang]} ${LANG_LABELS[currentLang]}</span>${text}
+    </div>`;
+}
+
+function render() { if (state.phase === 'start') renderStart(); else if (state.phase === 'quiz') renderQuiz(); else renderEnd(); }
 
 function renderStart() {
     document.getElementById('app').innerHTML = `
         <div class="screen">
             <div class="start-card">
-                <span class="badge">Samhällskunskap</span>
+                <span class="badge">${uiStr('badge')}</span>
                 <button class="btn-start" onclick="startGame()">
-                    Kör igång
+                    ${uiStr('startBtn')}
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </button>
             </div>
@@ -727,47 +320,44 @@ function renderStart() {
 
 function renderQuiz() {
     const q = state.questions[state.idx];
+    const origQ = QUESTIONS.find(orig => orig.q === q.q) || q;
+    const tq = getTransQ(origQ);
     const pct = ((state.idx + 1) / state.questions.length) * 100;
 
     const optsHTML = q.shuffledOpts.map((opt, i) => {
         const isCorrectOrig = opt.origIdx === q.correct;
         const isSelected = state.selected === i;
         let cls = 'opt-btn';
-        if (state.locked) {
-            if (isCorrectOrig) cls += ' correct';
-            else if (isSelected) cls += ' wrong';
-            else cls += ' dim';
-        }
+        if (state.locked) { if (isCorrectOrig) cls += ' correct'; else if (isSelected) cls += ' wrong'; else cls += ' dim'; }
+        const tOpt = tq ? tq.opts[opt.origIdx] : null;
         return `<button class="${cls}" onclick="selectOpt(${i})" ${state.locked ? 'disabled' : ''}>
             <span class="letter">${LETTERS[i]}</span>
-            ${opt.text}
+            <span>${opt.text}${transLine(tOpt)}</span>
         </button>`;
     }).join('');
 
     const hintHTML = state.showHint ? `
         <div class="hint-box">
-            <strong>Tips</strong>
-            ${q.hint}
+            <strong>${uiStr('hintLabel')}</strong>
+            ${q.hint}${transLine(tq ? tq.hint : null)}
         </div>` : '';
 
     document.getElementById('app').innerHTML = `
         <div class="screen">
             <div class="quiz-header">
-                <span class="q-counter">Fråga <span>${state.idx + 1}</span> / ${state.questions.length}</span>
+                <span class="q-counter">${uiStr('counter')} <span>${state.idx + 1}</span> / ${state.questions.length}</span>
                 <span class="timer" id="timer-display">${fmt(state.timer)}</span>
             </div>
-            <div class="progress-track">
-                <div class="progress-fill" style="width:${pct}%"></div>
-            </div>
-            <p class="question-text">${q.q}</p>
+            <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+            <p class="question-text">${q.q}${transLine(tq ? tq.q : null)}</p>
             <div class="options">${optsHTML}</div>
             <div class="quiz-footer">
                 <button class="hint-toggle" onclick="toggleHint()">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-                    ${state.showHint ? 'Dölj tips' : 'Visa tips'}
+                    ${state.showHint ? uiStr('hideHint') : uiStr('showHint')}
                 </button>
                 ${state.locked ? `<button class="btn-next" onclick="nextQ()">
-                    ${state.idx + 1 === state.questions.length ? 'Se resultat' : 'Nästa'}
+                    ${state.idx + 1 === state.questions.length ? uiStr('resultBtn') : uiStr('nextBtn')}
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </button>` : ''}
             </div>
@@ -777,34 +367,30 @@ function renderQuiz() {
 
 function renderEnd() {
     const pct = Math.round((state.score / state.questions.length) * 100);
-    const msg = pct >= 90 ? "Imponerande! Du är redo för provet." :
-                pct >= 70 ? "Bra jobbat! Läs igenom det du missade en gång till." :
-                "Fortsätt öva – varje runda gör dig skarpare.";
-
+    const h2Key = pct >= 90 ? 'h2_90' : pct >= 70 ? 'h2_70' : 'h2_low';
+    const msgKey = pct >= 90 ? 'msg_90' : pct >= 70 ? 'msg_70' : 'msg_low';
     document.getElementById('app').innerHTML = `
         <div class="screen">
             <div class="end-card">
                 <div class="score-big">${state.score}<span style="font-size:2.5rem;color:var(--muted)">/${state.questions.length}</span></div>
-                <div class="score-label">rätta svar</div>
-                <h2>${pct >= 90 ? 'Strålande!' : pct >= 70 ? 'Bra kämpat!' : 'Fortsätt träna!'}</h2>
-                <p>${msg}</p>
+                <div class="score-label">${uiStr('correctLabel')}</div>
+                <h2>${uiStr(h2Key)}</h2>
+                <p>${uiStr(msgKey)}</p>
                 <div class="stats-row">
-                    <div class="stat-box">
-                        <span class="label">Resultat</span>
-                        <span class="value">${pct}%</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="label">Tid</span>
-                        <span class="value">${fmt(state.timer)}</span>
-                    </div>
+                    <div class="stat-box"><span class="label">${uiStr('statResult')}</span><span class="value">${pct}%</span></div>
+                    <div class="stat-box"><span class="label">${uiStr('statTime')}</span><span class="value">${fmt(state.timer)}</span></div>
                 </div>
                 <button class="btn-restart" onclick="startGame()">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
-                    Kör igen med ny ordning
+                    ${uiStr('restartBtn')}
                 </button>
             </div>
         </div>`;
 }
+
+function toggleLangMenu(e) { e.stopPropagation(); const m = document.getElementById('lang-menu'); m.style.display = m.style.display==='none'?'block':'none'; }
+function selectLang(lang) { currentLang = lang; document.getElementById('lang-menu').style.display='none'; render(); }
+document.addEventListener('click', () => { const m=document.getElementById('lang-menu'); if(m) m.style.display='none'; });
 
 render();
 </script>
