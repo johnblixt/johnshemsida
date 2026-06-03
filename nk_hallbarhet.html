@@ -76,9 +76,8 @@
       const [gameState, setGameState] = useState('start');
       const [allQuestions, setAllQuestions] = useState([]);
       const [currentIdx, setCurrentIdx] = useState(0);
-      const [score, setScore] = useState(0);
-      const [selected, setSelected] = useState(null);
-      const [shuffledOptions, setShuffledOptions] = useState([]);
+      const [answers, setAnswers] = useState([]);
+      const [optionsList, setOptionsList] = useState([]);
       const [timer, setTimer] = useState(0);
       
       const timerRef = useRef(null);
@@ -97,31 +96,33 @@
       const start = () => {
         const combined = [...chainQuestions, ...shuffle(conceptQuestions)];
         setAllQuestions(combined);
+        setOptionsList(combined.map(qq => shuffle([qq.a, ...qq.i])));
+        setAnswers(new Array(combined.length).fill(null));
         setCurrentIdx(0);
-        setScore(0);
         setTimer(0);
-        setSelected(null);
         setGameState('play');
-        const firstQ = combined[0];
-        setShuffledOptions(shuffle([firstQ.a, ...firstQ.i]));
       };
 
       const handleAns = (ans) => {
-        if (selected) return;
-        setSelected(ans);
-        if (ans === allQuestions[currentIdx].a) setScore(score + 1);
+        if (answers[currentIdx]) return;
+        setAnswers(prev => {
+          const copy = [...prev];
+          copy[currentIdx] = ans;
+          return copy;
+        });
       };
 
       const next = () => {
         const nextIdx = currentIdx + 1;
         if (nextIdx < allQuestions.length) {
           setCurrentIdx(nextIdx);
-          setSelected(null);
-          const nextQ = allQuestions[nextIdx];
-          setShuffledOptions(shuffle([nextQ.a, ...nextQ.i]));
         } else {
           setGameState('end');
         }
+      };
+
+      const prev = () => {
+        if (currentIdx > 0) setCurrentIdx(currentIdx - 1);
       };
 
       if (gameState === 'start') return (
@@ -135,23 +136,49 @@
         </div>
       );
 
-      if (gameState === 'end') return (
-        <div className="flex items-center justify-center min-h-screen p-4 text-center">
-          <div className="bg-white p-8 rounded-3xl shadow-xl max-w-sm w-full border-t-8 border-green-500">
+      if (gameState === 'end') {
+        const finalScore = answers.reduce((acc, ans, idx) => acc + (ans === allQuestions[idx].a ? 1 : 0), 0);
+        return (
+        <div className="flex flex-col items-center min-h-screen p-4 py-8">
+          <div className="bg-white p-8 rounded-3xl shadow-xl max-w-sm w-full border-t-8 border-green-500 text-center">
             <Trophy className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
             <h2 className="text-2xl font-black mb-2 text-slate-800">Bra jobbat!</h2>
             <div className="space-y-1 mb-6">
-                <p className="text-4xl font-black text-green-500">{score} / {allQuestions.length}</p>
+                <p className="text-4xl font-black text-green-500">{finalScore} / {allQuestions.length}</p>
                 <p className="text-slate-400 font-bold flex items-center justify-center gap-2">
                     <Clock className="w-4 h-4" /> Tid: {formatTime(timer)}
                 </p>
             </div>
             <button onClick={start} className="w-full bg-slate-800 text-white font-bold py-4 rounded-xl mb-3 shadow-md">Spela igen</button>
           </div>
+
+          <div className="w-full max-w-md mt-8 space-y-3">
+            <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest px-1">Dina svar</h3>
+            {allQuestions.map((question, idx) => {
+              const userAns = answers[idx];
+              const correct = userAns === question.a;
+              return (
+                <div key={idx} className={`bg-white p-4 rounded-2xl shadow-sm border-l-4 ${correct ? "border-green-500" : "border-red-500"}`}>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Fråga {idx + 1} · {question.step}</span>
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${correct ? "text-green-600" : "text-red-600"}`}>{correct ? "Rätt" : "Fel"}</span>
+                  </div>
+                  <p className="text-sm font-bold text-slate-800 mb-2 leading-snug">{question.q}</p>
+                  <p className={`text-sm font-bold ${correct ? "text-green-700" : "text-red-700"}`}>Ditt svar: {userAns ?? "—"}</p>
+                  {!correct && (
+                    <p className="text-sm font-bold text-green-700 mt-1">Rätt svar: {question.a}</p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
-      );
+        );
+      }
 
       const q = allQuestions[currentIdx];
+      const selected = answers[currentIdx];
+      const shuffledOptions = optionsList[currentIdx];
 
       return (
         <div className="flex flex-col items-center min-h-screen p-4 pt-8">
@@ -183,11 +210,18 @@
                 </button>
               ))}
             </div>
-            {selected && (
-              <button onClick={next} className="w-full mt-8 bg-slate-900 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 animate-bounce-subtle">
-                {currentIdx + 1 === allQuestions.length ? "Visa Resultat" : "Gå Vidare"}
-              </button>
-            )}
+            <div className="flex gap-3 mt-8">
+              {currentIdx > 0 && (
+                <button onClick={prev} className="flex-1 bg-white text-slate-700 font-bold py-4 rounded-xl shadow-sm border-2 border-slate-100 hover:border-slate-300 transition-all active:scale-95">
+                  ← Tillbaka
+                </button>
+              )}
+              {selected && (
+                <button onClick={next} className="flex-1 bg-slate-900 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 animate-bounce-subtle">
+                  {currentIdx + 1 === allQuestions.length ? "Visa Resultat" : "Gå Vidare"}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       );
