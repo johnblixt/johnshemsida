@@ -136,6 +136,49 @@ Varje quiz-fil ska följa detta mönster:
 - ✅ Betygsliknande slutfeedback (t.ex. "Redo för provet!" / "Öva lite till")
 - ✅ Lista över missade frågor på slutskärmen
 - ✅ "Gör om"-knapp som blandar om allt igen
+- ✅ Fullständigt facit på resultatskärmen – alla frågor med rätt/fel-markering och elevens svar
+- ✅ Bakåtnavigering under quizet – eleven kan gå tillbaka till tidigare besvarade frågor
+
+### Facit på resultatskärmen – obligatoriskt
+
+Resultatskärmen ska alltid visa ett fullständigt facit med **alla** frågor, inte bara de missade.
+
+- Varje fråga listas i ordning med frågenummer
+- Korrekt besvarade frågor markeras tydligt (grön färg eller ikon)
+- Felaktigt besvarade frågor markeras tydligt (röd färg eller ikon)
+- **Elevens valda svar visas alltid**, formulerat exakt som det stod under quizet
+- **Vid fel visas dessutom det rätta svaret** under elevens svar
+- Obesvarade frågor (om bakåtnavigering används och eleven hoppat över) redovisas som saknade
+- Facitlistan renderas efter poäng/statistik-rutan och före "Gör om"-knappen
+
+**Flerspråkigt quiz:** Alla UI-etiketter i facit måste finnas i samtliga språk quizet stödjer — t.ex.:
+`reviewTitle` (sektionsrubrik), `counter` ("Fråga"), `lblCorrect` ("Rätt"), `lblWrong` ("Fel"), `lblYourAnswer` ("Ditt svar"), `lblCorrectAnswer` ("Rätt svar")
+
+### Bakåtnavigering mellan frågor – obligatoriskt
+
+Eleven ska kunna navigera bakåt till en tidigare fråga under quizet. Reglerna gäller oavsett om quizet är byggt med vanilla JS eller React.
+
+**Blandning sker en gång och sparas:**
+- Frågorna och varje frågas svarsalternativ blandas **en enda gång** vid quizstart
+- Den blandade ordningen sparas per fråga och förändras aldrig vid navigation
+
+**Per-fråga-tillstånd sparas:**
+- Varje fråga håller reda på: (a) sin sparade alternativordning, (b) vilket alternativ eleven valt (eller null om obesvarad)
+- Vid navigation bakåt/framåt återställs frågans sparade tillstånd exakt — ingen ny blandning
+
+**Låsning av besvarade frågor:**
+- En besvarad fråga visas alltid låst: rätt alternativ markerat grönt, elevens felval markerat rött, övriga nedtonade, alla knappar inaktiverade
+- En obesvarad fråga visas olåst och klickbar som vanligt
+
+**Poängräkning:**
+- Poäng räknas **exakt en gång per fråga**, vid det initiala svaret
+- Navigation bakåt eller framåt påverkar aldrig poängen
+
+**Navigeringsknappar:**
+- Bakåt-knappen visas bara när eleven inte är på den första frågan
+- Framåt/Nästa-knappen visas bara efter att frågan är besvarad (eller om frågan redan besvarats)
+
+**Flerspråkigt quiz:** Bakåt-knappens text (t.ex. `backBtn`) måste finnas i samtliga språk quizet stödjer.
 
 ---
 
