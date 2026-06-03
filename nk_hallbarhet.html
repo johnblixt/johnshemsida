@@ -34,8 +34,8 @@
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
     );
 
-    const LANG_FLAGS  = { en:'🇬🇧', ar:'🇸🇦', fa:'🇮🇷', bs:'🇧🇦', tr:'🇹🇷' };
-    const LANG_LABELS = { en:'Engelska', ar:'Arabiska', fa:'Persiska', bs:'Bosniska', tr:'Turkiska' };
+    const LANG_FLAGS  = { en:'🇬🇧', ar:'🇸🇦', fa:'🇮🇷', bs:'🇧🇦', tr:'🇹🇷', so:'🇸🇴' };
+    const LANG_LABELS = { en:'Engelska', ar:'Arabiska', fa:'Persiska', bs:'Bosniska', tr:'Turkiska', so:'Somaliska' };
     const RTL = ['ar','fa'];
 
     const UI = {
@@ -45,6 +45,7 @@
       fa: { badge:'علوم طبیعی: آزمون محیط‌زیست', desc:'دانش خود را درباره توسعه پایدار و زنجیره علت و معلول بیازمایید.', startBtn:'شروع بازی', counter:'سوال', correctLabel:'درست', wrongLabel:'نادرست', yourAnswer:'پاسخ شما', correctAnswer:'پاسخ صحیح', reviewTitle:'پاسخ‌های شما', timeLabel:'زمان', playAgain:'دوباره بازی کن', nextBtn:'ادامه', backBtn:'بازگشت →', showResult:'نمایش نتیجه', wellDone:'آفرین!', langBtn:'انتخاب زبان' },
       bs: { badge:'NK: Kviz o okolišu', desc:'Testiraj znanje o održivom razvoju i uzročnom lancu.', startBtn:'Pokreni igru', counter:'Pitanje', correctLabel:'Tačno', wrongLabel:'Netačno', yourAnswer:'Tvoj odgovor', correctAnswer:'Tačan odgovor', reviewTitle:'Tvoji odgovori', timeLabel:'Vrijeme', playAgain:'Igraj ponovo', nextBtn:'Nastavi', backBtn:'← Nazad', showResult:'Prikaži rezultate', wellDone:'Bravo!', langBtn:'Odaberi jezik' },
       tr: { badge:'NK: Çevre Testi', desc:'Sürdürülebilir kalkınma ve nedensellik zinciri hakkındaki bilgini test et.', startBtn:'Oyuna Başla', counter:'Soru', correctLabel:'Doğru', wrongLabel:'Yanlış', yourAnswer:'Cevabın', correctAnswer:'Doğru cevap', reviewTitle:'Cevapların', timeLabel:'Süre', playAgain:'Tekrar oyna', nextBtn:'Devam Et', backBtn:'← Geri', showResult:'Sonucu Göster', wellDone:'Aferin!', langBtn:'Dil seç' },
+      so: { badge:'NK: Imtixaanka Deegaanka', desc:'Tijaabi aqoonkaaga ku saabsan horumarinta joogtada ah iyo silsilada sababtu-natiijada.', startBtn:'Bilow Ciyaarta', counter:"Su'aal", correctLabel:'Saxan', wrongLabel:'Khalad', yourAnswer:'Jawaabta', correctAnswer:'Jawaabta Saxda ah', reviewTitle:'Jawaabaha', timeLabel:'Waqti', playAgain:'Mar kale ciyaar', nextBtn:'Sii wad', backBtn:'← Dib u noqo', showResult:'Tus Natiijada', wellDone:'Waad ku guuleysatay!', langBtn:'Dooro luqadda' },
     };
 
     const chainQuestions = [
@@ -215,6 +216,33 @@
         { q:"'İklim adaleti' neye odaklanır?", a:"Zengin ve fakir ülkeler arasında sorumluluk paylaşımı.", i:["Tüm insanların aynı miktarda vergi ödemesi gerektiği.","Yasaların dışarıda ne kadar sıcak olmasına izin verileceğini belirlemesi gerektiği.","Tüm ülkelerin birbirleriyle ticareti tamamen durdurması."] },
         { q:"Paris Anlaşması'nın temel amacı nedir?", a:"Küresel ısınmayı 2°C'nin altında tutmak.", i:["Paris'i dünyanın en çevre dostu şehri haline getirmek.","Tüm ülkelerin 2030'a kadar aynı para birimine geçmesi.","Avrupa genelinde tüm uçuşları yasaklamak."] },
         { q:"'Küresel Hedefler' (Gündem 2030) nedir?", a:"Sosyal, ekonomik ve çevresel sağlık hedefleri.", i:["Dünyanın en başarılı şirketlerinin listesi.","Ülkeler arasında kimin en iyi olduğuna dair bir yarışma.","Güvenli nükleer güç santralleri inşa etme kuralları."] }
+      ],
+      so: [
+        { q:"Maxaa inta badan tallaabada ugu horeysa ee silsilada sharxaysa sida aadamigu deegaanka u saamaynayo?", a:"Isticmaalka badeecadaha iyo adeegyada ee aadanaha.", i:["Isbedelada dabiiciga ah ee jawiga dhulka.","Isbedelada durdurrada weyn ee badaha.","Koritaanka hawlaha ifo-korantada ee qorraxda."] },
+        { q:"Markay warshadu wax samaynayaan, qogoorida, saliidda iyo gaaska ayaa inta badan la isticmaalaa. Maxaa lagu magacaabaa kuwaas wadajir?", a:"Shidaalka fosil.", i:["Ilaha tamarta dib-u-soo-noolaanshaha.","Gaasyada xumaysta ee dabiiciga ah.","Kheyraadka caddaalad ee la xukumi karo."] },
+        { q:"Maxaa hawada lagu sii deyraa markay shidaalka fosil gubtaan?", a:"Gaasyada xumaysta sida kaarboon dayoksayd.", i:["Uumi biyo oo kaliya oo aan waxyeello lahayn.","Ozone oo qaboojiya jawiga.","Oksijiinka nadiif ah oo faa'iido u leh dhirta."] },
+        { q:"Maxay kaarboon dayoksaydku jawiga ku ahaataa dhibaato cimilada?", a:"Waxay xidaa kulaylka ka baxaya dhulka.", i:["Waxay gooyaa iftiinka qorraxda inuusan gaadhsiimin dusha dhulka.","Waxay baabi'isaa lakabka ozone sidaas darteedna shucaaca UV-ga waa kordha.","Waxay keentaa in roobkii dunida oo dhan yar yahay."] },
+        { q:"Maxaa ku dhacaya heerkulka dhulka markay saameynta xumaysata adag noqoto?", a:"Heerkulka celceliska caalamiga ah ayaa si tartiib ah u kacaya.", i:["Heerkulka wuu si xun hoos ugu dhacaa qudbaha.","Ma jirto farqi la cabbiri karo cimilada.","Kulaylku wuxuu sii baxaa oo kaliya xilliga xagaaga."] },
+        { q:"Sidee kulaylka koritaanku u kordhin karaa dab-deymaha kaynta?", a:"Kulaylku wuxuu engejiyaa koobka dhulka iyo dhirta.", i:["Kulaylku wuxuu keenaa biriqsi badan oo dhacaya.","Kulaylku wuxuu keenaa marinka geedaha inuu si iskiis ah u baxsado.","Kulaylku wuxuu keenaa xayawaanadu inay ka badan dhaqaaqdaan goobaha engegan."] },
+        { q:"Maxay dab-deymaha kayntu u keentaa kulaylka kordhada (wareeg xun)?", a:"Dabku wuxuu sii deyraa kaarboon dayoksayd oo geedaha ku kaydsnaa.", i:["Qiiqu wuxuu xidaa iftiinka qorraxda si dhulku u kululo.","Cididu waxay keentaa dhulka inuu jiido qabow badan.","Dabku wuxuu cunaa oksijiinka loogu baahdo si hawada loo qaboojiyо."] },
+        { q:"Maxaa ku dhacaya barafka ku taal qudbaha markay heerkulku kaco?", a:"Barafku wuu dhalaalaa oo u beddelaa xaalad biyo ah.", i:["Barafku wuu adag yahay oo iftiinka badan ka celiya.","Barafku wuxuu u socdaa xaaladda oo badaha qaboojiya.","Barafku wuxuu ballaadha sababtoo ah roobab badan."] },
+        { q:"Maxaa dhacaya markii barafka caddaanka ah lagu beddelo biyaha madow ee badda?", a:"Biyaha madow waxay nuugaan kulaylka qorraxda aad u badan.", i:["Baddu waxay bilaabaysaa inay celiso iftiinka badan xiddigiska.","Dhulku wuu qaboobaa sababtoo ah biyo furan oo badan.","Baddu waxay noqotaa mid macaan oo saameeya caafimaadka kalluunka."] },
+        { q:"Maxay ahaanaysaa cawaaqibka magaalooyinka xeebaha ee markay barafka qudbada dhalaalaan?", a:"Heerka badda wuu kacaa waxayna keentaa daad.", i:["Heerka badda wuu hoos u dhacaa sababtoo ah barafku wuu ka badan yahay booska.","Dhulal cusub ayaa u samaysmaa meesha dhexe ee adduunka.","Biyuhu waxay noqdaan la cabi karo oo dhammaan xeebta degan."] },
+        { q:"Maxay tahay macnaha 'Horumarinta joogtada ah'?", a:"In maanta si fiican u noolaan adoon mustaqbalka baabbi'in.", i:["In koritaanka dhaqaalaha la kordho qiimo kasta oo la bixiyo.","In si buuxda loo joojiyo isticmaalka dhammaan kheyraadka dabiiciga ah.","In dabiiciga loo xafido sida hore ahayd."] },
+        { q:"Xagee xoogga joogtada ah ee diiradda saara caafimaadka nidaamyada deegaanka?", a:"Joogtada deegaanka.", i:["Joogtada bulshada.","Joogtada dhaqaale.","Joogtada dhaqanka."] },
+        { q:"Qeybta horumarinta joogtada ah ee ku saabsan xuquuqda aadanaha?", a:"Joogtada bulshada.", i:["Joogtada deegaanka.","Joogtada farsamada.","Joogtada maaliyadda."] },
+        { q:"Maxay astaamaha 'Joogtada dhaqaale' ka dhigaan?", a:"Maaraynta kheyraadka muddo dheer oo aan waxyeello u geysan deegaanka.", i:["Faa'iidada ugu badan ee xilliga gaaban ee shirkadaha oo dhan.","In si buuxda loo mamnuuco ganacsiga iyo isticmaalka lacagta.","In kaliya la iibsado badeecadaha ugu jaban ee suuqa."] },
+        { q:"Maxay 'Cagaha deegaanka' cabbiraan?", a:"Tirada kheyraadka dabiiciga ah ee aadane isticmaalo.", i:["Intee degdeg ah qofku uga gudbi karo kaynta.","Tirada noocyada xayawaanka ee meesha gaarka ah ku nool.","Intee kaarboon dayoksayd warshad sanadkiiba sii deyrtaa."] },
+        { q:"Maxaa loo yaqaan kheyraadyada sida qorraxda iyo dabaylaha?", a:"Kheyraadka dabiiciga ah ee dib-u-cusboonaasiiya.", i:["Kheyraadka dabiiciga ah ee kooban.","Ilaha tamarta fosil.","Kheyraadyada macmalka ah."] },
+        { q:"Maxaa tusaale u ah kheyraad aan dib-u-cusboonaasinayn?", a:"Gaaska dabiiciga ah iyo macdanta.", i:["Tamarta dabaylaha iyo iftiinka qorraxda.","Qoryo iyo biomass.","Tamarta biyaha iyo mowjadaha."] },
+        { q:"Maxay tahay macnaha 'Kala-duwanaanshaha noolaha'?", a:"Hodanka kala-duwanaanshaha noocyada iyo nidaamyada deegaanka.", i:["In dad badan oo nooc keliya ah ay jiraan.","In aan beerno geed isku nooc ah kaynta oo dhan.","In dabiiciga u xadidno goobaha la difaacayo."] },
+        { q:"Maxay yihiin 'Adeegyada nidaamka deegaanka'?", a:"Faa'iidooyinka dabiicigu noo siiyaan, sida nadiifinta biyaha.", i:["Shaqada ay qabtaan shaqaalaha beerta magaalooyinka.","Badeecadaha aan ka iibsano dukaamada cuntada dabiiciga ah.","Mishiinnada nadiifiya hawada warshadaha waaweyn."] },
+        { q:"Maxay tahay mid ka mid ah hanjabadaha ugu weyn ee kala-duwanaanshaha noolaha?", a:"Luminta deegaannada noolaha iyada oo loo marayo dhaqaalaynta.", i:["In aan beerno ubax badan oo beerta dhul-guryaha.","In shucaaca qorraxdu kordhaa xilliga xagaaga.","In ay jiraan cayayaanka ki'iga ah oo aad u badan."] },
+        { q:"Maxaa lagu baaraa 'Falanqaynta Wareegga Nolosha' (LCA)?", a:"Saameynta deegaanka laga bilaabo soo-saarka ilaa xalinta.", i:["Intee in le'eg xayawaan duurjoog ah ku noolaa deegaankiisa dabiiciga ah.","Intee macmiil iibsadaan badeecad gaar ah.","Midkee midab badeecaddu u baahan tahay si ugu fiican u iibsato."] },
+        { q:"Maxay tahay macnaha 'Dhaqaalaha wareegga'?", a:"Nidaam agabku uu ku dib-u-isticmaalo oo loo kaydisto.", i:["In lacagtu si dhakhso ah ugu wareegto bangiyada kala duwan.","In dukaamada oo dhan lagu dhigo goobo wareeg ah si fududaanaanshaha.","In aan wax cusub iibsano oo hore si degdeg ah u tuuro."] },
+        { q:"Maxay diiradda saartaa 'Cadaaladda cimilada'?", a:"Qeybinta mas'uuliyadda dhexmarta dalka hodan ah iyo kuwa faqiirka ah.", i:["In dadka oo dhan ay bixiyaan canshuur isku miqdaar ah.","In sharciyadu go'aamiyaan intee kulaylka dibadda la ogol yahay.","In dhamaan dalka si buuxda uga joogaan ganacsiga midba midka kale."] },
+        { q:"Maxay tahay ujeeddada ugu muhiimsan heshiiska Paris?", a:"Xaddidaadda kulaylka caalamiga ah ka hoosaysa 2°C.", i:["In Paris noqoto magaalada ugu saaxiibtobadan deegaanka adduunka.","In dhamaan dalka ku bedelaan lacag isku mid ah sanadka 2030.","In la mamnuuco dulimaadka oo dhan Yurub oo dhan."] },
+        { q:"Maxay yihiin 'Yoolalka Caalamiga ah' (Ajendada 2030)?", a:"Yoolallo bulshada, dhaqaalaha iyo deegaanka caafimaadkiisa.", i:["Liiska shirkadaha ugu guuleystay dunida.","Tartanka u dhexeeya dalka ee ku saabsan cidda ugu wanaagsan.","Xeerarka dhismaha santraadyada nukliyeerka ammaan ah."] }
       ]
     };
 
@@ -316,6 +344,7 @@
               <button className="lang-opt" onClick={() => {setLang('en');setShowLangMenu(false);}}>🇬🇧 Engelska</button>
               <button className="lang-opt" onClick={() => {setLang('bs');setShowLangMenu(false);}}>🇧🇦 Bosniska</button>
               <button className="lang-opt" onClick={() => {setLang('tr');setShowLangMenu(false);}}>🇹🇷 Turkiska</button>
+              <button className="lang-opt" onClick={() => {setLang('so');setShowLangMenu(false);}}>🇸🇴 Somaliska</button>
             </div>
           )}
         </div>
