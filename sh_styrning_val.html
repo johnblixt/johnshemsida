@@ -6,25 +6,32 @@
   <title>Välj Quiz - Så styrs Sverige</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* Laddar in EB Garamond för att matcha portalen */
     @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-    
-    body { 
-        font-family: 'EB Garamond', serif; 
-        font-size: 1.1rem;
-    }
-
-    .selection-card { 
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-    }
-    
-    .selection-card:hover { 
-        transform: translateY(-5px); 
-        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-    }
+    body { font-family: 'EB Garamond', serif; font-size: 1.1rem; }
+    .selection-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .selection-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
+    .lang-opt { display:block;width:100%;text-align:left;padding:8px 14px;font-size:13px;border:none;background:none;cursor:pointer;font-family:inherit; }
+    .lang-opt:hover { background:#f8fafc; }
+    .trans-block { margin-top:6px;padding-top:6px;border-top:1px solid #e2e8f0;font-size:0.82em;color:#64748b;line-height:1.4; }
   </style>
 </head>
 <body class="bg-slate-50 min-h-screen flex items-center justify-center p-6 text-slate-800">
+
+  <!-- Language Selector -->
+  <div id="lang-selector" style="position:fixed;top:1rem;right:1rem;z-index:9999;font-family:'EB Garamond',serif;">
+    <button id="lang-btn" onclick="toggleLangMenu(event)" style="background:white;border:0.5px solid #cbd5e1;border-radius:8px;font-size:13px;padding:6px 12px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.1);display:flex;align-items:center;gap:6px;white-space:nowrap;">
+      🌐 Välj språk
+    </button>
+    <div id="lang-menu" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:white;border:0.5px solid #cbd5e1;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);overflow:hidden;min-width:160px;">
+      <button class="lang-opt" onclick="selectLang('sv')">🇸🇪 Svenska</button>
+      <button class="lang-opt" onclick="selectLang('ar')">🇸🇦 Arabiska</button>
+      <button class="lang-opt" onclick="selectLang('fa')">🇮🇷 Persiska</button>
+      <button class="lang-opt" onclick="selectLang('en')">🇬🇧 Engelska</button>
+      <button class="lang-opt" onclick="selectLang('bs')">🇧🇦 Bosniska</button>
+      <button class="lang-opt" onclick="selectLang('tr')">🇹🇷 Turkiska</button>
+    </div>
+  </div>
+
   <a href="index.html" class="fixed top-4 left-4 z-50 text-sm font-medium text-slate-500 hover:text-slate-800 bg-white/90 px-3 py-2 rounded-xl shadow-sm transition-colors">← Tillbaka till startsidan</a>
 
   <div class="max-w-4xl w-full">
@@ -33,24 +40,24 @@
       <a href="index.html" class="text-yellow-600 font-bold inline-flex items-center gap-2 mb-8 hover:translate-x-[-4px] transition-transform italic">
         ← Tillbaka till portalen
       </a>
-      <h1 class="text-5xl md:text-6xl font-black text-slate-900 italic tracking-tight mb-4">Så styrs Sverige</h1>
-      <p class="text-xl md:text-2xl text-slate-500 italic">Vilken nivå vill du träna på idag?</p>
+      <h1 data-t="title" class="text-5xl md:text-6xl font-black text-slate-900 italic tracking-tight mb-1">Så styrs Sverige</h1>
+      <p data-t="subtitle" class="text-xl md:text-2xl text-slate-500 italic mt-4">Vilken nivå vill du träna på idag?</p>
     </div>
 
     <!-- Val-rutor -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      
+
       <!-- Det lätta quizet (Banor) -->
       <a href="sh_styrning_game.html" class="selection-card bg-white p-10 rounded-3xl shadow-xl border-t-8 border-green-400 flex flex-col items-center text-center group">
         <div class="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
             <span class="text-6xl">🎮</span>
         </div>
-        <h2 class="text-3xl font-bold text-slate-900 mb-3">Det lätta quizet</h2>
-        <p class="text-slate-500 mb-8 italic leading-relaxed text-lg">
-            Träna genom banor och samla stjärnor. <br>
+        <h2 data-t="card1_title" class="text-3xl font-bold text-slate-900 mb-1">Det lätta quizet</h2>
+        <p data-t="card1_desc" class="text-slate-500 mb-8 italic leading-relaxed text-lg mt-3">
+            Träna genom banor och samla stjärnor.<br>
             Perfekt för att få koll på grunderna och grundlagarna!
         </p>
-        <div class="mt-auto bg-green-500 text-white px-10 py-3 rounded-xl font-bold uppercase tracking-widest text-sm shadow-md group-hover:bg-green-600 transition-colors">
+        <div data-t="card1_btn" class="mt-auto bg-green-500 text-white px-10 py-3 rounded-xl font-bold uppercase tracking-widest text-sm shadow-md group-hover:bg-green-600 transition-colors">
             Välj denna
         </div>
       </a>
@@ -60,12 +67,12 @@
         <div class="w-24 h-24 bg-yellow-50 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
             <span class="text-6xl">🏛️</span>
         </div>
-        <h2 class="text-3xl font-bold text-slate-900 mb-3">Det vanliga quizet</h2>
-        <p class="text-slate-500 mb-8 italic leading-relaxed text-lg">
-            Fokus på lagstiftningsprocessen och EU. <br>
+        <h2 data-t="card2_title" class="text-3xl font-bold text-slate-900 mb-1">Det vanliga quizet</h2>
+        <p data-t="card2_desc" class="text-slate-500 mb-8 italic leading-relaxed text-lg mt-3">
+            Fokus på lagstiftningsprocessen och EU.<br>
             Klarar du detta flera gånger så är du redo för omprov!
         </p>
-        <div class="mt-auto bg-yellow-400 text-slate-900 px-10 py-3 rounded-xl font-bold uppercase tracking-widest text-sm shadow-md group-hover:bg-yellow-500 transition-colors">
+        <div data-t="card2_btn" class="mt-auto bg-yellow-400 text-slate-900 px-10 py-3 rounded-xl font-bold uppercase tracking-widest text-sm shadow-md group-hover:bg-yellow-500 transition-colors">
             Välj denna
         </div>
       </a>
@@ -75,11 +82,104 @@
     <!-- Footer -->
     <footer class="mt-20 text-center">
         <div class="w-16 h-1 bg-slate-200 mx-auto mb-6 rounded-full"></div>
-        <p class="text-slate-400 text-xs uppercase tracking-[0.2em] font-black italic">
+        <p data-t="footer_text" class="text-slate-400 text-xs uppercase tracking-[0.2em] font-black italic">
             Johns Repetitionsportal • Samhällskunskap Sa1a1
         </p>
     </footer>
   </div>
 
+<script>
+const LANG_DATA = {
+  en: {
+    title: "How Sweden is Governed",
+    subtitle: "Which level do you want to practise today?",
+    card1_title: "The Easy Quiz",
+    card1_desc: "Practise through levels and collect stars. Perfect for getting a grip on the basics and the fundamental laws!",
+    card1_btn: "CHOOSE THIS",
+    card2_title: "The Standard Quiz",
+    card2_desc: "Focus on the legislative process and the EU. Pass this several times and you are ready for the re-test!",
+    card2_btn: "CHOOSE THIS",
+    footer_text: "JOHN'S STUDY PORTAL • CIVICS SA1A1"
+  },
+  ar: {
+    title: "كيف تُدار السويد",
+    subtitle: "أي مستوى تريد التدرب عليه اليوم؟",
+    card1_title: "الاختبار السهل",
+    card1_desc: "تدرّب عبر مراحل واجمع النجوم. مثالي للإلمام بالأساسيات والقوانين الأساسية!",
+    card1_btn: "اختر هذا",
+    card2_title: "الاختبار العادي",
+    card2_desc: "التركيز على عملية التشريع والاتحاد الأوروبي. إذا اجتزت هذا عدة مرات فأنت جاهز لإعادة الاختبار!",
+    card2_btn: "اختر هذا",
+    footer_text: "بوابة المراجعة لجون • العلوم الاجتماعية Sa1a1"
+  },
+  fa: {
+    title: "چگونه سوئد اداره می‌شود",
+    subtitle: "امروز می‌خواهید چه سطحی را تمرین کنید؟",
+    card1_title: "آزمون آسان",
+    card1_desc: "از طریق مراحل تمرین کنید و ستاره جمع کنید. برای یادگیری اصول و قوانین اساسی عالی است!",
+    card1_btn: "این را انتخاب کن",
+    card2_title: "آزمون معمولی",
+    card2_desc: "تمرکز بر فرآیند قانون‌گذاری و اتحادیه اروپا. اگر چندین بار در این آزمون موفق شدید، آماده آزمون مجدد هستید!",
+    card2_btn: "این را انتخاب کن",
+    footer_text: "پورتال مطالعه جان • علوم اجتماعی Sa1a1"
+  },
+  bs: {
+    title: "Kako se upravlja Švedskom",
+    subtitle: "Koji nivo želiš vježbati danas?",
+    card1_title: "Laki kviz",
+    card1_desc: "Vježbaj kroz nivoe i skupljaj zvjezdice. Savršeno za savladavanje osnova i temeljnih zakona!",
+    card1_btn: "ODABERI OVO",
+    card2_title: "Standardni kviz",
+    card2_desc: "Fokus na zakonodavni postupak i EU. Ako prolaziš ovo više puta, spreman si za popravni!",
+    card2_btn: "ODABERI OVO",
+    footer_text: "JOHNOV PORTAL ZA PONAVLJANJE • DRUŠTVENE NAUKE SA1A1"
+  },
+  tr: {
+    title: "İsveç Nasıl Yönetilir",
+    subtitle: "Bugün hangi seviyeyi çalışmak istersiniz?",
+    card1_title: "Kolay Test",
+    card1_desc: "Bölümler aracılığıyla pratik yapın ve yıldız toplayın. Temel bilgileri ve temel yasaları kavramak için mükemmel!",
+    card1_btn: "BU SEÇENEĞİ SEÇ",
+    card2_title: "Normal Test",
+    card2_desc: "Yasama süreci ve AB'ye odaklanın. Bunu birkaç kez geçerseniz sınava hazırsınız!",
+    card2_btn: "BU SEÇENEĞİ SEÇ",
+    footer_text: "JOHN'UN TEKRAR PORTALI • SOSYAL BİLGİLER SA1A1"
+  }
+};
+
+const LANG_LABELS = { en:'Engelska', ar:'Arabiska', fa:'Persiska', bs:'Bosniska', tr:'Turkiska' };
+const LANG_FLAGS  = { en:'🇬🇧', ar:'🇸🇦', fa:'🇮🇷', bs:'🇧🇦', tr:'🇹🇷' };
+const RTL_LANGS   = ['ar','fa'];
+
+function applyTranslation(lang) {
+  document.querySelectorAll('.trans-block').forEach(el => el.remove());
+  if (lang === 'sv') return;
+  const t = LANG_DATA[lang];
+  const isRTL = RTL_LANGS.includes(lang);
+  const flag = LANG_FLAGS[lang];
+  const label = LANG_LABELS[lang];
+  document.querySelectorAll('[data-t]').forEach(el => {
+    const key = el.getAttribute('data-t');
+    if (!t[key]) return;
+    const div = document.createElement('div');
+    div.className = 'trans-block';
+    if (isRTL) div.style.cssText = 'direction:rtl;text-align:right;';
+    const badgeMargin = isRTL ? 'margin-left:6px;' : 'margin-right:6px;';
+    div.innerHTML = '<span style="display:inline-block;font-size:11px;background:#f1f5f9;border-radius:4px;padding:1px 6px;' + badgeMargin + '">' + flag + ' ' + label + '</span>' + t[key];
+    el.parentNode.insertBefore(div, el.nextSibling);
+  });
+}
+
+function toggleLangMenu(e) {
+  e.stopPropagation();
+  const m = document.getElementById('lang-menu');
+  m.style.display = m.style.display === 'none' ? 'block' : 'none';
+}
+function selectLang(lang) {
+  document.getElementById('lang-menu').style.display = 'none';
+  applyTranslation(lang);
+}
+document.addEventListener('click', () => { document.getElementById('lang-menu').style.display = 'none'; });
+</script>
 </body>
 </html>
