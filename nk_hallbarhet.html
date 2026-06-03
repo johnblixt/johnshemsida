@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NK - Hållbar Utveckling Quiz (Förbättrad)</title>
+  <title>NK - Hållbar Utveckling Quiz</title>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -11,6 +11,10 @@
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'EB Garamond', serif; }
+    .trans-line { margin-top:4px; padding-top:4px; border-top:1px solid rgba(0,0,0,0.08); font-size:0.82em; color:#64748b; line-height:1.5; }
+    .trans-badge { display:inline-block; font-size:10px; background:rgba(0,0,0,0.06); border-radius:4px; padding:1px 5px; margin-right:5px; }
+    .lang-opt { display:block;width:100%;text-align:left;padding:8px 14px;font-size:13px;border:none;background:none;cursor:pointer;color:#1e293b;font-family:'EB Garamond',serif; }
+    .lang-opt:hover { background:#f8fafc; }
   </style>
 </head>
 <body class="bg-slate-50">
@@ -20,7 +24,6 @@
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
 
-    // --- IKONER ---
     const Leaf = ({ className }) => (
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
     );
@@ -31,7 +34,19 @@
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
     );
 
-    // --- FRÅGOR (BALANSERAD TEXTLÄNGD OCH TROVÄRDIGA DISTRAKTORER) ---
+    const LANG_FLAGS  = { en:'🇬🇧', ar:'🇸🇦', fa:'🇮🇷', bs:'🇧🇦', tr:'🇹🇷' };
+    const LANG_LABELS = { en:'Engelska', ar:'Arabiska', fa:'Persiska', bs:'Bosniska', tr:'Turkiska' };
+    const RTL = ['ar','fa'];
+
+    const UI = {
+      sv: { badge:'NK: Miljöquiz', desc:'Testa dina kunskaper om hållbar utveckling och orsakskedjan.', startBtn:'Starta Spelet', counter:'Fråga', correctLabel:'Rätt', wrongLabel:'Fel', yourAnswer:'Ditt svar', correctAnswer:'Rätt svar', reviewTitle:'Dina svar', timeLabel:'Tid', playAgain:'Spela igen', nextBtn:'Gå Vidare', backBtn:'← Tillbaka', showResult:'Visa Resultat', wellDone:'Bra jobbat!', langBtn:'Välj språk' },
+      en: { badge:'NK: Environment Quiz', desc:'Test your knowledge of sustainable development and the cause-and-effect chain.', startBtn:'Start Game', counter:'Question', correctLabel:'Correct', wrongLabel:'Wrong', yourAnswer:'Your answer', correctAnswer:'Correct answer', reviewTitle:'Your answers', timeLabel:'Time', playAgain:'Play again', nextBtn:'Continue', backBtn:'← Back', showResult:'Show Result', wellDone:'Well done!', langBtn:'Choose language' },
+      ar: { badge:'علوم الطبيعة: اختبار البيئة', desc:'اختبر معرفتك بالتنمية المستدامة وسلسلة الأسباب والنتائج.', startBtn:'ابدأ اللعبة', counter:'سؤال', correctLabel:'صحيح', wrongLabel:'خطأ', yourAnswer:'إجابتك', correctAnswer:'الإجابة الصحيحة', reviewTitle:'إجاباتك', timeLabel:'الوقت', playAgain:'العب مرة أخرى', nextBtn:'متابعة', backBtn:'رجوع ←', showResult:'عرض النتائج', wellDone:'أحسنت!', langBtn:'اختر اللغة' },
+      fa: { badge:'علوم طبیعی: آزمون محیط‌زیست', desc:'دانش خود را درباره توسعه پایدار و زنجیره علت و معلول بیازمایید.', startBtn:'شروع بازی', counter:'سوال', correctLabel:'درست', wrongLabel:'نادرست', yourAnswer:'پاسخ شما', correctAnswer:'پاسخ صحیح', reviewTitle:'پاسخ‌های شما', timeLabel:'زمان', playAgain:'دوباره بازی کن', nextBtn:'ادامه', backBtn:'بازگشت →', showResult:'نمایش نتیجه', wellDone:'آفرین!', langBtn:'انتخاب زبان' },
+      bs: { badge:'NK: Kviz o okolišu', desc:'Testiraj znanje o održivom razvoju i uzročnom lancu.', startBtn:'Pokreni igru', counter:'Pitanje', correctLabel:'Tačno', wrongLabel:'Netačno', yourAnswer:'Tvoj odgovor', correctAnswer:'Tačan odgovor', reviewTitle:'Tvoji odgovori', timeLabel:'Vrijeme', playAgain:'Igraj ponovo', nextBtn:'Nastavi', backBtn:'← Nazad', showResult:'Prikaži rezultate', wellDone:'Bravo!', langBtn:'Odaberi jezik' },
+      tr: { badge:'NK: Çevre Testi', desc:'Sürdürülebilir kalkınma ve nedensellik zinciri hakkındaki bilgini test et.', startBtn:'Oyuna Başla', counter:'Soru', correctLabel:'Doğru', wrongLabel:'Yanlış', yourAnswer:'Cevabın', correctAnswer:'Doğru cevap', reviewTitle:'Cevapların', timeLabel:'Süre', playAgain:'Tekrar oyna', nextBtn:'Devam Et', backBtn:'← Geri', showResult:'Sonucu Göster', wellDone:'Aferin!', langBtn:'Dil seç' },
+    };
+
     const chainQuestions = [
       { q: "Vad är oftast det första steget i kedjan som förklarar hur människan påverkar miljön?", a: "Människans konsumtion av varor och tjänster.", i: ["Naturliga variationer i jordens atmosfär.", "Förändringar i havets stora strömmar.", "Ökad aktivitet i solens elektromagnetiska strålning."], step: "Steg 1: Konsumtion" },
       { q: "När fabriker tillverkar saker används ofta kol, olja och gas. Vad kallas dessa gemensamt?", a: "Fossila bränslen.", i: ["Förnybara energikällor.", "Naturliga växthusgaser.", "Hållbara råmaterial."], step: "Steg 2: Resurser" },
@@ -63,35 +78,204 @@
       { q: "Vad är 'Globala målen' (Agenda 2030)?", a: "Mål för social, ekonomisk och miljömässig hälsa.", i: ["En lista på världens mest framgångsrika företag.", "En tävling mellan länder om vem som är bäst.", "Regler för hur man bygger säkra kärnkraftverk."], step: "Avtal" }
     ];
 
-    const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
+    const ALL_QUESTIONS_STATIC = [...chainQuestions, ...conceptQuestions];
 
-    // Formatering av tid (mm:ss)
+    const TRANS_Q = {
+      en: [
+        { q:"What is usually the first step in the chain that explains how humans affect the environment?", a:"Human consumption of goods and services.", i:["Natural variations in the Earth's atmosphere.","Changes in the ocean's major currents.","Increased activity in the sun's electromagnetic radiation."] },
+        { q:"When factories produce things, coal, oil, and gas are often used. What are these collectively called?", a:"Fossil fuels.", i:["Renewable energy sources.","Natural greenhouse gases.","Sustainable raw materials."] },
+        { q:"What is released into the air when fossil fuels are burned?", a:"Greenhouse gases such as carbon dioxide.", i:["Only harmless water vapour.","Ozone that cools the atmosphere.","Pure oxygen that benefits plants."] },
+        { q:"Why is carbon dioxide in the atmosphere a problem for the climate?", a:"It prevents heat radiation from escaping Earth.", i:["It blocks the sun's rays from reaching the surface.","It destroys the ozone layer so UV radiation increases.","It causes less rain throughout the world."] },
+        { q:"What happens to Earth's temperature when the greenhouse effect intensifies?", a:"The global average temperature rises gradually.", i:["The temperature drops drastically at the poles.","There is no measurable difference in the climate.","It only gets warmer during the summer half of the year."] },
+        { q:"How can increased heat lead to an increase in wildfires?", a:"The heat dries out the ground layer and vegetation.", i:["The heat causes lightning to strike more often.","The heat causes tree bark to spontaneously ignite.","The heat causes animals to move more in dry areas."] },
+        { q:"Why do wildfires lead to even more warming (a vicious cycle)?", a:"The fire releases carbon dioxide stored in the trees.", i:["The smoke blocks sunlight, causing the Earth to warm up.","The ash causes the ground to absorb more cold.","The fire consumes the oxygen needed to cool the air."] },
+        { q:"What happens to the polar ice caps when temperatures rise?", a:"The ice melts and turns into liquid form.", i:["The ice becomes denser and reflects more light.","The ice drifts towards the equator and cools the oceans.","The ice expands due to increased precipitation."] },
+        { q:"What happens when white ice is replaced by dark seawater?", a:"Dark water absorbs more of the sun's heat.", i:["The ocean starts reflecting more light out into space.","The Earth cools down due to more open water.","The ocean becomes fresher and affects fish health."] },
+        { q:"What is the consequence for coastal cities when the polar ice caps melt?", a:"Sea levels rise and cause flooding.", i:["Sea levels drop because the ice took up more space.","New land areas form near the equator.","The water becomes drinkable for everyone on the coast."] },
+        { q:"What does the concept of 'Sustainable development' mean?", a:"Living well today without destroying the future.", i:["Increasing economic growth at any cost.","Completely stopping the use of all natural resources.","Preserving nature exactly as it was in the past."] },
+        { q:"Which dimension of sustainability focuses on ecosystem health?", a:"Ecological sustainability.", i:["Social sustainability.","Economic sustainability.","Cultural sustainability."] },
+        { q:"Which part of sustainable development deals with human rights?", a:"Social sustainability.", i:["Environmental sustainability.","Technical sustainability.","Financial sustainability."] },
+        { q:"What characterises 'Economic sustainability'?", a:"Long-term resource management that does not harm the environment.", i:["Maximum short-term profit for all companies.","Completely prohibiting trade and the use of money.","Only buying the cheapest products on the market."] },
+        { q:"What does an 'Ecological footprint' measure?", a:"The amount of natural resources a person consumes.", i:["How fast a person can walk through a forest.","The number of animal species found in a specific area.","How much carbon dioxide a factory emits per year."] },
+        { q:"What are resources such as the sun and wind called?", a:"Renewable natural resources.", i:["Finite natural resources.","Fossil energy sources.","Synthetic resources."] },
+        { q:"What is an example of a non-renewable resource?", a:"Natural gas and metals.", i:["Wind power and sunlight.","Wood and biomass.","Hydropower and waves."] },
+        { q:"What does the concept of 'Biodiversity' mean?", a:"Richness of variation among species and ecosystems.", i:["That there are many individuals of a single species.","That we plant the same kind of tree throughout the forest.","That we restrict nature to protected areas."] },
+        { q:"What are 'Ecosystem services'?", a:"Benefits nature provides us, such as water purification.", i:["Work performed by park workers in cities.","Products we buy in organic food stores.","Machines that purify air in large industries."] },
+        { q:"What is one of the greatest threats to biodiversity?", a:"Loss of habitats through exploitation.", i:["That we plant too many flowers in gardens.","That the sun's radiation increases during summer.","That there are too many pollinating insects."] },
+        { q:"What does a 'Life Cycle Analysis' (LCA) examine?", a:"Environmental impact from extraction to disposal.", i:["How long a wild animal lives in its natural environment.","How many consumers buy a certain product.","What colour a product should be to sell best."] },
+        { q:"What does the concept of 'Circular economy' mean?", a:"A system where materials are reused and conserved.", i:["That money circulates quickly between different banks.","That all shops are placed in a circle for convenience.","That we buy new things and throw away the old ones immediately."] },
+        { q:"What does 'Climate justice' focus on?", a:"Distribution of responsibility between rich and poor countries.", i:["That all people should pay the same amount of tax.","That laws should determine how warm it is allowed to be outside.","That all countries should stop trading with each other completely."] },
+        { q:"What is the primary goal of the Paris Agreement?", a:"Limit global warming to below 2°C.", i:["To make Paris the world's most environmentally friendly city.","That all countries will switch to the same currency by 2030.","To ban all flights within all of Europe."] },
+        { q:"What are the 'Global Goals' (Agenda 2030)?", a:"Goals for social, economic, and environmental health.", i:["A list of the world's most successful companies.","A competition between countries about who is best.","Rules for how to build safe nuclear power plants."] }
+      ],
+      ar: [
+        { q:"ما هي عادةً الخطوة الأولى في السلسلة التي تشرح كيفية تأثير الإنسان على البيئة؟", a:"استهلاك الإنسان للسلع والخدمات.", i:["التغيرات الطبيعية في الغلاف الجوي للأرض.","التغيرات في التيارات المحيطية الكبرى.","زيادة نشاط الإشعاع الكهرومغناطيسي للشمس."] },
+        { q:"عندما تصنع المصانع الأشياء، يُستخدم الفحم والنفط والغاز في الغالب. ماذا تُسمى هذه مجتمعةً؟", a:"الوقود الأحفوري.", i:["مصادر الطاقة المتجددة.","الغازات الدفيئة الطبيعية.","المواد الخام المستدامة."] },
+        { q:"ما الذي يُطلق في الهواء عند حرق الوقود الأحفوري؟", a:"غازات الدفيئة كثاني أكسيد الكربون.", i:["بخار ماء غير ضار فحسب.","الأوزون الذي يُبرد الغلاف الجوي.","الأكسجين النقي الذي يفيد النباتات."] },
+        { q:"لماذا يُشكل ثاني أكسيد الكربون في الغلاف الجوي مشكلة للمناخ؟", a:"إنه يمنع انبعاث الحرارة من الأرض.", i:["إنه يحجب أشعة الشمس من الوصول إلى السطح.","إنه يدمر طبقة الأوزون مما يزيد من أشعة فوق البنفسجية.","إنه يتسبب في هطول أمطار أقل في جميع أنحاء العالم."] },
+        { q:"ماذا يحدث لدرجة حرارة الأرض عندما يتفاقم تأثير الاحتباس الحراري؟", a:"يرتفع متوسط درجة الحرارة العالمية تدريجياً.", i:["تنخفض درجة الحرارة بشكل حاد عند القطبين.","لا يوجد فرق قابل للقياس في المناخ.","يصبح الجو أكثر دفئاً فقط خلال فصل الصيف."] },
+        { q:"كيف يمكن للحرارة المتزايدة أن تؤدي إلى زيادة حرائق الغابات؟", a:"الحرارة تُجفف طبقة التربة والنباتات.", i:["الحرارة تجعل الصواعق تحدث بشكل أكثر تكراراً.","الحرارة تجعل لحاء الأشجار يشتعل تلقائياً.","الحرارة تجعل الحيوانات تتحرك أكثر في المناطق الجافة."] },
+        { q:"لماذا تؤدي حرائق الغابات إلى مزيد من الاحترار (دوامة شريرة)؟", a:"تُطلق النيران ثاني أكسيد الكربون المخزن في الأشجار.", i:["الدخان يحجب ضوء الشمس مما يؤدي إلى تسخين الأرض.","الرماد يجعل التربة تمتص المزيد من البرودة.","تستهلك النيران الأكسيجين اللازم لتبريد الهواء."] },
+        { q:"ماذا يحدث للجليد في القطبين عندما ترتفع درجة الحرارة؟", a:"يذوب الجليد ويتحول إلى صورة سائلة.", i:["يصبح الجليد أكثر كثافة ويعكس ضوءاً أكبر.","يتحرك الجليد نحو خط الاستواء ويبرد المحيطات.","يتمدد الجليد بسبب زيادة هطول الأمطار."] },
+        { q:"ماذا يحدث عندما يُستعاض عن الجليد الأبيض بمياه البحر الداكنة؟", a:"يمتص الماء الداكن مزيداً من حرارة الشمس.", i:["يبدأ المحيط في عكس مزيد من الضوء نحو الفضاء.","تبرد الأرض بسبب المزيد من المياه المفتوحة.","يصبح المحيط أقل ملوحة مما يؤثر على صحة الأسماك."] },
+        { q:"ما هي التبعات لمدن الساحل عندما يذوب الجليد القطبي؟", a:"ترتفع مستويات البحر وتتسبب في الفيضانات.", i:["ينخفض مستوى البحر لأن الجليد كان يشغل مساحة أكبر.","تتشكل مناطق أرضية جديدة بالقرب من خط الاستواء.","يصبح الماء صالحاً للشرب للجميع على الساحل."] },
+        { q:"ما معنى مفهوم 'التنمية المستدامة'؟", a:"العيش بشكل جيد اليوم دون الإضرار بالمستقبل.", i:["زيادة النمو الاقتصادي بأي ثمن.","التوقف التام عن استخدام جميع الموارد الطبيعية.","الحفاظ على الطبيعة كما كانت في الماضي تماماً."] },
+        { q:"أي بُعد من أبعاد الاستدامة يركز على صحة النظم البيئية؟", a:"الاستدامة البيئية.", i:["الاستدامة الاجتماعية.","الاستدامة الاقتصادية.","الاستدامة الثقافية."] },
+        { q:"أي جزء من التنمية المستدامة يتعلق بحقوق الإنسان؟", a:"الاستدامة الاجتماعية.", i:["الاستدامة البيئية.","الاستدامة التقنية.","الاستدامة المالية."] },
+        { q:"ما الذي يميز 'الاستدامة الاقتصادية'؟", a:"الإدارة طويلة الأمد للموارد دون الإضرار بالبيئة.", i:["تحقيق أقصى ربح على المدى القصير لجميع الشركات.","حظر التجارة واستخدام المال كلياً.","شراء المنتجات الأرخص فقط في السوق."] },
+        { q:"ماذا يقيس 'البصمة البيئية'؟", a:"كمية الموارد الطبيعية التي يستهلكها الإنسان.", i:["مدى سرعة تحرك الشخص عبر الغابة.","عدد الأنواع الحيوانية الموجودة في منطقة محددة.","كمية ثاني أكسيد الكربون التي تطلقها مصنع في السنة."] },
+        { q:"ما اسم الموارد كالشمس والرياح؟", a:"الموارد الطبيعية المتجددة.", i:["الموارد الطبيعية المحدودة.","مصادر الطاقة الأحفورية.","الموارد الاصطناعية."] },
+        { q:"ما مثال على مورد غير متجدد؟", a:"الغاز الطبيعي والمعادن.", i:["طاقة الرياح وأشعة الشمس.","الخشب والكتلة الحيوية.","الطاقة الكهرومائية والأمواج."] },
+        { q:"ما معنى مفهوم 'التنوع البيولوجي'؟", a:"ثراء التنوع بين الأنواع والنظم البيئية.", i:["وجود كثير من الأفراد من نوع واحد فقط.","أننا نزرع نفس النوع من الأشجار في كل الغابة.","أننا نحصر الطبيعة في مناطق محمية."] },
+        { q:"ما هي 'خدمات النظام البيئي'؟", a:"الفوائد التي تقدمها الطبيعة لنا كتنقية المياه.", i:["العمل الذي يؤديه عمال الحدائق في المدن.","المنتجات التي نشتريها في متاجر الأغذية العضوية.","الآلات التي تنقي الهواء في الصناعات الكبيرة."] },
+        { q:"ما أحد أكبر التهديدات للتنوع البيولوجي؟", a:"فقدان الموائل من خلال الاستغلال.", i:["أننا نزرع الكثير من الأزهار في الحدائق.","أن إشعاع الشمس يزداد خلال فصل الصيف.","أن هناك حشرات ملقحة كثيرة جداً."] },
+        { q:"ما الذي يبحثه 'تحليل دورة الحياة' (LCA)؟", a:"الأثر البيئي من الاستخراج إلى التخلص.", i:["كم المدة التي يعيشها الحيوان البري في بيئته الطبيعية.","عدد المستهلكين الذين يشترون منتجاً معيناً.","أي لون يجب أن يكون عليه المنتج ليبيع بشكل أفضل."] },
+        { q:"ما معنى مفهوم 'الاقتصاد الدائري'؟", a:"نظام تُعاد فيه استخدام المواد وحفظها.", i:["أن الأموال تتداول بسرعة بين البنوك المختلفة.","أن جميع المتاجر تُوضع في دائرة لسهولة الوصول.","أننا نشتري أشياء جديدة ونتخلص من القديمة فوراً."] },
+        { q:"ما الذي يركز عليه 'العدالة المناخية'؟", a:"توزيع المسؤولية بين الدول الغنية والفقيرة.", i:["أن جميع الناس يجب أن يدفعوا نفس مقدار الضريبة.","أن القوانين يجب أن تحدد كم يُسمح بارتفاع درجة الحرارة.","أن جميع الدول تتوقف عن التجارة مع بعضها تماماً."] },
+        { q:"ما الهدف الأساسي لاتفاقية باريس؟", a:"الحد من الاحترار العالمي إلى ما دون 2 درجة مئوية.", i:["جعل باريس أكثر مدن العالم صداقة للبيئة.","أن تتبنى جميع الدول نفس العملة بحلول عام 2030.","حظر جميع رحلات الطيران داخل أوروبا."] },
+        { q:"ما هي 'الأهداف العالمية' (أجندة 2030)؟", a:"أهداف للصحة الاجتماعية والاقتصادية والبيئية.", i:["قائمة بأكثر شركات العالم نجاحاً.","مسابقة بين الدول حول من هو الأفضل.","قواعد لكيفية بناء محطات طاقة نووية آمنة."] }
+      ],
+      fa: [
+        { q:"اولین گام معمول در زنجیره‌ای که توضیح می‌دهد انسان چگونه بر محیط‌زیست تأثیر می‌گذارد چیست؟", a:"مصرف کالا و خدمات توسط انسان.", i:["تغییرات طبیعی در جو زمین.","تغییرات در جریان‌های بزرگ اقیانوس.","افزایش فعالیت تابش الکترومغناطیسی خورشید."] },
+        { q:"وقتی کارخانه‌ها چیزی می‌سازند، اغلب از زغال، نفت و گاز استفاده می‌شود. این‌ها با هم چه نامیده می‌شوند؟", a:"سوخت‌های فسیلی.", i:["منابع انرژی تجدیدپذیر.","گازهای گلخانه‌ای طبیعی.","مواد اولیه پایدار."] },
+        { q:"هنگام سوزاندن سوخت‌های فسیلی چه چیزی به هوا منتشر می‌شود؟", a:"گازهای گلخانه‌ای مانند دی‌اکسید کربن.", i:["فقط بخار آب بی‌ضرر.","ازن که جو را خنک می‌کند.","اکسیژن خالص که به گیاهان کمک می‌کند."] },
+        { q:"چرا دی‌اکسید کربن در جو برای آب‌وهوا مشکل‌ساز است؟", a:"از تابش گرما از زمین جلوگیری می‌کند.", i:["اشعه خورشید را از رسیدن به سطح زمین مسدود می‌کند.","لایه اوزون را نابود می‌کند و اشعه UV را افزایش می‌دهد.","باعث می‌شود در سراسر جهان باران کمتری ببارد."] },
+        { q:"وقتی اثر گلخانه‌ای تشدید می‌شود، چه اتفاقی برای دمای زمین می‌افتد؟", a:"میانگین دمای جهانی به تدریج افزایش می‌یابد.", i:["دما در قطب‌ها به شدت کاهش می‌یابد.","هیچ تفاوت قابل اندازه‌گیری در آب‌وهوا وجود ندارد.","فقط در نیمه تابستانی سال گرم‌تر می‌شود."] },
+        { q:"چگونه گرمای بیشتر می‌تواند منجر به افزایش آتش‌سوزی جنگل‌ها شود؟", a:"گرما لایه خاک و پوشش گیاهی را خشک می‌کند.", i:["گرما باعث می‌شود صاعقه بیشتر رخ دهد.","گرما باعث می‌شود پوست درختان به خودی خود آتش بگیرد.","گرما باعث می‌شود حیوانات بیشتر در مناطق خشک حرکت کنند."] },
+        { q:"چرا آتش‌سوزی جنگل‌ها به گرمایش بیشتر منجر می‌شود (یک چرخه معیوب)؟", a:"آتش دی‌اکسید کربن ذخیره‌شده در درختان را آزاد می‌کند.", i:["دود نور خورشید را مسدود می‌کند و زمین را گرم می‌کند.","خاکستر باعث می‌شود زمین سرمای بیشتری جذب کند.","آتش اکسیژن لازم برای خنک کردن هوا را مصرف می‌کند."] },
+        { q:"وقتی دما بالا می‌رود، چه اتفاقی برای یخ‌های قطبی می‌افتد؟", a:"یخ‌ها ذوب می‌شوند و به شکل مایع درمی‌آیند.", i:["یخ‌ها متراکم‌تر می‌شوند و نور بیشتری بازتاب می‌دهند.","یخ‌ها به سمت خط استوا حرکت می‌کنند و اقیانوس‌ها را خنک می‌کنند.","یخ‌ها به دلیل بارش بیشتر منبسط می‌شوند."] },
+        { q:"وقتی یخ سفید با آب دریای تیره جایگزین می‌شود چه اتفاقی می‌افتد؟", a:"آب تیره گرمای بیشتری از خورشید جذب می‌کند.", i:["اقیانوس شروع به بازتاب نور بیشتری به فضا می‌کند.","زمین به دلیل آب باز بیشتر خنک می‌شود.","اقیانوس شیرین‌تر می‌شود و بر سلامت ماهی‌ها تأثیر می‌گذارد."] },
+        { q:"پیامد ذوب یخ‌های قطبی برای شهرهای ساحلی چیست؟", a:"سطح دریا بالا می‌آید و سیل ایجاد می‌کند.", i:["سطح دریا پایین می‌آید چون یخ فضای بیشتری اشغال می‌کرد.","مناطق زمینی جدیدی در نزدیکی خط استوا شکل می‌گیرد.","آب برای همه در ساحل قابل شرب می‌شود."] },
+        { q:"مفهوم 'توسعه پایدار' به چه معناست؟", a:"زندگی خوب امروز بدون نابودی آینده.", i:["افزایش رشد اقتصادی به هر قیمتی.","توقف کامل استفاده از همه منابع طبیعی.","حفظ طبیعت دقیقاً همان‌طور که در گذشته بود."] },
+        { q:"کدام بُعد از پایداری بر سلامت اکوسیستم‌ها تمرکز دارد؟", a:"پایداری زیست‌محیطی.", i:["پایداری اجتماعی.","پایداری اقتصادی.","پایداری فرهنگی."] },
+        { q:"کدام بخش از توسعه پایدار به حقوق بشر مربوط می‌شود؟", a:"پایداری اجتماعی.", i:["پایداری محیط‌زیستی.","پایداری فنی.","پایداری مالی."] },
+        { q:"'پایداری اقتصادی' چه ویژگی‌هایی دارد؟", a:"مدیریت بلندمدت منابع بدون آسیب به محیط‌زیست.", i:["حداکثر سود کوتاه‌مدت برای همه شرکت‌ها.","ممنوعیت کامل تجارت و استفاده از پول.","فقط خرید ارزان‌ترین محصولات در بازار."] },
+        { q:"'ردپای بوم‌شناختی' چه چیزی را اندازه می‌گیرد؟", a:"میزان منابع طبیعی که یک انسان مصرف می‌کند.", i:["چقدر سریع یک شخص می‌تواند از میان جنگل راه برود.","تعداد گونه‌های جانوری موجود در یک منطقه خاص.","چه مقدار دی‌اکسید کربن یک کارخانه در سال منتشر می‌کند."] },
+        { q:"منابعی مانند خورشید و باد چه نامیده می‌شوند؟", a:"منابع طبیعی تجدیدپذیر.", i:["منابع طبیعی محدود.","منابع انرژی فسیلی.","منابع مصنوعی."] },
+        { q:"مثالی از منبع غیرتجدیدپذیر چیست؟", a:"گاز طبیعی و فلزات.", i:["انرژی باد و نور خورشید.","چوب و زیست‌توده.","نیروی آبی و امواج."] },
+        { q:"مفهوم 'تنوع زیستی' به چه معناست؟", a:"غنای تنوع در میان گونه‌ها و اکوسیستم‌ها.", i:["اینکه افراد زیادی از یک گونه واحد وجود داشته باشند.","اینکه ما همان نوع درخت را در سراسر جنگل می‌کاریم.","اینکه طبیعت را به مناطق حفاظت‌شده محدود می‌کنیم."] },
+        { q:"'خدمات اکوسیستمی' چیست؟", a:"مزایایی که طبیعت به ما می‌دهد مانند تصفیه آب.", i:["کاری که کارگران پارک در شهرها انجام می‌دهند.","محصولاتی که در فروشگاه‌های غذای ارگانیک می‌خریم.","ماشین‌هایی که هوا را در صنایع بزرگ تصفیه می‌کنند."] },
+        { q:"یکی از بزرگ‌ترین تهدیدات تنوع زیستی چیست؟", a:"از دست دادن زیستگاه‌ها از طریق بهره‌برداری.", i:["اینکه ما گل‌های زیاد در باغ‌ها می‌کاریم.","اینکه تابش خورشید در تابستان افزایش می‌یابد.","اینکه حشرات گرده‌افشان زیاد وجود دارند."] },
+        { q:"'تحلیل چرخه عمر' (LCA) چه چیزی را بررسی می‌کند؟", a:"تأثیر محیط‌زیستی از استخراج تا دفع.", i:["یک حیوان وحشی چه مدت در محیط طبیعی خود زندگی می‌کند.","چه تعداد مصرف‌کننده یک محصول خاص را می‌خرند.","چه رنگی برای فروش بهتر یک محصول مناسب است."] },
+        { q:"مفهوم 'اقتصاد چرخشی' به چه معناست؟", a:"سیستمی که مواد در آن بازیافت و حفظ می‌شوند.", i:["اینکه پول به سرعت بین بانک‌های مختلف در گردش است.","اینکه همه فروشگاه‌ها برای راحتی در یک دایره قرار می‌گیرند.","اینکه ما چیزهای جدید می‌خریم و قدیمی‌ها را فوراً دور می‌اندازیم."] },
+        { q:"'عدالت آب‌وهوایی' بر چه چیزی تمرکز دارد؟", a:"توزیع مسئولیت بین کشورهای ثروتمند و فقیر.", i:["اینکه همه مردم باید همان مقدار مالیات بپردازند.","اینکه قوانین باید تعیین کنند هوا تا چه حد گرم باشد.","اینکه همه کشورها کاملاً تجارت با یکدیگر را متوقف کنند."] },
+        { q:"هدف اصلی توافق پاریس چیست؟", a:"محدود کردن گرمایش جهانی به زیر ۲ درجه سانتی‌گراد.", i:["تبدیل پاریس به سازگارترین شهر جهان با محیط‌زیست.","اینکه همه کشورها تا سال ۲۰۳۰ به یک ارز واحد تغییر دهند.","ممنوعیت همه پروازها در داخل اروپا."] },
+        { q:"'اهداف جهانی' (دستور کار ۲۰۳۰) چیست؟", a:"اهدافی برای سلامت اجتماعی، اقتصادی و محیط‌زیستی.", i:["فهرستی از موفق‌ترین شرکت‌های جهان.","رقابتی بین کشورها درباره اینکه چه کسی بهتر است.","قوانینی برای نحوه ساخت نیروگاه‌های هسته‌ای ایمن."] }
+      ],
+      bs: [
+        { q:"Šta je obično prvi korak u lancu koji objašnjava kako čovjek utiče na okolinu?", a:"Čovjekova potrošnja roba i usluga.", i:["Prirodne varijacije u Zemljinoj atmosferi.","Promjene u velikim okeanskim strujama.","Povećana aktivnost Sunčevog elektromagnetnog zračenja."] },
+        { q:"Kada tvornice proizvode stvari, često se koriste ugljen, nafta i gas. Kako se ovi zajednički zovu?", a:"Fosilna goriva.", i:["Obnovljivi izvori energije.","Prirodni staklenički plinovi.","Održive sirovine."] },
+        { q:"Šta se oslobađa u zrak pri sagorijevanju fosilnih goriva?", a:"Staklenički plinovi poput ugljičnog dioksida.", i:["Samo bezopasna vodena para.","Ozon koji hladi atmosferu.","Čist kisik koji koristi biljkama."] },
+        { q:"Zašto je ugljični dioksid u atmosferi problem za klimu?", a:"On sprječava toplinski zrak da odlazi od Zemlje.", i:["Blokira Sunčeve zrake da dostignu površinu.","Uništava ozonski sloj pa UV zrake rastu.","Uzrokuje manje kiše u cijelom svijetu."] },
+        { q:"Šta se dešava s temperaturom Zemlje kada se pojačava efekt staklene bašte?", a:"Globalna prosječna temperatura postepeno raste.", i:["Temperatura drastično opada na polovima.","Nema mjerljive razlike u klimi.","Toplije postaje samo tokom ljetne polovine godine."] },
+        { q:"Kako povećana vrućina može dovesti do porasta šumskih požara?", a:"Vrućina isušuje sloj tla i vegetaciju.", i:["Vrućina uzrokuje češće udare groma.","Vrućina uzrokuje spontano gorenje kore drveća.","Vrućina uzrokuje više kretanja životinja u sušnim područjima."] },
+        { q:"Zašto šumski požari dovode do još većeg zagrijavanja (začarani krug)?", a:"Vatra oslobađa ugljični dioksid pohranjen u drveću.", i:["Dim blokira sunčevu svjetlost pa se Zemlja zagrijava.","Pepeo uzrokuje da tlo upija više hladnoće.","Vatra troši kisik potreban za hlađenje zraka."] },
+        { q:"Šta se dešava s ledom na polovima kada temperatura raste?", a:"Led se topi i prelazi u tekuće stanje.", i:["Led postaje gušći i reflektuje više svjetlosti.","Led se kreće prema ekvatoru i hladi okeane.","Led se širi zbog povećanih padavina."] },
+        { q:"Šta se dešava kada bijeli led zamijeni tamna morska voda?", a:"Tamna voda apsorbuje više Sunčeve topline.", i:["Okean počinje reflektovati više svjetlosti u svemir.","Zemlja se hladi zbog više otvorene vode.","Okean postaje manje slan što utiče na zdravlje riba."] },
+        { q:"Kakve su posljedice za priobalne gradove kada se polarne ledene kape tope?", a:"Razina mora raste i uzrokuje poplave.", i:["Razina mora opada jer je led zauzimao više mjesta.","Nastaju nova kopnena područja blizu ekvatora.","Voda postaje pitka za sve na obali."] },
+        { q:"Šta znači pojam 'Održivi razvoj'?", a:"Živjeti dobro danas bez uništavanja budućnosti.", i:["Povećati ekonomski rast po svaku cijenu.","Potpuno prestati koristiti sve prirodne resurse.","Sačuvati prirodu točno onakvu kakva je bila u prošlosti."] },
+        { q:"Koja dimenzija održivosti se fokusira na zdravlje ekosistema?", a:"Ekološka održivost.", i:["Socijalna održivost.","Ekonomska održivost.","Kulturna održivost."] },
+        { q:"Koji dio održivog razvoja se bavi ljudskim pravima?", a:"Socijalna održivost.", i:["Ekološka održivost.","Tehnička održivost.","Finansijska održivost."] },
+        { q:"Šta karakterizuje 'Ekonomsku održivost'?", a:"Dugoročno upravljanje resursima koje ne šteti okolini.", i:["Maksimalna kratkoročna dobit za sva preduzeća.","Potpuna zabrana trgovine i korišćenja novca.","Kupovanje samo najjeftinijih proizvoda na tržištu."] },
+        { q:"Šta mjeri 'Ekološki otisak'?", a:"Količinu prirodnih resursa koje osoba troši.", i:["Koliko brzo osoba može hodati kroz šumu.","Broj vrsta životinja u određenom području.","Koliko ugljičnog dioksida tvornica emituje godišnje."] },
+        { q:"Kako se nazivaju resursi poput sunca i vjetra?", a:"Obnovljivi prirodni resursi.", i:["Ograničeni prirodni resursi.","Fosilni energetski izvori.","Sintetički resursi."] },
+        { q:"Šta je primjer neobnovljivog resursa?", a:"Prirodni gas i metali.", i:["Energija vjetra i sunčeva svjetlost.","Drvo i biomasa.","Hidroenergija i valovi."] },
+        { q:"Šta znači pojam 'Biološka raznolikost'?", a:"Bogatstvo raznolikosti među vrstama i ekosistemima.", i:["Da postoji mnogo jedinki jedne jedine vrste.","Da sadimo iste vrste drveća u cijeloj šumi.","Da ograničavamo prirodu na zaštićena područja."] },
+        { q:"Šta su 'Usluge ekosistema'?", a:"Dobrobiti koje nam priroda pruža, poput pročišćavanja vode.", i:["Rad koji obavljaju radnici u parkovima u gradovima.","Proizvodi koje kupujemo u organskim prodavnicama hrane.","Mašine koje pročišćavaju zrak u velikim industrijama."] },
+        { q:"Šta je jedna od najvećih prijetnji biološkoj raznolikosti?", a:"Gubitak staništa kroz eksploataciju.", i:["Da sadimo previše cvijeća u vrtovima.","Da Sunčevo zračenje raste tokom ljeta.","Da postoji previše oprašivačkih insekata."] },
+        { q:"Šta se ispituje u 'Analizi životnog ciklusa' (LCA)?", a:"Utjecaj na okoliš od vađenja do zbrinjavanja.", i:["Koliko dugo divlja životinja živi u svom prirodnom okruženju.","Koliko potrošača kupuje određeni proizvod.","Koje boje bi trebao biti proizvod da se bolje prodaje."] },
+        { q:"Šta znači pojam 'Kružna ekonomija'?", a:"Sistem gdje se materijali ponovo koriste i štede.", i:["Da novac brzo cirkuliše između različitih banaka.","Da se sve prodavnice postavljaju u krug radi praktičnosti.","Da kupujemo nove stvari i odmah bacamo stare."] },
+        { q:"Na šta se fokusira 'Klimatska pravda'?", a:"Raspodjela odgovornosti između bogatih i siromašnih zemalja.", i:["Da svi ljudi trebaju plaćati isti iznos poreza.","Da zakoni trebaju određivati koliko je toplo vani dozvoljeno.","Da sve zemlje potpuno prestanu trgovati međusobno."] },
+        { q:"Koji je primarni cilj Pariškog sporazuma?", a:"Ograničiti globalno zagrijavanje na ispod 2°C.", i:["Da Paris postane ekološki najprihvatljiviji grad na svijetu.","Da sve zemlje pređu na istu valutu do 2030. godine.","Zabraniti sve letove unutar cijele Evrope."] },
+        { q:"Šta su 'Globalni ciljevi' (Agenda 2030)?", a:"Ciljevi za socijalno, ekonomsko i ekološko zdravlje.", i:["Lista najuspješnijih kompanija na svijetu.","Takmičenje između zemalja ko je bolji.","Pravila za izgradnju sigurnih nuklearnih elektrana."] }
+      ],
+      tr: [
+        { q:"İnsanın çevreyi nasıl etkilediğini açıklayan zincirin ilk adımı genellikle nedir?", a:"İnsanın mal ve hizmet tüketimi.", i:["Dünya atmosferindeki doğal değişimler.","Okyanusun büyük akıntılarındaki değişimler.","Güneşin elektromanyetik radyasyonundaki artış."] },
+        { q:"Fabrikalar bir şeyler ürettiğinde genellikle kömür, petrol ve gaz kullanılır. Bunlara topluca ne denir?", a:"Fosil yakıtlar.", i:["Yenilenebilir enerji kaynakları.","Doğal sera gazları.","Sürdürülebilir ham maddeler."] },
+        { q:"Fosil yakıtların yakılması sırasında havaya ne salınır?", a:"Karbondioksit gibi sera gazları.", i:["Yalnızca zararsız su buharı.","Atmosferi soğutan ozon.","Bitkilere yararlı olan saf oksijen."] },
+        { q:"Atmosferdeki karbondioksit neden iklim için bir sorun oluşturur?", a:"Dünya'dan ısı yayılımını engeller.", i:["Güneş ışınlarının yüzeye ulaşmasını engeller.","Ozon tabakasını tahrip eder ve UV ışınları artar.","Tüm dünyada daha az yağış olmasına neden olur."] },
+        { q:"Sera etkisi yoğunlaştığında Dünya'nın sıcaklığına ne olur?", a:"Küresel ortalama sıcaklık yavaş yavaş yükselir.", i:["Kutuplarda sıcaklık dramatik biçimde düşer.","İklimde ölçülebilir bir fark oluşmaz.","Yalnızca yılın yaz yarısında ısınma gerçekleşir."] },
+        { q:"Artan sıcaklık orman yangınlarının artmasına nasıl yol açabilir?", a:"Sıcaklık, toprak katmanını ve bitki örtüsünü kurutur.", i:["Sıcaklık daha sık yıldırım düşmesine neden olur.","Sıcaklık ağaç kabuğunun kendiliğinden tutuşmasına yol açar.","Sıcaklık hayvanların kurak bölgelerde daha fazla hareket etmesine neden olur."] },
+        { q:"Orman yangınları neden daha fazla ısınmaya yol açar (kısır döngü)?", a:"Ateş, ağaçlarda depolanan karbondioksiti serbest bırakır.", i:["Duman güneş ışığını engeller ve Dünya ısınır.","Kül, toprağın daha fazla soğuk emmesine neden olur.","Ateş, havayı soğutmak için gereken oksijeni tüketir."] },
+        { q:"Sıcaklık yükseldiğinde kutuplardaki buzullara ne olur?", a:"Buz erir ve sıvı forma geçer.", i:["Buz daha yoğun hale gelir ve daha fazla ışık yansıtır.","Buz ekvatora doğru sürüklenir ve okyanusları soğutur.","Buz, artan yağış nedeniyle genişler."] },
+        { q:"Beyaz buz, koyu renkli deniz suyuyla yer değiştirdiğinde ne olur?", a:"Koyu renkli su, güneşin ısısını daha fazla emer.", i:["Okyanus uzaya daha fazla ışık yansıtmaya başlar.","Daha fazla açık su nedeniyle Dünya soğur.","Okyanus daha az tuzlu hale gelir ve balık sağlığını etkiler."] },
+        { q:"Kutup buzulları eridiğinde kıyı şehirleri için sonuç ne olur?", a:"Deniz seviyeleri yükselir ve sel baskınlarına neden olur.", i:["Deniz seviyesi düşer çünkü buz daha fazla yer kaplıyordu.","Ekvator yakınında yeni kara alanları oluşur.","Su sahilde herkes için içilebilir hale gelir."] },
+        { q:"'Sürdürülebilir kalkınma' kavramı ne anlama gelir?", a:"Geleceği mahvetmeden bugün iyi yaşamak.", i:["Ekonomik büyümeyi her ne pahasına olursa olsun artırmak.","Tüm doğal kaynakların kullanımını tamamen durdurmak.","Doğayı geçmişte olduğu gibi tam olarak korumak."] },
+        { q:"Sürdürülebilirliğin hangi boyutu ekosistem sağlığına odaklanır?", a:"Ekolojik sürdürülebilirlik.", i:["Sosyal sürdürülebilirlik.","Ekonomik sürdürülebilirlik.","Kültürel sürdürülebilirlik."] },
+        { q:"Sürdürülebilir kalkınmanın hangi kısmı insan haklarıyla ilgilidir?", a:"Sosyal sürdürülebilirlik.", i:["Çevresel sürdürülebilirlik.","Teknik sürdürülebilirlik.","Mali sürdürülebilirlik."] },
+        { q:"'Ekonomik sürdürülebilirlik' ile ne kastedilir?", a:"Çevreye zarar vermeyen uzun vadeli kaynak yönetimi.", i:["Tüm şirketler için kısa vadede maksimum kâr.","Ticaret ve para kullanımını tamamen yasaklamak.","Piyasadaki yalnızca en ucuz ürünleri satın almak."] },
+        { q:"'Ekolojik ayak izi' neyi ölçer?", a:"Bir insanın tükettiği doğal kaynak miktarını.", i:["Bir kişinin ormandan ne kadar hızlı geçebildiğini.","Belirli bir alanda bulunan hayvan türü sayısını.","Bir fabrikanın yılda ne kadar karbondioksit saldığını."] },
+        { q:"Güneş ve rüzgar gibi kaynaklar ne olarak adlandırılır?", a:"Yenilenebilir doğal kaynaklar.", i:["Tükenebilir doğal kaynaklar.","Fosil enerji kaynakları.","Sentetik kaynaklar."] },
+        { q:"Yenilenemez kaynak örneği nedir?", a:"Doğal gaz ve metaller.", i:["Rüzgar enerjisi ve güneş ışığı.","Ahşap ve biyokütle.","Hidroenerji ve dalgalar."] },
+        { q:"'Biyolojik çeşitlilik' kavramı ne anlama gelir?", a:"Türler ve ekosistemler arasındaki çeşitlilik zenginliği.", i:["Tek bir türden çok sayıda bireyin bulunması.","Ormanın tamamına aynı tür ağaç dikmemiz.","Doğayı korunan alanlarla sınırlamamız."] },
+        { q:"'Ekosistem hizmetleri' nedir?", a:"Doğanın bize sağladığı su arıtma gibi faydalar.", i:["Şehirlerdeki park işçilerinin yaptığı işler.","Organik gıda mağazalarında satın aldığımız ürünler.","Büyük sanayi kuruluşlarında havayı temizleyen makineler."] },
+        { q:"Biyolojik çeşitlilik için en büyük tehditlerden biri nedir?", a:"Sömürü yoluyla yaşam alanlarının yitirilmesi.", i:["Bahçelere çok fazla çiçek dikmemiz.","Yaz mevsiminde güneş radyasyonunun artması.","Çok fazla tozlayıcı böcek bulunması."] },
+        { q:"'Yaşam Döngüsü Analizi' (LCA) neyi inceler?", a:"Çıkarmadan bertarata kadar çevresel etki.", i:["Vahşi bir hayvanın doğal ortamında ne kadar yaşadığı.","Belirli bir ürünü kaç tüketicinin satın aldığı.","Daha iyi satmak için ürünün hangi renkte olması gerektiği."] },
+        { q:"'Döngüsel ekonomi' kavramı ne anlama gelir?", a:"Malzemelerin yeniden kullanıldığı ve korunduğu bir sistem.", i:["Paranın farklı bankalar arasında hızla dolaşması.","Tüm mağazaların kolaylık için bir daire içine yerleştirilmesi.","Yeni şeyler alıp eskileri hemen atmak."] },
+        { q:"'İklim adaleti' neye odaklanır?", a:"Zengin ve fakir ülkeler arasında sorumluluk paylaşımı.", i:["Tüm insanların aynı miktarda vergi ödemesi gerektiği.","Yasaların dışarıda ne kadar sıcak olmasına izin verileceğini belirlemesi gerektiği.","Tüm ülkelerin birbirleriyle ticareti tamamen durdurması."] },
+        { q:"Paris Anlaşması'nın temel amacı nedir?", a:"Küresel ısınmayı 2°C'nin altında tutmak.", i:["Paris'i dünyanın en çevre dostu şehri haline getirmek.","Tüm ülkelerin 2030'a kadar aynı para birimine geçmesi.","Avrupa genelinde tüm uçuşları yasaklamak."] },
+        { q:"'Küresel Hedefler' (Gündem 2030) nedir?", a:"Sosyal, ekonomik ve çevresel sağlık hedefleri.", i:["Dünyanın en başarılı şirketlerinin listesi.","Ülkeler arasında kimin en iyi olduğuna dair bir yarışma.","Güvenli nükleer güç santralleri inşa etme kuralları."] }
+      ]
+    };
+
+    const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
     const formatTime = (seconds) => {
       const m = Math.floor(seconds / 60);
       const s = seconds % 60;
       return `${m}:${s < 10 ? '0' : ''}${s}`;
     };
 
+    function getTQ(q, lang) {
+      if (lang === 'sv' || !TRANS_Q[lang]) return null;
+      const idx = ALL_QUESTIONS_STATIC.indexOf(q);
+      return idx >= 0 ? TRANS_Q[lang][idx] : null;
+    }
+
+    function getOptTrans(tq, q, optStr) {
+      if (!tq) return null;
+      if (optStr === q.a) return tq.a;
+      const iIdx = q.i.indexOf(optStr);
+      return iIdx >= 0 ? tq.i[iIdx] : null;
+    }
+
+    const TransLine = ({ text, lang }) => {
+      if (!text || lang === 'sv') return null;
+      const isRTL = RTL.includes(lang);
+      return (
+        <div className="trans-line" style={isRTL ? {direction:'rtl',textAlign:'right'} : {}}>
+          <span className="trans-badge">{LANG_FLAGS[lang]} {LANG_LABELS[lang]}</span>{text}
+        </div>
+      );
+    };
+
     function App() {
+      const [lang, setLang] = useState('sv');
+      const [showLangMenu, setShowLangMenu] = useState(false);
       const [gameState, setGameState] = useState('start');
       const [allQuestions, setAllQuestions] = useState([]);
       const [currentIdx, setCurrentIdx] = useState(0);
       const [answers, setAnswers] = useState([]);
       const [optionsList, setOptionsList] = useState([]);
       const [timer, setTimer] = useState(0);
-      
       const timerRef = useRef(null);
+
+      const ui = (key) => (lang !== 'sv' && UI[lang]) ? (UI[lang][key] || UI.sv[key] || '') : (UI.sv[key] || '');
 
       useEffect(() => {
         if (gameState === 'play') {
-          timerRef.current = setInterval(() => {
-            setTimer(prev => prev + 1);
-          }, 1000);
+          timerRef.current = setInterval(() => setTimer(prev => prev + 1), 1000);
         } else {
           clearInterval(timerRef.current);
         }
         return () => clearInterval(timerRef.current);
       }, [gameState]);
+
+      useEffect(() => {
+        if (!showLangMenu) return;
+        const close = () => setShowLangMenu(false);
+        window.addEventListener('click', close);
+        return () => window.removeEventListener('click', close);
+      }, [showLangMenu]);
 
       const start = () => {
         const combined = [...chainQuestions, ...shuffle(conceptQuestions)];
@@ -105,127 +289,165 @@
 
       const handleAns = (ans) => {
         if (answers[currentIdx]) return;
-        setAnswers(prev => {
-          const copy = [...prev];
-          copy[currentIdx] = ans;
-          return copy;
-        });
+        setAnswers(prev => { const copy = [...prev]; copy[currentIdx] = ans; return copy; });
       };
 
       const next = () => {
         const nextIdx = currentIdx + 1;
-        if (nextIdx < allQuestions.length) {
-          setCurrentIdx(nextIdx);
-        } else {
-          setGameState('end');
-        }
+        if (nextIdx < allQuestions.length) setCurrentIdx(nextIdx);
+        else setGameState('end');
       };
 
-      const prev = () => {
-        if (currentIdx > 0) setCurrentIdx(currentIdx - 1);
-      };
+      const prev = () => { if (currentIdx > 0) setCurrentIdx(currentIdx - 1); };
+
+      const LangSelector = () => (
+        <div style={{position:'fixed',top:'1rem',right:'1rem',zIndex:9999}} onClick={e => e.stopPropagation()}>
+          <button
+            onClick={() => setShowLangMenu(prev => !prev)}
+            style={{background:'rgba(255,255,255,0.95)',border:'1px solid #cbd5e1',borderRadius:'8px',fontSize:'13px',padding:'6px 12px',cursor:'pointer',color:'#1e293b',display:'flex',alignItems:'center',gap:'6px',fontFamily:'EB Garamond,serif',boxShadow:'0 1px 4px rgba(0,0,0,0.1)'}}
+          >
+            🌐 {lang === 'sv' ? ui('langBtn') : `${LANG_FLAGS[lang]} ${LANG_LABELS[lang]}`}
+          </button>
+          {showLangMenu && (
+            <div style={{position:'absolute',right:0,top:'calc(100% + 4px)',background:'white',border:'1px solid #cbd5e1',borderRadius:'8px',boxShadow:'0 4px 12px rgba(0,0,0,0.15)',overflow:'hidden',minWidth:'160px'}}>
+              <button className="lang-opt" onClick={() => {setLang('sv');setShowLangMenu(false);}}>🇸🇪 Svenska</button>
+              <button className="lang-opt" onClick={() => {setLang('ar');setShowLangMenu(false);}}>🇸🇦 Arabiska</button>
+              <button className="lang-opt" onClick={() => {setLang('fa');setShowLangMenu(false);}}>🇮🇷 Persiska</button>
+              <button className="lang-opt" onClick={() => {setLang('en');setShowLangMenu(false);}}>🇬🇧 Engelska</button>
+              <button className="lang-opt" onClick={() => {setLang('bs');setShowLangMenu(false);}}>🇧🇦 Bosniska</button>
+              <button className="lang-opt" onClick={() => {setLang('tr');setShowLangMenu(false);}}>🇹🇷 Turkiska</button>
+            </div>
+          )}
+        </div>
+      );
 
       if (gameState === 'start') return (
-        <div className="flex items-center justify-center min-h-screen p-4 text-center">
-          <div className="bg-white p-8 rounded-3xl shadow-xl max-w-sm w-full border-t-8 border-green-500">
-            <Leaf className="w-16 h-16 text-green-500 mx-auto mb-4" />
-            <h1 className="text-2xl font-black mb-2 uppercase tracking-tight">NK: Miljöquiz</h1>
-            <p className="text-slate-500 mb-6 font-medium">Testa dina kunskaper om hållbar utveckling och orsakskedjan.</p>
-            <button onClick={start} className="w-full bg-green-500 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-green-600 transition-all active:scale-95">Starta Spelet</button>
+        <>
+          <LangSelector />
+          <div className="flex items-center justify-center min-h-screen p-4 text-center">
+            <div className="bg-white p-8 rounded-3xl shadow-xl max-w-sm w-full border-t-8 border-green-500">
+              <Leaf className="w-16 h-16 text-green-500 mx-auto mb-4" />
+              <h1 className="text-2xl font-black mb-2 uppercase tracking-tight">{ui('badge')}</h1>
+              <p className="text-slate-500 mb-6 font-medium">{ui('desc')}</p>
+              <button onClick={start} className="w-full bg-green-500 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-green-600 transition-all active:scale-95">{ui('startBtn')}</button>
+            </div>
           </div>
-        </div>
+        </>
       );
 
       if (gameState === 'end') {
         const finalScore = answers.reduce((acc, ans, idx) => acc + (ans === allQuestions[idx].a ? 1 : 0), 0);
         return (
-        <div className="flex flex-col items-center min-h-screen p-4 py-8">
-          <div className="bg-white p-8 rounded-3xl shadow-xl max-w-sm w-full border-t-8 border-green-500 text-center">
-            <Trophy className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-black mb-2 text-slate-800">Bra jobbat!</h2>
-            <div className="space-y-1 mb-6">
-                <p className="text-4xl font-black text-green-500">{finalScore} / {allQuestions.length}</p>
-                <p className="text-slate-400 font-bold flex items-center justify-center gap-2">
-                    <Clock className="w-4 h-4" /> Tid: {formatTime(timer)}
-                </p>
-            </div>
-            <button onClick={start} className="w-full bg-slate-800 text-white font-bold py-4 rounded-xl mb-3 shadow-md">Spela igen</button>
-          </div>
-
-          <div className="w-full max-w-md mt-8 space-y-3">
-            <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest px-1">Dina svar</h3>
-            {allQuestions.map((question, idx) => {
-              const userAns = answers[idx];
-              const correct = userAns === question.a;
-              return (
-                <div key={idx} className={`bg-white p-4 rounded-2xl shadow-sm border-l-4 ${correct ? "border-green-500" : "border-red-500"}`}>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Fråga {idx + 1} · {question.step}</span>
-                    <span className={`text-[10px] font-black uppercase tracking-widest ${correct ? "text-green-600" : "text-red-600"}`}>{correct ? "Rätt" : "Fel"}</span>
-                  </div>
-                  <p className="text-sm font-bold text-slate-800 mb-2 leading-snug">{question.q}</p>
-                  <p className={`text-sm font-bold ${correct ? "text-green-700" : "text-red-700"}`}>Ditt svar: {userAns ?? "—"}</p>
-                  {!correct && (
-                    <p className="text-sm font-bold text-green-700 mt-1">Rätt svar: {question.a}</p>
-                  )}
+          <>
+            <LangSelector />
+            <div className="flex flex-col items-center min-h-screen p-4 py-8">
+              <div className="bg-white p-8 rounded-3xl shadow-xl max-w-sm w-full border-t-8 border-green-500 text-center">
+                <Trophy className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
+                <h2 className="text-2xl font-black mb-2 text-slate-800">{ui('wellDone')}</h2>
+                <div className="space-y-1 mb-6">
+                  <p className="text-4xl font-black text-green-500">{finalScore} / {allQuestions.length}</p>
+                  <p className="text-slate-400 font-bold flex items-center justify-center gap-2">
+                    <Clock className="w-4 h-4" /> {ui('timeLabel')}: {formatTime(timer)}
+                  </p>
                 </div>
-              );
-            })}
-          </div>
-        </div>
+                <button onClick={start} className="w-full bg-slate-800 text-white font-bold py-4 rounded-xl mb-3 shadow-md">{ui('playAgain')}</button>
+              </div>
+
+              <div className="w-full max-w-md mt-8 space-y-3">
+                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest px-1">{ui('reviewTitle')}</h3>
+                {allQuestions.map((question, idx) => {
+                  const userAns = answers[idx];
+                  const correct = userAns === question.a;
+                  const tq = getTQ(question, lang);
+                  const userAnsTrans = userAns ? getOptTrans(tq, question, userAns) : null;
+                  const correctAnsTrans = getOptTrans(tq, question, question.a);
+                  return (
+                    <div key={idx} className={`bg-white p-4 rounded-2xl shadow-sm border-l-4 ${correct ? "border-green-500" : "border-red-500"}`}>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{ui('counter')} {idx + 1} · {question.step}</span>
+                        <span className={`text-[10px] font-black uppercase tracking-widest ${correct ? "text-green-600" : "text-red-600"}`}>{correct ? ui('correctLabel') : ui('wrongLabel')}</span>
+                      </div>
+                      <p className="text-sm font-bold text-slate-800 mb-1 leading-snug">{question.q}</p>
+                      {tq && <div className="trans-line" style={RTL.includes(lang)?{direction:'rtl',textAlign:'right'}:{}}><span className="trans-badge">{LANG_FLAGS[lang]} {LANG_LABELS[lang]}</span>{tq.q}</div>}
+                      <p className={`text-sm font-bold mt-2 ${correct ? "text-green-700" : "text-red-700"}`}>
+                        {ui('yourAnswer')}: {userAns ?? "—"}
+                        {userAnsTrans && <TransLine text={userAnsTrans} lang={lang} />}
+                      </p>
+                      {!correct && (
+                        <p className="text-sm font-bold text-green-700 mt-1">
+                          {ui('correctAnswer')}: {question.a}
+                          {correctAnsTrans && <TransLine text={correctAnsTrans} lang={lang} />}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </>
         );
       }
 
       const q = allQuestions[currentIdx];
       const selected = answers[currentIdx];
       const shuffledOptions = optionsList[currentIdx];
+      const tq = getTQ(q, lang);
 
       return (
-        <div className="flex flex-col items-center min-h-screen p-4 pt-8">
-          <div className="w-full max-w-md">
-            <div className="flex justify-between items-end text-[10px] font-black text-slate-400 mb-2 uppercase tracking-widest">
-              <div className="flex flex-col">
-                <span className="text-green-500">{q.step}</span>
-                <span>Fråga {currentIdx + 1} / {allQuestions.length}</span>
+        <>
+          <LangSelector />
+          <div className="flex flex-col items-center min-h-screen p-4 pt-8">
+            <div className="w-full max-w-md">
+              <div className="flex justify-between items-end text-[10px] font-black text-slate-400 mb-2 uppercase tracking-widest">
+                <div className="flex flex-col">
+                  <span className="text-green-500">{q.step}</span>
+                  <span>{ui('counter')} {currentIdx + 1} / {allQuestions.length}</span>
+                </div>
+                <div className="flex items-center gap-1 text-slate-500">
+                  <Clock className="w-3 h-3" />
+                  <span>{formatTime(timer)}</span>
+                </div>
               </div>
-              <div className="flex items-center gap-1 text-slate-500">
-                <Clock className="w-3 h-3" />
-                <span>{formatTime(timer)}</span>
+              <div className="h-2 bg-slate-200 rounded-full mb-6 overflow-hidden">
+                <div className="h-full bg-green-500 transition-all duration-500" style={{width:`${((currentIdx+1)/allQuestions.length)*100}%`}}></div>
               </div>
-            </div>
-            <div className="h-2 bg-slate-200 rounded-full mb-6 overflow-hidden">
-              <div className="h-full bg-green-500 transition-all duration-500" style={{width: `${((currentIdx+1)/allQuestions.length)*100}%`}}></div>
-            </div>
-            <div className="bg-white p-6 rounded-2xl shadow-sm mb-6 border-b-4 border-slate-100">
-              <h2 className="text-lg font-bold text-slate-800 leading-snug">{q.q}</h2>
-            </div>
-            <div className="space-y-3">
-              {shuffledOptions.map((opt, i) => (
-                <button key={i} onClick={() => handleAns(opt)} disabled={!!selected} className={`w-full text-left p-4 rounded-xl font-bold border-2 transition-all ${
-                  !selected ? "bg-white border-slate-100 hover:border-green-400 hover:shadow-sm" : 
-                  opt === q.a ? "bg-green-50 border-green-500 text-green-700" : 
-                  opt === selected ? "bg-red-50 border-red-500 text-red-700" : "bg-white border-slate-50 text-slate-300 opacity-60"
-                }`}>
-                  {opt}
-                </button>
-              ))}
-            </div>
-            <div className="flex gap-3 mt-8">
-              {currentIdx > 0 && (
-                <button onClick={prev} className="flex-1 bg-white text-slate-700 font-bold py-4 rounded-xl shadow-sm border-2 border-slate-100 hover:border-slate-300 transition-all active:scale-95">
-                  ← Tillbaka
-                </button>
-              )}
-              {selected && (
-                <button onClick={next} className="flex-1 bg-slate-900 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 animate-bounce-subtle">
-                  {currentIdx + 1 === allQuestions.length ? "Visa Resultat" : "Gå Vidare"}
-                </button>
-              )}
+              <div className="bg-white p-6 rounded-2xl shadow-sm mb-6 border-b-4 border-slate-100">
+                <h2 className="text-lg font-bold text-slate-800 leading-snug">{q.q}</h2>
+                <TransLine text={tq ? tq.q : null} lang={lang} />
+              </div>
+              <div className="space-y-3">
+                {shuffledOptions.map((opt, i) => {
+                  const optTrans = getOptTrans(tq, q, opt);
+                  return (
+                    <button key={i} onClick={() => handleAns(opt)} disabled={!!selected} className={`w-full text-left p-4 rounded-xl font-bold border-2 transition-all ${
+                      !selected ? "bg-white border-slate-100 hover:border-green-400 hover:shadow-sm" :
+                      opt === q.a ? "bg-green-50 border-green-500 text-green-700" :
+                      opt === selected ? "bg-red-50 border-red-500 text-red-700" : "bg-white border-slate-50 text-slate-300 opacity-60"
+                    }`}>
+                      {opt}
+                      <TransLine text={optTrans} lang={lang} />
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="flex gap-3 mt-8">
+                {currentIdx > 0 && (
+                  <button onClick={prev} className="flex-1 bg-white text-slate-700 font-bold py-4 rounded-xl shadow-sm border-2 border-slate-100 hover:border-slate-300 transition-all active:scale-95">
+                    {ui('backBtn')}
+                  </button>
+                )}
+                {selected && (
+                  <button onClick={next} className="flex-1 bg-slate-900 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 animate-bounce-subtle">
+                    {currentIdx + 1 === allQuestions.length ? ui('showResult') : ui('nextBtn')}
+                  </button>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        </>
       );
     }
+
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<App />);
   </script>
