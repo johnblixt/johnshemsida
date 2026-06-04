@@ -218,6 +218,37 @@ Varje begreppsfil innehåller **både en begreppslista och flashcards i samma fi
 - "Nästa begrepp →"-knapp i mörkgrå (`bg-slate-900`)
 - Räknare: "X av Y" i pill-format under knappen
 
+### Flashcard-vy – Sortering i högar (obligatoriskt)
+
+Varje flashcard-vy ska ha ett inbyggt sorteringssystem med två högar. Reglerna gäller oavsett om komponenten är byggd med React-CDN eller vanilla JS.
+
+**Sorteringsknappar:**
+- När eleven har vänt kortet (sett svaret) visas två knappar: **"Kunde inte"** och **"Kunde"**
+- Knapparna visas aldrig på framsidan — eleven måste vända kortet innan hen sorterar
+- "Kunde inte"-knappen är röd/varningsfärgad; "Kunde"-knappen är grön
+- Inget swipe — sortering sker uteslutande via knapptryck
+
+**Högar och räknare:**
+- Varje kort placeras i exakt en av högarna när eleven klickar en knapp
+- Antal kort kvar i **"Kunde inte"-högen** och antal i **"Kunde"-högen** visas tydligt under hela övningen, t.ex. `Kunde inte: 8 | Kunde: 4`
+- Räknarna uppdateras direkt när ett kort sorteras
+
+**Flöde efter att hela leken är genomgången:**
+- När sista kortet sorterats visas en skärm med två val:
+  - **"Öva på Kunde inte"** — startar en ny runda med enbart korten i "Kunde inte"-högen, i ny slumpmässig ordning
+  - **"Börja om med alla"** — nollställer båda högarna och startar om med hela leken
+- Om "Kunde inte"-högen redan är tom när leken är slut visas direkt sammanfattningsskärmen
+
+**Rundor tills högen är tom:**
+- Eleven kan repetera "Kunde inte"-rundan hur många gånger som helst
+- Varje runda börjar med korten i ny slumpmässig ordning
+- Kort som sorteras till "Kunde" under en runda tas bort från nästa runda
+- Processen upprepas tills "Kunde inte"-högen är tom
+
+**Avslutning och sammanfattning:**
+- När "Kunde inte"-högen är tom visas en kompakt sammanfattning: hur många begrepp eleven behärskar av totalen, t.ex. `Du kan 18 av 20 begrepp!`
+- Knappen **"Börja om med alla"** finns alltid tillgänglig — även mitt i en runda — för att nollställa och starta från början
+
 ### CSS för flip-animation (kopiera exakt)
 ```css
 .flip-card { perspective: 1000px; height: 350px; width: 100%; max-width: 400px; cursor: pointer; }
