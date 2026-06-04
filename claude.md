@@ -203,6 +203,33 @@ Varje quiz ska ha ett alternativ som visar frågorna och svaren på ett enkelt, 
 - Inga bisatser eller nominaliseringar om det går att undvika
 - Förklara med exempel snarare än definitioner när det är möjligt
 
+### Översättningsfunktion – obligatoriskt
+
+Varje quiz ska ha en språkväljare (🌐-knapp, fast uppe till höger) där eleven kan se frågorna och svaren även på sitt modersmål. Översättningen visas som en kompletterande rad direkt under den svenska texten — originalet på svenska behålls alltid synligt.
+
+**Stödda språk — alla ska finnas med:**
+
+| Språk | Flagga | Kod | Skriptriktning |
+|-------|--------|-----|----------------|
+| Engelska | 🇬🇧 | `en` | LTR |
+| Arabiska | 🇸🇦 | `ar` | RTL |
+| Persiska (Farsi) | 🇮🇷 | `fa` | RTL |
+| Bosniska | 🇧🇦 | `bs` | LTR |
+| Turkiska | 🇹🇷 | `tr` | LTR |
+| Somaliska | 🇸🇴 | `so` | LTR |
+| Tigrinja | 🇪🇷 | `ti` | LTR |
+| Albanska | 🇦🇱 | `sq` | LTR |
+| Urdu | 🇵🇰 | `ur` | RTL |
+| Pashto | 🇦🇫 | `ps` | RTL |
+| Dari | 🇦🇫 | `prs` | RTL |
+
+**Tekniska krav:**
+- RTL-språk (arabiska, persiska, urdu, pashto, dari) visas högerställda med `direction:rtl; text-align:right`
+- Språkkoden läggs i `LANG_FLAGS`, `LANG_LABELS` och `RTL`-arrayen (om tillämpligt)
+- Alla **frågor**, **svarsalternativ** och **ledtrådar/förklaringar** översätts
+- Alla **UI-strängar** (knappar, etiketter, facitrubriker) översätts till samtliga språk
+- Enkel svenska (📖) placeras sist i menyn, separerad med en linje
+
 ---
 
 ## Begreppslista + Flashcards – Regler som ALLTID ska gälla
