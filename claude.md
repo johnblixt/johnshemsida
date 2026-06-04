@@ -410,3 +410,20 @@ Icke-exempel-vyn är en interaktiv 'Välj rätt tillämpning'-övning där eleve
 - Visa istället snygga kort för varje PDF med: en ikon, en kort beskrivande titel och en tydlig 'Öppna dokument →'-knapp som öppnar PDF:en i en ny flik
 - Korten ska vara mobilanpassade och matcha ämnets färg
 - Lägg till en kort instruktionstext högst upp i Fördjupning-vyn: 'Tryck på ett dokument för att öppna det. Du kan zooma och bläddra fritt.'
+
+---
+
+## Styrdokument för nya kurser
+
+Allt som skapas för de fyra nya kurserna — quiz, begreppslista, pluggmaterial — ska utgå strikt från kursens officiella styrdokument. Hitta på inget som inte finns i respektive PDF.
+
+| Kurs | Styrdokument |
+|------|-------------|
+| Juridik nivå 1 | `Juridik nivå 1.pdf` |
+| Samhällskunskap nivå 1a1 | `Samhällskunskap nivå 1a1.pdf` |
+| Naturkunskap nivå 1a1 | `Naturkunskap nivå 1.pdf` |
+| Rätten och samhället | `rätten och samhället.pdf` |
+
+- Läs styrdokumentet noggrant innan du skapar något
+- Begrepp, frågor och förklaringar ska spegla kursens centrala innehåll och kunskapskrav enligt PDF:en
+- Om ett begrepp eller en fråga inte kan härledas ur styrdokumentet ska det inte inkluderas
