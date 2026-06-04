@@ -138,6 +138,7 @@ Varje quiz-fil ska följa detta mönster:
 - ✅ "Gör om"-knapp som blandar om allt igen
 - ✅ Fullständigt facit på resultatskärmen – alla frågor med rätt/fel-markering och elevens svar
 - ✅ Bakåtnavigering under quizet – eleven kan gå tillbaka till tidigare besvarade frågor
+- ✅ Knapp för enkel svenska – alla frågor och svar finns i en förenklad version utan fackspråk
 
 ### Facit på resultatskärmen – obligatoriskt
 
@@ -179,6 +180,28 @@ Eleven ska kunna navigera bakåt till en tidigare fråga under quizet. Reglerna 
 - Framåt/Nästa-knappen visas bara efter att frågan är besvarad (eller om frågan redan besvarats)
 
 **Flerspråkigt quiz:** Bakåt-knappens text (t.ex. `backBtn`) måste finnas i samtliga språk quizet stödjer.
+
+### Enkel svenska – obligatoriskt
+
+Varje quiz ska ha ett alternativ som visar frågorna och svaren på ett enkelt, lättläst språk. Gäller oavsett om quizet är flerspråkigt eller enbart på svenska.
+
+**Knapp och placering:**
+- En knapp märkt **📖 Enkel svenska** ska finnas tillgänglig under hela quizet
+- Placeras lämpligen i språkmenyn (separerad med en linje från övriga språk) eller som en fristående toggle
+- Aktiveras och avaktiveras med ett klick
+
+**Innehåll – enkel version:**
+- Alla **30 frågor** skrivs om till korta, enkla meningar utan fackspråk
+- Alla **4 svarsalternativ per fråga** skrivs om på samma sätt
+- Inga tekniska termer eller ämnesspecifika ord i formuleringen — använd vardagliga ord
+- Den enkla versionen visas som en kompletterande rad direkt under originaltexten (samma stil som övriga språköversättningar)
+- Originaltexten på svenska behålls synlig ovanför
+
+**Vad "enkel svenska" innebär:**
+- Korta meningar (helst under 15 ord)
+- Vanliga ord som en lågstadieelev förstår
+- Inga bisatser eller nominaliseringar om det går att undvika
+- Förklara med exempel snarare än definitioner när det är möjligt
 
 ---
 
