@@ -199,8 +199,8 @@ Varje begreppsfil innehåller **både en begreppslista och flashcards i samma fi
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 ```
 
-### Toggle – Lista vs Flashcards vs Lucktext
-- Pill-formad toggle högst upp: **Lista** | **Flashcards** | **Lucktext**
+### Toggle – Lista vs Flashcards vs Lucktext vs Test av begrepp 1 vs Test av begrepp 2
+- Pill-formad toggle högst upp: **Lista** | **Flashcards** | **Lucktext** | **Test av begrepp 1** | **Test av begrepp 2**
 - Aktiv vy markeras med ämnets primärfärg
 - Inaktiv vy är grå text
 
@@ -279,7 +279,7 @@ När begreppslistan skapas, generera matchningspar för varje begrepp med fokus 
 - Exempel: Begrepp 'Statisk elektricitet' → Scenario: 'Du drar av dig en fleecetröja i ett mörkt rum och hör ett knastrande ljud samtidigt som håret ställer sig upp'
 
 ### Interaktiv Icke-exempel-vy i begreppslista
-Gäller ENDAST begreppslistor. Lägg till en femte vy i toggle-raden: Lista | Flashcards | Lucktext | Scenario | Icke-ex.
+Gäller ENDAST begreppslistor. Lägg till en femte vy i toggle-raden: Lista | Flashcards | Lucktext | Test av begrepp 1 | Test av begrepp 2
 Icke-exempel-vyn är en interaktiv 'Välj rätt tillämpning'-övning där eleven aktivt måste skilja på en korrekt användning och en trovärdig fälla:
 - Visa ett begrepp och två alternativ (A och B)
 - Eleven klickar på det alternativ de tror är korrekt
