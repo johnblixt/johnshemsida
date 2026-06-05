@@ -299,6 +299,144 @@ Varje flashcard-vy ska ha ett inbyggt sorteringssystem med två högar. Reglerna
 - När "Kunde inte"-högen är tom visas en kompakt sammanfattning: hur många begrepp eleven behärskar av totalen, t.ex. `Du kan 18 av 20 begrepp!`
 - Knappen **"Börja om med alla"** finns alltid tillgänglig — även mitt i en runda — för att nollställa och starta från början
 
+### Flashcard-vy – React-komponent (kopiera exakt)
+
+```jsx
+function FlashcardView() {
+  const total = concepts.length;
+  const [deck, setDeck] = useState(() => shuffleArray([...concepts]));
+  const [deckIdx, setDeckIdx] = useState(0);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [kudeInte, setKudeInte] = useState([]);
+  const [kunde, setKunde] = useState([]);
+  const [phase, setPhase] = useState('playing'); // 'playing' | 'roundEnd' | 'allDone'
+
+  const restartAll = () => {
+    setDeck(shuffleArray([...concepts]));
+    setDeckIdx(0);
+    setIsFlipped(false);
+    setKudeInte([]);
+    setKunde([]);
+    setPhase('playing');
+  };
+
+  const sort = (pile) => {
+    const card = deck[deckIdx];
+    const newKudeInte = pile === 'kudeInte' ? [...kudeInte, card] : kudeInte;
+    const newKunde    = pile === 'kunde'    ? [...kunde, card]    : kunde;
+    const nextIdx = deckIdx + 1;
+    setKudeInte(newKudeInte);
+    setKunde(newKunde);
+    setIsFlipped(false);
+    if (nextIdx >= deck.length) {
+      setDeckIdx(nextIdx);
+      setPhase(newKudeInte.length === 0 ? 'allDone' : 'roundEnd');
+    } else {
+      setDeckIdx(nextIdx);
+    }
+  };
+
+  const nextRound = () => {
+    setDeck(shuffleArray([...kudeInte]));
+    setDeckIdx(0);
+    setIsFlipped(false);
+    setKudeInte([]);
+    setPhase('playing');
+  };
+
+  if (phase === 'allDone') return (
+    <div className="flex flex-col items-center gap-6">
+      <div className="bg-green-50 border-2 border-green-400 rounded-3xl p-8 text-center w-full max-w-sm">
+        <div className="text-5xl mb-4">🎉</div>
+        <p className="text-2xl font-bold text-green-700 mb-2">Alla kort klarade!</p>
+        <p className="text-slate-600 mb-6">Du behärskar <span className="font-bold text-green-700">{kunde.length} av {total}</span> begrepp.</p>
+        <button onClick={restartAll} className="w-full bg-[PRIMARY] text-white px-8 py-3 rounded-2xl font-bold transition-colors">Börja om med alla</button>
+      </div>
+    </div>
+  );
+
+  if (phase === 'roundEnd') return (
+    <div className="flex flex-col items-center gap-6">
+      <div className="bg-white border-2 border-slate-200 rounded-3xl p-8 text-center w-full max-w-sm shadow-sm">
+        <p className="text-lg font-bold text-slate-700 mb-4">Runda klar!</p>
+        <div className="flex justify-center gap-8 mb-6">
+          <div className="text-center">
+            <p className="text-3xl font-bold text-green-600">{kunde.length}</p>
+            <p className="text-xs text-slate-400 uppercase tracking-wide mt-1">Kunde</p>
+          </div>
+          <div className="text-center">
+            <p className="text-3xl font-bold text-red-500">{kudeInte.length}</p>
+            <p className="text-xs text-slate-400 uppercase tracking-wide mt-1">Kunde inte</p>
+          </div>
+        </div>
+        <div className="flex flex-col gap-3">
+          <button onClick={nextRound} className="w-full bg-slate-900 text-white px-8 py-3 rounded-2xl font-bold hover:bg-slate-800 transition-colors">
+            Öva på Kunde inte ({kudeInte.length} kort) →
+          </button>
+          <button onClick={restartAll} className="w-full bg-[PRIMARY] text-white px-8 py-3 rounded-2xl font-bold transition-colors">
+            Börja om med alla
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const card = deck[deckIdx];
+  const remaining = deck.length - deckIdx;
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="flex gap-3 mb-5 w-full max-w-sm">
+        <div className="flex-1 bg-red-50 border border-red-200 rounded-xl p-2 text-center">
+          <p className="text-xl font-bold text-red-500">{kudeInte.length}</p>
+          <p className="text-[10px] text-red-400 uppercase tracking-wide font-bold">Kunde inte</p>
+        </div>
+        <div className="flex-1 bg-slate-100 border border-slate-200 rounded-xl p-2 text-center">
+          <p className="text-xl font-bold text-slate-400">{remaining}</p>
+          <p className="text-[10px] text-slate-400 uppercase tracking-wide font-bold">Kvar</p>
+        </div>
+        <div className="flex-1 bg-green-50 border border-green-200 rounded-xl p-2 text-center">
+          <p className="text-xl font-bold text-green-500">{kunde.length}</p>
+          <p className="text-[10px] text-green-400 uppercase tracking-wide font-bold">Kunde</p>
+        </div>
+      </div>
+      <div className="flip-card mb-5" onClick={() => setIsFlipped(!isFlipped)}>
+        <div className={`flip-card-inner ${isFlipped ? 'flipped-classes' : ''}`}>
+          <div className="flip-card-front">
+            <h2 className="text-3xl font-bold text-white text-center px-4">{card.term}</h2>
+            <div className="absolute bottom-6 animate-pulse">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-white font-bold opacity-70">Klicka för svar</span>
+            </div>
+          </div>
+          <div className="flip-card-back">
+            <p className="text-xl leading-relaxed text-slate-800 font-medium px-4">{card.definition}</p>
+            <div className="absolute bottom-6">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">Klicka för att vända</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {isFlipped && (
+        <div className="flex gap-3 w-full max-w-sm mb-4">
+          <button onClick={() => sort('kudeInte')} className="flex-1 bg-red-100 text-red-700 border-2 border-red-300 font-bold py-3 rounded-2xl hover:bg-red-200 active:scale-95 transition-all">
+            ✗ Kunde inte
+          </button>
+          <button onClick={() => sort('kunde')} className="flex-1 bg-green-100 text-green-700 border-2 border-green-300 font-bold py-3 rounded-2xl hover:bg-green-200 active:scale-95 transition-all">
+            ✓ Kunde
+          </button>
+        </div>
+      )}
+      <div className="flex flex-col items-center gap-2 mt-1">
+        <p className="text-slate-500 font-medium bg-slate-200 px-4 py-1 rounded-full text-xs">{deckIdx + 1} av {deck.length}</p>
+        <button onClick={restartAll} className="text-slate-400 text-xs hover:text-slate-600 transition-colors underline">↺ Börja om med alla</button>
+      </div>
+    </div>
+  );
+}
+```
+
+> Ersätt `bg-[PRIMARY]` med ämnets primärfärg, t.ex. `bg-teal-600` eller använd inline `style={{background:P}}`.
+
 ### CSS för flip-animation (kopiera exakt)
 ```css
 .flip-card { perspective: 1000px; height: 350px; width: 100%; max-width: 400px; cursor: pointer; }
