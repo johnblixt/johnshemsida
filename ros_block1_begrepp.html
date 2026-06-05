@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Block 1 Begrepp – Rätten och samhället</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: 'Fredoka', sans-serif; }
+    .flip-card { perspective: 1000px; height: 350px; width: 100%; max-width: 400px; cursor: pointer; }
+    .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+    .flipped-classes { transform: rotateY(180deg); }
+    .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+    .flip-card-front { background-color: #0d9488; border: 6px solid white; }
+    .flip-card-back { background-color: white; border: 6px solid #0d9488; transform: rotateY(180deg); }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+    const concepts = [
+      { term: "Rättsregler", definition: "Lagar, förordningar och föreskrifter som styr det svenska samhället.", sentence: "_____ är bindande bestämmelser — lagar, förordningar och föreskrifter — som alla i Sverige måste följa.", scenario: "En student undrar om det är förbjudet att cykla på trottoar och söker upp de bindande bestämmelserna som riksdag, regering och myndigheter utfärdat för att reglera samhällslivet.", ickeExempel: { korrekt: "Förbudet mot stöld i brottsbalken, beslutat av riksdagen och gällande för alla.", icke: "En lärares muntliga råd om att inte prata i klassrummet.", forklaring: "Förbudet mot stöld är en rättsregel — en bindande bestämmelse. Lärarens råd saknar rättslig bindande kraft och är inte en rättsregel." } },
+      { term: "Rättsväsendet", definition: "Upprätthåller lagen med hjälp av lagstiftning och rättsskipning. Sveriges domstolar, Polismyndigheten och Kriminalvården ingår.", sentence: "_____ upprätthåller lagen och består bland annat av polisen, domstolarna och Kriminalvården.", scenario: "En person som rånas kontaktar polisen. Polisen utreder, åklagaren väcker åtal och domstolen dömer. Hela den kedjan av statliga institutioner kallas för...", ickeExempel: { korrekt: "Polismyndigheten, åklagarmyndigheten och domstolarna som hanterar brottmål.", icke: "Riksdagen som stiftar lagar om brott och straff.", forklaring: "Rättsväsendet är de institutioner som upprätthåller lagen — inte de som skapar den. Riksdagen stiftar lagarna men ingår inte i rättsväsendet." } },
+      { term: "Konstitutionell rätt", definition: "Innefattar dels hur lagar blir till, dels fri- och rättigheter för medborgare samt hur den offentliga makten kontrolleras. Regleras till stor del av Sveriges fyra grundlagar.", sentence: "_____ reglerar hur lagar stiftas, vilka fri- och rättigheter medborgarna har samt hur den offentliga makten kontrolleras.", scenario: "En juriststudent läser om hur riksdagen stiftar lagar, om yttrandefrihetens gränser och om hur Konstitutionsutskottet granskar regeringen — allt inom ett och samma rättsområde.", ickeExempel: { korrekt: "Reglerna i grundlagarna om hur riksdagen väljs och vilka rättigheter medborgare har gentemot staten.", icke: "Reglerna om hur privatpersoner får ingå avtal och kräva skadestånd av varandra.", forklaring: "Konstitutionell rätt handlar om staten och medborgarnas rättigheter gentemot den — inte om förhållanden mellan privatpersoner." } },
+      { term: "Demokrati", definition: "Innebär att de som är medborgare eller bor i ett land ska ha möjlighet att påverka hur landet ska styras genom regelbundna val.", sentence: "_____ innebär att folket har makt att påverka landets styrning, bland annat genom regelbundna val.", scenario: "Vart fjärde år röstar svenska folket för att välja representanter till riksdagen, som sedan fattar lagar och beslut för landets bästa.", ickeExempel: { korrekt: "Medborgare röstar i val och kan bilda partier för att påverka hur landet styrs.", icke: "En kung bestämmer ensam vilka lagar som ska gälla i landet.", forklaring: "Demokrati bygger på folklig delaktighet och val — en kung som styr ensam är det motsatta, en enväldig monarki." } },
+      { term: "Rättstrygghet", definition: "Innebär en visshet om att rättsväsendet tillgodoser medborgarnas rättigheter.", sentence: "_____ innebär att medborgarna kan lita på att rättsväsendet faktiskt skyddar deras rättigheter i praktiken.", scenario: "En kvinna anmäler ett brott mot sig och är trygg i vetskapen att polisen och domstolarna verkligen kommer att ta hennes rättigheter på allvar.", ickeExempel: { korrekt: "Medborgarnas visshet om att domstolarna dömer rättvist och att polisen utreder brott ordentligt.", icke: "Att lagarna är tydligt skrivna så att man på förhand vet vad konsekvenserna blir av sina handlingar.", forklaring: "Det sista beskriver rättssäkerhet (tydliga lagar) — rättstrygghet handlar om visshet att rättsväsendet faktiskt skyddar rättigheterna i praktiken." } },
+      { term: "Rättssäkerhet", definition: "Innebär att lagar och regler ska vara formulerade så att konsekvensen av en handling går att förutse på förhand.", sentence: "_____ innebär att lagar är klart formulerade så att man på förhand kan förutse konsekvenserna av sina handlingar.", scenario: "En affärsman vill veta exakt vilka skattekonsekvenser ett beslut får innan han fattar det. Lagarna är tillräckligt tydliga för att han ska kunna bedöma detta i förväg.", ickeExempel: { korrekt: "Att straffet för stöld är tydligt angivet i lagen innan brottet begås, så att alla vet konsekvenserna.", icke: "Att medborgarna känner tillit till att domstolarna faktiskt tillämpar lagarna rätt.", forklaring: "Tillit till att lagarna tillämpas rätt är rättstrygghet — rättssäkerhet handlar om att lagarnas konsekvenser går att förutse." } },
+      { term: "Rättsstat", definition: "En stat där rättssäkerhet råder, med självständiga domstolar och frihet från godtycke.", sentence: "Sverige anses vara en _____ eftersom domstolarna är oberoende och rättsliga beslut grundas på tydliga lagar snarare än godtycke.", scenario: "I ett land finns oberoende domstolar som dömer enligt lagen, och ingen — inte ens presidenten — kan straffas utan rättegång och lagstöd.", ickeExempel: { korrekt: "Ett land där domstolarna är oberoende, lagar tillämpas lika för alla och godtycke är förbjudet.", icke: "Ett land där folket väljer sina representanter i fria och rättvisa val.", forklaring: "Fria val beskriver demokrati — rättsstat handlar om oberoende domstolar och frånvaro av godtycke i rättstillämpningen." } },
+      { term: "Rättsordning", definition: "Sveriges regelsystem, som innehåller lagar, förordningar och föreskrifter.", sentence: "Sveriges _____ är det samlade regelsystemet med lagar, förordningar och föreskrifter som alla måste följa.", scenario: "En ny invandrare vill förstå alla de regler som gäller i Sverige — det samlade systemet av bindande normer från riksdag, regering och myndigheter.", ickeExempel: { korrekt: "Helheten av lagar, förordningar och föreskrifter som tillsammans bildar landets regelsystem.", icke: "Det system av institutioner — polis, domstolar, kriminalvård — som ser till att lagarna följs.", forklaring: "Institutionssystemet kallas rättsväsendet — rättsordningen är de normer och regler som dessa institutioner upprätthåller." } },
+      { term: "Lagar", definition: "Rättsregler som beslutas av riksdagen.", sentence: "_____ är rättsregler som riksdagen beslutar om och som gäller för hela landet.", scenario: "En ny regel om trafiksäkerhet går igenom riksdagens hela beslutsprocess — utskott, debatter och omröstningar — innan den träder i kraft.", ickeExempel: { korrekt: "Brottsbalken, som riksdagen har stiftat och som gäller för alla i landet.", icke: "Regler som kommunen beslutar om för att hålla ordning lokalt.", forklaring: "Kommunens regler är kommunala föreskrifter — lagar beslutas av riksdagen och gäller i hela landet." } },
+      { term: "Förordningar", definition: "Beslutas av regeringen.", sentence: "_____ beslutas av regeringen och reglerar hur lagar ska tillämpas i praktiken.", scenario: "Regeringen beslutade om detaljerade regler för hur ett stöd till småföretag ska fördelas, utan att behöva gå till riksdagen.", ickeExempel: { korrekt: "Körkortsförordningen som regeringen beslutat om för att reglera detaljer kring körkort.", icke: "Socialtjänstlagen som riksdagen stiftat och som reglerar socialt stöd.", forklaring: "En lag beslutas av riksdagen — förordningar beslutas av regeringen." } },
+      { term: "Föreskrifter", definition: "Lokala ordningsregler och anvisningar.", sentence: "_____ är detaljerade ordningsregler och anvisningar som myndigheter och kommuner kan utfärda inom sina områden.", scenario: "Kommunen sätter upp en skylt om att det är förbjudet att rasta hundar på en viss parkyta. Denna lokala regel gäller alla som befinner sig i kommunen.", ickeExempel: { korrekt: "Livsmedelsverkets detaljerade anvisningar om hur restauranger ska hantera livsmedel.", icke: "Riksdagens beslut om inkomstskattens storlek.", forklaring: "Riksdagens beslut om skatter är lagar — föreskrifter är detaljerade anvisningar från myndigheter eller kommuner." } },
+      { term: "Författningar", definition: "Lagar och förordningar tillsammans.", sentence: "_____ är det samlade begreppet för lagar och förordningar — alltså regler beslutade av riksdagen och regeringen.", scenario: "En jurist refererar till 'alla bindande regler på riksnivå' och menar både de riksdagen beslutat om och de regeringen beslutat om.", ickeExempel: { korrekt: "Kombination av riksdagslagarna och regeringens förordningar.", icke: "Alla sorters regler inklusive kommunala regler och myndigheternas detaljerade anvisningar.", forklaring: "Kommunala regler och myndigheternas anvisningar ingår inte i begreppet författningar — det täcker lagar och förordningar." } },
+      { term: "Normgivningsmakten", definition: "Rätten att skapa de regler som den svenska rättsordningen består av.", sentence: "_____ är den formella befogenheten att stifta regler och normer som utgör Sveriges rättsordning.", scenario: "Riksdagen, regeringen och myndigheter har var och en befogenhet att utfärda bindande regler inom sina respektive områden — dessa befogenheter kallas gemensamt för...", ickeExempel: { korrekt: "Riksdagens rätt att stifta lagar och regeringens rätt att utfärda förordningar.", icke: "Domstolarnas rätt att döma i mål och ärenden.", forklaring: "Domstolarna dömer — de skapar inte regler. Normgivningsmakten är rätten att skapa bindande normer." } },
+      { term: "Rättssystem", definition: "Det system av rättsliga normer som är gällande.", sentence: "Varje land har sitt eget _____ — ett sammanhängande system av gällande rättsliga normer.", scenario: "En komparativist jämför hur normer, principer och regler bildar ett sammanhängande system i Sverige respektive i Frankrike.", ickeExempel: { korrekt: "Det samlade systemet av rättsliga normer — lagar, principer och praxis — som gäller i Sverige.", icke: "De institutioner som polis, domstolar och kriminalvård som ser till att reglerna följs.", forklaring: "Institutionerna som upprätthåller regler är rättsväsendet — rättssystemet är normerna i sig." } },
+      { term: "Bemyndigande", definition: "Tillåtelse att exempelvis utfärda egna regler.", sentence: "Riksdagen ger ibland regeringen ett _____ att utfärda egna detaljregler inom ett visst område.", scenario: "Riksdagen stiftade en lag men lät regeringen fylla i detaljerna med egna regler — en formell tillåtelse att göra detta gavs i lagen.", ickeExempel: { korrekt: "Riksdagen ger i en lag tillstånd till en myndighet att utfärda detaljerade föreskrifter.", icke: "Regeringen ber riksdagen om lov att bilda en ny myndighet.", forklaring: "Bemyndigande är att ge någon annan tillstånd att utfärda regler — inte att be om lov att bilda en myndighet." } },
+      { term: "Stifta lagar", definition: "Innebär att riksdagen beslutar om lagar.", sentence: "Det är riksdagens uppgift att _____ — det vill säga att fatta formella beslut om vilka lagar som ska gälla.", scenario: "Efter månaders utredning, remissrunda och debatt röstar riksdagen för att en ny miljölag ska träda i kraft.", ickeExempel: { korrekt: "Riksdagen röstar och beslutar om att en ny lag om cykelhjälmar ska gälla.", icke: "Regeringen beslutar i ett möte om en ny förordning om körkort.", forklaring: "Regeringen beslutar om förordningar — lagar stiftas enbart av riksdagen." } },
+      { term: "Betänkande", definition: "Ett förslag till regeringen från en utredning.", sentence: "En statlig utredning presenterar sitt _____ — ett formellt förslag med analyser och rekommendationer — till regeringen.", scenario: "Efter ett och ett halvt år av arbete presenterar en kommitté sin rapport med rekommendationer och förslag till hur ett problem bör lösas, riktat till regeringen.", ickeExempel: { korrekt: "En utredningskommittés rapport med förslag om hur en ny socialförsäkringslag bör utformas.", icke: "Riksdagens omröstning om ett lagförslag i kammaren.", forklaring: "Riksdagens omröstning kommer efter betänkandet — betänkandet är utredningens förslag till regeringen." } },
+      { term: "Remiss", definition: "Att inhämta synpunkter på ett förslag från berörda myndigheter och andra intressenter.", sentence: "Innan en ny lag beslutas skickar regeringen ut ett _____ för att samla synpunkter från berörda myndigheter och organisationer.", scenario: "Regeringen skickar ut ett lagförslag till hundratals myndigheter, kommuner och intresseorganisationer och ber dem kommentera förslaget innan beslut fattas.", ickeExempel: { korrekt: "Länsstyrelsen och fackföreningarna får ett lagförslag skickat till sig för att lämna synpunkter.", icke: "Lagrådet granskar om ett lagförslag strider mot grundlagen.", forklaring: "Lagrådet granskar juridisk korrekthet — en remiss är att inhämta synpunkter från intressenter." } },
+      { term: "Proposition", definition: "Regeringens förslag till riksdagen om ny lagstiftning.", sentence: "Regeringen lämnar en _____ till riksdagen — ett formellt förslag om ny lagstiftning som riksdagen ska ta ställning till.", scenario: "Statsministern presenterar i riksdagen regeringens officiella förslag till ny lagstiftning om hur skolan ska finansieras.", ickeExempel: { korrekt: "Regeringens skriftliga förslag till riksdagen om att ändra inkomstskattelagen.", icke: "Riksdagens beslut att anta en ny lag om trafiksäkerhet.", forklaring: "Riksdagens beslut är det slutliga steget — propositionen är det förslag som regeringen lämnar till riksdagen." } },
+      { term: "Lagrådet", definition: "Granskar vanligtvis lagförslag innan de behandlas av riksdagen.", sentence: "Innan riksdagen röstar om ett lagförslag brukar _____ granska om förslaget är juridiskt korrekt och förenligt med grundlagarna.", scenario: "Höga domare och jurister granskar ett nytt lagförslag och påpekar att en paragraf kan strida mot grundlagen — detta sker innan riksdagen tar ställning.", ickeExempel: { korrekt: "Högt uppsatta jurister och domare som kontrollerar att ett nytt lagförslag inte strider mot grundlagen.", icke: "Riksdagsutskottet som bereder lagförslaget och tar fram ett betänkande.", forklaring: "Riksdagsutskottet är riksdagens eget beredningsorgan — Lagrådet är ett oberoende granskningsorgan." } },
+      { term: "Bordlägger", definition: "Innebär att ett förslag tas upp vid ett senare tillfälle.", sentence: "Riksdagen _____ ibland ett förslag, vilket innebär att beslutet skjuts upp till ett kommande sammanträde.", scenario: "Riksdagen har inte tid att behandla ett visst ärende under dagens sammanträde och beslutar att skjuta upp det till nästa vecka.", ickeExempel: { korrekt: "Riksdagen beslutar att ett lagförslag inte ska behandlas nu utan skjutas upp till nästa sammanträde.", icke: "Riksdagen röstar ner ett förslag och avslår det helt.", forklaring: "Att avsläga ett förslag är en definitiv vägran — att bordlägga är bara att skjuta upp behandlingen." } },
+      { term: "Förvaltningsrätten", definition: "De regler som styr myndigheternas arbete.", sentence: "_____ är det rättsområde som reglerar hur myndigheter ska fatta beslut och hur medborgare kan överklaga myndighetsbeslut.", scenario: "En medborgare överklagade Försäkringskassans beslut om sjukersättning. Ärendet hanteras av ett rättsligt regelsystem som styr hur myndigheter ska arbeta och hur beslut kan överklagas.", ickeExempel: { korrekt: "Reglerna om hur Skatteverket ska handlägga ärenden och hur du kan överklaga deras beslut.", icke: "Reglerna om hur privatpersoner får stämma varandra för avtalsbrott.", forklaring: "Stämningar mellan privatpersoner tillhör civilrätten — förvaltningsrätten reglerar myndigheternas förhållande till medborgarna." } },
+      { term: "Ministerstyre", definition: "Gör sig regeringen skyldig till om denna blandar sig i myndigheternas arbete eller dess beslut. Detta är förbjudet.", sentence: "Det är förbjudet med _____ i Sverige — statsråd får inte ge direktiv till myndigheter i enskilda ärenden.", scenario: "En minister ringer till chefen för Migrationsverket och ger direktiv om hur ett specifikt asylärende ska avgöras — detta är strängt förbjudet i Sverige.", ickeExempel: { korrekt: "En minister instruerar en myndighet att fatta ett visst beslut i ett specifikt ärende.", icke: "Riksdagen granskar om regeringen har följt lagen i ett ärende.", forklaring: "Riksdagens granskning är en del av kontrollmakten och är tillåten — ministerstyre är förbjudet statlig inblandning i myndighetsbeslut." } },
+      { term: "Kommunala föreskrifter", definition: "Ordningsregler som gäller för alla som bor och vistas i kommunen.", sentence: "_____ är lokala ordningsregler som kommunfullmäktige beslutar om och som gäller för alla inom kommunens gränser.", scenario: "Kommunen beslutade att det är förbjudet att köra moped på en viss gångväg — en lokal regel som gäller alla i kommunen.", ickeExempel: { korrekt: "Kommunens förbud mot att elda i naturen under torrt väder.", icke: "Riksdagens lag om hur avfall ska hanteras i hela landet.", forklaring: "En riksdagslag gäller i hela landet — kommunala föreskrifter gäller bara inom den aktuella kommunen." } },
+      { term: "Normhierarki", definition: "Den inbördes ordning som visar vilka lagar och regler som styr andra lagar och regler.", sentence: "Enligt _____ har grundlagarna högre rang än vanliga lagar, som i sin tur har högre rang än förordningar.", scenario: "Om en vanlig lag verkar strida mot en grundlag gäller grundlagen — det finns en rangordning som avgör vilken regel som väger tyngst.", ickeExempel: { korrekt: "Grundlagar står över vanliga lagar, som i sin tur står över förordningar och föreskrifter.", icke: "Den kronologiska ordning i vilken lagar stiftades — äldre lagar gäller framför nyare.", forklaring: "Kronologisk ordning är inte normhierarki — normhierarkin handlar om vilken regeltyp som har högre rang." } },
+      { term: "Grundlagar", definition: "Grundläggande regler för hur politiska beslut ska fattas.", sentence: "Sveriges _____ är svårare att ändra än vanliga lagar och innehåller grundläggande regler om hur landet ska styras.", scenario: "En politiker vill ändra reglerna för hur val ska gå till — det kräver en lång process med två riksdagsbeslut och ett val emellan, eftersom det rör de allra fundamentalaste reglerna.", ickeExempel: { korrekt: "Regeringsformen som reglerar hur den svenska statsmakten är uppbyggd och hur politiska beslut fattas.", icke: "Riksdagsordningen som reglerar hur riksdagens arbete ska organiseras.", forklaring: "Riksdagsordningen är ett mellanting — inte en grundlag. Grundlagarna är de fyra grundläggande regelverken." } },
+      { term: "Politiskt system", definition: "Systemet av institutioner och aktörer som tillsammans påverkar hur Sverige ska styras.", sentence: "Det _____ innefattar riksdag, regering, partier, myndigheter och tjänstemän som alla samverkar i styrningen av landet.", scenario: "En statsvetare analyserar hur riksdag, regering, partier, väljare och tjänstemän samverkar för att producera politiska beslut i Sverige.", ickeExempel: { korrekt: "Riksdag, regering, politiska partier och myndigheter som tillsammans formar landets styrning.", icke: "Domstolssystemet med tingsrätter, hovrätter och Högsta domstolen.", forklaring: "Domstolssystemet ingår i rättsväsendet — det politiska systemet fokuserar på institutioner och aktörer i beslutsfattandet." } },
+      { term: "Riksdagsordningen", definition: "Innehåller regler kring riksdagens arbete. Inte en grundlag, men heller ingen vanlig lag — ett mellanting med högre rang än en vanlig lag.", sentence: "_____ reglerar hur riksdagens arbete organiseras och har en speciell rang — inte en grundlag, men med högre rang än en vanlig lag.", scenario: "Det finns ett regelverk som beskriver hur riksdagen ska hålla sina sammanträden, hur utskotten ska arbeta och hur beslut fattas — detta regelverk har speciell rang.", ickeExempel: { korrekt: "Reglerna om hur riksdagens utskott bildas, hur talmannen väljs och hur debatter förs.", icke: "Grundlagarna som fastslår medborgarnas fri- och rättigheter.", forklaring: "Grundlagarna är en annan kategori — riksdagsordningen reglerar riksdagens interna arbete och har en mellanstatus." } },
+      { term: "Representativt styrelseskick", definition: "De representanter som sitter i riksdagen är folkvalda.", sentence: "Sverige har _____ — medborgarna väljer representanter som i sin tur fattar beslut å folkets vägnar.", scenario: "Medborgarna röstar inte direkt om varje lag, utan väljer istället personer som sedan representerar dem och fattar beslut i riksdagen.", ickeExempel: { korrekt: "Medborgarna väljer riksdagsledamöter som sedan fattar beslut för folket.", icke: "Folket röstar direkt om varje enskild lag via folkomröstningar.", forklaring: "Direkta folkomröstningar om varje lag är direkt demokrati — representativt styrelseskick innebär att folkvalda representanter beslutar." } },
+      { term: "Parlamentariskt styrelseskick", definition: "Den offentliga makten utgår från folket, och regeringen måste ha riksdagens förtroende.", sentence: "I ett _____ måste regeringen ha riksdagens förtroende — riksdagen kan fälla en regering som inte längre har stöd.", scenario: "Riksdagen röstar om misstroende mot statsministern. Om riksdagen förlorar förtroendet för regeringen måste den avgå.", ickeExempel: { korrekt: "Att regeringen måste ha riksdagens stöd för att kunna sitta kvar och styra landet.", icke: "Att statsministern väljs direkt av folket i ett separat val.", forklaring: "Direktval av statsministern finns i presidentsystem — parlamentarism innebär att regeringen behöver riksdagens förtroende." } },
+      { term: "Folkrepresentation", definition: "En folkvald församling av och för folket (riksdagen).", sentence: "Riksdagen är Sveriges _____ — en folkvald församling som representerar och beslutar å folkets vägnar.", scenario: "349 folkvalda ledamöter samlas i en kammare för att stifta lagar och fatta beslut som representerar det svenska folket.", ickeExempel: { korrekt: "Riksdagen som 349 folkvalda ledamöter som stiftar lagar å folkets vägnar.", icke: "Kommunfullmäktige som lokalt folkvalt organ i varje kommun.", forklaring: "Kommunfullmäktige är lokala folkvalda organ — folkrepresentationen syftar på riksdagen som nationell folkvald församling." } },
+      { term: "Regioner", definition: "Självstyrande enheter som tidigare kallades för landsting.", sentence: "_____ är självstyrande enheter som ansvarar för bland annat sjukvård i Sverige och tidigare kallades landsting.", scenario: "En patient får vård på ett sjukhus som drivs av en regional självstyrande enhet — denna enhet ansvarade tidigare för landstingsfrågor.", ickeExempel: { korrekt: "Den självstyrande enheten som ansvarar för sjukvård och kollektivtrafik i ett geografiskt område.", icke: "Kommunen som lokal enhet ansvarig för skola och äldreomsorg.", forklaring: "Kommunen är en annan typ av självstyrande enhet — regioner ansvarar för sjukvård och bildades av det som tidigare hette landsting." } },
+      { term: "Maktdelning", definition: "Principen om att makten, enligt Montesquieu, behöver kontrolleras och vara fördelad på flera instanser.", sentence: "Enligt principen om _____ ska den lagstiftande, verkställande och dömande makten utövas av skilda institutioner för att förhindra maktmissbruk.", scenario: "En statsfilosof argumenterade för att ett land inte bör låta en och samma person eller institution både stifta lagar, genomföra dem och döma i tvister.", ickeExempel: { korrekt: "Riksdagen stiftar lagar, regeringen genomför dem och domstolarna dömer — dessa tre funktioner hålls separata.", icke: "Principen att alla medborgare ska ha lika röstvärde i demokratiska val.", forklaring: "Lika röstvärde är en demokratiprincip — maktdelning handlar om att fördela de tre statsmakterna på skilda institutioner." } },
+      { term: "Den lagstiftande makten", definition: "Är riksdagen.", sentence: "_____ innehas av riksdagen, som beslutar om vilka lagar som ska gälla i Sverige.", scenario: "Av de tre statsmakterna är det en som har ensamrätten att stifta och ändra lagar — den kammare som medborgarna väljer vart fjärde år.", ickeExempel: { korrekt: "Riksdagen som röstar om och beslutar vilka lagar som ska gälla i Sverige.", icke: "Regeringen som genomför riksdagens beslut och styr myndigheterna.", forklaring: "Regeringen innehar den verkställande makten — den lagstiftande makten tillhör riksdagen." } },
+      { term: "Den verkställande makten", definition: "Har regeringen, som förverkligar de lagar som riksdagen har stiftat.", sentence: "_____ har regeringen, som ser till att riksdagens beslut och lagar genomförs i praktiken.", scenario: "När riksdagen stiftat en ny lag om arbetsrätt är det en annan instans som ska se till att lagen tillämpas — den instansen styr myndigheterna.", ickeExempel: { korrekt: "Regeringen som styr myndigheterna och ser till att riksdagens lagar tillämpas.", icke: "Riksdagen som beslutar om lagar och statsbudget.", forklaring: "Riksdagen innehar den lagstiftande makten — den verkställande makten, alltså att genomföra lagarna, tillhör regeringen." } },
+      { term: "Den dömande makten", definition: "Är de allmänna domstolarna, förvaltningsdomstolarna samt specialdomstolarna.", sentence: "_____ utövas av domstolarna, som avgör tvister och dömer i brottmål.", scenario: "Varken riksdagen eller regeringen avgör om en person är skyldig till ett brott — det är en tredje statsmakt, bestående av oberoende domstolar, som gör detta.", ickeExempel: { korrekt: "Tingsrätten som dömer i brottmål och civilrättsliga tvister.", icke: "Justitieombudsmannen som granskar om myndigheter följer lagen.", forklaring: "JO granskar myndigheter men dömer inte — den dömande makten är domstolssystemet." } },
+      { term: "Likhetsprincipen", definition: "Innebär att myndigheter ska behandla alla lika, oavsett exempelvis nationalitet eller utbildning.", sentence: "Enligt _____ ska myndigheter behandla alla medborgare lika, oavsett nationalitet, utbildning eller bakgrund.", scenario: "En handläggare på Skatteverket måste tillämpa samma regler på en invandrare som på en infödd svensk — ingen skillnad i behandling är tillåten utan lagstöd.", ickeExempel: { korrekt: "Försäkringskassan tillämpar samma regler för bidrag oavsett om den sökande är rik eller fattig.", icke: "Lagen om att alla brott ska straffas proportionellt mot hur allvarliga de är.", forklaring: "Proportionerliga straff är en annan princip — likhetsprincipen handlar om myndigheternas skyldighet att behandla alla lika." } },
+      { term: "Objektivitetsprincipen", definition: "Innebär att alla som arbetar på myndigheter ska vara sakliga och opartiska.", sentence: "_____ kräver att tjänstemän på myndigheter är sakliga och opartiska — de får inte gynna eller missgynna någon av personliga skäl.", scenario: "En handläggare på socialtjänsten fattar beslut utan att låta sina personliga åsikter om den sökande påverka beslutet — hen ska vara neutral.", ickeExempel: { korrekt: "En tjänsteman på migrationsverket bedömer ett ärende utan att låta personliga åsikter om invandring påverka beslutet.", icke: "Att alla myndigheter ska behandla medborgare lika oavsett bakgrund.", forklaring: "Att behandla alla lika är likhetsprincipen — objektivitetsprincipen handlar om saklighet och opartiskhet." } },
+      { term: "Yttrandefrihet", definition: "Frihet att i tal, skrift eller bild eller på annat sätt meddela upplysningar samt uttrycka tankar, åsikter och känslor.", sentence: "_____ ger dig rätt att uttrycka dina åsikter, tankar och känslor i tal, skrift och bild utan statlig censur.", scenario: "En journalist skriver en artikel som kritiserar statsministern skarpt. Myndigheterna kan inte hindra publiceringen.", ickeExempel: { korrekt: "En medborgare publicerar en debattartikel med stark kritik mot regeringens migrationspolitik.", icke: "En medborgare deltar i ett politiskt partis möte och lyssnar på talarna.", forklaring: "Att lyssna på ett möte är mötesfrihet — yttrandefrihet är rätten att aktivt uttrycka åsikter i tal, skrift och bild." } },
+      { term: "Informationsfrihet", definition: "Frihet att inhämta och ta emot upplysningar.", sentence: "_____ ger medborgare rätt att söka, ta emot och ta del av information utan att staten hindrar dem.", scenario: "En student söker på internet efter information från utländska nyhetssajter och läser rapporter från organisationer utomlands — ingen myndighet kan stoppa henne.", ickeExempel: { korrekt: "Rätten att besöka utländska webbplatser och läsa böcker med kontroversiellt innehåll utan statlig censur.", icke: "Rätten att tala offentligt på ett torg och uttrycka sina åsikter för förbipasserande.", forklaring: "Att tala på ett torg är yttrandefrihet — informationsfrihet är rätten att inhämta och ta emot information." } },
+      { term: "Mötesfrihet", definition: "Frihet att anordna och delta i sammankomster.", sentence: "_____ innebär att medborgare har rätt att anordna och delta i sammankomster utan statens tillstånd.", scenario: "En grupp grannar samlas i en park för att diskutera en planerad byggnad i deras kvarter. Myndigheterna kan inte förbjuda detta möte.", ickeExempel: { korrekt: "Rätten att hålla ett politiskt möte eller en föreläsning utan att behöva statens godkännande.", icke: "Rätten att gå med i en förening och kämpa för gemensamma mål.", forklaring: "Att gå med i en förening är föreningsfrihet — mötesfrihet är rätten att anordna och delta i sammankomster." } },
+      { term: "Demonstrationsfrihet", definition: "Frihet att anordna och delta i demonstrationer.", sentence: "_____ ger medborgare rätt att demonstrera offentligt för sin sak utan att staten kan förbjuda det.", scenario: "Hundratals personer marscherar med plakat längs en central gata i Stockholm för att protestera mot en ny lag. Myndigheterna kan inte förbjuda dem.", ickeExempel: { korrekt: "Rätten att anordna en politisk manifestation på ett torg och bära plakat med politiska budskap.", icke: "Rätten att hålla ett slutet möte inomhus med ett politiskt parti.", forklaring: "Slutna möten inomhus är mötesfrihet — demonstrationsfrihet gäller offentliga manifestationer och demonstrationståg." } },
+      { term: "Föreningsfrihet", definition: "Frihet att sammansluta sig med andra för allmänna eller enskilda syften.", sentence: "_____ innebär att du har rätt att bilda eller gå med i en förening, ett parti eller en organisation utan statens inblandning.", scenario: "En grupp ungdomar bestämmer sig för att bilda ett nytt politiskt parti. Staten kan inte hindra dem från att organisera sig.", ickeExempel: { korrekt: "Rätten att bilda ett fackförbund eller ett politiskt parti och arbeta för gemensamma mål.", icke: "Rätten att delta i ett offentligt möte och lyssna på debatter.", forklaring: "Att lyssna på debatter är mötesfrihet — föreningsfrihet handlar om att organisera sig tillsammans med andra." } },
+      { term: "Religionsfrihet", definition: "Frihet att ensam eller tillsammans med andra utöva sin religion.", sentence: "_____ ger varje person rätt att fritt utöva sin religion, byta religion eller inte tillhöra något trossamfund alls.", scenario: "En muslim ber fem gånger om dagen, en jude firar sabbat och en ateist väljer att inte tillhöra något trossamfund — alla dessa val skyddas av samma grundlagsstadgade frihet.", ickeExempel: { korrekt: "Rätten att gå i kyrkan, moskén eller synagogan och utöva sin tro utan statlig inblandning.", icke: "Rätten att bilda en organisation med gemensamma värderingar och politiska mål.", forklaring: "Att bilda organisationer för politiska mål är föreningsfrihet — religionsfrihet gäller specifikt rätten att utöva sin tro." } },
+      { term: "Monarki", definition: "Ett statsskick där statschefen är en monark (kung eller drottning).", sentence: "Sverige är en _____ — statschefen är kungen, vars position ärvs och regleras av grundlagen.", scenario: "Landets statsöverhuvud ärver sin position och representerar nationen vid officiella statliga ceremonier utan att ha politisk makt.", ickeExempel: { korrekt: "Sverige med kung Carl XVI Gustaf som statschef, vars position ärvs av barn.", icke: "USA med presidenten som statsöverhuvud vald av folket för en mandatperiod.", forklaring: "En vald president är ett exempel på en republik — monarki innebär att statschefsposten ärvs." } },
+      { term: "Successionsordningen (SO)", answer: "Successionsordningen", definition: "Den grundlag som reglerar arvsrätten till Sveriges tron.", sentence: "_____ är den grundlag som fastslår reglerna för hur arvsrätten till den svenska tronen fungerar.", scenario: "Det finns en grundlag som exakt specificerar vem som ärver tronen och i vilken ordning kungafamiljen kan bli statschefer.", ickeExempel: { korrekt: "Grundlagen som bestämmer att kronprinsessans barn ärver tronen i en fastlagd ordning.", icke: "Grundlagen som reglerar alla medborgares rättigheter och skyldigheter gentemot staten.", forklaring: "Medborgares rättigheter regleras i regeringsformen — successionsordningen reglerar specifikt arvsrätten till tronen." } },
+      { term: "Successionsrätten", definition: "Arvsrätten till Sveriges tron.", sentence: "_____ reglerar vem som har rätt att ärva den svenska tronen och i vilken ordning.", scenario: "När kungen pensionerar sig eller dör avgör ett fast regelverk vem i kungafamiljen som tar över som statschef.", ickeExempel: { korrekt: "Reglerna om att kronprinsessan Victoria kommer att bli statschef när kungen abdikerar eller dör.", icke: "Reglerna om att statsministern nomineras av riksdagen och inte väljs direkt av folket.", forklaring: "Statsministernominering regleras i regeringsformen — successionsrätten handlar om arvsrätten till tronen." } },
+      { term: "Tryckfrihetsförordningen (TF)", answer: "Tryckfrihetsförordningen", definition: "Den grundlag som innehåller regler om tryckfrihet och delaktighet.", sentence: "_____ är en av Sveriges grundlagar och reglerar rätten att trycka och sprida text samt allmänhetens insyn i offentlig verksamhet.", scenario: "En tidning publicerar avslöjanden om korruption inom en statlig myndighet. Den lag som skyddar tidningens rätt att trycka och sprida denna information är en av landets grundlagar.", ickeExempel: { korrekt: "Grundlagen som ger tidningar rätt att publicera information utan förhandscensur och som skyddar källors anonymitet.", icke: "Grundlagen som ger alla medborgare rätt att yttra sig i tal och på internet.", forklaring: "Rätten att yttra sig på internet regleras i yttrandefrihetsgrundlagen — tryckfrihetsförordningen gäller specifikt tryckt press." } },
+      { term: "Allmänna handlingar", definition: "Handlingar som förvaras hos en statlig myndighet eller en kommun. Det kan exempelvis vara mötesprotokoll eller betyg.", sentence: "_____ är dokument som förvaras hos myndigheter eller kommuner och som medborgare normalt har rätt att ta del av.", scenario: "En journalist begär ut protokollet från kommunstyrelsens senaste möte. Kommunen är skyldig att ge ut dokumentet eftersom det är ett offentligt dokument som förvaras hos kommunen.", ickeExempel: { korrekt: "Mötesprotokoll från en kommunstyrelse eller ett universitets antagningsregister.", icke: "En privatpersons personliga dagbok eller ett företags interna affärshemmeligheter.", forklaring: "Personliga dagböcker och företagshemligheter är inte allmänna handlingar — det är dokument hos myndigheter och kommuner som är det." } },
+      { term: "Offentlighetsprincipen", definition: "Innebär att alla medborgare har rätt att ta del av allmänna handlingar.", sentence: "Tack vare _____ har medborgarna rätt att granska myndigheternas handlingar och hålla den offentliga makten ansvarig.", scenario: "En medborgare vill se vilket underlag kommunen använde för att fatta ett beslut om ett byggprojekt. Kommunen måste lämna ut dokumenten.", ickeExempel: { korrekt: "En journalist som begär ut ett myndighetsbeslut och alla handlingar som hör till ärendet.", icke: "En medborgares rätt att yttra sig fritt i tal och skrift utan statlig censur.", forklaring: "Rätten att yttra sig är yttrandefrihet — offentlighetsprincipen handlar om rätten att ta del av myndigheternas handlingar." } },
+      { term: "Mediegrundlagarna", definition: "Omfattar tryckfrihetsförordningen och yttrandefrihetsgrundlagen.", sentence: "_____ är de två grundlagar — tryckfrihetsförordningen och yttrandefrihetsgrundlagen — som skyddar mediernas frihet i Sverige.", scenario: "En professor i juridik förklarar att Sverige har speciella grundlagsskyddsregler för tidningar, radio och TV — de skyddas av två av landets grundlagar.", ickeExempel: { korrekt: "Tryckfrihetsförordningen och yttrandefrihetsgrundlagen som tillsammans skyddar pressfriheten.", icke: "Alla lagar och förordningar som reglerar hur medier får arbeta och vad de får rapportera om.", forklaring: "Vanliga lagar och förordningar är inte grundlagar — mediegrundlagarna är specifikt de två grundlagarna som skyddar mediefriheten." } },
+      { term: "Meddelarfrihet", definition: "Innebär att anställda har rätt att lämna information till media.", sentence: "_____ skyddar anställda som lämnar information till journalister — de kan inte straffas av sin arbetsgivare för att ha pratat med media.", scenario: "En sjuksköterska berättar för en journalist om allvarliga missförhållanden på sin arbetsplats. Sjukhusdirektören kan inte avskeda henne för detta — hon är skyddad.", ickeExempel: { korrekt: "En kommunalanställd som tipsar en journalist om oegentligheter utan att riskera att bli avskedad.", icke: "En journalists rätt att hålla en källa hemlig trots påtryckningar.", forklaring: "En journalists rätt att skydda en källa är källskyddet — meddelarfrihet skyddar den anställde som lämnar informationen." } },
+      { term: "Efterforskningsförbud", definition: "Innebär att exempelvis en myndighetschef inte får försöka ta reda på vilken anställd som lämnat ut information om företaget.", sentence: "_____ förbjuder chefer på myndigheter att spåra upp vilken anställd som lämnat uppgifter till media.", scenario: "En myndighetschef är rasande efter ett avslöjande och vill ta reda på vem av de anställda som pratade med reportern — detta är strängt förbjudet enligt lag.", ickeExempel: { korrekt: "Förbudet mot att en myndighetschef undersöker vem som läckte information till en journalist.", icke: "Förbudet mot att en minister ger direktiv till en myndighet i ett enskilt ärende.", forklaring: "Ministerns inblandning i myndighetsbeslut är ministerstyre — efterforskningsförbud gäller spårande av vem som lämnat information." } },
+      { term: "Utgivningsbevis", definition: "En registrering av utgivaren av exempelvis en tidning.", sentence: "En tidning eller webbsajt måste ha ett _____ — en registrering hos myndigheten — för att ha fullt grundlagsskydd.", scenario: "En webbtidning registrerar sig hos den statliga myndigheten och anger vem som är ansvarig utgivare — utan denna registrering saknar tidningen vissa grundlagsskydd.", ickeExempel: { korrekt: "En nättidnings officiella registrering hos staten som ger den grundlagsskydd för publiceringar.", icke: "Tillståndet som radiokanaler måste ha för att sända på FM-bandet.", forklaring: "Sändningstillstånd för radio är en annan fråga — utgivningsbevis är registreringen av en tidning eller webbpublikation." } },
+      { term: "Ansvarig utgivare", definition: "En person som kan ställas till svars för om företaget begår ett brott mot tryckfrihetsförordningen eller annan lag.", sentence: "Varje tidning måste ha en _____ — en namngiven person som kan hållas juridiskt ansvarig för innehållet.", scenario: "En tidning publicerar ett inlägg som kan vara förtal. Om det uppstår en rättstvist är det en specifikt utnämnd person på tidningen som är juridiskt ansvarig.", ickeExempel: { korrekt: "Den namngagna person på en tidning som bär det juridiska ansvaret för allt som publiceras.", icke: "Den journalist som skrivit en artikel och vars namn står under texten.", forklaring: "Journalistens byline är inte detsamma — ansvarig utgivare är ett juridiskt utnämnt ansvar för hela publikationen." } },
+      { term: "Yttrandefrihetsgrundlagen (YGL)", answer: "Yttrandefrihetsgrundlagen", definition: "Den yngsta av Sveriges grundlagar och reglerar rätten att yttra sig.", sentence: "_____ är den senast stiftade av Sveriges grundlagar och reglerar yttrandefriheten i radio, TV och på internet.", scenario: "En radiokanal sänder ett program med skarpa politiska åsikter. Den grundlag som skyddar radiokanalen från statlig censur av sändningen heter...", ickeExempel: { korrekt: "Grundlagen som skyddar radioprogram och webbsajter från statlig censur.", icke: "Grundlagen som skyddar tryckt press, tidningar och böcker från statlig censur.", forklaring: "Tryckt press skyddas av tryckfrihetsförordningen — yttrandefrihetsgrundlagen gäller radio, TV och internet." } },
+      { term: "Replik", definition: "En kommentar (från en ledamot eller en minister) om ett tidigare anförande.", sentence: "En riksdagsledamot begär en _____ och kommenterar kort det statsrådet just sagt i riksdagen.", scenario: "En minister håller ett tal i riksdagen. Direkt efteråt räcker en ledamot upp handen och vill kommentera och bemöta det som ministern just sagt.", ickeExempel: { korrekt: "En ledamots korta svar direkt riktat till det statsrådet just sagt i riksdagskammaren.", icke: "Det långa inledningstal som statsministern håller i riksdagen vid budgetdebatterna.", forklaring: "Statsministerns inledningstal är ett anförande — en replik är en kort kommentar som svar på vad någon just sagt." } },
+      { term: "Civilrätt", definition: "Består av lagar som behandlar förhållandena mellan privatpersoner och företag eller mellan företag.", sentence: "_____ reglerar förhållanden mellan privatpersoner och företag — till exempel avtalsrätt och skadeståndsrätt.", scenario: "Två grannar tvistar om vem som äger ett staket. De vänder sig till domstolen för att lösa sin konflikt — det handlar om ett rättsområde som reglerar relationer mellan privata aktörer.", ickeExempel: { korrekt: "Köplagen som reglerar avtal mellan en konsument och ett företag.", icke: "Förvaltningslagen som reglerar hur Skatteverket ska handlägga dina skatteärenden.", forklaring: "Förvaltningslagen reglerar myndighetsrelationer och tillhör offentlig rätt — civilrätten reglerar förhållanden mellan privata parter." } },
+      { term: "Offentlig rätt", definition: "Består av lagar som berör förhållanden mellan myndigheter och privatpersoner eller företag.", sentence: "_____ reglerar förhållanden mellan staten, kommuner och myndigheter å ena sidan och privatpersoner å andra sidan.", scenario: "En medborgare överklagade ett beslut av socialtjänsten. Ärendet hanteras av de regler som styr förhållandet mellan offentliga myndigheter och enskilda medborgare.", ickeExempel: { korrekt: "Reglerna om hur kommunen fattar beslut om bygglov och hur du kan överklaga.", icke: "Avtalsrätten som avgör om ett kontrakt mellan ett företag och en privatperson är giltigt.", forklaring: "Avtalsrätten tillhör civilrätten — offentlig rätt reglerar relationer där en myndighet är inblandad." } },
+      { term: "Tvingande lag", definition: "En lag som inte går att avtala bort eller förändra i ett avtal, exempelvis miljölagstiftning eller lagstiftningen i brottsbalken.", sentence: "_____ är en lag som gäller oavsett vad parterna avtalat om — inte ens ett skriftligt avtal kan åsidosätta den.", scenario: "Två personer avtalar om att strunta i de lagstadgade reglerna om minimilön. Domstolen ogiltigförklarar avtalet eftersom den aktuella lagen inte kan avtalas bort.", ickeExempel: { korrekt: "Reglerna om semester i semesterlagen som gäller oavsett vad ett anställningsavtal säger.", icke: "Köplagen som kan åsidosättas om parterna i ett avtal väljer andra regler.", forklaring: "Köplagen är dispositiv — en tvingande lag kan inte avtalas bort oavsett vad parterna önskar." } },
+      { term: "Dispositiv lag", definition: "En lag som går att avtala bort eller förändra i ett avtal. Ett sådant exempel är reglerna i köplagen.", sentence: "_____ är en lag vars regler kan ersättas av vad parterna kommit överens om i ett avtal.", scenario: "Köpare och säljare väljer i sitt avtal att bestämma egna regler för leverans och reklamation — det är tillåtet eftersom lagen tillåter det.", ickeExempel: { korrekt: "Köplagen som parterna kan välja att ersätta med egna avtalade regler om de vill.", icke: "Miljölagstiftningen som gäller för alla oavsett vad parterna avtalat om.", forklaring: "Miljölagstiftning är tvingande och kan inte avtalas bort — dispositiv lag är den som parterna kan ersätta med egna regler." } },
+      { term: "Balkar", definition: "Den svenska lagbokens indelning av lagarna.", sentence: "Den svenska lagboken är uppdelad i _____ — till exempel brottsbalken, äktenskapsbalken och jordabalken.", scenario: "En jurist söker upp reglerna om arv och hittar dem samlade i ett kapitel av den svenska lagboken uppkallat efter sitt ämne och slutar på '-balken'.", ickeExempel: { korrekt: "Brottsbalken, äktenskapsbalken och ärvdabalken som var och en täcker ett rättsområde.", icke: "De kapitel och paragrafer som en enskild lag är uppdelad i.", forklaring: "Kapitel och paragrafer är en lags interna struktur — balkar är lagbokens övergripande indelning i stora rättsområden." } },
+      { term: "Upphovsrättslagen", definition: "Reglerar det skydd (upphovsrätten) som den person som skapat ett verk med en viss verkshöjd har.", sentence: "_____ ger den som skapar ett konstnärligt eller litterärt verk exklusiv rätt att bestämma hur verket används och sprids.", scenario: "En fotograf märker att hennes bilder utan tillstånd används på en kommersiell webbplats. Det finns en lag som ger henne ensamrätt till sina verk.", ickeExempel: { korrekt: "Lagen som ger en kompositör ensamrätt till sin musik och rätt att bestämma om den får användas i reklam.", icke: "Lagen om varumärken som skyddar företags logotyper och varumärkesnamn.", forklaring: "Varumärkesskydd regleras av en annan lag — upphovsrättslagen skyddar konstnärliga och litterära verk." } },
+      { term: "Kontrollmakten", definition: "Kontrollerar om riksdagens beslut och regeringens agerande är i enighet med rådande lagstiftning, förordningar och andra föreskrifter.", sentence: "_____ är den funktion som granskar om riksdagen och regeringen har agerat i enlighet med lagar och regler.", scenario: "En rad institutioner — som KU, JO, JK och Riksrevisionen — har i uppdrag att se till att makthavarna inte missbrukar sin ställning och att lagar följs.", ickeExempel: { korrekt: "JO, KU, JK och Riksrevisionen som granskar om makt utövas lagligt och korrekt.", icke: "Polisen och åklagarmyndigheten som utreder brott och väcker åtal.", forklaring: "Polis och åklagare tillhör rättsväsendet och utreder brott — kontrollmakten granskar om myndigheter och beslutsfattare följer regelverket." } },
+      { term: "Konstitutionsutskottet (KU)", answer: "Konstitutionsutskottet", definition: "Granskar statsrådens tjänsteutövning och regeringsärendenas handläggning.", sentence: "_____ är ett riksdagsutskott som granskar om statsministern och ministrarna har skött sina uppdrag i enlighet med lagen.", scenario: "Riksdagsledamöter undersöker om en minister handlagt ett ärende korrekt och om de interna rutinerna i Regeringskansliet har följts.", ickeExempel: { korrekt: "Riksdagsutskottet som granskar om en minister har fattat ett beslut på lagliga grunder.", icke: "JO som granskar om kommunala myndigheter har följt lagen i ett ärende.", forklaring: "JO granskar myndigheter — KU granskar specifikt statsrådens tjänsteutövning och regeringsärendenas handläggning." } },
+      { term: "Justitieombudsmannen (JO)", answer: "Justitieombudsmannen", definition: "Granskar statliga och kommunala myndigheter.", sentence: "_____ är riksdagens ombudsman som granskar att statliga och kommunala myndigheter följer lagar och regler.", scenario: "En medborgare anmäler att kommunens socialkontor behandlat hen felaktigt. En oberoende ombudsman utreder klagomålet och kan kritisera myndigheten om reglerna inte följts.", ickeExempel: { korrekt: "En medborgare som anmäler att Migrationsverket brutit mot förvaltningslagen och JO utreder klagomålet.", icke: "En domstol som dömer en myndighetsanställd för tjänstefel.", forklaring: "Domstolar dömer i mål — JO granskar myndigheters handläggning och kan uttala kritik men är inte en domstol." } },
+      { term: "Riksrevisionen", definition: "Kontrollerar att den statliga förvaltningen sköts effektivt.", sentence: "_____ är en myndighet under riksdagen som granskar om statens pengar används effektivt och om verksamheten uppfyller sina mål.", scenario: "En granskning visar att en statlig myndighet slösat med skattepengar. Det är en oberoende revisionsmyndighet kopplad till riksdagen som avslöjar detta.", ickeExempel: { korrekt: "Riksdagens granskningsmyndighet som kontrollerar att Trafikverkets miljardinvesteringar används effektivt.", icke: "Kommunernas revisorer som kontrollerar att kommunala medel används rätt.", forklaring: "Kommunala revisorer granskar kommunerna — Riksrevisionen granskar den statliga förvaltningen." } },
+      { term: "Justitiekanslern (JK)", answer: "Justitiekanslern", definition: "Statens jurist som kontrollerar att andra myndigheter följer Sveriges lagar och andra författningar.", sentence: "_____ är statens chefsjurist och har till uppgift att kontrollera att myndigheter följer Sveriges lagar och övriga författningar.", scenario: "Regeringen behöver en chefsjurist som ser till att hela den statliga förvaltningen håller sig inom lagliga ramar och som kan företräda staten i rättsliga sammanhang.", ickeExempel: { korrekt: "Statens chefsjurist som granskar att alla statliga myndigheter följer lagar och förordningar.", icke: "JO som tar emot klagomål från medborgare om myndigheters felaktiga handläggning.", forklaring: "JO tar emot medborgarnas klagomål — JK är statens egna jurist som kontrollerar att myndigheter följer lagar och författningar." } }
+    ];
+
+    function shuffleArray(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function getFeedback(score, total) {
+      const p = score / total;
+      if (p >= 0.9) return "Redo för provet! Fantastiskt bra!";
+      if (p >= 0.7) return "Bra jobbat! Öva lite till på de du missade.";
+      if (p >= 0.5) return "Halvvägs! Fortsätt träna.";
+      return "Öva lite till – du är på rätt väg!";
+    }
+
+    const P = '#0d9488';
+    const PLIGHT = '#ccfbf1';
+    const PDARK = '#134e4a';
+
+    function LucktextView() {
+      const [inputs, setInputs] = useState(concepts.map(() => ''));
+      const [attempts, setAttempts] = useState(concepts.map(() => 0));
+      const [statuses, setStatuses] = useState(concepts.map(() => null));
+      const [done, setDone] = useState(false);
+
+      const normalize = s => s.trim().toLowerCase();
+      const getAnswer = c => (c.answer || c.term).toLowerCase();
+
+      const submit = (i) => {
+        if (statuses[i] === 'correct' || statuses[i] === 'wrong-final') return;
+        if (normalize(inputs[i]) === getAnswer(concepts[i])) {
+          const s = [...statuses]; s[i] = 'correct'; setStatuses(s);
+        } else {
+          const a = [...attempts]; a[i]++; setAttempts(a);
+          const s = [...statuses]; s[i] = a[i] >= 2 ? 'wrong-final' : 'wrong-once'; setStatuses(s);
+        }
+      };
+
+      const rättaAlla = () => { setStatuses(statuses.map(s => s === 'correct' ? 'correct' : 'wrong-final')); setDone(true); };
+      const börjaOm = () => { setInputs(concepts.map(() => '')); setAttempts(concepts.map(() => 0)); setStatuses(concepts.map(() => null)); setDone(false); };
+
+      const correctCount = statuses.filter(s => s === 'correct').length;
+      const allDone = done || statuses.every(s => s === 'correct' || s === 'wrong-final');
+
+      return (
+        <div>
+          <div className="mb-6 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Begreppsbank</p>
+            <div className="flex flex-wrap gap-2">
+              {concepts.map((c, i) => (
+                <span key={i} className={`px-3 py-1 rounded-full text-sm font-medium border transition-all ${statuses[i] === 'correct' ? 'line-through text-slate-400 bg-teal-50 border-teal-200' : 'bg-teal-50 border-teal-300 text-teal-800'}`}>{c.term}</span>
+              ))}
+            </div>
+          </div>
+          <div className="grid gap-4">
+            {concepts.map((c, i) => {
+              const parts = c.sentence.split('_____');
+              const st = statuses[i];
+              return (
+                <div key={i} className={`bg-white p-5 rounded-2xl shadow-sm border-l-8 transition-all ${st === 'correct' ? 'border-teal-500' : st === 'wrong-final' ? 'border-red-400' : 'border-teal-400'}`}>
+                  <p className="text-slate-700 mb-3 leading-relaxed">{parts[0]}<span className="font-bold text-teal-600">[_____]</span>{parts[1]}</p>
+                  {st === 'correct' ? (
+                    <div className="flex flex-wrap items-center gap-2 text-teal-600"><span className="font-bold">✓ {c.term}</span><span className="text-sm font-normal text-slate-500">– {c.definition}</span></div>
+                  ) : st === 'wrong-final' ? (
+                    <div><p className="text-red-500 text-sm">Rätt svar: <span className="font-bold">{c.term}</span></p><p className="text-slate-500 text-sm mt-1">{c.definition}</p></div>
+                  ) : (
+                    <div>
+                      <div className="flex gap-2">
+                        <input type="text" value={inputs[i]} onChange={e => { const v = [...inputs]; v[i] = e.target.value; setInputs(v); }} onKeyDown={e => e.key === 'Enter' && submit(i)} placeholder="Skriv begreppet och tryck Enter..." className="flex-1 border-2 border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:border-teal-500 text-sm" />
+                        <button onClick={() => submit(i)} style={{background:P}} className="text-white px-4 py-2 rounded-xl font-bold transition-colors">→</button>
+                      </div>
+                      {st === 'wrong-once' && <p className="text-orange-500 text-sm mt-2 font-medium">Är du säker att du stavat rätt?</p>}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <div className="mt-8 flex justify-between items-center">
+            <button onClick={börjaOm} className="text-slate-500 hover:text-slate-700 font-medium transition-colors">↺ Börja om</button>
+            {!allDone && <button onClick={rättaAlla} className="bg-slate-800 text-white px-6 py-3 rounded-2xl font-bold hover:bg-slate-700 transition-colors">Rätta alla</button>}
+          </div>
+          {allDone && (
+            <div className="mt-8 border-2 rounded-3xl p-8 text-center" style={{background:PLIGHT, borderColor:P}}>
+              <p className="text-5xl font-bold mb-2" style={{color:P}}>{correctCount}/{concepts.length}</p>
+              <p className="text-xl font-bold text-slate-800 mb-4">{getFeedback(correctCount, concepts.length)}</p>
+              <button onClick={börjaOm} style={{background:P}} className="text-white px-8 py-3 rounded-2xl font-bold transition-colors">Börja om</button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function ScenarioView() {
+      const genOpts = (idx) => {
+        const others = shuffleArray(concepts.filter((_, i) => i !== idx)).slice(0, 3);
+        return shuffleArray([concepts[idx], ...others]);
+      };
+      const freshState = () => {
+        const ord = shuffleArray(concepts.map((_, i) => i));
+        return { ord, cur: 0, opts: genOpts(ord[0]), answered: null, selected: null, score: 0, done: false };
+      };
+      const [s, setS] = useState(freshState);
+      const concept = concepts[s.ord[s.cur]];
+
+      const handleSelect = (term) => {
+        if (s.answered !== null) return;
+        const isCorrect = term === concept.term;
+        setS(prev => ({ ...prev, answered: isCorrect ? 'correct' : 'wrong', selected: term, score: prev.score + (isCorrect ? 1 : 0) }));
+      };
+
+      const next = () => {
+        const nextCur = s.cur + 1;
+        if (nextCur >= concepts.length) { setS(prev => ({ ...prev, done: true })); return; }
+        setS(prev => ({ ...prev, cur: nextCur, opts: genOpts(prev.ord[nextCur]), answered: null, selected: null }));
+      };
+
+      const reset = () => setS(freshState);
+
+      if (s.done) return (
+        <div className="text-center">
+          <div className="border-2 rounded-3xl p-8 mb-6" style={{background:PLIGHT, borderColor:P}}>
+            <p className="text-5xl font-bold mb-2" style={{color:P}}>{s.score}/{concepts.length}</p>
+            <p className="text-xl font-bold text-slate-800 mb-4">{getFeedback(s.score, concepts.length)}</p>
+            <button onClick={reset} style={{background:P}} className="text-white px-8 py-3 rounded-2xl font-bold transition-colors">Börja om</button>
+          </div>
+        </div>
+      );
+
+      return (
+        <div className="max-w-2xl mx-auto">
+          <div className="flex justify-between items-center mb-3">
+            <span className="font-bold" style={{color:P}}>Poäng: {s.score}</span>
+            <span className="text-slate-400 text-sm">{s.cur + 1} / {concepts.length}</span>
+          </div>
+          <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+            <div className="h-2 rounded-full transition-all" style={{background:P, width:`${((s.cur + 1) / concepts.length) * 100}%`}}></div>
+          </div>
+          <div className="bg-white p-6 rounded-3xl shadow-lg mb-6">
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Vilket begrepp beskrivs?</p>
+            <p className="text-lg text-slate-800 leading-relaxed italic">"{concept.scenario}"</p>
+          </div>
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            {s.opts.map((opt, i) => (
+              <button key={i} onClick={() => handleSelect(opt.term)} disabled={s.answered !== null}
+                className={`p-4 rounded-2xl font-bold border-2 text-left transition-all text-sm ${
+                  s.answered === null ? 'bg-white border-slate-200 hover:bg-teal-50' :
+                  opt.term === concept.term ? 'bg-green-50 border-green-500 text-green-700' :
+                  opt.term === s.selected ? 'bg-red-50 border-red-500 text-red-700' :
+                  'bg-white border-slate-100 text-slate-300'
+                }`} style={s.answered === null ? {borderColor:'#e2e8f0'} : {}}>
+                {opt.term}
+              </button>
+            ))}
+          </div>
+          {s.answered !== null && (
+            <div>
+              <div className={`p-4 rounded-2xl text-sm font-medium mb-4 ${s.answered === 'correct' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>
+                {s.answered === 'correct' ? `✓ Rätt! ${concept.definition}` : `✗ Fel. Rätt svar: ${concept.term} – ${concept.definition}`}
+              </div>
+              <button onClick={next} className="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-slate-800 transition-all">
+                {s.cur + 1 >= concepts.length ? 'Se resultat' : 'Nästa scenario →'}
+              </button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function IckeExempelView() {
+      const makeOpts = (c) => {
+        const flip = Math.random() > 0.5;
+        return flip
+          ? [{ text: c.ickeExempel.korrekt, isCorrect: true }, { text: c.ickeExempel.icke, isCorrect: false }]
+          : [{ text: c.ickeExempel.icke, isCorrect: false }, { text: c.ickeExempel.korrekt, isCorrect: true }];
+      };
+      const freshState = () => {
+        const ord = shuffleArray(concepts.map((_, i) => i));
+        return { ord, cur: 0, opts: makeOpts(concepts[ord[0]]), answered: null, selIdx: null, score: 0, done: false };
+      };
+      const [s, setS] = useState(freshState);
+      const concept = concepts[s.ord[s.cur]];
+
+      const handleSelect = (idx) => {
+        if (s.answered !== null) return;
+        const isCorrect = s.opts[idx].isCorrect;
+        setS(prev => ({ ...prev, answered: isCorrect ? 'correct' : 'wrong', selIdx: idx, score: prev.score + (isCorrect ? 1 : 0) }));
+      };
+
+      const next = () => {
+        const nextCur = s.cur + 1;
+        if (nextCur >= concepts.length) { setS(prev => ({ ...prev, done: true })); return; }
+        setS(prev => ({ ...prev, cur: nextCur, opts: makeOpts(concepts[prev.ord[nextCur]]), answered: null, selIdx: null }));
+      };
+
+      const reset = () => setS(freshState);
+
+      if (s.done) return (
+        <div className="text-center">
+          <div className="border-2 rounded-3xl p-8 mb-6" style={{background:PLIGHT, borderColor:P}}>
+            <p className="text-5xl font-bold mb-2" style={{color:P}}>{s.score}/{concepts.length}</p>
+            <p className="text-xl font-bold text-slate-800 mb-4">{getFeedback(s.score, concepts.length)}</p>
+            <button onClick={reset} style={{background:P}} className="text-white px-8 py-3 rounded-2xl font-bold transition-colors">Börja om</button>
+          </div>
+        </div>
+      );
+
+      return (
+        <div className="max-w-2xl mx-auto">
+          <div className="flex justify-between items-center mb-3">
+            <span className="font-bold" style={{color:P}}>Poäng: {s.score}</span>
+            <span className="text-slate-400 text-sm">{s.cur + 1} / {concepts.length}</span>
+          </div>
+          <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+            <div className="h-2 rounded-full transition-all" style={{background:P, width:`${((s.cur + 1) / concepts.length) * 100}%`}}></div>
+          </div>
+          <div className="bg-white p-6 rounded-3xl shadow-lg mb-6">
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Vilket är rätt tillämpning?</p>
+            <h2 className="text-2xl font-bold" style={{color:P}}>{concept.term}</h2>
+            <p className="text-sm text-slate-500 mt-1 leading-relaxed">{concept.definition}</p>
+          </div>
+          <div className="grid gap-3 mb-6">
+            {s.opts.map((opt, i) => (
+              <button key={i} onClick={() => handleSelect(i)} disabled={s.answered !== null}
+                className={`p-4 rounded-2xl border-2 text-left transition-all ${
+                  s.answered === null ? 'bg-white border-slate-200 hover:bg-teal-50' :
+                  opt.isCorrect ? 'bg-green-50 border-green-500 text-green-700' :
+                  i === s.selIdx ? 'bg-red-50 border-red-500 text-red-700' :
+                  'bg-white border-slate-100 text-slate-300'
+                }`}>
+                <span className="font-bold mr-2">{i === 0 ? 'A' : 'B'}.</span>{opt.text}
+              </button>
+            ))}
+          </div>
+          {s.answered !== null && (
+            <div>
+              <div className={`p-4 rounded-2xl text-sm mb-4 ${s.answered === 'correct' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>
+                <p className="font-bold mb-1">{s.answered === 'correct' ? '✓ Rätt!' : '✗ Fel!'}</p>
+                <p>{concept.ickeExempel.forklaring}</p>
+              </div>
+              <button onClick={next} className="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-slate-800 transition-all">
+                {s.cur + 1 >= concepts.length ? 'Se resultat' : 'Nästa begrepp →'}
+              </button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function FlashcardView() {
+      const total = concepts.length;
+      const [deck, setDeck] = useState(() => shuffleArray([...concepts]));
+      const [deckIdx, setDeckIdx] = useState(0);
+      const [isFlipped, setIsFlipped] = useState(false);
+      const [kudeInte, setKudeInte] = useState([]);
+      const [kunde, setKunde] = useState([]);
+      const [phase, setPhase] = useState('playing');
+
+      const restartAll = () => {
+        setDeck(shuffleArray([...concepts]));
+        setDeckIdx(0);
+        setIsFlipped(false);
+        setKudeInte([]);
+        setKunde([]);
+        setPhase('playing');
+      };
+
+      const sort = (pile) => {
+        const card = deck[deckIdx];
+        const newKudeInte = pile === 'kudeInte' ? [...kudeInte, card] : kudeInte;
+        const newKunde = pile === 'kunde' ? [...kunde, card] : kunde;
+        const nextIdx = deckIdx + 1;
+        setKudeInte(newKudeInte);
+        setKunde(newKunde);
+        setIsFlipped(false);
+        if (nextIdx >= deck.length) {
+          setDeckIdx(nextIdx);
+          setPhase(newKudeInte.length === 0 ? 'allDone' : 'roundEnd');
+        } else {
+          setDeckIdx(nextIdx);
+        }
+      };
+
+      const nextRound = () => {
+        setDeck(shuffleArray([...kudeInte]));
+        setDeckIdx(0);
+        setIsFlipped(false);
+        setKudeInte([]);
+        setPhase('playing');
+      };
+
+      if (phase === 'allDone') return (
+        <div className="flex flex-col items-center gap-6">
+          <div className="bg-green-50 border-2 border-green-400 rounded-3xl p-8 text-center w-full max-w-sm">
+            <div className="text-5xl mb-4">🎉</div>
+            <p className="text-2xl font-bold text-green-700 mb-2">Alla kort klarade!</p>
+            <p className="text-slate-600 mb-6">Du behärskar <span className="font-bold text-green-700">{kunde.length} av {total}</span> begrepp.</p>
+            <button onClick={restartAll} style={{background:P}} className="w-full text-white px-8 py-3 rounded-2xl font-bold transition-colors">Börja om med alla</button>
+          </div>
+        </div>
+      );
+
+      if (phase === 'roundEnd') return (
+        <div className="flex flex-col items-center gap-6">
+          <div className="bg-white border-2 border-slate-200 rounded-3xl p-8 text-center w-full max-w-sm shadow-sm">
+            <p className="text-lg font-bold text-slate-700 mb-4">Runda klar!</p>
+            <div className="flex justify-center gap-8 mb-6">
+              <div className="text-center">
+                <p className="text-3xl font-bold text-green-600">{kunde.length}</p>
+                <p className="text-xs text-slate-400 uppercase tracking-wide mt-1">Kunde</p>
+              </div>
+              <div className="text-center">
+                <p className="text-3xl font-bold text-red-500">{kudeInte.length}</p>
+                <p className="text-xs text-slate-400 uppercase tracking-wide mt-1">Kunde inte</p>
+              </div>
+            </div>
+            <div className="flex flex-col gap-3">
+              <button onClick={nextRound} className="w-full bg-slate-900 text-white px-8 py-3 rounded-2xl font-bold hover:bg-slate-800 transition-colors">
+                Öva på Kunde inte ({kudeInte.length} kort) →
+              </button>
+              <button onClick={restartAll} style={{background:P}} className="w-full text-white px-8 py-3 rounded-2xl font-bold transition-colors">
+                Börja om med alla
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+
+      const card = deck[deckIdx];
+      const remaining = deck.length - deckIdx;
+
+      return (
+        <div className="flex flex-col items-center">
+          <div className="flex gap-3 mb-5 w-full max-w-sm">
+            <div className="flex-1 bg-red-50 border border-red-200 rounded-xl p-2 text-center">
+              <p className="text-xl font-bold text-red-500">{kudeInte.length}</p>
+              <p className="text-[10px] text-red-400 uppercase tracking-wide font-bold">Kunde inte</p>
+            </div>
+            <div className="flex-1 bg-slate-100 border border-slate-200 rounded-xl p-2 text-center">
+              <p className="text-xl font-bold text-slate-400">{remaining}</p>
+              <p className="text-[10px] text-slate-400 uppercase tracking-wide font-bold">Kvar</p>
+            </div>
+            <div className="flex-1 bg-green-50 border border-green-200 rounded-xl p-2 text-center">
+              <p className="text-xl font-bold text-green-500">{kunde.length}</p>
+              <p className="text-[10px] text-green-400 uppercase tracking-wide font-bold">Kunde</p>
+            </div>
+          </div>
+          <div className="flip-card mb-5" onClick={() => setIsFlipped(!isFlipped)}>
+            <div className={`flip-card-inner ${isFlipped ? 'flipped-classes' : ''}`}>
+              <div className="flip-card-front">
+                <h2 className="text-3xl font-bold text-white text-center px-4">{card.term}</h2>
+                <div className="absolute bottom-6 animate-pulse"><span className="text-[10px] uppercase tracking-[0.2em] text-teal-100 font-bold opacity-80">Klicka för svar</span></div>
+              </div>
+              <div className="flip-card-back">
+                <p className="text-xl leading-relaxed text-slate-800 font-medium px-4">{card.definition}</p>
+                <div className="absolute bottom-6"><span className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">Klicka för att vända</span></div>
+              </div>
+            </div>
+          </div>
+          {isFlipped && (
+            <div className="flex gap-3 w-full max-w-sm mb-4">
+              <button onClick={() => sort('kudeInte')} className="flex-1 bg-red-100 text-red-700 border-2 border-red-300 font-bold py-3 rounded-2xl hover:bg-red-200 active:scale-95 transition-all">
+                ✗ Kunde inte
+              </button>
+              <button onClick={() => sort('kunde')} className="flex-1 bg-green-100 text-green-700 border-2 border-green-300 font-bold py-3 rounded-2xl hover:bg-green-200 active:scale-95 transition-all">
+                ✓ Kunde
+              </button>
+            </div>
+          )}
+          <div className="flex flex-col items-center gap-2 mt-1">
+            <p className="text-slate-500 font-medium bg-slate-200 px-4 py-1 rounded-full text-xs">{deckIdx + 1} av {deck.length}</p>
+            <button onClick={restartAll} className="text-slate-400 text-xs hover:text-slate-600 transition-colors underline">↺ Börja om med alla</button>
+          </div>
+        </div>
+      );
+    }
+
+    function App() {
+      const [view, setView] = useState('list');
+
+      const activeTab = 'text-white font-bold shadow-sm';
+      const inactiveTab = 'text-slate-500';
+
+      return (
+        <div className="min-h-screen p-4 md:p-8">
+          <header className="max-w-2xl mx-auto mb-8 flex items-center justify-between">
+            <a href="index.html" className="text-slate-500 hover:text-teal-600 transition-colors flex items-center gap-2 font-medium text-sm">← Tillbaka till startsidan</a>
+            <h1 className="text-2xl md:text-3xl font-bold text-center">Block 1 – Rätten och samhället</h1>
+            <div className="w-36"></div>
+          </header>
+
+          <div className="max-w-2xl mx-auto mb-10 flex bg-white p-1 rounded-full shadow-md border border-slate-200 overflow-x-auto">
+            {[['list','Lista'],['flashcards','Flashcards'],['lucktext','Lucktext'],['scenario','Scenario'],['icke','Icke-ex.']].map(([v, label]) => (
+              <button key={v} onClick={() => setView(v)}
+                className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm whitespace-nowrap ${view === v ? activeTab : inactiveTab}`}
+                style={view === v ? {background:P} : {}}>
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <main className="max-w-2xl mx-auto">
+            {view === 'list' && (
+              <div className="grid gap-4">
+                {concepts.map((item, index) => (
+                  <div key={index} className="bg-white p-5 rounded-2xl border-l-8 shadow-sm hover:shadow-md transition-shadow" style={{borderColor:P}}>
+                    <div className="flex items-center gap-3 mb-1">
+                      <span className="text-xs font-bold px-2 py-1 rounded-lg" style={{background:PLIGHT, color:PDARK}}>{index + 1}</span>
+                      <h3 className="text-lg font-bold">{item.term}</h3>
+                    </div>
+                    <p className="text-slate-600 leading-relaxed ml-10">{item.definition}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+            {view === 'flashcards' && <FlashcardView />}
+            {view === 'lucktext' && <LucktextView />}
+            {view === 'scenario' && <ScenarioView />}
+            {view === 'icke' && <IckeExempelView />}
+          </main>
+
+          <footer className="mt-12 text-center text-slate-400 text-sm italic pb-8">Källa: Rätten och samhället – Block 1 begreppslista</footer>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
