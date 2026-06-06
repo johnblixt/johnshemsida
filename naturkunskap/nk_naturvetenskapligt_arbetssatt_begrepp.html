@@ -132,7 +132,8 @@ function App() {
       <main className="max-w-3xl mx-auto px-4 py-6">
         {view === 'Lista' && <ListView />}
         {view === 'Flashcards' && <FlashcardsView />}
-        {view !== 'Lista' && view !== 'Flashcards' && (
+        {view === 'Lucktext' && <LucktextView />}
+        {view !== 'Lista' && view !== 'Flashcards' && view !== 'Lucktext' && (
           <p className="text-center text-gray-400 mt-20 text-lg">Kommer snart…</p>
         )}
       </main>
@@ -233,6 +234,226 @@ function FlashcardsView() {
       >
         {index + 1} av {deck.length}
       </span>
+    </div>
+  );
+}
+
+const lucktextData = [
+  { term: 'Den vetenskapliga revolutionen', sentence: 'Under ___ började europeiska forskare att använda systematiska experiment istället för att luta sig mot kyrkans lära.' },
+  { term: 'Frågeställning', sentence: 'Innan vi satte igång laborationen formulerade vi en tydlig ___ som angav exakt vad vi ville ta reda på.' },
+  { term: 'Hypotes', sentence: 'Vi formulerade en ___ om att mer ljus ger snabbare tillväxt, men vi visste inte om den stämde förrän efter experimentet.' },
+  { term: 'Testbar hypotes', sentence: 'En ___ är en sådan som faktiskt går att undersöka med mätningar och observationer.' },
+  { term: 'Falsifierbar hypotes', sentence: 'Karl Popper menade att en vetenskaplig ___ måste gå att motbevisa — annars räknas den inte som vetenskap.' },
+  { term: 'Repeterbart experiment', sentence: 'Resultaten accepterades i forskarvärlden eftersom det var ett ___ som oberoende laboratorier kunde kontrollera.' },
+  { term: 'Observationer', sentence: 'Astronomer samlar in data genom ___ eftersom de inte kan utföra experiment på stjärnor.' },
+  { term: 'Experiment', sentence: 'I ett ___ ändrar forskaren medvetet en faktor och mäter hur det påverkar resultatet.' },
+  { term: 'Simuleringar', sentence: 'Klimatforskare använder ___ för att beräkna hur temperaturen kan förändras de kommande hundra åren.' },
+  { term: 'Den vetenskapliga metoden', sentence: '___ beskriver en idealiserad ordning av steg, men i praktiken arbetar forskare sällan exakt på det sättet.' },
+  { term: 'Den hypotetisk-deduktiva metoden', sentence: 'Med ___ börjar man med en frågeställning, formulerar en hypotes och förutsägelse, genomför undersökningen och drar sedan en slutsats.' },
+  { term: 'Förutsägelse', sentence: 'Utifrån vår hypotes formulerade vi en ___: om pH-värdet stiger kommer bakterietillväxten att minska.' },
+  { term: 'Slutsats', sentence: 'I rapportens ___ tolkade vi resultaten och konstaterade att hypotesen fick stöd av mätningarna.' },
+  { term: 'Vetenskaplig teori', sentence: 'Evolutionen är en ___ — inte bara en gissning — eftersom den bygger på enorma mängder bevis från flera vetenskapsgrenar.' },
+  { term: 'Paradigmskifte', sentence: 'När forskarna accepterade att Jorden kretsar runt Solen istället för tvärtom skedde ett ___ i astronomin.' },
+  { term: 'Naturvetenskapens begränsningar', sentence: 'Frågan om vad som är moraliskt rätt i sjukvården är ett exempel på ___ — vetenskapen kan inte ge svaret.' },
+  { term: 'Forskningsetik', sentence: '___ innebär att forskning ska bedrivas objektivt och med hänsyn till dem som deltar i studierna.' },
+  { term: 'Forskningsfusk', sentence: 'Att medvetet utelämna resultat som talar emot sin hypotes är ett allvarligt exempel på ___.' },
+  { term: 'Etikprövning', sentence: 'Innan försöket fick genomföras på råttor krävdes en ___ av den ansvariga myndigheten.' },
+  { term: 'Oberoende variabel', sentence: 'I experimentet var ljusmängden ___ — det var den faktorn vi ändrade för att se vad som hände.' },
+  { term: 'Beroende variabel', sentence: 'Växtens höjd var ___ — vi mätte den för att se hur den påverkades av ljusmängden.' },
+  { term: 'Kontrollerade variabler', sentence: 'Temperatur, vattenmängd och jordmån behandlades som ___ och hölls konstanta under hela försöket.' },
+  { term: 'Störvariabler', sentence: 'Drag från ett öppet fönster var en möjlig ___ som vi försökte eliminera under laborationen.' },
+  { term: 'Kontrollgrupp', sentence: '___ fick vanligt vatten utan tillsatser och gav oss ett jämförelsevärde mot experimentgruppen.' },
+  { term: 'Experimentgrupp', sentence: '___ fick vatten med gödningsmedel för att vi skulle kunna jämföra effekten mot kontrollgruppen.' },
+  { term: 'Slumpen', sentence: 'Genom att använda 200 försökspersoner minskade vi risken för att resultatet berodde på ___.' },
+  { term: 'Blindstudie', sentence: 'I en ___ vet deltagarna inte om de tar den aktiva medicinen eller ett overksamt sockerpiller.' },
+  { term: 'Placeboeffekten', sentence: 'Patienterna som fick sockerpiller förbättrades ändå, vilket var ett tydligt exempel på ___.' },
+  { term: 'Medelvärde', sentence: 'Vi beräknade ___ av de fem mätningarna för att få ett mer tillförlitligt resultat.' },
+  { term: 'Trendlinje', sentence: 'Diagrammet visade en stigande ___ som antydde att temperaturen ökat stadigt under de senaste decennierna.' },
+  { term: 'Samvariation (korrelation)', sentence: 'Det finns en ___ mellan skostorlek och läsförmåga hos barn, men det beror på att båda ökar med åldern.' },
+  { term: 'Orsakssamband', sentence: 'Att rökning leder till lungcancer är ett bevisat ___ — rökningen är den direkta orsaken.' },
+  { term: 'Vetenskaplig rapport', sentence: 'Läraren bad oss skriva en ___ med delarna inledning, metod, resultat och diskussion.' },
+  { term: 'Riskbedömning', sentence: 'Innan laborationen med syra fyllde vi i en ___ för att identifiera vilka skyddsåtgärder som krävdes.' },
+  { term: 'Farosymboler', sentence: '___ på kemikalierna varnade oss för att produkten var frätande och att vi behövde handskar och skyddsglasögon.' },
+  { term: 'Vetenskapligt förhållningssätt', sentence: 'Ett ___ innebär att man granskar påståenden kritiskt och inte accepterar dem utan tillräckliga bevis.' },
+  { term: 'Källkritik', sentence: 'Läraren betonade vikten av ___ och uppmanade oss att alltid kontrollera vem som ligger bakom informationen.' },
+  { term: 'Källkritikens ABC', sentence: 'Med hjälp av ___ ställde vi frågor om källan var äkta, aktuell, oberoende och granskad.' },
+  { term: 'Primärkälla', sentence: 'Den vetenskapliga artikeln är en ___ eftersom den bygger på forskarnas egna experiment och data.' },
+  { term: 'Sekundärkälla', sentence: 'Wikipedia är ofta en ___ — den sammanfattar vad andra skrivit snarare än att presentera egna undersökningar.' },
+  { term: 'Tendensiös (vinklad) källa', sentence: 'Rapporten finansierad av tobaksindustrin är ett exempel på en ___ eftersom den har ett ekonomiskt intresse i resultatet.' },
+  { term: 'Peer review', sentence: 'Artikeln publicerades först efter ___ där två oberoende experter kontrollerade metod och slutsatser.' },
+  { term: 'Desinformation', sentence: 'Påhittade nyheter som sprids medvetet för att lura folk kallas ___.' },
+  { term: 'Propaganda', sentence: '___ används för att forma allmänhetens opinion och misskreditera politiska motståndare.' },
+  { term: 'Deepfakes', sentence: '___ gjorde det svårt att avgöra om videon verkligen föreställde politikern eller om den var AI-genererad.' },
+  { term: 'Konspirationsteorier', sentence: '___ om att månlandningen var regisserad saknar vetenskapligt stöd men lever kvar i vissa grupper.' },
+  { term: 'Faktaresistens', sentence: '___ innebär att en person vägrar ändra uppfattning trots att tydliga bevis talar emot dennes övertygelse.' },
+  { term: 'Ekokammare', sentence: 'På vissa forum uppstår en ___ där alla håller med varandra och kritiska röster tystas ner.' },
+  { term: 'Filterbubblor', sentence: 'Algoritmen skapade ___ som gjorde att hon bara såg nyheter som bekräftade hennes politiska åsikter.' },
+  { term: 'Bekräftelsebias', sentence: '___ fick honom att lägga mer vikt vid studier som stödde hans teori och ignorera dem som talade emot.' },
+  { term: 'Kognitiv dissonans', sentence: 'Han upplevde ___ när vetenskapliga fakta om klimatförändringar krockade med hans övertygelse om att allt var normalt.' },
+  { term: 'Pseudovetenskap', sentence: 'Astrologi är ett exempel på ___ — den låter vetenskaplig men saknar empiriskt stöd.' },
+];
+
+function LucktextView() {
+  const initStates = () => lucktextData.map(() => ({ input: '', status: 'idle' }));
+  const [states, setStates] = React.useState(initStates);
+  const [finished, setFinished] = React.useState(false);
+
+  const correctCount = states.filter(s => s.status === 'correct').length;
+
+  React.useEffect(() => {
+    if (states.length > 0 && states.every(s => s.status === 'correct' || s.status === 'revealed')) {
+      setFinished(true);
+    }
+  }, [states]);
+
+  function updateState(i, patch) {
+    setStates(prev => {
+      const next = [...prev];
+      next[i] = { ...next[i], ...patch };
+      return next;
+    });
+  }
+
+  function handleSubmit(i) {
+    const s = states[i];
+    if (s.status === 'correct' || s.status === 'revealed') return;
+    const answer = s.input.trim();
+    const term = lucktextData[i].term;
+    if (answer.toLowerCase() === term.toLowerCase()) {
+      updateState(i, { status: 'correct' });
+    } else if (s.status === 'idle') {
+      updateState(i, { status: 'warn' });
+    } else {
+      updateState(i, { status: 'error' });
+    }
+  }
+
+  function rattaAlla() {
+    setStates(prev => prev.map(s =>
+      s.status === 'correct' ? s : { ...s, status: 'revealed' }
+    ));
+    setFinished(true);
+  }
+
+  function borjaOm() {
+    setStates(initStates());
+    setFinished(false);
+  }
+
+  function grade() {
+    const pct = correctCount / lucktextData.length;
+    if (pct === 1) return 'Perfekt! Du kan alla begreppen!';
+    if (pct >= 0.8) return 'Bra jobbat! Öva lite till på de du missade.';
+    if (pct >= 0.6) return 'Godkänt — fortsätt öva så sitter det snart!';
+    return 'Fortsätt öva — du lär dig mer för varje gång!';
+  }
+
+  return (
+    <div className="flex flex-col gap-5">
+      {/* Begreppsbank */}
+      <div className="bg-white rounded-xl shadow-sm p-4">
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Begreppsbank</p>
+        <div className="flex flex-wrap gap-2">
+          {lucktextData.map((item, i) => (
+            <span
+              key={i}
+              className="text-sm px-2 py-0.5 rounded-full transition-all"
+              style={{
+                backgroundColor: states[i].status === 'correct' ? LIGHT_BG : '#f3f4f6',
+                color: states[i].status === 'correct' ? DARK_TEXT : '#9ca3af',
+                textDecoration: states[i].status === 'correct' ? 'line-through' : 'none',
+              }}
+            >
+              {item.term}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Meningar */}
+      {lucktextData.map((item, i) => {
+        const st = states[i];
+        const parts = item.sentence.split('___');
+        const def = begrepp.find(b => b.term === item.term)?.def ?? '';
+
+        let borderColor = '#e5e7eb';
+        if (st.status === 'correct') borderColor = '#16a34a';
+        else if (st.status === 'revealed') borderColor = '#dc2626';
+        else if (st.status === 'warn') borderColor = '#f97316';
+        else if (st.status === 'error') borderColor = '#dc2626';
+
+        return (
+          <div
+            key={i}
+            className="bg-white rounded-xl shadow-sm px-5 py-4"
+            style={{ border: `2px solid ${borderColor}` }}
+          >
+            <p className="text-gray-700 leading-relaxed">
+              {parts[0]}
+              {st.status === 'correct' && (
+                <strong style={{ color: '#16a34a' }}>{item.term}</strong>
+              )}
+              {st.status === 'revealed' && (
+                <strong style={{ color: '#dc2626' }}>{item.term}</strong>
+              )}
+              {st.status !== 'correct' && st.status !== 'revealed' && (
+                <input
+                  type="text"
+                  value={st.input}
+                  onChange={e => updateState(i, { input: e.target.value })}
+                  onKeyDown={e => e.key === 'Enter' && handleSubmit(i)}
+                  className="border-b-2 border-gray-300 focus:border-green-500 outline-none px-1 mx-1 text-gray-800 font-semibold bg-transparent"
+                  style={{ width: `${Math.max(item.term.length * 0.65, 8)}em` }}
+                  placeholder="..."
+                />
+              )}
+              {parts[1]}
+            </p>
+
+            {st.status === 'warn' && (
+              <p className="text-sm font-semibold mt-2" style={{ color: '#f97316' }}>
+                Är du säker att du stavat rätt?
+              </p>
+            )}
+            {st.status === 'error' && (
+              <p className="text-sm font-semibold mt-2 text-red-600">
+                Fel svar — fortsätt försöka eller tryck "Rätta alla".
+              </p>
+            )}
+            {st.status === 'correct' && (
+              <p className="text-sm text-gray-500 mt-2">✓ {def}</p>
+            )}
+            {st.status === 'revealed' && (
+              <p className="text-sm text-gray-500 mt-2">{def}</p>
+            )}
+          </div>
+        );
+      })}
+
+      {!finished && (
+        <button
+          onClick={rattaAlla}
+          className="mx-auto px-6 py-2.5 rounded-full font-semibold text-white bg-slate-900 hover:bg-slate-700 transition-colors"
+        >
+          Rätta alla
+        </button>
+      )}
+
+      {finished && (
+        <div className="bg-white rounded-xl shadow-sm p-6 text-center">
+          <p className="text-4xl font-bold mb-2" style={{ color: DARK_TEXT }}>
+            {correctCount} / {lucktextData.length} rätt
+          </p>
+          <p className="text-gray-600 mb-5">{grade()}</p>
+          <button
+            onClick={borjaOm}
+            className="px-6 py-2.5 rounded-full font-semibold text-white"
+            style={{ backgroundColor: PRIMARY }}
+          >
+            Börja om
+          </button>
+        </div>
+      )}
     </div>
   );
 }
