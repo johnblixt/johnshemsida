@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Naturvetenskapligt arbetssätt – Begrepp</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: 'Fredoka', sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+<div id="root"></div>
+
+<script type="text/babel">
+const PRIMARY = '#22c55e';
+const LIGHT_BG = '#dcfce7';
+const DARK_TEXT = '#14532d';
+
+const begrepp = [
+  { term: 'Den vetenskapliga revolutionen', def: 'Perioden efter medeltiden i Europa då man började använda systematiska undersökningsmetoder och experiment istället för att söka svar i antika skrifter eller kyrkans lära.' },
+  { term: 'Frågeställning', def: 'En specifik och avgränsad fråga som preciserar syftet med en undersökning.' },
+  { term: 'Hypotes', def: 'Ett påstående som ger ett möjligt svar på frågeställningen. När en hypotes föreslås vet man inte om den är sann eller falsk.' },
+  { term: 'Testbar hypotes', def: 'En hypotes som går att undersöka genom experiment och observationer.' },
+  { term: 'Falsifierbar hypotes', def: 'En hypotes som är möjlig att motbevisa, exempelvis genom att resultaten motsäger den.' },
+  { term: 'Repeterbart experiment', def: 'Ett experiment som kan upprepas och kontrolleras av andra.' },
+  { term: 'Observationer', def: 'Att samla in resultat genom att iaktta, exempelvis inom astronomin där man inte kan göra experiment.' },
+  { term: 'Experiment', def: 'En undersökning där man avsiktligt ändrar en variabel för att undersöka effekten på något annat.' },
+  { term: 'Simuleringar', def: 'Datorberäkningar som används för att förutsäga förlopp, exempelvis framtida temperaturförändringar i klimatforskningen.' },
+  { term: 'Den vetenskapliga metoden', def: 'Uttryck för en bestämd ordning av steg i forskning; i praktiken finns ingen enda metod som alla naturvetare följer.' },
+  { term: 'Den hypotetisk-deduktiva metoden', def: 'Arbetsgång där en frågeställning leder till en hypotes, en förutsägelse, en undersökning och slutligen en slutsats.' },
+  { term: 'Förutsägelse', def: 'Ett påstående om vad man förväntar sig ska hända om hypotesen stämmer.' },
+  { term: 'Slutsats', def: 'Tolkning av resultaten för att avgöra om förutsägelsen inträffat. Inträffar den får hypotesen stöd; annars motbevisas (falsifieras) den.' },
+  { term: 'Vetenskaplig teori', def: 'En väl underbyggd förklaringsmodell för hur något i omvärlden är uppbyggt eller fungerar. Långt mer än en gissning.' },
+  { term: 'Paradigmskifte', def: 'När en vetenskaplig teori ersätts av en annan.' },
+  { term: 'Naturvetenskapens begränsningar', def: 'Naturvetenskapen kan bara undersöka sådant som går att testa och kan inte besvara moraliska frågor om vad som är rätt och fel.' },
+  { term: 'Forskningsetik', def: 'Vägledning från etikprövningsmyndighet och etiska kommittéer för att forskning ska utföras på ett etiskt och objektivt sätt.' },
+  { term: 'Forskningsfusk', def: 'Att plagiera, förfalska eller undanhålla resultat från sin forskning.' },
+  { term: 'Etikprövning', def: 'Prövning som i regel krävs innan experiment får utföras på bläckfiskar, ryggradsdjur och människor.' },
+  { term: 'Oberoende variabel', def: 'Det som ändras i ett experiment, och som antas orsaka en förändring.' },
+  { term: 'Beroende variabel', def: 'Det som mäts, och som antas påverkas av den oberoende variabeln.' },
+  { term: 'Kontrollerade variabler', def: 'Faktorer som hålls så konstanta som möjligt för att de inte ska påverka resultatet.' },
+  { term: 'Störvariabler', def: 'Andra faktorer som kan påverka resultatet och därför måste hållas konstanta.' },
+  { term: 'Kontrollgrupp', def: 'En jämförelsegrupp som inte utsätts för behandlingen eller det verksamma ämnet, vilket minskar risken att andra variabler påverkar slutsatsen.' },
+  { term: 'Experimentgrupp', def: 'Den grupp som utsätts för behandlingen eller det verksamma ämne som undersöks.' },
+  { term: 'Slumpen', def: 'Slumpmässiga variationer; ju fler försökspersoner eller upprepningar, desto mindre risk att resultatet beror på slumpen.' },
+  { term: 'Blindstudie', def: 'Studie där försökspersonerna inte vet om de får en aktiv substans eller inte, för att utesluta placeboeffekten.' },
+  { term: 'Placeboeffekten', def: 'Påverkan på ett behandlingsresultat som beror på att försökspersonen förväntar sig att bli bättre, trots att ingen verksam medicin getts.' },
+  { term: 'Medelvärde', def: 'Det beräknade genomsnittet av flera mätvärden, ofta redovisat per försöksgrupp.' },
+  { term: 'Trendlinje', def: 'En linje i ett diagram som visar den övergripande tendensen i mätvärdena.' },
+  { term: 'Samvariation (korrelation)', def: 'När två variabler varierar tillsammans.' },
+  { term: 'Orsakssamband', def: 'När en variabel faktiskt orsakar förändring i en annan. Samvariation behöver inte betyda orsakssamband.' },
+  { term: 'Vetenskaplig rapport', def: 'Skriftlig redovisning av ett experiment med delarna inledning, material och metod, resultat, diskussion och källförteckning.' },
+  { term: 'Riskbedömning', def: 'Bedömning av risker som görs innan det praktiska arbetet i exempelvis en laboration påbörjas.' },
+  { term: 'Farosymboler', def: 'Märkning av hälso- och brandfarliga produkter, t.ex. skadlig, brandfarlig, frätande, hälsofarlig, miljöfarlig och giftig.' },
+  { term: 'Vetenskapligt förhållningssätt', def: 'Att ha ett kritiskt tänkande, vara opartisk, vara öppen för nya idéer och basera sina slutsatser på välgrundade fakta.' },
+  { term: 'Källkritik', def: 'Att systematiskt granska och bedöma källors trovärdighet.' },
+  { term: 'Källkritikens ABC', def: 'Frågorna man ställer om en källa: är den äkta, aktuell, beroende, tendensiös och granskad?' },
+  { term: 'Primärkälla', def: 'Källa som bygger på egen data, t.ex. vetenskapliga artiklar baserade på observationer och experiment. Mer tillförlitlig.' },
+  { term: 'Sekundärkälla', def: 'Källa som hämtar sin information från andra källor. Mindre pålitlig eftersom den är beroende av att ursprungskällan är korrekt.' },
+  { term: 'Tendensiös (vinklad) källa', def: 'En källa med underliggande politiska, ekonomiska eller ideologiska intressen, vilket gör den mindre trovärdig.' },
+  { term: 'Peer review', def: 'Granskning av en vetenskaplig rapport av minst två oberoende forskare innan publicering; ett sätt att garantera kvaliteten.' },
+  { term: 'Desinformation', def: 'Felaktig information som sprids medvetet för att lura eller vilseleda.' },
+  { term: 'Propaganda', def: 'Kommunikation som syftar till att påverka den allmänna opinionen och undergräva motståndare. Räknas som desinformation när den medvetet sprider falsk information.' },
+  { term: 'Deepfakes', def: 'Falska bilder, videor och ljudinspelningar av personer som skapats med hjälp av AI.' },
+  { term: 'Konspirationsteorier', def: 'Föreställningar om att hemliga grupper i en sammansvärjning arbetar för att uppnå dolda mål.' },
+  { term: 'Faktaresistens', def: 'När en person håller fast vid sin övertygelse trots att fakta talar emot.' },
+  { term: 'Ekokammare', def: 'En miljö, t.ex. på sociala medier, där en grupps åsikter förstärks genom att användarna ständigt bekräftar varandra.' },
+  { term: 'Filterbubblor', def: 'När algoritmer på sociala medier anpassar innehållet efter en persons profil, så att man främst möter information som bekräftar den egna världsbilden.' },
+  { term: 'Bekräftelsebias', def: 'Tendensen att ha högre tilltro till information som redan stämmer med de egna uppfattningarna.' },
+  { term: 'Kognitiv dissonans', def: 'Den inre konflikt som uppstår av motstridiga fakta, vilket kan få personer att förneka fakta snarare än att ändra uppfattning.' },
+  { term: 'Pseudovetenskap', def: 'Läror som gör anspråk på att vara vetenskapliga utan att ha vetenskapligt stöd, t.ex. astrologi.' },
+];
+
+const VIEWS = ['Lista', 'Flashcards', 'Lucktext', 'Scenario', 'Icke-ex.'];
+
+function App() {
+  const [view, setView] = React.useState('Lista');
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white shadow-sm">
+        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+          <a
+            href="../index.html"
+            className="text-sm font-medium text-gray-500 hover:text-green-600 transition-colors"
+          >
+            ← Tillbaka till startsidan
+          </a>
+          <h1
+            className="text-2xl font-bold text-center tracking-wide"
+            style={{ color: DARK_TEXT }}
+          >
+            Naturvetenskapligt arbetssätt
+          </h1>
+          <div className="w-40" />
+        </div>
+      </header>
+
+      {/* Toggle */}
+      <div className="max-w-3xl mx-auto px-4 pt-6 pb-2">
+        <div className="flex bg-white rounded-full shadow-sm border border-gray-200 p-1 gap-1 w-fit mx-auto">
+          {VIEWS.map(v => (
+            <button
+              key={v}
+              onClick={() => setView(v)}
+              className="px-4 py-1.5 rounded-full text-sm font-semibold transition-colors"
+              style={
+                view === v
+                  ? { backgroundColor: PRIMARY, color: '#fff' }
+                  : { color: '#6b7280', backgroundColor: 'transparent' }
+              }
+            >
+              {v}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Content */}
+      <main className="max-w-3xl mx-auto px-4 py-6">
+        {view === 'Lista' && <ListView />}
+        {view !== 'Lista' && (
+          <p className="text-center text-gray-400 mt-20 text-lg">Kommer snart…</p>
+        )}
+      </main>
+
+      {/* Footer */}
+      <footer className="text-center py-6 text-sm italic text-gray-400">
+        Källa: Naturkunskap 1a1 — Naturvetenskapligt arbetssätt
+      </footer>
+    </div>
+  );
+}
+
+function ListView() {
+  return (
+    <div className="flex flex-col gap-3">
+      {begrepp.map((b, i) => (
+        <div
+          key={i}
+          className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
+          style={{ borderLeft: `8px solid ${PRIMARY}` }}
+        >
+          <div className="px-5 py-4 flex gap-4 items-start">
+            <span
+              className="text-sm font-bold rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mt-0.5"
+              style={{ backgroundColor: LIGHT_BG, color: DARK_TEXT }}
+            >
+              {i + 1}
+            </span>
+            <div>
+              <p className="font-bold text-gray-800">{b.term}</p>
+              <p className="text-gray-500 text-sm mt-0.5">{b.def}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
