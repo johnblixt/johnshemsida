@@ -11,6 +11,11 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
     body { font-family: 'Fredoka', sans-serif; }
+    .flip-card { perspective: 1000px; height: 350px; width: 100%; max-width: 400px; cursor: pointer; }
+    .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+    .flipped-classes { transform: rotateY(180deg); }
+    .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+    .flip-card-back { transform: rotateY(180deg); }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -126,7 +131,8 @@ function App() {
       {/* Content */}
       <main className="max-w-3xl mx-auto px-4 py-6">
         {view === 'Lista' && <ListView />}
-        {view !== 'Lista' && (
+        {view === 'Flashcards' && <FlashcardsView />}
+        {view !== 'Lista' && view !== 'Flashcards' && (
           <p className="text-center text-gray-400 mt-20 text-lg">Kommer snart…</p>
         )}
       </main>
@@ -162,6 +168,71 @@ function ListView() {
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function FlashcardsView() {
+  const [deck, setDeck] = React.useState(() => shuffle(begrepp));
+  const [index, setIndex] = React.useState(0);
+  const [flipped, setFlipped] = React.useState(false);
+
+  function next() {
+    setFlipped(false);
+    setTimeout(() => {
+      if (index + 1 < deck.length) {
+        setIndex(i => i + 1);
+      } else {
+        const last = deck[deck.length - 1];
+        let newDeck = shuffle(begrepp);
+        if (newDeck[0].term === last.term && newDeck.length > 1) {
+          [newDeck[0], newDeck[1]] = [newDeck[1], newDeck[0]];
+        }
+        setDeck(newDeck);
+        setIndex(0);
+      }
+    }, 300);
+  }
+
+  const card = deck[index];
+
+  return (
+    <div className="flex flex-col items-center gap-6 py-4">
+      <div className="flip-card" onClick={() => setFlipped(f => !f)}>
+        <div className={`flip-card-inner${flipped ? ' flipped-classes' : ''}`}>
+          <div className="flip-card-front" style={{ backgroundColor: PRIMARY }}>
+            <p className="text-3xl font-bold text-white">{card.term}</p>
+            <p className="text-white text-sm mt-auto animate-pulse">Klicka för svar</p>
+          </div>
+          <div className="flip-card-back bg-white" style={{ border: `3px solid ${PRIMARY}` }}>
+            <p className="text-lg text-gray-700">{card.def}</p>
+            <p className="text-sm mt-auto" style={{ color: PRIMARY }}>Klicka för att vända</p>
+          </div>
+        </div>
+      </div>
+
+      <button
+        onClick={next}
+        className="bg-slate-900 text-white px-6 py-2.5 rounded-full font-semibold hover:bg-slate-700 transition-colors"
+      >
+        Nästa begrepp →
+      </button>
+
+      <span
+        className="text-sm font-semibold px-4 py-1.5 rounded-full"
+        style={{ backgroundColor: LIGHT_BG, color: DARK_TEXT }}
+      >
+        {index + 1} av {deck.length}
+      </span>
     </div>
   );
 }
