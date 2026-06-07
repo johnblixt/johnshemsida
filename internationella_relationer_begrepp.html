@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internationella relationer – Begreppslista</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body { font-family: 'Fredoka', sans-serif; }
+        .flip-card { perspective: 1000px; height: 350px; width: 100%; max-width: 400px; cursor: pointer; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+        .flipped-classes { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+        .flip-card-front { background-color: #fbbf24; border: 6px solid white; }
+        .flip-card-back { background-color: white; border: 6px solid #fbbf24; transform: rotateY(180deg); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState } = React;
+
+        const PRIMARY = '#fbbf24';
+
+        const concepts = [
+            {
+                term: "Europeiska unionen (EU)",
+                definition: "En politisk och ekonomisk union av 27 europeiska länder som samarbetar för att främja fred, välstånd och frihet.",
+                sentence: "Sverige blev medlem i _____ år 1995 och deltar sedan dess i ett samarbete med 26 andra europeiska länder.",
+                scenario: "Tjugosjus länder i Europa samarbetar om handelspolitik, miljölagar och fri rörlighet för att gemensamt stärka fred och välstånd.",
+                ickeExempel: {
+                    korrekt: "EU är en politisk och ekonomisk union där 27 länder samarbetar om gemensamma lagar och fri rörlighet.",
+                    icke: "EU är en militär allians som garanterar att alla medlemsländer försvarar varandra vid ett angrepp.",
+                    forklaring: "EU är primärt en politisk och ekonomisk union – det militära försvarssamarbetet sköts av Nato, inte EU."
+                }
+            },
+            {
+                term: "Inre marknaden",
+                definition: "Fri rörlighet för varor, tjänster, människor och kapital inom EU.",
+                sentence: "Tack vare _____ kan ett polskt företag sälja sina produkter i Sverige utan tullar eller handelshinder.",
+                scenario: "En spansk elektriker kan flytta till Sverige och arbeta utan arbetstillstånd, och ett tyskt företag kan sälja varor i Frankrike utan tull.",
+                ickeExempel: {
+                    korrekt: "Inre marknaden innebär att varor, tjänster, kapital och personer kan röra sig fritt inom EU.",
+                    icke: "Inre marknaden innebär att alla EU-länder måste ha exakt samma priser på alla varor och tjänster.",
+                    forklaring: "Inre marknaden handlar om fri rörlighet och inga handelshinder – priserna sätts av marknaden och varierar mellan länder."
+                }
+            },
+            {
+                term: "Lissabonfördraget",
+                definition: "Ett avtal som trädde i kraft 2009 och reformerade EU:s struktur och beslutsprocesser. Kallas EU:s grundlag.",
+                sentence: "_____, som trädde i kraft 2009, kallas ofta för EU:s grundlag eftersom det styr hur unionen är organiserad och fattar beslut.",
+                scenario: "EU reformerar sina beslutsregler och organisationsstruktur i ett juridiskt bindande avtal som alla 27 medlemsländer ratificerar.",
+                ickeExempel: {
+                    korrekt: "Lissabonfördraget reformerade EU:s struktur och beslutsprocesser och trädde i kraft 2009.",
+                    icke: "Lissabonfördraget skapade EU som organisation och bestämde vilka länder som fick bli medlemmar.",
+                    forklaring: "EU grundades redan på 1950-talet – Lissabonfördraget reformerade en befintlig organisation, det skapade inte EU."
+                }
+            },
+            {
+                term: "Mellanstatlig",
+                definition: "Samarbete mellan självständiga stater som ingår avtal och fattar gemensamma beslut, men behåller sin suveränitet.",
+                sentence: "FN är ett _____ samarbete där varje land behåller sin suveränitet och kan välja att inte följa beslut de inte stödjer.",
+                scenario: "Två länder sluter ett avtal om gemensam gränspolis. Varje land bestämmer självt om de vill delta och behåller sin nationella suveränitet.",
+                ickeExempel: {
+                    korrekt: "FN är ett mellanstatligt samarbete där stater frivilligt ingår avtal men behåller sin suveränitet.",
+                    icke: "Mellanstatligt samarbete innebär att länderna överlåter sin beslutanderätt till en gemensam organisation vars beslut är bindande.",
+                    forklaring: "Att överlåta beslutanderätt till en bindande gemensam organisation är överstatlighet – vid mellanstatligt samarbete behålls den nationella suveräniteten."
+                }
+            },
+            {
+                term: "Överstatlighet",
+                definition: "Flera stater överlåter delar av sitt självbestämmande till en internationell organisation vars beslut blir bindande för alla.",
+                sentence: "EU präglas av _____ – när EU fattar beslut om handelspolitik måste Sverige följa dem, även om Sverige röstade emot.",
+                scenario: "En organisation kan besluta om lagar som automatiskt gäller i alla medlemsländer, oavsett om ett enskilt land röstade emot.",
+                ickeExempel: {
+                    korrekt: "EU:s överstatlighet innebär att EU-förordningar gäller direkt i alla medlemsländer, även de som röstade mot.",
+                    icke: "Överstatlighet innebär att länder samarbetar men alltid kan neka att följa gemensamma beslut.",
+                    forklaring: "Att kunna neka gemensamma beslut är mellanstatlighet – överstatlighet innebär just att beslut är bindande även för de som röstade emot."
+                }
+            },
+            {
+                term: "Ministerrådet",
+                definition: "Består av ministrar från EU-ländernas regeringar som möts för att diskutera, ändra och anta lagar samt samordna politiken.",
+                sentence: "När EU ska fatta beslut om miljölagar möts _____ med miljöministrarna från alla 27 medlemsländer.",
+                scenario: "Miljöministrarna från alla EU-länder samlas i Bryssel för att diskutera och rösta om ett nytt direktiv om utsläppsreduktion.",
+                ickeExempel: {
+                    korrekt: "Ministerrådet består av ministrar från EU-ländernas regeringar som antar lagar och samordnar politiken.",
+                    icke: "Ministerrådet är EU:s folkvalda församling som representerar Europas medborgare i val.",
+                    forklaring: "EU:s folkvalda församling är Europaparlamentet – Ministerrådet representerar EU-ländernas regeringar, inte medborgarna direkt."
+                }
+            },
+            {
+                term: "Europaparlamentet",
+                definition: "EU:s folkvalda församling som stiftar lagar (med Ministerrådet), beslutar om budget och kontrollerar andra EU-institutioner.",
+                sentence: "Vart femte år väljer européerna sina representanter till _____, EU:s enda direktvalda institution.",
+                scenario: "Europeiska medborgare röstar i val och väljer representanter till en gemensam assembly som kan anta lagar och granska Kommissionen.",
+                ickeExempel: {
+                    korrekt: "Europaparlamentet är EU:s direktvalda församling som stiftar lagar, godkänner budget och kontrollerar Kommissionen.",
+                    icke: "Europaparlamentet kan självständigt föreslå och anta lagar utan att samarbeta med Ministerrådet.",
+                    forklaring: "Europaparlamentet stiftar lagar i samverkan med Ministerrådet – parlamentet kan inte ensamt anta lagstiftning."
+                }
+            },
+            {
+                term: "Europeiska kommissionen",
+                definition: "EU:s verkställande organ som föreslår nya lagar, övervakar lagstiftningen, ansvarar för budget och leds av en ordförande.",
+                sentence: "Det är _____ som har ensamrätt att föreslå nya EU-lagar, som sedan behandlas av parlamentet och rådet.",
+                scenario: "Ett EU-organ lägger fram ett lagförslag om dataskydd som skickas vidare till parlamentet och rådet för beslut, och det vaktar att befintliga regler följs.",
+                ickeExempel: {
+                    korrekt: "Europeiska kommissionen har monopol på att föreslå EU-lagstiftning och övervakar att befintliga regler följs.",
+                    icke: "Europeiska kommissionen är EU:s folkvalda organ och representerar EU-medborgarnas intressen direkt.",
+                    forklaring: "Kommissionen är inte folkvaldt – ledamöterna utses av medlemsländernas regeringar. Folkvalda representanter finns i Europaparlamentet."
+                }
+            },
+            {
+                term: "Europeiska rådet",
+                definition: "EU:s högsta politiska organ där alla stats- och regeringschefer möts för att bestämma EU:s övergripande inriktning och prioriteringar.",
+                sentence: "När EU ska fastslå sin övergripande strategi för klimatpolitiken sammankallas _____ med alla stats- och regeringschefer.",
+                scenario: "Stats- och regeringschefer från alla 27 EU-länder samlas för att lägga fast unionens långsiktiga politiska prioriteringar för de kommande åren.",
+                ickeExempel: {
+                    korrekt: "Europeiska rådet samlar EU:s stats- och regeringschefer för att bestämma EU:s övergripande inriktning.",
+                    icke: "Europeiska rådet och Ministerrådet är samma institution med samma uppgifter och sammansättning.",
+                    forklaring: "Europeiska rådet (stats-/regeringschefer) och Ministerrådet (fackministrar) är två skilda institutioner med olika roller."
+                }
+            },
+            {
+                term: "EU-domstolen",
+                definition: "Tolkar EU:s lagar och ser till att de tillämpas enhetligt i alla medlemsländer.",
+                sentence: "När ett EU-land är osäker på hur en EU-lag ska tolkas kan de begära ett förhandsavgörande från _____.",
+                scenario: "Ett EU-land tillämpar en EU-regel annorlunda än övriga länder – en domstol avgör hur regeln ska tolkas och tillämpas likadant överallt.",
+                ickeExempel: {
+                    korrekt: "EU-domstolen tolkar EU-rätten och säkerställer att lagar tillämpas likadant i alla medlemsländer.",
+                    icke: "EU-domstolen dömer i brottmål och kan sätta EU-medborgare i fängelse för brott.",
+                    forklaring: "EU-domstolen hanterar tolkningsfrågor och tvister om EU-rätten, inte brottmål mot enskilda – straffrätt är nationell kompetens."
+                }
+            },
+            {
+                term: "EU-förordning",
+                definition: "En bindande rättsakt som gäller direkt i alla EU-länder, utan att behöva införlivas i nationell lagstiftning.",
+                sentence: "GDPR är en _____ som gäller direkt i Sverige utan att riksdagen behöver stifta en ny lag.",
+                scenario: "EU antar en regel om dataskydd som automatiskt och omedelbart börjar gälla som lag i alla 27 länder – ingen nationell lagstiftningsprocess krävs.",
+                ickeExempel: {
+                    korrekt: "EU-förordningar gäller direkt i alla medlemsländer utan att nationella parlament behöver anta egna lagar.",
+                    icke: "En EU-förordning är ett förslag som varje land fritt kan välja att anta eller avvisa i sin nationella lagstiftning.",
+                    forklaring: "EU-förordningar är bindande och gäller automatiskt – de är inte frivilliga. Det är EU-direktiv som kräver nationell implementering."
+                }
+            },
+            {
+                term: "EU-direktiv",
+                definition: "En bindande rättsakt som sätter upp mål som länder ska nå, men varje land bestämmer hur målen uppnås.",
+                sentence: "EU utfärdade ett _____ som kräver att alla länder minskar plastavfallet, men varje land fick välja sin egen metod.",
+                scenario: "EU beslutar att alla länder ska ha viss andel förnybar energi till 2030, men varje land väljer själv om de satsar på vindkraft, sol eller vatten.",
+                ickeExempel: {
+                    korrekt: "EU-direktiv sätter upp mål som alla länder ska nå men varje land bestämmer själv hur de uppnår målet.",
+                    icke: "EU-direktiv gäller omedelbart som lag i alla länder precis som de är skrivna, utan nationell anpassning.",
+                    forklaring: "EU-direktiv kräver implementering i nationell lag – det är EU-förordningar som gäller direkt utan nationell lagstiftning."
+                }
+            },
+            {
+                term: "Subsidiaritetsprincipen (närhetsprincipen)",
+                definition: "Beslut ska fattas så nära medborgarna som möjligt – EU ska bara agera om inte nationella eller lokala nivåer kan lösa problemet bättre.",
+                sentence: "Tack vare _____ kan Sverige fortsätta bestämma om skolpolitiken själva, eftersom det inte kräver EU-gemensamma regler.",
+                scenario: "En fråga om hur kommuner ska sköta sophämtning avgörs lokalt – EU blandar sig inte i eftersom det inte finns skäl att besluta på EU-nivå.",
+                ickeExempel: {
+                    korrekt: "Subsidiaritetsprincipen innebär att EU bara ska lagstifta när nationella eller lokala nivåer inte kan lösa problemet bättre.",
+                    icke: "Subsidiaritetsprincipen innebär att EU alltid ska fatta beslut centralt för att garantera enhetlighet i hela unionen.",
+                    forklaring: "Subsidiaritetsprincipen är motsatsen – den begränsar central EU-lagstiftning och värnar om nationellt och lokalt självstyre."
+                }
+            },
+            {
+                term: "Totalförsvar",
+                definition: "Den verksamhet som behövs för att förbereda ett land för krig – består av både militärt och civilt försvar.",
+                sentence: "Sveriges _____ innefattar allt från militära förband till sjukvård och livsmedelsförsörjning under kris och krig.",
+                scenario: "En nation planerar både för militärt motstånd och för att sjukhus, matdistribution och el ska fungera under ett väpnat angrepp.",
+                ickeExempel: {
+                    korrekt: "Totalförsvar omfattar både militärt och civilt försvar för att hela samhället ska kunna fungera i krig.",
+                    icke: "Totalförsvar syftar enbart på militär upprustning och antalet soldater och stridsfordon i armén.",
+                    forklaring: "Totalförsvar är bredare än bara militären – det inkluderar civilt försvar som sjukvård, livsmedelsförsörjning och kritisk infrastruktur."
+                }
+            },
+            {
+                term: "Försvarsmakten",
+                definition: "Myndighet som ansvarar för Sveriges militära försvar och fredsbevarande insatser.",
+                sentence: "Det är _____ som skickar svenska soldater till internationella fredsbevarande uppdrag runt om i världen.",
+                scenario: "En statlig myndighet tränar soldater, underhåller militär utrustning och skickar förband till internationella uppdrag för att skydda landet.",
+                ickeExempel: {
+                    korrekt: "Försvarsmakten är den statliga myndighet som ansvarar för militärt försvar och fredsbevarande insatser.",
+                    icke: "Försvarsmakten ansvarar primärt för civilbefolkningens skydd och evakuering vid naturkatastrofer i fredstid.",
+                    forklaring: "Civilbefolkningens skydd sköts av Civilförsvaret och MSB – Försvarsmakten fokuserar på militärt försvar och internationella insatser."
+                }
+            },
+            {
+                term: "Civilförsvaret",
+                definition: "Den verksamhet som syftar till att skydda och stödja civilbefolkningen under kriser och krig.",
+                sentence: "Under en konflikt är det _____ som ser till att sjukhus fungerar, mat distribueras och befolkningen kan evakueras.",
+                scenario: "En organisation ser till att det finns skyddsrum, att sjukvård fungerar och att befolkningen kan ta sig till säkra platser vid krig eller allvarlig kris.",
+                ickeExempel: {
+                    korrekt: "Civilförsvaret skyddar och stöder civilbefolkningen under kriser och krig genom sjukvård, evakuering och skyddsrum.",
+                    icke: "Civilförsvaret är detsamma som Försvarsmakten och ansvarar för militära operationer och stridande förband.",
+                    forklaring: "Civilförsvaret och Försvarsmakten är skilda verksamheter – Försvarsmakten hanterar militärt försvar medan Civilförsvaret skyddar civila."
+                }
+            },
+            {
+                term: "Totalförsvarsplikt",
+                definition: "Alla mellan 16 och 70 år som bor i Sverige kan kallas in för att bidra till landets försvar, militärt eller civilt.",
+                sentence: "Genom _____ kan staten kalla in vanliga medborgare att arbeta inom sjukvård eller livsmedelsförsörjning under krig.",
+                scenario: "En 35-årig sjuksköterska utan militär utbildning kan kallas in att tjänstgöra på ett krigssjukhus eftersom alla i arbetsför ålder kan bidra till samhällets försvar.",
+                ickeExempel: {
+                    korrekt: "Totalförsvarsplikt innebär att alla 16–70-åringar i Sverige kan kallas in för att bidra militärt eller civilt.",
+                    icke: "Totalförsvarsplikt gäller bara för dem som genomfört militär grundutbildning och tillhör en försvarsgren.",
+                    forklaring: "Totalförsvarsplikt är bredare – den kan gälla alla som bor i Sverige i åldern 16–70, inte bara de med militär utbildning."
+                }
+            },
+            {
+                term: "Kalla kriget",
+                definition: "Det spända läget mellan öst och väst från andra världskrigets slut till kommunismens fall i Östeuropa ca 1990.",
+                sentence: "Under _____ byggde USA och Sovjetunionen enorma kärnvapenarsenaler och kämpade om inflytande runt om i världen.",
+                scenario: "Två supermakter med helt olika politiska system ägnar decennier åt kapprustning, spionage och proxykrig utan att någonsin formellt förklara krig mot varandra.",
+                ickeExempel: {
+                    korrekt: "Kalla kriget var ett maktpolitiskt spänningsläge mellan USA och Sovjet som varade från 1945 till ca 1990.",
+                    icke: "Kalla kriget var ett globalt krig med direkta militära strider mellan USA och Sovjet på europeisk mark.",
+                    forklaring: "Kalla kriget kännetecknades av att USA och Sovjet aldrig stred direkt mot varandra – spänningen uttrycktes via kapprustning och proxykrig."
+                }
+            },
+            {
+                term: "Nato",
+                definition: "En politisk och militär allians mellan länder i Europa och Nordamerika vars syfte är att säkerställa medlemsländernas säkerhet genom gemensamt försvar.",
+                sentence: "Sverige gick med i _____ år 2024 och är nu skyddat av artikel 5, som innebär att ett angrepp på ett land ses som ett angrepp på alla.",
+                scenario: "Trettiotvå länder i Europa och Nordamerika lovar att om något av dem angrips militärt kommer övriga att komma till dess försvar.",
+                ickeExempel: {
+                    korrekt: "Nato är en försvarsallians där ett angrepp på ett medlemsland betraktas som ett angrepp på alla.",
+                    icke: "Nato är en ekonomisk organisation som samordnar handelspolitik och tullregler mellan europeiska och nordamerikanska länder.",
+                    forklaring: "Nato är en militär och politisk försvarsallians, inte en handelsorganisation – ekonomisk samordning sköts av EU och WTO."
+                }
+            },
+            {
+                term: "Folkrätt",
+                definition: "Regler och principer som styr hur stater och internationella organisationer ska agera gentemot varandra.",
+                sentence: "Enligt _____ är det förbjudet för ett land att anfalla ett annat land utan godkännande från FN:s säkerhetsråd.",
+                scenario: "En stat bryter mot internationella normer när den invaderar ett grannland – detta strider mot reglerna som är framtagna för att styra staters beteende.",
+                ickeExempel: {
+                    korrekt: "Folkrätten är det internationella regelverk som styr hur stater ska bete sig gentemot varandra och i krig.",
+                    icke: "Folkrätten är nationella lagar som varje land stiftar för att reglera sina egna medborgares beteende.",
+                    forklaring: "Folkrätt är internationell – den reglerar staters beteende mot varandra, inte ett enskilt lands interna lagstiftning mot medborgarna."
+                }
+            },
+            {
+                term: "Fredens folkrätt",
+                definition: "Regler som styr relationer mellan stater i fredstid, bestående av mänskliga rättigheter och internationella avtal.",
+                sentence: "Handelsavtal, diplomatiska förbindelser och konventioner om mänskliga rättigheter är alla delar av _____.",
+                scenario: "Två länder i fred ingår ett avtal om hur de ska behandla varandras medborgare – detta regleras av det internationella regelverket för fredstida relationer.",
+                ickeExempel: {
+                    korrekt: "Fredens folkrätt reglerar staters relationer i fredstid, inklusive mänskliga rättigheter och diplomatiska avtal.",
+                    icke: "Fredens folkrätt handlar om hur soldater och civila ska behandlas under pågående väpnade konflikter.",
+                    forklaring: "Skydd under krig regleras av internationell humanitär rätt ('krigets lagar') – fredens folkrätt gäller relationer i fredstid."
+                }
+            },
+            {
+                term: "Internationell humanitär rätt",
+                definition: "Regler ('krigets lagar') som syftar till att skydda civila och begränsa lidandet under väpnade konflikter.",
+                sentence: "Enligt _____ är det förbjudet att avsiktligt rikta angrepp mot civila, sjukhus och humanitära transporter.",
+                scenario: "Trots pågående krig gäller speciella regler: fångar ska behandlas humant, sjukhus får inte bombarderas och civila ska skyddas från direkt angrepp.",
+                ickeExempel: {
+                    korrekt: "Internationell humanitär rätt ('krigets lagar') skyddar civila, krigsfångar och sjukvårdspersonal under väpnade konflikter.",
+                    icke: "Internationell humanitär rätt gäller bara under fredstid och skyddar flyktingars rättigheter vid migration.",
+                    forklaring: "Flyktingars rättigheter regleras av flyktingkonventionen – internationell humanitär rätt gäller specifikt under väpnade konflikter."
+                }
+            },
+            {
+                term: "Internationell domstol",
+                definition: "Domstol som hanterar tvister mellan stater – till exempel FN:s internationella domstol (ICJ) i Haag.",
+                sentence: "När Ukraina och Ryssland tvistade om territoriella anspråk tog Ukraina ärendet till den _____ i Haag.",
+                scenario: "Två länder är oense om var deras gemensamma gräns ska gå – de tar upp tvisten inför en global domstol vars uppgift är att avgöra mellanstatliga konflikter.",
+                ickeExempel: {
+                    korrekt: "Internationella domstolen (ICJ) i Haag avgör tvister mellan stater och kan döma i frågor om folkrätten.",
+                    icke: "Internationell domstol dömer enskilda brottslingar för folkmord och krigsbrott begångna under konflikter.",
+                    forklaring: "Enskilda krigsförbrytare döms av Internationella brottmålsdomstolen (ICC) – Internationella domstolen (ICJ) hanterar tvister mellan stater."
+                }
+            }
+        ];
+
+        function shuffleArray(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        function getFeedback(score, total) {
+            const p = score / total;
+            if (p >= 0.9) return "Redo för provet! Fantastiskt bra!";
+            if (p >= 0.7) return "Bra jobbat! Öva lite till på de du missade.";
+            if (p >= 0.5) return "Halvvägs! Fortsätt träna.";
+            return "Öva lite till – du är på rätt väg!";
+        }
+
+        function FlashcardView() {
+            const total = concepts.length;
+            const [deck, setDeck] = useState(() => shuffleArray([...concepts]));
+            const [deckIdx, setDeckIdx] = useState(0);
+            const [isFlipped, setIsFlipped] = useState(false);
+            const [kudeInte, setKudeInte] = useState([]);
+            const [kunde, setKunde] = useState([]);
+            const [phase, setPhase] = useState('playing');
+
+            const restartAll = () => {
+                setDeck(shuffleArray([...concepts]));
+                setDeckIdx(0);
+                setIsFlipped(false);
+                setKudeInte([]);
+                setKunde([]);
+                setPhase('playing');
+            };
+
+            const sort = (pile) => {
+                const card = deck[deckIdx];
+                const newKudeInte = pile === 'kudeInte' ? [...kudeInte, card] : kudeInte;
+                const newKunde    = pile === 'kunde'    ? [...kunde, card]    : kunde;
+                const nextIdx = deckIdx + 1;
+                setKudeInte(newKudeInte);
+                setKunde(newKunde);
+                setIsFlipped(false);
+                if (nextIdx >= deck.length) {
+                    setDeckIdx(nextIdx);
+                    setPhase(newKudeInte.length === 0 ? 'allDone' : 'roundEnd');
+                } else {
+                    setDeckIdx(nextIdx);
+                }
+            };
+
+            const nextRound = () => {
+                setDeck(shuffleArray([...kudeInte]));
+                setDeckIdx(0);
+                setIsFlipped(false);
+                setKudeInte([]);
+                setPhase('playing');
+            };
+
+            if (phase === 'allDone') return (
+                <div className="flex flex-col items-center gap-6">
+                    <div className="bg-green-50 border-2 border-green-400 rounded-3xl p-8 text-center w-full max-w-sm">
+                        <div className="text-5xl mb-4">🎉</div>
+                        <p className="text-2xl font-bold text-green-700 mb-2">Alla kort klarade!</p>
+                        <p className="text-slate-600 mb-6">Du behärskar <span className="font-bold text-green-700">{kunde.length} av {total}</span> begrepp.</p>
+                        <button onClick={restartAll} className="w-full text-white px-8 py-3 rounded-2xl font-bold transition-colors" style={{background: PRIMARY}}>Börja om med alla</button>
+                    </div>
+                </div>
+            );
+
+            if (phase === 'roundEnd') return (
+                <div className="flex flex-col items-center gap-6">
+                    <div className="bg-white border-2 border-slate-200 rounded-3xl p-8 text-center w-full max-w-sm shadow-sm">
+                        <p className="text-lg font-bold text-slate-700 mb-4">Runda klar!</p>
+                        <div className="flex justify-center gap-8 mb-6">
+                            <div className="text-center">
+                                <p className="text-3xl font-bold text-green-600">{kunde.length}</p>
+                                <p className="text-xs text-slate-400 uppercase tracking-wide mt-1">Kunde</p>
+                            </div>
+                            <div className="text-center">
+                                <p className="text-3xl font-bold text-red-500">{kudeInte.length}</p>
+                                <p className="text-xs text-slate-400 uppercase tracking-wide mt-1">Kunde inte</p>
+                            </div>
+                        </div>
+                        <div className="flex flex-col gap-3">
+                            <button onClick={nextRound} className="w-full bg-slate-900 text-white px-8 py-3 rounded-2xl font-bold hover:bg-slate-800 transition-colors">
+                                Öva på Kunde inte ({kudeInte.length} kort) →
+                            </button>
+                            <button onClick={restartAll} className="w-full text-white px-8 py-3 rounded-2xl font-bold transition-colors" style={{background: PRIMARY}}>
+                                Börja om med alla
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const card = deck[deckIdx];
+            const remaining = deck.length - deckIdx;
+
+            return (
+                <div className="flex flex-col items-center">
+                    <div className="flex gap-3 mb-5 w-full max-w-sm">
+                        <div className="flex-1 bg-red-50 border border-red-200 rounded-xl p-2 text-center">
+                            <p className="text-xl font-bold text-red-500">{kudeInte.length}</p>
+                            <p className="text-[10px] text-red-400 uppercase tracking-wide font-bold">Kunde inte</p>
+                        </div>
+                        <div className="flex-1 bg-slate-100 border border-slate-200 rounded-xl p-2 text-center">
+                            <p className="text-xl font-bold text-slate-400">{remaining}</p>
+                            <p className="text-[10px] text-slate-400 uppercase tracking-wide font-bold">Kvar</p>
+                        </div>
+                        <div className="flex-1 bg-green-50 border border-green-200 rounded-xl p-2 text-center">
+                            <p className="text-xl font-bold text-green-500">{kunde.length}</p>
+                            <p className="text-[10px] text-green-400 uppercase tracking-wide font-bold">Kunde</p>
+                        </div>
+                    </div>
+                    <div className="flip-card mb-5" onClick={() => setIsFlipped(!isFlipped)}>
+                        <div className={`flip-card-inner ${isFlipped ? 'flipped-classes' : ''}`}>
+                            <div className="flip-card-front">
+                                <h2 className="text-3xl font-bold text-white text-center px-4">{card.term}</h2>
+                                <div className="absolute bottom-6 animate-pulse">
+                                    <span className="text-[10px] uppercase tracking-[0.2em] text-white font-bold opacity-70">Klicka för svar</span>
+                                </div>
+                            </div>
+                            <div className="flip-card-back">
+                                <p className="text-xl leading-relaxed text-slate-800 font-medium px-4">{card.definition}</p>
+                                <div className="absolute bottom-6">
+                                    <span className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">Klicka för att vända</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {isFlipped && (
+                        <div className="flex gap-3 w-full max-w-sm mb-4">
+                            <button onClick={() => sort('kudeInte')} className="flex-1 bg-red-100 text-red-700 border-2 border-red-300 font-bold py-3 rounded-2xl hover:bg-red-200 active:scale-95 transition-all">
+                                ✗ Kunde inte
+                            </button>
+                            <button onClick={() => sort('kunde')} className="flex-1 bg-green-100 text-green-700 border-2 border-green-300 font-bold py-3 rounded-2xl hover:bg-green-200 active:scale-95 transition-all">
+                                ✓ Kunde
+                            </button>
+                        </div>
+                    )}
+                    <div className="flex flex-col items-center gap-2 mt-1">
+                        <p className="text-slate-500 font-medium bg-slate-200 px-4 py-1 rounded-full text-xs">{deckIdx + 1} av {deck.length}</p>
+                        <button onClick={restartAll} className="text-slate-400 text-xs hover:text-slate-600 transition-colors underline">↺ Börja om med alla</button>
+                    </div>
+                </div>
+            );
+        }
+
+        function LucktextView() {
+            const [inputs, setInputs] = useState(concepts.map(() => ''));
+            const [attempts, setAttempts] = useState(concepts.map(() => 0));
+            const [statuses, setStatuses] = useState(concepts.map(() => null));
+            const [done, setDone] = useState(false);
+
+            const normalize = s => s.trim().toLowerCase();
+
+            const submit = (i) => {
+                if (statuses[i] === 'correct' || statuses[i] === 'wrong-final') return;
+                if (normalize(inputs[i]) === normalize(concepts[i].term)) {
+                    const s = [...statuses]; s[i] = 'correct'; setStatuses(s);
+                } else {
+                    const a = [...attempts]; a[i]++; setAttempts(a);
+                    const s = [...statuses]; s[i] = a[i] >= 2 ? 'wrong-final' : 'wrong-once'; setStatuses(s);
+                }
+            };
+
+            const rättaAlla = () => { setStatuses(statuses.map(s => s === 'correct' ? 'correct' : 'wrong-final')); setDone(true); };
+            const börjaOm = () => { setInputs(concepts.map(() => '')); setAttempts(concepts.map(() => 0)); setStatuses(concepts.map(() => null)); setDone(false); };
+
+            const correctCount = statuses.filter(s => s === 'correct').length;
+            const allDone = done || statuses.every(s => s === 'correct' || s === 'wrong-final');
+
+            return (
+                <div>
+                    <div className="mb-6 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Begreppsbank</p>
+                        <div className="flex flex-wrap gap-2">
+                            {concepts.map((c, i) => (
+                                <span key={i} className={`px-3 py-1 rounded-full text-sm font-medium border transition-all ${statuses[i] === 'correct' ? 'line-through text-slate-400 bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-300 text-yellow-800'}`}>{c.term}</span>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="grid gap-4">
+                        {concepts.map((c, i) => {
+                            const parts = c.sentence.split('_____');
+                            const st = statuses[i];
+                            return (
+                                <div key={i} className={`bg-white p-5 rounded-2xl shadow-sm border-l-8 transition-all ${st === 'correct' ? 'border-green-500' : st === 'wrong-final' ? 'border-red-400' : 'border-yellow-400'}`}>
+                                    <p className="text-slate-700 mb-3 leading-relaxed">{parts[0]}<span className="font-bold text-yellow-600">[_____]</span>{parts[1]}</p>
+                                    {st === 'correct' ? (
+                                        <div className="flex flex-wrap items-center gap-2 text-green-600"><span className="font-bold">✓ {c.term}</span><span className="text-sm font-normal text-slate-500">– {c.definition}</span></div>
+                                    ) : st === 'wrong-final' ? (
+                                        <div><p className="text-red-500 text-sm">Rätt svar: <span className="font-bold">{c.term}</span></p><p className="text-slate-500 text-sm mt-1">{c.definition}</p></div>
+                                    ) : (
+                                        <div>
+                                            <div className="flex gap-2">
+                                                <input type="text" value={inputs[i]} onChange={e => { const v = [...inputs]; v[i] = e.target.value; setInputs(v); }} onKeyDown={e => e.key === 'Enter' && submit(i)} placeholder="Skriv begreppet och tryck Enter..." className="flex-1 border-2 border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:border-yellow-400 text-sm" style={{fontFamily:'Fredoka,sans-serif'}} />
+                                                <button onClick={() => submit(i)} className="text-yellow-900 px-4 py-2 rounded-xl font-bold hover:opacity-80 transition-colors" style={{background: PRIMARY}}>→</button>
+                                            </div>
+                                            {st === 'wrong-once' && <p className="text-orange-500 text-sm mt-2 font-medium">Är du säker att du stavat rätt?</p>}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <div className="mt-8 flex justify-between items-center">
+                        <button onClick={börjaOm} className="text-slate-500 hover:text-slate-700 font-medium transition-colors">↺ Börja om</button>
+                        {!allDone && <button onClick={rättaAlla} className="bg-slate-800 text-white px-6 py-3 rounded-2xl font-bold hover:bg-slate-700 transition-colors">Rätta alla</button>}
+                    </div>
+                    {allDone && (
+                        <div className="mt-8 border-2 rounded-3xl p-8 text-center" style={{background:'#fef9c3', borderColor: PRIMARY}}>
+                            <p className="text-5xl font-bold mb-2" style={{color: PRIMARY}}>{correctCount}/{concepts.length}</p>
+                            <p className="text-xl font-bold text-slate-800 mb-4">{getFeedback(correctCount, concepts.length)}</p>
+                            <button onClick={börjaOm} className="text-yellow-900 px-8 py-3 rounded-2xl font-bold hover:opacity-80 transition-colors" style={{background: PRIMARY}}>Börja om</button>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        function ScenarioView() {
+            const [shuffledIdxs] = useState(() => shuffleArray(concepts.map((_, i) => i)));
+            const [current, setCurrent] = useState(0);
+            const [answered, setAnswered] = useState(null);
+            const [selected, setSelected] = useState(null);
+            const [score, setScore] = useState(0);
+            const [done, setDone] = useState(false);
+            const [termOptions, setTermOptions] = useState(() => shuffleArray(concepts.map(c => c.term)));
+
+            const conceptIdx = shuffledIdxs[current];
+            const concept = concepts[conceptIdx];
+
+            const handleSelect = (term) => {
+                if (answered !== null) return;
+                setSelected(term);
+                const isCorrect = term === concept.term;
+                setAnswered(isCorrect ? 'correct' : 'wrong');
+                if (isCorrect) setScore(s => s + 1);
+            };
+
+            const next = () => {
+                if (current + 1 >= concepts.length) { setDone(true); return; }
+                setCurrent(c => c + 1);
+                setAnswered(null);
+                setSelected(null);
+                setTermOptions(shuffleArray(concepts.map(c => c.term)));
+            };
+
+            const reset = () => {
+                setCurrent(0); setAnswered(null); setSelected(null); setScore(0); setDone(false);
+                setTermOptions(shuffleArray(concepts.map(c => c.term)));
+            };
+
+            if (done) return (
+                <div className="text-center">
+                    <div className="border-2 rounded-3xl p-8 mb-6" style={{background:'#fef9c3', borderColor: PRIMARY}}>
+                        <p className="text-5xl font-bold mb-2" style={{color: PRIMARY}}>{score}/{concepts.length}</p>
+                        <p className="text-xl font-bold text-slate-800 mb-4">{getFeedback(score, concepts.length)}</p>
+                        <button onClick={reset} className="text-yellow-900 px-8 py-3 rounded-2xl font-bold hover:opacity-80 transition-colors" style={{background: PRIMARY}}>Börja om</button>
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="max-w-2xl mx-auto">
+                    <div className="flex justify-between items-center mb-3">
+                        <span className="font-bold" style={{color:'#92400e'}}>Poäng: {score}</span>
+                        <span className="text-slate-400 text-sm">{current + 1} / {concepts.length}</span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+                        <div className="h-2 rounded-full transition-all" style={{background: PRIMARY, width: `${((current + 1) / concepts.length) * 100}%`}}></div>
+                    </div>
+                    <div className="bg-white p-6 rounded-3xl shadow-lg mb-6">
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Vilket begrepp beskrivs?</p>
+                        <p className="text-lg text-slate-800 leading-relaxed italic">"{concept.scenario}"</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 mb-6">
+                        {termOptions.map((term, i) => (
+                            <button key={i} onClick={() => handleSelect(term)} disabled={answered !== null}
+                                className={`p-4 rounded-2xl font-bold border-2 text-left transition-all text-sm ${
+                                    answered === null ? 'bg-white border-slate-200 hover:bg-yellow-50' :
+                                    term === concept.term ? 'bg-green-50 border-green-500 text-green-700' :
+                                    term === selected ? 'bg-red-50 border-red-500 text-red-700' :
+                                    'bg-white border-slate-100 text-slate-300'
+                                }`}
+                                style={answered === null ? {borderColor:'#e2e8f0'} : undefined}
+                                onMouseEnter={e => { if (answered === null) e.currentTarget.style.borderColor = PRIMARY; }}
+                                onMouseLeave={e => { if (answered === null) e.currentTarget.style.borderColor = '#e2e8f0'; }}>
+                                {term}
+                            </button>
+                        ))}
+                    </div>
+                    {answered !== null && (
+                        <div>
+                            <div className={`p-4 rounded-2xl text-sm font-medium mb-4 ${answered === 'correct' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>
+                                {answered === 'correct' ? `✓ Rätt! ${concept.definition}` : `✗ Fel. Rätt svar: ${concept.term} – ${concept.definition}`}
+                            </div>
+                            <button onClick={next} className="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-slate-800 transition-all">
+                                {current + 1 >= concepts.length ? 'Se resultat' : 'Nästa scenario →'}
+                            </button>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        function IckeExempelView() {
+            const makeOpts = (c) => {
+                const flip = Math.random() > 0.5;
+                return flip
+                    ? [{ text: c.ickeExempel.korrekt, isCorrect: true }, { text: c.ickeExempel.icke, isCorrect: false }]
+                    : [{ text: c.ickeExempel.icke, isCorrect: false }, { text: c.ickeExempel.korrekt, isCorrect: true }];
+            };
+            const freshState = () => {
+                const ord = shuffleArray(concepts.map((_, i) => i));
+                return { ord, cur: 0, opts: makeOpts(concepts[ord[0]]), answered: null, selIdx: null, score: 0, done: false };
+            };
+            const [s, setS] = useState(freshState);
+            const concept = concepts[s.ord[s.cur]];
+
+            const handleSelect = (idx) => {
+                if (s.answered !== null) return;
+                const isCorrect = s.opts[idx].isCorrect;
+                setS(prev => ({ ...prev, answered: isCorrect ? 'correct' : 'wrong', selIdx: idx, score: prev.score + (isCorrect ? 1 : 0) }));
+            };
+
+            const next = () => {
+                const nextCur = s.cur + 1;
+                if (nextCur >= concepts.length) { setS(prev => ({ ...prev, done: true })); return; }
+                setS(prev => ({ ...prev, cur: nextCur, opts: makeOpts(concepts[prev.ord[nextCur]]), answered: null, selIdx: null }));
+            };
+
+            const reset = () => setS(freshState);
+
+            if (s.done) return (
+                <div className="text-center">
+                    <div className="border-2 rounded-3xl p-8 mb-6" style={{background:'#fef9c3', borderColor: PRIMARY}}>
+                        <p className="text-5xl font-bold mb-2" style={{color: PRIMARY}}>{s.score}/{concepts.length}</p>
+                        <p className="text-xl font-bold text-slate-800 mb-4">{getFeedback(s.score, concepts.length)}</p>
+                        <button onClick={reset} className="text-yellow-900 px-8 py-3 rounded-2xl font-bold hover:opacity-80 transition-colors" style={{background: PRIMARY}}>Börja om</button>
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="max-w-2xl mx-auto">
+                    <div className="flex justify-between items-center mb-3">
+                        <span className="font-bold" style={{color:'#92400e'}}>Poäng: {s.score}</span>
+                        <span className="text-slate-400 text-sm">{s.cur + 1} / {concepts.length}</span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+                        <div className="h-2 rounded-full transition-all" style={{background: PRIMARY, width: `${((s.cur + 1) / concepts.length) * 100}%`}}></div>
+                    </div>
+                    <div className="bg-white p-6 rounded-3xl shadow-lg mb-6">
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Vilket är rätt tillämpning?</p>
+                        <h2 className="text-2xl font-bold" style={{color:'#92400e'}}>{concept.term}</h2>
+                        <p className="text-sm text-slate-500 mt-1 leading-relaxed">{concept.definition}</p>
+                    </div>
+                    <div className="grid gap-3 mb-6">
+                        {s.opts.map((opt, i) => (
+                            <button key={i} onClick={() => handleSelect(i)} disabled={s.answered !== null}
+                                className={`p-4 rounded-2xl border-2 text-left transition-all ${
+                                    s.answered === null ? 'bg-white border-slate-200 hover:bg-yellow-50' :
+                                    opt.isCorrect ? 'bg-green-50 border-green-500 text-green-700' :
+                                    i === s.selIdx ? 'bg-red-50 border-red-500 text-red-700' :
+                                    'bg-white border-slate-100 text-slate-300'
+                                }`}
+                                style={s.answered === null ? {borderColor:'#e2e8f0'} : undefined}
+                                onMouseEnter={e => { if (s.answered === null) e.currentTarget.style.borderColor = PRIMARY; }}
+                                onMouseLeave={e => { if (s.answered === null) e.currentTarget.style.borderColor = '#e2e8f0'; }}>
+                                <span className="font-bold mr-2">{i === 0 ? 'A' : 'B'}.</span>{opt.text}
+                            </button>
+                        ))}
+                    </div>
+                    {s.answered !== null && (
+                        <div>
+                            <div className={`p-4 rounded-2xl text-sm mb-4 ${s.answered === 'correct' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>
+                                <p className="font-bold mb-1">{s.answered === 'correct' ? '✓ Rätt!' : '✗ Fel!'}</p>
+                                <p>{concept.ickeExempel.forklaring}</p>
+                            </div>
+                            <button onClick={next} className="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-slate-800 transition-all">
+                                {s.cur + 1 >= concepts.length ? 'Se resultat' : 'Nästa begrepp →'}
+                            </button>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        function App() {
+            const [view, setView] = useState('list');
+
+            const activeTab = 'text-yellow-900 font-bold shadow-sm';
+            const inactiveTab = 'text-slate-500';
+
+            return (
+                <div className="min-h-screen p-4 md:p-8">
+                    <header className="max-w-2xl mx-auto mb-8 flex items-center justify-between">
+                        <a href="index.html" className="text-slate-500 hover:text-yellow-600 transition-colors flex items-center gap-2 font-medium text-sm">← Tillbaka till startsidan</a>
+                        <h1 className="text-2xl md:text-3xl font-bold text-center">Internationella relationer</h1>
+                        <div className="w-36"></div>
+                    </header>
+
+                    <div className="max-w-2xl mx-auto mb-10 flex bg-white p-1 rounded-full shadow-md border border-slate-200 overflow-x-auto gap-0.5">
+                        {[['list','Lista'],['flashcards','Flashcards'],['lucktext','Lucktext'],['scenario','Scenario'],['icke','Icke-ex.']].map(([key, label]) => (
+                            <button key={key} onClick={() => setView(key)} className={`flex-1 py-2 px-2 rounded-full transition-all duration-300 text-xs whitespace-nowrap ${view === key ? activeTab : inactiveTab}`}
+                                style={view === key ? {background: PRIMARY} : {}}>
+                                {label}
+                            </button>
+                        ))}
+                    </div>
+
+                    <main className="max-w-2xl mx-auto">
+                        {view === 'list' && (
+                            <div className="grid gap-4">
+                                {concepts.map((item, index) => (
+                                    <div key={index} className="bg-white p-5 rounded-2xl border-l-8 shadow-sm hover:shadow-md transition-shadow" style={{borderColor: PRIMARY}}>
+                                        <div className="flex items-center gap-3 mb-1">
+                                            <span className="text-xs font-bold px-2 py-1 rounded-lg" style={{background:'#fef9c3', color:'#78350f'}}>{index + 1}</span>
+                                            <h3 className="text-lg font-bold">{item.term}</h3>
+                                        </div>
+                                        <p className="text-slate-600 leading-relaxed ml-10">{item.definition}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        {view === 'flashcards' && <FlashcardView />}
+                        {view === 'lucktext' && <LucktextView />}
+                        {view === 'scenario' && <ScenarioView />}
+                        {view === 'icke' && <IckeExempelView />}
+                    </main>
+
+                    <footer className="mt-12 text-center text-slate-400 text-sm italic pb-8">Källa: Samhällskunskap – Internationella relationer begreppslista</footer>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
