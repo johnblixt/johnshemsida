@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Konstitutionell rätt – Quiz | Rätten och samhället Block 1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0d9488;
+      --primary-light: #ccfbf1;
+      --primary-dark: #0f766e;
+      --correct-bg: #dcfce7;
+      --correct-border: #16a34a;
+      --correct-text: #16a34a;
+      --wrong-bg: #fee2e2;
+      --wrong-border: #dc2626;
+      --wrong-text: #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'EB Garamond', Georgia, serif; background: #f0fdfa; min-height: 100vh; color: #1e293b; }
+
+    a.back-btn {
+      display: inline-block; padding: 8px 16px; color: var(--primary);
+      text-decoration: none; font-size: 0.95rem; position: fixed;
+      top: 14px; left: 14px; z-index: 200; border-radius: 8px; transition: background 0.2s;
+    }
+    a.back-btn:hover { background: var(--primary-light); }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Start screen ── */
+    #screen-start { max-width: 560px; margin: 0 auto; padding: 90px 24px 40px; text-align: center; }
+    .badge {
+      display: inline-block; background: var(--primary-light); color: var(--primary);
+      padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;
+      letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 20px;
+    }
+    #screen-start h1 {
+      font-size: 2.4rem; font-weight: 600; font-style: italic;
+      color: #0f172a; margin-bottom: 8px;
+    }
+    #screen-start .subtitle { font-size: 1.05rem; color: #64748b; margin-bottom: 32px; }
+    .info-cards { display: flex; gap: 12px; justify-content: center; margin-bottom: 36px; flex-wrap: wrap; }
+    .info-card {
+      background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 16px 20px; text-align: center; flex: 1; min-width: 100px; max-width: 140px;
+    }
+    .info-card .num { font-size: 1.7rem; font-weight: 600; color: var(--primary); }
+    .info-card .lbl { font-size: 0.78rem; color: #94a3b8; margin-top: 2px; }
+
+    /* ── Quiz screen ── */
+    #screen-quiz { max-width: 700px; margin: 0 auto; padding: 70px 20px 60px; }
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .timer {
+      background: white; border: 1px solid #e2e8f0; border-radius: 20px;
+      padding: 5px 14px; font-size: 0.92rem; color: #475569; font-variant-numeric: tabular-nums;
+    }
+    .score-pill {
+      background: var(--primary-light); color: var(--primary-dark);
+      border-radius: 20px; padding: 5px 14px; font-size: 0.92rem; font-weight: 600;
+    }
+    .progress-wrap { background: #e2e8f0; border-radius: 4px; height: 6px; overflow: hidden; margin-bottom: 6px; }
+    .progress-bar { background: var(--primary); height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+    .q-counter { font-size: 0.82rem; color: #94a3b8; text-align: right; margin-bottom: 22px; }
+    .type-badge {
+      display: inline-block; font-size: 0.72rem; text-transform: uppercase;
+      letter-spacing: 0.08em; padding: 2px 10px; border-radius: 20px; margin-bottom: 10px;
+    }
+    .type-badge.mc { background: #ede9fe; color: #6d28d9; }
+    .type-badge.tf  { background: #fef9c3; color: #854d0e; }
+    .q-text { font-size: 1.25rem; font-weight: 600; line-height: 1.55; color: #0f172a; margin-bottom: 22px; }
+    .opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+    .opts.two { flex-direction: row; gap: 14px; }
+    .opt-btn {
+      background: white; border: 2px solid #e2e8f0; border-radius: 12px;
+      padding: 13px 18px; text-align: left; font-size: 1rem; font-family: inherit;
+      cursor: pointer; transition: border-color 0.15s, background 0.15s; line-height: 1.45;
+    }
+    .opts.two .opt-btn { flex: 1; text-align: center; font-size: 1.15rem; padding: 18px 12px; }
+    .opt-btn:hover:not(:disabled) { border-color: var(--primary); background: var(--primary-light); }
+    .opt-btn:disabled { cursor: default; }
+    .opt-btn.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); font-weight: 600; }
+    .opt-btn.wrong   { background: var(--wrong-bg);   border-color: var(--wrong-border);   color: var(--wrong-text); }
+    .opt-btn.dimmed  { opacity: 0.4; }
+    .nav-row { display: flex; gap: 12px; align-items: center; }
+    .btn-back {
+      background: white; border: 2px solid #e2e8f0; border-radius: 10px;
+      padding: 10px 20px; font-family: inherit; font-size: 0.9rem; color: #64748b; cursor: pointer;
+    }
+    .btn-back:hover { border-color: #94a3b8; }
+    .btn-next {
+      background: var(--primary); border: none; border-radius: 10px;
+      padding: 10px 28px; font-family: inherit; font-size: 0.9rem; font-weight: 600;
+      color: white; cursor: pointer; margin-left: auto; transition: background 0.15s;
+    }
+    .btn-next:hover { background: var(--primary-dark); }
+
+    /* ── Modal ── */
+    #modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 500; padding: 20px;
+    }
+    #modal-overlay.hidden { display: none; }
+    .modal-box {
+      background: white; border-radius: 20px; padding: 32px;
+      max-width: 520px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .modal-icon  { font-size: 2.6rem; margin-bottom: 10px; }
+    .modal-verdict { font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; }
+    .modal-verdict.c { color: var(--correct-text); }
+    .modal-verdict.w { color: var(--wrong-text); }
+    .modal-expl { font-size: 0.98rem; color: #475569; line-height: 1.7; margin-bottom: 24px; }
+
+    /* ── Result screen ── */
+    #screen-result { max-width: 700px; margin: 0 auto; padding: 80px 20px 80px; }
+    .res-header { text-align: center; margin-bottom: 30px; }
+    .score-ring {
+      width: 120px; height: 120px; border-radius: 50%;
+      border: 5px solid var(--primary); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; margin: 0 auto 18px;
+    }
+    .score-ring .rnum { font-size: 2rem; font-weight: 600; color: var(--primary); line-height: 1; }
+    .score-ring .rlbl { font-size: 0.72rem; color: #94a3b8; }
+    .res-title  { font-size: 1.8rem; font-weight: 600; font-style: italic; margin-bottom: 6px; }
+    .res-msg    { font-size: 1rem; color: #64748b; margin-bottom: 4px; }
+    .res-time   { font-size: 0.85rem; color: #94a3b8; margin-bottom: 28px; }
+    .stats-row  { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+    .stat-box {
+      flex: 1; min-width: 80px; background: white; border: 1px solid #e2e8f0;
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .stat-box .snum { font-size: 1.6rem; font-weight: 600; }
+    .stat-box .slbl { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
+    .stat-box.cs .snum { color: var(--correct-text); }
+    .stat-box.ws .snum { color: var(--wrong-text); }
+    .section-hd {
+      font-size: 1.05rem; font-weight: 600; color: #0f172a;
+      margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0;
+    }
+    .missed-section { margin-bottom: 32px; }
+    .missed-item {
+      background: var(--wrong-bg); border-left: 4px solid var(--wrong-border);
+      border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-size: 0.92rem;
+    }
+    .facit-item {
+      background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 14px 16px; margin-bottom: 10px;
+    }
+    .facit-item.fc { border-left: 4px solid var(--correct-border); }
+    .facit-item.fw { border-left: 4px solid var(--wrong-border); }
+    .fi-num { font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .fi-q   { font-size: 0.93rem; font-weight: 600; color: #0f172a; margin-bottom: 8px; line-height: 1.4; }
+    .fi-row { font-size: 0.88rem; padding: 2px 0; }
+    .fi-row .lbl { color: #94a3b8; }
+    .fi-row.ya-ok  { color: var(--correct-text); }
+    .fi-row.ya-bad { color: var(--wrong-text); }
+    .fi-row.ra     { color: var(--correct-text); font-weight: 600; margin-top: 2px; }
+
+    .btn-primary {
+      display: inline-block; background: var(--primary); color: white; border: none;
+      border-radius: 12px; padding: 13px 36px; font-size: 1.05rem; font-family: inherit;
+      font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s;
+    }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+    .btn-primary:active { transform: none; }
+
+    @media (max-width: 500px) {
+      #screen-start h1 { font-size: 1.85rem; }
+      .q-text { font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<a href="index.html" class="back-btn">← Tillbaka till startsidan</a>
+
+<!-- ═══════════ START ═══════════ -->
+<div id="screen-start" class="screen active">
+  <div class="badge">Rätten och samhället · Block 1</div>
+  <h1>Konstitutionell rätt</h1>
+  <p class="subtitle">Quiz med flervalsfrågor och Rätt/Fel-påståenden</p>
+  <div class="info-cards">
+    <div class="info-card"><div class="num">31</div><div class="lbl">Frågor</div></div>
+    <div class="info-card"><div class="num">19</div><div class="lbl">Flerval</div></div>
+    <div class="info-card"><div class="num">12</div><div class="lbl">Rätt / Fel</div></div>
+  </div>
+  <button class="btn-primary" onclick="startQuiz()">Starta Quiz →</button>
+</div>
+
+<!-- ═══════════ QUIZ ═══════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-header">
+    <div class="timer" id="timer">⏱ 0:00</div>
+    <div class="score-pill" id="score-pill">Poäng: 0</div>
+  </div>
+  <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+  <div class="q-counter" id="q-counter">Fråga 1 av 31</div>
+  <div id="type-badge-wrap"></div>
+  <div class="q-text" id="q-text"></div>
+  <div class="opts" id="opts"></div>
+  <div class="nav-row">
+    <button class="btn-back" id="btn-back" onclick="goBack()" style="display:none">← Bakåt</button>
+    <button class="btn-next" id="btn-next" onclick="goNext()" style="display:none">Nästa →</button>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL ═══════════ -->
+<div id="modal-overlay" class="hidden">
+  <div class="modal-box">
+    <div class="modal-icon"  id="modal-icon"></div>
+    <div class="modal-verdict" id="modal-verdict"></div>
+    <div class="modal-expl"   id="modal-expl"></div>
+    <button class="btn-primary" onclick="closeModal()">Nästa fråga →</button>
+  </div>
+</div>
+
+<!-- ═══════════ RESULT ═══════════ -->
+<div id="screen-result" class="screen">
+  <div class="res-header">
+    <div class="score-ring">
+      <div class="rnum" id="r-score"></div>
+      <div class="rlbl">poäng</div>
+    </div>
+    <div class="res-title"  id="r-title"></div>
+    <div class="res-msg"    id="r-msg"></div>
+    <div class="res-time"   id="r-time"></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-box cs"><div class="snum" id="s-correct">0</div><div class="slbl">Rätt</div></div>
+    <div class="stat-box ws"><div class="snum" id="s-wrong">0</div><div class="slbl">Fel</div></div>
+    <div class="stat-box"><div class="snum" id="s-pct">0%</div><div class="slbl">Andel rätt</div></div>
+  </div>
+  <div class="missed-section" id="missed-section"></div>
+  <div class="section-hd">Fullständigt facit</div>
+  <div id="facit-list"></div>
+  <div style="text-align:center;margin-top:32px">
+    <button class="btn-primary" onclick="restartQuiz()">↺ Gör om quizet</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// QUESTION DATA  (19 MC + 12 TF = 31 questions)
+// ════════════════════════════════════════════════════════════
+const QUESTIONS = [
+  // ── DEL 1: Faktafrågor (flerval) ──────────────────────────
+  {
+    type: 'mc',
+    q: 'Vad är en förordning?',
+    opts: [
+      'En regel som beslutas av regeringen och innehåller mer detaljerade regler som bygger på en lag',
+      'En regel som beslutas av riksdagen och har samma rang som en grundlag',
+      'En bindande regel som utfärdas av kommuner och regioner på eget initiativ',
+      'Ett internationellt avtal som Sverige förbundit sig att följa'
+    ],
+    correct: 0,
+    expl: 'En förordning beslutas av regeringen och innehåller mer detaljerade regler som bygger vidare på en lag stiftad av riksdagen. Förordningen ligger under lagen i normhierarkin.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad är en rättsordning?',
+    opts: [
+      'Sveriges regelsystem bestående av grundlagar, lagar, förordningar och föreskrifter',
+      'En samling domar och prejudikat från Högsta domstolen',
+      'Det regelverk som styr förhållandet mellan stater inom EU',
+      'En förteckning över alla myndigheter och deras befogenheter'
+    ],
+    correct: 0,
+    expl: 'Rättsordningen är hela Sveriges regelsystem och innefattar alla nivåer i normhierarkin: grundlagar, lagar, förordningar och föreskrifter.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad betyder begreppet "författning"?',
+    opts: [
+      'Ett samlingsnamn för lagar och förordningar – grundlagar är också författningar',
+      'En regel som enbart syftar på de fyra grundlagarna',
+      'En förordning som en myndighet utfärdat för ett specifikt ändamål',
+      'En kommunal regel som gäller inom ett begränsat geografiskt område'
+    ],
+    correct: 0,
+    expl: 'Författning är ett övergripande samlingsbegrepp: grundlagar, lagar och förordningar räknas alla som författningar.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad är rättsregler?',
+    opts: [
+      'Lagar, förordningar och föreskrifter som styr det svenska samhället',
+      'Etiska normer och sedvänjor som styr beteende utan juridisk bindning',
+      'Riksdagsbeslut i frågor av allmänt intresse som inte kräver lagstiftning',
+      'Avtal och kontrakt som privatpersoner ingår med varandra'
+    ],
+    correct: 0,
+    expl: 'Rättsregler är de juridiskt bindande reglerna – lagar, förordningar och föreskrifter – som reglerar hur samhället ska fungera och som kan verkställas med statens makt.'
+  },
+  {
+    type: 'mc',
+    q: 'I vilken ordning står normhierarkin (från högst till lägst)?',
+    opts: [
+      'Grundlag → Riksdagsordningen → Lag → Förordning → Föreskrift',
+      'Lag → Grundlag → Förordning → Riksdagsordningen → Föreskrift',
+      'Riksdagsordningen → Grundlag → Lag → Föreskrift → Förordning',
+      'Grundlag → Lag → Riksdagsordningen → Föreskrift → Förordning'
+    ],
+    correct: 0,
+    expl: 'Normhierarkin rangordnar rättskällorna uppifrån: Grundlag → Riksdagsordningen → Lag → Förordning → Föreskrift. En lägre regel får aldrig strida mot en högre.'
+  },
+  {
+    type: 'mc',
+    q: 'Var kan föreskrifter utfärdas?',
+    opts: [
+      'Av myndigheter samt av kommuner och regioner, efter riksdagens bemyndigande',
+      'Enbart av riksdagen och regeringen gemensamt via ett lagstiftningsärende',
+      'Av EU-kommissionen och svenska myndigheter i gemensamma samarbetsprojekt',
+      'Av enskilda domstolar inom deras respektive behörighetsområde'
+    ],
+    correct: 0,
+    expl: 'Föreskrifter kan utfärdas av myndigheter och av kommuner och regioner, men detta kräver att riksdagen gett bemyndigande (tillåtelse). Utan bemyndigande saknar föreskriften rättslig grund.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilka är Sveriges fyra grundlagar?',
+    opts: [
+      'Regeringsformen, successionsordningen, tryckfrihetsförordningen och yttrandefrihetsgrundlagen',
+      'Regeringsformen, brottsbalken, tryckfrihetsförordningen och yttrandefrihetsgrundlagen',
+      'Successionsordningen, riksdagsordningen, skattelagen och tryckfrihetsförordningen',
+      'Regeringsformen, successionsordningen, riksdagsordningen och offentlighetslagen'
+    ],
+    correct: 0,
+    expl: 'Sveriges fyra grundlagar är: Regeringsformen (RF), Successionsordningen (SO), Tryckfrihetsförordningen (TF) och Yttrandefrihetsgrundlagen (YGL). Riksdagsordningen är en mellanlag.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilka är maktens tre delar?',
+    opts: [
+      'Den lagstiftande makten (riksdagen), den verkställande makten (regeringen) och den dömande makten (domstolarna)',
+      'Den lagstiftande makten (riksdagen), den kontrollerande makten (KU) och den verkställande makten (regeringen)',
+      'Den statliga makten (riksdagen), den kommunala makten (kommunerna) och den regionala makten (regionerna)',
+      'Den rättsliga makten (JO), den politiska makten (partierna) och den ekonomiska makten (Riksbanken)'
+    ],
+    correct: 0,
+    expl: 'Maktdelningsprincipen delar in statsmakten i tre delar: den lagstiftande (riksdagen), den verkställande (regeringen) och den dömande makten (domstolarna).'
+  },
+  {
+    type: 'mc',
+    q: 'Vad innebär ett representativt styrelseskick?',
+    opts: [
+      'Att folket väljer representanter (riksdagsledamöter) som fattar beslut å folkets vägnar',
+      'Att alla medborgare röstar direkt om varje lag via obligatoriska folkomröstningar',
+      'Att statsministern väljs direkt av folket och sedan fritt utser sin regering',
+      'Att politiska partier turas om att styra landet enligt ett fastställt rotationsschema'
+    ],
+    correct: 0,
+    expl: 'I ett representativt styrelseskick väljer medborgarna representanter – riksdagsledamöter – som sedan fattar besluten i riksdagen å folkets vägnar. Det skiljer sig från direkt demokrati.'
+  },
+  {
+    type: 'mc',
+    q: 'Vem har den lagstiftande makten i Sverige?',
+    opts: [
+      'Riksdagen',
+      'Regeringen',
+      'Konstitutionsutskottet',
+      'Justitiekanslern'
+    ],
+    correct: 0,
+    expl: 'Den lagstiftande makten tillhör riksdagen. Det är riksdagen som stiftar, ändrar och upphäver lagar i Sverige.'
+  },
+  {
+    type: 'mc',
+    q: 'Vem har den verkställande makten i Sverige?',
+    opts: [
+      'Regeringen',
+      'Riksdagen',
+      'Riksdagsdirektören och statssekreterarna',
+      'Riksrevisionen'
+    ],
+    correct: 0,
+    expl: 'Den verkställande makten tillhör regeringen. Regeringen genomför och tillämpar de lagar riksdagen beslutar om och leder den statliga förvaltningen.'
+  },
+  {
+    type: 'mc',
+    q: 'Vem har den dömande makten i Sverige?',
+    opts: [
+      'Domstolarna (allmänna domstolar, förvaltningsdomstolar och specialdomstolar)',
+      'Riksdagen och dess rättsutskott vid rättsliga tvister',
+      'Justitieombudsmannen (JO) vid klagomål mot myndigheter',
+      'Kronofogdemyndigheten vid rättsliga avgöranden'
+    ],
+    correct: 0,
+    expl: 'Den dömande makten utövas av domstolarna: allmänna domstolar (tingsrätt, hovrätt, HD), förvaltningsdomstolar och specialdomstolar som Arbetsdomstolen. Domstolarna är oberoende.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad innebär allmän och lika rösträtt i Sverige?',
+    opts: [
+      'Att alla myndiga svenska medborgare får rösta och att varje röst väger lika mycket',
+      'Att alla invånare i Sverige över 16 år har rätt att rösta i alla typer av val',
+      'Att rösträttsåldern fastställs individuellt av varje enskild kommun',
+      'Att skattebetalarnas röster väger tyngre eftersom de finansierar den offentliga sektorn'
+    ],
+    correct: 0,
+    expl: 'Allmän rösträtt innebär att alla myndiga medborgare (18 år) har rätt att rösta. Lika rösträtt innebär att varje röst har exakt samma tyngd, oavsett vem som röstar.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilka är exempel på grundläggande fri- och rättigheter enligt regeringsformen?',
+    opts: [
+      'Yttrandefrihet, mötesfrihet och religionsfrihet (regeringsformen 2 kap. 1 §)',
+      'Fri rörlighet, tingsrättsrätt och förtroendevaldsrätt (successionsordningen kap. 1)',
+      'Rösträtt, skattefrihet och näringsfrihet (riksdagsordningen kap. 3)',
+      'Äganderätt, rättegångsrätt och kommunalrätt (brottsbalken 1 kap. 1 §)'
+    ],
+    correct: 0,
+    expl: 'Grundläggande fri- och rättigheter regleras i regeringsformen 2 kap. 1 § och inkluderar bl.a. yttrandefrihet, mötesfrihet och religionsfrihet. Rättigheterna skyddar medborgarna mot statliga ingrepp.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad handlar successionsordningen om?',
+    opts: [
+      'Den reglerar arvsrätten till Sveriges tron – alltså vem som kan bli statschef',
+      'Den reglerar hur arvet efter en privatperson ska fördelas bland arvingarna',
+      'Den fastställer hur statsministerposten överlämnas vid ett mandatskifte',
+      'Den beskriver hur riksdagens sammansättning förändras efter ett riksdagsval'
+    ],
+    correct: 0,
+    expl: 'Successionsordningen är en av Sveriges fyra grundlagar och reglerar tronföljden – vem som ärver tronen och kan bli statschef (kung eller drottning).'
+  },
+  {
+    type: 'mc',
+    q: 'Vad innebär likhetsprincipen?',
+    opts: [
+      'Att myndigheter ska behandla alla lika, oavsett exempelvis nationalitet eller utbildning',
+      'Att alla politiska partier ska ha lika stor representation i riksdagen oavsett väljarstöd',
+      'Att alla skattebetalare ska betala exakt samma belopp i skatt till staten',
+      'Att alla myndigheter ska ha samma befogenheter och resurser som varandra'
+    ],
+    correct: 0,
+    expl: 'Likhetsprincipen innebär att myndigheter inte får diskriminera – alla ska behandlas lika inför lagen oavsett nationalitet, utbildning, kön eller andra faktorer.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad innebär offentlighetsprincipen?',
+    opts: [
+      'Att alla medborgare har rätt att ta del av allmänna handlingar',
+      'Att myndigheternas beslut alltid måste publiceras på deras officiella webbplatser',
+      'Att alla domstolsförhandlingar är helt öppna för allmänheten utan undantag',
+      'Att privatpersoner alltid kan kräva att deras personuppgifter publiceras offentligt'
+    ],
+    correct: 0,
+    expl: 'Offentlighetsprincipen ger alla medborgare rätt att begära ut och läsa allmänna handlingar hos myndigheter. Den regleras i tryckfrihetsförordningen och är grundlagsskyddad.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad regleras i den offentliga rätten?',
+    opts: [
+      'Förhållandet mellan myndigheter och privatpersoner eller företag, t.ex. brottsbalken och skattelagstiftningen',
+      'Förhållandet mellan privatpersoner, exempelvis köplagen och äktenskapsbalken',
+      'Handeln mellan länder inom EU samt tullregler och importavgifter',
+      'Anställningsförhållanden och kollektivavtal på den svenska arbetsmarknaden'
+    ],
+    correct: 0,
+    expl: 'Offentlig rätt reglerar förhållandet mellan det offentliga (stat, myndigheter) och enskilda medborgare eller företag. Brottsbalken och skattelagstiftningen är typiska exempel.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilka uppgifter utför Konstitutionsutskottet (KU)?',
+    opts: [
+      'Granskar statsrådens tjänsteutövning och regeringsärendenas handläggning',
+      'Granskar alla nya lagförslag innan de formellt antas av riksdagens kammare',
+      'Beslutar om ändringar i grundlagarna och tillsätter statliga utredningar',
+      'Utser ledamöter till Högsta domstolen och Högsta förvaltningsdomstolen'
+    ],
+    correct: 0,
+    expl: 'Konstitutionsutskottet (KU) granskar om statsråden sköter sina uppgifter enligt lagen och om regeringen hanterar sina ärenden korrekt. KU kan rikta kritik mot enskilda statsråd.'
+  },
+
+  // ── DEL 2: Rätt eller Fel (tvåval) ────────────────────────
+  {
+    type: 'tf',
+    q: 'Påstående: Rättsordningen består av lagar och förordningar.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Rättsordningen är mer omfattande och består av grundlagar, lagar, förordningar OCH föreskrifter – inte bara lagar och förordningar.'
+  },
+  {
+    type: 'tf',
+    q: 'Påstående: En kommun som vill skapa en föreskrift kan göra det inom vissa gränser.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. Kommuner och regioner kan utfärda föreskrifter, men de måste ha riksdagens bemyndigande och föreskrifterna får inte strida mot överordnade regler i normhierarkin.'
+  },
+  {
+    type: 'tf',
+    q: 'Påstående: Endast riksdagen kan stifta lagar och förordningar.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Riksdagen stiftar lagar, men förordningar beslutas av regeringen. Det är en viktig distinktion i normhierarkin.'
+  },
+  {
+    type: 'tf',
+    q: 'Påstående: Normhierarkin innebär att en lag inte får strida mot grundlagen och att en föreskrift inte får strida mot en lag.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. Varje rättskälla måste stämma överens med den överordnade: lagar får inte strida mot grundlagar, och föreskrifter får inte strida mot lagar.'
+  },
+  {
+    type: 'tf',
+    q: 'Påstående: Mötesfrihet är en av de grundläggande fri- och rättigheterna.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. Mötesfrihet är en av de grundläggande fri- och rättigheterna i regeringsformen 2 kap. 1 §. Det innebär rätten att anordna och delta i möten.'
+  },
+  {
+    type: 'tf',
+    q: 'Påstående: Offentlighetsprincipen har en egen lag som kallas "offentlighetslagen".',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Det finns ingen "offentlighetslag". Offentlighetsprincipen regleras i tryckfrihetsförordningen (TF), som är en av Sveriges fyra grundlagar.'
+  },
+  {
+    type: 'tf',
+    q: 'Påstående: Meddelarfrihet innebär att anställda har rätt att lämna information till media.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. Meddelarfriheten skyddar anställda som lämnar uppgifter till journalister från att straffas för detta. Det är en central del av pressfriheten i Sverige.'
+  },
+  {
+    type: 'tf',
+    q: 'Påstående: Efterforskningsförbudet innebär att det är förbjudet för en chef att ta reda på vem som berättat något för en journalist.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. En arbetsgivare eller myndighet får inte undersöka vem som kontaktat media – det skulle annars undergräva meddelarskyddet.'
+  },
+  {
+    type: 'tf',
+    q: 'Påstående: Yttrandefrihetsgrundlagen behandlar yttrandefrihet i tryckta medier.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Yttrandefrihetsgrundlagen (YGL) gäller för radio, tv, webb och sociala medier. Tryckta medier regleras i stället av tryckfrihetsförordningen (TF).'
+  },
+  {
+    type: 'tf',
+    q: 'Påstående: En tvingande lag är en lag som alla måste följa.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. En tvingande lag är en lag som inte kan avtalas bort i ett avtal mellan parter. Motsatsen är en dispositiv lag som kan avtalas bort. Att "alla måste följa lagen" gäller i princip alla lagar.'
+  },
+  {
+    type: 'tf',
+    q: 'Påstående: Alla lagar är indelade i balkar och dessa behandlar olika ämnen.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Visserligen är många lagar samlade i balkar (t.ex. brottsbalken, äktenskapsbalken), men många lagar står utanför balkindelningen – t.ex. arbetsrättens lagar och upphovsrättslagen.'
+  },
+  {
+    type: 'tf',
+    q: 'Påstående: Riksrevisionen är en del av kontrollmakten.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. Riksrevisionen granskar statens finanser och verksamhet. Tillsammans med JO och KU utgör den kontrollmakten i det svenska statsskicket.'
+  }
+];
+
+// ════════════════════════════════════════════════════════════
+// FISHER-YATES SHUFFLE
+// ════════════════════════════════════════════════════════════
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// ════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════
+let qs = [];        // shuffled questions with per-question state
+let cur = 0;        // current question index
+let score = 0;
+let elapsed = 0;
+let timerID = null;
+
+function buildState() {
+  const shuffled = shuffleArray([...QUESTIONS]);
+  qs = shuffled.map(q => {
+    const indices = q.opts.map((_, i) => i);
+    return {
+      ...q,
+      shuffledIdx: shuffleArray(indices),  // original option indices in display order
+      selectedDisplay: null,               // which display position was clicked
+      answered: false
+    };
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// SCREENS
+// ════════════════════════════════════════════════════════════
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ════════════════════════════════════════════════════════════
+// TIMER
+// ════════════════════════════════════════════════════════════
+function fmt(s) {
+  const m = Math.floor(s / 60);
+  const ss = String(s % 60).padStart(2, '0');
+  return `⏱ ${m}:${ss}`;
+}
+function startTimer() {
+  elapsed = 0;
+  timerID = setInterval(() => {
+    elapsed++;
+    document.getElementById('timer').textContent = fmt(elapsed);
+  }, 1000);
+}
+function stopTimer() {
+  clearInterval(timerID);
+}
+
+// ════════════════════════════════════════════════════════════
+// START
+// ════════════════════════════════════════════════════════════
+function startQuiz() {
+  buildState();
+  cur = 0;
+  score = 0;
+  show('screen-quiz');
+  startTimer();
+  render();
+}
+
+// ════════════════════════════════════════════════════════════
+// RENDER QUESTION
+// ════════════════════════════════════════════════════════════
+function render() {
+  const q = qs[cur];
+  const total = qs.length;
+
+  // Progress
+  document.getElementById('progress-bar').style.width = (cur / total * 100) + '%';
+  document.getElementById('q-counter').textContent = `Fråga ${cur + 1} av ${total}`;
+  document.getElementById('score-pill').textContent = `Poäng: ${score}`;
+
+  // Type badge
+  const badgeWrap = document.getElementById('type-badge-wrap');
+  badgeWrap.innerHTML = q.type === 'mc'
+    ? '<span class="type-badge mc">Flerval</span>'
+    : '<span class="type-badge tf">Rätt eller Fel</span>';
+
+  // Question text
+  document.getElementById('q-text').textContent = q.q;
+
+  // Options
+  const optsEl = document.getElementById('opts');
+  optsEl.innerHTML = '';
+  optsEl.className = 'opts' + (q.type === 'tf' ? ' two' : '');
+
+  q.shuffledIdx.forEach((origIdx, displayPos) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = q.opts[origIdx];
+    btn.disabled = q.answered;
+
+    if (q.answered) {
+      const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+      if (displayPos === correctDisplay) {
+        btn.classList.add('correct');
+      } else if (displayPos === q.selectedDisplay) {
+        btn.classList.add('wrong');
+      } else {
+        btn.classList.add('dimmed');
+      }
+    } else {
+      btn.addEventListener('click', () => handleAnswer(displayPos));
+    }
+
+    optsEl.appendChild(btn);
+  });
+
+  // Nav buttons
+  document.getElementById('btn-back').style.display = cur > 0 ? 'inline-block' : 'none';
+  document.getElementById('btn-next').style.display = q.answered ? 'inline-block' : 'none';
+  document.getElementById('btn-next').textContent =
+    cur === total - 1 ? 'Se resultat →' : 'Nästa →';
+}
+
+// ════════════════════════════════════════════════════════════
+// HANDLE ANSWER
+// ════════════════════════════════════════════════════════════
+function handleAnswer(displayPos) {
+  const q = qs[cur];
+  if (q.answered) return;
+
+  q.answered = true;
+  q.selectedDisplay = displayPos;
+
+  const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+  const isCorrect = displayPos === correctDisplay;
+  if (isCorrect) score++;
+
+  // Lock options immediately
+  const btns = document.querySelectorAll('.opt-btn');
+  btns.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === correctDisplay) btn.classList.add('correct');
+    else if (i === displayPos) btn.classList.add('wrong');
+    else btn.classList.add('dimmed');
+  });
+
+  // Show next button
+  document.getElementById('btn-next').style.display = 'inline-block';
+  document.getElementById('btn-next').textContent =
+    cur === qs.length - 1 ? 'Se resultat →' : 'Nästa →';
+  document.getElementById('score-pill').textContent = `Poäng: ${score}`;
+
+  // Modal after 600 ms
+  setTimeout(() => showModal(isCorrect, q.expl), 600);
+}
+
+// ════════════════════════════════════════════════════════════
+// MODAL
+// ════════════════════════════════════════════════════════════
+function showModal(isCorrect, expl) {
+  document.getElementById('modal-icon').textContent    = isCorrect ? '✅' : '❌';
+  document.getElementById('modal-verdict').textContent = isCorrect ? 'Rätt svar!' : 'Fel svar';
+  document.getElementById('modal-verdict').className   = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
+  document.getElementById('modal-expl').textContent    = expl;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  goNext();
+}
+
+// ════════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════════
+function goBack() {
+  if (cur > 0) { cur--; render(); }
+}
+
+function goNext() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  if (cur < qs.length - 1) {
+    cur++;
+    render();
+  } else {
+    showResults();
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// RESULTS
+// ════════════════════════════════════════════════════════════
+function showResults() {
+  stopTimer();
+  show('screen-result');
+
+  const total = qs.length;
+  const wrong = total - score;
+  const pct   = Math.round(score / total * 100);
+
+  document.getElementById('r-score').textContent = `${score}/${total}`;
+  document.getElementById('s-correct').textContent = score;
+  document.getElementById('s-wrong').textContent   = wrong;
+  document.getElementById('s-pct').textContent     = pct + '%';
+
+  const m = Math.floor(elapsed / 60);
+  const s = String(elapsed % 60).padStart(2, '0');
+  document.getElementById('r-time').textContent = `Tid: ${m}:${s}`;
+
+  let title, msg;
+  if (pct >= 90)      { title = '🏆 Utmärkt!';             msg = 'Du behärskar konstitutionell rätt på hög nivå.'; }
+  else if (pct >= 75) { title = '✅ Redo för provet!';      msg = 'Bra resultat – du har koll på det centrala.'; }
+  else if (pct >= 55) { title = '📖 Öva lite till';        msg = 'Du är på rätt spår men behöver repetera en del.'; }
+  else                { title = '💡 Fortsätt repetera';    msg = 'Gå igenom materialet och försök igen.'; }
+
+  document.getElementById('r-title').textContent = title;
+  document.getElementById('r-msg').textContent   = msg;
+
+  // Missed questions
+  const missedEl = document.getElementById('missed-section');
+  const missed = qs.filter(q => q.answered && q.shuffledIdx.indexOf(q.correct) !== q.selectedDisplay);
+  if (missed.length > 0) {
+    missedEl.innerHTML = `<div class="section-hd">Missade frågor (${missed.length})</div>`;
+    missed.forEach(q => {
+      const div = document.createElement('div');
+      div.className = 'missed-item';
+      div.textContent = q.q;
+      missedEl.appendChild(div);
+    });
+  } else {
+    missedEl.innerHTML = '';
+  }
+
+  // Full facit
+  const facitEl = document.getElementById('facit-list');
+  facitEl.innerHTML = '';
+  qs.forEach((q, i) => {
+    const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+    const isCorrect = q.answered && q.selectedDisplay === correctDisplay;
+    const notAnswered = !q.answered;
+
+    const div = document.createElement('div');
+    div.className = 'facit-item ' + (notAnswered ? '' : isCorrect ? 'fc' : 'fw');
+
+    const correctOptText = q.opts[q.correct];
+    const selectedOptText = q.answered
+      ? q.opts[q.shuffledIdx[q.selectedDisplay]]
+      : null;
+
+    let inner = `<div class="fi-num">Fråga ${i + 1}</div>`;
+    inner += `<div class="fi-q">${q.q}</div>`;
+
+    if (notAnswered) {
+      inner += `<div class="fi-row"><span class="lbl">Ditt svar: </span>— (inte besvarad)</div>`;
+      inner += `<div class="fi-row ra"><span class="lbl">Rätt svar: </span>${correctOptText}</div>`;
+    } else if (isCorrect) {
+      inner += `<div class="fi-row ya-ok">✓ <span class="lbl">Ditt svar: </span>${selectedOptText}</div>`;
+    } else {
+      inner += `<div class="fi-row ya-bad">✗ <span class="lbl">Ditt svar: </span>${selectedOptText}</div>`;
+      inner += `<div class="fi-row ra"><span class="lbl">Rätt svar: </span>${correctOptText}</div>`;
+    }
+
+    div.innerHTML = inner;
+    facitEl.appendChild(div);
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// RESTART
+// ════════════════════════════════════════════════════════════
+function restartQuiz() {
+  stopTimer();
+  show('screen-start');
+}
+</script>
+</body>
+</html>
