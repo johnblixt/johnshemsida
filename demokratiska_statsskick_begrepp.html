@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demokratiska statsskick – Begrepp</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: 'Fredoka', sans-serif; }
+    .flip-card { perspective: 1000px; height: 350px; width: 100%; max-width: 400px; cursor: pointer; }
+    .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+    .flipped-classes { transform: rotateY(180deg); }
+    .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+    .flip-card-back { transform: rotateY(180deg); }
+  </style>
+</head>
+<body class="bg-amber-50 min-h-screen">
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    const PRIMARY = '#fbbf24';
+
+    const items = [
+      { term: 'Demokrati', definition: 'Ordet kommer från grekiskan och betyder folkstyre.', sentence: 'Sverige styrs som en ___, vilket innebär att folket har den yttersta makten.' },
+      { term: 'Direktdemokrati', definition: 'En styrelseform där medborgarna själva direkt deltar i beslutsfattandet, ofta genom folkomröstningar.', sentence: 'I det antika Aten praktiserades ___, där medborgarna röstade om lagarna på torget.' },
+      { term: 'Representativ demokrati', definition: 'En styrelseform där medborgarna väljer representanter som fattar beslut å deras vägnar.', sentence: 'Sverige är ett exempel på ___, där vi vart fjärde år väljer riksdagsledamöter att fatta beslut åt oss.' },
+      { term: 'Tjänsteman', definition: 'Person som arbetar inom offentlig förvaltning och ser till att de politiska besluten genomförs i praktiken.', sentence: 'En ___ på Arbetsförmedlingen handlägger ansökningar om a-kassa enligt de lagar riksdagen stiftat.' },
+      { term: 'Statsskick', definition: 'Den form av styrelse som ett land tillämpar, till exempel republik–monarki.', sentence: 'Om ett land har en kung eller en vald president avgörs av landets ___.' },
+      { term: 'Statsorgan', definition: 'De viktigaste delarna i ett lands statsskick, framför allt statschef, parlament, regering och domstolar.', sentence: 'Riksdagen, regeringen och Högsta domstolen räknas alla som ___.' },
+      { term: 'Konstitution (författning, grundlag)', definition: 'Grundläggande regler för hur ett land styrs. Sveriges grundlagar är: regeringsformen, successionsordningen, tryckfrihetsförordningen och yttrandefrihetsgrundlagen.', sentence: 'Regeringsformen är en del av den svenska ___ och slår fast att all offentlig makt utgår från folket.' },
+      { term: 'Statschef', definition: 'Statsöverhuvud: en stats högsta företrädare. Kallas vanligtvis president i en republik och kung eller drottning i en monarki.', sentence: 'Kung Carl XVI Gustaf är Sveriges ___ och representerar landet vid utländska statsbesök.' },
+      { term: 'Monarki', definition: 'Ett statsskick där uppdraget att vara statschef (monark) går i arv inom en familj.', sentence: 'Sverige är en ___, eftersom uppdraget som kung eller drottning går i arv inom kungafamiljen.' },
+      { term: 'Konstitutionell monarki', definition: 'I en demokrati är monarkens makt alltid begränsad av författningen (konstitutionen). Motsats: absolut monarki.', sentence: 'I en ___ är kungens makt begränsad av grundlagen, till skillnad från i en absolut monarki.' },
+      { term: 'Republik', definition: 'Ett statsskick där statschefen väljs på annat sätt än genom arv, oftast genom val.', sentence: 'Frankrike är en ___ där presidenten väljs av folket.' },
+      { term: 'President', definition: 'En vald ledare som ofta fungerar som statschef i en republik.', sentence: 'Emmanuel Macron är Frankrikes ___ och fungerar som landets statschef.' },
+      { term: 'Politisk ideologi', definition: 'Ett sammanhängande system av idéer och värderingar om hur samhället bör organiseras och styras.', sentence: 'Socialismens idéer om gemensamt ägande utgör en sammanhängande ___.' },
+      { term: 'Vänster-högerskalan', definition: 'En skala som ideologiskt placerar partierna från vänster (socialism) till höger (konservatism).', sentence: 'Vänsterpartiet placeras längst till vänster på ___, medan Sverigedemokraterna befinner sig längre till höger.' },
+      { term: 'Partiprogram', definition: 'En sammanställning av ett partis ståndpunkter i olika samhällsfrågor. Ger väljarna en uppfattning om den politik partiet vill föra om det kommer till makten.', sentence: 'Inför valet publicerade Socialdemokraterna sitt ___ med löften om satsningar på välfärden.' },
+      { term: 'Valkrets', definition: 'Ett geografiskt område som har ett bestämt antal platser (mandat) i en vald församling, till exempel riksdagen.', sentence: 'Stockholms läns ___ väljer in flest riksdagsledamöter tack vare regionens stora befolkning.' },
+      { term: 'Valsystem', definition: 'Det sätt som befolkningen i ett land utser sina representanter (politiker).', sentence: 'Sverige och USA har helt olika ___ — proportionellt respektive majoritetsval.' },
+      { term: 'Proportionellt valsystem', definition: 'Valsystem där varje parti får mandat i förhållande till antalet röster.', sentence: 'Tack vare ett ___ kan ett parti som får tio procent av rösterna räkna med ungefär tio procent av mandaten.' },
+      { term: 'Mandat', definition: 'Plats i folkförsamlingen (riksdagen, parlamentet) som representant för sina väljare.', sentence: 'Socialdemokraterna vann flest ___ i riksdagsvalet och fick i uppdrag att bilda regering.' },
+      { term: 'Majoritetsval', definition: 'Ett valsystem där varje valkrets representeras av en enda kandidat, och den kandidat som får flest röster vinner mandatet.', sentence: 'I Storbritannien används ___, vilket gör att en kandidat vinner hela valkretsen även med bara 35 procent av rösterna.' },
+      { term: 'Spärregler', definition: 'Regler som ska förhindra att alltför små partier kommer in i riksdagen och andra folkvalda församlingar och försvårar arbetet där.', sentence: 'I Sverige måste ett parti få minst fyra procent av rösterna — dessa ___ hindrar att alltför många småpartier splittrar riksdagen.' },
+      { term: 'Partival', definition: 'Valsystem där väljarna röstar på partier. Varje parti har innan valet utsett vilka kandidater som ska stå på valsedeln.', sentence: 'Vid ___ lägger väljaren en valsedel med ett partis namn i stället för en enskild kandidats.' },
+      { term: 'Personval', definition: 'Valmetod där väljarna röstar på enskilda personer.', sentence: 'Tack vare ___ kan väljaren kryssa för en kandidat och på så vis påverka vem i partiet som faktiskt väljs in.' },
+      { term: 'Parlament', definition: 'Folkrepresentation — en församling där representanter för folket (politiker) beslutar om lagar och politik. I Sverige kallad riksdagen.', sentence: 'Det brittiska ___ i Westminster anses vara ett av världens äldsta folkvalda organ.' },
+      { term: 'Konstitutionsutskottet (KU)', definition: 'Riksdagsutskott som främst granskar att regeringen i sitt arbete följer författningen (konstitutionen).', sentence: 'Det är ___ som kontrollerar att statsråden i sin ämbetsutövning följer grundlagen.' },
+      { term: 'Misstroendeförklaring', definition: 'Efter en omröstning kan riksdagen förklara sitt misstroende för enskilda statsråd eller för hela regeringen. Om mer än hälften av riksdagen förklarar sitt misstroende måste regeringen eller statsrådet avgå.', sentence: 'Riksdagen kan rikta en ___ mot en minister om mer än hälften av ledamöterna röstar för det.' },
+      { term: 'Riksrevisionen', definition: 'Myndighet som lyder under riksdagen och har till uppgift att granska statsförvaltningen. Kontrollerar hur korrekt och effektivt myndigheterna använder skattemedlen.', sentence: 'Det var ___ som slog larm om att Försäkringskassan hade betalat ut felaktiga ersättningar i miljardbelopp.' },
+      { term: 'Justitieombudsmannen (JO)', definition: 'Riksdagens ombudsman (egentligen fyra personer) som kontrollerar hur väl myndigheterna i sitt arbete följer lagar och förordningar.', sentence: 'Den student som nekades tillgång till ett offentligt dokument kan i sista hand anmäla myndigheten till ___.' },
+      { term: 'Regering', definition: 'Statsorgan som styr landet och verkställer beslut som fattats av parlamentet/riksdagen.', sentence: 'Det är ___ som lägger fram budgetpropositionen och ansvarar för att riksdagens beslut genomförs.' },
+      { term: 'Parlamentarism', definition: 'Statsskick där regeringen måste ha parlamentets förtroende för sin politik, annars måste regeringen avgå. Finns bland annat i Sverige, Danmark och Storbritannien.', sentence: 'Tack vare ___ kan riksdagen avsätta en statsminister som inte längre har parlamentets förtroende.' },
+      { term: 'Statsminister', definition: 'Benämning på regeringschefen i Sverige samt övriga nordiska länder.', sentence: 'Ulf Kristersson tillträdde som ___ efter att talmannen föreslagit honom och riksdagen godkänt förslaget.' },
+      { term: 'Presidentstyre', definition: 'Statsskick där presidenten både är statschef och regeringschef. Väljs av folket.', sentence: 'I USA råder ett ___, vilket innebär att presidenten leder både staten och den verkställande makten.' },
+      { term: 'Talman', definition: 'Föreslår ny statsminister och leder riksdagens arbete tillsammans med de vice talmännen.', sentence: 'Det är ___ som föreslår vem som ska bli ny statsminister efter ett riksdagsval.' },
+      { term: 'Statsråd', definition: 'Minister; medlem av regeringen.', sentence: 'Varje ___ i regeringen ansvarar för ett politikområde och deltar i de veckovisa regeringssammanträdena.' },
+      { term: 'Departement', definition: 'Del av Regeringskansliet som förbereder och efterarbetar olika regeringsärenden som avgörs av regeringen.', sentence: 'Utbildningsdepartementet är det ___ som bereder ärenden om skola och forskning inför regeringsbeslut.' },
+      { term: 'Motion', definition: 'Förslag till riksdagen som kommer från en eller flera riksdagsledamöter.', sentence: 'En riksdagsledamot lämnade in en ___ med förslag om att förlänga föräldraledigheten till 18 månader.' },
+      { term: 'Proposition', definition: 'Förslag till riksdagen som kommer från regeringen.', sentence: 'Regeringen lade fram en ___ om att sänka åldersgränsen för att köpa receptfria läkemedel.' },
+      { term: 'Utskott', definition: 'Arbetsgrupper inom riksdagen som bereder de olika ärendena.', sentence: 'Förslaget om höjd pensionsålder bereddes av socialförsäkringsutskottet, ett av riksdagens ___.' },
+      { term: 'Remiss', definition: 'Betyder överlämna eller skicka. Inför viktiga beslut remitteras vissa ärenden till berörda personer eller organisationer för att dessa ska få ge sina synpunkter.', sentence: 'Lagförslaget skickades på ___ till Advokatsamfundet och ett antal kommuner för att inhämta deras synpunkter.' },
+      { term: 'Statens offentliga utredningar (SOU)', definition: 'En serie rapporter från utredningar som regeringen tillsatt.', sentence: 'Betänkandet om skolsystemets brister publicerades som en ___ efter tre års utredningsarbete.' },
+      { term: 'Votering', definition: 'Omröstning vid beslutsfattande. Om detta sker muntligt kallas det acklamation.', sentence: 'Riksdagsledamöterna genomförde en ___ och lagförslaget antogs med 175 röster mot 174.' },
+      { term: 'Förvaltning (administration)', definition: 'Sköter något för någon annans räkning. Statsförvaltningen ser till att beslut fattade av riksdag och regering blir genomförda.', sentence: 'Polismyndigheten är en del av statens ___ och ser till att riksdagens lagar verkställs i praktiken.' },
+      { term: 'Myndigheter', definition: 'Enheter inom statsförvaltningen. Indelade i centrala ämbetsverk (t.ex. Skolverket), uppdragsmyndigheter (t.ex. CSN) och affärsverk (t.ex. Luftfartsverket).', sentence: 'Skolverket och Transportstyrelsen är exempel på statliga ___ med var sin avgränsade uppgift.' },
+      { term: 'Länsstyrelse', definition: 'Högsta statliga organet inom ett län.', sentence: 'Det är ___ som är det högsta statliga organet i ett län och samordnar insatser vid kriser.' },
+      { term: 'Lokalt (kommunalt) och regionalt självstyre', definition: 'Den beslutanderätt i vissa frågor medborgarna har inom en kommun eller region.', sentence: 'Genom ___ kan kommunerna bestämma hur de vill organisera sin förskoleverksamhet.' },
+      { term: 'Kommun', definition: 'Område med lokalt självstyre, t.ex. över skola, socialtjänst och renhållning. I Sverige finns cirka 290 kommuner.', sentence: 'Uppsala är en av Sveriges 290 ___ och ansvarar bland annat för stadens skolor och äldreomsorg.' },
+      { term: 'Kommunfullmäktige', definition: 'Kommunens "riksdag".', sentence: 'Det är ___ i Göteborg som tar beslut om kommunens budget och övergripande mål.' },
+      { term: 'Kommunstyrelse', definition: 'Kommunens "regering".', sentence: 'Det är ___ som förbereder ärenden inför kommunfullmäktige och leder kommunens löpande arbete.' },
+      { term: 'Nämnder', definition: 'Arbetsgrupper för olika politiska sakområden inom kommuner och regioner.', sentence: 'Barn- och utbildningsnämnden är en av kommunens ___ och fattar beslut i frågor om skola och förskola.' },
+      { term: 'Region', definition: 'Område med regionalt självstyre, t.ex. om sjukvård och kollektivtrafik. I Sverige finns 20 regioner.', sentence: 'Region Skåne är en av Sveriges 20 ___ och ansvarar för sjukvård och kollektivtrafik i södra Sverige.' },
+      { term: 'Regionfullmäktige', definition: 'Regionens "riksdag".', sentence: 'Det är ___ i Västra Götaland som beslutar om sjukvårdens budget och övergripande prioriteringar.' },
+      { term: 'Regionstyrelse', definition: 'Regionens "regering".', sentence: 'Det är ___ som leder regionens löpande verksamhet och förbereder ärenden inför regionfullmäktige.' },
+      { term: 'Offentlighetsprincipen', definition: 'Viktig princip som ger allmänheten rätt att ta del av offentliga handlingar.', sentence: 'En journalist begärde ut mejl från kommunen med stöd av ___ och fick dem utlämnade samma dag.' },
+    ];
+
+    const scenarioData = [
+      { correct: 'Medborgarna väljer vart fjärde år representanter som fattar beslut om lagar och skatter.', trap: 'En grupp experter utses av regeringen för att fatta alla viktiga beslut utan att folket röstar.', explanation: 'Demokrati innebär att makten utgår från folket. Expertstyre utan folklig förankring är inte demokrati.' },
+      { correct: 'Alla kommuninvånare kallas till ett möte och röstar direkt om en ny simhall ska byggas.', trap: 'Kommuninvånarna röstar in fullmäktigeledamöter som sedan beslutar om simhallen.', explanation: 'Direktdemokrati kräver att medborgarna själva direkt fattar besluten — val av representanter är representativ demokrati.' },
+      { correct: 'Väljarna röstar in riksdagsledamöter som sedan stiftar lagar och beslutar om budgeten.', trap: 'Alla medborgare röstar direkt i en riksomfattande omröstning om ett nytt lagförslag.', explanation: 'Representativ demokrati innebär att valda representanter fattar besluten — direktröstning av alla medborgare är direktdemokrati.' },
+      { correct: 'En handläggare på Försäkringskassan prövar sjukskrivningsansökningar utifrån gällande regelverk.', trap: 'En riksdagsledamot presenterar ett lagförslag om sjukförsäkringens villkor i riksdagen.', explanation: 'Tjänstemän genomför politiska beslut i praktiken. Riksdagsledamoten är en vald politiker, inte tjänsteman.' },
+      { correct: 'Sverige är en konstitutionell monarki med parlamentarism — det beskriver landets grundläggande styrelseskick.', trap: 'Sverige beslutade att höja pensionsåldern — det är ett uttryck för hur landet styrs.', explanation: 'Statsskick avser den grundläggande organisationen av staten, inte enskilda politiska beslut.' },
+      { correct: 'Riksdagen, regeringen och Högsta domstolen utgör kärnan i Sveriges statsapparat.', trap: 'Riksdagen, LO och SVT utgör de viktigaste institutionerna i det svenska samhället.', explanation: 'Statsorgan är formella delar av staten — fackförbund och public service räknas inte dit.' },
+      { correct: 'Regeringsformen innehåller grundregler om att all makt utgår från folket och om de grundläggande fri- och rättigheterna.', trap: 'Riksdagen stiftade en ny lag om maxhastigheter på motorvägar — den ingår i landets rättsliga grundstruktur.', explanation: 'Konstitutionen innehåller grundläggande regler för statsskicket, inte vanliga trafikregler.' },
+      { correct: 'Kungen representerar Sverige vid statsbesök och undertecknar formellt nya statsministrars förordnanden.', trap: 'Statsministern är landets viktigaste politiker och styr landet i kungens namn.', explanation: 'Statschefen (kungen) är landets officiella högste representant — statsministern leder regeringen.' },
+      { correct: 'Landets kung ärvde tronen av sin far och planerar att lämna den till sin äldsta dotter.', trap: 'Landets ledare väljs i ett nationellt val vart femte år och kan sitta i högst två perioder.', explanation: 'I en monarki ärvs statschefsämbetet — en vald statschef är ett tecken på en republik.' },
+      { correct: 'Kungen inviger riksdagen och öppnar sessionen men kan inte stoppa lagar som riksdagen stiftar.', trap: 'Kungen är statschef och kan avfärda statsministrar som han inte tycker sköter landet tillräckligt bra.', explanation: 'I en konstitutionell monarki begränsas kungens makt av konstitutionen — att avsätta statsministrar tillhör absolut monarki.' },
+      { correct: 'Landets president väljs i direkta folkval vart fem år och lämnar ämbetet när mandattiden löpt ut.', trap: 'Landets kung är statschef och har styrt landet sedan han tillträdde för 30 år sedan.', explanation: 'I en republik väljs statschefen — en ärftlig statschef tillhör monarkin.' },
+      { correct: 'Frankrikes valda statschef har stor makt och utnämnde nyligen en ny premiärminister.', trap: 'Storbritanniens statsminister är landets mäktigaste politiker och leder regeringen.', explanation: 'Presidenten är vald statschef i en republik — statsministern är regeringschef i ett parlamentariskt system.' },
+      { correct: 'Liberalismen bygger på en sammanhängande uppsättning idéer om individens frihet, rättsstat och fri marknad.', trap: 'Moderaterna beslutade att stödja ett förslag om sänkt bolagsskatt — det är deras ideologiska ståndpunkt.', explanation: 'En politisk ideologi är ett heltäckande tankesystem — ett enstaka politiskt beslut är inte en ideologi.' },
+      { correct: 'Vänsterpartiet vill förstatliga banker och öka offentliga satsningar; Moderaterna vill sänka skatter och öka valfrihet.', trap: 'SD vill minska invandringen och MP vill ha mer grön energi — de är varandras motpoler på vänster-högerskalan.', explanation: 'Vänster-högerskalan mäter synen på ekonomisk omfördelning och statens roll — invandring och miljöpolitik hör inte primärt dit.' },
+      { correct: 'Liberalerna publicerade ett dokument med sina ståndpunkter om skola, rättsväsende och EU inför riksdagsvalet.', trap: 'Centerpartiets riksdagsgrupp röstade ja till sänkt restaurangmoms under ett riksdagssammanträde.', explanation: 'Partiprogram är ett samlat dokument med partiets ståndpunkter — en enstaka omröstning i riksdagen är inte ett partiprogram.' },
+      { correct: 'Jämtlands läns valkrets väljer in färre riksdagsledamöter än Stockholm eftersom befolkningstätheten är lägre.', trap: 'Riksdagens talman fördelar riksdagsledamöterna på utskott utifrån partiernas storlek.', explanation: 'Valkretsar är geografiska enheter med bestämda mandat — utskottsplacering är en intern riksdagsfråga.' },
+      { correct: 'I Sverige fördelas mandaten i proportion till hur stor andel av rösterna varje parti fick.', trap: 'Sverige håller riksdagsval vart fjärde år — det är ett uttryck för landets demokratiska valsystem.', explanation: 'Valsystem handlar om hur röster räknas om till mandat, inte om valperiodens längd.' },
+      { correct: 'Partiet som fick 20 procent av rösterna fick ungefär 20 procent av mandaten i parlamentet.', trap: 'I varje valkrets vann det parti som fick flest röster — de fick alla kretsens mandat.', explanation: 'I ett proportionellt system speglar mandatandelen röstandelen — vinnaren-tar-allt tillhör majoritetsvalsystemet.' },
+      { correct: 'Sverigedemokraterna fick 62 platser i riksdagen efter riksdagsvalet 2022.', trap: 'Riksdagen gav regeringen tillstånd att skriva under ett handelsavtal med EU.', explanation: 'Mandat är platser i riksdagen — riksdagens tillstånd för ett handelsavtal är ett annat slags godkännande.' },
+      { correct: 'Kandidaten som fick 38 procent av rösterna vann hela valkretsen — de andra kandidaternas röster räknades bort.', trap: 'Partiet som fick flest röster nationellt fick flest mandat i proportion till sin röstandel.', explanation: 'Majoritetsval avgörs per valkrets och vinnaren tar allt — proportionell fördelning är ett annat system.' },
+      { correct: 'Partiet fick 2,8 procent av rösterna och fick inga platser i riksdagen eftersom de inte nådde fyraprocentsspärren.', trap: 'Riksdagen utesluter ett parti som brutit mot demokratiska normer från att delta i omröstningar.', explanation: 'Spärregler handlar om minsta röstandel för att komma in i riksdagen — de utesluter inte partier pga normbrott.' },
+      { correct: 'Väljaren la ner en valsedel märkt Vänsterpartiet utan att kryssa för någon specifik person.', trap: 'Väljaren kryssade för Nooshi Dadgostar för att säkerställa att just hon väljs in i riksdagen.', explanation: 'Partival innebär att man röstar på ett parti — att kryssa för en kandidat är personval.' },
+      { correct: 'Väljaren satte ett kryss för Erik Hellsborn på Sverigedemokraternas valsedel för att stödja hans inval.', trap: 'Väljaren la sin röst på Sverigedemokraterna eftersom de lovade strängare straff för gängkriminalitet.', explanation: 'Personval innebär aktivt kryss för en individ — att bara rösta på partiet utan kryss är partival.' },
+      { correct: 'Riksdagen sammanträdde och röstade igenom den nya brottsbalksändringen med 192 röster mot 157.', trap: 'Statsministern presenterade en ny strategi mot gängkriminalitet på en presskonferens.', explanation: 'Parlamentet är lagstiftaren — statsministern tillhör den verkställande makten.' },
+      { correct: 'KU kallade finansministern till utfrågning för att utreda om hennes beslut om statliga lån stred mot grundlagen.', trap: 'Riksdagens arbetsmarknadsutskott granskar om en ny lag om sjukpenning är tillräcklig.', explanation: 'KU granskar om grundlagen följts — arbetsmarknadsutskottet bereder arbetsmarknadsfrågor.' },
+      { correct: 'Riksdagen röstade med absolut majoritet för att statsrådet måste avgå efter att ha ljugit inför KU.', trap: 'Oppositionspartierna höll en gemensam presskonferens och krävde att ministern avgår.', explanation: 'En misstroendeförklaring är en formell omröstning med rättslig verkan — en presskonferens är inte bindande.' },
+      { correct: 'Riksrevisionen publicerade en rapport om att Arbetsförmedlingen slösat bort hundratals miljoner i onödiga IT-projekt.', trap: 'KU granskar om Arbetsförmedlingens generaldirektör handlat i strid med grundlagen.', explanation: 'Riksrevisionen granskar hur skattemedel används — KU granskar om grundlagen följts.' },
+      { correct: 'En medborgare anmälde Migrationsverket till JO efter att myndigheten vägrat lämna ut en offentlig handling utan laglig grund.', trap: 'En åklagare inleder förundersökning mot en kommunal tjänsteman för tjänstefel.', explanation: 'JO kontrollerar att myndigheter följer lagar och regler — åtal inleds av åklagare, inte JO.' },
+      { correct: 'Statsråden sammanträdde och beslutade om en proposition om höjd a-kassa som ska skickas till riksdagen.', trap: 'Riksdagen röstade ja till propositionen om höjd a-kassa med 180 mot 169 röster.', explanation: 'Regeringen lägger fram förslag och styr landet — riksdagen beslutar om lagarna.' },
+      { correct: 'Statsministern tvingades avgå när riksdagen röstade ner budgeten och gav honom ett formellt misstroende.', trap: 'Presidenten styrde landet i fyra år trots att kongressen konsekvent röstade ner hans förslag.', explanation: 'Parlamentarism innebär att regeringen är beroende av parlamentets stöd — i presidentstyre är presidenten oberoende av parlamentet.' },
+      { correct: 'Magdalena Andersson tillträdde som chef för regeringen och ansvarade inför riksdagen för dess arbete.', trap: 'Kungen öppnade riksdagen och hälsade riksdagsledamöterna välkomna till den nya sessionen.', explanation: 'Statsministern är regeringschef — kungen är statschef men deltar inte i den politiska ledningen.' },
+      { correct: 'USA:s president är överbefälhavare, utser ministrar och leder den verkställande makten utan att vara beroende av kongressens förtroende.', trap: 'Frankrikes president nominerade en premiärminister som sedan presenterade sin regering för parlamentet.', explanation: 'Renodlat presidentstyre innebär att presidenten styr utan parlamentets förtroende — Frankrike har ett semipresidentiellt system.' },
+      { correct: 'Riksdagens talman föreslog Ulf Kristersson som statsministerkandidat och ledde riksdagens omröstning om hans tillträdande.', trap: 'Statsministern öppnade riksdagens höstession och presenterade regeringens prioriteringar för ledamöterna.', explanation: 'Talmannen leder riksdagen och föreslår statsminister — statsministern leder inte riksdagen.' },
+      { correct: 'Finansminister Elisabeth Svantesson deltog i torsdagens ministerrådsmöte och förelade budgetunderlaget.', trap: 'Riksbankschefen höll presskonferens och meddelade att räntan sänks med 0,25 procentenheter.', explanation: 'Statsråd är minister i regeringen — riksbankschefen är en myndighetschef, inte statsråd.' },
+      { correct: 'Socialdepartementet tog fram propositionstexten inför regeringens beslut om ny äldreomsorgsreform.', trap: 'Riksdagens socialutskott beredde ärendet om äldreomsorgen och föreslog ändringar i lagförslaget.', explanation: 'Departementet arbetar åt regeringen — utskottet är riksdagens arbetsgrupp.' },
+      { correct: 'Riksdagsledamoten Erik Ottosson lämnade in ett skriftligt förslag till riksdagen om skärpta straff för gängbrott.', trap: 'Regeringen presenterade ett lagförslag om skärpta straff för gängbrott och skickade det till riksdagen.', explanation: 'En motion kommer från riksdagsledamöter — ett förslag från regeringen är en proposition.' },
+      { correct: 'Regeringen skickade ett lagförslag om ny trafiklagstiftning till riksdagen som underlag för riksdagsbeslutet.', trap: 'Riksdagsledamoten Tobias Andersson lade in ett eget förslag om ny trafiklagstiftning i riksdagen.', explanation: 'En proposition är ett regeringsförslag — ett riksdagsledamotförslag kallas motion.' },
+      { correct: 'Riksdagens justitieutskott beredde lagstiftningsärendet om en ny visitationslag och föreslog ändringar.', trap: 'Regeringen tillsatte en expertkommission för att utreda hur den nya visitationslagen borde utformas.', explanation: 'Utskott är riksdagens beredningsorgan — en expertkommission tillsatt av regeringen är en SOU-utredning.' },
+      { correct: 'Lagförslaget skickades till Advokatsamfundet och tre kommuner som fick ge skriftliga synpunkter.', trap: 'Riksdagens talman skickade lagförslaget till KU för att kontrollera att det inte strider mot grundlagen.', explanation: 'Remiss innebär att berörda parter konsulteras — KU:s grundlagsgranskning är en annan process.' },
+      { correct: 'Regeringen tillsatte en kommission som tre år senare publicerade en rapport om pensionssystemets hållbarhet.', trap: 'Riksrevisionen publicerade en kritisk rapport om att Pensionsmyndigheten hanterat pensionsmedlen felaktigt.', explanation: 'En SOU är resultatet av en utredning tillsatt av regeringen — riksrevisionens rapport är en granskning, inte en SOU.' },
+      { correct: 'Riksdagsledamöterna tryckte på sina knappar och röstade ja eller nej till det nya kriminalvårdsförslaget.', trap: 'Partiledarna debatterade intensivt om kriminalvårdsreformen i riksdagen under tre timmar.', explanation: 'Votering är själva omröstningsförfarandet — debatten föregår voteringen men är inte en votering.' },
+      { correct: 'Skatteverket, Försäkringskassan och Polisen tillämpar i daglig verksamhet de lagar som riksdag och regering beslutat.', trap: 'Riksdagen beslutar om en ny lag om utökad skatteåterbäring för renovering av äldre fastigheter.', explanation: 'Förvaltningen genomför politiska beslut — riksdagen stiftar lagarna men myndigheternas uppgift är att verkställa dem.' },
+      { correct: 'Naturvårdsverket och Läkemedelsverket är statliga organ med specifika uppdrag reglerade av sina instruktioner.', trap: 'Göteborgs stad driver vattenledningsnätet och hanterar VA-avgifterna inom kommunens gränser.', explanation: 'Myndigheter är statliga organ under regeringen — kommunala verksamheter är inte statliga myndigheter.' },
+      { correct: 'Vid krisen samordnade länsstyrelsen i Jämtland insatser från kommuner, polis och räddningstjänst i länet.', trap: 'Kommunstyrelsen i Östersund ledde kommunens eget krisarbete och samordnade de lokala resurserna.', explanation: 'Länsstyrelsen är det högsta statliga organet i länet med regionalt samordningsansvar — kommunstyrelsen leder kommunens arbete.' },
+      { correct: 'Luleå kommun beslutar självt om hur pengarna till förskolan ska fördelas och verksamheten organiseras.', trap: 'Riksdagen lagstiftar om att alla kommuner ska erbjuda barnomsorg — kommunerna har inga egna befogenheter att avvika.', explanation: 'Lokalt självstyre innebär att kommunen har beslutanderätt i vissa frågor — riksdagen sätter ramarna via lagstiftning, men kommunen bestämmer inom dem.' },
+      { correct: 'Helsingborgs stad ansvarar för grundskolorna, äldreomsorgen och sophämtningen inom kommunens gränser.', trap: 'Region Skåne ansvarar för sjukhusen och kollektivtrafiken i Helsingborg.', explanation: 'Kommunen sköter lokal välfärd som skola och äldreomsorg — regionen ansvarar för sjukvård och kollektivtrafik.' },
+      { correct: 'De folkvalda ledamöterna i Borås kommunfullmäktige röstade igenom stadens budget för nästa år.', trap: 'Kommunstyrelsen i Borås föreslog en ny budget för nästa år och lade fram underlaget inför beslut.', explanation: 'Kommunfullmäktige är det högsta beslutande organet — kommunstyrelsen bereder ärenden men fullmäktige beslutar.' },
+      { correct: 'Kommunstyrelsen i Umeå ledde det löpande arbetet och förberedde budgetunderlaget inför fullmäktiges beslut.', trap: 'Kommunfullmäktige i Umeå röstade igenom kommunens femårsplan och budget för kommande period.', explanation: 'Kommunstyrelsen leder den löpande verksamheten och bereder ärenden — kommunfullmäktige fattar de formella besluten.' },
+      { correct: 'Socialnämnden i Sundsvall beslutade om riktlinjer för hur ekonomiskt bistånd ska bedömas och beviljas.', trap: 'Kommunfullmäktige i Sundsvall beslutade om kommunens totala socialtjänstbudget för nästa år.', explanation: 'Nämnder hanterar specifika sakområden som socialtjänst — kommunfullmäktige fattar övergripande budgetbeslut.' },
+      { correct: 'Region Halland driver Hallands sjukhus och ansvarar för kollektivtrafiken i länet.', trap: 'Varbergs kommun driver kommunens hemtjänst och äldreboenden inom kommunens gränser.', explanation: 'Regionen ansvarar för sjukvård och kollektivtrafik — kommunen sköter lokala välfärdstjänster som hemtjänst.' },
+      { correct: 'Folkvalda ledamöter i Region Dalarnas regionfullmäktige röstade om hur sjukvårdsbudgeten ska fördelas.', trap: 'Regionstyrelsen i Dalarna föreslog en ny fördelning av sjukvårdsbudgeten inför kommande period.', explanation: 'Regionfullmäktige är det högsta beslutande organet i regionen — regionstyrelsen bereder och verkställer besluten.' },
+      { correct: 'Regionstyrelsen i Östergötland förberedde ärendet om en ny psykiatrimottagning och presenterade det inför regionfullmäktige.', trap: 'Regionfullmäktige i Östergötland röstade ja till att öppna en ny psykiatrimottagning i länet.', explanation: 'Regionstyrelsen bereder ärenden och leder den löpande verksamheten — regionfullmäktige fattar de formella besluten.' },
+      { correct: 'En journalist begär ut alla mejl till kommunalrådet som rör ett byggprojekt — kommunen är skyldig att lämna ut dem.', trap: 'En medborgare kräver att få läsa ett statsråds privata dagbok för att förstå hur ett beslut fattades.', explanation: 'Offentlighetsprincipen gäller allmänna handlingar hos myndigheter — privata dagböcker är inte allmänna handlingar.' },
+    ];
+
+    function isCorrectAnswer(val, term) {
+      const v = val.trim().toLowerCase();
+      const full = term.toLowerCase();
+      const simplified = term.replace(/\s*\([^)]*\)/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+      const abbrevs = { 'konstitutionsutskottet (ku)': ['ku'], 'justitieombudsmannen (jo)': ['jo'], 'statens offentliga utredningar (sou)': ['sou'] };
+      const extras = abbrevs[full] || [];
+      return v === full || v === simplified || extras.includes(v);
+    }
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function ListaView() {
+      return (
+        <div className="flex flex-col gap-3">
+          {items.map((c, i) => (
+            <div
+              key={i}
+              className="bg-white rounded-2xl shadow-sm px-5 py-4 hover:shadow-md transition-shadow"
+              style={{ borderLeft: '8px solid #fbbf24' }}
+            >
+              <div className="flex items-start gap-3">
+                <span
+                  className="font-bold text-xs px-2 py-1 rounded-full shrink-0 mt-0.5"
+                  style={{ background: '#fef9c3', color: '#78350f' }}
+                >
+                  {i + 1}
+                </span>
+                <div>
+                  <p className="font-bold text-slate-800">{c.term}</p>
+                  <p className="text-slate-500 text-sm mt-0.5">{c.definition}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    function LucktextView() {
+      const [answers, setAnswers] = useState(items.map(() => ({ value: '', status: 'idle' })));
+      const [done, setDone] = useState(false);
+
+      const correctCount = answers.filter(a => a.status === 'correct').length;
+
+      const update = (idx, changes) => setAnswers(prev => {
+        const n = [...prev]; n[idx] = { ...n[idx], ...changes }; return n;
+      });
+
+      const handleSubmit = (idx) => {
+        const { value, status } = answers[idx];
+        if (status === 'correct' || status === 'corrected') return;
+        if (!value.trim()) return;
+        if (isCorrectAnswer(value, items[idx].term)) {
+          update(idx, { value: items[idx].term, status: 'correct' });
+        } else {
+          update(idx, { status: status === 'idle' ? 'warn1' : 'warn2' });
+        }
+      };
+
+      const ratteAlla = () => {
+        setAnswers(prev => prev.map((a, i) =>
+          a.status === 'correct' ? a : { value: items[i].term, status: 'corrected' }
+        ));
+        setDone(true);
+      };
+
+      const restart = () => {
+        setAnswers(items.map(() => ({ value: '', status: 'idle' })));
+        setDone(false);
+      };
+
+      const getFeedback = (score, total) => {
+        const p = score / total;
+        if (p === 1) return 'Perfekt! Alla rätt!';
+        if (p >= 0.8) return 'Utmärkt! Du kan de flesta begreppen.';
+        if (p >= 0.6) return 'Bra! Fortsätt öva på de du missade.';
+        if (p >= 0.4) return 'Du är på rätt väg — repetera gärna listan.';
+        return 'Öva på begreppslistan och försök igen!';
+      };
+
+      const borderColors = { idle: '#e2e8f0', warn1: '#fb923c', warn2: '#f87171', correct: '#4ade80', corrected: '#f87171' };
+      const bgColors     = { idle: '#ffffff',  warn1: '#fff7ed',  warn2: '#fef2f2',  correct: '#f0fdf4',  corrected: '#fef2f2' };
+
+      return (
+        <div>
+          {/* Concept bank */}
+          <div className="bg-white rounded-2xl p-4 shadow-sm mb-5">
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Begreppsbank</p>
+            <div className="flex flex-wrap gap-2">
+              {items.map((item, i) => {
+                const st = answers[i].status;
+                const done_ = st === 'correct' || st === 'corrected';
+                return (
+                  <span key={i} className="text-xs font-medium px-3 py-1 rounded-full border transition-all"
+                    style={done_
+                      ? { textDecoration: 'line-through', color: st === 'correct' ? '#4ade80' : '#fca5a5', background: st === 'correct' ? '#f0fdf4' : '#fef2f2', borderColor: st === 'correct' ? '#bbf7d0' : '#fecaca' }
+                      : { color: '#78350f', background: '#fef9c3', borderColor: '#fde68a' }
+                    }
+                  >{item.term}</span>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Controls bar */}
+          <div className="flex items-center justify-between mb-5">
+            <p className="font-bold text-slate-700 text-sm">{correctCount} / {items.length} rätt</p>
+            {!done
+              ? <button onClick={ratteAlla} className="bg-slate-900 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-slate-800 transition-colors">Rätta alla</button>
+              : <button onClick={restart} className="text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors" style={{ background: PRIMARY }}>Börja om</button>
+            }
+          </div>
+
+          {/* Score banner */}
+          {done && (
+            <div className="rounded-2xl p-4 mb-6 text-center border-2 font-bold"
+              style={correctCount === items.length
+                ? { background: '#f0fdf4', color: '#15803d', borderColor: '#4ade80' }
+                : { background: '#fefce8', color: '#78350f', borderColor: PRIMARY }
+              }
+            >
+              <p className="text-3xl mb-1">{correctCount} / {items.length}</p>
+              <p className="text-base font-medium">{getFeedback(correctCount, items.length)}</p>
+            </div>
+          )}
+
+          {/* Sentences */}
+          <div className="flex flex-col gap-4">
+            {items.map((item, idx) => {
+              const ans = answers[idx];
+              const parts = item.sentence.split('___');
+              const isLocked = ans.status === 'correct' || ans.status === 'corrected';
+              const inputBorder = { idle: '#cbd5e1', warn1: '#fb923c', warn2: '#f87171', correct: '#4ade80', corrected: '#f87171' }[ans.status];
+              const inputBg    = { idle: '#ffffff',  warn1: '#fff7ed',  warn2: '#fef2f2',  correct: '#f0fdf4',  corrected: '#fef2f2' }[ans.status];
+              const inputColor = { idle: '#1e293b',  warn1: '#1e293b',  warn2: '#1e293b',  correct: '#15803d',  corrected: '#b91c1c' }[ans.status];
+
+              return (
+                <div key={idx} className="rounded-2xl px-5 py-4 shadow-sm transition-colors"
+                  style={{ borderLeft: `8px solid ${borderColors[ans.status]}`, background: bgColors[ans.status] }}
+                >
+                  <div className="flex flex-wrap items-baseline gap-x-1 gap-y-2 text-slate-700 leading-relaxed">
+                    <span className="font-bold text-xs shrink-0 px-2 py-0.5 rounded-full" style={{ background: '#fef9c3', color: '#78350f' }}>{idx + 1}</span>
+                    <span>{parts[0]}</span>
+                    <input
+                      type="text"
+                      className="border-b-2 px-2 py-0.5 text-sm font-bold outline-none rounded transition-colors"
+                      style={{ minWidth: '9rem', borderColor: inputBorder, background: inputBg, color: inputColor }}
+                      value={ans.value}
+                      placeholder="Skriv begreppet…"
+                      disabled={isLocked}
+                      onChange={e => !isLocked && update(idx, { value: e.target.value })}
+                      onKeyDown={e => e.key === 'Enter' && !isLocked && handleSubmit(idx)}
+                    />
+                    {parts[1] && <span>{parts[1]}</span>}
+                  </div>
+                  {ans.status === 'warn1' && <p className="text-orange-600 text-sm mt-2 font-medium">Är du säker att du stavat rätt?</p>}
+                  {ans.status === 'warn2' && <p className="text-red-600 text-sm mt-2 font-medium">Fel svar — försök igen eller tryck "Rätta alla".</p>}
+                  {ans.status === 'correct' && <p className="text-green-700 text-sm mt-2">{item.definition}</p>}
+                  {ans.status === 'corrected' && (
+                    <div className="mt-2">
+                      <p className="text-red-600 text-sm font-medium">Rätt svar: <span className="font-bold">{item.term}</span></p>
+                      <p className="text-slate-500 text-sm">{item.definition}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {done && (
+            <div className="flex justify-center mt-8 mb-4">
+              <button onClick={restart} className="text-white px-8 py-3 rounded-2xl font-bold transition-colors" style={{ background: PRIMARY }}>Börja om</button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function FlashcardView() {
+      const total = items.length;
+      const [deck, setDeck] = useState(() => shuffleArray([...items]));
+      const [deckIdx, setDeckIdx] = useState(0);
+      const [isFlipped, setIsFlipped] = useState(false);
+      const [kudeInte, setKudeInte] = useState([]);
+      const [kunde, setKunde] = useState([]);
+      const [phase, setPhase] = useState('playing');
+
+      const restartAll = () => {
+        setDeck(shuffleArray([...items]));
+        setDeckIdx(0);
+        setIsFlipped(false);
+        setKudeInte([]);
+        setKunde([]);
+        setPhase('playing');
+      };
+
+      const sort = (pile) => {
+        const card = deck[deckIdx];
+        const newKudeInte = pile === 'kudeInte' ? [...kudeInte, card] : kudeInte;
+        const newKunde    = pile === 'kunde'    ? [...kunde, card]    : kunde;
+        const nextIdx = deckIdx + 1;
+        setKudeInte(newKudeInte);
+        setKunde(newKunde);
+        setIsFlipped(false);
+        if (nextIdx >= deck.length) {
+          setDeckIdx(nextIdx);
+          setPhase(newKudeInte.length === 0 ? 'allDone' : 'roundEnd');
+        } else {
+          setDeckIdx(nextIdx);
+        }
+      };
+
+      const nextRound = () => {
+        setDeck(shuffleArray([...kudeInte]));
+        setDeckIdx(0);
+        setIsFlipped(false);
+        setKudeInte([]);
+        setPhase('playing');
+      };
+
+      if (phase === 'allDone') return (
+        <div className="flex flex-col items-center gap-6">
+          <div className="bg-green-50 border-2 border-green-400 rounded-3xl p-8 text-center w-full max-w-sm">
+            <div className="text-5xl mb-4">🎉</div>
+            <p className="text-2xl font-bold text-green-700 mb-2">Alla kort klarade!</p>
+            <p className="text-slate-600 mb-6">Du behärskar <span className="font-bold text-green-700">{kunde.length} av {total}</span> begrepp.</p>
+            <button onClick={restartAll} className="w-full text-white px-8 py-3 rounded-2xl font-bold transition-colors" style={{ background: PRIMARY }}>Börja om med alla</button>
+          </div>
+        </div>
+      );
+
+      if (phase === 'roundEnd') return (
+        <div className="flex flex-col items-center gap-6">
+          <div className="bg-white border-2 border-slate-200 rounded-3xl p-8 text-center w-full max-w-sm shadow-sm">
+            <p className="text-lg font-bold text-slate-700 mb-4">Runda klar!</p>
+            <div className="flex justify-center gap-8 mb-6">
+              <div className="text-center">
+                <p className="text-3xl font-bold text-green-600">{kunde.length}</p>
+                <p className="text-xs text-slate-400 uppercase tracking-wide mt-1">Kunde</p>
+              </div>
+              <div className="text-center">
+                <p className="text-3xl font-bold text-red-500">{kudeInte.length}</p>
+                <p className="text-xs text-slate-400 uppercase tracking-wide mt-1">Kunde inte</p>
+              </div>
+            </div>
+            <div className="flex flex-col gap-3">
+              <button onClick={nextRound} className="w-full bg-slate-900 text-white px-8 py-3 rounded-2xl font-bold hover:bg-slate-800 transition-colors">
+                Öva på Kunde inte ({kudeInte.length} kort) →
+              </button>
+              <button onClick={restartAll} className="w-full text-white px-8 py-3 rounded-2xl font-bold transition-colors" style={{ background: PRIMARY }}>
+                Börja om med alla
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+
+      const card = deck[deckIdx];
+      const remaining = deck.length - deckIdx;
+
+      return (
+        <div className="flex flex-col items-center">
+          <div className="flex gap-3 mb-5 w-full max-w-sm">
+            <div className="flex-1 bg-red-50 border border-red-200 rounded-xl p-2 text-center">
+              <p className="text-xl font-bold text-red-500">{kudeInte.length}</p>
+              <p className="text-[10px] text-red-400 uppercase tracking-wide font-bold">Kunde inte</p>
+            </div>
+            <div className="flex-1 bg-slate-100 border border-slate-200 rounded-xl p-2 text-center">
+              <p className="text-xl font-bold text-slate-400">{remaining}</p>
+              <p className="text-[10px] text-slate-400 uppercase tracking-wide font-bold">Kvar</p>
+            </div>
+            <div className="flex-1 bg-green-50 border border-green-200 rounded-xl p-2 text-center">
+              <p className="text-xl font-bold text-green-500">{kunde.length}</p>
+              <p className="text-[10px] text-green-400 uppercase tracking-wide font-bold">Kunde</p>
+            </div>
+          </div>
+          <div className="flip-card mb-5" onClick={() => setIsFlipped(!isFlipped)}>
+            <div className={`flip-card-inner ${isFlipped ? 'flipped-classes' : ''}`}>
+              <div className="flip-card-front" style={{ background: PRIMARY }}>
+                <h2 className="text-3xl font-bold text-white text-center px-4">{card.term}</h2>
+                <div className="absolute bottom-6 animate-pulse">
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-white font-bold opacity-70">Klicka för svar</span>
+                </div>
+              </div>
+              <div className="flip-card-back bg-white" style={{ border: `2px solid ${PRIMARY}` }}>
+                <p className="text-xl leading-relaxed text-slate-800 font-medium px-4">{card.definition}</p>
+                <div className="absolute bottom-6">
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">Klicka för att vända</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          {isFlipped && (
+            <div className="flex gap-3 w-full max-w-sm mb-4">
+              <button onClick={() => sort('kudeInte')} className="flex-1 bg-red-100 text-red-700 border-2 border-red-300 font-bold py-3 rounded-2xl hover:bg-red-200 active:scale-95 transition-all">
+                ✗ Kunde inte
+              </button>
+              <button onClick={() => sort('kunde')} className="flex-1 bg-green-100 text-green-700 border-2 border-green-300 font-bold py-3 rounded-2xl hover:bg-green-200 active:scale-95 transition-all">
+                ✓ Kunde
+              </button>
+            </div>
+          )}
+          <div className="flex flex-col items-center gap-2 mt-1">
+            <p className="text-slate-500 font-medium bg-slate-200 px-4 py-1 rounded-full text-xs">{deckIdx + 1} av {deck.length}</p>
+            <button onClick={restartAll} className="text-slate-400 text-xs hover:text-slate-600 transition-colors underline">↺ Börja om med alla</button>
+          </div>
+        </div>
+      );
+    }
+
+    const ickeExempelData = [
+      { correct: 'I Sverige styrs landet ytterst av folket genom fria val, yttrandefrihet och fri press.', trap: 'Landet har demokrati för att alla medborgare har rätt att tycka vad de vill, även om de aldrig röstar eller deltar.', explanation: 'Demokrati handlar om att folket faktiskt utövar makt — att ha åsikter utan politisk delaktighet räcker inte.' },
+      { correct: 'Schweiziska kantoner håller regelbundna folkomröstningar där medborgarna direkt beslutar om lagar.', trap: 'I Sverige röstar folket vart fjärde år — det är direktdemokrati eftersom folket bestämmer vem som styr.', explanation: 'Riksdagsval är representativ demokrati. I direktdemokrati fattar folket besluten direkt, utan valda mellanhänder.' },
+      { correct: 'Riksdagsledamöterna som valts in beslutar om lagar och budget på väljarnas uppdrag.', trap: 'I en folkomröstning röstade medborgarna direkt för att behålla euron — det är representativ demokrati.', explanation: 'En folkomröstning är direktdemokrati. Representativ demokrati innebär att valda representanter fattar besluten.' },
+      { correct: 'En handläggare på Socialtjänsten fattar beslut om försörjningsstöd utifrån gällande socialtjänstlag.', trap: 'Kommunalrådet är tjänsteman eftersom hon arbetar heltid med kommunens frågor och får lön av kommunen.', explanation: 'Kommunalrådet är en förtroendevald politiker. Tjänstemän är politiskt oberoende anställda som verkställer beslut.' },
+      { correct: 'En beskrivning av hur ett land är organiserat — vem som är statschef, hur beslut fattas och vilka grundlagar som gäller.', trap: 'Statsskick är detsamma som landets politiska situation — vem som just nu sitter vid makten och vilken politik de driver.', explanation: 'Statsskick avser den grundläggande organisationsformen — inte vem som tillfälligtvis innehar makten.' },
+      { correct: 'Riksdagen, regeringen och domstolarna är statsorgan eftersom de är formella delar av statsmakten.', trap: 'Riksdagen, medierna och fackförbunden är statsorgan eftersom alla tre påverkar politiken i landet.', explanation: 'Statsorgan är formella delar av statsmakten. Medier och intresseorganisationer påverkar politiken men är inte statsorgan.' },
+      { correct: 'Regeringsformen skyddar medborgarnas grundläggande fri- och rättigheter och reglerar hur staten är uppbyggd.', trap: 'Riksdagens beslut om höjd fordonsskatt är en del av konstitutionen eftersom det är ett viktigt statligt beslut.', explanation: 'Konstitutionen är grundlagar om statens uppbyggnad och medborgarnas rättigheter. Vanliga lagar som fordonsskatt ingår inte.' },
+      { correct: 'Kungen är statschef i Sverige och representerar landet officiellt utan att leda den dagliga politiken.', trap: 'Statsministern är statschef eftersom han är den mäktigaste politikern och leder landets styre.', explanation: 'Statschefen är landets officiella representant. I Sverige är det kungen som är statschef, inte statsministern.' },
+      { correct: 'I Sverige går statschefsämbetet i arv — Victoria kommer att ärva tronen av sin far.', trap: 'Sverige är en monarki eftersom kungen har stor politisk makt och kan påverka landets lagar och beslut.', explanation: 'Monarki definieras av att ämbetet går i arv — inte av hur mycket makt kungen har. Sveriges kung har minimal politisk makt.' },
+      { correct: 'Kungen deltar i statsceremoniella funktioner men kan inte stoppa lagar eller avsätta regeringen.', trap: 'Sverige är en konstitutionell monarki för att det finns en konstitution och en monarki — kungen kan styra om han vill.', explanation: 'Konstitutionell monarki innebär att kungens makt begränsas av konstitutionen. Han kan inte styra fritt.' },
+      { correct: 'Frankrikes statschef väljs av folket i direkta val och kan avsättas — ämbetet är inte ärftligt.', trap: 'Landet är en republik för att det inte har en kung — presidenten är folklig och lyssnar på folket.', explanation: 'Republik definieras av att statschefen väljs (inte ärver). Att vara folklig räcker inte som definition.' },
+      { correct: 'I USA väljs presidenten av folket och fungerar som statschef och ledare för den verkställande makten.', trap: 'Statsministern i Sverige kan också kallas president eftersom hon är vald och har stort inflytande.', explanation: 'President är en vald statschef i en republik. Sveriges statsminister är en parlamentarisk regeringschef, inte president.' },
+      { correct: 'Liberalismen är en politisk ideologi med sammanhängande idéer om individens frihet och rättsstatsprincipen.', trap: 'Moderaternas beslut att rösta nej till en höjd bensinskatt är ett uttryck för partiets politiska ideologi.', explanation: 'En politisk ideologi är ett heltäckande värdesystem. Ett enstaka beslut i en sakfråga representerar inte en hel ideologi.' },
+      { correct: 'Vänster-högerskalan mäter i grunden synen på ekonomisk omfördelning och statens roll i ekonomin.', trap: 'Partiet som vill ha strängare straff för brott placerar sig till höger på vänster-högerskalan.', explanation: 'Vänster-högerskalan handlar primärt om ekonomisk politik och statens roll. Rättspolitik placeras inte enkelt på den skalan.' },
+      { correct: 'Socialdemokraternas partiprogram innehåller samlade ståndpunkter om jämlikhet, välfärd och arbetsmarknad.', trap: 'Partiets valmanifest inför valet är detsamma som partiprogrammet och innehåller alla partiets ståndpunkter.', explanation: 'Partiprogrammet är det officiella grunddokumentet. Ett valmanifest är ett kortare valdokument och ersätter inte partiprogrammet.' },
+      { correct: 'Norrbottens läns valkrets väljer in ett bestämt antal riksdagsledamöter baserat på regionens befolkningsstorlek.', trap: 'Hela Sverige är en enda stor valkrets eftersom alla röster räknas ihop nationellt vid mandatfördelningen.', explanation: 'Sverige har 29 valkretsar. Mandaten fördelas per valkrets — en enda nationell valkrets används inte.' },
+      { correct: 'Sverige har ett proportionellt valsystem där partier får mandat i proportion till röstandelen.', trap: 'Valsystemet i Sverige handlar om att val hålls vart fjärde år och att alla över 18 har rösträtt.', explanation: 'Valsystem avser hur röster omvandlas till mandat, inte vallagens allmänna principer om rösträtt och valperiod.' },
+      { correct: 'Varje parti som överstiger spärren får mandat i ungefärlig proportion till sin röstandel.', trap: 'Sverige har ett proportionellt valsystem vilket innebär att alla partier alltid får lika många mandat.', explanation: 'Proportionellt valsystem innebär att mandaten speglar röstandelarna — inte att alla partier får lika många.' },
+      { correct: 'Efter valet fick Centerpartiet 24 platser i riksdagen att representera sina väljare från.', trap: 'Statsministern fick ett folkligt mandat att genomföra sin politik eftersom hon vann valet.', explanation: 'I riksdagen är mandat konkreta riksdagsplatser. Att ha folkligt förtroende är inte samma sak som ett riksdagsmandat.' },
+      { correct: 'I varje brittisk valkrets vinner kandidaten med flest röster mandatet — de andras röster ger inga platser.', trap: 'Majoritetsval innebär att det parti som fått totalt flest röster i hela landet vinner valet och bildar regering.', explanation: 'Majoritetsval avgörs per valkrets och vinnaren tar allt. Den nationella totala röstandelen avgör inte direkt utfallet.' },
+      { correct: 'Riksdagsspärren på fyra procent hindrar mikropartier från att fragmentera riksdagen med enstaka mandat.', trap: 'Spärregler i riksdagen gör att partier som begår lagbrott eller antidemokratisk verksamhet stängs ute.', explanation: 'Spärregler handlar om en minimiröstandel för inträde i riksdagen. De har inget med lagbrott att göra.' },
+      { correct: 'Väljaren röstade på Moderaterna utan att kryssa — partiet väljer sedan vilka kandidater som tar platserna.', trap: 'I partival väljer medborgarna direkt vilket parti som ska bilda regering utan att välja riksdagsledamöter.', explanation: 'Partival innebär att rösta på ett parti vars kandidater sedan tilldelas mandat. Val av regering sker indirekt via riksdagen.' },
+      { correct: 'Väljaren la sitt kryss bredvid Jimmie Åkessons namn för att säkra hans personliga inval i riksdagen.', trap: 'Personval innebär att partiledaren automatiskt väljs in med flest röster eftersom de är partiets ansikte utåt.', explanation: 'Personval kräver att väljaren aktivt kryssar för en kandidat. Partiledare väljs inte automatiskt in utan kryss.' },
+      { correct: 'Det brittiska parlamentet debatterar och röstar om lagförslag innan de träder i kraft.', trap: 'Parlamentet i Sverige kallas riksdag men saknar verklig makt — regeringen fattar alla riktiga beslut.', explanation: 'Riksdagen (parlamentet) är landets högsta lagstiftande organ. Regeringen verkställer — riksdagen beslutar om lagar.' },
+      { correct: 'KU granskade om ett statsråds beslut fattades i enlighet med grundlagen och formella regler.', trap: 'KU beslutar om nya grundlagar och ändrar konstitutionen när riksdagen anser att det behövs.', explanation: 'KU granskar om grundlagen följts. Det är inte KU som ändrar grundlagar — det sker genom ett särskilt riksdagsförfarande.' },
+      { correct: 'Riksdagen röstade med mer än hälften av ledamöterna för att statsministern måste avgå.', trap: 'Oppositionen lämnade in en misstroendeförklaring mot statsministern i form av en skriftlig protest till riksdagen.', explanation: 'En misstroendeförklaring är en formell omröstning i riksdagen. En skriftlig protest är inte en misstroendeförklaring.' },
+      { correct: 'Riksrevisionen granskade hur effektivt Arbetsförmedlingen använde sina anslagna skattemedel.', trap: 'Riksrevisionen är riksdagens övervakningsorgan och kontrollerar om statsministern bryter mot grundlagen.', explanation: 'Riksrevisionen granskar hur skattemedel används. Grundlagsbrott granskas av KU, inte Riksrevisionen.' },
+      { correct: 'JO utredde en myndighets vägran att lämna ut en offentlig handling och konstaterade att myndigheten agerat fel.', trap: 'JO har befogenhet att bötfälla myndigheter och stänga av tjänstemän som bryter mot lagar och regler.', explanation: 'JO kan kritisera och göra uttalanden men saknar befogenhet att utdöma böter eller stänga av tjänstemän.' },
+      { correct: 'Regeringen styr landet och lägger fram lagförslag (propositioner) för riksdagen att besluta om.', trap: 'Regeringen är landets viktigaste institution och kan vid behov stifta lagar utan riksdagens godkännande.', explanation: 'Regeringen kan inte stifta lagar utan riksdagen. Lagstiftning är riksdagens uppgift.' },
+      { correct: 'Regeringen måste ha riksdagens förtroende — förlorar den det tvingas den avgå.', trap: 'Parlamentarism innebär att riksdagen och regeringen alltid samarbetar friktionsfritt utan politiska konflikter.', explanation: 'Parlamentarism handlar om att regeringen är beroende av parlamentets förtroende. Det innebär maktbalans, inte konfliktfrihet.' },
+      { correct: 'Statsministern är chef för regeringen och leder det politiska arbetet inför riksdagen.', trap: 'Statsministern är landets statschef och högste representant vid internationella statsbesök.', explanation: 'Statsministern är regeringschef. Statschefen är kungen. Vid statsbesök representerar statsministern dock ofta Sverige utomlands.' },
+      { correct: 'I USA leder presidenten regeringen och är statschef utan att vara beroende av kongressens förtroende.', trap: 'Presidentstyre innebär att presidenten är demokratiskt vald och har starkare ställning än en kung i en monarki.', explanation: 'Presidentstyre definieras av att presidenten är både statschef och regeringschef utan krav på parlamentets förtroende.' },
+      { correct: 'Talmannen leder riksdagsdebatten och föreslår vem som ska bilda regering efter ett val.', trap: 'Talmannen är riksdagens ordförande och avgör omröstningar med sin röst vid lika röstetal.', explanation: 'Talmannen leder riksdagen men röstar normalt inte i sakfrågor. Det är riksdagsledamöterna som röstar.' },
+      { correct: 'Migrationsminister Maria Malmer Stenergard är statsråd och ansvarar för migrationspolitiken i regeringen.', trap: 'Riksdagsledamöter kallas statsråd om de är sina partiers viktigaste företrädare i en viss politisk fråga.', explanation: 'Statsråd är ministrar i regeringen. Riksdagsledamöter är inte statsråd, även om de är ledande i sina partier.' },
+      { correct: 'Justitiedepartementet tar fram underlag och propositionstext inför regeringens rättsliga beslut.', trap: 'Polismyndigheten är ett departement under Justitiedepartementet och lyder direkt under justitieministern.', explanation: 'Polismyndigheten är en myndighet, inte ett departement. Myndigheter är fristående och lyder under regeringen som helhet.' },
+      { correct: 'Riksdagsledamoten Lotta Johnsson Fornarve lämnade in en motion om stärkt djurskyddslag.', trap: 'Regeringen lämnar varje år in motioner om statsbudgeten till riksdagen för godkännande.', explanation: 'Motioner kommer från riksdagsledamöter. Regeringen lämnar propositioner, inte motioner.' },
+      { correct: 'Regeringen lade fram proposition 2023/24:50 med förslag om ny lag om psykiatrisk tvångsvård.', trap: 'En riksdagsledamot la fram en proposition om att höja studiestödet för gymnasiestudenter.', explanation: 'En proposition är ett lagförslag från regeringen. Riksdagsledamöters förslag kallas motioner, inte propositioner.' },
+      { correct: 'Trafikutskottet granskade propositionen om ny järnvägslag och föreslog ändringar innan omröstningen.', trap: 'Riksdagens utskott kan rösta igenom lagar direkt utan att hela riksdagen behöver sammankallas för omröstning.', explanation: 'Utskott bereder ärenden och ger förslag till riksdagen. De fattar inte slutliga lagbeslut — det gör hela riksdagen.' },
+      { correct: 'Förslaget om ny dataskyddslag skickades på remiss till Integritetsskyddsmyndigheten och kommunförbundet.', trap: 'Riksdagen skickade lagförslaget på remiss till statschefen för formellt godkännande innan det trädde i kraft.', explanation: 'Remiss innebär att berörda parter konsulteras för synpunkter. Sverige har ingen statschef som formellt godkänner lagar.' },
+      { correct: 'Utredningen om skolsegregation presenterades som SOU 2020:28 efter tre års arbete.', trap: 'SOU är riksdagens officiella omröstningsprotokoll som publiceras efter varje riksdagsbeslut.', explanation: 'SOU är rapporter från utredningar som regeringen tillsatt. Det är inte riksdagens omröstningsprotokoll.' },
+      { correct: 'Riksdagen genomförde votering om lagförslaget — 175 röstade ja, 174 nej, och förslaget gick igenom.', trap: 'Riksdagen genomförde en votering när partiledarna debatterade statsministerns redogörelse för rikets tillstånd.', explanation: 'Votering är den faktiska omröstningen. En debatt där partiledare håller anföranden är inte en votering.' },
+      { correct: 'Statens förvaltning, med myndigheter som Polisen och Skatteverket, verkställer de lagar riksdagen beslutat.', trap: 'Förvaltningen skapar lagar och förordningar som sedan gäller för alla medborgare i hela landet.', explanation: 'Förvaltningen verkställer politiska beslut. Den skapar inte lagar — det gör riksdagen.' },
+      { correct: 'Konsumentverket och Jordbruksverket är statliga myndigheter med specifika uppdrag definierade i förordningar.', trap: 'Kommunen i Västerås är en statlig myndighet som lyder under regeringens direktiv och instruktioner.', explanation: 'Kommuner är självstyrande enheter, inte statliga myndigheter. De lyder under kommunallagen, inte direkt under regeringen.' },
+      { correct: 'Länsstyrelsen i Skåne samordnade regionala insatser och representerade staten gentemot kommunerna i länet.', trap: 'Länsstyrelsen är kommunens förlängda arm och hjälper kommunen att genomföra dess lokala beslut.', explanation: 'Länsstyrelsen representerar staten i länet, inte kommunen. Den är ett statligt organ som övervakar och samordnar.' },
+      { correct: 'Kommunen beslutar självt om hur socialtjänsten organiseras, inom de ramar riksdagen satt upp.', trap: 'Kommunalt självstyre innebär att kommunen är helt fri att göra precis vad den vill utan statlig inblandning.', explanation: 'Kommunalt självstyre är begränsat självstyre. Kommunen bestämmer inom ramar som riksdag och regering satt upp.' },
+      { correct: 'Eskilstuna kommun ansvarar för grundskolor, förskola, äldreomsorg och lokalt gatunderhåll.', trap: 'Kommunen ansvarar för sjukvården i området eftersom den är närmast medborgarna och känner deras behov bäst.', explanation: 'Sjukvården är regionens ansvar, inte kommunens. Kommunen ansvarar för grundskola, äldreomsorg och liknande.' },
+      { correct: 'Folkvalda kommunfullmäktigeledamöter i Västerås röstade om kommunens budget och övergripande mål.', trap: 'Kommunfullmäktige är kommunens verkställande organ som genomför besluten i det dagliga arbetet.', explanation: 'Kommunfullmäktige är kommunens beslutande organ. Kommunstyrelsen är det verkställande och beredande organet.' },
+      { correct: 'Kommunstyrelsen ledde det löpande arbetet och förberedde ärenden inför kommunfullmäktiges beslut.', trap: 'Kommunstyrelsen är kommunens högsta beslutande organ och fattar alla kommunens viktigaste beslut.', explanation: 'Kommunfullmäktige är kommunens högsta beslutande organ. Kommunstyrelsen bereder och verkställer.' },
+      { correct: 'Miljö- och byggnadsnämnden behandlar bygglovsansökningar och miljöskyddsfrågor i kommunen.', trap: 'Nämnder i kommunen fattar beslut om kommunens totala budget och övergripande politiska inriktning.', explanation: 'Nämnder hanterar specifika sakområden. Kommunens totala budget och övergripande beslut fattas av kommunfullmäktige.' },
+      { correct: 'Region Stockholm ansvarar för Karolinska universitetssjukhuset och SL:s kollektivtrafik.', trap: 'Regionerna är statliga organ som lyder under Socialdepartementet och genomför statens sjukvårdspolitik.', explanation: 'Regioner är självstyrande enheter med regionalt självstyre. De är inte statliga organ under Socialdepartementet.' },
+      { correct: 'Folkvalda ledamöter i Regionfullmäktige i Västra Götaland röstade om regionens sjukvårdsbudget.', trap: 'Regionfullmäktige är regionens verkställande organ och genomför besluten om sjukvård och kollektivtrafik.', explanation: 'Regionfullmäktige är det beslutande organet. Regionstyrelsen sköter den löpande verksamheten och verkställer beslut.' },
+      { correct: 'Regionstyrelsen beredde ärendet om att stänga ett sjukhus och presenterade det för regionfullmäktige.', trap: 'Regionstyrelsen är regionens högsta beslutande organ och fattar alla viktiga beslut om sjukvård och trafik.', explanation: 'Regionfullmäktige är regionens högsta beslutande organ. Regionstyrelsen bereder och verkställer, beslutar inte.' },
+      { correct: 'En journalist begär att ta del av kommunens upphandlingsavtal — kommunen måste lämna ut dem som allmän handling.', trap: 'Offentlighetsprincipen innebär att alla uppgifter om privatpersoner är offentliga eftersom myndigheterna registrerar dem.', explanation: 'Offentlighetsprincipen gäller allmänna handlingar hos myndigheter. Personuppgifter kan skyddas av sekretess.' },
+    ];
+
+    function IckeExempelView() {
+      const buildQuestions = () =>
+        shuffleArray(items.map((item, i) => {
+          const d = ickeExempelData[i];
+          const aIsCorrect = Math.random() < 0.5;
+          return {
+            term: item.term,
+            optionA: aIsCorrect ? d.correct : d.trap,
+            optionB: aIsCorrect ? d.trap : d.correct,
+            correct: aIsCorrect ? 'A' : 'B',
+            explanation: d.explanation,
+          };
+        }));
+
+      const [questions, setQuestions] = useState(buildQuestions);
+      const [idx, setIdx] = useState(0);
+      const [chosen, setChosen] = useState(null);
+      const [score, setScore] = useState(0);
+      const [done, setDone] = useState(false);
+
+      const q = questions[idx];
+      const isRight = chosen === q.correct;
+
+      const pick = (choice) => {
+        if (chosen) return;
+        setChosen(choice);
+        if (choice === q.correct) setScore(s => s + 1);
+      };
+
+      const next = () => {
+        if (idx + 1 >= questions.length) {
+          setDone(true);
+        } else {
+          setIdx(i => i + 1);
+          setChosen(null);
+        }
+      };
+
+      const restart = () => {
+        setQuestions(buildQuestions());
+        setIdx(0);
+        setChosen(null);
+        setScore(0);
+        setDone(false);
+      };
+
+      const getFeedback = (s, t) => {
+        const p = s / t;
+        if (p === 1) return 'Perfekt! Alla rätt!';
+        if (p >= 0.8) return 'Utmärkt! Du behärskar de flesta begreppen.';
+        if (p >= 0.6) return 'Bra jobbat! Fortsätt öva.';
+        if (p >= 0.4) return 'Du är på rätt väg — repetera gärna.';
+        return 'Öva mer och försök igen!';
+      };
+
+      if (done) return (
+        <div className="flex flex-col items-center gap-6">
+          <div className="rounded-3xl p-8 text-center w-full max-w-sm border-2"
+            style={score === questions.length
+              ? { background: '#f0fdf4', borderColor: '#4ade80' }
+              : { background: '#fefce8', borderColor: PRIMARY }
+            }
+          >
+            <div className="text-5xl mb-3">{score === questions.length ? '🏆' : '📚'}</div>
+            <p className="text-4xl font-bold mb-2" style={{ color: score === questions.length ? '#15803d' : '#78350f' }}>
+              {score} / {questions.length}
+            </p>
+            <p className="text-base font-medium text-slate-600 mb-6">{getFeedback(score, questions.length)}</p>
+            <button onClick={restart} className="w-full text-white px-8 py-3 rounded-2xl font-bold transition-colors" style={{ background: PRIMARY }}>
+              Börja om med ny blandning
+            </button>
+          </div>
+        </div>
+      );
+
+      const optStyle = (opt) => {
+        if (!chosen) return { background: '#ffffff', border: '2px solid #e2e8f0', color: '#1e293b' };
+        if (opt === q.correct) return { background: '#f0fdf4', border: '2px solid #4ade80', color: '#15803d' };
+        if (opt === chosen) return { background: '#fef2f2', border: '2px solid #f87171', color: '#b91c1c' };
+        return { background: '#f8fafc', border: '2px solid #e2e8f0', color: '#94a3b8' };
+      };
+
+      return (
+        <div className="flex flex-col items-center">
+          <div className="w-full max-w-lg mb-3 flex items-center justify-between">
+            <p className="text-sm font-medium text-slate-500">Fråga {idx + 1} av {questions.length}</p>
+            <p className="text-sm font-bold" style={{ color: '#78350f' }}>{score} rätt</p>
+          </div>
+          <div className="w-full max-w-lg mb-6 bg-slate-200 rounded-full h-2">
+            <div className="h-2 rounded-full transition-all" style={{ width: `${(idx / questions.length) * 100}%`, background: PRIMARY }} />
+          </div>
+
+          <div className="w-full max-w-lg bg-white rounded-3xl shadow-sm p-6 mb-5 text-center" style={{ borderTop: `4px solid ${PRIMARY}` }}>
+            <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: '#d97706' }}>Välj rätt tillämpning av</p>
+            <h2 className="text-2xl font-bold text-slate-800">{q.term}</h2>
+          </div>
+
+          <div className="w-full max-w-lg flex flex-col gap-3 mb-4">
+            {['A', 'B'].map(opt => (
+              <button
+                key={opt}
+                onClick={() => pick(opt)}
+                disabled={!!chosen}
+                className="w-full text-left p-4 rounded-2xl transition-all leading-relaxed"
+                style={optStyle(opt)}
+              >
+                <span className="font-bold mr-2">{opt}.</span>
+                {opt === 'A' ? q.optionA : q.optionB}
+                {chosen && opt === q.correct && <span className="ml-2 font-bold text-green-600"> ✓</span>}
+                {chosen && opt === chosen && opt !== q.correct && <span className="ml-2 font-bold text-red-600"> ✗</span>}
+              </button>
+            ))}
+          </div>
+
+          {chosen && (
+            <div className="w-full max-w-lg rounded-2xl p-4 mb-5"
+              style={isRight
+                ? { background: '#f0fdf4', borderLeft: '8px solid #4ade80' }
+                : { background: '#fef2f2', borderLeft: '8px solid #f87171' }
+              }
+            >
+              <p className="font-bold mb-1" style={{ color: isRight ? '#15803d' : '#b91c1c' }}>
+                {isRight ? 'Rätt!' : 'Fel!'}
+              </p>
+              <p className="text-slate-600 text-sm">{q.explanation}</p>
+            </div>
+          )}
+
+          {chosen && (
+            <button onClick={next} className="px-8 py-3 rounded-2xl font-bold text-white transition-colors" style={{ background: '#1e293b' }}>
+              {idx + 1 >= questions.length ? 'Visa resultat →' : 'Nästa →'}
+            </button>
+          )}
+        </div>
+      );
+    }
+
+    function ScenarioView() {
+      const buildQuestions = () =>
+        shuffleArray(items.map((item, i) => {
+          const d = scenarioData[i];
+          const aIsCorrect = Math.random() < 0.5;
+          return {
+            term: item.term,
+            optionA: aIsCorrect ? d.correct : d.trap,
+            optionB: aIsCorrect ? d.trap : d.correct,
+            correct: aIsCorrect ? 'A' : 'B',
+            explanation: d.explanation,
+          };
+        }));
+
+      const [questions, setQuestions] = useState(buildQuestions);
+      const [idx, setIdx] = useState(0);
+      const [chosen, setChosen] = useState(null);
+      const [score, setScore] = useState(0);
+      const [done, setDone] = useState(false);
+
+      const q = questions[idx];
+      const isRight = chosen === q.correct;
+
+      const pick = (choice) => {
+        if (chosen) return;
+        setChosen(choice);
+        if (choice === q.correct) setScore(s => s + 1);
+      };
+
+      const next = () => {
+        if (idx + 1 >= questions.length) {
+          setDone(true);
+        } else {
+          setIdx(i => i + 1);
+          setChosen(null);
+        }
+      };
+
+      const restart = () => {
+        setQuestions(buildQuestions());
+        setIdx(0);
+        setChosen(null);
+        setScore(0);
+        setDone(false);
+      };
+
+      const getFeedback = (s, t) => {
+        const p = s / t;
+        if (p === 1) return 'Perfekt! Alla rätt!';
+        if (p >= 0.8) return 'Utmärkt! Du behärskar de flesta begreppen.';
+        if (p >= 0.6) return 'Bra jobbat! Fortsätt öva.';
+        if (p >= 0.4) return 'Du är på rätt väg — repetera gärna.';
+        return 'Öva mer och försök igen!';
+      };
+
+      if (done) return (
+        <div className="flex flex-col items-center gap-6">
+          <div className="rounded-3xl p-8 text-center w-full max-w-sm border-2"
+            style={score === questions.length
+              ? { background: '#f0fdf4', borderColor: '#4ade80' }
+              : { background: '#fefce8', borderColor: PRIMARY }
+            }
+          >
+            <div className="text-5xl mb-3">{score === questions.length ? '🏆' : '📚'}</div>
+            <p className="text-4xl font-bold mb-2" style={{ color: score === questions.length ? '#15803d' : '#78350f' }}>
+              {score} / {questions.length}
+            </p>
+            <p className="text-base font-medium text-slate-600 mb-6">{getFeedback(score, questions.length)}</p>
+            <button onClick={restart} className="w-full text-white px-8 py-3 rounded-2xl font-bold transition-colors" style={{ background: PRIMARY }}>
+              Börja om med ny blandning
+            </button>
+          </div>
+        </div>
+      );
+
+      const optStyle = (opt) => {
+        if (!chosen) return { background: '#ffffff', border: '2px solid #e2e8f0', color: '#1e293b' };
+        if (opt === q.correct) return { background: '#f0fdf4', border: '2px solid #4ade80', color: '#15803d' };
+        if (opt === chosen) return { background: '#fef2f2', border: '2px solid #f87171', color: '#b91c1c' };
+        return { background: '#f8fafc', border: '2px solid #e2e8f0', color: '#94a3b8' };
+      };
+
+      return (
+        <div className="flex flex-col items-center">
+          <div className="w-full max-w-lg mb-3 flex items-center justify-between">
+            <p className="text-sm font-medium text-slate-500">Fråga {idx + 1} av {questions.length}</p>
+            <p className="text-sm font-bold" style={{ color: '#78350f' }}>{score} rätt</p>
+          </div>
+          <div className="w-full max-w-lg mb-6 bg-slate-200 rounded-full h-2">
+            <div className="h-2 rounded-full transition-all" style={{ width: `${(idx / questions.length) * 100}%`, background: PRIMARY }} />
+          </div>
+
+          <div className="w-full max-w-lg bg-white rounded-3xl shadow-sm p-6 mb-5 text-center" style={{ borderTop: `4px solid ${PRIMARY}` }}>
+            <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: '#d97706' }}>Vilket scenario visar</p>
+            <h2 className="text-2xl font-bold text-slate-800">{q.term}</h2>
+          </div>
+
+          <div className="w-full max-w-lg flex flex-col gap-3 mb-4">
+            {['A', 'B'].map(opt => (
+              <button
+                key={opt}
+                onClick={() => pick(opt)}
+                disabled={!!chosen}
+                className="w-full text-left p-4 rounded-2xl transition-all leading-relaxed"
+                style={optStyle(opt)}
+              >
+                <span className="font-bold mr-2">{opt}.</span>
+                {opt === 'A' ? q.optionA : q.optionB}
+                {chosen && opt === q.correct && <span className="ml-2 font-bold text-green-600"> ✓</span>}
+                {chosen && opt === chosen && opt !== q.correct && <span className="ml-2 font-bold text-red-600"> ✗</span>}
+              </button>
+            ))}
+          </div>
+
+          {chosen && (
+            <div className="w-full max-w-lg rounded-2xl p-4 mb-5"
+              style={isRight
+                ? { background: '#f0fdf4', borderLeft: '8px solid #4ade80' }
+                : { background: '#fef2f2', borderLeft: '8px solid #f87171' }
+              }
+            >
+              <p className="font-bold mb-1" style={{ color: isRight ? '#15803d' : '#b91c1c' }}>
+                {isRight ? 'Rätt!' : 'Fel!'}
+              </p>
+              <p className="text-slate-600 text-sm">{q.explanation}</p>
+            </div>
+          )}
+
+          {chosen && (
+            <button onClick={next} className="px-8 py-3 rounded-2xl font-bold text-white transition-colors" style={{ background: '#1e293b' }}>
+              {idx + 1 >= questions.length ? 'Visa resultat →' : 'Nästa →'}
+            </button>
+          )}
+        </div>
+      );
+    }
+
+    function App() {
+      const [view, setView] = useState('lista');
+      return (
+        <div className="bg-amber-50 min-h-screen">
+          <header className="bg-white shadow-sm sticky top-0 z-10">
+            <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+              <a href="index.html" className="text-amber-600 hover:text-amber-800 transition-colors text-sm font-medium">
+                ← Tillbaka till startsidan
+              </a>
+              <h1 className="text-xl font-bold text-amber-700 tracking-wide">Demokratiska statsskick</h1>
+              <div className="w-36"></div>
+            </div>
+          </header>
+
+          <div className="max-w-3xl mx-auto px-4 pt-6 pb-2 flex justify-center">
+            <div className="bg-white rounded-full shadow-sm p-1 flex gap-1">
+              <button
+                onClick={() => setView('lista')}
+                className="px-5 py-2 rounded-full text-sm font-bold transition-all"
+                style={view === 'lista' ? { background: PRIMARY, color: '#78350f' } : { color: '#94a3b8' }}
+              >
+                Lista
+              </button>
+              <button
+                onClick={() => setView('flashcards')}
+                className="px-5 py-2 rounded-full text-sm font-bold transition-all"
+                style={view === 'flashcards' ? { background: PRIMARY, color: '#78350f' } : { color: '#94a3b8' }}
+              >
+                Flashcards
+              </button>
+              <button
+                onClick={() => setView('lucktext')}
+                className="px-5 py-2 rounded-full text-sm font-bold transition-all"
+                style={view === 'lucktext' ? { background: PRIMARY, color: '#78350f' } : { color: '#94a3b8' }}
+              >
+                Lucktext
+              </button>
+              <button
+                onClick={() => setView('scenario')}
+                className="px-5 py-2 rounded-full text-sm font-bold transition-all"
+                style={view === 'scenario' ? { background: PRIMARY, color: '#78350f' } : { color: '#94a3b8' }}
+              >
+                Scenario
+              </button>
+              <button
+                onClick={() => setView('ickeex')}
+                className="px-5 py-2 rounded-full text-sm font-bold transition-all"
+                style={view === 'ickeex' ? { background: PRIMARY, color: '#78350f' } : { color: '#94a3b8' }}
+              >
+                Icke-ex.
+              </button>
+            </div>
+          </div>
+
+          <main className="max-w-3xl mx-auto px-4 py-6">
+            <p className="text-center text-amber-700 font-medium mb-6 text-sm">{items.length} begrepp</p>
+            {view === 'lista' && <ListaView />}
+            {view === 'flashcards' && <FlashcardView />}
+            {view === 'lucktext' && <LucktextView />}
+            {view === 'scenario' && <ScenarioView key="scenario" />}
+            {view === 'ickeex' && <IckeExempelView key="ickeex" />}
+          </main>
+
+          <footer className="text-center text-slate-400 text-xs italic py-8">
+            Källa: Samhällskunskap Sa1a1 begreppslista
+          </footer>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+
+</body>
+</html>
