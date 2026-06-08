@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pluggmaterial – Naturvetenskapligt arbetssätt | NK 1a1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'EB Garamond', serif; font-size: 1.1rem; }
+        .prose { line-height: 1.9; }
+        .prose h2 {
+            font-size: 1.45rem;
+            font-weight: 700;
+            font-style: italic;
+            color: #1e293b;
+            margin-top: 2.2rem;
+            margin-bottom: 0.5rem;
+            padding-left: 0.75rem;
+            border-left: 4px solid #0891b2;
+        }
+        .prose h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #334155;
+            margin-top: 1.5rem;
+            margin-bottom: 0.3rem;
+        }
+        .prose p {
+            color: #334155;
+            margin-bottom: 0.85rem;
+        }
+        .prose ul {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 1rem;
+        }
+        .prose ul li {
+            color: #334155;
+            padding: 0.25rem 0 0.25rem 1.5rem;
+            position: relative;
+        }
+        .prose ul li::before {
+            content: '→';
+            color: #0891b2;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        .pill-toggle button {
+            padding: 0.45rem 1.2rem;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .pill-toggle button.active  { background: #0891b2; color: white; }
+        .pill-toggle button.inactive { background: transparent; color: #94a3b8; }
+        .faktaruta {
+            background: #ecfeff;
+            border-left: 4px solid #0891b2;
+            padding: 1rem 1.2rem;
+            border-radius: 0 0.75rem 0.75rem 0;
+            margin: 1.2rem 0;
+        }
+        .faktaruta p { margin: 0; color: #0e4f6a; }
+        .begrepp-rad {
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+            margin-bottom: 0.9rem;
+        }
+        .begrepp-badge {
+            background: #ecfeff;
+            color: #0e4f6a;
+            font-weight: 900;
+            font-size: 0.8rem;
+            padding: 0.15rem 0.6rem;
+            border-radius: 999px;
+            flex-shrink: 0;
+            margin-top: 0.2rem;
+            border: 1px solid #0891b2;
+        }
+        .begrepp-rad p { margin: 0; color: #334155; }
+        .hierarki-box {
+            border: 2px solid #0891b2;
+            border-radius: 1rem;
+            overflow: hidden;
+            margin: 1.2rem 0;
+        }
+        .hierarki-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .hierarki-row:last-child { border-bottom: none; }
+        .hierarki-num {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .del-avdelare {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 2.5rem 0;
+        }
+        .del-avdelare .linje { flex: 1; border-top: 2px dashed #e2e8f0; }
+        .del-avdelare .etikett {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+<div class="max-w-2xl mx-auto px-6 py-10">
+
+    <!-- Tillbaka-knapp -->
+    <div class="flex items-center justify-between mb-8">
+        <a href="nk1a1_naturvetenskap.html" class="text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">← Tillbaka till området</a>
+        <div></div>
+    </div>
+
+    <!-- Rubrik -->
+    <div class="border-l-4 pl-4 mb-8" style="border-color: #0891b2;">
+        <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Naturkunskap nivå 1a1 · Pluggmaterial</p>
+        <h1 class="text-3xl md:text-4xl font-bold italic text-slate-900">Naturvetenskapligt arbetssätt</h1>
+    </div>
+
+    <!-- Toggle -->
+    <div class="pill-toggle flex gap-1 bg-slate-100 p-1 rounded-full w-fit mb-10">
+        <button id="btn-lattlast"    class="active"   onclick="showView('lattlast')">Lättläst</button>
+        <button id="btn-fordjupning" class="inactive" onclick="showView('fordjupning')">Fördjupning</button>
+    </div>
+
+    <!-- ════════════════ LÄTTLÄST ════════════════ -->
+    <div id="view-lattlast" class="prose">
+
+        <!-- ══ A1: ETT NATURVETENSKAPLIGT ARBETSSÄTT ══ -->
+
+        <h2>Den vetenskapliga revolutionen</h2>
+        <p>Förr sökte man svar i gamla skrifter eller kyrkans lära.</p>
+        <p>Under den <strong>vetenskapliga revolutionen</strong> (slutet av 1500-talet) ändrades det.</p>
+        <p>Nu började man använda systematiska undersökningar och experiment istället.</p>
+        <p>Nicolaus Copernicus visade att solen — inte jorden — är i centrum av solsystemet.</p>
+        <p>Galileo Galilei förespråkade experiment för att testa teorier.</p>
+        <p>Han kallas ibland "den moderna vetenskapens fader".</p>
+
+        <div class="faktaruta">
+            <p><strong>Poängen:</strong> Vetenskapliga revolutionen = skiftet från att lita på auktoriteter till att testa med experiment.</p>
+        </div>
+
+        <h2>Frågeställning och hypotes</h2>
+        <p>En naturvetenskaplig undersökning utgår från en <strong>frågeställning</strong> och en <strong>hypotes</strong>.</p>
+        <p>En <strong>frågeställning</strong> är en specifik och avgränsad fråga som preciserar syftet.</p>
+        <p>En <strong>hypotes</strong> är ett påstående — ett möjligt svar på frågeställningen.</p>
+        <p>När hypotesen formuleras vet vi inte om den är sann eller falsk.</p>
+
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Frågeställning</span>
+                <p>"Varför fungerar inte belysningen?" — formulerad som en fråga om orsak.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Hypotes</span>
+                <p>"Belysningen fungerar inte eftersom ljuskällan är trasig." — ett testbart påstående.</p>
+            </div>
+        </div>
+
+        <h2>Vad krävs för att en undersökning ska vara vetenskaplig?</h2>
+        <p>Tre krav måste uppfyllas:</p>
+
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Testbar</span>
+                <p>Hypotesen måste kunna undersökas med experiment och observationer.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Falsifierbar</span>
+                <p>Det måste vara möjligt att motbevisa hypotesen — resultaten kan visa att den är fel.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Repeterbar</span>
+                <p>Andra måste kunna upprepa experimentet och kontrollera resultaten.</p>
+            </div>
+        </div>
+
+        <h2>Naturvetenskapens begränsningar</h2>
+        <p>Naturvetenskapen kan bara undersöka sådant som går att testa.</p>
+        <p>Frågor som "Vad finns utanför universum?" och "Finns Gud?" faller utanför.</p>
+        <p>Naturvetenskapen kan inte heller avgöra vad som är rätt eller fel i moralisk mening.</p>
+        <p>Vi kan studera klimatförändringarna — men om de är "bra" eller "dåliga" är en fråga om värderingar.</p>
+
+        <h2>Den hypotetisk-deduktiva metoden</h2>
+        <p>Det finns ingen enda vetenskaplig metod som alla följer.</p>
+        <p>Men en vanlig ordning kallas den <strong>hypotetisk-deduktiva metoden</strong>.</p>
+
+        <div class="hierarki-box">
+            <div class="hierarki-row" style="background: #ecfeff;">
+                <div class="hierarki-num" style="background: #0891b2; color: white;">1</div>
+                <div><p class="font-bold text-slate-800" style="margin:0;">Frågeställning</p><p class="text-sm text-slate-500" style="margin:0;">Vad vill vi ta reda på?</p></div>
+            </div>
+            <div class="hierarki-row">
+                <div class="hierarki-num" style="background: #cffafe; color: #0e4f6a;">2</div>
+                <div><p class="font-bold text-slate-800" style="margin:0;">Hypotes</p><p class="text-sm text-slate-500" style="margin:0;">En möjlig förklaring — ett testbart påstående.</p></div>
+            </div>
+            <div class="hierarki-row">
+                <div class="hierarki-num" style="background: #e2e8f0; color: #475569;">3</div>
+                <div><p class="font-bold text-slate-800" style="margin:0;">Förutsägelse</p><p class="text-sm text-slate-500" style="margin:0;">Vad förväntar vi oss ska hända om hypotesen stämmer?</p></div>
+            </div>
+            <div class="hierarki-row">
+                <div class="hierarki-num" style="background: #f1f5f9; color: #64748b;">4</div>
+                <div><p class="font-bold text-slate-800" style="margin:0;">Undersökning</p><p class="text-sm text-slate-500" style="margin:0;">Experimentet genomförs.</p></div>
+            </div>
+            <div class="hierarki-row">
+                <div class="hierarki-num" style="background: #f8fafc; color: #94a3b8;">5</div>
+                <div><p class="font-bold text-slate-800" style="margin:0;">Slutsats</p><p class="text-sm text-slate-500" style="margin:0;">Stöder resultaten hypotesen — eller falsifierar de den?</p></div>
+            </div>
+        </div>
+
+        <p>Om hypotesen falsifieras måste en ny hypotes formuleras.</p>
+        <p>Noggrant testade hypoteser kan med tiden upphöjas till <strong>vetenskapliga teorier</strong>.</p>
+
+        <h2>Vetenskapliga teorier</h2>
+        <p>En <strong>vetenskaplig teori</strong> är inte en gissning — det är en väl underbyggd förklaringsmodell.</p>
+        <p>Den baseras på data från många noggranna och systematiska experiment.</p>
+        <p>Teorier är öppna för förändring om nya bevis dyker upp.</p>
+        <p>När en teori ersätts av en bättre kallas det ett <strong>paradigmskifte</strong>.</p>
+        <p>Exempel: den geocentriska världsbilden (jorden i centrum) ersattes av den heliocentriska (solen i centrum).</p>
+
+        <div class="faktaruta">
+            <p><strong>Kom ihåg:</strong> Att teorier uppdateras är ett tecken på att vetenskapen fungerar — inte att den är opålitlig.</p>
+        </div>
+
+        <h2>Naturvetenskap har förbättrat samhället</h2>
+        <p>Naturvetenskapliga upptäckter har förbättrat livet på många sätt.</p>
+
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Medicin</span>
+                <p>Antibiotika, vaccin, röntgen, genetiska analyser.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Teknologi</span>
+                <p>Elektricitet, datorer, internet, radio.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Energi &amp; miljö</span>
+                <p>Förnybar energi (sol, vind, vatten), kärnkraft, reningstekniker.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Jordbruk</span>
+                <p>Växtförädling, GMO, konstgödsel.</p>
+            </div>
+        </div>
+
+        <h2>Forskningsetik</h2>
+        <p>Forskning regleras av lagar och etiska kommittéer.</p>
+        <p>Det räknas som <strong>forskningsfusk</strong> att plagiera, förfalska eller undanhålla resultat.</p>
+        <p>Experiment på ryggradsdjur och människor kräver etikprövning.</p>
+
+        <div class="faktaruta">
+            <p><strong>Exempel:</strong> En läkare på Karolinska använde en otillräckligt testad metod med konstgjorda luftstrupar. Flera patienter dog. Det skadade förtroendet för forskning.</p>
+        </div>
+
+        <!-- ══ AVDELARE A1 → A2 ══ -->
+        <div class="del-avdelare">
+            <div class="linje"></div>
+            <span class="etikett">Fortsättning A2</span>
+            <div class="linje"></div>
+        </div>
+
+        <!-- ══ A2: EGNA NATURVETENSKAPLIGA UNDERSÖKNINGAR ══ -->
+
+        <h2>Variabler i ett experiment</h2>
+        <p>I ett experiment ändrar man avsiktligt en variabel för att se effekten på en annan.</p>
+
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Oberoende variabel</span>
+                <p>Det som förändras — det man medvetet ändrar.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Beroende variabel</span>
+                <p>Det som mäts — det man undersöker effekten av.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Störvariabler</span>
+                <p>Alla andra faktorer som måste hållas konstanta så de inte påverkar resultatet.</p>
+            </div>
+        </div>
+
+        <p><strong>Exempel:</strong> Lökplantor odlas i olika belysningsstyrkor. Belysningsstyrkan är den oberoende variabeln; tillväxten (biomassa) är den beroende variabeln.</p>
+
+        <h2>Kontrollgrupp, blindstudie och placebo</h2>
+        <p>En <strong>kontrollgrupp</strong> utsätts inte för den behandling som testas — men väljs ut på samma sätt.</p>
+        <p>Den används för jämförelse så att störvariabler minimeras.</p>
+        <p>I medicinska studier vet deltagarna i kontrollgruppen inte om de får verksam substans.</p>
+        <p>Det kallas en <strong>blindstudie</strong> och görs för att utesluta <strong>placeboeffekten</strong>.</p>
+        <p><strong>Placeboeffekten</strong> innebär att en person mår bättre bara för att de förväntar sig det — utan verksam medicin.</p>
+
+        <div class="faktaruta">
+            <p><strong>Dilemma:</strong> I en blindstudie kan sjuka i kontrollgruppen gå miste om behandling — det är ett etiskt problem.</p>
+        </div>
+
+        <h2>Fler mätningar ger säkrare resultat</h2>
+        <p>Individuella variationer gör att ett enskilt mätvärde kan vara missvisande.</p>
+        <p>Ju fler individer och upprepningar, desto pålitligare resultat.</p>
+        <p>Slumpmässiga fel jämnas ut när antalet mätvärden ökar.</p>
+
+        <h2>Samvariation är inte detsamma som orsakssamband</h2>
+        <p>En <strong>samvariation (korrelation)</strong> mellan två variabler betyder inte att den ena orsakar den andra.</p>
+        <p>Det kallas att blanda ihop korrelation med <strong>kausalitet</strong>.</p>
+
+        <div class="faktaruta">
+            <p><strong>Klassiskt exempel:</strong> Glasskonsumtion och solbränna samvarierar — men det är sommarväder som orsakar båda, inte att glass orsakar solbränna.</p>
+        </div>
+
+        <h2>Rapportens struktur</h2>
+        <p>En vetenskaplig undersökning redovisas i en rapport med dessa delar:</p>
+
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Titel</span>
+                <p>Speglar undersökningens innehåll.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Inledning</span>
+                <p>Bakgrund, begrepp, sammanhang, frågeställning och hypotes.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Material &amp; metod</span>
+                <p>Så noggrann beskrivning att någon annan kan upprepa experimentet.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Resultat</span>
+                <p>Tabeller och diagram med tydliga axelrubriker och enheter.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Diskussion</span>
+                <p>Tolkning, utvärdering av hypotesen, avvikande resultat och förbättringsförslag.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Källförteckning</span>
+                <p>Källor anges enligt ett standardformat.</p>
+            </div>
+        </div>
+
+        <h2>Säkerhet i laboratoriet</h2>
+        <p>Innan ett experiment påbörjas görs en <strong>riskbedömning</strong>.</p>
+        <p>Kemikalier som är farliga ska vara märkta med <strong>farosymboler</strong>.</p>
+
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Skadlig</span>
+                <p>Kan ge klåda, irritation, allergi, dåsighet.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Brandfarlig</span>
+                <p>Kan brinna våldsamt — håll borta från värme och öppen låga.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Frätande</span>
+                <p>Farlig på hud, i ögon eller i munnen.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Hälsofarlig</span>
+                <p>Kan vara cancerframkallande eller ge fosterskador.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Miljöfarlig</span>
+                <p>Farlig för vattenmiljön.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Giftig</span>
+                <p>Ger livshotande skador vid inandning, hudkontakt eller förtäring.</p>
+            </div>
+        </div>
+
+        <!-- ══ AVDELARE A2 → A3 ══ -->
+        <div class="del-avdelare">
+            <div class="linje"></div>
+            <span class="etikett">Fortsättning A3</span>
+            <div class="linje"></div>
+        </div>
+
+        <!-- ══ A3: ATT INTE BLI LURAD ══ -->
+
+        <h2>Ett vetenskapligt förhållningssätt</h2>
+        <p>Ett vetenskapligt förhållningssätt innebär att vara kritisk, opartisk och basera slutsatser på fakta.</p>
+        <p>Fyra viktiga strategier:</p>
+
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Källkritik</span>
+                <p>Granska information och reklam systematiskt.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Desinformation</span>
+                <p>Var uppmärksam på medvetet vilseledande information.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Psykologi</span>
+                <p>Känn till mekanismer som gör att vi inte alltid tänker rationellt.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Pseudovetenskap</span>
+                <p>Kunna skilja riktig vetenskap från falska anspråk.</p>
+            </div>
+        </div>
+
+        <h2>Källkritik</h2>
+        <p><strong>Källkritik</strong> innebär att systematiskt granska och bedöma källors trovärdighet.</p>
+        <p>Vetenskapliga artiklar är primärkällor — de baseras på egna observationer och experiment.</p>
+        <p>Sekundärkällor hämtar sin information från andra och är mindre tillförlitliga.</p>
+        <p>Artiklar som granskas av oberoende forskare kallas <strong>peer review</strong> — de är mer tillförlitliga.</p>
+
+        <h3>Källkritikens ABC</h3>
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Äkta?</span>
+                <p>Är källan vad den utger sig för att vara? Är upphovspersonen expert inom ämnet?</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Aktuell?</span>
+                <p>Är informationen uppdaterad? Inom snabbrörliga områden föråldras kunskap fort.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Beroende?</span>
+                <p>Har källan samlat in egna data, eller bygger den på andra? Primärkällor är bättre.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Tendensiös?</span>
+                <p>Finns bakomliggande ekonomiska eller politiska intressen som kan påverka innehållet?</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Granskad?</span>
+                <p>Har källan genomgått peer review? Vetenskapliga artiklar är mer pålitliga än bloggar.</p>
+            </div>
+        </div>
+
+        <div class="faktaruta">
+            <p><strong>AI och källkritik:</strong> AI kan skapa trovärdigt utseende text med falsk information. Källor som anges av en chattbot kan vara påhittade. Källkritik gäller också AI-genererat innehåll.</p>
+        </div>
+
+        <h2>Desinformation</h2>
+        <p><strong>Desinformation</strong> är felaktig information som sprids <em>medvetet</em> för att lura eller vilseleda.</p>
+        <p>Syftet kan vara att gynna egna intressen, påverka politiska frågor eller skapa misstro.</p>
+
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Sociala medier</span>
+                <p>Algoritmer prioriterar innehåll med starka reaktioner — falska nyheter sprids snabbt.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Botar och troll</span>
+                <p>Automatiserade program kan sprida stor mängd desinformation och skapa falsk konsensus.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Deepfakes</span>
+                <p>AI-teknik som skapar falska bilder, videor och ljud av verkliga personer.</p>
+            </div>
+        </div>
+
+        <h2>Konspirationsteorier</h2>
+        <p><strong>Konspirationsteorier</strong> är föreställningar om att hemliga grupper arbetar för dolda mål.</p>
+        <p>De flesta saknar vetenskapligt stöd.</p>
+        <p><strong>Exempel:</strong> "Chemtrails" — vita stimmor efter flygplan påstås vara kemikalier. Sanningen: det är kondensstrimmor av varm, fuktig avgasluft som möter kall höghöjdsluft.</p>
+
+        <h2>Faktaresistens, ekokammare och filterbubblor</h2>
+
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Faktaresistens</span>
+                <p>Att hålla fast vid sin övertygelse trots fakta som talar emot. Strider mot vetenskapligt förhållningssätt.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Ekokammare</span>
+                <p>En miljö där åsikter förstärks för att man bara möter likasinnade — vanligt på sociala medier.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Filterbubbla</span>
+                <p>Algoritmer anpassar flödet efter din profil — du ser bara sådant du redan håller med om.</p>
+            </div>
+        </div>
+
+        <h2>Psykologiska mekanismer</h2>
+        <p>Flera mekanismer gör det svårt att ändra ståndpunkt trots motbevisning.</p>
+
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Bekräftelsebias</span>
+                <p>Vi söker och tror mer på information som bekräftar det vi redan tänker.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Kognitiv dissonans</span>
+                <p>Motstridiga fakta skapar obehag — vissa väljer då att förneka fakta snarare än ändra åsikt.</p>
+            </div>
+        </div>
+
+        <p>Upprepning av ett påstående — även ett falskt — gör att fler börjar acceptera det som sant.</p>
+
+        <h2>Pseudovetenskap</h2>
+        <p><strong>Pseudovetenskap</strong> är läror som påstår sig vara vetenskapliga men saknar vetenskapligt stöd.</p>
+        <p><em>Pseudo</em> betyder falsk.</p>
+        <p><strong>Exempel:</strong> Astrologi — att stjärntecknet avgör personlighet. Inga experiment har kunnat visa ett sådant samband.</p>
+        <p>Problemet är att pseudovetenskap <em>ser ut</em> som vetenskap — det leder folk att lita på den.</p>
+        <p>I värsta fall väljer personer pseudovetenskaplig "behandling" istället för beprövad sjukvård.</p>
+
+        <div class="faktaruta">
+            <p><strong>Test:</strong> Är påståendet testbart och falsifierbart? Kan det motbevisas med experiment? Om inte — är det förmodligen pseudovetenskap.</p>
+        </div>
+
+        <!-- ══ AVSLUTANDE SAMMANFATTNING ══ -->
+        <div class="del-avdelare" style="margin-top: 3rem;">
+            <div class="linje"></div>
+            <span class="etikett">Sammanfattning</span>
+            <div class="linje"></div>
+        </div>
+
+        <div class="faktaruta" style="margin-top: 0;">
+            <p><strong>Hela området — Naturvetenskapligt arbetssätt:</strong></p>
+            <p style="margin-top: 0.5rem;">Under <strong>den vetenskapliga revolutionen</strong> gick man från att lita på auktoriteter till att testa med experiment. En vetenskaplig undersökning kräver en <strong>testbar</strong>, <strong>falsifierbar</strong> och <strong>repeterbar</strong> hypotes. Metoden följer ofta den <strong>hypotetisk-deduktiva metoden</strong>: frågeställning → hypotes → förutsägelse → experiment → slutsats. Noggrant testade hypoteser kan upphöjas till <strong>vetenskapliga teorier</strong>. I experiment skiljer man på <strong>oberoende</strong> och <strong>beroende variabler</strong> — och en <strong>kontrollgrupp</strong> används för jämförelse. En <strong>samvariation</strong> är inte detsamma som ett <strong>orsakssamband</strong>. För att undvika att bli lurade använder vi <strong>källkritik</strong> (äkta, aktuell, beroende, tendensiös, granskad) och ett vetenskapligt förhållningssätt mot <strong>desinformation</strong>, <strong>konspirationsteorier</strong>, <strong>filterbubblor</strong>, <strong>ekokammare</strong> och <strong>pseudovetenskap</strong>.</p>
+        </div>
+
+    </div>
+    <!-- ════════════════ SLUT LÄTTLÄST ════════════════ -->
+
+    <!-- ════════════════ FÖRDJUPNING ════════════════ -->
+    <div id="view-fordjupning" class="hidden">
+        <p class="text-slate-500 italic mb-8">Tryck på ett dokument för att öppna det. Du kan zooma och bläddra fritt.</p>
+
+        <div class="space-y-4">
+            <a href="A1 - Ett naturvetenskapligt arbetssätt.pdf" target="_blank"
+               class="flex items-center gap-5 bg-white rounded-2xl border-2 p-5 hover:-translate-y-0.5 hover:shadow-md transition-all"
+               style="border-color: #0891b2;">
+                <div class="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
+                     style="background: #ecfeff;">📄</div>
+                <div class="flex-1 min-w-0">
+                    <p class="font-bold text-slate-800 leading-snug">A1 – Ett naturvetenskapligt arbetssätt</p>
+                    <p class="text-sm text-slate-500 mt-0.5">Vetenskaplig revolution, hypotes, hypotetisk-deduktiv metod, teorier, forskningsetik</p>
+                </div>
+                <span class="font-bold flex-shrink-0 text-sm" style="color: #0891b2;">Öppna dokument →</span>
+            </a>
+
+            <a href="A2 - Egna naturvetenskapliga undersökningar.pdf" target="_blank"
+               class="flex items-center gap-5 bg-white rounded-2xl border-2 p-5 hover:-translate-y-0.5 hover:shadow-md transition-all"
+               style="border-color: #0891b2;">
+                <div class="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
+                     style="background: #ecfeff;">📄</div>
+                <div class="flex-1 min-w-0">
+                    <p class="font-bold text-slate-800 leading-snug">A2 – Egna naturvetenskapliga undersökningar</p>
+                    <p class="text-sm text-slate-500 mt-0.5">Variabler, kontrollgrupp, placeboeffekt, rapportstruktur, säkerhet i labbet</p>
+                </div>
+                <span class="font-bold flex-shrink-0 text-sm" style="color: #0891b2;">Öppna dokument →</span>
+            </a>
+
+            <a href="A3 - Att inte bli lurad.pdf" target="_blank"
+               class="flex items-center gap-5 bg-white rounded-2xl border-2 p-5 hover:-translate-y-0.5 hover:shadow-md transition-all"
+               style="border-color: #0891b2;">
+                <div class="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
+                     style="background: #ecfeff;">📄</div>
+                <div class="flex-1 min-w-0">
+                    <p class="font-bold text-slate-800 leading-snug">A3 – Att inte bli lurad</p>
+                    <p class="text-sm text-slate-500 mt-0.5">Källkritik, desinformation, konspirationsteorier, faktaresistens, pseudovetenskap</p>
+                </div>
+                <span class="font-bold flex-shrink-0 text-sm" style="color: #0891b2;">Öppna dokument →</span>
+            </a>
+
+            <a href="A - Facit naturvetenskapligt arbetssätt.pdf" target="_blank"
+               class="flex items-center gap-5 bg-white rounded-2xl border-2 p-5 hover:-translate-y-0.5 hover:shadow-md transition-all"
+               style="border-color: #0891b2;">
+                <div class="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
+                     style="background: #ecfeff;">📋</div>
+                <div class="flex-1 min-w-0">
+                    <p class="font-bold text-slate-800 leading-snug">A – Facit</p>
+                    <p class="text-sm text-slate-500 mt-0.5">Svar på alla "Testa dig själv"-frågor och "Förklara och utveckla"-uppgifter</p>
+                </div>
+                <span class="font-bold flex-shrink-0 text-sm" style="color: #0891b2;">Öppna dokument →</span>
+            </a>
+        </div>
+    </div>
+    <!-- ════════════════ SLUT FÖRDJUPNING ════════════════ -->
+
+    <footer class="mt-16 text-center border-t border-slate-200 pt-8">
+        <p class="text-slate-400 text-xs uppercase tracking-[0.2em] font-black italic">Designad av John</p>
+    </footer>
+
+</div>
+
+<script>
+    function showView(view) {
+        document.getElementById('view-lattlast').classList.toggle('hidden', view !== 'lattlast');
+        document.getElementById('view-fordjupning').classList.toggle('hidden', view !== 'fordjupning');
+        document.getElementById('btn-lattlast').className    = view === 'lattlast'    ? 'active' : 'inactive';
+        document.getElementById('btn-fordjupning').className = view === 'fordjupning' ? 'active' : 'inactive';
+    }
+</script>
+</body>
+</html>
