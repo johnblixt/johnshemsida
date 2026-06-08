@@ -4,811 +4,164 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Naturvetenskapligt arbetssätt – Begrepp</title>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
-    body { font-family: 'Fredoka', sans-serif; }
-    .flip-card { perspective: 1000px; height: 350px; width: 100%; max-width: 400px; cursor: pointer; }
-    .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
-    .flipped-classes { transform: rotateY(180deg); }
-    .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
-    .flip-card-back { transform: rotateY(180deg); }
+    body { font-family: 'EB Garamond', serif; background: #f9fafb; }
   </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="min-h-screen">
+  <div id="root"></div>
 
-<div id="root"></div>
+  <script type="text/babel">
+    const PRIMARY       = '#22c55e';
+    const PRIMARY_LIGHT = '#dcfce7';
+    const PRIMARY_TEXT  = '#14532d';
 
-<script type="text/babel">
-const PRIMARY = '#22c55e';
-const LIGHT_BG = '#dcfce7';
-const DARK_TEXT = '#14532d';
+    const concepts = [
+      { id:  1, term: 'Den vetenskapliga revolutionen',   def: 'Perioden efter medeltiden i Europa då man började använda systematiska undersökningsmetoder och experiment istället för att söka svar i antika skrifter eller kyrkans lära.' },
+      { id:  2, term: 'Frågeställning',                   def: 'En specifik och avgränsad fråga som preciserar syftet med en undersökning.' },
+      { id:  3, term: 'Hypotes',                          def: 'Ett påstående som ger ett möjligt svar på frågeställningen. När en hypotes föreslås vet man inte om den är sann eller falsk.' },
+      { id:  4, term: 'Testbar hypotes',                  def: 'En hypotes som går att undersöka genom experiment och observationer.' },
+      { id:  5, term: 'Falsifierbar hypotes',             def: 'En hypotes som är möjlig att motbevisa, exempelvis genom att resultaten motsäger den.' },
+      { id:  6, term: 'Repeterbart experiment',           def: 'Ett experiment som kan upprepas och kontrolleras av andra.' },
+      { id:  7, term: 'Observationer',                    def: 'Att samla in resultat genom att iaktta, exempelvis inom astronomin där man inte kan göra experiment.' },
+      { id:  8, term: 'Experiment',                       def: 'En undersökning där man avsiktligt ändrar en variabel för att undersöka effekten på något annat.' },
+      { id:  9, term: 'Simuleringar',                     def: 'Datorberäkningar som används för att förutsäga förlopp, exempelvis framtida temperaturförändringar i klimatforskningen.' },
+      { id: 10, term: 'Den vetenskapliga metoden',        def: 'Uttryck för en bestämd ordning av steg i forskning; i praktiken finns ingen enda metod som alla naturvetare följer.' },
+      { id: 11, term: 'Den hypotetisk-deduktiva metoden', def: 'Arbetsgång där en frågeställning leder till en hypotes, en förutsägelse, en undersökning och slutligen en slutsats.' },
+      { id: 12, term: 'Förutsägelse',                     def: 'Ett påstående om vad man förväntar sig ska hända om hypotesen stämmer.' },
+      { id: 13, term: 'Slutsats',                         def: 'Tolkning av resultaten för att avgöra om förutsägelsen inträffat. Inträffar den får hypotesen stöd; annars motbevisas (falsifieras) den.' },
+      { id: 14, term: 'Vetenskaplig teori',               def: 'En väl underbyggd förklaringsmodell för hur något i omvärlden är uppbyggt eller fungerar. Långt mer än en gissning.' },
+      { id: 15, term: 'Paradigmskifte',                   def: 'När en vetenskaplig teori ersätts av en annan.' },
+      { id: 16, term: 'Naturvetenskapens begränsningar',  def: 'Naturvetenskapen kan bara undersöka sådant som går att testa och kan inte besvara moraliska frågor om vad som är rätt och fel.' },
+      { id: 17, term: 'Forskningsetik',                   def: 'Vägledning från etikprövningsmyndighet och etiska kommittéer för att forskning ska utföras på ett etiskt och objektivt sätt.' },
+      { id: 18, term: 'Forskningsfusk',                   def: 'Att plagiera, förfalska eller undanhålla resultat från sin forskning.' },
+      { id: 19, term: 'Etikprövning',                     def: 'Prövning som i regel krävs innan experiment får utföras på bläckfiskar, ryggradsdjur och människor.' },
+      { id: 20, term: 'Oberoende variabel',               def: 'Det som ändras i ett experiment, och som antas orsaka en förändring.' },
+      { id: 21, term: 'Beroende variabel',                def: 'Det som mäts, och som antas påverkas av den oberoende variabeln.' },
+      { id: 22, term: 'Kontrollerade variabler',          def: 'Faktorer som hålls så konstanta som möjligt för att de inte ska påverka resultatet.' },
+      { id: 23, term: 'Störvariabler',                    def: 'Andra faktorer som kan påverka resultatet och därför måste hållas konstanta.' },
+      { id: 24, term: 'Kontrollgrupp',                    def: 'En jämförelsegrupp som inte utsätts för behandlingen eller det verksamma ämnet, vilket minskar risken att andra variabler påverkar slutsatsen.' },
+      { id: 25, term: 'Experimentgrupp',                  def: 'Den grupp som utsätts för behandlingen eller det verksamma ämne som undersöks.' },
+      { id: 26, term: 'Slumpen',                          def: 'Slumpmässiga variationer; ju fler försökspersoner eller upprepningar, desto mindre risk att resultatet beror på slumpen.' },
+      { id: 27, term: 'Blindstudie',                      def: 'Studie där försökspersonerna inte vet om de får en aktiv substans eller inte, för att utesluta placeboeffekten.' },
+      { id: 28, term: 'Placeboeffekten',                  def: 'Påverkan på ett behandlingsresultat som beror på att försökspersonen förväntar sig att bli bättre, trots att ingen verksam medicin getts.' },
+      { id: 29, term: 'Medelvärde',                       def: 'Det beräknade genomsnittet av flera mätvärden, ofta redovisat per försöksgrupp.' },
+      { id: 30, term: 'Trendlinje',                       def: 'En linje i ett diagram som visar den övergripande tendensen i mätvärdena.' },
+      { id: 31, term: 'Samvariation (korrelation)',       def: 'När två variabler varierar tillsammans.' },
+      { id: 32, term: 'Orsakssamband',                    def: 'När en variabel faktiskt orsakar förändring i en annan. Samvariation behöver inte betyda orsakssamband.' },
+      { id: 33, term: 'Vetenskaplig rapport',             def: 'Skriftlig redovisning av ett experiment med delarna inledning, material och metod, resultat, diskussion och källförteckning.' },
+      { id: 34, term: 'Riskbedömning',                    def: 'Bedömning av risker som görs innan det praktiska arbetet i exempelvis en laboration påbörjas.' },
+      { id: 35, term: 'Farosymboler',                     def: 'Märkning av hälso- och brandfarliga produkter, t.ex. skadlig, brandfarlig, frätande, hälsofarlig, miljöfarlig och giftig.' },
+      { id: 36, term: 'Vetenskapligt förhållningssätt',   def: 'Att ha ett kritiskt tänkande, vara opartisk, vara öppen för nya idéer och basera sina slutsatser på välgrundade fakta.' },
+      { id: 37, term: 'Källkritik',                       def: 'Att systematiskt granska och bedöma källors trovärdighet.' },
+      { id: 38, term: 'Källkritikens ABC',                def: 'Frågorna man ställer om en källa: är den äkta, aktuell, beroende, tendensiös och granskad?' },
+      { id: 39, term: 'Primärkälla',                      def: 'Källa som bygger på egen data, t.ex. vetenskapliga artiklar baserade på observationer och experiment. Mer tillförlitlig.' },
+      { id: 40, term: 'Sekundärkälla',                    def: 'Källa som hämtar sin information från andra källor. Mindre pålitlig eftersom den är beroende av att ursprungskällan är korrekt.' },
+      { id: 41, term: 'Tendensiös (vinklad) källa',       def: 'En källa med underliggande politiska, ekonomiska eller ideologiska intressen, vilket gör den mindre trovärdig.' },
+      { id: 42, term: 'Peer review',                      def: 'Granskning av en vetenskaplig rapport av minst två oberoende forskare innan publicering; ett sätt att garantera kvaliteten.' },
+      { id: 43, term: 'Desinformation',                   def: 'Felaktig information som sprids medvetet för att lura eller vilseleda.' },
+      { id: 44, term: 'Propaganda',                       def: 'Kommunikation som syftar till att påverka den allmänna opinionen och undergräva motståndare. Räknas som desinformation när den medvetet sprider falsk information.' },
+      { id: 45, term: 'Deepfakes',                        def: 'Falska bilder, videor och ljudinspelningar av personer som skapats med hjälp av AI.' },
+      { id: 46, term: 'Konspirationsteorier',             def: 'Föreställningar om att hemliga grupper i en sammansvärjning arbetar för att uppnå dolda mål.' },
+      { id: 47, term: 'Faktaresistens',                   def: 'När en person håller fast vid sin övertygelse trots att fakta talar emot.' },
+      { id: 48, term: 'Ekokammare',                       def: 'En miljö, t.ex. på sociala medier, där en grupps åsikter förstärks genom att användarna ständigt bekräftar varandra.' },
+      { id: 49, term: 'Filterbubblor',                    def: 'När algoritmer på sociala medier anpassar innehållet efter en persons profil, så att man främst möter information som bekräftar den egna världsbilden.' },
+      { id: 50, term: 'Bekräftelsebias',                  def: 'Tendensen att ha högre tilltro till information som redan stämmer med de egna uppfattningarna.' },
+      { id: 51, term: 'Kognitiv dissonans',               def: 'Den inre konflikt som uppstår av motstridiga fakta, vilket kan få personer att förneka fakta snarare än att ändra uppfattning.' },
+      { id: 52, term: 'Pseudovetenskap',                  def: 'Läror som gör anspråk på att vara vetenskapliga utan att ha vetenskapligt stöd, t.ex. astrologi.' },
+    ];
 
-const begrepp = [
-  { term: 'Den vetenskapliga revolutionen', def: 'Perioden efter medeltiden i Europa då man började använda systematiska undersökningsmetoder och experiment istället för att söka svar i antika skrifter eller kyrkans lära.' },
-  { term: 'Frågeställning', def: 'En specifik och avgränsad fråga som preciserar syftet med en undersökning.' },
-  { term: 'Hypotes', def: 'Ett påstående som ger ett möjligt svar på frågeställningen. När en hypotes föreslås vet man inte om den är sann eller falsk.' },
-  { term: 'Testbar hypotes', def: 'En hypotes som går att undersöka genom experiment och observationer.' },
-  { term: 'Falsifierbar hypotes', def: 'En hypotes som är möjlig att motbevisa, exempelvis genom att resultaten motsäger den.' },
-  { term: 'Repeterbart experiment', def: 'Ett experiment som kan upprepas och kontrolleras av andra.' },
-  { term: 'Observationer', def: 'Att samla in resultat genom att iaktta, exempelvis inom astronomin där man inte kan göra experiment.' },
-  { term: 'Experiment', def: 'En undersökning där man avsiktligt ändrar en variabel för att undersöka effekten på något annat.' },
-  { term: 'Simuleringar', def: 'Datorberäkningar som används för att förutsäga förlopp, exempelvis framtida temperaturförändringar i klimatforskningen.' },
-  { term: 'Den vetenskapliga metoden', def: 'Uttryck för en bestämd ordning av steg i forskning; i praktiken finns ingen enda metod som alla naturvetare följer.' },
-  { term: 'Den hypotetisk-deduktiva metoden', def: 'Arbetsgång där en frågeställning leder till en hypotes, en förutsägelse, en undersökning och slutligen en slutsats.' },
-  { term: 'Förutsägelse', def: 'Ett påstående om vad man förväntar sig ska hända om hypotesen stämmer.' },
-  { term: 'Slutsats', def: 'Tolkning av resultaten för att avgöra om förutsägelsen inträffat. Inträffar den får hypotesen stöd; annars motbevisas (falsifieras) den.' },
-  { term: 'Vetenskaplig teori', def: 'En väl underbyggd förklaringsmodell för hur något i omvärlden är uppbyggt eller fungerar. Långt mer än en gissning.' },
-  { term: 'Paradigmskifte', def: 'När en vetenskaplig teori ersätts av en annan.' },
-  { term: 'Naturvetenskapens begränsningar', def: 'Naturvetenskapen kan bara undersöka sådant som går att testa och kan inte besvara moraliska frågor om vad som är rätt och fel.' },
-  { term: 'Forskningsetik', def: 'Vägledning från etikprövningsmyndighet och etiska kommittéer för att forskning ska utföras på ett etiskt och objektivt sätt.' },
-  { term: 'Forskningsfusk', def: 'Att plagiera, förfalska eller undanhålla resultat från sin forskning.' },
-  { term: 'Etikprövning', def: 'Prövning som i regel krävs innan experiment får utföras på bläckfiskar, ryggradsdjur och människor.' },
-  { term: 'Oberoende variabel', def: 'Det som ändras i ett experiment, och som antas orsaka en förändring.' },
-  { term: 'Beroende variabel', def: 'Det som mäts, och som antas påverkas av den oberoende variabeln.' },
-  { term: 'Kontrollerade variabler', def: 'Faktorer som hålls så konstanta som möjligt för att de inte ska påverka resultatet.' },
-  { term: 'Störvariabler', def: 'Andra faktorer som kan påverka resultatet och därför måste hållas konstanta.' },
-  { term: 'Kontrollgrupp', def: 'En jämförelsegrupp som inte utsätts för behandlingen eller det verksamma ämnet, vilket minskar risken att andra variabler påverkar slutsatsen.' },
-  { term: 'Experimentgrupp', def: 'Den grupp som utsätts för behandlingen eller det verksamma ämne som undersöks.' },
-  { term: 'Slumpen', def: 'Slumpmässiga variationer; ju fler försökspersoner eller upprepningar, desto mindre risk att resultatet beror på slumpen.' },
-  { term: 'Blindstudie', def: 'Studie där försökspersonerna inte vet om de får en aktiv substans eller inte, för att utesluta placeboeffekten.' },
-  { term: 'Placeboeffekten', def: 'Påverkan på ett behandlingsresultat som beror på att försökspersonen förväntar sig att bli bättre, trots att ingen verksam medicin getts.' },
-  { term: 'Medelvärde', def: 'Det beräknade genomsnittet av flera mätvärden, ofta redovisat per försöksgrupp.' },
-  { term: 'Trendlinje', def: 'En linje i ett diagram som visar den övergripande tendensen i mätvärdena.' },
-  { term: 'Samvariation (korrelation)', def: 'När två variabler varierar tillsammans.' },
-  { term: 'Orsakssamband', def: 'När en variabel faktiskt orsakar förändring i en annan. Samvariation behöver inte betyda orsakssamband.' },
-  { term: 'Vetenskaplig rapport', def: 'Skriftlig redovisning av ett experiment med delarna inledning, material och metod, resultat, diskussion och källförteckning.' },
-  { term: 'Riskbedömning', def: 'Bedömning av risker som görs innan det praktiska arbetet i exempelvis en laboration påbörjas.' },
-  { term: 'Farosymboler', def: 'Märkning av hälso- och brandfarliga produkter, t.ex. skadlig, brandfarlig, frätande, hälsofarlig, miljöfarlig och giftig.' },
-  { term: 'Vetenskapligt förhållningssätt', def: 'Att ha ett kritiskt tänkande, vara opartisk, vara öppen för nya idéer och basera sina slutsatser på välgrundade fakta.' },
-  { term: 'Källkritik', def: 'Att systematiskt granska och bedöma källors trovärdighet.' },
-  { term: 'Källkritikens ABC', def: 'Frågorna man ställer om en källa: är den äkta, aktuell, beroende, tendensiös och granskad?' },
-  { term: 'Primärkälla', def: 'Källa som bygger på egen data, t.ex. vetenskapliga artiklar baserade på observationer och experiment. Mer tillförlitlig.' },
-  { term: 'Sekundärkälla', def: 'Källa som hämtar sin information från andra källor. Mindre pålitlig eftersom den är beroende av att ursprungskällan är korrekt.' },
-  { term: 'Tendensiös (vinklad) källa', def: 'En källa med underliggande politiska, ekonomiska eller ideologiska intressen, vilket gör den mindre trovärdig.' },
-  { term: 'Peer review', def: 'Granskning av en vetenskaplig rapport av minst två oberoende forskare innan publicering; ett sätt att garantera kvaliteten.' },
-  { term: 'Desinformation', def: 'Felaktig information som sprids medvetet för att lura eller vilseleda.' },
-  { term: 'Propaganda', def: 'Kommunikation som syftar till att påverka den allmänna opinionen och undergräva motståndare. Räknas som desinformation när den medvetet sprider falsk information.' },
-  { term: 'Deepfakes', def: 'Falska bilder, videor och ljudinspelningar av personer som skapats med hjälp av AI.' },
-  { term: 'Konspirationsteorier', def: 'Föreställningar om att hemliga grupper i en sammansvärjning arbetar för att uppnå dolda mål.' },
-  { term: 'Faktaresistens', def: 'När en person håller fast vid sin övertygelse trots att fakta talar emot.' },
-  { term: 'Ekokammare', def: 'En miljö, t.ex. på sociala medier, där en grupps åsikter förstärks genom att användarna ständigt bekräftar varandra.' },
-  { term: 'Filterbubblor', def: 'När algoritmer på sociala medier anpassar innehållet efter en persons profil, så att man främst möter information som bekräftar den egna världsbilden.' },
-  { term: 'Bekräftelsebias', def: 'Tendensen att ha högre tilltro till information som redan stämmer med de egna uppfattningarna.' },
-  { term: 'Kognitiv dissonans', def: 'Den inre konflikt som uppstår av motstridiga fakta, vilket kan få personer att förneka fakta snarare än att ändra uppfattning.' },
-  { term: 'Pseudovetenskap', def: 'Läror som gör anspråk på att vara vetenskapliga utan att ha vetenskapligt stöd, t.ex. astrologi.' },
-];
+    const TABS = ['Lista', 'Flashcards', 'Lucktext', 'Scenario', 'Icke-ex.'];
 
-const VIEWS = ['Lista', 'Flashcards', 'Lucktext', 'Scenario', 'Icke-ex.'];
+    function App() {
+      const [view, setView] = React.useState('Lista');
 
-function App() {
-  const [view, setView] = React.useState('Lista');
+      return (
+        <div className="min-h-screen">
+          {/* Header */}
+          <header className="bg-white shadow-sm">
+            <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+              <a
+                href="../index.html"
+                className="text-sm font-medium text-gray-500 hover:text-green-600 transition-colors"
+              >
+                ← Tillbaka till startsidan
+              </a>
+              <h1 className="text-2xl font-bold text-center tracking-wide" style={{ color: PRIMARY_TEXT }}>
+                Naturvetenskapligt arbetssätt
+              </h1>
+              <div className="w-40" />
+            </div>
+          </header>
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
-          <a
-            href="../index.html"
-            className="text-sm font-medium text-gray-500 hover:text-green-600 transition-colors"
-          >
-            ← Tillbaka till startsidan
-          </a>
-          <h1
-            className="text-2xl font-bold text-center tracking-wide"
-            style={{ color: DARK_TEXT }}
-          >
-            Naturvetenskapligt arbetssätt
-          </h1>
-          <div className="w-40" />
-        </div>
-      </header>
-
-      {/* Toggle */}
-      <div className="max-w-3xl mx-auto px-4 pt-6 pb-2">
-        <div className="flex bg-white rounded-full shadow-sm border border-gray-200 p-1 gap-1 w-fit mx-auto">
-          {VIEWS.map(v => (
-            <button
-              key={v}
-              onClick={() => setView(v)}
-              className="px-4 py-1.5 rounded-full text-sm font-semibold transition-colors"
-              style={
-                view === v
-                  ? { backgroundColor: PRIMARY, color: '#fff' }
-                  : { color: '#6b7280', backgroundColor: 'transparent' }
-              }
-            >
-              {v}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Content */}
-      <main className="max-w-3xl mx-auto px-4 py-6">
-        {view === 'Lista' && <ListView />}
-        {view === 'Flashcards' && <FlashcardsView />}
-        {view === 'Lucktext' && <LucktextView />}
-        {view === 'Scenario' && <ScenarioView />}
-        {view === 'Icke-ex.' && <IckeExempelView />}
-      </main>
-
-      {/* Footer */}
-      <footer className="text-center py-6 text-sm italic text-gray-400">
-        Källa: Naturkunskap 1a1 — Naturvetenskapligt arbetssätt
-      </footer>
-    </div>
-  );
-}
-
-function ListView() {
-  return (
-    <div className="flex flex-col gap-3">
-      {begrepp.map((b, i) => (
-        <div
-          key={i}
-          className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
-          style={{ borderLeft: `8px solid ${PRIMARY}` }}
-        >
-          <div className="px-5 py-4 flex gap-4 items-start">
-            <span
-              className="text-sm font-bold rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mt-0.5"
-              style={{ backgroundColor: LIGHT_BG, color: DARK_TEXT }}
-            >
-              {i + 1}
-            </span>
-            <div>
-              <p className="font-bold text-gray-800">{b.term}</p>
-              <p className="text-gray-500 text-sm mt-0.5">{b.def}</p>
+          {/* Toggle */}
+          <div className="max-w-3xl mx-auto px-4 pt-6 pb-2">
+            <div className="flex bg-white rounded-full shadow-sm border border-gray-200 p-1 gap-1 w-fit mx-auto">
+              {TABS.map(tab => (
+                <button
+                  key={tab}
+                  onClick={() => setView(tab)}
+                  className="px-4 py-1.5 rounded-full text-sm font-semibold transition-colors"
+                  style={
+                    view === tab
+                      ? { backgroundColor: PRIMARY, color: '#fff' }
+                      : { color: '#6b7280', backgroundColor: 'transparent' }
+                  }
+                >
+                  {tab}
+                </button>
+              ))}
             </div>
           </div>
-        </div>
-      ))}
-    </div>
-  );
-}
 
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-function FlashcardsView() {
-  const [deck, setDeck] = React.useState(() => shuffle(begrepp));
-  const [index, setIndex] = React.useState(0);
-  const [flipped, setFlipped] = React.useState(false);
-
-  function next() {
-    setFlipped(false);
-    setTimeout(() => {
-      if (index + 1 < deck.length) {
-        setIndex(i => i + 1);
-      } else {
-        const last = deck[deck.length - 1];
-        let newDeck = shuffle(begrepp);
-        if (newDeck[0].term === last.term && newDeck.length > 1) {
-          [newDeck[0], newDeck[1]] = [newDeck[1], newDeck[0]];
-        }
-        setDeck(newDeck);
-        setIndex(0);
-      }
-    }, 300);
-  }
-
-  const card = deck[index];
-
-  return (
-    <div className="flex flex-col items-center gap-6 py-4">
-      <div className="flip-card" onClick={() => setFlipped(f => !f)}>
-        <div className={`flip-card-inner${flipped ? ' flipped-classes' : ''}`}>
-          <div className="flip-card-front" style={{ backgroundColor: PRIMARY }}>
-            <p className="text-3xl font-bold text-white">{card.term}</p>
-            <p className="text-white text-sm mt-auto animate-pulse">Klicka för svar</p>
-          </div>
-          <div className="flip-card-back bg-white" style={{ border: `3px solid ${PRIMARY}` }}>
-            <p className="text-lg text-gray-700">{card.def}</p>
-            <p className="text-sm mt-auto" style={{ color: PRIMARY }}>Klicka för att vända</p>
-          </div>
-        </div>
-      </div>
-
-      <button
-        onClick={next}
-        className="bg-slate-900 text-white px-6 py-2.5 rounded-full font-semibold hover:bg-slate-700 transition-colors"
-      >
-        Nästa begrepp →
-      </button>
-
-      <span
-        className="text-sm font-semibold px-4 py-1.5 rounded-full"
-        style={{ backgroundColor: LIGHT_BG, color: DARK_TEXT }}
-      >
-        {index + 1} av {deck.length}
-      </span>
-    </div>
-  );
-}
-
-const lucktextData = [
-  { term: 'Den vetenskapliga revolutionen', sentence: 'Under ___ började europeiska forskare att använda systematiska experiment istället för att luta sig mot kyrkans lära.' },
-  { term: 'Frågeställning', sentence: 'Innan vi satte igång laborationen formulerade vi en tydlig ___ som angav exakt vad vi ville ta reda på.' },
-  { term: 'Hypotes', sentence: 'Vi formulerade en ___ om att mer ljus ger snabbare tillväxt, men vi visste inte om den stämde förrän efter experimentet.' },
-  { term: 'Testbar hypotes', sentence: 'En ___ är en sådan som faktiskt går att undersöka med mätningar och observationer.' },
-  { term: 'Falsifierbar hypotes', sentence: 'Karl Popper menade att en vetenskaplig ___ måste gå att motbevisa — annars räknas den inte som vetenskap.' },
-  { term: 'Repeterbart experiment', sentence: 'Resultaten accepterades i forskarvärlden eftersom det var ett ___ som oberoende laboratorier kunde kontrollera.' },
-  { term: 'Observationer', sentence: 'Astronomer samlar in data genom ___ eftersom de inte kan utföra experiment på stjärnor.' },
-  { term: 'Experiment', sentence: 'I ett ___ ändrar forskaren medvetet en faktor och mäter hur det påverkar resultatet.' },
-  { term: 'Simuleringar', sentence: 'Klimatforskare använder ___ för att beräkna hur temperaturen kan förändras de kommande hundra åren.' },
-  { term: 'Den vetenskapliga metoden', sentence: '___ beskriver en idealiserad ordning av steg, men i praktiken arbetar forskare sällan exakt på det sättet.' },
-  { term: 'Den hypotetisk-deduktiva metoden', sentence: 'Med ___ börjar man med en frågeställning, formulerar en hypotes och förutsägelse, genomför undersökningen och drar sedan en slutsats.' },
-  { term: 'Förutsägelse', sentence: 'Utifrån vår hypotes formulerade vi en ___: om pH-värdet stiger kommer bakterietillväxten att minska.' },
-  { term: 'Slutsats', sentence: 'I rapportens ___ tolkade vi resultaten och konstaterade att hypotesen fick stöd av mätningarna.' },
-  { term: 'Vetenskaplig teori', sentence: 'Evolutionen är en ___ — inte bara en gissning — eftersom den bygger på enorma mängder bevis från flera vetenskapsgrenar.' },
-  { term: 'Paradigmskifte', sentence: 'När forskarna accepterade att Jorden kretsar runt Solen istället för tvärtom skedde ett ___ i astronomin.' },
-  { term: 'Naturvetenskapens begränsningar', sentence: 'Frågan om vad som är moraliskt rätt i sjukvården är ett exempel på ___ — vetenskapen kan inte ge svaret.' },
-  { term: 'Forskningsetik', sentence: '___ innebär att forskning ska bedrivas objektivt och med hänsyn till dem som deltar i studierna.' },
-  { term: 'Forskningsfusk', sentence: 'Att medvetet utelämna resultat som talar emot sin hypotes är ett allvarligt exempel på ___.' },
-  { term: 'Etikprövning', sentence: 'Innan försöket fick genomföras på råttor krävdes en ___ av den ansvariga myndigheten.' },
-  { term: 'Oberoende variabel', sentence: 'I experimentet var ljusmängden ___ — det var den faktorn vi ändrade för att se vad som hände.' },
-  { term: 'Beroende variabel', sentence: 'Växtens höjd var ___ — vi mätte den för att se hur den påverkades av ljusmängden.' },
-  { term: 'Kontrollerade variabler', sentence: 'Temperatur, vattenmängd och jordmån behandlades som ___ och hölls konstanta under hela försöket.' },
-  { term: 'Störvariabler', sentence: 'Drag från ett öppet fönster var en möjlig ___ som vi försökte eliminera under laborationen.' },
-  { term: 'Kontrollgrupp', sentence: '___ fick vanligt vatten utan tillsatser och gav oss ett jämförelsevärde mot experimentgruppen.' },
-  { term: 'Experimentgrupp', sentence: '___ fick vatten med gödningsmedel för att vi skulle kunna jämföra effekten mot kontrollgruppen.' },
-  { term: 'Slumpen', sentence: 'Genom att använda 200 försökspersoner minskade vi risken för att resultatet berodde på ___.' },
-  { term: 'Blindstudie', sentence: 'I en ___ vet deltagarna inte om de tar den aktiva medicinen eller ett overksamt sockerpiller.' },
-  { term: 'Placeboeffekten', sentence: 'Patienterna som fick sockerpiller förbättrades ändå, vilket var ett tydligt exempel på ___.' },
-  { term: 'Medelvärde', sentence: 'Vi beräknade ___ av de fem mätningarna för att få ett mer tillförlitligt resultat.' },
-  { term: 'Trendlinje', sentence: 'Diagrammet visade en stigande ___ som antydde att temperaturen ökat stadigt under de senaste decennierna.' },
-  { term: 'Samvariation (korrelation)', sentence: 'Det finns en ___ mellan skostorlek och läsförmåga hos barn, men det beror på att båda ökar med åldern.' },
-  { term: 'Orsakssamband', sentence: 'Att rökning leder till lungcancer är ett bevisat ___ — rökningen är den direkta orsaken.' },
-  { term: 'Vetenskaplig rapport', sentence: 'Läraren bad oss skriva en ___ med delarna inledning, metod, resultat och diskussion.' },
-  { term: 'Riskbedömning', sentence: 'Innan laborationen med syra fyllde vi i en ___ för att identifiera vilka skyddsåtgärder som krävdes.' },
-  { term: 'Farosymboler', sentence: '___ på kemikalierna varnade oss för att produkten var frätande och att vi behövde handskar och skyddsglasögon.' },
-  { term: 'Vetenskapligt förhållningssätt', sentence: 'Ett ___ innebär att man granskar påståenden kritiskt och inte accepterar dem utan tillräckliga bevis.' },
-  { term: 'Källkritik', sentence: 'Läraren betonade vikten av ___ och uppmanade oss att alltid kontrollera vem som ligger bakom informationen.' },
-  { term: 'Källkritikens ABC', sentence: 'Med hjälp av ___ ställde vi frågor om källan var äkta, aktuell, oberoende och granskad.' },
-  { term: 'Primärkälla', sentence: 'Den vetenskapliga artikeln är en ___ eftersom den bygger på forskarnas egna experiment och data.' },
-  { term: 'Sekundärkälla', sentence: 'Wikipedia är ofta en ___ — den sammanfattar vad andra skrivit snarare än att presentera egna undersökningar.' },
-  { term: 'Tendensiös (vinklad) källa', sentence: 'Rapporten finansierad av tobaksindustrin är ett exempel på en ___ eftersom den har ett ekonomiskt intresse i resultatet.' },
-  { term: 'Peer review', sentence: 'Artikeln publicerades först efter ___ där två oberoende experter kontrollerade metod och slutsatser.' },
-  { term: 'Desinformation', sentence: 'Påhittade nyheter som sprids medvetet för att lura folk kallas ___.' },
-  { term: 'Propaganda', sentence: '___ används för att forma allmänhetens opinion och misskreditera politiska motståndare.' },
-  { term: 'Deepfakes', sentence: '___ gjorde det svårt att avgöra om videon verkligen föreställde politikern eller om den var AI-genererad.' },
-  { term: 'Konspirationsteorier', sentence: '___ om att månlandningen var regisserad saknar vetenskapligt stöd men lever kvar i vissa grupper.' },
-  { term: 'Faktaresistens', sentence: '___ innebär att en person vägrar ändra uppfattning trots att tydliga bevis talar emot dennes övertygelse.' },
-  { term: 'Ekokammare', sentence: 'På vissa forum uppstår en ___ där alla håller med varandra och kritiska röster tystas ner.' },
-  { term: 'Filterbubblor', sentence: 'Algoritmen skapade ___ som gjorde att hon bara såg nyheter som bekräftade hennes politiska åsikter.' },
-  { term: 'Bekräftelsebias', sentence: '___ fick honom att lägga mer vikt vid studier som stödde hans teori och ignorera dem som talade emot.' },
-  { term: 'Kognitiv dissonans', sentence: 'Han upplevde ___ när vetenskapliga fakta om klimatförändringar krockade med hans övertygelse om att allt var normalt.' },
-  { term: 'Pseudovetenskap', sentence: 'Astrologi är ett exempel på ___ — den låter vetenskaplig men saknar empiriskt stöd.' },
-];
-
-const scenarioData = [
-  { term: 'Den vetenskapliga revolutionen', scenario: 'Under 1500–1600-talen slutade europeiska tänkare att luta sig mot gamla skrifter och kyrkans auktoritet — istället började de undersöka naturen systematiskt med egna experiment och mätningar.' },
-  { term: 'Frågeställning', scenario: 'Inför laborationen skriver läraren på tavlan: "Hur påverkar mängden gödning växtens tillväxt under fyra veckor?" — en precis avgränsning av vad undersökningen ska besvara.' },
-  { term: 'Hypotes', scenario: 'Eleven skriver ner sin bästa gissning på vad resultatet kommer att bli — men vet ännu inte om det stämmer.' },
-  { term: 'Testbar hypotes', scenario: 'Påståendet "om temperaturen ökar med 10 °C fördubblas reaktionshastigheten" kan faktiskt undersökas i ett laboratorium med kontrollerade mätningar.' },
-  { term: 'Falsifierbar hypotes', scenario: 'Om experimentets resultat inte stämmer med påståendet kan påståendet motbevisas — den egenskapen är nödvändig för att ett påstående ska räknas som vetenskapligt.' },
-  { term: 'Repeterbart experiment', scenario: 'Tre olika laboratorier på tre olika kontinenter utförde samma försök och fick likartade resultat, vilket stärkte tilltron till slutsatserna.' },
-  { term: 'Observationer', scenario: 'Forskaren kan inte resa till planeten — hon samlar istället data med teleskop och registrerar noggrant vad hon iakttar på avstånd.' },
-  { term: 'Experiment', scenario: 'Forskaren ändrar medvetet pH-nivån i varje testkärl och mäter sedan hur algmängden svarar på den avsiktliga förändringen.' },
-  { term: 'Simuleringar', scenario: 'Med hjälp av superdatorer beräknar klimatforskare hur havsytan kan stiga fram till år 2100 — utan att kunna göra ett verkligt test på framtiden.' },
-  { term: 'Den vetenskapliga metoden', scenario: 'Läroboken beskriver forskning som ett perfekt antal steg som följs i en bestämd ordning, men i verkligheten arbetar forskare mer flexibelt och icke-linjärt.' },
-  { term: 'Den hypotetisk-deduktiva metoden', scenario: 'Forskaren börjar med ett problem, formulerar ett möjligt svar, förutspår vad som bör hända om svaret stämmer, testar det och drar en slutsats.' },
-  { term: 'Förutsägelse', scenario: '"Om vår teori stämmer bör vi se ökad puls hos alla deltagare inom 30 minuter", skriver forskaren i protokollet innan försöket startar.' },
-  { term: 'Slutsats', scenario: 'Efter att ha analyserat alla mätvärden bedömer teamet om resultaten stämde med det de förväntade sig — och om startantagandet ska behållas eller förkastas.' },
-  { term: 'Vetenskaplig teori', scenario: 'Förklaringen av hur arter förändras över tid stöds av fossil, genetik och beteendestudier från hela världen — det är långt mer än en gissning.' },
-  { term: 'Paradigmskifte', scenario: 'I hundratals år trodde alla att solen kretsade runt jorden. Sedan ersattes den gamla modellen av en ny som bättre förklarade observationerna.' },
-  { term: 'Naturvetenskapens begränsningar', scenario: 'Frågan "Är det rätt att klona människor?" kan inte besvaras av vetenskapen, oavsett hur avancerade experiment vi genomför.' },
-  { term: 'Forskningsetik', scenario: 'Innan studien på frivilliga deltagare startade granskade en oberoende kommitté planen för att säkerställa att deltagarna behandlades rättvist och med respekt.' },
-  { term: 'Forskningsfusk', scenario: 'Forskaren plockade bort de mätvärden som inte passade hennes teori och presenterade de kvarstående resultaten som om de var kompletta.' },
-  { term: 'Etikprövning', scenario: 'Laboratoriet fick inte starta sina försök på möss förrän en statlig myndighet granskat och formellt godkänt det planerade tillvägagångssättet.' },
-  { term: 'Oberoende variabel', scenario: 'Forskaren bestämmer sig för att testa tre olika doser av ett ämne — det är den faktor som hon aktivt styr och ändrar under försöket.' },
-  { term: 'Beroende variabel', scenario: 'Varje dag mäter laget blodtrycket hos alla deltagare — det är den storhet de vill se om behandlingen påverkar.' },
-  { term: 'Kontrollerade variabler', scenario: 'Alla försöksgrupper hålls i rum med exakt samma temperatur, fuktighet och ljusexponering för att inga oönskade faktorer ska skilja dem åt.' },
-  { term: 'Störvariabler', scenario: 'En otäthet i fönstret orsakade vindbyar i laboratoriet som kan ha snedvridit resultaten — en faktor som inte var tänkt att variera.' },
-  { term: 'Kontrollgrupp', scenario: 'Hälften av deltagarna fick vanligt vatten utan något tillsatt — deras resultat jämfördes sedan med de som fick behandlingen.' },
-  { term: 'Experimentgrupp', scenario: 'Den grupp deltagare som fick vitamintillskottet var de som forskarna egentligen ville studera effekten hos.' },
-  { term: 'Slumpen', scenario: 'Med bara fem testpersoner riskerar ett ovanligt resultat att snedvrida hela studien — ju fler upprepningar, desto lägre påverkan av tillfälligheter.' },
-  { term: 'Blindstudie', scenario: 'Ingen av deltagarna visste om pillret de svalde var den verkliga medicinen eller bara ett overksamt sockerpiller.' },
-  { term: 'Placeboeffekten', scenario: 'Patienten som fick ett overksamt piller utan medicin rapporterade ändå minskad smärta — enbart för att hon förväntade sig att bli bättre.' },
-  { term: 'Medelvärde', scenario: 'Forskargruppen summerade alla sju mätningar och delade summan med sju för att få ett representativt tal för hela gruppen.' },
-  { term: 'Trendlinje', scenario: 'I grafen ritade de en linje som bäst följde datapunkternas riktning, för att tydliggöra om värdena generellt ökade eller minskade över tid.' },
-  { term: 'Samvariation (korrelation)', scenario: 'Städer med fler kyrkor har också fler brott — de ökar i takt med varandra, men kyrkornas antal orsakar inte brotten.' },
-  { term: 'Orsakssamband', scenario: 'Forskning har visat att rökning direkt skadar lungvävnad och leder till cancer — det är inte bara en tillfällighet att de uppträder tillsammans.' },
-  { term: 'Vetenskaplig rapport', scenario: 'Dokumentet innehåller bakgrund, exakt hur försöket genomfördes, vad mätningarna visade och en analys av vad resultaten betyder — i en bestämd ordning.' },
-  { term: 'Riskbedömning', scenario: 'Eleverna gick igenom alla kemikalier och identifierade vilka skyddsåtgärder som behövdes — detta gjordes alltid innan det praktiska arbetet startade.' },
-  { term: 'Farosymboler', scenario: 'På etiketten satt en svart dödskalle mot orange bakgrund — en standardiserad signal om att innehållet var livsfarligt att förtära.' },
-  { term: 'Vetenskapligt förhållningssätt', scenario: 'Hon accepterar inte påståendet bara för att det låter rimligt — hon kräver bevis, granskar källorna och kontrollerar att slutsatserna är välgrundade.' },
-  { term: 'Källkritik', scenario: 'Eleven frågar sig: vem har skrivit det här, när skrevs det, varför skrevs det och på vilket underlag grundas påståendena?' },
-  { term: 'Källkritikens ABC', scenario: 'Eleven använde en checklista för att systematiskt avgöra om texten var äkta, aktuell, skriven av någon med dolt syfte och kontrollerad av oberoende granskare.' },
-  { term: 'Primärkälla', scenario: 'Artikeln bygger på forskarnas egna mätningar och observationer — inte på vad andra redan skrivit eller sammanfattat.' },
-  { term: 'Sekundärkälla', scenario: 'Tidningsartikeln sammanfattar vad ett laboratorium påstår sig ha kommit fram till — tidningen var inte med och genomförde undersökningen själv.' },
-  { term: 'Tendensiös (vinklad) källa', scenario: 'Rapporten om socker publicerades av konfektyrförbundet och lyfter enbart fram resultat som är fördelaktiga för industrin.' },
-  { term: 'Peer review', scenario: 'Innan artikeln godkändes för publicering i tidskriften granskades den av två oberoende experter inom samma forskningsområde.' },
-  { term: 'Desinformation', scenario: 'Bilderna som spreds på nätet visade att vaccinet hade skadat barnen — men bilderna var fabricerade och spreds med avsikt att lura folk.' },
-  { term: 'Propaganda', scenario: 'Statskanalen sänder program som skildrar motståndarsidan som ond och farlig, i syfte att stärka folkets stöd för landets ledning.' },
-  { term: 'Deepfakes', scenario: 'Videon verkade visa att politikern sagt saker hon aldrig uttalat — röst och rörelser var skapade med ett AI-program.' },
-  { term: 'Konspirationsteorier', scenario: 'En grupp påstår att en hemlig elit i det dolda kontrollerar världens medier och banker för att styra den globala ekonomin.' },
-  { term: 'Faktaresistens', scenario: 'Trots att nio av tio studier visade det motsatta vägrade personen att ändra sin uppfattning och hänvisade till att forskningen var köpt.' },
-  { term: 'Ekokammare', scenario: 'I gruppen bekräftade alla varandra hela tiden — ingen med ett avvikande synsätt fick utrymme, och de egna åsikterna förstärktes ständigt.' },
-  { term: 'Filterbubblor', scenario: 'Appen visade henne aldrig nyheter från partier hon inte sympatiserade med — algoritmen styrde automatiskt vad hon mötte utifrån hennes tidigare beteende.' },
-  { term: 'Bekräftelsebias', scenario: 'Han läste studien som stödde hans teori tre gånger och avfärdade snabbt den studie som visade motsatsen som bristfällig och opålitlig.' },
-  { term: 'Kognitiv dissonans', scenario: 'Hon kände ett inre obehag när vetenskapliga fakta om köttkonsumtionens klimatpåverkan krockade med hennes självbild som miljömedveten person.' },
-  { term: 'Pseudovetenskap', scenario: 'Läran påstår sig ha vetenskaplig grund men har aldrig klarat ett kontrollerat test — och avfärdar krav på bevisning som ett tecken på fördomsfullhet.' },
-];
-
-const ickeExempelData = [
-  { term: 'Den vetenskapliga revolutionen', correct: 'Galileo genomförde kontrollerade fallexperiment för att testa rörelselagar, istället för att acceptera antika auktoriteters förklaringar.', falla: 'Renässansens konstnärer lämnade medeltida stilideal och började avbilda verkligheten mer realistiskt.', explanation: 'Den vetenskapliga revolutionen handlar specifikt om övergången till systematiska naturvetenskapliga metoder — inte om konst eller kulturrörelser.' },
-  { term: 'Frågeställning', correct: '"Hur påverkar pH-värdet enzymets reaktionshastighet vid 37 °C?" styr laborationen mot ett specifikt, mätbart svar.', falla: '"Vad händer med enzymer?" är tillräckligt specifikt för att räknas som en frågeställning.', explanation: 'En frågeställning måste vara specifik och avgränsad. "Vad händer med enzymer?" är alltför vag och öppen för att vara användbar.' },
-  { term: 'Hypotes', correct: 'Eleven skriver "Jag tror att plantor som får mer ljus växer snabbare" och planerar att testa detta i ett experiment.', falla: '"Fotosyntesen ökar med ljusintensiteten" — eleven hänvisar till att det redan är vetenskapligt bevisat.', explanation: 'En hypotes är ett antagande man inte vet om det stämmer. Om det redan är bevisat är det ett faktum, inte en hypotes.' },
-  { term: 'Testbar hypotes', correct: '"Om vattentemperaturen ökar med 5 °C ökar fiskens simhastighet med minst 10 %" kan mätas i ett kontrollerat akvarium.', falla: '"Fiskar med positiv energi simmar snabbare" kan undersökas om man observerar fiskens beteende tillräckligt länge.', explanation: 'En testbar hypotes kräver mätbara, empiriska metoder. "Positiv energi" är inte mätbart och kan inte undersökas vetenskapligt.' },
-  { term: 'Falsifierbar hypotes', correct: '"Alla svanar är vita" är falsifierbar — en enda svart svan räcker för att motbevisa den.', falla: '"Det finns en osynlig kraft som påverkar allt levande men aldrig kan mätas" är falsifierbar eftersom den hänvisar till något som existerar.', explanation: 'Falsifierbarhet kräver att påståendet principiellt KAN motbevisas. Om inget ens i princip kan motbevisa det är det inte falsifierbart.' },
-  { term: 'Repeterbart experiment', correct: 'Tre oberoende forskargrupper på olika kontinenter utförde samma försök och fick liknande resultat.', falla: 'Forskaren upprepade sitt eget experiment tio gånger på samma labb och fick samma resultat varje gång.', explanation: 'Repeterbarhet innebär att ANDRA oberoende grupper kan genomföra och bekräfta resultaten — inte bara att man upprepar det själv.' },
-  { term: 'Observationer', correct: 'Astronomen registrerade noggrant planetens rörelse med teleskop under sex månader utan att ingripa.', falla: 'Biologen genomförde ett experiment där hon medvetet ändrade fågelungarnas diet och registrerade effekten.', explanation: 'Observationer innebär att man iakttar utan att aktivt förändra något. Att medvetet ändra en variabel är ett experiment.' },
-  { term: 'Experiment', correct: 'Forskaren ökade koldioxidhalten i ett slutet terrarium steg för steg och mätte växternas respons på varje förändring.', falla: 'Astronomen registrerade hur planeten rörde sig runt solen under ett år utan att göra något ingrepp.', explanation: 'I ett experiment ändrar man medvetet en variabel. Att passivt iaktta planetens rörelse är en observation.' },
-  { term: 'Simuleringar', correct: 'Klimatforskare körde en datormodell med aktuella utsläppsdata för att beräkna havsytans nivå år 2100.', falla: 'Biologer byggde ett konstgjort ekosystem i ett laboratorium och observerade hur arterna interagerade.', explanation: 'Simuleringar är datorberäkningar av framtida förlopp. Att bygga ett konstgjort ekosystem är ett laboratorieexperiment, inte en simulering.' },
-  { term: 'Den vetenskapliga metoden', correct: 'Läroboken beskriver ett idealt schema för forskning men påpekar att verkliga forskare arbetar mer flexibelt och icke-linjärt.', falla: 'Alla seriösa naturvetare måste följa exakt samma ordnade steg — annars räknas arbetet inte som vetenskap.', explanation: 'Den vetenskapliga metoden är ett idealiserat schema, inte ett obligatoriskt protokoll. Forskare arbetar på varierande sätt i praktiken.' },
-  { term: 'Den hypotetisk-deduktiva metoden', correct: 'Forskaren börjar med "Varför är sjön grön?", formulerar hypotesen om algblomning, förutsäger vad som bör gälla, mäter och drar slutsats.', falla: 'Forskaren samlar in stora mängder data och söker sedan efter mönster utan att ha en hypotes från start.', explanation: 'Den hypotetisk-deduktiva metoden börjar alltid med en hypotes som sedan testas. Att söka mönster i data utan hypotes är induktiv metod.' },
-  { term: 'Förutsägelse', correct: '"Om vår hypotes stämmer ska reaktionshastigheten halveras när temperaturen sänks 10 °C" — formulerat innan experimentet startar.', falla: '"Reaktionshastigheten halverades när vi sänkte temperaturen 10 °C" — skrivet ned efter att resultaten är klara.', explanation: 'En förutsägelse formuleras INNAN experimentet som ett påstående om vad som bör hända om hypotesen är sann.' },
-  { term: 'Slutsats', correct: 'Teamet analyserade resultaten och konstaterade att hypotesen fick stöd eftersom förutsägelsen stämde med mätvärdena.', falla: 'Forskarna presenterade rådata i tabellform och lät läsaren tolka vad de innebär för hypotesen.', explanation: 'Slutsatsen innebär att forskaren aktivt tolkar resultaten och avgör om hypotesen fick stöd eller motbevisades.' },
-  { term: 'Vetenskaplig teori', correct: 'Evolutionsteorin förklarar arternas mångfald och stöds av fossil, genetik och beteendeforskning från hela världen.', falla: 'Klimatforskarens teori om havsytans stigning är bara hennes personliga gissning tills fler experter håller med.', explanation: 'En vetenskaplig teori är en väl underbyggd förklaring med stöd av många oberoende bevis — inte en personlig gissning.' },
-  { term: 'Paradigmskifte', correct: 'Astronomer accepterade att Jorden kretsar runt Solen — en helt ny världsbild ersatte den gamla geocentriska modellen.', falla: 'En ny studie visar att ett visst läkemedel är mer effektivt än det gamla, och sjukvårdens förskrivning ändras.', explanation: 'Paradigmskifte innebär att en hel vetenskaplig grunduppfattning ersätts av en annan — inte att ett enskilt fynd uppdateras.' },
-  { term: 'Naturvetenskapens begränsningar', correct: 'Frågan "Bör vi tillåta mänsklig kloning?" kan inte besvaras av naturvetenskapen, oavsett hur avancerade experiment vi genomför.', falla: 'Naturvetenskapen kan inte förklara planeters banor eftersom rymden är för komplex för vetenskapliga metoder.', explanation: 'Naturvetenskapens begränsning gäller etiska och moraliska frågor om vad som BÖR ske — inte faktafrågor om naturen som rymdmekanik.' },
-  { term: 'Forskningsetik', correct: 'Innan studien startade granskade en oberoende kommitté om deltagarna fått tydlig information och gett sitt samtycke.', falla: 'Forskaren valde de resultat som passade bäst för att göra artikeln mer övertygande — effektiv forskning.', explanation: 'Forskningsetik handlar om att skydda deltagare och säkerställa ärlighet. Att selektivt välja resultat är forskningsfusk.' },
-  { term: 'Forskningsfusk', correct: 'Biologen utelämnade medvetet mätvärden som talade emot hennes hypotes i den publicerade rapporten.', falla: 'Forskaren valde att inte publicera ett negativt resultat eftersom det inte tillförde ny kunskap — etiskt försvarbart.', explanation: 'Att undanhålla resultat är forskningsfusk oavsett anledning. Negativa resultat är viktiga för vetenskapens integritet.' },
-  { term: 'Etikprövning', correct: 'Laboratoriet fick inte starta råttförsöken förrän en statlig myndighet granskat och formellt godkänt upplägget.', falla: 'Innan laborationen med syra fick eleverna skriva under en riskbedömning — det är etikprövning.', explanation: 'Etikprövning är myndighetsgodkännande för experiment på djur och människor, inte kemisk säkerhetsbedömning i klassrummet.' },
-  { term: 'Oberoende variabel', correct: 'Forskaren ökade salthalten i proven från 0 % till 5 % i tre steg — den faktor hon aktivt styrde och ändrade.', falla: 'Algens tillväxttakt i varje prov var den oberoende variabeln — det var den som förändrades som ett resultat.', explanation: 'Den oberoende variabeln är det FORSKAREN ändrar. Det som förändras som ett resultat av det är den beroende variabeln.' },
-  { term: 'Beroende variabel', correct: 'Växtens höjd mättes varje vecka för att se hur den påverkades av ljusmängden som experimentet manipulerade.', falla: 'Ljusmängden var den beroende variabeln eftersom den styr hur mycket växten växer.', explanation: 'Den beroende variabeln är det som mäts och påverkas. Ljusmängden som manipuleras av forskaren är den oberoende variabeln.' },
-  { term: 'Kontrollerade variabler', correct: 'Temperatur, vattenmängd och jordtyp hölls konstanta i alla grupper för att bara ljuset skulle skilja dem åt.', falla: 'Kontrollgruppen fick standardvatten utan tillsatser — det är den kontrollerade variabeln i experimentet.', explanation: 'Kontrollerade variabler är faktorer som hålls konstanta. Gruppen utan behandling kallas kontrollgrupp, inte kontrollerad variabel.' },
-  { term: 'Störvariabler', correct: 'Ett öppet fönster orsakade oväntade temperaturskillnader mellan odlingslådorna, vilket kan ha snedvridit resultaten.', falla: 'Forskaren använde en störvariabel strategiskt för att stärka sin hypotes, vilket är tillåtet om det dokumenteras.', explanation: 'Störvariabler är oönskade faktorer som hotar tillförlitligheten — de ska elimineras, aldrig utnyttjas strategiskt.' },
-  { term: 'Kontrollgrupp', correct: 'Hälften av patienterna fick sockerpiller utan verksamt ämne och gav ett jämförelsevärde mot behandlingsgruppen.', falla: 'Kontrollgruppen fick dubbel dos av läkemedlet för att säkerställa att effekten var stark nog att mäta.', explanation: 'Kontrollgruppen ska INTE utsättas för behandlingen — den ska ge ett basvärde att jämföra experimentgruppens resultat mot.' },
-  { term: 'Experimentgrupp', correct: 'Gruppen som fick gödningsmedlet var de vars resultat jämfördes mot kontrollgruppen med vanligt vatten.', falla: 'Experimentgruppen fick exakt samma behandling som kontrollgruppen för att resultaten skulle vara jämförbara.', explanation: 'Experimentgruppen utsätts för den behandling som undersöks. Om den får samma sak som kontrollgruppen kan inga slutsatser dras.' },
-  { term: 'Slumpen', correct: 'Med 500 deltagare är risken liten att ett ovanligt resultat hos några få snedvrider hela studiens slutsats.', falla: 'Slumpen elimineras helt om man planerar experimentet noggrant och väljer rätt deltagare.', explanation: 'Slumpmässiga variationer kan aldrig elimineras helt — man minskar deras påverkan genom fler upprepningar eller deltagare.' },
-  { term: 'Blindstudie', correct: 'Deltagarna visste inte om de fick aktiv medicin eller placebo under hela studien.', falla: 'Forskarna visste inte vilka deltagare som fick aktiv medicin — det är en blindstudie.', explanation: 'I en enkel blindstudie vet DELTAGARNA inte vad de får. När varken deltagare eller forskare vet kallas det dubbelblind studie.' },
-  { term: 'Placeboeffekten', correct: 'Patienter som fick sockerpiller utan medicin rapporterade ändå minskad smärta — enbart tack vare förväntningen om förbättring.', falla: 'Medicinen fungerade bättre än förväntat — placeboeffekten förstärkte dess verkan.', explanation: 'Placeboeffekten uppstår när patienten förbättras ENBART av förväntningen, utan verksam behandling — inte som ett tillägg till den.' },
-  { term: 'Medelvärde', correct: 'Teamet summerade de sju mätningarna och delade med sju för att få ett representativt värde för hela gruppen.', falla: 'Det vanligast förekommande värdet i mätserien är medelvärdet som gruppen redovisade.', explanation: 'Medelvärde är summan delat på antalet mätvärden. Det vanligaste värdet kallas typvärde (mode), inte medelvärde.' },
-  { term: 'Trendlinje', correct: 'I spridningsdiagrammet ritades en linje som sammanfattade datapunkternas generella riktning uppåt.', falla: 'Trendlinjen visar det exakta värdet vid varje mättillfälle och gör det lätt att avläsa specifika data.', explanation: 'Trendlinjen visar den övergripande tendensen — den passerar inte nödvändigtvis varje punkt utan sammanfattar mönstret.' },
-  { term: 'Samvariation (korrelation)', correct: 'I städer med fler invånare säljs mer glass och begås fler brott — de varierar i takt utan att glass orsakar brott.', falla: 'Eftersom rökning och lungcancer samvarierar vet vi att rökning orsakar lungcancer.', explanation: 'Samvariation innebär att variabler varierar tillsammans — det bevisar inte orsakssamband, vilket kräver ytterligare bevis.' },
-  { term: 'Orsakssamband', correct: 'Kontrollerade experiment har visat att rökning direkt skadar lungvävnad och leder till cancer via en tydlig mekanism.', falla: 'Eftersom fler glasskiosker öppnar på sommaren och fler drunknar på sommaren orsakar glasskioskerna drunkningarna.', explanation: 'Orsakssamband kräver att en variabel faktiskt orsakar förändringen. Samvariation räcker inte — det kan bero på en tredje faktor.' },
-  { term: 'Vetenskaplig rapport', correct: 'Dokumentet innehöll inledning, material och metod, resultat, diskussion och källförteckning i rätt ordning.', falla: 'Loggboken med dagliga anteckningar och observationer från laboratoriet är en vetenskaplig rapport.', explanation: 'En vetenskaplig rapport har en specifik standardiserad struktur. En loggbok är ett arbetsdokument, inte en vetenskaplig rapport.' },
-  { term: 'Riskbedömning', correct: 'Innan laborationen med saltsyra identifierade eleverna nödvändiga skyddsåtgärder och dokumenterade riskerna skriftligt.', falla: 'Forskaren bedömde risken för att studien skulle misslyckas och planerade om sitt upplägg — det är riskbedömning.', explanation: 'Riskbedömning i laboratoriesammanhang gäller säkerhetsrisker i det praktiska arbetet, inte risken för att forskningen misslyckas.' },
-  { term: 'Farosymboler', correct: 'På flaskans etikett satt en svart flamma mot orange bakgrund — en standardiserad varning för brandfarlig substans.', falla: 'Farosymbolen på läkemedelspaketet visar att man ska ta tabletten med mat för bästa effekt.', explanation: 'Farosymboler är standardiserade varningssymboler för farliga kemikalier — inte dosanvisningar eller brukanvisningar.' },
-  { term: 'Vetenskapligt förhållningssätt', correct: 'Hon bad om bevis innan hon accepterade påståendet, även om det kom från en respekterad professor.', falla: 'Vetenskapligt förhållningssätt innebär att man alltid litar på etablerade forskares slutsatser utan att ifrågasätta dem.', explanation: 'Vetenskapligt förhållningssätt kräver kritiskt tänkande och opartiskhet — man ska granska påståenden oavsett vem som framför dem.' },
-  { term: 'Källkritik', correct: 'Eleven kontrollerade vem som skrivit artikeln, när den publicerades och om skribenten hade dolda intressen.', falla: 'Källkritik innebär att man väljer bort alla källor som inte stöder den egna uppfattningen.', explanation: 'Källkritik handlar om att objektivt granska källors trovärdighet — inte att selektivt välja bort obekväma källor.' },
-  { term: 'Källkritikens ABC', correct: 'Eleven ställde systematiskt frågorna: Är källan äkta? Aktuell? Oberoende? Tendensiös? Och granskad av andra?', falla: 'Källkritikens ABC innebär att man alltid ska lita på källa A framför källa B och C.', explanation: 'Källkritikens ABC är en checklista med frågor om källan — inte en bokstavlig rangordning av källors värde.' },
-  { term: 'Primärkälla', correct: 'Den vetenskapliga artikeln presenterade forskarnas egna mätresultat och experiment utan mellanhänder.', falla: 'Artikeln i en populärvetenskaplig tidskrift är en primärkälla eftersom den är utgiven av en erkänd tidning.', explanation: 'En primärkälla bygger på egna data och observationer. Populärvetenskapliga tidningar sammanfattar andras forskning och är sekundärkällor.' },
-  { term: 'Sekundärkälla', correct: 'Tidningsartikeln sammanfattade vad tre laboratorier kommit fram till, utan att ha deltagit i forskningen.', falla: 'En sekundärkälla är alltid opålitlig och bör aldrig användas i vetenskaplig forskning.', explanation: 'Sekundärkällor kan vara värdefulla men är beroende av ursprungskällan. De ska värderas med det i åtanke — inte avfärdas helt.' },
-  { term: 'Tendensiös (vinklad) källa', correct: 'Rapporten om sockrets hälsorisker var finansierad av läskedrycksföretaget och lyfter enbart fram industrivänliga resultat.', falla: 'En akademiker som starkt förespråkar en teori skapar automatiskt en tendensiös källa.', explanation: 'En källa är tendensiös om den har dolda ekonomiska, politiska eller ideologiska intressen. Vetenskaplig passion gör det inte tendensiöst.' },
-  { term: 'Peer review', correct: 'Artikeln granskades av två oberoende experter i samma fält innan tidskriften accepterade den för publicering.', falla: 'Forskarens chef läste igenom rapporten och godkände den — det är peer review.', explanation: 'Peer review kräver OBEROENDE granskare utanför den egna gruppen. En chef i samma organisation är inte oberoende.' },
-  { term: 'Desinformation', correct: 'Nyheten om att vaccinet innehöll chip spreds medvetet på sociala medier trots att den var påhittad.', falla: 'Journalisten publicerade felaktig information som han trodde var sann — det är desinformation.', explanation: 'Desinformation kräver att felaktig information sprids MEDVETET för att lura. Oavsiktliga fel kallas misinformation, inte desinformation.' },
-  { term: 'Propaganda', correct: 'Statsmediet sände program som skildrade fienden som barbarisk och farlig, i syfte att stärka stödet för kriget.', falla: 'Reklamen för tandkräm överdrev produktens effekt för att sälja mer — det är propaganda.', explanation: 'Propaganda riktar sig mot politisk opinion och motståndare. Vilseledande kommersiell reklam är ett annat fenomen.' },
-  { term: 'Deepfakes', correct: 'Videon tycktes visa att politikern sagt saker hon aldrig uttalat — röst och ansiktsrörelser var AI-genererade.', falla: 'Fotomontaget som klistrade in en persons ansikte på en annans kropp med bildbehandling är ett deepfake.', explanation: 'Deepfakes skapas med AI och maskininlärning för att generera realistiska rörliga bilder och ljud — enkla fotomontage räknas inte.' },
-  { term: 'Konspirationsteorier', correct: 'En grupp påstår att en hemlig elit kontrollerar världens medier och banker för dolda syften som aldrig kan bevisas.', falla: 'Misstanken om att ett läkemedelsföretag undanhöll negativa studieresultat är en konspirationsteori.', explanation: 'Konspirationsteorier handlar om hemliga sammansvärjningar för dolda mål. Undersökbara misstankar om missförhållanden är inte automatiskt konspirationsteorier.' },
-  { term: 'Faktaresistens', correct: 'Trots att tio oberoende studier visade det motsatta vägrade personen ändra sin ståndpunkt om vacciner.', falla: 'Forskaren accepterade inte en ny studie förrän den replikerats av oberoende grupper — det är faktaresistens.', explanation: 'Faktaresistens innebär att man avvisar överväldigande bevisning av psykologiska skäl. Att kräva replikering är sund vetenskaplig skepsis.' },
-  { term: 'Ekokammare', correct: 'I gruppen bekräftade alla varandra ständigt och röster med avvikande åsikter sorterades snabbt bort.', falla: 'Forskargruppen samarbetade intensivt inom sin specialitet och delade bara resultat med varandra — en ekokammare av experter.', explanation: 'Ekokammare handlar om åsiktsbekräftelse och uteslutning av kritik. Att experter samarbetar inom ett fält är normalt vetenskapligt samarbete.' },
-  { term: 'Filterbubblor', correct: 'Algoritmen visade henne aldrig nyheter från partier hon inte sympatiserade med, baserat på hennes tidigare klick.', falla: 'Eleven valde att bara läsa nyhetssajter hon gillade — det skapade en filterbubbla.', explanation: 'Filterbubblor skapas av algoritmer baserade på beteendedata. Att själv medvetet välja informationskällor är ett aktivt val, inte en filterbubbla.' },
-  { term: 'Bekräftelsebias', correct: 'Han lade stor vikt vid studier som stödde hans teori och avfärdade snabbt de som talade emot som metodologiskt bristfälliga.', falla: 'Bekräftelsebias uppstår när en forskare medvetet fabricerar resultat för att bekräfta sin hypotes.', explanation: 'Bekräftelsebias är en omedveten kognitiv tendens att favorisera bekräftande information. Medveten fabricering är forskningsfusk.' },
-  { term: 'Kognitiv dissonans', correct: 'Hon kände starkt inre obehag när fakta om köttkonsumtionens miljöpåverkan krockade med hennes självbild som miljömedveten.', falla: 'Kognitiv dissonans uppstår när man vet att man gjort fel och skäms för det — ett etiskt problem.', explanation: 'Kognitiv dissonans är psykologisk spänning när motstridiga fakta krockar med övertygelser — inte enbart skuld eller skam.' },
-  { term: 'Pseudovetenskap', correct: 'Astrologin påstår sig förutsäga personlighetsdrag baserat på stjärnornas position, men klarar aldrig kontrollerade tester.', falla: 'En ny medicinsk behandling som ännu inte bevisats i kliniska studier räknas som pseudovetenskap.', explanation: 'Pseudovetenskap gör anspråk på vetenskaplig status men klarar aldrig kontrollerade tester. En obevisad behandling är obevisad, inte nödvändigtvis pseudovetenskap.' },
-];
-
-function IckeExempelView() {
-  const buildQuestions = () =>
-    shuffle(ickeExempelData).map(item => {
-      const correctIsA = Math.random() < 0.5;
-      return {
-        ...item,
-        optionA: correctIsA ? item.correct : item.falla,
-        optionB: correctIsA ? item.falla : item.correct,
-        correctOption: correctIsA ? 'A' : 'B',
-      };
-    });
-
-  const [questions, setQuestions] = React.useState(buildQuestions);
-  const [current, setCurrent] = React.useState(0);
-  const [score, setScore] = React.useState(0);
-  const [selected, setSelected] = React.useState(null);
-  const [done, setDone] = React.useState(false);
-
-  const q = questions[current];
-
-  const handleSelect = (option) => {
-    if (selected !== null) return;
-    setSelected(option);
-    if (option === q.correctOption) setScore(s => s + 1);
-  };
-
-  const next = () => {
-    if (current + 1 >= questions.length) {
-      setDone(true);
-    } else {
-      setCurrent(c => c + 1);
-      setSelected(null);
-    }
-  };
-
-  const restart = () => {
-    setQuestions(buildQuestions());
-    setCurrent(0);
-    setScore(0);
-    setSelected(null);
-    setDone(false);
-  };
-
-  const grade = (s) => {
-    const pct = s / questions.length;
-    if (pct === 1) return 'Perfekt! Du kan skilja rätt tillämpning från fällan på alla begrepp!';
-    if (pct >= 0.8) return 'Bra jobbat! Du behärskar de flesta begreppen.';
-    if (pct >= 0.6) return 'Godkänt — öva lite till på de du missade.';
-    return 'Fortsätt öva — varje runda stärker din förståelse!';
-  };
-
-  if (done) return (
-    <div className="flex flex-col items-center gap-6">
-      <div className="bg-white border-2 rounded-3xl p-8 text-center w-full max-w-sm shadow-sm" style={{ borderColor: PRIMARY }}>
-        <div className="text-5xl mb-4">🎯</div>
-        <p className="text-3xl font-bold mb-2" style={{ color: DARK_TEXT }}>{score} / {questions.length}</p>
-        <p className="text-gray-600 mb-6">{grade(score)}</p>
-        <button onClick={restart} className="w-full text-white px-8 py-3 rounded-2xl font-bold" style={{ backgroundColor: PRIMARY }}>
-          Börja om
-        </button>
-      </div>
-    </div>
-  );
-
-  const getOptionStyle = (option) => {
-    if (selected === null) return { border: '2px solid #e5e7eb', background: '#fff', color: '#1f2937' };
-    if (option === q.correctOption) return { border: '2px solid #16a34a', background: '#f0fdf4', color: '#14532d' };
-    if (option === selected) return { border: '2px solid #dc2626', background: '#fef2f2', color: '#7f1d1d' };
-    return { border: '2px solid #e5e7eb', background: '#f9fafb', color: '#9ca3af' };
-  };
-
-  return (
-    <div className="flex flex-col gap-5 max-w-2xl mx-auto">
-      <div className="flex items-center justify-between text-sm font-medium text-gray-500">
-        <span>Begrepp {current + 1} av {questions.length}</span>
-        <span className="px-3 py-1 rounded-full" style={{ backgroundColor: LIGHT_BG, color: DARK_TEXT }}>{score} rätt</span>
-      </div>
-      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-        <div className="h-full rounded-full transition-all" style={{ width: `${(current / questions.length) * 100}%`, backgroundColor: PRIMARY }} />
-      </div>
-
-      <div className="bg-white rounded-2xl shadow-sm p-6" style={{ borderLeft: `6px solid ${PRIMARY}` }}>
-        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Vilket alternativ stämmer?</p>
-        <p className="text-2xl font-bold" style={{ color: DARK_TEXT }}>{q.term}</p>
-      </div>
-
-      <div className="flex flex-col gap-3">
-        {['A', 'B'].map(opt => (
-          <button
-            key={opt}
-            onClick={() => handleSelect(opt)}
-            disabled={selected !== null}
-            className="rounded-xl px-5 py-4 text-left font-medium transition-all hover:shadow-sm disabled:cursor-default"
-            style={getOptionStyle(opt)}
-          >
-            <span className="font-bold mr-2">{opt}.</span>
-            {opt === 'A' ? q.optionA : q.optionB}
-          </button>
-        ))}
-      </div>
-
-      {selected !== null && (
-        <div className="flex flex-col gap-3 items-center">
-          <div className={`w-full rounded-xl px-4 py-3 ${selected === q.correctOption ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
-            <p className={`font-semibold mb-1 ${selected === q.correctOption ? 'text-green-700' : 'text-red-700'}`}>
-              {selected === q.correctOption ? '✓ Rätt!' : '✗ Fel — rätt alternativ var ' + q.correctOption + '.'}
-            </p>
-            <p className="text-gray-700 text-sm">{q.explanation}</p>
-          </div>
-          <button
-            onClick={next}
-            className="text-white px-8 py-3 rounded-2xl font-bold"
-            style={{ backgroundColor: PRIMARY }}
-          >
-            {current + 1 >= questions.length ? 'Se resultat' : 'Nästa begrepp →'}
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function ScenarioView() {
-  const allTerms = scenarioData.map(d => d.term);
-
-  const buildQuestions = () =>
-    shuffle(scenarioData).map(item => ({
-      ...item,
-      options: shuffle([item.term, ...shuffle(allTerms.filter(t => t !== item.term)).slice(0, 3)]),
-    }));
-
-  const [questions, setQuestions] = React.useState(buildQuestions);
-  const [current, setCurrent] = React.useState(0);
-  const [score, setScore] = React.useState(0);
-  const [selected, setSelected] = React.useState(null);
-  const [done, setDone] = React.useState(false);
-
-  const q = questions[current];
-
-  const handleAnswer = (term) => {
-    if (selected !== null) return;
-    setSelected(term);
-    if (term === q.term) setScore(s => s + 1);
-  };
-
-  const next = () => {
-    if (current + 1 >= questions.length) {
-      setDone(true);
-    } else {
-      setCurrent(c => c + 1);
-      setSelected(null);
-    }
-  };
-
-  const restart = () => {
-    setQuestions(buildQuestions());
-    setCurrent(0);
-    setScore(0);
-    setSelected(null);
-    setDone(false);
-  };
-
-  const grade = (s) => {
-    const pct = s / questions.length;
-    if (pct === 1) return 'Perfekt! Du känner igen alla begrepp i deras sammanhang!';
-    if (pct >= 0.8) return 'Bra jobbat! Du behärskar de flesta scenarier.';
-    if (pct >= 0.6) return 'Godkänt — öva lite till på de du missade.';
-    return 'Fortsätt öva — varje runda stärker din förståelse!';
-  };
-
-  if (done) return (
-    <div className="flex flex-col items-center gap-6">
-      <div className="bg-white border-2 rounded-3xl p-8 text-center w-full max-w-sm shadow-sm" style={{ borderColor: PRIMARY }}>
-        <div className="text-5xl mb-4">🎯</div>
-        <p className="text-3xl font-bold mb-2" style={{ color: DARK_TEXT }}>{score} / {questions.length}</p>
-        <p className="text-gray-600 mb-6">{grade(score)}</p>
-        <button onClick={restart} className="w-full text-white px-8 py-3 rounded-2xl font-bold" style={{ backgroundColor: PRIMARY }}>
-          Börja om
-        </button>
-      </div>
-    </div>
-  );
-
-  return (
-    <div className="flex flex-col gap-5 max-w-2xl mx-auto">
-      <div className="flex items-center justify-between text-sm font-medium text-gray-500">
-        <span>Scenario {current + 1} av {questions.length}</span>
-        <span className="px-3 py-1 rounded-full" style={{ backgroundColor: LIGHT_BG, color: DARK_TEXT }}>{score} rätt</span>
-      </div>
-      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-        <div className="h-full rounded-full transition-all" style={{ width: `${(current / questions.length) * 100}%`, backgroundColor: PRIMARY }} />
-      </div>
-
-      <div className="bg-white rounded-2xl shadow-sm p-6" style={{ borderLeft: `6px solid ${PRIMARY}` }}>
-        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Vilket begrepp beskrivs?</p>
-        <p className="text-gray-800 text-lg leading-relaxed">{q.scenario}</p>
-      </div>
-
-      <div className="flex flex-col gap-3">
-        {q.options.map((opt, i) => {
-          let style = { border: '2px solid #e5e7eb', background: '#fff', color: '#1f2937' };
-          if (selected !== null) {
-            if (opt === q.term) style = { border: '2px solid #16a34a', background: '#f0fdf4', color: '#14532d' };
-            else if (opt === selected) style = { border: '2px solid #dc2626', background: '#fef2f2', color: '#7f1d1d' };
-            else style = { border: '2px solid #e5e7eb', background: '#f9fafb', color: '#9ca3af' };
-          }
-          return (
-            <button
-              key={i}
-              onClick={() => handleAnswer(opt)}
-              disabled={selected !== null}
-              className="rounded-xl px-5 py-3 text-left font-semibold transition-all hover:shadow-sm disabled:cursor-default"
-              style={style}
-            >
-              {opt}
-            </button>
-          );
-        })}
-      </div>
-
-      {selected !== null && (
-        <div className="flex flex-col gap-3 items-center">
-          {selected === q.term
-            ? <p className="font-semibold text-green-700">✓ Rätt!</p>
-            : <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-center w-full">
-                <p className="text-red-700 font-semibold">✗ Fel — rätt svar: <span className="underline">{q.term}</span></p>
+          {/* Content */}
+          <main className="max-w-3xl mx-auto px-4 py-6">
+            {view === 'Lista' && (
+              <div className="flex flex-col gap-3">
+                {concepts.map(c => (
+                  <div
+                    key={c.id}
+                    className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
+                    style={{ borderLeft: `8px solid ${PRIMARY}` }}
+                  >
+                    <div className="px-5 py-4 flex gap-4 items-start">
+                      <span
+                        className="text-sm font-bold rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mt-0.5"
+                        style={{ backgroundColor: PRIMARY_LIGHT, color: PRIMARY_TEXT }}
+                      >
+                        {c.id}
+                      </span>
+                      <div>
+                        <p className="font-bold text-gray-800">{c.term}</p>
+                        <p className="text-gray-500 text-sm mt-0.5">{c.def}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-          }
-          <button
-            onClick={next}
-            className="text-white px-8 py-3 rounded-2xl font-bold"
-            style={{ backgroundColor: PRIMARY }}
-          >
-            {current + 1 >= questions.length ? 'Se resultat' : 'Nästa scenario →'}
-          </button>
+            )}
+
+            {view !== 'Lista' && (
+              <div className="text-center py-24 text-gray-400 text-lg italic">
+                Kommer snart…
+              </div>
+            )}
+          </main>
+
+          {/* Footer */}
+          <footer className="text-center py-6 text-sm italic text-gray-400">
+            Källa: Naturkunskap 1a1 — Naturvetenskapligt arbetssätt
+          </footer>
         </div>
-      )}
-    </div>
-  );
-}
-
-function LucktextView() {
-  const initStates = () => lucktextData.map(() => ({ input: '', status: 'idle' }));
-  const [states, setStates] = React.useState(initStates);
-  const [finished, setFinished] = React.useState(false);
-
-  const correctCount = states.filter(s => s.status === 'correct').length;
-
-  React.useEffect(() => {
-    if (states.length > 0 && states.every(s => s.status === 'correct' || s.status === 'revealed')) {
-      setFinished(true);
+      );
     }
-  }, [states]);
 
-  function updateState(i, patch) {
-    setStates(prev => {
-      const next = [...prev];
-      next[i] = { ...next[i], ...patch };
-      return next;
-    });
-  }
-
-  function handleSubmit(i) {
-    const s = states[i];
-    if (s.status === 'correct' || s.status === 'revealed') return;
-    const answer = s.input.trim();
-    const term = lucktextData[i].term;
-    if (answer.toLowerCase() === term.toLowerCase()) {
-      updateState(i, { status: 'correct' });
-    } else if (s.status === 'idle') {
-      updateState(i, { status: 'warn' });
-    } else {
-      updateState(i, { status: 'error' });
-    }
-  }
-
-  function rattaAlla() {
-    setStates(prev => prev.map(s =>
-      s.status === 'correct' ? s : { ...s, status: 'revealed' }
-    ));
-    setFinished(true);
-  }
-
-  function borjaOm() {
-    setStates(initStates());
-    setFinished(false);
-  }
-
-  function grade() {
-    const pct = correctCount / lucktextData.length;
-    if (pct === 1) return 'Perfekt! Du kan alla begreppen!';
-    if (pct >= 0.8) return 'Bra jobbat! Öva lite till på de du missade.';
-    if (pct >= 0.6) return 'Godkänt — fortsätt öva så sitter det snart!';
-    return 'Fortsätt öva — du lär dig mer för varje gång!';
-  }
-
-  return (
-    <div className="flex flex-col gap-5">
-      {/* Begreppsbank */}
-      <div className="bg-white rounded-xl shadow-sm p-4">
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Begreppsbank</p>
-        <div className="flex flex-wrap gap-2">
-          {lucktextData.map((item, i) => (
-            <span
-              key={i}
-              className="text-sm px-2 py-0.5 rounded-full transition-all"
-              style={{
-                backgroundColor: states[i].status === 'correct' ? LIGHT_BG : '#f3f4f6',
-                color: states[i].status === 'correct' ? DARK_TEXT : '#9ca3af',
-                textDecoration: states[i].status === 'correct' ? 'line-through' : 'none',
-              }}
-            >
-              {item.term}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* Meningar */}
-      {lucktextData.map((item, i) => {
-        const st = states[i];
-        const parts = item.sentence.split('___');
-        const def = begrepp.find(b => b.term === item.term)?.def ?? '';
-
-        let borderColor = '#e5e7eb';
-        if (st.status === 'correct') borderColor = '#16a34a';
-        else if (st.status === 'revealed') borderColor = '#dc2626';
-        else if (st.status === 'warn') borderColor = '#f97316';
-        else if (st.status === 'error') borderColor = '#dc2626';
-
-        return (
-          <div
-            key={i}
-            className="bg-white rounded-xl shadow-sm px-5 py-4"
-            style={{ border: `2px solid ${borderColor}` }}
-          >
-            <p className="text-gray-700 leading-relaxed">
-              {parts[0]}
-              {st.status === 'correct' && (
-                <strong style={{ color: '#16a34a' }}>{item.term}</strong>
-              )}
-              {st.status === 'revealed' && (
-                <strong style={{ color: '#dc2626' }}>{item.term}</strong>
-              )}
-              {st.status !== 'correct' && st.status !== 'revealed' && (
-                <input
-                  type="text"
-                  value={st.input}
-                  onChange={e => updateState(i, { input: e.target.value })}
-                  onKeyDown={e => e.key === 'Enter' && handleSubmit(i)}
-                  className="border-b-2 border-gray-300 focus:border-green-500 outline-none px-1 mx-1 text-gray-800 font-semibold bg-transparent"
-                  style={{ width: `${Math.max(item.term.length * 0.65, 8)}em` }}
-                  placeholder="..."
-                />
-              )}
-              {parts[1]}
-            </p>
-
-            {st.status === 'warn' && (
-              <p className="text-sm font-semibold mt-2" style={{ color: '#f97316' }}>
-                Är du säker att du stavat rätt?
-              </p>
-            )}
-            {st.status === 'error' && (
-              <p className="text-sm font-semibold mt-2 text-red-600">
-                Fel svar — fortsätt försöka eller tryck "Rätta alla".
-              </p>
-            )}
-            {st.status === 'correct' && (
-              <p className="text-sm text-gray-500 mt-2">✓ {def}</p>
-            )}
-            {st.status === 'revealed' && (
-              <p className="text-sm text-gray-500 mt-2">{def}</p>
-            )}
-          </div>
-        );
-      })}
-
-      {!finished && (
-        <button
-          onClick={rattaAlla}
-          className="mx-auto px-6 py-2.5 rounded-full font-semibold text-white bg-slate-900 hover:bg-slate-700 transition-colors"
-        >
-          Rätta alla
-        </button>
-      )}
-
-      {finished && (
-        <div className="bg-white rounded-xl shadow-sm p-6 text-center">
-          <p className="text-4xl font-bold mb-2" style={{ color: DARK_TEXT }}>
-            {correctCount} / {lucktextData.length} rätt
-          </p>
-          <p className="text-gray-600 mb-5">{grade()}</p>
-          <button
-            onClick={borjaOm}
-            className="px-6 py-2.5 rounded-full font-semibold text-white"
-            style={{ backgroundColor: PRIMARY }}
-          >
-            Börja om
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-</script>
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
 </body>
 </html>
