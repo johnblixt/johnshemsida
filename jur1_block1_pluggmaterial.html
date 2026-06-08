@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pluggmaterial – Juridik 1 Block 1: Den konstitutionella rätten</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'EB Garamond', serif; font-size: 1.1rem; }
+        .prose { line-height: 1.9; }
+        .prose h2 {
+            font-size: 1.45rem;
+            font-weight: 700;
+            font-style: italic;
+            color: #1e293b;
+            margin-top: 2.2rem;
+            margin-bottom: 0.5rem;
+            padding-left: 0.75rem;
+            border-left: 4px solid #0d9488;
+        }
+        .prose h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #334155;
+            margin-top: 1.5rem;
+            margin-bottom: 0.3rem;
+        }
+        .prose p {
+            color: #334155;
+            margin-bottom: 0.85rem;
+        }
+        .prose ul {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 1rem;
+        }
+        .prose ul li {
+            color: #334155;
+            padding: 0.25rem 0 0.25rem 1.5rem;
+            position: relative;
+        }
+        .prose ul li::before {
+            content: '→';
+            color: #0d9488;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        .faktaruta {
+            background: #f0fdfa;
+            border-left: 4px solid #0d9488;
+            padding: 1rem 1.2rem;
+            border-radius: 0 0.75rem 0.75rem 0;
+            margin: 1.2rem 0;
+        }
+        .faktaruta p { margin: 0; color: #134e4a; }
+        .begrepp-rad {
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+            margin-bottom: 0.9rem;
+        }
+        .begrepp-badge {
+            background: #f0fdfa;
+            color: #134e4a;
+            font-weight: 900;
+            font-size: 0.8rem;
+            padding: 0.15rem 0.6rem;
+            border-radius: 999px;
+            flex-shrink: 0;
+            margin-top: 0.2rem;
+            border: 1px solid #0d9488;
+        }
+        .begrepp-rad p { margin: 0; color: #334155; }
+        .hierarki-box {
+            border: 2px solid #0d9488;
+            border-radius: 1rem;
+            overflow: hidden;
+            margin: 1.2rem 0;
+        }
+        .hierarki-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .hierarki-row:last-child { border-bottom: none; }
+        .hierarki-num {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .lagrum-block {
+            background: #f8fafc;
+            border: 2px solid #0d9488;
+            border-radius: 1rem;
+            padding: 1.2rem 1.5rem;
+            margin: 1rem 0;
+        }
+        .lagrum-ref {
+            font-size: 0.72rem;
+            font-weight: 900;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #0d9488;
+            display: block;
+            margin-bottom: 0.4rem;
+        }
+        .lagrum-text {
+            color: #1e293b;
+            font-style: italic;
+            margin: 0;
+            line-height: 1.8;
+        }
+        .lagrum-sublist {
+            margin: 0.5rem 0 0 1rem;
+            list-style: none;
+            padding: 0;
+        }
+        .lagrum-sublist li {
+            color: #1e293b;
+            font-style: italic;
+            padding: 0.15rem 0;
+            line-height: 1.7;
+        }
+        .lagrum-sublist li::before {
+            content: none;
+        }
+        .exempel-box {
+            background: #fff;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: 1.2rem 1.5rem;
+            margin: 1rem 0;
+        }
+        .exempel-tag {
+            font-size: 0.72rem;
+            font-weight: 900;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #0d9488;
+            border: 1px solid #0d9488;
+            padding: 0.1rem 0.55rem;
+            border-radius: 999px;
+            display: inline-block;
+            margin-bottom: 0.6rem;
+        }
+        .rattfall-box {
+            background: #fefce8;
+            border: 1.5px solid #ca8a04;
+            border-radius: 1rem;
+            padding: 1.2rem 1.5rem;
+            margin: 1rem 0;
+        }
+        .rattfall-tag {
+            font-size: 0.72rem;
+            font-weight: 900;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #92400e;
+            border: 1px solid #ca8a04;
+            padding: 0.1rem 0.55rem;
+            border-radius: 999px;
+            display: inline-block;
+            margin-bottom: 0.6rem;
+        }
+        .avdelare {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 2.5rem 0;
+        }
+        .avdelare-linje { flex: 1; border-top: 2px dashed #e2e8f0; }
+        .avdelare-text {
+            font-size: 0.7rem;
+            font-weight: 900;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: #94a3b8;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+<div class="max-w-2xl mx-auto px-6 py-10">
+
+    <!-- Tillbaka-knapp -->
+    <div class="flex items-center justify-between mb-8">
+        <a href="index.html" class="text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">← Tillbaka till startsidan</a>
+        <div></div>
+    </div>
+
+    <!-- Rubrik -->
+    <div class="border-l-4 pl-4 mb-10" style="border-color: #0d9488;">
+        <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Juridik 1 · Block 1</p>
+        <h1 class="text-3xl md:text-4xl font-bold italic text-slate-900">Den konstitutionella rätten</h1>
+    </div>
+
+    <div class="prose">
+
+        <!-- ========== SEKTION 1: INTRODUKTION ========== -->
+
+        <p>Block 1 handlar om <strong>konstitutionell rätt</strong> – de grundläggande reglerna för hur Sverige styrs. Du lär dig om rättsordningens uppbyggnad, de fyra grundlagarna, hur statsmakten är uppdelad, medborgarnas fri- och rättigheter samt hur lagar stiftas och hur domstolarna fungerar.</p>
+
+        <div class="faktaruta">
+            <p><strong>Konstitutionell rätt</strong> innefattar dels hur lagar blir till, dels fri- och rättigheter för landets medborgare samt hur den offentliga makten kontrolleras. Till stor del regleras detta av Sveriges fyra grundlagar.</p>
+        </div>
+
+        <div class="avdelare">
+            <div class="avdelare-linje"></div>
+            <span class="avdelare-text">Sammanfattning per avsnitt</span>
+            <div class="avdelare-linje"></div>
+        </div>
+
+        <!-- ========== SEKTION 2: SAMMANFATTNING PER AVSNITT ========== -->
+
+        <!-- 2.1 Rättssäkerhet & rättsstat -->
+        <h2>Rättssäkerhet och rättsstat</h2>
+        <p>Sverige är en <strong>demokrati</strong> – ett samhällssystem där medborgarna kan påverka hur landet styrs genom regelbundna val. En central princip är att alla människor är lika mycket värda och ska ha samma rättigheter.</p>
+        <p>I demokratin råder <strong>rättstrygghet</strong> och <strong>rättssäkerhet</strong>. Rättstrygghet innebär en visshet om att rättsväsendet tillgodoser medborgarnas rättigheter. Rättssäkerhet innebär att lagar och regler är formulerade så att konsekvensen av en handling går att förutse på förhand.</p>
+        <p>En <strong>rättsstat</strong> är en stat där rättssäkerhet råder, med självständiga domstolar och frihet från godtycke. I en rättsstat gäller principen att en person är <em>oskyldig tills motsatsen har bevisats</em>. Domstolar kan inte döma någon på godtycklig grund – handlingen måste vara beskriven i lag.</p>
+
+        <div class="faktaruta">
+            <p><strong>Skillnaden:</strong> Rättssäkerhet = förutsägbara lagar, du vet i förväg vad konsekvenserna av ditt handlande blir. Rättstrygghet = tillit till att rättsväsendet faktiskt skyddar dig. Båda krävs i en rättsstat.</p>
+        </div>
+
+        <!-- 2.2 Rättsordningen & normhierarkin -->
+        <h2>Rättsordningen och normhierarkin</h2>
+        <p>För att ett samhälle ska fungera behövs ett <strong>rättssystem</strong> bestående av lagar och regler som medborgarna är skyldiga att följa – så kallade <strong>rättsregler</strong>. Om någon bryter mot en rättsregel kan personen drabbas av en <strong>sanktion</strong> (straff), till exempel böter eller fängelse.</p>
+        <p>Systemet med rättsregler kallas <strong>rättsordningen</strong> och består av grundlagar, lagar, förordningar och föreskrifter. Rättsreglerna har olika dignitet – denna ordning kallas <strong>normhierarkin</strong>. En rättsregel får inte strida mot en regel högre upp. En lag får till exempel inte strida mot grundlagarna.</p>
+
+        <div class="hierarki-box">
+            <div class="hierarki-row" style="background: #f0fdfa;">
+                <div class="hierarki-num" style="background: #0d9488; color: white;">1</div>
+                <div>
+                    <p class="font-bold text-slate-800" style="margin:0;">Grundlagar</p>
+                    <p class="text-sm text-slate-500" style="margin:0;">Svårast att ändra. Starkast rang. (RF 8 kap. 14 §)</p>
+                </div>
+            </div>
+            <div class="hierarki-row">
+                <div class="hierarki-num" style="background: #ccfbf1; color: #134e4a;">2</div>
+                <div>
+                    <p class="font-bold text-slate-800" style="margin:0;">Riksdagsordningen</p>
+                    <p class="text-sm text-slate-500" style="margin:0;">Mellanting – starkare än vanlig lag, men inte grundlag. (RF 8 kap. 17 §)</p>
+                </div>
+            </div>
+            <div class="hierarki-row">
+                <div class="hierarki-num" style="background: #e2e8f0; color: #475569;">3</div>
+                <div>
+                    <p class="font-bold text-slate-800" style="margin:0;">Lagar</p>
+                    <p class="text-sm text-slate-500" style="margin:0;">Stiftas av riksdagen. Kallas också författningar.</p>
+                </div>
+            </div>
+            <div class="hierarki-row">
+                <div class="hierarki-num" style="background: #f1f5f9; color: #64748b;">4</div>
+                <div>
+                    <p class="font-bold text-slate-800" style="margin:0;">Förordningar</p>
+                    <p class="text-sm text-slate-500" style="margin:0;">Beslutas av regeringen. (RF 8 kap. 7 §)</p>
+                </div>
+            </div>
+            <div class="hierarki-row">
+                <div class="hierarki-num" style="background: #f8fafc; color: #94a3b8;">5</div>
+                <div>
+                    <p class="font-bold text-slate-800" style="margin:0;">Föreskrifter</p>
+                    <p class="text-sm text-slate-500" style="margin:0;">Utfärdas av myndigheter, kommuner och regioner enligt bemyndigande.</p>
+                </div>
+            </div>
+        </div>
+
+        <p>Lagar och förordningar kallas tillsammans för <strong>författningar</strong>. Föreskrifter kan vara anvisningar från myndigheter eller lokala ordningsregler beslutade av kommunfullmäktige.</p>
+
+        <!-- 2.3 De fyra grundlagarna -->
+        <h2>De fyra grundlagarna</h2>
+        <p>Sverige har fyra grundlagar som samlar de grundläggande reglerna för hur politiska beslut ska fattas. Grundlagarnas uppgift är att skapa stabilitet och beskriva de grundläggande värderingar Sverige bygger på.</p>
+
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">RF</span>
+                <p><strong>Regeringsformen</strong> – den viktigaste grundlagen. Reglerar statsskicket och medborgarnas fri- och rättigheter.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">SO</span>
+                <p><strong>Successionsordningen</strong> – reglerar vem som kan bli Sveriges statschef (arvsrätten till tronen). Sverige är en monarki.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">TF</span>
+                <p><strong>Tryckfrihetsförordningen</strong> – ger rätt att uttrycka tankar och åsikter i tryckta skrifter. Reglerar också offentlighetsprincipen och allmänna handlingar.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">YGL</span>
+                <p><strong>Yttrandefrihetsgrundlagen</strong> – den yngsta grundlagen (1990-talet). Reglerar yttrandefriheten i radio, tv och nätbaserade medier.</p>
+            </div>
+        </div>
+
+        <p>Dessutom finns <strong>riksdagsordningen (RO)</strong> som reglerar riksdagens arbete. Den är inte en grundlag men har högre rang än en vanlig lag – ett mellanting.</p>
+
+        <div class="faktaruta">
+            <p><strong>Skydd mot snabba ändringar:</strong> En grundlag kan bara ändras om riksdagen fattar två likalydande beslut med ett riksdagsval emellan. Det tar alltså minst ett år att ändra en grundlag. Det är med vilje – en tillfällig politisk majoritet ska inte kunna radera grundläggande rättigheter.</p>
+        </div>
+
+        <!-- 2.4 Statsskick & maktdelning -->
+        <h2>Statsskick och maktdelning</h2>
+        <p>Sverige har ett <strong>representativt</strong> och <strong>parlamentariskt</strong> styrelseskick. Representativt innebär att de 349 riksdagsledamöterna är folkvalda representanter – vi har en <strong>folkrepresentation</strong>. Parlamentarism innebär att regeringen måste ha riksdagens förtroende.</p>
+        <p>Den offentliga makten i Sverige är uppdelad på tre institutioner:</p>
+
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Riksdagen</span>
+                <p><strong>Den lagstiftande makten.</strong> Riksdagen stiftar lag, beslutar om skatt och bestämmer hur statens medel ska användas. Riksdagen granskar också regeringen. (RF 1:4)</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Regeringen</span>
+                <p><strong>Den verkställande makten.</strong> Regeringen styr riket och är ansvarig inför riksdagen. Den förverkligar riksdagens lagar och kan utfärda förordningar med riksdagens bemyndigande. (RF 1:6)</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Domstolarna</span>
+                <p><strong>Den dömande makten.</strong> Domstolarna avgör mål och är helt oberoende från riksdag och regering. (RF 1:8)</p>
+            </div>
+        </div>
+
+        <p>Myndigheter och domstolar ska följa <strong>likhetsprincipen</strong> – alla ska behandlas lika oavsett nationalitet, utbildning eller inkomst. De ska också följa <strong>objektivitetsprincipen</strong> – vara sakliga och opartiska. (RF 1:9)</p>
+
+        <p>Demokratin kontrolleras av <strong>kontrollfunktionerna</strong>: Justitieombudsmannen (JO), Justitiekanslern (JK), Riksrevisionen och konstitutionsutskottet (KU).</p>
+
+        <!-- 2.5 Fri- och rättigheter -->
+        <h2>Grundläggande fri- och rättigheter</h2>
+        <p>I regeringsformens 2 kapitel 1 § finns sex grundlagsskyddade friheter som var och en är tillförsäkrad gentemot det allmänna (staten):</p>
+
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">1</span>
+                <p><strong>Yttrandefrihet</strong> – frihet att i tal, skrift eller bild eller på annat sätt meddela upplysningar samt uttrycka tankar, åsikter och känslor.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">2</span>
+                <p><strong>Informationsfrihet</strong> – frihet att inhämta och ta emot upplysningar samt att i övrigt ta del av andras yttranden.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">3</span>
+                <p><strong>Mötesfrihet</strong> – frihet att anordna och delta i sammankomster för upplysning, meningsyttring eller annat liknande syfte.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">4</span>
+                <p><strong>Demonstrationsfrihet</strong> – frihet att anordna och delta i demonstrationer på allmän plats.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">5</span>
+                <p><strong>Föreningsfrihet</strong> – frihet att sammansluta sig med andra för allmänna eller enskilda syften.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">6</span>
+                <p><strong>Religionsfrihet</strong> – frihet att ensam eller tillsammans med andra utöva sin religion.</p>
+            </div>
+        </div>
+
+        <p>Friheterna kan begränsas i vissa fall, bland annat av <strong>GDPR</strong> (dataskyddsförordningen), förbud mot <strong>förtal</strong>, förbud mot <strong>hets mot folkgrupp</strong> och förbud mot att röja militär information.</p>
+
+        <!-- 2.6 Offentlig rätt / civilrätt -->
+        <h2>Offentlig rätt och civilrätt</h2>
+        <p>Lagarna delas in i två stora områden:</p>
+
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Offentlig rätt</span>
+                <p>Reglerar statens och kommunernas organisation, kompetens och myndighetsutövning – samt medborgarnas förhållande till det allmänna. Hit hör skatterätt, processrätt, straffrätt och speciallagstiftning.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Civilrätt</span>
+                <p>Reglerar förhållanden mellan enskilda medborgare, mellan medborgare och företag, samt mellan företag. Exempel: köprätt och familjerätt.</p>
+            </div>
+        </div>
+
+        <p>Många lagar är samlade i <strong>balkar</strong> – till exempel brottsbalken, äktenskapsbalken och rättegångsbalken. Balkarna har sin bakgrund i 1734 års lag.</p>
+
+        <!-- 2.7 Tvingande / dispositiv -->
+        <h2>Tvingande och dispositiva rättsregler</h2>
+        <p>Lagar i det svenska rättssystemet är antingen tvingande eller dispositiva:</p>
+
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Tvingande lag</span>
+                <p>Kan inte avtalas bort. Gäller alltid, oavsett vad parterna kommit överens om. Ibland används "tvingande till konsumentens fördel" – det går bara att förbättra konsumentens rättigheter, aldrig försämra dem.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Dispositiv lag</span>
+                <p>Kan avtalas bort. Om parterna sluter ett eget avtal gäller avtalet i stället för lagen.</p>
+            </div>
+        </div>
+
+        <!-- 2.8 Förordningar / föreskrifter -->
+        <h2>Förordningar och föreskrifter</h2>
+        <p><strong>Förordningar</strong> är bestämmelser som i vissa fall innehåller mer detaljerade regler om en viss företeelse än vad lagarna gör. De förtydligar och preciserar det som står i lagarna. Förordningar beslutas av <em>regeringen</em> och får inte strida mot lagar eller grundlagar.</p>
+        <p><strong>Föreskrifter</strong> är rättsregler – mer detaljerade instruktioner eller vägledande regler – som utfärdas av <em>myndigheter</em> (till exempel Naturvårdsverket eller Socialstyrelsen) eller av <em>regioner och kommuner</em> (till exempel parkeringsregler). Föreskrifter får inte strida mot lagar.</p>
+
+        <div class="faktaruta">
+            <p><strong>Kom ihåg:</strong> Riksdag → lagar. Regering → förordningar. Myndigheter/kommuner → föreskrifter. Ju lägre i hierarkin, desto mer detaljerat.</p>
+        </div>
+
+        <!-- 2.9 Lagstiftningsprocessen -->
+        <h2>Lagstiftningsprocessen</h2>
+        <p>Att stifta en ny lag är en lång process som kan ta flera år. Här är stegen i ordning:</p>
+
+        <div class="hierarki-box">
+            <div class="hierarki-row">
+                <div class="hierarki-num" style="background: #f0fdfa; color: #0d9488; border: 1.5px solid #0d9488;">1</div>
+                <div>
+                    <p class="font-bold text-slate-800" style="margin:0;">Förslag / Motion</p>
+                    <p class="text-sm text-slate-500" style="margin:0;">En riksdagsledamot lägger en motion, eller förslaget kommer från regeringen.</p>
+                </div>
+            </div>
+            <div class="hierarki-row">
+                <div class="hierarki-num" style="background: #f0fdfa; color: #0d9488; border: 1.5px solid #0d9488;">2</div>
+                <div>
+                    <p class="font-bold text-slate-800" style="margin:0;">Utredning</p>
+                    <p class="text-sm text-slate-500" style="margin:0;">En utredning tillsätts för att undersöka hur förslaget påverkar samhället.</p>
+                </div>
+            </div>
+            <div class="hierarki-row">
+                <div class="hierarki-num" style="background: #f0fdfa; color: #0d9488; border: 1.5px solid #0d9488;">3</div>
+                <div>
+                    <p class="font-bold text-slate-800" style="margin:0;">Betänkande</p>
+                    <p class="text-sm text-slate-500" style="margin:0;">Utredningens resultat lämnas som ett betänkande till regeringen (publiceras i SOU).</p>
+                </div>
+            </div>
+            <div class="hierarki-row">
+                <div class="hierarki-num" style="background: #f0fdfa; color: #0d9488; border: 1.5px solid #0d9488;">4</div>
+                <div>
+                    <p class="font-bold text-slate-800" style="margin:0;">Remiss</p>
+                    <p class="text-sm text-slate-500" style="margin:0;">Betänkandet skickas ut på remiss till intresseorganisationer och myndigheter för synpunkter.</p>
+                </div>
+            </div>
+            <div class="hierarki-row">
+                <div class="hierarki-num" style="background: #f0fdfa; color: #0d9488; border: 1.5px solid #0d9488;">5</div>
+                <div>
+                    <p class="font-bold text-slate-800" style="margin:0;">Proposition</p>
+                    <p class="text-sm text-slate-500" style="margin:0;">Regeringen tar fram ett förslag till lagstiftning – en proposition.</p>
+                </div>
+            </div>
+            <div class="hierarki-row">
+                <div class="hierarki-num" style="background: #f0fdfa; color: #0d9488; border: 1.5px solid #0d9488;">6</div>
+                <div>
+                    <p class="font-bold text-slate-800" style="margin:0;">Utskottsbehandling + Lagrådet</p>
+                    <p class="text-sm text-slate-500" style="margin:0;">Riksdagens utskott diskuterar propositionen. Lagrådet granskar att lagen inte strider mot grundlagen eller andra lagar.</p>
+                </div>
+            </div>
+            <div class="hierarki-row">
+                <div class="hierarki-num" style="background: #f0fdfa; color: #0d9488; border: 1.5px solid #0d9488;">7</div>
+                <div>
+                    <p class="font-bold text-slate-800" style="margin:0;">Riksdagsbeslut</p>
+                    <p class="text-sm text-slate-500" style="margin:0;">Riksdagen röstar och beslutar om lagen.</p>
+                </div>
+            </div>
+            <div class="hierarki-row" style="background: #f0fdfa;">
+                <div class="hierarki-num" style="background: #0d9488; color: white;">8</div>
+                <div>
+                    <p class="font-bold text-slate-800" style="margin:0;">Regeringen utfärdar lagen (SFS)</p>
+                    <p class="text-sm text-slate-500" style="margin:0;">Lagen publiceras i Svensk författningssamling. Regeringen verkställer den.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2.10 Domstolarna -->
+        <h2>Domstolarna</h2>
+        <p>Det svenska rättssystemet har tre typer av domstolar. Totalt finns det nästan 80 olika domstolar i Sverige.</p>
+
+        <h3>Allmänna domstolar</h3>
+        <p>Hanterar brottmål och tvistemål (tvister mellan privatpersoner eller företag). Tre instanser:</p>
+        <div style="margin: 1rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Tingsrätten</span>
+                <p>Första instansen (48 st i Sverige). Den som är missnöjd kan överklaga till hovrätten inom tre veckor, annars vinner domen <em>laga kraft</em>.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Hovrätten</span>
+                <p>Andra instansen (6 st). Kräver ofta prövningstillstånd för att ta upp målet. Beviljas om hovrätten ifrågasätter tingsrättens dom.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Högsta domstolen (HD)</span>
+                <p>Kräver prövningstillstånd. Domar här blir <em>prejudikat</em> – vägledande för framtida mål.</p>
+            </div>
+        </div>
+
+        <h3>Förvaltningsdomstolar</h3>
+        <p>Hanterar tvister om myndighetsbeslut (till exempel avslag på bygglov eller sjukpenning). Tre instanser:</p>
+        <div style="margin: 1rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Förvaltningsrätten</span>
+                <p>Första instansen (12 st). Överklagbart till kammarrätten.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Kammarrätten</span>
+                <p>Andra instansen (4 st). De flesta mål kräver prövningstillstånd.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Högsta förvaltningsdomstolen (HFD)</span>
+                <p>Kräver prövningstillstånd. Domar här blir prejudikat.</p>
+            </div>
+        </div>
+
+        <h3>Specialdomstolar</h3>
+        <p>Hanterar övriga ärenden. De självständiga är <strong>Arbetsdomstolen (AD)</strong> – prövar arbetsrättsliga tvister om bland annat kollektivavtal – och <strong>Försvarsunderrättelsedomstolen</strong>. Dessutom finns Patent- och marknadsdomstolen (knuten till Stockholms tingsrätt), mark- och miljödomstolarna och migrationsdomstolarna.</p>
+
+        <!-- 2.11 Rättegångsprinciperna -->
+        <h2>Rättegångsprinciperna</h2>
+        <p>De allmänna domstolarnas arbete styrs av <strong>rättegångsbalken (RB)</strong>. Vid en huvudförhandling gäller sju grundläggande principer:</p>
+
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Legalitetsprincipen</span>
+                <p>"Inget straff utan lag och inget brott utan lag." Ingen får dömas utan stöd i en lag.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Objektivitetsprincipen</span>
+                <p>Alla ska behandlas lika inför lagen. Domstolar och myndigheter ska vara sakliga och opartiska.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Muntlighetsprincipen</span>
+                <p>Utredningar och bevis ska presenteras muntligt vid rättegången.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Omedelbarhetsprincipen</span>
+                <p>En dom ska bara grundas på det som tas upp under rättegången.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Koncentrationsprincipen</span>
+                <p>Rättegången ska vara sammanhängande och inte utdragen över tid.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Offentlighetsprincipen</span>
+                <p>En rättegång är offentlig – vem som helst får närvara. Domstolen kan besluta om <em>lyckta dörrar</em> vid till exempel barnpornografibrott.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Oskuldspresumtion</span>
+                <p>Den som misstänks för ett brott anses oskyldig till dess att motsatsen bevisas i domstol.</p>
+            </div>
+        </div>
+
+        <div class="faktaruta">
+            <p><strong>Sammanfattning domstolarna:</strong> Allmänna domstolar (brottmål/tvistemål) → tingsrätt, hovrätt, HD. Förvaltningsdomstolar (myndighetsbeslut) → förvaltningsrätt, kammarrätt, HFD. Specialdomstolar → Arbetsdomstolen med flera. Alla instanser är oberoende från riksdag och regering.</p>
+        </div>
+
+        <div class="avdelare">
+            <div class="avdelare-linje"></div>
+            <span class="avdelare-text">Begreppslista</span>
+            <div class="avdelare-linje"></div>
+        </div>
+
+        <!-- ========== SEKTION 3: BEGREPPSLISTA ========== -->
+
+        <div style="margin: 0.5rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Konstitutionell rätt</span>
+                <p>Innefattar dels hur lagar blir till, dels fri- och rättigheter för landets medborgare samt hur den offentliga makten kontrolleras. Till stor del regleras detta av Sveriges fyra grundlagar.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Demokrati</span>
+                <p>Innebär att de som är medborgare eller bor i ett land ska ha möjlighet att påverka hur landet ska styras genom regelbundna val.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Rättstrygghet</span>
+                <p>Innebär en visshet om att rättsväsendet tillgodoser medborgarnas rättigheter.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Rättssäkerhet</span>
+                <p>Innebär att lagar och regler ska vara formulerade så att konsekvensen av en handling går att förutse på förhand.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Rättsstat</span>
+                <p>En stat där rättssäkerhet råder, med självständiga domstolar och frihet från godtycke.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Rättssystem</span>
+                <p>Består av lagar och regler.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Rättsregler</span>
+                <p>Är nedskrivna och av riksdagen beslutade lagar.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Sanktion</span>
+                <p>Det vi normalt kallar "straff", till exempel böter eller fängelse.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Rättsordning</span>
+                <p>Det system av rättsregler som består av grundlagar, lagar, förordningar och föreskrifter.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Normhierarki</span>
+                <p>Den inbördes ordning som visar vilka lagar och regler som styr andra lagar och regler.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Grundlagar</span>
+                <p>Är grundläggande regler för hur politiska beslut ska fattas.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Politiskt system</span>
+                <p>Det system av institutioner och aktörer som tillsammans påverkar hur Sverige ska styras, till exempel vilka lagar och regler som ska råda.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Representativt styrelseskick</span>
+                <p>Innebär att de representanter som sitter i riksdagen är folkvalda.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Parlamentariskt styrelseskick</span>
+                <p>Innebär att den offentliga makten utgår från folket och att regeringen måste ha riksdagens förtroende.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Folkrepresentation</span>
+                <p>Lagstiftande församling bestående av valda företrädare för folket.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Regioner</span>
+                <p>Kallades tidigare för landsting och är självstyrande enheter som motsvarar län.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Kommuner</span>
+                <p>Är geografiskt avgränsade områden med ett visst lokalt självstyre. Det finns 290 kommuner i Sverige.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Den lagstiftande makten</span>
+                <p>Har riksdagen, det vill säga folkrepresentationen.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Skattepengar</span>
+                <p>Inbetald skatt som finansierar viktiga samhällsfunktioner.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Den verkställande makten</span>
+                <p>Har regeringen, som förverkligar de lagar som riksdagen har stiftat.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Riksdagens talman</span>
+                <p>Landets högsta valbara ämbete. Talmannen leder riksdagens arbete.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Den dömande makten</span>
+                <p>Har de allmänna domstolarna, förvaltningsdomstolarna samt specialdomstolarna.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Likhetsprincipen</span>
+                <p>Innebär att myndigheter ska behandla alla lika, oavsett till exempel nationalitet eller utbildning.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Objektivitetsprincipen</span>
+                <p>Innebär att alla som arbetar på myndigheter ska vara sakliga och opartiska.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Monarki</span>
+                <p>Ett statsskick i vilket statschefen är en monark, det vill säga kung eller drottning.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Successionsordningen</span>
+                <p>Är den grundlag som reglerar vem som kan bli Sveriges statschef.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Successionsrätten</span>
+                <p>Arvsrätten till Sveriges tron.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Tryckfrihetsförordningen</span>
+                <p>En grundlag som innehåller regler för yttrandefrihet i tryckta skrifter (tidningar och böcker) samt offentlighetsprincipen för allmänna handlingar.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Offentlighetsprincipen</span>
+                <p>En grundlagsskyddad princip som ger medborgarna insyn i myndigheternas arbete.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Allmänna handlingar</span>
+                <p>Handlingar som vem som helst har rätt att ta del av.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Yttrandefrihetsgrundlagen</span>
+                <p>Den yngsta av de fyra grundlagarna och reglerar rätten att fritt uttrycka tankar, åsikter och känslor i medier (radio, tv samt nätbaserade medier).</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">GDPR (dataskyddsförordningen)</span>
+                <p>En EU-förordning om behandling av personuppgifter som gäller som svensk lag.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Förtal</span>
+                <p>Till exempel att felaktigt peka ut en annan person som brottslig.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Hets mot folkgrupp</span>
+                <p>Att offentligt sprida uttalanden som hotar eller är nedsättande mot en grupp människor.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Utgivningsbevis</span>
+                <p>Intyg som i vissa fall behövs för att få ge ut till exempel en tidning.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Kontrollfunktionerna</span>
+                <p>Justitieombudsmannen, Riksrevisionen och konstitutionsutskottet. De kallas även kontrollmakten.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Statsråd</span>
+                <p>Enskild ledamot av Sveriges regering.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Lagar</span>
+                <p>Rättsregler som beslutas av riksdagen.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Offentlig rätt</span>
+                <p>Lagar som reglerar den enskildes rättigheter och skyldigheter gentemot stat, region och kommun.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Civilrätt</span>
+                <p>Lagar som reglerar förhållanden mellan enskilda människor, mellan enskilda och företag eller mellan företag.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Balkar</span>
+                <p>Samling av lagar inom ett rättsområde.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Tvingande lag</span>
+                <p>En lag eller rättsregel som inte kan avtalas bort.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Dispositiv lag</span>
+                <p>En lag eller rättsregel som kan avtalas bort.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Förordningar</span>
+                <p>Mer detaljerade regler om en specifik lag. Beslutas av regeringen.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Föreskrifter</span>
+                <p>Kan till exempel vara anvisningar från en myndighet eller lokala ordningsregler.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Motion</span>
+                <p>Ett förslag om en ny lag eller om en lagförändring som kommer från en riksdagsledamot.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Utredning</span>
+                <p>Ett projekt som tillsätts för att utreda en fråga.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Betänkande</span>
+                <p>Ett utredningsförslag som lämnas till regeringen.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Remiss</span>
+                <p>En möjlighet för organisationer och myndigheter att ge synpunkter på betänkandet.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Proposition</span>
+                <p>Ett förslag till ny lagstiftning.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Utskott</span>
+                <p>En mindre del av en beslutande församling i till exempel riksdagen.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Lagrådet</span>
+                <p>Myndighet med uppgift att granska nya lagar.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Domstolar</span>
+                <p>Sverige har tre typer av domstolar: allmänna domstolar, förvaltningsdomstolar och specialdomstolar.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Allmänna domstolar</span>
+                <p>Är tingsrätt, hovrätt och Högsta domstolen.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Tingsrätten</span>
+                <p>Den första instansen i allmänna domstolar.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Laga kraft</span>
+                <p>När tiden för överklagande är över och ingen har överklagat gäller domen. Den vinner laga kraft.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Åklagare</span>
+                <p>Den statligt anställda jurist som leder förundersökningen och för talan mot den åtalade i brottmål i huvudförhandlingen.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Målsägare</span>
+                <p>Den som har blivit utsatt för ett brott.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Hovrätten</span>
+                <p>Andra instansen i frågor som har tagits upp av tingsrätt.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Prövningstillstånd</span>
+                <p>För domar i brottmål där fängelse finns i straffskalan behövs inget prövningstillstånd, men för övriga fall bedömer den högre instansen om målet ska tas upp.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Högsta domstolen</span>
+                <p>Den högsta av de allmänna domstolarna. Domar i denna domstol blir vägledande för framtida mål.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Prejudikat</span>
+                <p>Vägledande domar i Högsta domstolen (eller Högsta förvaltningsdomstolen).</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Rättegångsbalken</span>
+                <p>Regelverket för domstolarnas arbete.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Lyckta eller stängda dörrar</span>
+                <p>Möjligt vid en rättegång som behandlar särskilt känsliga uppgifter.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Förvaltningsdomstolar</span>
+                <p>Behandlar ärenden som gäller myndighetsbeslut. De är förvaltningsrätten, kammarrätten och Högsta förvaltningsdomstolen.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Kollektivavtal</span>
+                <p>Avtal på arbetsmarknaden mellan arbetsmarknadens parter.</p>
+            </div>
+        </div>
+
+        <div class="avdelare">
+            <div class="avdelare-linje"></div>
+            <span class="avdelare-text">Viktiga lagrum</span>
+            <div class="avdelare-linje"></div>
+        </div>
+
+        <!-- ========== SEKTION 4: VIKTIGA LAGRUM ========== -->
+
+        <div class="lagrum-block">
+            <span class="lagrum-ref">Regeringsformen 1 kap. 1 §</span>
+            <p class="lagrum-text">All offentlig makt i Sverige utgår från folket.</p>
+        </div>
+
+        <div class="lagrum-block">
+            <span class="lagrum-ref">Regeringsformen 1 kap. 2 §</span>
+            <p class="lagrum-text">Den offentliga makten ska utövas med respekt för alla människors lika värde och för den enskilda människans frihet och värdighet.</p>
+        </div>
+
+        <div class="lagrum-block">
+            <span class="lagrum-ref">Regeringsformen 1 kap. 4 §</span>
+            <p class="lagrum-text">Riksdagen är folkets främsta företrädare. Riksdagen stiftar lag, beslutar om skatt till staten och bestämmer hur statens medel ska användas. Riksdagen granskar rikets styrelse och förvaltning.</p>
+        </div>
+
+        <div class="lagrum-block">
+            <span class="lagrum-ref">Regeringsformen 1 kap. 6 §</span>
+            <p class="lagrum-text">Regeringen styr riket. Den är ansvarig inför riksdagen.</p>
+        </div>
+
+        <div class="lagrum-block">
+            <span class="lagrum-ref">Regeringsformen 1 kap. 8 §</span>
+            <p class="lagrum-text">För rättskipningen finns domstolar och för den offentliga förvaltningen statliga och kommunala förvaltningsmyndigheter.</p>
+        </div>
+
+        <div class="lagrum-block">
+            <span class="lagrum-ref">Regeringsformen 1 kap. 9 §</span>
+            <p class="lagrum-text">Domstolar samt förvaltningsmyndigheter och andra som fullgör offentliga förvaltningsuppgifter ska i sin verksamhet beakta allas likhet inför lagen samt iaktta saklighet och opartiskhet.</p>
+        </div>
+
+        <div class="lagrum-block">
+            <span class="lagrum-ref">Regeringsformen 2 kap. 1 § — Grundläggande fri- och rättigheter</span>
+            <p class="lagrum-text">Var och en är gentemot det allmänna tillförsäkrad</p>
+            <ol class="lagrum-sublist" style="list-style: decimal; padding-left: 1.5rem;">
+                <li><strong>yttrandefrihet:</strong> frihet att i tal, skrift eller bild eller på annat sätt meddela upplysningar samt uttrycka tankar, åsikter och känslor,</li>
+                <li><strong>informationsfrihet:</strong> frihet att inhämta och ta emot upplysningar samt att i övrigt ta del av andras yttranden,</li>
+                <li><strong>mötesfrihet:</strong> frihet att anordna och delta i sammankomster för upplysning, meningsyttring eller annat liknande syfte eller för framförande av konstnärligt verk,</li>
+                <li><strong>demonstrationsfrihet:</strong> frihet att anordna och delta i demonstrationer på allmän plats,</li>
+                <li><strong>föreningsfrihet:</strong> frihet att sammansluta sig med andra för allmänna eller enskilda syften, och</li>
+                <li><strong>religionsfrihet:</strong> frihet att ensam eller tillsammans med andra utöva sin religion.</li>
+            </ol>
+        </div>
+
+        <div class="avdelare">
+            <div class="avdelare-linje"></div>
+            <span class="avdelare-text">Exempel och rättsfall</span>
+            <div class="avdelare-linje"></div>
+        </div>
+
+        <!-- ========== SEKTION 5: EXEMPEL & RÄTTSFALL ========== -->
+
+        <div class="exempel-box">
+            <span class="exempel-tag">Exempel 1 – Medborgares rättssäkerhet</span>
+            <ul>
+                <li>Om någon begår en brottslig handling har polisen rätt att gripa personen, som sedan kan lagföras i domstol. Den eventuellt brottsliga handlingen ska utredas enligt gällande lagar, regler och principer.</li>
+                <li>En person som inte kan försörja sig kan ansöka om försörjningsstöd hos kommunens socialtjänst. Socialnämnden är tvungen att pröva ansökan enligt socialtjänstlagens regler. Beslutet kan överklagas till förvaltningsrätten om det gått den sökande emot.</li>
+            </ul>
+            <p style="margin-top: 0.5rem;">Båda situationerna visar att det i ett rättssäkert samhälle går att förutse vilka regler som gäller för myndighetsutövningen.</p>
+        </div>
+
+        <div class="exempel-box">
+            <span class="exempel-tag">Exempel 2 – Inget godtycke i en rättsstat</span>
+            <p>Domstolar kan inte döma någon till straff för ett brott om inte handlingen finns beskriven i lag. En domstol får inte straffa någon på godtycklig grund, till exempel på grund av politiska åsikter. Handlingen ska vara beskriven i förväg, till exempel <em>"den som berövar annan livet, döms för mord till fängelse på viss tid, lägst tio och högst arton år, eller på livstid"</em>, som det står i brottsbalken (BrB) 3 kap. 1 §. Dessutom är personen oskyldig till dess att domstolen kunnat bevisa att personen är skyldig.</p>
+        </div>
+
+        <div class="exempel-box">
+            <span class="exempel-tag">Exempel 3 – Likhet inför lagen</span>
+            <p>Om en person blir sjuk och behöver uppsöka sjukhus ska personen få vård oberoende av vem personen är, hur gammal eller om personen är rik eller fattig. Den sjuke ska också behandlas med värdighet, vilket regleras i hälso- och sjukvårdslagen.</p>
+            <p>Om någon ansöker om sjukpenning eller sjukersättning måste Försäkringskassan pröva ansökan enligt socialförsäkringsbalkens regler – oberoende av vem det är som ansöker. Den som uppfyller kraven i lagen har rätt till förmånen.</p>
+        </div>
+
+        <div class="exempel-box">
+            <span class="exempel-tag">Exempel 4 – Skärpta straff för brott i "getton"</span>
+            <p>I Danmark har straffen för brott som begås inom vissa geografiska områden skärpts. Påföljden ska vara dubbelt så hård om brottet begås i vad som i Danmark kallas ett "getto" – ett bostadsområde med bland annat hög andel arbetslösa och invandrare. Det finns även krav på obligatorisk förskola samt fängelsestraff för föräldrar som skickar sina barn till ursprungslandet under en längre period.</p>
+            <p>I Sverige skulle sådana beslut strida mot den svenska principen om allas likhet inför lagen.</p>
+        </div>
+
+        <div class="exempel-box">
+            <span class="exempel-tag">Exempel 5 – Kvinnlig tronföljd i Sverige</span>
+            <p>År 1980 ändrades grundlagen och kvinnlig tronföljd infördes i Sverige. Tidigare kunde enbart manliga efterkommande ärva tronen. Enligt den tidigare successionsordningen skulle den förstfödda sonen till Carl XVI Gustaf bli tronarvinge. Hade Sverige inte gjort grundlagsändringen skulle Carl Philip ha blivit monark efter Carl XVI Gustaf, inte Victoria, trots att hon är äldst.</p>
+        </div>
+
+        <div class="exempel-box">
+            <span class="exempel-tag">Exempel 6 – Anonyma vittnen</span>
+            <p>Ny lag: Lag (2024:1180) om anonyma vittnen i brottmål. I syfte att stärka skyddet för vittnen och bryta tystnadskulturen inom och runt de kriminella gängen infördes från och med den 1 januari 2025 en möjlighet för vittnen att höras anonymt under en förundersökning och i brottmål i domstol. Ett vittne ska få lämna sina uppgifter under anonymitet om det finns en påtaglig risk för att vittnet eller vittnets närstående utsätts för allvarlig brottslighet. Det brott som vittnet ska höras om måste motsvara minst två års fängelse.</p>
+            <p>Lagförslaget blev kritiserat av flera remissinstanser, men regeringen valde trots det att driva igenom lagen.</p>
+        </div>
+
+        <div class="exempel-box">
+            <span class="exempel-tag">Exempel 7 – Uppsägning på grund av bristande arbetsprestation</span>
+            <p>En lagerarbetare ägnade flera timmar per arbetspass åt annat än arbetet. Arbetsdomstolen (AD) fann att bolagets uppsägning var giltig eftersom lagerarbetaren utan godtagbar förklaring gjorde annat än att arbeta under stora delar av sin arbetstid. Arbetsgivaren hade genomfört flera insatser för att stödja lagerarbetaren och hade dessutom utfärdat varningar, av vilka det tydligt framgick att om inte rättelse vidtogs riskerade denne att förlora sin anställning.</p>
+            <p><em>Källa: Rättsfall AD 2024 nr 78.</em></p>
+        </div>
+
+        <div class="rattfall-box">
+            <span class="rattfall-tag">Rättsfall 1 – Koranbrännare dömdes till fängelse</span>
+            <p>Den dansk-svenske politikern Rasmus Paludan höll under 2022 demonstrationer mot islam i Sverige, avslutade med att han brände en koran och skapade en hätsk stämning. Vid flera tillfällen uppstod motdemonstrationer och bråk. Paludan hävdade att hans koranbränning var förenlig med den svenska yttrandefriheten och demonstrationsfriheten.</p>
+            <p>Han anmäldes för hets mot folkgrupp efter två fall av koranbränning i Malmö. Tingsrätten bedömde att Rasmus Paludan uttryckt missaktning mot bland annat muslimer och att hans agerande inte kan ursäktas som kritik mot islam eller som politiskt kampanjarbete. Tingsrätten dömde honom till <strong>fyra månaders fängelse för hets mot folkgrupp</strong>.</p>
+        </div>
+
+        <div class="faktaruta" style="margin-top: 2.5rem;">
+            <p><strong>Sammanfattning Block 1:</strong> Konstitutionell rätt handlar om hur Sverige styrs. <strong>Rättsordningen</strong> följer en <strong>normhierarki</strong> med <strong>grundlagarna</strong> överst. De fyra grundlagarna är RF, SO, TF och YGL. Den offentliga makten är uppdelad på riksdag (lagstiftande), regering (verkställande) och domstolar (dömande). Medborgarna skyddas av sex grundlagsskyddade friheter i RF 2:1. Juridiken delas i <strong>offentlig rätt</strong> och <strong>civilrätt</strong>, och lagar kan vara <strong>tvingande</strong> eller <strong>dispositiva</strong>. Lagstiftningsprocessen löper från motion till riksdagsbeslut och publicering i SFS. Domstolsväsendet består av allmänna domstolar, förvaltningsdomstolar och specialdomstolar, och alla rättegångar styrs av sju grundprinciper.</p>
+        </div>
+
+    </div>
+
+    <footer class="mt-16 text-center border-t border-slate-200 pt-8">
+        <p class="text-slate-400 text-xs uppercase tracking-[0.2em] font-black italic">Designad av John</p>
+    </footer>
+
+</div>
+</body>
+</html>
