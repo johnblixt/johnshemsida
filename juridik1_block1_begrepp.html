@@ -65,6 +65,12 @@ function shuffleArray(array) {
   return array;
 }
 
+function makeOptions(currentItem, allData) {
+  const distractors = allData.filter(d => d.id !== currentItem.id);
+  shuffleArray(distractors);
+  return shuffleArray([currentItem, ...distractors.slice(0, 3)]);
+}
+
 const lucktextData = [
   { id: 1,  term: 'Konstitutionell rätt',        sentence: 'Läraren förklarade att _____ handlar om hur grundlagarna skyddar medborgarnas fri- och rättigheter och reglerar den offentliga maktens kontroll.', definition: concepts[0].definition },
   { id: 2,  term: 'Demokrati',                   sentence: 'Sverige styrs med _____ som grund, vilket innebär att medborgarna kan påverka politiken genom regelbundna val.', definition: concepts[1].definition },
@@ -93,6 +99,36 @@ const lucktextData = [
   { id: 25, term: 'Monarki',                     sentence: 'Sverige är en konstitutionell _____, där kungen är statschef men saknar politisk makt.', definition: concepts[24].definition },
   { id: 26, term: 'Successionsordningen',        sentence: '_____ är den grundlag som bestämmer vem som kan bli Sveriges statschef.', definition: concepts[25].definition },
   { id: 27, term: 'Successionsrätten',           sentence: '_____ innebär att tronen ärvs av monarkens äldsta barn, oavsett kön.', definition: concepts[26].definition },
+];
+
+const scenarioData = [
+  { id: 1,  term: 'Konstitutionell rätt',          scenario: 'Juridikkursen handlar om hur lagar stiftas, vilka fri- och rättigheter medborgarna har skydd för, och hur man ser till att den offentliga makten inte missbrukas.' },
+  { id: 2,  term: 'Demokrati',                     scenario: 'Vart fjärde år går medborgarna till vallokalen och röstar — på så sätt kan de påverka vilka som ska styra landet.' },
+  { id: 3,  term: 'Rättstrygghet',                 scenario: 'Sofia visste att om hon hamnade i en orättvis situation, skulle domstolarna och myndigheterna faktiskt stå på hennes sida och tillvarata hennes rättigheter.' },
+  { id: 4,  term: 'Rättssäkerhet',                 scenario: 'Innan han signerade kontraktet kollade han lagen noggrant — och kunde redan i förväg veta exakt vad konsekvenserna skulle bli om han inte höll avtalet.' },
+  { id: 5,  term: 'Rättsstat',                     scenario: 'I landet kan ingen fängslas utan rättegång, domstolarna styrs inte av politikerna, och samma regler gäller för alla — inte ens presidenten är undantagen.' },
+  { id: 6,  term: 'Rättssystem',                   scenario: 'Trafikregler, äktenskapslagstiftning och strafflagar — allt detta ingår i det samlade regelverket av lagar och bestämmelser som gäller i landet.' },
+  { id: 7,  term: 'Rättsregler',                   scenario: 'Riksdagen röstade igenom en ny paragraf i brottsbalken — ett officiellt, nedskrivet beslut som nu gäller för alla som bor i Sverige.' },
+  { id: 8,  term: 'Sanktion',                      scenario: 'Domstolen bestämde att föraren måste betala 4 000 kronor som konsekvens av att ha kört för fort.' },
+  { id: 9,  term: 'Rättsordning',                  scenario: 'Det svenska regelverket är uppbyggt i lager: högst upp grundlagarna, sedan vanliga lagar, därefter förordningar och sist föreskrifter.' },
+  { id: 10, term: 'Normhierarki',                  scenario: 'En kommunal föreskrift om buller strider mot riksdagens miljölag — eftersom riksdagslagen väger tyngre i rangordningen måste föreskriften ändras.' },
+  { id: 11, term: 'Grundlagar',                    scenario: 'Dessa fyra fundamentala dokument kräver dubbla riksdagsbeslut med ett val emellan för att kunna ändras — de fastslår grundprinciperna för hur politiska beslut får fattas.' },
+  { id: 12, term: 'Politiskt system',              scenario: 'Riksdag, regering, kommuner, regioner och politiska partier samverkar med varandra för att forma hur Sverige ska styras.' },
+  { id: 13, term: 'Representativt styrelseskick',  scenario: 'I stället för att alla medborgare röstar direkt om varje lagstiftningsfråga väljer de politiker som gör det åt dem.' },
+  { id: 14, term: 'Parlamentariskt styrelseskick', scenario: 'Statsministern förlorade en misstroendeomröstning och måste avgå — ingen regering kan styra landet mot riksdagens vilja.' },
+  { id: 15, term: 'Folkrepresentation',            scenario: 'De 349 folkvalda ledamöterna samlas i kammaren och bildar den lagstiftande församlingen — de är valda att stifta lagar på folkets uppdrag.' },
+  { id: 16, term: 'Regioner',                      scenario: 'Den självstyrande enhet på länsnivå som ansvarar för sjukvård och kollektivtrafik hette tidigare landsting.' },
+  { id: 17, term: 'Kommuner',                      scenario: 'Den lokala enhet som beslutar om var förskolor ska byggas, hur äldreomsorgen ska organiseras och vilka gator som ska underhållas i din stad.' },
+  { id: 18, term: 'Den lagstiftande makten',       scenario: 'Det är denna gren av statsapparaten som beslutar om nya lagar, ändrar befintliga och kan avskaffa dem som inte längre behövs — den utövas av folkrepresentationen.' },
+  { id: 19, term: 'Skattepengar',                  scenario: 'De belopp som arbetsgivaren varje månad drar av från lönen och som sedan finansierar sjukvård, skola och polis.' },
+  { id: 20, term: 'Den verkställande makten',      scenario: 'Det är denna gren som har ansvaret att se till att riksdagens beslutade lagar faktiskt genomförs i praktiken — den utövas av regeringen.' },
+  { id: 21, term: 'Riksdagens talman',             scenario: 'Hon valdes till det högsta ämbete som medborgarna kan rösta fram — hennes uppgift är att leda riksdagens debatter och arbete.' },
+  { id: 22, term: 'Den dömande makten',            scenario: 'Det är denna gren som avgör om en person har begått ett brott och beslutar om påföljden — den utövas av landets domstolar.' },
+  { id: 23, term: 'Likhetsprincipen',              scenario: 'Handläggaren på Skatteverket tillämpar exakt samma regler på en professor från Stockholm som på en arbetslös från Luleå — ingen favoriseras på grund av bakgrund.' },
+  { id: 24, term: 'Objektivitetsprincipen',        scenario: 'Trots att tjänstemannen personligen ogillar sökanden lägger han sina känslor åt sidan och bedömer ansökan enbart utifrån sakliga fakta och gällande regler.' },
+  { id: 25, term: 'Monarki',                       scenario: 'I detta statsskick ärver en person rollen som landets statsöverhuvud — positionen bestäms inte genom val utan går i arv inom en familj.' },
+  { id: 26, term: 'Successionsordningen',          scenario: 'Det finns ett specifikt grundlagsdokument som fastslår vilka krav en person måste uppfylla för att kunna bli Sveriges statschef.' },
+  { id: 27, term: 'Successionsrätten',             scenario: 'Principen att monarkens äldsta barn automatiskt ärver rätten till tronen när monarken avgår eller dör.' },
 ];
 
 function LucktextView() {
@@ -404,6 +440,131 @@ function FlashcardView() {
   );
 }
 
+function ScenarioView() {
+  const total = scenarioData.length;
+  const [items, setItems] = React.useState(() => shuffleArray([...scenarioData]));
+  const [idx, setIdx] = React.useState(0);
+  const [options, setOptions] = React.useState(() => makeOptions(items[0], scenarioData));
+  const [selected, setSelected] = React.useState(null);
+  const [score, setScore] = React.useState(0);
+  const [phase, setPhase] = React.useState('playing');
+
+  const current = items[idx];
+  const isAnswered = selected !== null;
+
+  const handleSelect = (opt) => {
+    if (isAnswered) return;
+    setSelected(opt);
+    if (opt.id === current.id) setScore(s => s + 1);
+  };
+
+  const handleNext = () => {
+    const nextIdx = idx + 1;
+    if (nextIdx >= total) {
+      setPhase('done');
+    } else {
+      setOptions(makeOptions(items[nextIdx], scenarioData));
+      setIdx(nextIdx);
+      setSelected(null);
+    }
+  };
+
+  const restart = () => {
+    const newItems = shuffleArray([...scenarioData]);
+    setItems(newItems);
+    setIdx(0);
+    setOptions(makeOptions(newItems[0], scenarioData));
+    setSelected(null);
+    setScore(0);
+    setPhase('playing');
+  };
+
+  if (phase === 'done') return (
+    <div className="flex flex-col items-center gap-6">
+      <div className="rounded-3xl p-8 text-center w-full" style={{ background: PRIMARY_LIGHT, border: `2px solid ${PRIMARY}` }}>
+        <div className="text-5xl mb-4">🎯</div>
+        <p className="text-2xl font-bold mb-1" style={{ color: PRIMARY_TEXT }}>{score} / {total} rätt</p>
+        <p className="text-slate-500 text-sm mb-6">
+          {score === total
+            ? 'Perfekt! Du kopplar ihop alla situationer rätt.'
+            : score >= Math.round(total * 0.8)
+            ? 'Bra jobbat! Öva lite till på de du missat.'
+            : 'Fortsätt öva – du lär dig!'}
+        </p>
+        <button onClick={restart} className="text-white font-bold px-8 py-3 rounded-2xl" style={{ background: PRIMARY }}>
+          Börja om
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-slate-400 font-medium">{idx + 1} av {total}</span>
+        <span className="text-xs font-bold px-3 py-1 rounded-full" style={{ background: PRIMARY_LIGHT, color: PRIMARY_TEXT }}>
+          {score} rätt
+        </span>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-1.5 mb-1">
+        <div className="h-1.5 rounded-full transition-all" style={{ width: `${(idx / total) * 100}%`, background: PRIMARY }} />
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm p-5 border-l-4" style={{ borderLeftColor: PRIMARY }}>
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Vilket begrepp beskrivs?</p>
+        <p className="text-slate-800 text-base leading-relaxed">{current.scenario}</p>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        {options.map(opt => {
+          const isCorrect = opt.id === current.id;
+          const isSelected = selected && selected.id === opt.id;
+          let bg = '#ffffff', border = '#e2e8f0', textColor = '#1e293b';
+          if (isAnswered) {
+            if (isCorrect) { bg = '#dcfce7'; border = '#16a34a'; textColor = '#15803d'; }
+            else if (isSelected) { bg = '#fee2e2'; border = '#dc2626'; textColor = '#dc2626'; }
+          }
+          return (
+            <button
+              key={opt.id}
+              onClick={() => handleSelect(opt)}
+              disabled={isAnswered}
+              className="w-full text-left px-4 py-3 rounded-xl font-semibold text-sm transition-all border-2"
+              style={{ background: bg, borderColor: border, color: textColor }}
+            >
+              {opt.term}
+            </button>
+          );
+        })}
+      </div>
+
+      {isAnswered && (
+        <div
+          className="rounded-xl p-4 text-sm leading-relaxed"
+          style={
+            selected.id === current.id
+              ? { background: '#dcfce7', color: '#15803d' }
+              : { background: '#fee2e2', color: '#dc2626' }
+          }
+        >
+          {selected.id === current.id ? '✓ Rätt! ' : `✗ Rätt svar: ${current.term}. `}
+          {concepts.find(c => c.id === current.id).definition}
+        </div>
+      )}
+
+      {isAnswered && (
+        <button
+          onClick={handleNext}
+          className="w-full text-white font-bold py-3 rounded-2xl text-sm"
+          style={{ background: PRIMARY }}
+        >
+          {idx + 1 < total ? 'Nästa scenario →' : 'Visa resultat'}
+        </button>
+      )}
+    </div>
+  );
+}
+
 const VIEWS = ['Lista', 'Flashcards', 'Lucktext', 'Scenario', 'Icke-ex.'];
 
 function ListView() {
@@ -477,7 +638,8 @@ function App() {
       {activeView === 'Lista' && <ListView />}
       {activeView === 'Flashcards' && <FlashcardView />}
       {activeView === 'Lucktext' && <LucktextView />}
-      {activeView !== 'Lista' && activeView !== 'Flashcards' && activeView !== 'Lucktext' && (
+      {activeView === 'Scenario' && <ScenarioView />}
+      {activeView === 'Icke-ex.' && (
         <div className="text-center text-slate-400 py-20 text-sm">
           Kommer snart…
         </div>
