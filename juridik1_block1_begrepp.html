@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Juridik Block 1 – Begrepp</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: 'Fredoka', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+<div id="root"></div>
+
+<script type="text/babel">
+const PRIMARY = '#0d9488';
+const PRIMARY_LIGHT = '#ccfbf1';
+const PRIMARY_TEXT = '#134e4a';
+
+const concepts = [
+  { id: 1, term: 'Konstitutionell rätt', definition: 'Innefattar dels hur lagar blir till, dels fri- och rättigheter för landets medborgare samt hur den offentliga makten kontrolleras. Till stor del regleras detta av Sveriges fyra grundlagar.' },
+  { id: 2, term: 'Demokrati', definition: 'Innebär att de som är medborgare eller bor i ett land ska ha möjlighet att påverka hur landet ska styras genom regelbundna val.' },
+  { id: 3, term: 'Rättstrygghet', definition: 'Innebär en visshet om att rättsväsendet tillgodoser medborgarnas rättigheter.' },
+  { id: 4, term: 'Rättssäkerhet', definition: 'Innebär att lagar och regler ska vara formulerade så att konsekvensen av en handling går att förutse på förhand.' },
+  { id: 5, term: 'Rättsstat', definition: 'Är en stat där rättssäkerhet råder, med självständiga domstolar och frihet från godtycke.' },
+  { id: 6, term: 'Rättssystem', definition: 'Består av lagar och regler.' },
+  { id: 7, term: 'Rättsregler', definition: 'Är nedskrivna och av riksdagen beslutade lagar.' },
+  { id: 8, term: 'Sanktion', definition: 'Det vi normalt kallar för "straff", och som exempelvis kan vara böter eller fängelse.' },
+  { id: 9, term: 'Rättsordning', definition: 'Det system av rättsregler som består av grundlagar, lagar, förordningar och föreskrifter.' },
+  { id: 10, term: 'Normhierarki', definition: 'Den inbördes ordning som visar vilka lagar och regler som styr andra lagar och regler.' },
+  { id: 11, term: 'Grundlagar', definition: 'Är grundläggande regler för hur politiska beslut ska fattas.' },
+  { id: 12, term: 'Politiskt system', definition: 'Det system av institutioner och aktörer som tillsammans påverkar hur Sverige ska styras.' },
+  { id: 13, term: 'Representativt styrelseskick', definition: 'Innebär att de representanter som sitter i riksdagen är folkvalda.' },
+  { id: 14, term: 'Parlamentariskt styrelseskick', definition: 'Innebär att den offentliga makten utgår från folket och att regeringen måste ha riksdagens förtroende.' },
+  { id: 15, term: 'Folkrepresentation', definition: 'Lagstiftande församling bestående av valda företrädare för folket.' },
+  { id: 16, term: 'Regioner', definition: 'Kallades tidigare för landsting och är självstyrande enheter som motsvarar län.' },
+  { id: 17, term: 'Kommuner', definition: 'Är geografiskt avgränsade områden med ett visst lokalt självstyre.' },
+  { id: 18, term: 'Den lagstiftande makten', definition: 'Har riksdagen, det vill säga folkrepresentationen.' },
+  { id: 19, term: 'Skattepengar', definition: 'Inbetald skatt som finansierar viktiga samhällsfunktioner.' },
+  { id: 20, term: 'Den verkställande makten', definition: 'Har regeringen, som förverkligar de lagar som riksdagen har stiftat.' },
+  { id: 21, term: 'Riksdagens talman', definition: 'Landets högsta valbara ämbete. Talmannen leder riksdagens arbete.' },
+  { id: 22, term: 'Den dömande makten', definition: 'Har de allmänna domstolarna, förvaltningsdomstolarna samt specialdomstolarna.' },
+  { id: 23, term: 'Likhetsprincipen', definition: 'Innebär att myndigheter ska behandla alla lika, oavsett exempelvis nationalitet eller utbildning.' },
+  { id: 24, term: 'Objektivitetsprincipen', definition: 'Innebär att alla de som arbetar på myndigheter ska vara sakliga och opartiska.' },
+  { id: 25, term: 'Monarki', definition: 'Ett statsskick i vilket statschefen är en monark, det vill säga kung eller drottning.' },
+  { id: 26, term: 'Successionsordningen', definition: 'Är den grundlag som reglerar vem som kan bli Sveriges statschef.' },
+  { id: 27, term: 'Successionsrätten', definition: 'Arvsrätten till Sveriges tron.' },
+];
+
+const VIEWS = ['Lista', 'Flashcards', 'Lucktext', 'Scenario', 'Icke-ex.'];
+
+function ListView() {
+  return (
+    <div className="flex flex-col gap-3">
+      {concepts.map((c) => (
+        <div
+          key={c.id}
+          className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border-l-8 pl-4 pr-4 py-3"
+          style={{ borderLeftColor: PRIMARY }}
+        >
+          <div className="flex items-start gap-3">
+            <span
+              className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mt-0.5"
+              style={{ background: PRIMARY_LIGHT, color: PRIMARY_TEXT }}
+            >
+              {c.id}
+            </span>
+            <div>
+              <p className="font-bold text-slate-800 text-base leading-snug">{c.term}</p>
+              <p className="text-slate-500 text-sm mt-1 leading-relaxed">{c.definition}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function App() {
+  const [activeView, setActiveView] = React.useState('Lista');
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 py-6">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <a
+          href="index.html"
+          className="text-sm font-medium transition-colors"
+          style={{ color: '#64748b' }}
+          onMouseEnter={e => e.currentTarget.style.color = PRIMARY}
+          onMouseLeave={e => e.currentTarget.style.color = '#64748b'}
+        >
+          ← Tillbaka till startsidan
+        </a>
+        <h1 className="text-xl font-bold text-center" style={{ color: PRIMARY_TEXT }}>
+          Juridik – Block 1
+        </h1>
+        <div className="w-32" />
+      </div>
+
+      {/* Toggle */}
+      <div className="flex gap-1 bg-slate-100 rounded-2xl p-1 mb-6 overflow-x-auto">
+        {VIEWS.map((view) => (
+          <button
+            key={view}
+            onClick={() => setActiveView(view)}
+            className="flex-1 min-w-0 px-2 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap"
+            style={
+              activeView === view
+                ? { background: PRIMARY, color: '#fff' }
+                : { color: '#94a3b8', background: 'transparent' }
+            }
+          >
+            {view}
+          </button>
+        ))}
+      </div>
+
+      {/* Content */}
+      {activeView === 'Lista' && <ListView />}
+      {activeView !== 'Lista' && (
+        <div className="text-center text-slate-400 py-20 text-sm">
+          Kommer snart…
+        </div>
+      )}
+
+      {/* Footer */}
+      <footer className="mt-10 text-center text-xs text-slate-400 italic">
+        Källa: Juridik nivå 1 – begreppslista Block 1
+      </footer>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
