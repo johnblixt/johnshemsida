@@ -565,6 +565,257 @@ function ScenarioView() {
   );
 }
 
+const ickeExData = [
+  { id: 1,  term: 'Konstitutionell rätt',
+    correct: 'Riksdagen ändrar en paragraf i tryckfrihetsförordningen för att stärka pressens oberoende gentemot staten.',
+    trap:    'Polisen utfärdar en lokal ordningsregel för ett torg i centrum för att hålla ordning under marknaden.',
+    explanation: 'Konstitutionell rätt handlar om grundlagar, medborgerliga fri- och rättigheter och kontroll av den offentliga makten — inte lokala ordningsregler.' },
+  { id: 2,  term: 'Demokrati',
+    correct: 'Medborgarna röstar vart fjärde år och väljer vilka partier som ska representera dem i riksdagen.',
+    trap:    'Kungen beslutar ensam om vilka lagar som ska gälla, eftersom han är statschef och landets högsta myndighet.',
+    explanation: 'Demokrati innebär att folket kan påverka styret via regelbundna val — kungen har ingen politisk beslutsmakt i Sverige.' },
+  { id: 3,  term: 'Rättstrygghet',
+    correct: 'Maria vet att om hon diskrimineras på jobbet kan hon vända sig till Diskrimineringsombudsmannen och räkna med att hennes rättigheter tillgodoses.',
+    trap:    'Ali kan förutsäga att brott X ger straff Y eftersom lagen är klart formulerad och konsekvenserna är kända i förväg.',
+    explanation: 'Rättstrygghet är visshet om att rättsväsendet tillgodoser rättigheter — förutsägbarhet av konsekvenser är rättssäkerhet.' },
+  { id: 4,  term: 'Rättssäkerhet',
+    correct: 'Innan Erik skriver på ett hyreskontrakt läser han hyreslagen och kan i förväg veta exakt vad som händer om han bryter mot avtalet.',
+    trap:    'Erik är övertygad om att domstolen alltid ger honom rätt om han klagar, eftersom han bor i en demokrati.',
+    explanation: 'Rättssäkerhet innebär att konsekvenser av handlingar går att förutse — inte att man automatiskt vinner i domstol.' },
+  { id: 5,  term: 'Rättsstat',
+    correct: 'I Sverige kan inte ens statsministern fängslas utan ett domstolsbeslut — domstolarna är helt oberoende från politikerna.',
+    trap:    'Staten garanterar att alla medborgare har tillgång till gratis sjukvård och utbildning via skattsedeln.',
+    explanation: 'Rättsstat handlar om självständiga domstolar och frihet från godtycke — välfärdsgarantier hör till välfärdsstaten.' },
+  { id: 6,  term: 'Rättssystem',
+    correct: 'Trafikregler, äktenskapslagstiftning och strafflagar — allt detta ingår i det samlade regelverket av lagar och bestämmelser som gäller i landet.',
+    trap:    'Domstolens interna arbetsordning för hur mål ska handläggas kallas rättssystem.',
+    explanation: 'Rättssystem är det övergripande systemet av lagar och regler i ett land — inte en enskild domstols interna rutiner.' },
+  { id: 7,  term: 'Rättsregler',
+    correct: 'Riksdagen röstar igenom en ny paragraf i brottsbalken — ett officiellt, nedskrivet beslut som gäller för alla som bor i Sverige.',
+    trap:    'Kommunen skriver en intern rutin om hur soporna ska sorteras på kommunens kontor.',
+    explanation: 'Rättsregler är av riksdagen beslutade och nedskrivna lagar — inte interna rutiner eller administrativa föreskrifter.' },
+  { id: 8,  term: 'Sanktion',
+    correct: 'Domstolen dömer en rattfull förare till 60 dagsböter och körkortsåterkallelse som konsekvens av brottet.',
+    trap:    'Arbetsgivaren ger en anställd en muntlig varning för att hon kom sent till ett mötet.',
+    explanation: 'Sanktion är en rättslig påföljd beslutad av domstol — en informell varning från arbetsgivaren är inte en rättslig sanktion.' },
+  { id: 9,  term: 'Rättsordning',
+    correct: 'Sveriges hela regelverk — grundlagar, lagar, förordningar och föreskrifter ordnade i en hierarki — kallas rättsordningen.',
+    trap:    'Normhierarkin visar att grundlagen väger tyngre än en vanlig lag om de skulle stå i konflikt med varandra.',
+    explanation: 'Rättsordning är systemet av alla rättsregler samlat — normhierarkin beskriver rangordningen dem emellan, vilket är ett snävare begrepp.' },
+  { id: 10, term: 'Normhierarki',
+    correct: 'En kommunal föreskrift om buller strider mot en riksdagslag om miljöskydd — riksdagslagen väger tyngre och föreskriften måste ändras.',
+    trap:    'Riksdagen stiftar en ny lag som stärker miljöskyddet efter att en gammal lag visat sig otillräcklig.',
+    explanation: 'Normhierarki handlar om rangordningen mellan regler — att stifta en ny lag är lagstiftning, inte ett exempel på normhierarki.' },
+  { id: 11, term: 'Grundlagar',
+    correct: 'Riksdagen vill ändra regeringsformen — det krävs två riksdagsbeslut med ett val emellan, eftersom det rör en grundlag.',
+    trap:    'Riksdagen röstar igenom en ny skattelag med enkel majoritet under en eftermiddagssession.',
+    explanation: 'Grundlagar kräver ett särskilt tungt förfarande för att ändras — vanliga lagar stiftas med enkel majoritet.' },
+  { id: 12, term: 'Politiskt system',
+    correct: 'Riksdag, regering, kommuner, regioner och partier samverkar för att forma hur Sverige ska styras — det är det politiska systemet.',
+    trap:    'Riksdagen fattar ensam alla politiska beslut i Sverige — de övriga institutionerna bara verkställer.',
+    explanation: 'Politiskt system inkluderar alla institutioner och aktörer som påverkar styrningen — inte bara riksdagen.' },
+  { id: 13, term: 'Representativt styrelseskick',
+    correct: 'Istället för att alla medborgare röstar om varje enskild lagstiftningsfråga väljer de folkvalda politiker som gör det åt dem i riksdagen.',
+    trap:    'Alla röstberättigade medborgare röstar direkt om varje ny lag via en digital plattform.',
+    explanation: 'Representativt styrelseskick innebär folkvalda representanter — direkt demokrati är ett annat system.' },
+  { id: 14, term: 'Parlamentariskt styrelseskick',
+    correct: 'Riksdagen röstar igenom ett misstroendevotum mot regeringen — statsministern måste avgå eller utlysa nyval.',
+    trap:    'Kungen utser statsministern utan att ta hänsyn till riksdagens sammansättning eller majoritetens önskemål.',
+    explanation: 'Parlamentariskt styrelseskick kräver att regeringen har riksdagens förtroende — kungen utser inte statsministern på eget bevåg.' },
+  { id: 15, term: 'Folkrepresentation',
+    correct: 'De 349 riksdagsledamöter som valdes av folket samlas och stiftar lagar — de bildar folkrepresentationen.',
+    trap:    'Alla som bor i Sverige, inklusive de utan rösträtt, utgör folkrepresentationen.',
+    explanation: 'Folkrepresentation är den lagstiftande församlingen av valda företrädare — inte hela befolkningen.' },
+  { id: 16, term: 'Regioner',
+    correct: 'Västra Götalandsregionen ansvarar för sjukhus och kollektivtrafik i sitt geografiska område — det är en region, som tidigare hette landsting.',
+    trap:    'Göteborgs stad ansvarar för sjukvård och kallas ibland region, men det är egentligen kommunens uppgift.',
+    explanation: 'Regioner är självstyrande enheter på länsnivå (f.d. landsting) — kommuner är en annan, lokal nivå med andra ansvarsområden.' },
+  { id: 17, term: 'Kommuner',
+    correct: 'Luleå beslutande organ bestämmer om var förskolor ska byggas och hur äldreomsorgen ska organiseras inom kommunens gränser.',
+    trap:    'Regionen beslutar om hur skolan och äldreomsorgen ska organiseras i länet.',
+    explanation: 'Kommuner ansvarar för lokal service som skola och äldreomsorg — sjukvård är däremot regionens ansvar.' },
+  { id: 18, term: 'Den lagstiftande makten',
+    correct: 'Riksdagen röstar igenom en ny lag om vapenkontroll — det är ett utövande av den lagstiftande makten.',
+    trap:    'Regeringen utfärdar en förordning om vapenkontroll — det är ett utövande av den lagstiftande makten.',
+    explanation: 'Den lagstiftande makten tillhör riksdagen — när regeringen utfärdar förordningar utövar den den verkställande makten.' },
+  { id: 19, term: 'Skattepengar',
+    correct: 'Löneskatten och momsen som medborgarna betalar finansierar sjukvård, skola och polis — det är skattepengar.',
+    trap:    'Kommunen tar ut en parkeringsavgift — pengarna används för drift av parkeringshuset och räknas som skattepengar.',
+    explanation: 'Skattepengar är inbetald skatt — parkeringsavgifter och andra avgifter är inte skatter utan avgifter.' },
+  { id: 20, term: 'Den verkställande makten',
+    correct: 'Regeringen beslutar om en förordning som genomför riksdagens beslutade trafiklagstiftning i praktiken.',
+    trap:    'Riksdagen röstar igenom en ny trafiklag efter lång debatt — det är ett utövande av den verkställande makten.',
+    explanation: 'Den verkställande makten tillhör regeringen — riksdagen utövar den lagstiftande makten.' },
+  { id: 21, term: 'Riksdagens talman',
+    correct: 'Den folkvalda person som leder riksdagens debatter och är det högsta valbara ämbetet i Sverige kallas riksdagens talman.',
+    trap:    'Statsministern är det högsta valbara ämbetet i Sverige och leder riksdagens dagliga arbete.',
+    explanation: 'Riksdagens talman är det högsta valbara ämbetet och leder riksdagen — statsministern leder regeringsarbetet.' },
+  { id: 22, term: 'Den dömande makten',
+    correct: 'Hovrätten avkunnar dom i ett brottmål och beslutar om fängelsestraff — det är ett utövande av den dömande makten.',
+    trap:    'Justitieministern beslutar om ett fängelsestraff för en dömd person — det är den dömande makten.',
+    explanation: 'Den dömande makten tillhör domstolarna — ministrar tillhör den verkställande makten och får inte besluta om straff.' },
+  { id: 23, term: 'Likhetsprincipen',
+    correct: 'Skatteverket tillämpar exakt samma regler på alla skattebetalare, oavsett utbildning, nationalitet eller ekonomisk ställning.',
+    trap:    'Handläggaren är noggrann och saklig i sina beslut och låter inte personliga åsikter påverka bedömningen.',
+    explanation: 'Likhetsprincipen handlar om likabehandling av alla — saklighet och opartiskhet är objektivitetsprincipen.' },
+  { id: 24, term: 'Objektivitetsprincipen',
+    correct: 'Handläggaren på Migrationsverket bedömer ansökan enbart utifrån sakliga fakta och regler, trots att hon personligen ogillar sökanden.',
+    trap:    'Skattemyndigheten behandlar alla sökande lika, oavsett nationalitet eller bakgrund.',
+    explanation: 'Objektivitetsprincipen handlar om saklighet och opartiskhet — likabehandling av alla är likhetsprincipen.' },
+  { id: 25, term: 'Monarki',
+    correct: 'Carl XVI Gustaf är statschef och ärvde sin position — Sverige är ett exempel på monarki.',
+    trap:    'Sverige är en republik eftersom statsministern väljs av riksdagen och styr landet i praktiken.',
+    explanation: 'Monarki innebär att statschefen är en monark som ärver positionen — Sverige är en monarki, även om statsministern styr i praktiken.' },
+  { id: 26, term: 'Successionsordningen',
+    correct: 'En av Sveriges grundlagar fastslår vilka krav en person måste uppfylla för att kunna bli statschef — det är successionsordningen.',
+    trap:    'Riksdagen röstar med enkel majoritet om vem som ska bli nästa statschef när tronen blir ledig.',
+    explanation: 'Successionsordningen är en grundlag som reglerar statschefsarvet — den kan inte ändras med enkel riksdagsmajoritet.' },
+  { id: 27, term: 'Successionsrätten',
+    correct: 'Monarkens äldsta barn ärver automatiskt rätten till tronen när monarken avgår eller dör — det kallas successionsrätten.',
+    trap:    'Riksdagen nominerar och röstar om vem som ska bli nästa monark efter varje tronledighet.',
+    explanation: 'Successionsrätten innebär arvsrätt till tronen — monarken utses inte via riksdagsröstning utan positionen ärvs.' },
+];
+
+function IckeExView() {
+  const total = ickeExData.length;
+
+  const makeQuestion = (item) => {
+    const correctFirst = Math.random() < 0.5;
+    return {
+      item,
+      optionA: correctFirst ? item.correct : item.trap,
+      optionB: correctFirst ? item.trap : item.correct,
+      correctIsA: correctFirst,
+    };
+  };
+
+  const [questions, setQuestions] = React.useState(() =>
+    shuffleArray([...ickeExData]).map(makeQuestion)
+  );
+  const [idx, setIdx] = React.useState(0);
+  const [chosen, setChosen] = React.useState(null); // 'A' | 'B' | null
+  const [score, setScore] = React.useState(0);
+  const [phase, setPhase] = React.useState('playing'); // 'playing' | 'done'
+
+  const current = questions[idx];
+  const isAnswered = chosen !== null;
+
+  const choose = (option) => {
+    if (isAnswered) return;
+    setChosen(option);
+    const isCorrect = (option === 'A') === current.correctIsA;
+    if (isCorrect) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (idx + 1 >= total) {
+      setPhase('done');
+    } else {
+      setIdx(idx + 1);
+      setChosen(null);
+    }
+  };
+
+  const restart = () => {
+    setQuestions(shuffleArray([...ickeExData]).map(makeQuestion));
+    setIdx(0);
+    setChosen(null);
+    setScore(0);
+    setPhase('playing');
+  };
+
+  if (phase === 'done') return (
+    <div className="flex flex-col items-center gap-6">
+      <div className="rounded-3xl p-8 text-center w-full" style={{ background: PRIMARY_LIGHT, border: `2px solid ${PRIMARY}` }}>
+        <div className="text-5xl mb-4">🎯</div>
+        <p className="text-2xl font-bold mb-1" style={{ color: PRIMARY_TEXT }}>{score} / {total} rätt</p>
+        <p className="text-slate-500 text-sm mb-6">
+          {score === total
+            ? 'Perfekt! Du kan skilja rätt tillämpning från fällan!'
+            : score >= Math.round(total * 0.8)
+            ? 'Bra jobbat! Öva lite till på de du missat.'
+            : 'Fortsätt öva — du är på rätt spår!'}
+        </p>
+        <button onClick={restart} className="text-white font-bold px-8 py-3 rounded-2xl" style={{ background: PRIMARY }}>
+          Börja om
+        </button>
+      </div>
+    </div>
+  );
+
+  const chosenCorrect = chosen !== null && (chosen === 'A') === current.correctIsA;
+  const aCorrect = current.correctIsA;
+  const bCorrect = !current.correctIsA;
+
+  const optionStyle = (option) => {
+    if (!isAnswered) return { background: '#ffffff', borderColor: '#e2e8f0', color: '#1e293b' };
+    const thisCorrect = (option === 'A') ? aCorrect : bCorrect;
+    const thisChosen = chosen === option;
+    if (thisCorrect) return { background: '#dcfce7', borderColor: '#16a34a', color: '#15803d' };
+    if (thisChosen) return { background: '#fee2e2', borderColor: '#dc2626', color: '#dc2626' };
+    return { background: '#f8fafc', borderColor: '#e2e8f0', color: '#94a3b8' };
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-slate-400 font-medium">{idx + 1} av {total}</span>
+        <span className="text-xs font-bold px-3 py-1 rounded-full" style={{ background: PRIMARY_LIGHT, color: PRIMARY_TEXT }}>
+          {score} rätt
+        </span>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-1.5 mb-1">
+        <div className="h-1.5 rounded-full transition-all" style={{ width: `${(idx / total) * 100}%`, background: PRIMARY }} />
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm p-5 border-l-4" style={{ borderLeftColor: PRIMARY }}>
+        <p className="text-xs font-bold uppercase tracking-wide mb-1" style={{ color: PRIMARY }}>Begrepp</p>
+        <p className="text-xl font-bold text-slate-800">{current.item.term}</p>
+        <p className="text-slate-500 text-xs mt-1">Vilket alternativ beskriver en korrekt tillämpning?</p>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        {['A', 'B'].map(option => {
+          const text = option === 'A' ? current.optionA : current.optionB;
+          const s = optionStyle(option);
+          return (
+            <button
+              key={option}
+              onClick={() => choose(option)}
+              disabled={isAnswered}
+              className="w-full text-left px-4 py-4 rounded-xl text-sm border-2 transition-all leading-relaxed"
+              style={{ background: s.background, borderColor: s.borderColor, color: s.color, fontWeight: isAnswered && (option === 'A' ? aCorrect : bCorrect) ? 700 : 500 }}
+            >
+              <span className="font-bold mr-2">{option}.</span>{text}
+            </button>
+          );
+        })}
+      </div>
+
+      {isAnswered && (
+        <>
+          <div
+            className="rounded-xl p-4 text-sm leading-relaxed"
+            style={chosenCorrect
+              ? { background: '#dcfce7', color: '#15803d' }
+              : { background: '#fee2e2', color: '#dc2626' }}
+          >
+            {chosenCorrect ? '✓ Rätt! ' : '✗ Fel! '}
+            {current.item.explanation}
+          </div>
+          <button
+            onClick={next}
+            className="w-full text-white font-bold py-3 rounded-2xl text-sm"
+            style={{ background: PRIMARY }}
+          >
+            {idx + 1 < total ? 'Nästa begrepp →' : 'Visa resultat'}
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
 const VIEWS = ['Lista', 'Flashcards', 'Lucktext', 'Scenario', 'Icke-ex.'];
 
 function ListView() {
@@ -639,11 +890,7 @@ function App() {
       {activeView === 'Flashcards' && <FlashcardView />}
       {activeView === 'Lucktext' && <LucktextView />}
       {activeView === 'Scenario' && <ScenarioView />}
-      {activeView === 'Icke-ex.' && (
-        <div className="text-center text-slate-400 py-20 text-sm">
-          Kommer snart…
-        </div>
-      )}
+      {activeView === 'Icke-ex.' && <IckeExView />}
 
       {/* Footer */}
       <footer className="mt-10 text-center text-xs text-slate-400 italic">
