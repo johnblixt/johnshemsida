@@ -65,6 +65,213 @@ function shuffleArray(array) {
   return array;
 }
 
+const lucktextData = [
+  { id: 1,  term: 'Konstitutionell rätt',        sentence: 'Läraren förklarade att _____ handlar om hur grundlagarna skyddar medborgarnas fri- och rättigheter och reglerar den offentliga maktens kontroll.', definition: concepts[0].definition },
+  { id: 2,  term: 'Demokrati',                   sentence: 'Sverige styrs med _____ som grund, vilket innebär att medborgarna kan påverka politiken genom regelbundna val.', definition: concepts[1].definition },
+  { id: 3,  term: 'Rättstrygghet',               sentence: '_____ ger medborgarna visshet om att rättsväsendet faktiskt tillgodoser deras rättigheter.', definition: concepts[2].definition },
+  { id: 4,  term: 'Rättssäkerhet',               sentence: 'Tack vare _____ vet varje medborgare i förväg vilka konsekvenser en viss handling kan leda till.', definition: concepts[3].definition },
+  { id: 5,  term: 'Rättsstat',                   sentence: 'Sverige kallas en _____ eftersom domstolarna är självständiga och rättssäkerhet råder utan godtycke.', definition: concepts[4].definition },
+  { id: 6,  term: 'Rättssystem',                 sentence: 'Det svenska _____ reglerar allt från trafikregler till straffrättsliga påföljder.', definition: concepts[5].definition },
+  { id: 7,  term: 'Rättsregler',                 sentence: 'Riksdagen stiftar _____ som är nedskrivna och gäller för alla som bor i Sverige.', definition: concepts[6].definition },
+  { id: 8,  term: 'Sanktion',                    sentence: 'Domstolen dömde ut en _____ i form av böter eftersom föraren körde för fort.', definition: concepts[7].definition },
+  { id: 9,  term: 'Rättsordning',                sentence: 'Det svenska _____ är en hierarki av grundlagar, lagar, förordningar och föreskrifter.', definition: concepts[8].definition },
+  { id: 10, term: 'Normhierarki',                sentence: 'Tack vare _____ vet alla att grundlagen väger tyngre än en vanlig lag om de skulle stå i konflikt.', definition: concepts[9].definition },
+  { id: 11, term: 'Grundlagar',                  sentence: 'Sveriges fyra _____ är svårare att ändra än vanliga lagar och bildar grunden för det politiska systemet.', definition: concepts[10].definition },
+  { id: 12, term: 'Politiskt system',            sentence: 'Det svenska _____ innehåller institutioner som riksdag, regering och kommuner som påverkar hur landet styrs.', definition: concepts[11].definition },
+  { id: 13, term: 'Representativt styrelseskick',sentence: 'Sverige har _____, vilket betyder att medborgarna väljer folkvalda representanter som beslutar i riksdagen.', definition: concepts[12].definition },
+  { id: 14, term: 'Parlamentariskt styrelseskick',sentence: 'Med _____ krävs det att regeringen har riksdagens förtroende för att kunna styra landet.', definition: concepts[13].definition },
+  { id: 15, term: 'Folkrepresentation',          sentence: 'Riksdagen är Sveriges _____ och de 349 ledamöterna är valda av folket.', definition: concepts[14].definition },
+  { id: 16, term: 'Regioner',                    sentence: '_____ ansvarar för sjukvården och kallades tidigare för landsting; de är självstyrande på länsnivå.', definition: concepts[15].definition },
+  { id: 17, term: 'Kommuner',                    sentence: '_____ ansvarar för skola och äldreomsorg på lokal nivå och finns i hela Sverige.', definition: concepts[16].definition },
+  { id: 18, term: 'Den lagstiftande makten',     sentence: '_____ i Sverige tillhör riksdagen, som har rätt att stifta, ändra och upphäva lagar.', definition: concepts[17].definition },
+  { id: 19, term: 'Skattepengar',                sentence: 'Sjukhus, skolor och polisen finansieras av _____ som medborgarna betalar in varje år.', definition: concepts[18].definition },
+  { id: 20, term: 'Den verkställande makten',    sentence: '_____ har regeringen, vars uppgift är att förverkliga de lagar som riksdagen har stiftat.', definition: concepts[19].definition },
+  { id: 21, term: 'Riksdagens talman',           sentence: '_____ är det högsta valbara ämbetet i Sverige och leder riksdagens dagliga arbete.', definition: concepts[20].definition },
+  { id: 22, term: 'Den dömande makten',          sentence: '_____ utövas av de allmänna domstolarna, förvaltningsdomstolarna och specialdomstolarna.', definition: concepts[21].definition },
+  { id: 23, term: 'Likhetsprincipen',            sentence: 'Skattemyndigheten måste följa _____, vilket innebär att alla behandlas lika oavsett nationalitet eller utbildning.', definition: concepts[22].definition },
+  { id: 24, term: 'Objektivitetsprincipen',      sentence: 'Handläggaren påmindes om _____ – att alltid vara saklig och opartisk i sina beslut.', definition: concepts[23].definition },
+  { id: 25, term: 'Monarki',                     sentence: 'Sverige är en konstitutionell _____, där kungen är statschef men saknar politisk makt.', definition: concepts[24].definition },
+  { id: 26, term: 'Successionsordningen',        sentence: '_____ är den grundlag som bestämmer vem som kan bli Sveriges statschef.', definition: concepts[25].definition },
+  { id: 27, term: 'Successionsrätten',           sentence: '_____ innebär att tronen ärvs av monarkens äldsta barn, oavsett kön.', definition: concepts[26].definition },
+];
+
+function LucktextView() {
+  const normalize = (s) => s.trim().toLowerCase();
+  const initStates = () => lucktextData.map(() => ({ value: '', status: 'unanswered', attempts: 0 }));
+
+  const [states, setStates] = React.useState(initStates);
+  const [struckTerms, setStruckTerms] = React.useState(new Set());
+
+  const finished = states.every(s => s.status === 'correct' || s.status === 'revealed');
+  const correctCount = states.filter(s => s.status === 'correct').length;
+
+  const handleInput = (idx, val) => {
+    setStates(prev => {
+      const next = [...prev];
+      next[idx] = { ...next[idx], value: val };
+      return next;
+    });
+  };
+
+  const check = (idx) => {
+    const item = lucktextData[idx];
+    const state = states[idx];
+    if (state.status === 'correct' || state.status === 'revealed') return;
+    setStates(prev => {
+      const next = [...prev];
+      if (normalize(state.value) === normalize(item.term)) {
+        next[idx] = { ...state, status: 'correct' };
+        setStruckTerms(s => new Set([...s, item.term]));
+      } else if (state.attempts === 0) {
+        next[idx] = { ...state, status: 'warning', attempts: 1 };
+      } else {
+        next[idx] = { ...state, status: 'wrong', attempts: state.attempts + 1 };
+      }
+      return next;
+    });
+  };
+
+  const correctAll = () => {
+    setStates(prev => prev.map((state, idx) => {
+      if (state.status === 'correct') return state;
+      return { ...state, status: 'revealed', value: lucktextData[idx].term };
+    }));
+    setStruckTerms(new Set(lucktextData.map(d => d.term)));
+  };
+
+  const restart = () => {
+    setStates(initStates());
+    setStruckTerms(new Set());
+  };
+
+  const borderColor = (status) => {
+    if (status === 'correct') return '#16a34a';
+    if (status === 'revealed' || status === 'wrong') return '#dc2626';
+    if (status === 'warning') return '#f97316';
+    return '#e2e8f0';
+  };
+
+  return (
+    <div>
+      {/* Begreppsbank */}
+      <div className="bg-white rounded-2xl border border-slate-200 p-4 mb-6 shadow-sm">
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Begreppsbank</p>
+        <div className="flex flex-wrap gap-2">
+          {lucktextData.map(item => (
+            <span
+              key={item.id}
+              className="px-2 py-1 rounded-lg text-sm font-medium transition-all"
+              style={
+                struckTerms.has(item.term)
+                  ? { background: '#f0fdf4', color: '#86efac', textDecoration: 'line-through' }
+                  : { background: PRIMARY_LIGHT, color: PRIMARY_TEXT }
+              }
+            >
+              {item.term}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Sentences */}
+      <div className="flex flex-col gap-4 mb-6">
+        {lucktextData.map((item, idx) => {
+          const state = states[idx];
+          const parts = item.sentence.split('_____');
+          const inputWidth = Math.max(item.term.length * 9, 130);
+
+          return (
+            <div
+              key={item.id}
+              className="bg-white rounded-xl shadow-sm p-4"
+              style={{ border: `1.5px solid ${borderColor(state.status)}` }}
+            >
+              <p className="text-slate-700 text-sm leading-relaxed mb-2 flex flex-wrap items-baseline gap-x-1">
+                <span>{parts[0]}</span>
+                <input
+                  type="text"
+                  value={state.value}
+                  onChange={e => handleInput(idx, e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && check(idx)}
+                  disabled={state.status === 'correct' || state.status === 'revealed'}
+                  placeholder="skriv begrepp…"
+                  className="border-b-2 bg-transparent outline-none px-1 text-sm font-semibold"
+                  style={{
+                    width: inputWidth + 'px',
+                    borderBottomColor: borderColor(state.status) === '#e2e8f0' ? PRIMARY : borderColor(state.status),
+                    color: state.status === 'correct' ? '#16a34a' : state.status === 'revealed' ? '#dc2626' : '#1e293b',
+                  }}
+                />
+                <span>{parts[1]}</span>
+              </p>
+
+              {state.status === 'warning' && (
+                <p className="text-orange-500 text-xs font-medium mt-1">Är du säker att du stavat rätt?</p>
+              )}
+              {state.status === 'wrong' && (
+                <p className="text-red-500 text-xs font-medium mt-1">Fel svar — prova igen eller tryck "Rätta alla".</p>
+              )}
+              {(state.status === 'correct' || state.status === 'revealed') && (
+                <div
+                  className="mt-2 text-xs rounded-lg p-2 leading-relaxed"
+                  style={{
+                    background: state.status === 'correct' ? '#dcfce7' : '#fee2e2',
+                    color: state.status === 'correct' ? '#15803d' : '#dc2626',
+                  }}
+                >
+                  {state.status === 'correct' ? '✓ Rätt! ' : `✗ Rätt svar: ${item.term}. `}
+                  {item.definition}
+                </div>
+              )}
+
+              {state.status !== 'correct' && state.status !== 'revealed' && (
+                <button
+                  onClick={() => check(idx)}
+                  className="mt-2 text-xs font-bold px-3 py-1 rounded-lg text-white"
+                  style={{ background: PRIMARY }}
+                >
+                  Kontrollera
+                </button>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Result */}
+      {finished && (
+        <div className="rounded-2xl p-6 text-center mb-4 border-2" style={{ background: '#f0fdfa', borderColor: PRIMARY }}>
+          <p className="text-2xl font-bold mb-1" style={{ color: PRIMARY_TEXT }}>
+            {correctCount} / {lucktextData.length} rätt
+          </p>
+          <p className="text-slate-500 text-sm">
+            {correctCount === lucktextData.length
+              ? '🎉 Perfekt! Du kan alla begrepp!'
+              : correctCount >= Math.round(lucktextData.length * 0.8)
+              ? '👍 Bra jobbat! Öva lite till på de du missat.'
+              : '📚 Fortsätt öva – du är på rätt spår!'}
+          </p>
+        </div>
+      )}
+
+      <div className="flex gap-3 mb-6">
+        {!finished && (
+          <button onClick={correctAll} className="flex-1 bg-slate-200 text-slate-700 font-bold py-2 rounded-xl text-sm hover:bg-slate-300 transition-colors">
+            Rätta alla
+          </button>
+        )}
+        <button
+          onClick={restart}
+          className="flex-1 text-white font-bold py-2 rounded-xl text-sm transition-colors"
+          style={{ background: PRIMARY }}
+        >
+          Börja om
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function FlashcardView() {
   const total = concepts.length;
   const [deck, setDeck] = React.useState(() => shuffleArray([...concepts]));
@@ -269,7 +476,8 @@ function App() {
       {/* Content */}
       {activeView === 'Lista' && <ListView />}
       {activeView === 'Flashcards' && <FlashcardView />}
-      {activeView !== 'Lista' && activeView !== 'Flashcards' && (
+      {activeView === 'Lucktext' && <LucktextView />}
+      {activeView !== 'Lista' && activeView !== 'Flashcards' && activeView !== 'Lucktext' && (
         <div className="text-center text-slate-400 py-20 text-sm">
           Kommer snart…
         </div>
