@@ -624,6 +624,439 @@
       );
     }
 
+    const ICKE_EXEMPEL = [
+      { id:  1, term: 'Den vetenskapliga revolutionen',
+        options: [
+          { text: 'Galileo använde teleskop och experiment istället för att hänvisa till kyrkans lära och antika skrifter.', correct: true },
+          { text: 'En nutida fysiker utmanar en etablerad teori med ett nytt banbrytande experiment.', correct: false }
+        ],
+        explanation: 'Den vetenskapliga revolutionen avser skiftet ca 1500–1700 då man bröt med auktoritetstron. En modern fysiker som utmanar en teori gör helt vanlig vetenskap – inget historiskt revolutionsskifte.' },
+      { id:  2, term: 'Frågeställning',
+        options: [
+          { text: '"Påverkar mängden solljus hur fort ett frö gror?"', correct: true },
+          { text: '"Jag vill undersöka allt om hur ljus påverkar växter och deras fysiologi."', correct: false }
+        ],
+        explanation: 'En frågeställning ska vara specifik och avgränsad. Det andra alternativet är för brett och oprecist för att fungera som frågeställning.' },
+      { id:  3, term: 'Hypotes',
+        options: [
+          { text: '"Jag tror att växter med mer solljus växer snabbare" – formulerat innan undersökningen.', correct: true },
+          { text: '"Växter med mer solljus växer snabbare" – en slutsats efter att experimenten avslutats.', correct: false }
+        ],
+        explanation: 'En hypotes formuleras INNAN man vet svaret. Det andra alternativet är en slutsats – den dras efter att resultaten redan är klara.' },
+      { id:  4, term: 'Testbar hypotes',
+        options: [
+          { text: '"Saltvatten kokar vid en högre temperatur än destillerat vatten" – kan mätas med termometer.', correct: true },
+          { text: '"Kärlek är det viktigaste i livet" – ett påstående som inte kan undersökas med experiment.', correct: false }
+        ],
+        explanation: 'En testbar hypotes måste kunna undersökas med mätningar. "Kärlek är det viktigaste" är ett värdeomdöme som inte är möjligt att testa naturvetenskapligt.' },
+      { id:  5, term: 'Falsifierbar hypotes',
+        options: [
+          { text: '"Alla metallföremål sjunker i vatten" – ett enda flytande metallföremål motbevisar det.', correct: true },
+          { text: '"Universum skapades för ett syfte" – ett påstående som inga observationer kan motbevisa.', correct: false }
+        ],
+        explanation: 'Falsifierbarhet kräver att det är möjligt att hitta bevis MOT påståendet. "Universum skapades för ett syfte" är inte falsifierbart.' },
+      { id:  6, term: 'Repeterbart experiment',
+        options: [
+          { text: 'Tre oberoende laboratorier i olika länder genomför exakt samma försök och jämför resultaten.', correct: true },
+          { text: 'En forskare upprepar sitt eget experiment fem gånger i rad för att kontrollera sin precision.', correct: false }
+        ],
+        explanation: 'Repeterbarhet handlar om att ANDRA kan genomföra och bekräfta experimentet. Att en forskare upprepar sina egna mätningar handlar om reliabilitet, inte vetenskaplig repeterbarhet.' },
+      { id:  7, term: 'Observationer',
+        options: [
+          { text: 'Astronomen noterar var Jupiter befinner sig varje kväll – hon kan inte flytta himlakropparna.', correct: true },
+          { text: 'Biologen förändrar mängden näring i vattnet och noterar hur snabbt algerna växer.', correct: false }
+        ],
+        explanation: 'Observationer innebär att man iakttar utan att experimentellt manipulera. Att ändra näring och mäta effekten är ett experiment.' },
+      { id:  8, term: 'Experiment',
+        options: [
+          { text: 'Kemisten ändrar pH-värdet i lösningen och mäter hur reaktionshastigheten förändras.', correct: true },
+          { text: 'Geologen studerar fossiler i bergsskikten och noterar vilka arter som förekommer i olika lager.', correct: false }
+        ],
+        explanation: 'I ett experiment avsiktligt ändrar man en variabel. Att studera fossiler utan att manipulera är observation, inte experiment.' },
+      { id:  9, term: 'Simuleringar',
+        options: [
+          { text: 'Klimatforskare matar in CO₂-nivåer i ett datorprogram för att beräkna hur klimatet kan se ut 2100.', correct: true },
+          { text: 'Meteorologen samlar in temperaturmätningar från 500 väderstationer runt om i Sverige.', correct: false }
+        ],
+        explanation: 'Simuleringar använder datorberäkningar för att förutsäga förlopp. Att samla in riktiga mätdata är datainsamling, inte simulering.' },
+      { id: 10, term: 'Den vetenskapliga metoden',
+        options: [
+          { text: 'En geolog och en biolog arbetar båda vetenskapligt men deras tillvägagångssätt skiljer sig markant.', correct: true },
+          { text: 'Alla naturvetare följer samma bestämda femstegsmodell: observation, fråga, hypotes, experiment, slutsats.', correct: false }
+        ],
+        explanation: 'Det finns inte en enda universell vetenskaplig metod – det är en vanlig missuppfattning. Tillvägagångssättet varierar beroende på ämne och frågeställning.' },
+      { id: 11, term: 'Den hypotetisk-deduktiva metoden',
+        options: [
+          { text: 'Forskaren formulerar en hypotes, härleder en förutsägelse, testar den och drar en slutsats.', correct: true },
+          { text: 'Forskaren samlar in massvis med data och försöker sedan hitta mönster som kan förklara dem.', correct: false }
+        ],
+        explanation: 'Den hypotetisk-deduktiva metoden börjar med en hypotes. Det andra alternativet beskriver induktiv metod – man startar med data och arbetar sig mot en förklaring.' },
+      { id: 12, term: 'Förutsägelse',
+        options: [
+          { text: '"Om min hypotes stämmer borde fröna i mörkret inte ha grott alls efter tre dagar."', correct: true },
+          { text: '"Fröna grodde inte i mörkret, precis som hypotesen föreslog." – skrivet efter experimentet.', correct: false }
+        ],
+        explanation: 'En förutsägelse formuleras INNAN experimentet. Det andra alternativet beskriver resultaten efteråt – det är en slutsats.' },
+      { id: 13, term: 'Slutsats',
+        options: [
+          { text: 'Resultaten jämförs med förutsägelsen: stämde de ger hypotesen stöd, stämde de inte falsifieras den.', correct: true },
+          { text: 'Forskaren beskriver vad hon förväntar sig att se – formulerat innan experimentet är avslutat.', correct: false }
+        ],
+        explanation: 'En slutsats dras EFTER att resultaten analyserats och jämförts med förutsägelsen. Det andra alternativet är en förutsägelse.' },
+      { id: 14, term: 'Vetenskaplig teori',
+        options: [
+          { text: 'Evolutionsteorin stöds av fossiler, DNA-analys och observationer – long ifrån en lös gissning.', correct: true },
+          { text: '"Jag har en teori om varför min chef alltid är på dåligt humör på måndagar."', correct: false }
+        ],
+        explanation: 'En vetenskaplig teori är en välunderbyggd förklaringsmodell stödd av systematisk forskning. I vardagsspråk kan "teori" betyda en gissning – en vanlig missuppfattning.' },
+      { id: 15, term: 'Paradigmskifte',
+        options: [
+          { text: 'Heliocentrism ersätter geocentrism när observationer och beräkningar motbevisar den gamla modellen.', correct: true },
+          { text: 'En ny studie visar att ett visst kosttillskott inte har de positiva effekter man tidigare trodde.', correct: false }
+        ],
+        explanation: 'Ett paradigmskifte kräver att en hel förklaringsmodell byts ut. Att en studie reviderar ett specifikt påstående är ingen paradigmförändring.' },
+      { id: 16, term: 'Naturvetenskapens begränsningar',
+        options: [
+          { text: 'Vetenskapen kan mäta ett ämnes giftighet men kan inte avgöra om det är rätt att använda det som vapen.', correct: true },
+          { text: 'Vetenskapen kan inte undersöka dåtiden eftersom det är omöjligt att göra experiment på historiska händelser.', correct: false }
+        ],
+        explanation: 'Naturvetenskapens begränsning handlar om etiska frågor (rätt/fel). Det andra alternativet är fel – vetenskapen undersöker dåtiden via t.ex. fossil och isotoper.' },
+      { id: 17, term: 'Forskningsetik',
+        options: [
+          { text: 'En oberoende etikkommitté granskar studiens plan för att säkerställa att den bedrivs objektivt och utan skada.', correct: true },
+          { text: 'Forskaren väljer att inte publicera negativa resultat för att skydda sin karriär.', correct: false }
+        ],
+        explanation: 'Forskningsetik handlar om vägledning och kontroll för korrekt forskning. Det andra alternativet beskriver oetiskt beteende – undanhållande av resultat.' },
+      { id: 18, term: 'Forskningsfusk',
+        options: [
+          { text: 'Forskaren kopierar en kollegas tabell utan källhänvisning och lägger till mätpunkter som aldrig samlades in.', correct: true },
+          { text: 'Forskaren väljer att inte aktivt marknadsföra ett negativt resultat och publicerar en positiv uppföljning.', correct: false }
+        ],
+        explanation: 'Forskningsfusk innebär plagiering, förfalskning eller undanhållande av resultat. Att inte marknadsföra ett negativt resultat är tveksamt men kräver aktiv förfalskning för att räknas som fusk.' },
+      { id: 19, term: 'Etikprövning',
+        options: [
+          { text: 'Universitetet ansöker om tillstånd från en statlig myndighet innan de börjar använda möss i ett läkemedelsförsök.', correct: true },
+          { text: 'Läraren ber föräldrar skriva under ett informationsbrev om att deras barn deltar i ett enkätprojekt.', correct: false }
+        ],
+        explanation: 'Etikprövning krävs vid försök på ryggradsdjur, bläckfiskar och människor och sker via en statlig myndighet. En enkel enkät i skolan kräver inte formell etikprövning.' },
+      { id: 20, term: 'Oberoende variabel',
+        options: [
+          { text: 'Mängden gödning som tillsätts – det som forskaren aktivt väljer att ändra i experimentet.', correct: true },
+          { text: 'Plantornas höjd, som mäts och registreras varje dag under hela experimentet.', correct: false }
+        ],
+        explanation: 'Den oberoende variabeln är det som ÄNDRAS aktivt av forskaren. Plantornas höjd är det man mäter – det är den beroende variabeln.' },
+      { id: 21, term: 'Beroende variabel',
+        options: [
+          { text: 'Musornas reaktionstid, som mäts efter att de exponerats för olika mängder koffein.', correct: true },
+          { text: 'Mängden koffein som injiceras i varje grupp av möss.', correct: false }
+        ],
+        explanation: 'Den beroende variabeln är det som MÄTS och antas påverkas. Koffeinmängden är det man ändrar – den oberoende variabeln.' },
+      { id: 22, term: 'Kontrollerade variabler',
+        options: [
+          { text: 'Temperatur, luftfuktighet och jordmängd hålls exakt lika för alla grupper under hela experimentet.', correct: true },
+          { text: 'Forskaren noterar och registrerar alla faktorer som varierar naturligt mellan grupperna.', correct: false }
+        ],
+        explanation: 'Kontrollerade variabler ska hållas KONSTANTA – inte bara registreras. Det andra alternativet beskriver mätning av variation, inte kontroll av den.' },
+      { id: 23, term: 'Störvariabler',
+        options: [
+          { text: 'Luftdraget från ventilationssystemet kan oavsiktligt påverka reaktionshastigheten i laboratoriet.', correct: true },
+          { text: 'Temperaturen i laboratoriet, som aktivt ändras av forskaren för att undersöka dess effekt.', correct: false }
+        ],
+        explanation: 'Störvariabler är faktorer man INTE planerat att ändra men som ändå kan snedvrida resultaten. Om man medvetet ändrar temperaturen är det en oberoende variabel.' },
+      { id: 24, term: 'Kontrollgrupp',
+        options: [
+          { text: 'En grupp råttor som inte får någon behandling alls – de används enbart som jämförelsegrupp.', correct: true },
+          { text: 'En grupp råttor som får den lägsta dosen av det läkemedel som testas.', correct: false }
+        ],
+        explanation: 'Kontrollgruppen ska inte utsättas för den behandling som undersöks. En grupp som får lägst dos är fortfarande del av experimentet.' },
+      { id: 25, term: 'Experimentgrupp',
+        options: [
+          { text: 'De patienter som faktiskt fick det nya läkemedlet under studien.', correct: true },
+          { text: 'De patienter som fick sockerpiller och visade stark förbättring tack vare placeboeffekten.', correct: false }
+        ],
+        explanation: 'Experimentgruppen utsätts för behandlingen som undersöks. De som fick sockerpiller ingår i kontrollgruppen – deras förbättring är placeboeffekten.' },
+      { id: 26, term: 'Slumpen',
+        options: [
+          { text: 'Alla tre i testgruppen råkade vara ovanligt friska individer – resultaten kan bero på det, inte på ämnet.', correct: true },
+          { text: 'Forskaren slumpmässigt delar in försökspersoner i kontroll- och experimentgrupp.', correct: false }
+        ],
+        explanation: 'Slumpen som begrepp handlar om oväntade variationer som kan förklara resultaten. Slumpmässig indelning är en metod för att minska bias – inte ett exempel på slumpens inverkan.' },
+      { id: 27, term: 'Blindstudie',
+        options: [
+          { text: 'Deltagarna vet inte om de fått det aktiva läkemedlet eller ett sockerpiller.', correct: true },
+          { text: 'Forskaren vet inte vem i studien som tillhör experimentgruppen respektive kontrollgruppen.', correct: false }
+        ],
+        explanation: 'I en blindstudie är det DELTAGARNA som hålls ovetande. Om FORSKAREN hålls ovetande kallas det dubbelblind studie – ett relaterat men annat begrepp.' },
+      { id: 28, term: 'Placeboeffekten',
+        options: [
+          { text: 'Patienter som fick sockerpiller rapporterade minskad smärta – de trodde att de fått riktig medicin.', correct: true },
+          { text: 'Läkemedlet fungerade bättre för äldre patienter eftersom deras immunsystem reagerade annorlunda.', correct: false }
+        ],
+        explanation: 'Placeboeffekten uppstår när förväntan – inte ämnet – skapar förbättring. Att äldre reagerar annorlunda handlar om biologiska skillnader, inte om placebo.' },
+      { id: 29, term: 'Medelvärde',
+        options: [
+          { text: 'De fem mätningarna adderas och delas med fem för att få ett representativt tal för gruppen.', correct: true },
+          { text: 'Det mätvärde som förekommer flest gånger i datamängden väljs för att representera gruppen.', correct: false }
+        ],
+        explanation: 'Medelvärdet är summan delat på antalet mätningar. Det vanligast förekommande värdet kallas typvärde – inte medelvärde.' },
+      { id: 30, term: 'Trendlinje',
+        options: [
+          { text: 'En linje ritas i diagrammet som visar att temperaturerna generellt ökat 50 år, trots enstaka kalla år.', correct: true },
+          { text: 'Varje enskilt uppmätt temperaturvärde markeras med en punkt i diagrammet.', correct: false }
+        ],
+        explanation: 'En trendlinje visar den ÖVERGRIPANDE tendensen, inte enskilda datapunkter. Att markera enskilda mätvärden är ett punktdiagram, inte en trendlinje.' },
+      { id: 31, term: 'Samvariation (korrelation)',
+        options: [
+          { text: 'Glasskonsumtion och drunkningsolyckor ökar båda på sommaren – de rör sig parallellt.', correct: true },
+          { text: 'Rökning orsakar lungcancer – det finns ett direkt biologiskt samband som förklarar kopplingen.', correct: false }
+        ],
+        explanation: 'Samvariation innebär att två variabler varierar tillsammans utan att det ena nödvändigtvis orsakar det andra. Rökning och lungcancer är ett orsakssamband, inte bara samvariation.' },
+      { id: 32, term: 'Orsakssamband',
+        options: [
+          { text: 'Cigarettrökning leder faktiskt till lungcancer – det finns ett direkt biologiskt förklaringssätt.', correct: true },
+          { text: 'Länder med hög chokladkonsumtion har fler nobelpristagare – båda ökar med välstånd.', correct: false }
+        ],
+        explanation: 'Orsakssamband kräver att den ena faktorn verkligen framkallar den andra. Choklad och nobelpris samvarierar pga välstånd – ett klassiskt exempel på samvariation utan orsakssamband.' },
+      { id: 33, term: 'Vetenskaplig rapport',
+        options: [
+          { text: 'Rapporten innehåller inledning, material och metod, resultat, diskussion och källförteckning i rätt ordning.', correct: true },
+          { text: 'Forskaren sammanfattar de viktigaste slutsatserna i ett email till sin handledare.', correct: false }
+        ],
+        explanation: 'En vetenskaplig rapport har en specifik struktur med bestämda delar. Ett email till handledaren är informell kommunikation.' },
+      { id: 34, term: 'Riskbedömning',
+        options: [
+          { text: 'Eleven listar möjliga risker och skyddsåtgärder INNAN syraförsöket påbörjas.', correct: true },
+          { text: 'Eleven skriver i rapporten efteråt att syran var starkare än väntat och att skyddsglasögon var nödvändiga.', correct: false }
+        ],
+        explanation: 'Riskbedömning görs INNAN det praktiska arbetet. Att notera risker efteråt i rapporten är reflektion, inte riskbedömning.' },
+      { id: 35, term: 'Farosymboler',
+        options: [
+          { text: 'En orange romb med en flamma på flaskan visar att innehållet är brandfarligt.', correct: true },
+          { text: 'Etiketten på produkten listar alla ingående kemikalier och deras procentuella koncentrationer.', correct: false }
+        ],
+        explanation: 'Farosymboler är standardiserade grafiska varningssymboler. En lista på kemikalier och koncentrationer är en innehållsförteckning, inte en farosymbol.' },
+      { id: 36, term: 'Vetenskapligt förhållningssätt',
+        options: [
+          { text: 'Du tar del av en studie som talar emot din uppfattning och funderar öppet på om dina slutsatser håller.', correct: true },
+          { text: 'Du söker aktivt efter bevis som stödjer det du redan tror för att bygga ett starkare argument.', correct: false }
+        ],
+        explanation: 'Vetenskapligt förhållningssätt innebär att vara öppen, kritisk och opartisk. Det andra alternativet beskriver bekräftelsebias – man söker bara information som bekräftar det man tror.' },
+      { id: 37, term: 'Källkritik',
+        options: [
+          { text: 'Du granskar vem som skrivit artikeln, när den publicerades och om avsändaren kan ha ett intresse av att vinkla.', correct: true },
+          { text: 'Du väljer enbart att använda källor från välkända, stora medier som SVT och DN.', correct: false }
+        ],
+        explanation: 'Källkritik innebär systematisk granskning – inte att automatiskt lita på välkända medier. Även stora medier kan ha vinklade artiklar.' },
+      { id: 38, term: 'Källkritikens ABC',
+        options: [
+          { text: 'Du ställer dig frågorna: Är källan äkta, aktuell, beroende, tendensiös och granskad?', correct: true },
+          { text: 'Du kontrollerar att källan är publicerad i en vetenskaplig tidskrift för att garantera trovärdigheten.', correct: false }
+        ],
+        explanation: 'Källkritikens ABC är ett ramverk med specifika frågor om äkthet, aktualitet och tendens. Att enbart kontrollera om källan är vetenskaplig är ofullständigt – även sådana kan vara vinklade.' },
+      { id: 39, term: 'Primärkälla',
+        options: [
+          { text: 'En vetenskaplig artikel som presenterar egna experiment och observationer som forskargruppen genomfört.', correct: true },
+          { text: 'En välrenommerad lärobok som sammanfattar forskning inom ett ämne.', correct: false }
+        ],
+        explanation: 'En primärkälla bygger på egna insamlade data. En lärobok sammanfattar andras forskning – det är en sekundärkälla.' },
+      { id: 40, term: 'Sekundärkälla',
+        options: [
+          { text: 'En bok som tolkar och sammanfattar resultaten från tre olika studier utan att samla in egna data.', correct: true },
+          { text: 'En rapport baserad på intervjuer och enkäter som forskargruppen själv administrerade.', correct: false }
+        ],
+        explanation: 'En sekundärkälla hämtar information från andra källor. En rapport baserad på egna intervjuer är en primärkälla – forskargruppen samlade in data själva.' },
+      { id: 41, term: 'Tendensiös (vinklad) källa',
+        options: [
+          { text: 'En hälsorapport om sockrets risker finansierad av sockerindustrin – ekonomiska intressen påverkar slutsatserna.', correct: true },
+          { text: 'En ensamforskares artikel som inte granskat av kollegor och därför kan innehålla metodfel.', correct: false }
+        ],
+        explanation: 'En tendensiös källa har ett underliggande intresse som påverkar innehållet. En ogranskat källa kan ha fel av slarv men är inte nödvändigtvis tendensiös – tendens kräver ett avsiktligt syfte.' },
+      { id: 42, term: 'Peer review',
+        options: [
+          { text: 'Artikeln läses igenom och godkänns av minst två oberoende experter inom fältet innan den publiceras.', correct: true },
+          { text: 'Artikeln publiceras på ett öppet vetenskapsforum där vem som helst kan lämna kommentarer.', correct: false }
+        ],
+        explanation: 'Peer review innebär granskning av kvalificerade oberoende experter INNAN publicering. Öppen kommentering på ett forum är inte formell granskning.' },
+      { id: 43, term: 'Desinformation',
+        options: [
+          { text: 'En nyhetssajt sprider medvetet en falsk historia om att ett vaccin orsakar allvarliga biverkningar.', correct: true },
+          { text: 'En journalist publicerar ett faktafel som sedan rättas efter påpekanden från läsare.', correct: false }
+        ],
+        explanation: 'Desinformation är falsk information spridd med AVSIKT att vilseleda. En journalist som gör ett misstag och rättar det sprider inte desinformation – det saknas det avsiktliga inslaget.' },
+      { id: 44, term: 'Propaganda',
+        options: [
+          { text: 'Under kriget sprids planscher för att påverka befolkningens syn på fienden och stärka stödet för ledarna.', correct: true },
+          { text: 'En AI-genererad video sprids för att ge sken av att en politiker sagt saker de aldrig sagt.', correct: false }
+        ],
+        explanation: 'Propaganda syftar till att vinkla opinion och kan innehålla sanningsenliga påståenden – det är det medvetna syftet som definierar det. En AI-fabricerad video med falskt innehåll är desinformation.' },
+      { id: 45, term: 'Deepfakes',
+        options: [
+          { text: 'En AI-genererad video visar en känd politiker säga saker de aldrig sagt – skapad med maskininlärning.', correct: true },
+          { text: 'En fotoshoppad bild som tar bort rynkor från ett ansikte för att personen ska se yngre ut.', correct: false }
+        ],
+        explanation: 'Deepfakes skapas med AI för att skapa realistiska falska video- eller ljudmaterial av riktiga personer. Enkel bildmanipulering med Photoshop är inte ett deepfake.' },
+      { id: 46, term: 'Konspirationsteorier',
+        options: [
+          { text: 'Trots att tusentals NASA-anställda dokumenterade månlandningen tror en del att en hemlig grupp planerade allt som en bluff.', correct: true },
+          { text: 'En journalist avslöjar med dokument att ett läkemedelsföretag aktivt dolde information om biverkningar.', correct: false }
+        ],
+        explanation: 'Konspirationsteorier saknar empiriskt stöd och handlar om hemliga grupper med dolda mål. Journalistens avslöjande bygger på bevis – det är investigativ journalistik, inte konspirationsteori.' },
+      { id: 47, term: 'Faktaresistens',
+        options: [
+          { text: 'Läkaren visar röntgenbilder som dokumenterar skadan, men patienten insisterar på att bilderna måste vara fel.', correct: true },
+          { text: 'Eleven tror att svaret är C men ändrar sig direkt när läraren visar att svaret faktiskt är A.', correct: false }
+        ],
+        explanation: 'Faktaresistens innebär att hålla fast vid övertygelse trots motbevis. Det andra alternativet beskriver det MOTSATTA – eleven tar till sig fakta och ändrar uppfattning.' },
+      { id: 48, term: 'Ekokammare',
+        options: [
+          { text: 'I gruppen bekräftar alla varandra och de som framför avvikande åsikter utestängs eller ignoreras direkt.', correct: true },
+          { text: 'En algoritm visar dig allt mer anpassat innehåll baserat på vad du tidigare klickat på.', correct: false }
+        ],
+        explanation: 'Ekokammare handlar om social dynamik där åsikter förstärks inom en grupp. Det andra alternativet beskriver filterbubblor – ett algoritmbaserat fenomen.' },
+      { id: 49, term: 'Filterbubblor',
+        options: [
+          { text: 'Algoritmerna registrerar dina klick och visar dig allt mer ensidigt innehåll utan att du märker det.', correct: true },
+          { text: 'En sluten Facebook-grupp där alla delar samma politiska åsikter och aldrig lyfter in motargument.', correct: false }
+        ],
+        explanation: 'Filterbubblor skapas av algoritmer. En sluten grupp med likasinnade är en ekokammare – skapad av social dynamik, inte av algoritmer.' },
+      { id: 50, term: 'Bekräftelsebias',
+        options: [
+          { text: 'Du klickar bara på artiklar som verkar bekräfta din uppfattning och ignorerar dem som talar emot.', correct: true },
+          { text: 'Du läser en artikel med ett öppet sinne, hittar den övertygande och ändrar faktiskt uppfattning.', correct: false }
+        ],
+        explanation: 'Bekräftelsebias innebär att selektivt söka information som bekräftar det man redan tror. Det andra alternativet är tvärtom kritiskt tänkande – man kan ändra åsikt efter ny information.' },
+      { id: 51, term: 'Kognitiv dissonans',
+        options: [
+          { text: 'Du har alltid trott att ett kosttillskott är nyttigt, men en studie visar det motsatta – du börjar ifrågasätta studien.', correct: true },
+          { text: 'Du vet att rökning är farligt men röker ändå – det är svårt att bryta beroendet.', correct: false }
+        ],
+        explanation: 'Kognitiv dissonans är den inre konflikt som uppstår när fakta och övertygelse krockar och kan leda till att man förnekar fakta. Det andra alternativet handlar om beroendeproblematik, inte kognitiv dissonans.' },
+      { id: 52, term: 'Pseudovetenskap',
+        options: [
+          { text: 'Astrologin påstår sig förutsäga personlighet baserat på födelsetidpunkten men saknar kontrollerade experiment.', correct: true },
+          { text: 'En ny behandling som ännu inte godkänts av Läkemedelsverket men visar lovande preliminära studieresultat.', correct: false }
+        ],
+        explanation: 'Pseudovetenskap gör anspråk på vetenskaplig status utan faktiskt vetenskapligt stöd. En behandling med lovande preliminära studier som inväntar godkännande är under vetenskaplig prövning – inte pseudovetenskap.' },
+    ];
+
+    function IckeExempelView() {
+      const [items, setItems] = React.useState(() =>
+        shuffleArray(ICKE_EXEMPEL.map(item => ({ ...item, options: shuffleArray([...item.options]) })))
+      );
+      const [idx, setIdx] = React.useState(0);
+      const [selected, setSelected] = React.useState(null);
+      const [score, setScore] = React.useState(0);
+      const [done, setDone] = React.useState(false);
+      const total = items.length;
+
+      const restart = () => {
+        setItems(shuffleArray(ICKE_EXEMPEL.map(item => ({ ...item, options: shuffleArray([...item.options]) }))));
+        setIdx(0);
+        setSelected(null);
+        setScore(0);
+        setDone(false);
+      };
+
+      const handleSelect = (optIdx) => {
+        if (selected !== null) return;
+        setSelected(optIdx);
+        if (items[idx].options[optIdx].correct) setScore(s => s + 1);
+      };
+
+      const handleNext = () => {
+        if (idx + 1 >= total) { setDone(true); }
+        else { setIdx(i => i + 1); setSelected(null); }
+      };
+
+      if (done) {
+        const pct = Math.round((score / total) * 100);
+        return (
+          <div className="flex flex-col items-center gap-6 py-8">
+            <div className="bg-white border-2 rounded-3xl p-8 text-center w-full max-w-sm shadow-sm" style={{borderColor: PRIMARY}}>
+              <div className="text-5xl mb-4">{pct===100?'🏆':pct>=80?'🌟':pct>=60?'👍':'📚'}</div>
+              <p className="text-3xl font-bold mb-1" style={{color: PRIMARY_TEXT}}>{score} / {total}</p>
+              <p className="text-gray-500 text-sm mb-6">
+                {pct===100 ? 'Perfekt! Du kan skilja rätt tillämpning från fällan!' :
+                 pct>=80   ? 'Mycket bra! Du hanterar de flesta begreppen korrekt.' :
+                 pct>=60   ? 'Bra kämpat – öva lite till!' : 'Fortsätt träna så sitter det snart!'}
+              </p>
+              <button onClick={restart} className="w-full text-white px-8 py-3 rounded-2xl font-bold transition-colors" style={{background: PRIMARY}}>
+                Börja om
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      const current = items[idx];
+      const isAnswered = selected !== null;
+      const progress = (idx / total) * 100;
+
+      return (
+        <div className="flex flex-col gap-4 max-w-xl mx-auto">
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div className="h-full rounded-full transition-all duration-300" style={{width: `${progress}%`, background: PRIMARY}} />
+            </div>
+            <span className="text-xs text-gray-500 font-medium whitespace-nowrap">{idx+1} / {total}</span>
+          </div>
+
+          <div className="flex justify-end">
+            <span className="text-sm font-semibold px-3 py-1 rounded-full" style={{background: PRIMARY_LIGHT, color: PRIMARY_TEXT}}>
+              {score} rätt
+            </span>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+            <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{color: PRIMARY}}>Vilket alternativ är en korrekt tillämpning?</p>
+            <p className="text-lg font-bold text-gray-800">{current.term}</p>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            {current.options.map((opt, i) => {
+              const label = i === 0 ? 'A' : 'B';
+              let border = '2px solid #e5e7eb';
+              let bg = '#fff';
+              let textCol = '#1f2937';
+              if (isAnswered) {
+                if (opt.correct) { border = '2px solid #4ade80'; bg = '#f0fdf4'; textCol = '#14532d'; }
+                else if (i === selected) { border = '2px solid #f87171'; bg = '#fef2f2'; textCol = '#7f1d1d'; }
+                else { textCol = '#9ca3af'; }
+              }
+              return (
+                <button
+                  key={i}
+                  onClick={() => handleSelect(i)}
+                  disabled={isAnswered}
+                  className="rounded-xl px-4 py-4 text-left text-sm transition-all"
+                  style={{border, background: bg, color: textCol, cursor: isAnswered ? 'default' : 'pointer'}}
+                >
+                  <span className="font-bold mr-2">{label}.</span>
+                  {isAnswered && opt.correct && '✓ '}
+                  {isAnswered && i === selected && !opt.correct && '✗ '}
+                  {opt.text}
+                </button>
+              );
+            })}
+          </div>
+
+          {isAnswered && (
+            <div className="flex flex-col gap-3">
+              <div className="rounded-xl p-4 text-sm leading-relaxed"
+                style={current.options[selected].correct
+                  ? {background: '#f0fdf4', color: '#14532d'}
+                  : {background: '#fef2f2', color: '#7f1d1d'}}>
+                <strong>{current.options[selected].correct ? 'Rätt!' : 'Fel.'}</strong>{' '}{current.explanation}
+              </div>
+              <button onClick={handleNext} className="w-full text-white py-3 rounded-2xl font-bold transition-colors" style={{background: PRIMARY}}>
+                {idx + 1 >= total ? 'Se resultat →' : 'Nästa begrepp →'}
+              </button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
     const TABS = ['Lista', 'Flashcards', 'Lucktext', 'Scenario', 'Icke-ex.'];
 
     function App() {
@@ -698,11 +1131,7 @@
 
             {view === 'Lucktext' && <LucktextView />}
             {view === 'Scenario' && <ScenarioView />}
-            {view === 'Icke-ex.' && (
-              <div className="text-center py-24 text-gray-400 text-lg italic">
-                Kommer snart…
-              </div>
-            )}
+            {view === 'Icke-ex.' && <IckeExempelView />}
           </main>
 
           {/* Footer */}
