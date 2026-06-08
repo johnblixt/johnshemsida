@@ -430,6 +430,200 @@
       );
     }
 
+    const SCENARIOS = [
+      { id:  1, term: 'Den vetenskapliga revolutionen',   scenario: 'Istället för att fråga prästen varför äpplet föll mot marken bestämde sig en grupp tänkare för att väga, mäta och upprepa försök för att hitta svaret själva.' },
+      { id:  2, term: 'Frågeställning',                   scenario: 'Innan laborationen skriver du ned exakt vad du ska ta reda på: "Påverkar mängden solljus hur snabbt ett frö gror?"' },
+      { id:  3, term: 'Hypotes',                          scenario: 'Utan att ha testat det ännu skriver du ned ditt förslag på vad du tror är svaret – du vet inte om det stämmer men det verkar rimligt.' },
+      { id:  4, term: 'Testbar hypotes',                  scenario: 'Du formulerar påståendet så att du faktiskt kan sätta upp ett experiment och mäta ett tydligt resultat för att kontrollera om det stämmer.' },
+      { id:  5, term: 'Falsifierbar hypotes',             scenario: 'Om fröna i mörkret gror lika snabbt som i ljuset visar det att din idé var fel – och det är just det som gör påståendet vetenskapligt godkänt.' },
+      { id:  6, term: 'Repeterbart experiment',           scenario: 'Tre olika laboratorier i tre länder genomför exakt samma försök och jämför om de oberoende av varandra får liknande svar.' },
+      { id:  7, term: 'Observationer',                    scenario: 'Astronomen tittar i teleskopet varje natt och antecknar var planeten befinner sig – hon kan inte flytta himlakropparna för att aktivt testa något.' },
+      { id:  8, term: 'Experiment',                       scenario: 'Du bestämmer dig för att ändra en enda sak i uppställningen och sedan mäta vad som händer med resultatet.' },
+      { id:  9, term: 'Simuleringar',                     scenario: 'Forskarna matar in data om havstemperatur och koldioxidnivåer i en dator och ber den räkna ut hur världen kan se ut år 2100.' },
+      { id: 10, term: 'Den vetenskapliga metoden',        scenario: 'Kemisten och astronomen arbetar båda naturvetenskapligt men deras tillvägagångssätt ser ganska olika ut – ingen universell checklista gäller för båda.' },
+      { id: 11, term: 'Den hypotetisk-deduktiva metoden', scenario: 'Forskaren följer en bestämd ordning: han formulerar en gissning, räknar ut vad som borde hända om den stämmer, testar det och drar sedan en slutsats.' },
+      { id: 12, term: 'Förutsägelse',                     scenario: 'Om din idé om solljuset är rätt, borde fröna i det ljusa fönstret ha grott efter tre dagar – det är vad du räknar med att se innan du testar.' },
+      { id: 13, term: 'Slutsats',                         scenario: 'Du jämför vad du faktiskt såg med vad du förväntade dig och avgör om din ursprungliga idé fick stöd eller motbevisades.' },
+      { id: 14, term: 'Vetenskaplig teori',               scenario: 'Det är inte en lös tanke – det är en genomarbetad förklaringsmodell som hundratals oberoende experiment bekräftat under lång tid.' },
+      { id: 15, term: 'Paradigmskifte',                   scenario: 'Den gamla förklaringsmodellen som alla lärt sig på universitetet byts ut mot en ny som bättre stämmer med det vi nu vet om verkligheten.' },
+      { id: 16, term: 'Naturvetenskapens begränsningar',  scenario: 'Laboratoriet kan mäta om ett ämne är giftigt, men det kan inte avgöra om det är rätt eller fel att använda ämnet i krig.' },
+      { id: 17, term: 'Forskningsetik',                   scenario: 'Innan studien kan starta granskar en oberoende kommitté planen för att se till att försöken genomförs på ett korrekt och opartiskt sätt.' },
+      { id: 18, term: 'Forskningsfusk',                   scenario: 'Forskaren lade till mätvärden som aldrig samlades in och kopierade en kollegas text utan att ange källan.' },
+      { id: 19, term: 'Etikprövning',                     scenario: 'Innan universitetet fick börja sina försök med möss behövde de ansöka om tillstånd från en statlig myndighet.' },
+      { id: 20, term: 'Oberoende variabel',               scenario: 'Det är den faktor du som forskare aktivt väljer att ändra i experimentet för att se vad som händer.' },
+      { id: 21, term: 'Beroende variabel',                scenario: 'Det är det du mäter varje dag – den sak du förväntar dig ska förändras när du justerar något annat.' },
+      { id: 22, term: 'Kontrollerade variabler',          scenario: 'Du ser till att temperatur, jordmängd och vattning är exakt lika i alla grupper – bara det du undersöker får skilja sig åt.' },
+      { id: 23, term: 'Störvariabler',                    scenario: 'Kalla luften som läcker in under dörren kan påverka hur fort lösningen reagerar – en faktor du inte planerat men som ändå kan snedvrida resultatet.' },
+      { id: 24, term: 'Kontrollgrupp',                    scenario: 'En av grupperna får ingenting – den används bara som jämförelse mot de grupper som faktiskt fick en behandling.' },
+      { id: 25, term: 'Experimentgrupp',                  scenario: 'Det är de frivilliga som faktiskt fick den nya medicinen, inte sockerpillret.' },
+      { id: 26, term: 'Slumpen',                          scenario: 'Av en händelse råkade alla tre i testgruppen vara ovanligt starka individer, vilket kan förklara det goda resultatet snarare än ämnet de testade.' },
+      { id: 27, term: 'Blindstudie',                      scenario: 'Ingen av deltagarna vet om de fick den riktiga behandlingen eller ett overksamt alternativ, för att deras förväntningar inte ska påverka hur de mår.' },
+      { id: 28, term: 'Placeboeffekten',                  scenario: 'Patienterna som fick ett sockerpiller mådde bättre – inte för att pillret hjälpte, utan för att de trodde att de fått riktig medicin.' },
+      { id: 29, term: 'Medelvärde',                       scenario: 'Du adderar alla mätvärden och delar med antalet mätningar för att få ett enda representativt tal för gruppen.' },
+      { id: 30, term: 'Trendlinje',                       scenario: 'I diagrammet ritar man in en linje som visar om värdena generellt rör sig uppåt, nedåt eller är stabila – utan att fastna vid varje enskild punkt.' },
+      { id: 31, term: 'Samvariation (korrelation)',       scenario: 'Försäljningen av glass och antalet drunkningsolyckor ökar båda under sommaren – de rör sig parallellt men det ena leder inte till det andra.' },
+      { id: 32, term: 'Orsakssamband',                    scenario: 'Rökning leder faktiskt till lungcancer – det är inte bara en tillfällighet att båda företeelserna förekommer hos samma personer.' },
+      { id: 33, term: 'Vetenskaplig rapport',             scenario: 'Du skriver ned allt om ditt försök i en bestämd ordning: bakgrund, hur du gick till väga, vad du fick för siffror och vad du tror att det betyder.' },
+      { id: 34, term: 'Riskbedömning',                    scenario: 'Innan du börjar syraförsöket listar du vad som kan gå fel och vad du ska göra för att skydda dig och dina klasskamrater.' },
+      { id: 35, term: 'Farosymboler',                     scenario: 'På flaskan sitter en orange romb med en flamma – den berättar för dig att innehållet kan fatta eld.' },
+      { id: 36, term: 'Vetenskapligt förhållningssätt',   scenario: 'Du läser en ny studie som talar emot det du alltid trott – istället för att avfärda den funderar du noga på om dina gamla slutsatser håller.' },
+      { id: 37, term: 'Källkritik',                       scenario: 'Innan du litar på en artikel kontrollerar du vem som skrivit den, när den publicerades och om den kan ha ett syfte som påverkar innehållet.' },
+      { id: 38, term: 'Källkritikens ABC',                scenario: 'Du ställer dig ett antal bestämda frågor om texten: Är den äkta? Är den aktuell? Kan avsändaren ha ett intresse av att vinkla informationen?' },
+      { id: 39, term: 'Primärkälla',                      scenario: 'Artikeln bygger på mätningar och experiment som forskargruppen själv genomfört – inga andrahandsuppgifter.' },
+      { id: 40, term: 'Sekundärkälla',                    scenario: 'Boken sammanfattar vad andra forskare kommit fram till – den har inte samlat in någon egen data.' },
+      { id: 41, term: 'Tendensiös (vinklad) källa',       scenario: 'Rapporten är finansierad av det företag vars produkt utvärderas – avsändaren har ett ekonomiskt intresse av att resultaten ser positiva ut.' },
+      { id: 42, term: 'Peer review',                      scenario: 'Innan artikeln publiceras i tidskriften läser minst två oberoende experter igenom den och kontrollerar att metoden och slutsatserna håller.' },
+      { id: 43, term: 'Desinformation',                   scenario: 'Nyheten skapades med avsikt att vilseleda folk – de som spred den visste från början att innehållet var falskt.' },
+      { id: 44, term: 'Propaganda',                       scenario: 'Budskapet är utformat för att påverka vad folk tycker om en politisk fråga – det behöver inte vara falskt men är alltid vinklat och avsiktligt.' },
+      { id: 45, term: 'Deepfakes',                        scenario: 'Videon verkar visa en känd politiker säga något skandalöst, men den har skapats av ett datorprogram som kan manipulera rörliga bilder.' },
+      { id: 46, term: 'Konspirationsteorier',             scenario: 'Trots officiella förklaringar är många övertygade om att en grupp i skuggorna planerat allt i hemlighet för att uppnå sina egna mål.' },
+      { id: 47, term: 'Faktaresistens',                   scenario: 'Röntgenbilden visar tydligt att knäet är skadat, men personen insisterar på att det inte kan stämma – inga bevis ändrar uppfattningen.' },
+      { id: 48, term: 'Ekokammare',                       scenario: 'På forumet håller alla med varandra och utesluter direkt dem som tänker annorlunda – åsikterna förstärks av att gruppen ständigt bekräftar sig själv.' },
+      { id: 49, term: 'Filterbubblor',                    scenario: 'Appen registrerar varje klick du gör och anpassar vad du ser – utan att du märker det presenteras du allt mer ensidigt innehåll av en algoritm.' },
+      { id: 50, term: 'Bekräftelsebias',                  scenario: 'Du läser igenom sökresultaten och klickar bara på artiklar som verkar hålla med dig – de som säger emot ignorerar du automatiskt.' },
+      { id: 51, term: 'Kognitiv dissonans',               scenario: 'Du har alltid trott att ett kosttillskott är nyttigt, men nu ser du en studie som visar det motsatta – istället för att ändra uppfattning börjar du ifrågasätta studien.' },
+      { id: 52, term: 'Pseudovetenskap',                  scenario: 'Påståendet ser ut som vetenskap och använder ord som "studier visar", men när man granskar det finns inga riktiga kontrollerade experiment bakom det.' },
+    ];
+
+    function ScenarioView() {
+      const total = SCENARIOS.length;
+      const [items, setItems] = React.useState(() => shuffleArray([...SCENARIOS]));
+      const [idx, setIdx] = React.useState(0);
+      const [options, setOptions] = React.useState(() => {
+        const correct = SCENARIOS[0];
+        const others = shuffleArray(SCENARIOS.filter((_, i) => i !== 0)).slice(0, 3);
+        return shuffleArray([correct, ...others]);
+      });
+      const [selected, setSelected] = React.useState(null);
+      const [score, setScore] = React.useState(0);
+      const [done, setDone] = React.useState(false);
+
+      const buildOptions = (currentIdx, currentItems) => {
+        const correct = currentItems[currentIdx];
+        const others = shuffleArray(currentItems.filter((_, i) => i !== currentIdx)).slice(0, 3);
+        return shuffleArray([correct, ...others]);
+      };
+
+      const handleSelect = (opt) => {
+        if (selected !== null) return;
+        setSelected(opt.id);
+        if (opt.id === items[idx].id) setScore(s => s + 1);
+      };
+
+      const handleNext = () => {
+        const nextIdx = idx + 1;
+        if (nextIdx >= total) {
+          setDone(true);
+        } else {
+          setIdx(nextIdx);
+          setOptions(buildOptions(nextIdx, items));
+          setSelected(null);
+        }
+      };
+
+      const handleRestart = () => {
+        const newItems = shuffleArray([...SCENARIOS]);
+        setItems(newItems);
+        setIdx(0);
+        setOptions(buildOptions(0, newItems));
+        setSelected(null);
+        setScore(0);
+        setDone(false);
+      };
+
+      if (done) {
+        const pct = Math.round((score / total) * 100);
+        return (
+          <div className="flex flex-col items-center gap-6 py-8">
+            <div className="bg-white border-2 rounded-3xl p-8 text-center w-full max-w-sm shadow-sm" style={{borderColor: PRIMARY}}>
+              <div className="text-5xl mb-4">{pct === 100 ? '🏆' : pct >= 80 ? '🌟' : pct >= 60 ? '👍' : '📚'}</div>
+              <p className="text-3xl font-bold mb-1" style={{color: PRIMARY_TEXT}}>{score} / {total}</p>
+              <p className="text-gray-500 text-sm mb-6">
+                {pct === 100 ? 'Perfekt! Du känner igen alla scenarier!' :
+                 pct >= 80 ? 'Mycket bra! Du hanterar de flesta begreppen.' :
+                 pct >= 60 ? 'Bra kämpat – öva lite till!' : 'Fortsätt träna så sitter det snart!'}
+              </p>
+              <button onClick={handleRestart} className="w-full text-white px-8 py-3 rounded-2xl font-bold transition-colors" style={{background: PRIMARY}}>
+                Börja om
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      const current = items[idx];
+      const isAnswered = selected !== null;
+      const progress = (idx / total) * 100;
+
+      return (
+        <div className="flex flex-col gap-4 max-w-xl mx-auto">
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div className="h-full rounded-full transition-all duration-300" style={{width: `${progress}%`, background: PRIMARY}} />
+            </div>
+            <span className="text-xs text-gray-500 font-medium whitespace-nowrap">{idx + 1} / {total}</span>
+          </div>
+
+          <div className="flex justify-end">
+            <span className="text-sm font-semibold px-3 py-1 rounded-full" style={{background: PRIMARY_LIGHT, color: PRIMARY_TEXT}}>
+              {score} rätt
+            </span>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{color: PRIMARY}}>Vilket begrepp beskrivs?</p>
+            <p className="text-gray-800 text-base leading-relaxed">{current.scenario}</p>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            {options.map(opt => {
+              const isCorrect = opt.id === current.id;
+              const isSelected = selected === opt.id;
+              let borderStyle = '2px solid #e5e7eb';
+              let bgColor = '#fff';
+              let textColor = '#1f2937';
+              if (isAnswered) {
+                if (isCorrect) { borderStyle = '2px solid #4ade80'; bgColor = '#f0fdf4'; textColor = '#14532d'; }
+                else if (isSelected) { borderStyle = '2px solid #f87171'; bgColor = '#fef2f2'; textColor = '#7f1d1d'; }
+                else { textColor = '#9ca3af'; }
+              }
+              return (
+                <button
+                  key={opt.id}
+                  onClick={() => handleSelect(opt)}
+                  disabled={isAnswered}
+                  className="rounded-xl px-4 py-3 text-left font-semibold text-sm transition-all"
+                  style={{border: borderStyle, background: bgColor, color: textColor, cursor: isAnswered ? 'default' : 'pointer'}}
+                >
+                  {isAnswered && isCorrect && '✓ '}
+                  {isAnswered && isSelected && !isCorrect && '✗ '}
+                  {opt.term}
+                </button>
+              );
+            })}
+          </div>
+
+          {isAnswered && (
+            <div className="flex flex-col gap-3">
+              <div className="rounded-xl p-4 text-sm leading-relaxed" style={
+                selected === current.id
+                  ? {background: '#f0fdf4', color: '#14532d'}
+                  : {background: '#fef2f2', color: '#7f1d1d'}
+              }>
+                {selected === current.id
+                  ? <span><strong>Rätt!</strong> {concepts.find(c => c.term === current.term)?.def}</span>
+                  : <span><strong>Fel.</strong> Rätt svar är <em>{current.term}</em>. {concepts.find(c => c.term === current.term)?.def}</span>
+                }
+              </div>
+              <button onClick={handleNext} className="w-full text-white py-3 rounded-2xl font-bold transition-colors" style={{background: PRIMARY}}>
+                {idx + 1 >= total ? 'Se resultat →' : 'Nästa scenario →'}
+              </button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
     const TABS = ['Lista', 'Flashcards', 'Lucktext', 'Scenario', 'Icke-ex.'];
 
     function App() {
@@ -503,7 +697,8 @@
             {view === 'Flashcards' && <FlashcardView />}
 
             {view === 'Lucktext' && <LucktextView />}
-            {(view === 'Scenario' || view === 'Icke-ex.') && (
+            {view === 'Scenario' && <ScenarioView />}
+            {view === 'Icke-ex.' && (
               <div className="text-center py-24 text-gray-400 text-lg italic">
                 Kommer snart…
               </div>
