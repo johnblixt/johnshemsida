@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Naturvetenskapligt arbetssätt – Quiz | NK 1a1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0891b2;
+      --primary-light: #ecfeff;
+      --primary-dark: #0e7490;
+      --correct-bg: #dcfce7;
+      --correct-border: #16a34a;
+      --correct-text: #16a34a;
+      --wrong-bg: #fee2e2;
+      --wrong-border: #dc2626;
+      --wrong-text: #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'EB Garamond', Georgia, serif; background: #f0f9ff; min-height: 100vh; color: #1e293b; }
+
+    a.back-btn {
+      display: inline-block; padding: 8px 16px; color: var(--primary);
+      text-decoration: none; font-size: 0.95rem; position: fixed;
+      top: 14px; left: 14px; z-index: 200; border-radius: 8px; transition: background 0.2s;
+    }
+    a.back-btn:hover { background: var(--primary-light); }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Start ── */
+    #screen-start { max-width: 560px; margin: 0 auto; padding: 90px 24px 40px; text-align: center; }
+    .badge {
+      display: inline-block; background: var(--primary-light); color: var(--primary);
+      padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;
+      letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 20px;
+    }
+    #screen-start h1 { font-size: 2.4rem; font-weight: 600; font-style: italic; color: #0f172a; margin-bottom: 8px; }
+    #screen-start .subtitle { font-size: 1.05rem; color: #64748b; margin-bottom: 32px; }
+    .info-cards { display: flex; gap: 12px; justify-content: center; margin-bottom: 36px; flex-wrap: wrap; }
+    .info-card {
+      background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 16px 20px; text-align: center; flex: 1; min-width: 100px; max-width: 140px;
+    }
+    .info-card .num { font-size: 1.7rem; font-weight: 600; color: var(--primary); }
+    .info-card .lbl { font-size: 0.78rem; color: #94a3b8; margin-top: 2px; }
+
+    /* ── Quiz ── */
+    #screen-quiz { max-width: 700px; margin: 0 auto; padding: 70px 20px 60px; }
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .timer {
+      background: white; border: 1px solid #e2e8f0; border-radius: 20px;
+      padding: 5px 14px; font-size: 0.92rem; color: #475569; font-variant-numeric: tabular-nums;
+    }
+    .score-pill { background: var(--primary-light); color: var(--primary-dark); border-radius: 20px; padding: 5px 14px; font-size: 0.92rem; font-weight: 600; }
+    .progress-wrap { background: #e2e8f0; border-radius: 4px; height: 6px; overflow: hidden; margin-bottom: 6px; }
+    .progress-bar { background: var(--primary); height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+    .q-counter { font-size: 0.82rem; color: #94a3b8; text-align: right; margin-bottom: 22px; }
+    .q-text { font-size: 1.25rem; font-weight: 600; line-height: 1.55; color: #0f172a; margin-bottom: 22px; }
+    .opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+    .opt-btn {
+      background: white; border: 2px solid #e2e8f0; border-radius: 12px;
+      padding: 13px 18px; text-align: left; font-size: 1rem; font-family: inherit;
+      cursor: pointer; transition: border-color 0.15s, background 0.15s; line-height: 1.45;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--primary); background: var(--primary-light); }
+    .opt-btn:disabled { cursor: default; }
+    .opt-btn.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); font-weight: 600; }
+    .opt-btn.wrong   { background: var(--wrong-bg);   border-color: var(--wrong-border);   color: var(--wrong-text); }
+    .opt-btn.dimmed  { opacity: 0.4; }
+    .nav-row { display: flex; gap: 12px; align-items: center; }
+    .btn-back { background: white; border: 2px solid #e2e8f0; border-radius: 10px; padding: 10px 20px; font-family: inherit; font-size: 0.9rem; color: #64748b; cursor: pointer; }
+    .btn-back:hover { border-color: #94a3b8; }
+    .btn-next { background: var(--primary); border: none; border-radius: 10px; padding: 10px 28px; font-family: inherit; font-size: 0.9rem; font-weight: 600; color: white; cursor: pointer; margin-left: auto; transition: background 0.15s; }
+    .btn-next:hover { background: var(--primary-dark); }
+
+    /* ── Modal ── */
+    #modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 500; padding: 20px; }
+    #modal-overlay.hidden { display: none; }
+    .modal-box { background: white; border-radius: 20px; padding: 32px; max-width: 520px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+    .modal-icon    { font-size: 2.6rem; margin-bottom: 10px; }
+    .modal-verdict { font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; }
+    .modal-verdict.c { color: var(--correct-text); }
+    .modal-verdict.w { color: var(--wrong-text); }
+    .modal-expl { font-size: 0.98rem; color: #475569; line-height: 1.7; margin-bottom: 24px; }
+
+    /* ── Result ── */
+    #screen-result { max-width: 700px; margin: 0 auto; padding: 80px 20px 80px; }
+    .res-header { text-align: center; margin-bottom: 30px; }
+    .score-ring { width: 120px; height: 120px; border-radius: 50%; border: 5px solid var(--primary); display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 18px; }
+    .score-ring .rnum { font-size: 2rem; font-weight: 600; color: var(--primary); line-height: 1; }
+    .score-ring .rlbl { font-size: 0.72rem; color: #94a3b8; }
+    .res-title  { font-size: 1.8rem; font-weight: 600; font-style: italic; margin-bottom: 6px; }
+    .res-msg    { font-size: 1rem; color: #64748b; margin-bottom: 4px; }
+    .res-time   { font-size: 0.85rem; color: #94a3b8; margin-bottom: 28px; }
+    .stats-row  { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+    .stat-box   { flex: 1; min-width: 80px; background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; text-align: center; }
+    .stat-box .snum { font-size: 1.6rem; font-weight: 600; }
+    .stat-box .slbl { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
+    .stat-box.cs .snum { color: var(--correct-text); }
+    .stat-box.ws .snum { color: var(--wrong-text); }
+    .section-hd { font-size: 1.05rem; font-weight: 600; color: #0f172a; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; }
+    .missed-section { margin-bottom: 32px; }
+    .missed-item { background: var(--wrong-bg); border-left: 4px solid var(--wrong-border); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-size: 0.92rem; }
+    .facit-item { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
+    .facit-item.fc { border-left: 4px solid var(--correct-border); }
+    .facit-item.fw { border-left: 4px solid var(--wrong-border); }
+    .fi-num { font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .fi-q   { font-size: 0.93rem; font-weight: 600; color: #0f172a; margin-bottom: 8px; line-height: 1.4; }
+    .fi-row { font-size: 0.88rem; padding: 2px 0; }
+    .fi-row .lbl { color: #94a3b8; }
+    .fi-row.ya-ok  { color: var(--correct-text); }
+    .fi-row.ya-bad { color: var(--wrong-text); }
+    .fi-row.ra     { color: var(--correct-text); font-weight: 600; margin-top: 2px; }
+
+    .btn-primary { display: inline-block; background: var(--primary); color: white; border: none; border-radius: 12px; padding: 13px 36px; font-size: 1.05rem; font-family: inherit; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+    .btn-primary:active { transform: none; }
+
+    @media (max-width: 500px) {
+      #screen-start h1 { font-size: 1.85rem; }
+      .q-text { font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<a href="nk1a1_naturvetenskap.html" class="back-btn">← Tillbaka till området</a>
+
+<!-- ═══════════ START ═══════════ -->
+<div id="screen-start" class="screen active">
+  <div class="badge">Naturkunskap nivå 1a1 · Naturvetenskapligt arbetssätt</div>
+  <h1>Quiz</h1>
+  <p class="subtitle">30 frågor om vetenskaplig metod, experiment och källkritik</p>
+  <div class="info-cards">
+    <div class="info-card"><div class="num">30</div><div class="lbl">Frågor</div></div>
+    <div class="info-card"><div class="num">A1–A3</div><div class="lbl">Avsnitt</div></div>
+    <div class="info-card"><div class="num">4</div><div class="lbl">Alternativ</div></div>
+  </div>
+  <button class="btn-primary" onclick="startQuiz()">Starta Quiz →</button>
+</div>
+
+<!-- ═══════════ QUIZ ═══════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-header">
+    <div class="timer" id="timer">⏱ 0:00</div>
+    <div class="score-pill" id="score-pill">Poäng: 0</div>
+  </div>
+  <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+  <div class="q-counter" id="q-counter">Fråga 1 av 30</div>
+  <div class="q-text" id="q-text"></div>
+  <div class="opts" id="opts"></div>
+  <div class="nav-row">
+    <button class="btn-back" id="btn-back" onclick="goBack()" style="display:none">← Bakåt</button>
+    <button class="btn-next" id="btn-next" onclick="goNext()" style="display:none">Nästa →</button>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL ═══════════ -->
+<div id="modal-overlay" class="hidden">
+  <div class="modal-box">
+    <div class="modal-icon"    id="modal-icon"></div>
+    <div class="modal-verdict" id="modal-verdict"></div>
+    <div class="modal-expl"    id="modal-expl"></div>
+    <button class="btn-primary" onclick="closeModal()">Nästa fråga →</button>
+  </div>
+</div>
+
+<!-- ═══════════ RESULT ═══════════ -->
+<div id="screen-result" class="screen">
+  <div class="res-header">
+    <div class="score-ring">
+      <div class="rnum" id="r-score"></div>
+      <div class="rlbl">poäng</div>
+    </div>
+    <div class="res-title" id="r-title"></div>
+    <div class="res-msg"   id="r-msg"></div>
+    <div class="res-time"  id="r-time"></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-box cs"><div class="snum" id="s-correct">0</div><div class="slbl">Rätt</div></div>
+    <div class="stat-box ws"><div class="snum" id="s-wrong">0</div><div class="slbl">Fel</div></div>
+    <div class="stat-box"><div class="snum" id="s-pct">0%</div><div class="slbl">Andel rätt</div></div>
+  </div>
+  <div class="missed-section" id="missed-section"></div>
+  <div class="section-hd">Fullständigt facit</div>
+  <div id="facit-list"></div>
+  <div style="text-align:center;margin-top:32px">
+    <button class="btn-primary" onclick="restartQuiz()">↺ Gör om quizet</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// QUESTION DATA — 30 frågor (A1×10, A2×10, A3×10)
+// ════════════════════════════════════════════════════════════
+const QUESTIONS = [
+
+  // ── A1: ETT NATURVETENSKAPLIGT ARBETSSÄTT ────────────────
+  {
+    q: 'Vad menas med den vetenskapliga revolutionen?',
+    opts: [
+      'Det skifte på 1500-talet då man slutade förlita sig på auktoriteter och istället började testa teorier med experiment och observationer',
+      'Den period då Galileo Galilei uppfann teleskopet och möjliggjorde systematiska astronomiska observationer',
+      'Det vetenskapliga genombrott som skedde under antiken då grekiska filosofer grundade naturvetenskapen',
+      'Den omvandling under 1800-talet då industrialiseringen ledde till nya vetenskapliga metoder och laboratorier'
+    ],
+    correct: 0,
+    expl: 'Den vetenskapliga revolutionen inleddes i slutet av 1500-talet. Istället för att söka svar i kyrkans lära eller antika skrifter började man använda systematiska undersökningar och experiment – t.ex. Copernicus och Galileo Galilei.'
+  },
+  {
+    q: 'Vad är en frågeställning i en vetenskaplig undersökning?',
+    opts: [
+      'En specifik och avgränsad fråga som preciserar syftet med undersökningen',
+      'En hypotes formulerad som ett påstående om vad man förväntar sig hitta',
+      'En sammanfattning av de resultat som uppnåtts efter att experimentet genomförts',
+      'En teori om hur världen fungerar som ska bevisas stämma med hjälp av data'
+    ],
+    correct: 0,
+    expl: 'En frågeställning är en specifik och avgränsad fråga – t.ex. "Vad beror det här på?" Det skiljer sig från hypotesen, som är ett möjligt svar formulerat som ett påstående.'
+  },
+  {
+    q: 'Vad är en hypotes?',
+    opts: [
+      'Ett testbart påstående som ger ett möjligt svar på frågeställningen – vi vet inte om det är sant eller falskt',
+      'En bekräftad slutsats som dragits efter att ett experiment upprepats ett stort antal gånger',
+      'En fråga om vad som ska undersökas, formulerad på ett specifikt och avgränsat sätt',
+      'En observation som gjorts under ett experiment och som behöver förklaras av forskaren'
+    ],
+    correct: 0,
+    expl: 'En hypotes är ett påstående – ett möjligt svar på frågeställningen. Den ska vara testbar och falsifierbar. När den formuleras vet vi ännu inte om den är sann.'
+  },
+  {
+    q: 'Vilka tre krav måste en vetenskaplig undersökning uppfylla?',
+    opts: [
+      'Hypotesen ska vara testbar och falsifierbar, och experimentet ska vara repeterbart',
+      'Hypotesen ska baseras på befintlig teori, godkännas av en etikkommitté och ge signifikanta resultat',
+      'Hypotesen ska bevisas sann, formuleras av minst två oberoende forskare och publiceras i en tidskrift',
+      'Experimentet ska vara enkelt, billigt att genomföra och förståeligt för en bred allmänhet'
+    ],
+    correct: 0,
+    expl: 'En vetenskaplig undersökning kräver att hypotesen är testbar (kan undersökas experimentellt), falsifierbar (kan motbevisas) och att experimentet är repeterbart (kan upprepas och kontrolleras av andra).'
+  },
+  {
+    q: 'Vad menas med att en hypotes är falsifierbar?',
+    opts: [
+      'Att det måste vara möjligt att motbevisa hypotesen – t.ex. om experimentets resultat strider mot den',
+      'Att hypotesen är formulerad på ett sådant sätt att den aldrig kan motbevisas av experiment',
+      'Att hypotesen automatiskt förklaras som falsk om den inte kan testas i ett laboratorium',
+      'Att hypotesen måste testas av minst tre oberoende forskargrupper för att godkännas'
+    ],
+    correct: 0,
+    expl: 'Falsifierbarhet innebär att det måste vara möjligt att visa att hypotesen är fel. Om inga tänkbara resultat kunde motbevisa den är den inte vetenskaplig.'
+  },
+  {
+    q: 'Vilka är stegen i den hypotetisk-deduktiva metoden i rätt ordning?',
+    opts: [
+      'Frågeställning → Hypotes → Förutsägelse → Undersökning → Slutsats',
+      'Hypotes → Frågeställning → Undersökning → Förutsägelse → Slutsats',
+      'Observation → Slutsats → Frågeställning → Hypotes → Experiment',
+      'Frågeställning → Undersökning → Hypotes → Förutsägelse → Slutsats'
+    ],
+    correct: 0,
+    expl: 'Den hypotetisk-deduktiva metoden: 1) Frågeställning, 2) Hypotes, 3) Förutsägelse (vad förväntar vi oss?), 4) Undersökning (experiment), 5) Slutsats (stöds eller falsifieras hypotesen?).'
+  },
+  {
+    q: 'Vad är en vetenskaplig teori?',
+    opts: [
+      'En väl underbyggd förklaringsmodell baserad på data från många noggranna och systematiska experiment',
+      'En kvalificerad gissning om hur något fungerar som ännu inte testats i ett experiment',
+      'En slutsats som dragits utifrån ett enskilt experiment med entydiga och reproducerbara resultat',
+      'En filosofisk tanke om naturens lagar som presenteras av en erkänd auktoritet inom området'
+    ],
+    correct: 0,
+    expl: 'En vetenskaplig teori är långt mer än en gissning – det är en väl underbyggd förklaringsmodell som stöds av data från många experiment. Teorier är öppna för revidering om nya bevis dyker upp.'
+  },
+  {
+    q: 'Vad innebär ett paradigmskifte?',
+    opts: [
+      'Att en etablerad vetenskaplig teori ersätts av en ny när tillräckliga bevis visar att den gamla är felaktig',
+      'Att ett experiment misslyckas och att nya variabler måste introduceras i undersökningen',
+      'Att en forskargrupp byter inriktning och börjar forska inom ett helt nytt ämnesområde',
+      'Att en ny teknisk metod gör att gamla experiment kan genomföras snabbare och mer precist'
+    ],
+    correct: 0,
+    expl: 'Ett paradigmskifte är när en teori ersätts av en annan. Exempel: den geocentriska världsbilden (jorden i centrum) ersattes av den heliocentriska (planeterna kretsar runt solen). Att teorier byts ut är ett tecken på att vetenskapen fungerar.'
+  },
+  {
+    q: 'Vad räknas som forskningsfusk?',
+    opts: [
+      'Att plagiera, förfalska eller undanhålla resultat från sin forskning',
+      'Att använda en otillräckligt testad metod och publicera resultaten utan peer review',
+      'Att utföra experiment på ryggradsdjur utan att genomföra en etikprövning i förväg',
+      'Att byta hypotes mitt i ett experiment utan att börja om hela undersökningen från grunden'
+    ],
+    correct: 0,
+    expl: 'Forskningsfusk innebär att plagiera, förfalska data eller undanhålla resultat. Det skadar både forskning och förtroende. Kända fall har lett till allvarliga konsekvenser – t.ex. ett fall på Karolinska där patienter dog.'
+  },
+  {
+    q: 'Varför kan naturvetenskapen inte svara på frågan "Är klimatförändringar dåliga?"',
+    opts: [
+      'Det är en värderingsfråga – naturvetenskapen kan beskriva och mäta fenomenet men inte avgöra om det är rätt eller fel',
+      'Klimatförändringar är ett för komplext fenomen för att kunna undersökas med vetenskapliga metoder',
+      'Frågans svar är beroende av politiska beslut och faller därmed utanför naturvetenskapens område',
+      'Naturvetenskapen saknar ännu tillräckliga data för att ge ett tillförlitligt svar på frågan'
+    ],
+    correct: 0,
+    expl: 'Naturvetenskapen är begränsad till det som kan testas. Frågor om vad som är "bra" eller "dåligt" är värderingsfrågor – de faller utanför ämnets räckvidd. Naturvetenskapen kan beskriva klimatförändringarna men inte avgöra om de är moraliskt acceptabla.'
+  },
+
+  // ── A2: EGNA NATURVETENSKAPLIGA UNDERSÖKNINGAR ───────────
+  {
+    q: 'Vad menas med den oberoende variabeln i ett experiment?',
+    opts: [
+      'Den variabel som den som utför experimentet medvetet ändrar för att undersöka dess effekt på något annat',
+      'Den variabel som mäts och registreras för att se om den påverkats av förändringen i experimentet',
+      'Den variabel som hålls konstant i alla försöksgrupper för att eliminera störningar från omgivningen',
+      'Den variabel som är omöjlig att kontrollera och som riskerar att påverka experimentets resultat'
+    ],
+    correct: 0,
+    expl: 'Den oberoende variabeln är det som forskaren aktivt ändrar – t.ex. belysningsstyrkan i ett lökexperiment. Den antas orsaka en förändring i den beroende variabeln.'
+  },
+  {
+    q: 'Vad är en beroende variabel?',
+    opts: [
+      'Det som mäts i experimentet och som antas påverkas av förändringen i den oberoende variabeln',
+      'En variabel som inte kan ändras och som alltid hålls konstant under hela experimentet',
+      'En variabel som påverkar experimentet utan att den som forskar är medveten om det',
+      'Det som aktivt förändras av forskaren för att undersöka dess effekt på ett annat fenomen'
+    ],
+    correct: 0,
+    expl: 'Den beroende variabeln är det man mäter – t.ex. tillväxten (biomassa) hos lökplantor. Den "beror" på den oberoende variabeln (belysningsstyrkan).'
+  },
+  {
+    q: 'Vad är en kontrollgrupp?',
+    opts: [
+      'En grupp som inte utsätts för den behandling som testas – den används för jämförelse med försöksgruppen',
+      'En grupp som kontrollerar att experimentet genomförs korrekt och att inga procedurmisstag görs',
+      'Den grupp som utsätts för den starkaste dosen av det ämne eller den faktor som testas',
+      'En grupp bestående av externa experter som bedömer om experimentets resultat är trovärdiga'
+    ],
+    correct: 0,
+    expl: 'Kontrollgruppen utsätts inte för behandlingen men väljs ut och hanteras på exakt samma sätt som de övriga grupperna. Den minimerar störvariabler och ger en jämförelsepunkt.'
+  },
+  {
+    q: 'Vad är placeboeffekten?',
+    opts: [
+      'Att en person mår bättre enbart för att de förväntar sig det – trots att de inte fått någon verksam medicin',
+      'Att ett läkemedel fungerar sämre än förväntat eftersom det inte testats tillräckligt noggrant',
+      'Att försöksdeltagare medvetet rapporterar felaktiga resultat för att påverka experimentets utfall',
+      'Att effekten av ett läkemedel avtar över tid även om personen fortsätter att ta medicinen'
+    ],
+    correct: 0,
+    expl: 'Placeboeffekten innebär att förväntan i sig kan ge en mätbar effekt. En person som tror de fått medicin kan känna sig bättre – även om de bara fått en sockerpiller. Blindstudier används för att utesluta detta.'
+  },
+  {
+    q: 'Varför genomförs blindstudier i medicinsk forskning?',
+    opts: [
+      'För att utesluta placeboeffekten – deltagarna vet inte om de får verksam substans eller placebo',
+      'För att skydda forskarnas identitet och förhindra att känsliga resultat läcker till allmänheten',
+      'För att experimentet ska kunna genomföras utan att en full etikprövning krävs i förväg',
+      'För att underlätta för deltagarna som slipper ta ställning till om de vill ha det aktiva preparatet'
+    ],
+    correct: 0,
+    expl: 'I en blindstudie vet inte deltagarna om de ingår i försöksgruppen eller kontrollgruppen. Det eliminerar placeboeffekten och ger mer tillförlitliga resultat.'
+  },
+  {
+    q: 'Varför ger fler upprepningar av ett experiment säkrare slutsatser?',
+    opts: [
+      'Fler mätningar minskar påverkan av slumpmässiga fel och individuella variationer i resultaten',
+      'Varje ny upprepning genererar en ny hypotes som kan leda till bättre och mer relevanta slutsatser',
+      'Upprepningar krävs av etikkommittén innan resultaten godkänns för publicering i tidskrifter',
+      'Det ökar sannolikheten att minst ett av experimenten ger det förväntade resultatet'
+    ],
+    correct: 0,
+    expl: 'Individuella variationer och slumpmässiga mätfel påverkar alltid ett enskilt experiment. Ju fler repetitioner, desto mer jämnas dessa ut och desto pålitligare blir genomsnittsresultaten.'
+  },
+  {
+    q: 'Vad menas med att samvariation inte är detsamma som orsakssamband?',
+    opts: [
+      'Att två variabler kan variera tillsammans utan att den ena orsakar den andra – en tredje faktor kan ligga bakom',
+      'Att starka samband alltid kräver fler oberoende experiment för att bekräftas som verkliga orsakssamband',
+      'Att ett orsakssamband kan existera utan att det yttrar sig som en mätbar samvariation i data',
+      'Att samvariation enbart är relevant inom medicin medan orsakssamband gäller alla vetenskapliga fält'
+    ],
+    correct: 0,
+    expl: 'Klassiskt exempel: glasskonsumtion och solbränna samvarierar – men glass orsakar inte solbränna. Förklaringen är en tredje faktor: varmt och soligt väder påverkar båda. Att dra förhastade slutsatser om orsak och verkan är ett vanligt misstag.'
+  },
+  {
+    q: 'Vilka delar ska ingå i en vetenskaplig rapport?',
+    opts: [
+      'Titel, inledning, material och metod, resultat, diskussion och källförteckning',
+      'Titel, sammanfattning, hypotes, experiment, analys och slutsatser',
+      'Bakgrund, teori, observationer, beräkningar, slutsats och bilagor',
+      'Rubrik, frågeställning, mätdata, diagram, tolkning och tacksägelse'
+    ],
+    correct: 0,
+    expl: 'En vetenskaplig rapport innehåller: titel, inledning (bakgrund + frågeställning), material och metod (så noggrann att experimentet kan upprepas), resultat (tabeller/diagram), diskussion (tolkning + utvärdering) och källförteckning.'
+  },
+  {
+    q: 'Varför ska material och metod i en rapport beskrivas noggrant?',
+    opts: [
+      'Så att andra forskare kan upprepa och kontrollera experimentet – repeterbarhet är ett grundkrav i vetenskapen',
+      'Så att läsaren enkelt kan bedöma om experimentet var tillräckligt stort för att ge statistiskt pålitliga slutsatser',
+      'Eftersom myndigheter och etikkommittéer kräver att metoden finns dokumenterad för efterhandskontroll',
+      'Så att den som utförde experimentet lättare kan gå tillbaka och korrigera eventuella procedurmisstag'
+    ],
+    correct: 0,
+    expl: 'Repeterbarhet är ett grundkrav i vetenskapen. Andra måste kunna göra om experimentet och kontrollera att resultaten stämmer. Utan en tydlig metodbeskrivning är det omöjligt.'
+  },
+  {
+    q: 'Vad menas med en riskbedömning inför ett laboratoriearbete?',
+    opts: [
+      'En planerad genomgång av potentiella faror med utrustning och kemikalier som görs innan det praktiska arbetet påbörjas',
+      'En efteranalys av olyckor som inträffat i laboratoriet för att förhindra att de upprepas i framtiden',
+      'En granskning som etikkommittén genomför för att avgöra om experimentet uppfyller säkerhetskraven',
+      'En lista med laborationsregler som eleverna skriver under för att bekräfta att de deltar frivilligt'
+    ],
+    correct: 0,
+    expl: 'En riskbedömning görs i förväg – man går igenom vilka faror som kan finnas med kemikalier, utrustning och metoder. Syftet är att förebygga skador innan de sker.'
+  },
+
+  // ── A3: ATT INTE BLI LURAD ────────────────────────────────
+  {
+    q: 'Vad innebär källkritik?',
+    opts: [
+      'Att systematiskt granska och bedöma källors trovärdighet för att undvika vilseledande information',
+      'Att uteslutande använda vetenskapliga artiklar som enda källtyp i all argumentation och analys',
+      'Att enbart godkänna källor som publicerats av myndigheter, lärosäten eller välkända institutioner',
+      'Att kontrollera stavning och grammatik i en källa för att bedöma om den är professionellt framtagen'
+    ],
+    correct: 0,
+    expl: 'Källkritik handlar om att systematiskt granska trovärdigheten hos information – är källan äkta, aktuell, oberoende, tendensiös och granskad? Syftet är att sortera bort opålitliga källor.'
+  },
+  {
+    q: 'Vad menas med att en källa är tendensiös?',
+    opts: [
+      'Att källan är vinklad på grund av bakomliggande ekonomiska, politiska eller ideologiska intressen',
+      'Att källan saknar peer review och därmed inte kan anses vetenskapligt trovärdig',
+      'Att källan är för gammal och att informationen inte längre är relevant eller aktuell',
+      'Att källan är skriven anonymt och att det är omöjligt att verifiera upphovsmannens identitet'
+    ],
+    correct: 0,
+    expl: 'En tendensiös källa är vinklad – t.ex. kan en rapport om rökningens skadeverkningar som finansieras av tobaksindustrin underdriva riskerna, eftersom industrin tjänar på det.'
+  },
+  {
+    q: 'Vad är peer review?',
+    opts: [
+      'En granskningsprocess där en vetenskaplig rapport bedöms av minst två oberoende forskare innan publicering',
+      'En statlig process där forskning utvärderas av myndigheter innan den får tillämpas i samhällspraktiken',
+      'En databas där forskare kan söka efter och jämföra varandras publicerade vetenskapliga artiklar',
+      'En metod för att räkna hur många gånger en vetenskaplig artikel citerats av andra forskare'
+    ],
+    correct: 0,
+    expl: 'Peer review innebär att en artikel granskas av minst två oberoende experter inom samma fält innan den publiceras. Det är en kvalitetskontroll som skiljer vetenskapliga artiklar från t.ex. bloggar.'
+  },
+  {
+    q: 'Vad är skillnaden mellan en primärkälla och en sekundärkälla?',
+    opts: [
+      'En primärkälla baseras på egna observationer och insamlade data – en sekundärkälla hämtar information från andra källor',
+      'En primärkälla är alltid publicerad i tryckt bokform medan en sekundärkälla enbart finns på internet',
+      'En primärkälla är alltid skriven av en expert inom området medan en sekundärkälla är skriven av en journalist',
+      'En primärkälla är nyare och mer aktuell än en sekundärkälla som ofta bygger på föråldrad information'
+    ],
+    correct: 0,
+    expl: 'Primärkällor (t.ex. vetenskapliga artiklar) baseras på ursprunglig forskning. Sekundärkällor hämtar och tolkar information från primärkällor – de är beroende av att originalinformationen är korrekt.'
+  },
+  {
+    q: 'Vad är desinformation?',
+    opts: [
+      'Felaktig information som sprids medvetet i syfte att lura eller vilseleda mottagaren',
+      'Information som är vetenskapligt osäker och som saknar tillräcklig forskning och evidens bakom sig',
+      'Nyheter som av misstag blivit felaktiga på grund av journalistens okunskap eller tidsbrist',
+      'Reklam som överdriver en produkts fördelar utan att tydligt lyfta fram dess eventuella nackdelar'
+    ],
+    correct: 0,
+    expl: 'Desinformation är medvetet vilseledande – skillnaden mot vanliga felaktigheter är avsikten. Syftet kan vara att gynna ekonomiska intressen, påverka politiken eller skapa misstro mot myndigheter och experter.'
+  },
+  {
+    q: 'Varför kan falska nyheter spridas snabbt på sociala medier?',
+    opts: [
+      'Algoritmer prioriterar innehåll som väcker starka reaktioner – sensationellt och falskt innehåll delar sig snabbt',
+      'Sociala medieplattformar har inga redaktörer och ingen kontroll av innehållet som publiceras',
+      'Falska nyheter är alltid kortare och enklare att läsa och dela än korrekta, faktabaserade nyheter',
+      'Användare på sociala medier är generellt sämre på källkritik än läsare av tryckta tidningar'
+    ],
+    correct: 0,
+    expl: 'Algoritmerna i sociala medier belönar engagemang – inlägg med många reaktioner, delningar och kommentarer sprids till fler. Sensationellt, provocerande och falskt innehåll genererar ofta mer engagemang än nyanserad information.'
+  },
+  {
+    q: 'Vad menas med faktaresistens?',
+    opts: [
+      'Att en person håller fast vid sin övertygelse trots att det finns välgrundade fakta som talar emot den',
+      'Att en person konsekvent vägrar ta del av information från källor som inte godkänts av vetenskapssamhället',
+      'Att forskning om ett visst ämne är så tekniskt komplicerad att den inte är tillgänglig för gemene man',
+      'Att myndigheter och institutioner undanhåller fakta från allmänheten av politiska eller ekonomiska skäl'
+    ],
+    correct: 0,
+    expl: 'Faktaresistens innebär att man inte ändrar uppfattning trots motstående bevis. Det strider mot ett vetenskapligt förhållningssätt och kan förstärka felaktiga uppfattningar – t.ex. om vaccinationer eller klimatförändringar.'
+  },
+  {
+    q: 'Vad är en filterbubbla?',
+    opts: [
+      'Ett fenomen där algoritmer anpassar innehållsflödet efter en persons profil – hen möter nästan bara information som bekräftar det hen redan tror',
+      'En säkerhetsfunktion i sociala medier som automatiskt blockerar falska nyheter och desinformation',
+      'En avancerad sökmotor som filtrerar bort opålitliga källor och enbart visar vetenskapligt granskade artiklar',
+      'En sluten grupp på sociala medier där medlemmar aktivt delar och förstärker varandras gemensamma åsikter'
+    ],
+    correct: 0,
+    expl: 'Filterbubblor uppstår av algoritmerna – de lär sig vad du gillar och visar mer av det. Till skillnad från ekokammare (som skapas av användarna aktivt) uppstår filterbubblor passivt utan att man märker det.'
+  },
+  {
+    q: 'Vad menas med bekräftelsebias?',
+    opts: [
+      'Att vi omedvetet söker och tillmäter information högre trovärdighet om den stämmer med vad vi redan tänker',
+      'Att vi alltid bekräftar att en källa är trovärdig innan vi delar vidare information på sociala medier',
+      'Att vi systematiskt litar mer på vetenskapliga källor än på folkliga uppfattningar och traditioner',
+      'Att vi lättare tar till oss information som presenteras i punktlistor och diagram än i löpande brödtext'
+    ],
+    correct: 0,
+    expl: 'Bekräftelsebias är en psykologisk mekanism: vi söker aktivt efter information som bekräftar vad vi redan tror och avfärdar omedvetet sådant som strider mot det. Det gör det svårt att ändra ståndpunkt.'
+  },
+  {
+    q: 'Vad är pseudovetenskap?',
+    opts: [
+      'Läror som påstår sig vara vetenskapliga men saknar vetenskapligt stöd och ofta inte kan falsifieras med experiment',
+      'Vetenskapliga teorier som ännu inte fått tillräcklig forskning bakom sig för att accepteras av forskarsamhället',
+      'Forskning som bedrivs utanför akademiska institutioner men som ändå kan ge tillförlitliga och reproducerbara resultat',
+      'Teorier som avvisats av majoriteten av forskare men som fortfarande kan bevisas med rätt experimentell uppställning'
+    ],
+    correct: 0,
+    expl: 'Pseudovetenskap ser ut som vetenskap men uppfyller inte kraven – t.ex. astrologi, vars förutsägelser är för vaga för att falsifieras. Problemet är att folk kan lita på pseudovetenskapliga "behandlingar" istället för beprövad vård.'
+  }
+];
+
+// ════════════════════════════════════════════════════════════
+// FISHER-YATES SHUFFLE
+// ════════════════════════════════════════════════════════════
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// ════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════
+let qs = [];
+let cur = 0;
+let score = 0;
+let elapsed = 0;
+let timerID = null;
+
+function buildState() {
+  const shuffled = shuffleArray([...QUESTIONS]);
+  qs = shuffled.map(q => ({
+    ...q,
+    shuffledIdx: shuffleArray(q.opts.map((_, i) => i)),
+    selectedDisplay: null,
+    answered: false
+  }));
+}
+
+// ════════════════════════════════════════════════════════════
+// SCREENS
+// ════════════════════════════════════════════════════════════
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ════════════════════════════════════════════════════════════
+// TIMER
+// ════════════════════════════════════════════════════════════
+function fmt(s) {
+  return '⏱ ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+}
+function startTimer() {
+  elapsed = 0;
+  timerID = setInterval(() => { elapsed++; document.getElementById('timer').textContent = fmt(elapsed); }, 1000);
+}
+function stopTimer() { clearInterval(timerID); }
+
+// ════════════════════════════════════════════════════════════
+// START
+// ════════════════════════════════════════════════════════════
+function startQuiz() {
+  buildState();
+  cur = 0;
+  score = 0;
+  show('screen-quiz');
+  startTimer();
+  render();
+}
+
+// ════════════════════════════════════════════════════════════
+// RENDER
+// ════════════════════════════════════════════════════════════
+function render() {
+  const q = qs[cur];
+  const total = qs.length;
+
+  document.getElementById('progress-bar').style.width = (cur / total * 100) + '%';
+  document.getElementById('q-counter').textContent = 'Fråga ' + (cur + 1) + ' av ' + total;
+  document.getElementById('score-pill').textContent = 'Poäng: ' + score;
+  document.getElementById('q-text').textContent = q.q;
+
+  const optsEl = document.getElementById('opts');
+  optsEl.innerHTML = '';
+
+  q.shuffledIdx.forEach((origIdx, displayPos) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = q.opts[origIdx];
+    btn.disabled = q.answered;
+
+    if (q.answered) {
+      const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+      if (displayPos === correctDisplay)      btn.classList.add('correct');
+      else if (displayPos === q.selectedDisplay) btn.classList.add('wrong');
+      else                                    btn.classList.add('dimmed');
+    } else {
+      btn.addEventListener('click', () => handleAnswer(displayPos));
+    }
+    optsEl.appendChild(btn);
+  });
+
+  document.getElementById('btn-back').style.display = cur > 0 ? 'inline-block' : 'none';
+  document.getElementById('btn-next').style.display = q.answered ? 'inline-block' : 'none';
+  document.getElementById('btn-next').textContent = cur === total - 1 ? 'Se resultat →' : 'Nästa →';
+}
+
+// ════════════════════════════════════════════════════════════
+// ANSWER
+// ════════════════════════════════════════════════════════════
+function handleAnswer(displayPos) {
+  const q = qs[cur];
+  if (q.answered) return;
+
+  q.answered = true;
+  q.selectedDisplay = displayPos;
+
+  const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+  const isCorrect = displayPos === correctDisplay;
+  if (isCorrect) score++;
+
+  document.querySelectorAll('.opt-btn').forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === correctDisplay)          btn.classList.add('correct');
+    else if (i === displayPos)         btn.classList.add('wrong');
+    else                               btn.classList.add('dimmed');
+  });
+
+  document.getElementById('btn-next').style.display = 'inline-block';
+  document.getElementById('btn-next').textContent = cur === qs.length - 1 ? 'Se resultat →' : 'Nästa →';
+  document.getElementById('score-pill').textContent = 'Poäng: ' + score;
+
+  setTimeout(() => showModal(isCorrect, q.expl), 600);
+}
+
+// ════════════════════════════════════════════════════════════
+// MODAL
+// ════════════════════════════════════════════════════════════
+function showModal(isCorrect, expl) {
+  document.getElementById('modal-icon').textContent      = isCorrect ? '✅' : '❌';
+  document.getElementById('modal-verdict').textContent   = isCorrect ? 'Rätt svar!' : 'Fel svar';
+  document.getElementById('modal-verdict').className     = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
+  document.getElementById('modal-expl').textContent      = expl;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  goNext();
+}
+
+// ════════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════════
+function goBack() { if (cur > 0) { cur--; render(); } }
+function goNext() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  if (cur < qs.length - 1) { cur++; render(); }
+  else showResults();
+}
+
+// ════════════════════════════════════════════════════════════
+// RESULTS
+// ════════════════════════════════════════════════════════════
+function showResults() {
+  stopTimer();
+  show('screen-result');
+
+  const total = qs.length;
+  const wrong = total - score;
+  const pct   = Math.round(score / total * 100);
+
+  document.getElementById('r-score').textContent   = score + '/' + total;
+  document.getElementById('s-correct').textContent = score;
+  document.getElementById('s-wrong').textContent   = wrong;
+  document.getElementById('s-pct').textContent     = pct + '%';
+
+  const m = Math.floor(elapsed / 60), s = String(elapsed % 60).padStart(2, '0');
+  document.getElementById('r-time').textContent = 'Tid: ' + m + ':' + s;
+
+  let title, msg;
+  if (pct >= 90)      { title = '🏆 Utmärkt!';          msg = 'Du behärskar naturvetenskapligt arbetssätt på hög nivå.'; }
+  else if (pct >= 75) { title = '✅ Redo för provet!';   msg = 'Bra resultat – du har koll på det centrala.'; }
+  else if (pct >= 55) { title = '📖 Öva lite till';      msg = 'Du är på rätt spår men behöver repetera en del.'; }
+  else                { title = '💡 Fortsätt repetera'; msg = 'Gå igenom pluggmaterialet och försök igen.'; }
+
+  document.getElementById('r-title').textContent = title;
+  document.getElementById('r-msg').textContent   = msg;
+
+  // Missed
+  const missedEl = document.getElementById('missed-section');
+  const missed = qs.filter(q => q.answered && q.shuffledIdx.indexOf(q.correct) !== q.selectedDisplay);
+  if (missed.length) {
+    missedEl.innerHTML = '<div class="section-hd">Missade frågor (' + missed.length + ')</div>';
+    missed.forEach(q => {
+      const d = document.createElement('div');
+      d.className = 'missed-item';
+      d.textContent = q.q;
+      missedEl.appendChild(d);
+    });
+  } else {
+    missedEl.innerHTML = '';
+  }
+
+  // Full facit
+  const facitEl = document.getElementById('facit-list');
+  facitEl.innerHTML = '';
+  qs.forEach((q, i) => {
+    const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+    const isCorrect  = q.answered && q.selectedDisplay === correctDisplay;
+    const notAnswered = !q.answered;
+    const correctText  = q.opts[q.correct];
+    const selectedText = q.answered ? q.opts[q.shuffledIdx[q.selectedDisplay]] : null;
+
+    const div = document.createElement('div');
+    div.className = 'facit-item ' + (notAnswered ? '' : isCorrect ? 'fc' : 'fw');
+
+    let html = '<div class="fi-num">Fråga ' + (i + 1) + '</div>';
+    html += '<div class="fi-q">' + q.q + '</div>';
+    if (notAnswered) {
+      html += '<div class="fi-row"><span class="lbl">Ditt svar: </span>— (inte besvarad)</div>';
+      html += '<div class="fi-row ra"><span class="lbl">Rätt svar: </span>' + correctText + '</div>';
+    } else if (isCorrect) {
+      html += '<div class="fi-row ya-ok">✓ <span class="lbl">Ditt svar: </span>' + selectedText + '</div>';
+    } else {
+      html += '<div class="fi-row ya-bad">✗ <span class="lbl">Ditt svar: </span>' + selectedText + '</div>';
+      html += '<div class="fi-row ra"><span class="lbl">Rätt svar: </span>' + correctText + '</div>';
+    }
+    div.innerHTML = html;
+    facitEl.appendChild(div);
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// RESTART
+// ════════════════════════════════════════════════════════════
+function restartQuiz() {
+  stopTimer();
+  show('screen-start');
+}
+</script>
+</body>
+</html>
