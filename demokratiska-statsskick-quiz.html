@@ -10,758 +10,189 @@
         * { font-family: 'EB Garamond', serif; }
         .accent-color { color: #fb923c; }
         .accent-bg { background-color: #fb923c; }
-        .accent-border { border-color: #fb923c; }
-        .light-accent-bg { background-color: #ffedd5; }
-
-        .quiz-btn {
-            transition: all 0.2s ease;
-            border: 2px solid #e2e8f0;
-        }
-        .quiz-btn:hover:not(:disabled) {
-            border-color: #fb923c;
-            background-color: #fef9c3;
-        }
-        .quiz-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        .quiz-btn.selected {
-            border-color: #fb923c;
-            background-color: #fb923c;
-            color: white;
-        }
-        .quiz-btn.correct {
-            border-color: #16a34a;
-            background-color: #dcfce7;
-            color: #16a34a;
-        }
-        .quiz-btn.incorrect {
-            border-color: #dc2626;
-            background-color: #fee2e2;
-            color: #dc2626;
-        }
-
-        .progress-fill {
-            transition: width 0.3s ease;
-            background-color: #fb923c;
-        }
-
-        .modal-backdrop {
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .modal-content {
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        .quiz-btn { transition: all 0.2s ease; border: 2px solid #e2e8f0; }
+        .quiz-btn:hover:not(:disabled) { border-color: #fb923c; background-color: #fef9c3; }
+        .quiz-btn.selected { border-color: #fb923c; background-color: #fb923c; color: white; }
+        .quiz-btn.correct { border-color: #16a34a; background-color: #dcfce7; color: #16a34a; }
+        .quiz-btn.incorrect { border-color: #dc2626; background-color: #fee2e2; color: #dc2626; }
+        .progress-fill { transition: width 0.3s ease; background-color: #fb923c; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-backdrop { animation: fadeIn 0.3s ease; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen">
 
-    <!-- Tillbaka-knapp -->
-    <div class="max-w-2xl mx-auto px-6 pt-6 pb-2">
+    <div class="max-w-2xl mx-auto px-6 pt-6">
         <a href="index.html" class="inline-flex items-center text-sm text-slate-600 hover:accent-color transition-colors">
             <span class="mr-1">←</span> Tillbaka till startsidan
         </a>
     </div>
 
-    <!-- Main container -->
     <div class="max-w-2xl mx-auto px-6 py-8">
-
-        <!-- STARTSKÄRM -->
         <div id="screen-start" class="text-center">
             <h1 class="text-5xl font-bold accent-color mb-4 italic">Demokratiska statsskick</h1>
             <p class="text-xl text-slate-600 mb-8">Sverige ett exempel</p>
-            <div class="light-accent-bg border-l-8 accent-border p-6 rounded mb-8 text-left">
-                <p class="text-slate-700 mb-3">
-                    Testa dina kunskaper om den svenska demokratin och statsskicket.
-                </p>
-                <p class="text-slate-700 mb-4">
-                    <strong>Antal frågor:</strong> 30 | <strong>Tid:</strong> Obegränsad | <strong>Poäng:</strong> 1 per rätt svar
-                </p>
-                <p class="text-sm text-slate-600 italic">
-                    Lycka till! 🎯
-                </p>
+            <div class="bg-yellow-50 border-l-8 border-yellow-400 p-6 rounded mb-8">
+                <p class="text-slate-700 mb-2"><strong>30 frågor</strong> om den svenska demokratin</p>
+                <p class="text-slate-600 text-sm">Lycka till! 🎯</p>
             </div>
-            <button onclick="startQuiz()" class="accent-bg text-white px-8 py-4 rounded-xl font-bold text-lg hover:brightness-110 transition-all">
-                Starta Quiz
-            </button>
+            <button onclick="startQuiz()" class="accent-bg text-white px-8 py-4 rounded-xl font-bold text-lg hover:brightness-110">Starta Quiz</button>
         </div>
 
-        <!-- QUIZSKÄRM -->
         <div id="screen-quiz" class="hidden">
-            <!-- Progress & Info -->
             <div class="mb-8">
-                <div class="flex justify-between items-center mb-3">
-                    <div class="flex gap-4">
-                        <div class="text-center">
-                            <p class="text-sm text-slate-500 uppercase tracking-wide font-bold">Fråga</p>
-                            <p class="text-2xl font-bold accent-color"><span id="q-current">1</span> av <span id="q-total">30</span></p>
-                        </div>
-                        <div class="text-center">
-                            <p class="text-sm text-slate-500 uppercase tracking-wide font-bold">Poäng</p>
-                            <p class="text-2xl font-bold text-green-600"><span id="score">0</span>/30</p>
-                        </div>
-                        <div class="text-center">
-                            <p class="text-sm text-slate-500 uppercase tracking-wide font-bold">Tid</p>
-                            <p class="text-2xl font-bold text-slate-700" id="timer">00:00</p>
-                        </div>
-                    </div>
+                <div class="flex justify-between items-center mb-4">
+                    <div><p class="text-sm text-slate-500 uppercase font-bold">Fråga <span id="q-current">1</span>/30</p></div>
+                    <div><p class="text-sm text-slate-500 uppercase font-bold">Poäng: <span id="score">0</span>/30</p></div>
+                    <div><p class="text-sm text-slate-500 uppercase font-bold">Tid: <span id="timer">00:00</span></p></div>
                 </div>
-
-                <!-- Progress bar -->
                 <div class="w-full bg-slate-200 rounded-full h-3">
                     <div id="progress-bar" class="progress-fill h-3 rounded-full" style="width: 0%"></div>
                 </div>
             </div>
-
-            <!-- Fråga -->
-            <div class="bg-white rounded-xl p-8 mb-8 border-t-4 accent-border shadow-sm">
-                <h2 id="question-text" class="text-2xl font-bold text-slate-900 mb-6 leading-relaxed">
-                    Fråga
-                </h2>
+            <div class="bg-white rounded-xl p-8 mb-6 border-t-4 border-yellow-400 shadow-sm">
+                <h2 id="question-text" class="text-2xl font-bold text-slate-900">Fråga</h2>
             </div>
-
-            <!-- Svarsalternativ -->
-            <div id="answers-container" class="space-y-3 mb-8">
-                <!-- Buttons generated by JS -->
-            </div>
-
-            <!-- Nästa-knapp (dold tills svar ges) -->
-            <button id="btn-next" onclick="nextQuestion()" class="hidden w-full accent-bg text-white py-3 rounded-xl font-bold text-lg hover:brightness-110 transition-all">
-                Nästa fråga →
-            </button>
+            <div id="answers-container" class="space-y-3 mb-6"></div>
+            <button id="btn-next" onclick="nextQuestion()" class="hidden w-full accent-bg text-white py-3 rounded-xl font-bold hover:brightness-110">Nästa fråga →</button>
         </div>
 
-        <!-- RESULTATSKÄRM -->
-        <div id="screen-results" class="hidden">
-            <div class="text-center mb-8">
-                <div class="text-6xl mb-4">
-                    <span id="result-emoji">🎉</span>
-                </div>
-                <h1 class="text-4xl font-bold accent-color mb-2 italic">Quiz färdigt!</h1>
-                <p class="text-lg text-slate-600 mb-8">Här är ditt resultat</p>
+        <div id="screen-results" class="hidden text-center">
+            <div class="text-6xl mb-4"><span id="result-emoji">🎉</span></div>
+            <h1 class="text-4xl font-bold accent-color mb-8 italic">Quiz färdigt!</h1>
+            <div class="bg-yellow-50 border-l-8 border-yellow-400 p-8 rounded-xl mb-8">
+                <p class="text-5xl font-bold accent-color mb-4"><span id="final-score">0</span>/30</p>
+                <p id="result-feedback" class="text-lg text-slate-700 mb-2">Feedback</p>
+                <p class="text-sm text-slate-600">Tid: <span id="final-time">00:00</span></p>
             </div>
-
-            <!-- Poängöversikt -->
-            <div class="light-accent-bg border-l-8 accent-border p-8 rounded-xl mb-8">
-                <div class="text-center">
-                    <p class="text-sm text-slate-600 uppercase tracking-wide font-bold mb-2">Din poäng</p>
-                    <p class="text-5xl font-bold accent-color mb-4">
-                        <span id="final-score">0</span>/30
-                    </p>
-                    <p id="result-feedback" class="text-lg text-slate-700 mb-4 font-semibold">
-                        Feedback
-                    </p>
-                    <div id="result-time" class="text-sm text-slate-600">
-                        Tid: <span id="final-time">00:00</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Missade frågor -->
             <div id="missed-section" class="mb-8 hidden">
                 <h2 class="text-2xl font-bold text-slate-900 mb-4">Frågor du missade</h2>
-                <div id="missed-list" class="space-y-2">
-                    <!-- Generated by JS -->
-                </div>
+                <div id="missed-list" class="space-y-2"></div>
             </div>
-
-            <!-- Fullständigt facit -->
-            <div class="mb-8">
-                <h2 class="text-2xl font-bold text-slate-900 mb-4">Fullständigt facit</h2>
-                <div id="review-list" class="space-y-3">
-                    <!-- Generated by JS -->
-                </div>
-            </div>
-
-            <!-- Gör om-knapp -->
-            <button onclick="resetQuiz()" class="w-full accent-bg text-white py-3 rounded-xl font-bold text-lg hover:brightness-110 transition-all">
-                Gör om Quiz
-            </button>
+            <button onclick="resetQuiz()" class="w-full accent-bg text-white py-3 rounded-xl font-bold hover:brightness-110">Gör om Quiz</button>
         </div>
-
     </div>
 
-    <!-- Feedback Modal -->
-    <div id="modal-backdrop" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center modal-backdrop z-50">
-        <div class="bg-white w-full sm:w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 sm:p-8 modal-content">
+    <div id="modal-backdrop" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white w-full max-w-md rounded-3xl p-8">
             <div class="flex items-center gap-3 mb-4">
                 <span id="modal-icon" class="text-3xl">✓</span>
                 <p id="modal-label" class="font-bold text-lg">Rätt!</p>
             </div>
-            <p id="modal-explanation" class="text-slate-700 leading-relaxed mb-6">
-                Förklaring här
-            </p>
-            <button onclick="closeModal()" class="w-full accent-bg text-white py-3 rounded-xl font-bold text-lg hover:brightness-110 transition-all">
-                Förstått
-            </button>
+            <p id="modal-explanation" class="text-slate-700 leading-relaxed mb-6"></p>
+            <button onclick="closeModal()" class="w-full accent-bg text-white py-3 rounded-xl font-bold hover:brightness-110">Förstått</button>
         </div>
     </div>
 
-    <!-- Frågorna (JSON-data) -->
     <script>
-const quizData = [
-    {
-        question: "Vad betyder ordet demokrati?",
-        options: [
-            "Folkstyre",
-            "Maktkoncentration hos en person",
-            "Styre av militären",
-            "Religiös statsskick"
-        ],
-        correct: 0,
-        explanation: "Ordet demokrati kommer från grekiskan och betyder folkstyre. I en demokrati är folket källan till makten, antingen direkt genom direktdemokrati eller indirekt genom representativ demokrati."
-    },
-    {
-        question: "Vilken är den viktigaste skillnaden mellan direktdemokrati och representativ demokrati?",
-        options: [
-            "I direktdemokrati fattar folket själva beslut direkt, i representativ demokrati väljer folket politiker som fattar beslut åt dem",
-            "Direktdemokrati är bättre än representativ demokrati",
-            "De är helt olika politiska ideologier",
-            "Direktdemokrati existerar inte längre i världen"
-        ],
-        correct: 0,
-        explanation: "I direktdemokrati deltar medborgarna själva direkt i beslutsfattandet, ofta genom folkomröstningar (som i Schweiz). I representativ demokrati, som Sverige har, väljer folket representanter – politiker – som fattar beslut på deras vägnar. Detta är praktiskt när landet är stort."
-    },
-    {
-        question: "Vilka är de fyra statsorganen i Sverige?",
-        options: [
-            "Statschef, Parlament, Regering och Domstolar",
-            "Riksdagen, Regeringen, Justitiekanslern och Försäkringskassan",
-            "Koronen, Senaten, Kongressen och Högsta domstolen",
-            "Folkpartiet, Moderaterna, Socialdemokraterna och Centerpartiet"
-        ],
-        correct: 0,
-        explanation: "De fyra statsorganen som är mest viktiga i en stat är: (1) Statschef – i Sverige kung Carl XVI Gustaf, (2) Parlament – i Sverige kallas det Riksdagen och är det högsta beslutande organet, (3) Regering – styr landet med stöd av Riksdagen, (4) Domstolar – dömer enligt landets lagar."
-    },
-    {
-        question: "Hur många grundlagar ingår i den svenska konstitutionen?",
-        options: [
-            "Fyra: Regeringsformen, Successionsordningen, Tryckfrihetsförordningen och Yttrandefrihetsgrundlagen",
-            "En huvudlag som reglerar allt",
-            "Två: En om regeringen och en om medborgarnas rättigheter",
-            "Tio olika grundlagar"
-        ],
-        correct: 0,
-        explanation: "Den svenska konstitutionen består av fyra grundlagar: (1) Regeringsformen – reglerar hur Sverige styrs och hur politiker väljs, (2) Successionsordningen – reglerar hur kronan ärvas, (3) Tryckfrihetsförordningen – garanterar yttrande- och tryckfrihet, (4) Yttrandefrihetsgrundlagen – garanterar yttrandefriheten på digitala medier."
-    },
-    {
-        question: "Vad är en konstitutionell monarki?",
-        options: [
-            "En stat där monarken är statschef men makten begränsas av konstitutionen",
-            "En monark med obegränsad makt",
-            "En president som väljs av folket",
-            "En republik utan någon statschef"
-        ],
-        correct: 0,
-        explanation: "I en konstitutionell monarki är monarken (kung eller drottning) statschef, men makten begränsas starkt av konstitutionen och grundlagarna. Sverige är en konstitutionell monarki. Kung Carl XVI Gustaf har därför mycket begränsad politisk makt och fungerar främst som en symbol för Sverige."
-    },
-    {
-        question: "Hur många ledamöter finns det i Sveriges riksdag?",
-        options: [
-            "349",
-            "365",
-            "300",
-            "250"
-        ],
-        correct: 0,
-        explanation: "Riksdagen har 349 ledamöter – folkvalda representanter för Sverige. Antalet mandat (platser) fördelas mellan 29 valkretsar baserat på befolkningsmängden. Stockholm får exempel 43 mandat medan Gotland får bara 2 mandat."
-    },
-    {
-        question: "Vad innebär ett proportionellt valsystem?",
-        options: [
-            "Ett parti får ungefär lika många mandat som andelen röster de får",
-            "Det största partiet får alla mandaten",
-            "Enbart män får rösta",
-            "Varje valkrets ger sitt enda mandat till vinnaren"
-        ],
-        correct: 0,
-        explanation: "I ett proportionellt valsystem får varje parti mandat motsvarande sin andel av rösterna. Till exempel, om ett parti får 30% av rösterna ska det få ungefär 30% av platserna i riksdagen. Sverige använder ett proportionellt system för att riksdagen ska spegla befolkningens åsikter."
-    },
-    {
-        question: "Vad är en fyraprocentsspärr?",
-        options: [
-            "En regel som säger att ett parti behöver minst 4% av landsrösterna för att få mandat i riksdagen",
-            "En lag som förbjuder fler än 4% av riksdagen att sitta tillsammans",
-            "En militär gräns mellan Sverige och Norge",
-            "En regel för hur många kommuner ett parti måste ha stöd i"
-        ],
-        correct: 0,
-        explanation: "Fyraprocentsspärren är en regel som förhindrar alltför små partier från att komma in i riksdagen. För att få mandat i riksdagen måste ett parti få minst 4% av samtliga röster i hele landet. Om ett parti får mindre än 4% nationellt men över 12% i en enskild valkrets, kan det fortfarande få mandat därifrån."
-    },
-    {
-        question: "Vad innebär parlamentarism?",
-        options: [
-            "Regeringen måste ha stöd av en majoritet i parlamentet för att styra; annars måste den avgå",
-            "Ett land styrs enbart av ett parlament utan regering",
-            "Bara aristokrater får rösta",
-            "En statsskick där presidenten har all makt"
-        ],
-        correct: 0,
-        explanation: "Parlamentarism innebär att regeringen måste ha stöd av en majoritet av ledamöterna i parlamentet/riksdagen. Om regeringen förlorar detta förtroende kan riksdagen uttala en misstroendeförklaring och regeringen måste avgå. Sverige är en parlamentarisk demokrati."
-    },
-    {
-        question: "Vem eller vilka är statschef/statschefer i Sverige?",
-        options: [
-            "Kung Carl XVI Gustaf",
-            "Statsministern",
-            "Talmannen i riksdagen",
-            "Riksrevisionens ordförande"
-        ],
-        correct: 0,
-        explanation: "Kung Carl XVI Gustaf är statschef i Sverige. Efter demokratins genombrott är monarkens makt mycket begränsad. Karl XVI Gustaf är huvudsakligen en symbol för Sverige och företräder landet internationellt, men statsministern leder regeringen och styr faktiskt landet."
-    },
-    {
-        question: "Vad regleras i Regeringsformen?",
-        options: [
-            "Reglerna för hur Sverige ska styras, hur politiker väljs, hur de fattar beslut, och de friheter och rättigheter medborgarna har",
-            "Endast vilken mat regeringen får äta",
-            "Bara reglerna för militären",
-            "Endast hur pengar ska användas"
-        ],
-        correct: 0,
-        explanation: "I Regeringsformen (som är en av våra fyra grundlagar) står reglerna för hur Sverige ska styras. Här finns det hur politiker väljs och utses, hur beslut fattas, hur besluten genomförs, och de friheter och rättigheter som vi medborgare har – såsom yttrande-, mötes-, förenings- och religionsfrihet."
-    },
-    {
-        question: "Vad är en republik?",
-        options: [
-            "Ett statsskick där statschefen väljs, oftast genom val, inte genom arv",
-            "En sammanslagning av flera länder",
-            "En diktatur utan parlament",
-            "En monarkisk statsskick"
-        ],
-        correct: 0,
-        explanation: "I en republik är statschefen, kallad president, vald och inte ärvd. Presidenten väljs oftast genom direkta val av folket eller indirekt genom ett parlament. Många länder är republiker – USA, Frankrike, Tyskland och Danmark är alla republiker."
-    },
-    {
-        question: "Vad är en valkrets?",
-        options: [
-            "Ett geografiskt område som har ett bestämt antal platser (mandat) i riksdagen",
-            "En grupp väljare som röstar på samma person",
-            "En politisk organisation",
-            "En institution som granskar valen"
-        ],
-        correct: 0,
-        explanation: "En valkrets är ett geografiskt område som får ett bestämt antal platser (mandat) i riksdagen. Sverige är indelat i 29 valkretsar, motsvarande 21 län plus några större städer. Stockholm har många mandat (43), medan mindre områden som Gotland bara har 2 mandat."
-    },
-    {
-        question: "Hur många län finns det i Sverige?",
-        options: [
-            "21",
-            "19",
-            "25",
-            "30"
-        ],
-        correct: 0,
-        explanation: "Sverige är indelat i 21 län. Varje län styrs av en länsstyrelse med en landshövding som chef. Länsstyrelserna är statens förlängda arm på regional nivå och hanterar allt från miljöskydd till tillståndsärenden."
-    },
-    {
-        question: "Vad är ett mandat?",
-        options: [
-            "En plats i folkförsamlingen, t.ex. riksdagen, som representerar väljare",
-            "En order från kung",
-            "En rättning eller korrektion",
-            "En militär befälhavare"
-        ],
-        correct: 0,
-        explanation: "Ett mandat är en plats i en folkförsamling som riksdagen, regionfullmäktige eller kommunfullmäktige. En riksdagsledamot har ett mandat i riksdagen och representerar sina väljare under fyra år. Mandaten fördelas mellan partierna enligt valresultatet."
-    },
-    {
-        question: "Vad innebär en misstroendeförklaring?",
-        options: [
-            "Riksdagen kan uttala sitt misstroende för en minister eller hela regeringen; då måste de avgå",
-            "En valkampanj mot ett parti",
-            "En rättegång mot en politiker",
-            "En statistik om förtroendet för politiker"
-        ],
-        correct: 0,
-        explanation: "En misstroendeförklaring innebär att riksdagen genom omröstning kan förklara sitt misstroende för en enskild statsråd (minister) eller för hela regeringen. Om mer än hälften av riksdagen röstar för misstroende måste statsrådet eller regeringen avgå. Detta är en viktig kontrollmekanism i en parlamentarisk demokrati."
-    },
-    {
-        question: "Hur många regioner finns det i Sverige?",
-        options: [
-            "21",
-            "19",
-            "25",
-            "29"
-        ],
-        correct: 0,
-        explanation: "Det finns 21 regioner i Sverige (tidigare kallade landsting). Regionerna sköter framför allt hälso- och sjukvård, som ofta är mycket kostsam. De ansvarar också för kollektivtrafik, kultur och regional utveckling. Regionerna finansieras huvudsakligen genom regionskatt."
-    },
-    {
-        question: "Vad innebär offentlighetsprincipen?",
-        options: [
-            "Huvudregeln är att myndigheters information ska vara öppen och tillgänglig för allmänheten",
-            "Alla möten måste hållas offentligt på torget",
-            "Alla människor måste rösta offentligt",
-            "Regeringen måste berätta sina hemliga planer"
-        ],
-        correct: 0,
-        explanation: "Offentlighetsprincipen är en viktig demokratisk princip som säger att huvudregeln är att myndigheters information ska vara öppen och tillgänglig för allmänheten. Du kan begära att se nästan all information som myndigheterna har. Det finns dock undantag för känslig information där sekretesslagstiftning gäller."
-    },
-    {
-        question: "Vad är en statsråd?",
-        options: [
-            "En minister – medlem av regeringen med ett speciellt ansvarsområde",
-            "En dommare i högsta domstolen",
-            "En ledamot i riksdagen",
-            "En tjänsteman på något departement"
-        ],
-        correct: 0,
-        explanation: "Statsråd är en annan benämning för minister – medlem av regeringen. Regeringen består av 20–25 statsråd som vardera har ett ansvarsområde, t.ex. utbildningsminister, finansminister, eller utrikesminister. Alla statsråd leds av statsministern."
-    },
-    {
-        question: "Vilken är talmannens viktigaste uppgift?",
-        options: [
-            "Att föreslå en ny statsminister och leda riksdagens arbete",
-            "Att döma i brottmål",
-            "Att styra hela regeringen",
-            "Att skriva alla lagar"
-        ],
-        correct: 0,
-        explanation: "Talmannen är förste talman i riksdagen och har två huvuduppgifter: (1) Efter ett riksdagsval samråder talmannen med partiledarna och föreslår sedan vem som ska bli ny statsminister. Om inte en majoritet motsätter sig förslaget får personen tillträda. (2) Talmannen leder riksdagens arbete tillsammans med tre vice talmän."
-    },
-    {
-        question: "Vad är en länsstyrelse?",
-        options: [
-            "Den högsta statliga myndigheten inom ett län, ledd av en landshövding",
-            "En domstol för brott",
-            "En kommunal organisation",
-            "En militär enhet"
-        ],
-        correct: 0,
-        explanation: "En länsstyrelse är statens regionala organisation inom ett län. Varje länsstyrelse leds av en landshövding och är statens förlängda arm på länsnivå. Länsstyrelserna hanterar allt från miljöskydd och djurskydd till att ge olika tillstånd och utfärda förordningar."
-    },
-    {
-        question: "Vad är kommunfullmäktige?",
-        options: [
-            "Kommunens högsta beslutande organ – kommunens motsvarighet till riksdagen",
-            "En polisstation i kommunen",
-            "Arbetarnas fackklubb",
-            "En privatägd företagsbyrå"
-        ],
-        correct: 0,
-        explanation: "Kommunfullmäktige är kommunens högsta beslutande organ och kan ses som kommunens motsvarighet till riksdagen. I kommunfullmäktige samlas de folkvalda politikerna från kommunen. Antalet ledamöter varierar beroende på kommunens storlek – från omkring 30 i små kommuner till 101 i Stockholms kommun."
-    },
-    {
-        question: "Vilka är de två viktigaste rättsprinciperna som nämndes i materialet?",
-        options: [
-            "Legalitetsprincipen (ingen får straffas för något som inte var förbjudet när det gjordes) och Likabehandlingsprincipen (alla är lika inför lagen)",
-            "Demokratiprincipen och Toleransprincipen",
-            "Värnplikt och Skatteplikten",
-            "Rösträttsprincipen och Valsekretessen"
-        ],
-        correct: 0,
-        explanation: "Två mycket viktiga rättsprinciper för rättssäkerhet är: (1) Legalitetsprincipen – ingen får straffas för något som vid tidpunkten då det utfördes inte var uttryckligen förbjudet i lag, (2) Likabehandlingsprincipen – alla ska vara lika inför lagen och ha samma rättigheter. Dessa är grundläggande för en rättsstat."
-    },
-    {
-        question: "Vad är skillnaden mellan partival och personval?",
-        options: [
-            "I partival röstar man på ett parti; i personval röstar man på en enskild kandidat",
-            "Partival är helt förbjudet i Sverige",
-            "De är samma sak",
-            "Personval tillåts bara för presidenter"
-        ],
-        correct: 0,
-        explanation: "I Sverige röstar vi främst på partier (partival), vilket innebär att partierna själva rangordnar sina kandidater på valsedeln. Men man kan också göra personval genom att kryssa för en enskild kandidat på valsedeln. En person som får över 5% av rösterna i sin valkrets kan komma in i riksdagen genom personval."
-    },
-    {
-        question: "Vilka är riksdagens tre huvuduppgifter?",
-        options: [
-            "Lagstiftningsmakt, Finansmakt och Kontrollmakt",
-            "Militär ledning, Poliskontroll och Skatteinsamling",
-            "Utbildning, Sjukvård och Vägunderhåll",
-            "Krig, Fred och Diplomati"
-        ],
-        correct: 0,
-        explanation: "Riksdagen har tre huvuduppgifter: (1) Lagstiftningsmakt – fattar politiska beslut som blir lagar, (2) Finansmakt – beslutar varje år om statens budget (inkomster och utgifter), (3) Kontrollmakt – granskar hur regeringen och statsförvaltningen sköter sitt arbete genom konstitutionsutskottet, frågestunder, interpellationer och möjligheten att rikta misstroendeförklaringar."
-    },
-    {
-        question: "Vad är en proposition?",
-        options: [
-            "Ett förslag till riksdagen som kommer från regeringen",
-            "Ett äktenskapsförslag",
-            "En förslag från ett politiskt parti",
-            "En matematisk ekvation"
-        ],
-        correct: 0,
-        explanation: "En proposition är ett förslag till riksdagen som kommer från regeringen. Regeringen använder propositioner för att presentera sina lagförslag för riksdagen. En proposition skrivs normalt av relevanta departement och presenteras för riksdagen under en session."
-    },
-    {
-        question: "Vad är en motion?",
-        options: [
-            "Ett förslag till riksdagen som kommer från en eller flera riksdagsledamöter",
-            "En rörelse eller dans",
-            "Ett förslag från regeringen",
-            "En folkomröstning"
-        ],
-        correct: 0,
-        explanation: "En motion är ett förslag till riksdagen som kommer från en eller flera riksdagsledamöter (politiker i riksdagen). Motioner kan handla om vilka politiska frågor som helst. Om flera ledamöter stöder en motion skickas den till rätt utskott för beredning."
-    },
-    {
-        question: "Vad är ett utskott i riksdagen?",
-        options: [
-            "Arbetsgrupper inom riksdagen som bereder olika ärenden före riksdagen fattar beslut",
-            "En grupp som granskar domstolarna",
-            "En militär organisation",
-            "En privat företagsklubb"
-        ],
-        correct: 0,
-        explanation: "Ett utskott är en arbetsgrupp inom riksdagen som bereder (förbereder) olika ärenden innan riksdagen som helhet fattar beslut. Riksdagen har 15 utskott indelade efter sakområden såsom utbildning, försvar och arbetsmarknad. Varje utskott har omkring 17 ledamöter från olika partier."
-    },
-    {
-        question: "Vilka två typer av val kan förekomma enligt materialet?",
-        options: [
-            "Proportionella val (där partier får mandat enligt röstandel) och Majoritetsval (där största vinnaren i en valkrets tar mandatet)",
-            "Privata val och Offentliga val",
-            "Hemliga val och Öppna val",
-            "Direkta val och Indirekta val"
-        ],
-        correct: 0,
-        explanation: "Det finns två huvudsakliga valsystem i världen: (1) Proportionella val – som Sverige använder – där ett parti får ungefär samma andel mandat som andelen röster, (2) Majoritetsval – som USA, Storbritannien och Indien använder – där varje valkrets ger sitt enda mandat till den största kandidaten, vilket ofta leder till två dominerande partier."
-    },
-    {
-        question: "Hur ändras en grundlag i Sverige?",
-        options: [
-            "Fler än hälften av riksdagen måste rösta för ändringen, sedan bordläggs ärendet till efter nästa val, och sedan måste den nyvalda riksdagen fatta samma beslut igen",
-            "En enskild politiker kan ändra grundlagen",
-            "Grundlagar kan aldrig ändras",
-            "Endast regeringen kan ändra grundlagar"
-        ],
-        correct: 0,
-        explanation: "Grundlagsändringar är avsiktligt komplicerade för att skydda demokratin: (1) Fler än hälften (>50%) av riksdagsledamöterna måste vara överens om förslaget, (2) Ärendet bordläggs till efter nästa riksdagsval så att folket får tid att reagera, (3) Den nyvalda riksdagen måste fatta samma beslut igen, (4) Grundlagsändringen får inte strida mot FN:s konventioner om mänskliga rättigheter."
-    },
-    {
-        question: "Vilka folkförsamlingar väljer vi i Sverige?",
-        options: [
-            "Riksdagen (349 ledamöter), Regionfullmäktige, Kommunfullmäktige och Europaparlamentet",
-            "Bara Riksdagen",
-            "Endast kommune- och regionfullmäktige",
-            "Bara Europaparlamentet och Riksdagen"
-        ],
-        correct: 0,
-        explanation: "Vi väljer till fyra olika folkförsamlingar: (1) Riksdagen – 349 ledamöter vars mandatperiod är fyra år, (2) Regionfullmäktige – för regional självstyre, även på fyra år, (3) Kommunfullmäktige – för kommunal självstyre, även på fyra år, (4) Europaparlamentet – vars mandatperiod är fem år. Alla myndiga svenska medborgare får rösta, och utländska medborgare får rösta till kommun och region efter 3 års bosättning i Sverige."
-    }
+const questions = [
+    { q: "Vad betyder ordet demokrati?", opts: ["Folkstyre", "Maktkoncentration hos en person", "Styre av militären", "Religiös statsskick"], ans: 0, exp: "Ordet demokrati kommer från grekiskan och betyder folkstyre. I en demokrati är folket källan till makten." },
+    { q: "Vilken är den viktigaste skillnaden mellan direktdemokrati och representativ demokrati?", opts: ["I direktdemokrati fattar folket själva beslut direkt, i representativ demokrati väljer folket politiker som fattar beslut åt dem", "Direktdemokrati är bättre än representativ demokrati", "De är helt olika politiska ideologier", "Direktdemokrati existerar inte längre"], ans: 0, exp: "I direktdemokrati deltar medborgarna själva direkt i beslutsfattandet, ofta genom folkomröstningar. I representativ demokrati, som Sverige har, väljer folket representanter." },
+    { q: "Vilka är de fyra statsorganen i Sverige?", opts: ["Statschef, Parlament, Regering och Domstolar", "Riksdagen, Regeringen, Justitiekanslern och Försäkringskassan", "Koronen, Senaten, Kongressen och Högsta domstolen", "Folkpartiet, Moderaterna, Socialdemokraterna och Centerpartiet"], ans: 0, exp: "De fyra statsorganen är: Statschef (Kung Carl XVI Gustaf), Parlament (Riksdagen), Regering och Domstolar." },
+    { q: "Hur många grundlagar ingår i den svenska konstitutionen?", opts: ["Fyra: Regeringsformen, Successionsordningen, Tryckfrihetsförordningen och Yttrandefrihetsgrundlagen", "En huvudlag som reglerar allt", "Två: En om regeringen och en om medborgarnas rättigheter", "Tio olika grundlagar"], ans: 0, exp: "Den svenska konstitutionen består av fyra grundlagar som tillsammans reglerar hur Sverige styrs och vilka fri- och rättigheter vi har." },
+    { q: "Vad är en konstitutionell monarki?", opts: ["En stat där monarken är statschef men makten begränsas av konstitutionen", "En monark med obegränsad makt", "En president som väljs av folket", "En republik utan någon statschef"], ans: 0, exp: "I en konstitutionell monarki är monarken statschef men makten begränsas starkt av konstitutionen. Sverige är en konstitutionell monarki." },
+    { q: "Hur många ledamöter finns det i Sveriges riksdag?", opts: ["349", "365", "300", "250"], ans: 0, exp: "Riksdagen har 349 ledamöter som fördelar sig mellan 29 valkretsar baserat på befolkningsmängden." },
+    { q: "Vad innebär ett proportionellt valsystem?", opts: ["Ett parti får ungefär lika många mandat som andelen röster de får", "Det största partiet får alla mandaten", "Enbart män får rösta", "Varje valkrets ger sitt enda mandat till vinnaren"], ans: 0, exp: "I ett proportionellt valsystem får varje parti mandat motsvarande sin andel av rösterna. Sverige använder denna system." },
+    { q: "Vad är en fyraprocentsspärr?", opts: ["En regel som säger att ett parti behöver minst 4% av landsrösterna för att få mandat i riksdagen", "En lag som förbjuder fler än 4% av riksdagen att sitta tillsammans", "En militär gräns mellan Sverige och Norge", "En regel för hur många kommuner ett parti måste ha stöd i"], ans: 0, exp: "Fyraprocentsspärren förhindrar alltför små partier från att komma in i riksdagen. Ett parti behöver minst 4% av landsrösterna." },
+    { q: "Vad innebär parlamentarism?", opts: ["Regeringen måste ha stöd av en majoritet i parlamentet för att styra; annars måste den avgå", "Ett land styrs enbart av ett parlament utan regering", "Bara aristokrater får rösta", "En statsskick där presidenten har all makt"], ans: 0, exp: "Parlamentarism innebär att regeringen måste ha stöd av en majoritet av ledamöterna i riksdagen. Sverige är en parlamentarisk demokrati." },
+    { q: "Vem eller vilka är statschef i Sverige?", opts: ["Kung Carl XVI Gustaf", "Statsministern", "Talmannen i riksdagen", "Riksrevisionens ordförande"], ans: 0, exp: "Kung Carl XVI Gustaf är statschef i Sverige. Han är huvudsakligen en symbol för Sverige, medan statsministern styr landet." },
+    { q: "Vad regleras i Regeringsformen?", opts: ["Reglerna för hur Sverige ska styrs, hur politiker väljs, och de friheter och rättigheter medborgarna har", "Endast vilken mat regeringen får äta", "Bara reglerna för militären", "Endast hur pengar ska användas"], ans: 0, exp: "Regeringsformen är en grundlag som reglerar hur Sverige styrs, vilka politiker väljs, hur beslut fattas, och medborgares friheter och rättigheter." },
+    { q: "Vad är en republik?", opts: ["Ett statsskick där statschefen väljs, oftast genom val, inte genom arv", "En sammanslagning av flera länder", "En diktatur utan parlament", "En monarkisk statsskick"], ans: 0, exp: "I en republik är statschefen vald, oftast genom direkta val av folket eller indirekt via ett parlament." },
+    { q: "Vad är en valkrets?", opts: ["Ett geografiskt område som har ett bestämt antal platser (mandat) i riksdagen", "En grupp väljare som röstar på samma person", "En politisk organisation", "En institution som granskar valen"], ans: 0, exp: "En valkrets är ett geografiskt område som får ett bestämt antal mandat i riksdagen. Sverige är indelat i 29 valkretsar." },
+    { q: "Hur många län finns det i Sverige?", opts: ["21", "19", "25", "30"], ans: 0, exp: "Sverige är indelat i 21 län. Varje län styrs av en länsstyrelse med en landshövding som chef." },
+    { q: "Vad är ett mandat?", opts: ["En plats i folkförsamlingen, t.ex. riksdagen, som representerar väljare", "En order från kung", "En rättning eller korrektion", "En militär befälhavare"], ans: 0, exp: "Ett mandat är en plats i en folkförsamling som riksdagen. Mandaten fördelas mellan partierna enligt valresultatet." },
+    { q: "Vad innebär en misstroendeförklaring?", opts: ["Riksdagen kan uttala sitt misstroende för en minister eller hela regeringen; då måste de avgå", "En valkampanj mot ett parti", "En rättegång mot en politiker", "En statistik om förtroendet för politiker"], ans: 0, exp: "En misstroendeförklaring innebär att riksdagen genom omröstning kan förklara sitt misstroende för en statsråd eller helt regeringen." },
+    { q: "Hur många regioner finns det i Sverige?", opts: ["21", "19", "25", "29"], ans: 0, exp: "Det finns 21 regioner i Sverige (tidigare kallade landsting) som framför allt sköter hälso- och sjukvård." },
+    { q: "Vad innebär offentlighetsprincipen?", opts: ["Huvudregeln är att myndigheters information ska vara öppen och tillgänglig för allmänheten", "Alla möten måste hållas offentligt på torget", "Alla människor måste rösta offentligt", "Regeringen måste berätta sina hemliga planer"], ans: 0, exp: "Offentlighetsprincipen säger att huvudregeln är att myndigheters information ska vara öppen för allmänheten." },
+    { q: "Vad är en statsråd?", opts: ["En minister – medlem av regeringen med ett speciellt ansvarsområde", "En dommare i högsta domstolen", "En ledamot i riksdagen", "En tjänsteman på något departement"], ans: 0, exp: "Statsråd är en annan benämning för minister – medlem av regeringen. Regeringen består av 20-25 statsråd." },
+    { q: "Vilken är talmannens viktigaste uppgift?", opts: ["Att föreslå en ny statsminister och leda riksdagens arbete", "Att döma i brottmål", "Att styra hela regeringen", "Att skriva alla lagar"], ans: 0, exp: "Talmannen föreslår ny statsminister efter val och leder riksdagens arbete tillsammans med vice talmän." },
+    { q: "Vad är en länsstyrelse?", opts: ["Den högsta statliga myndigheten inom ett län, ledd av en landshövding", "En domstol för brott", "En kommunal organisation", "En militär enhet"], ans: 0, exp: "En länsstyrelse är statens regionala organisation inom ett län, ledd av en landshövding." },
+    { q: "Vad är kommunfullmäktige?", opts: ["Kommunens högsta beslutande organ – kommunens motsvarighet till riksdagen", "En polisstation i kommunen", "Arbetarnas fackklubb", "En privatägd företagsbyrå"], ans: 0, exp: "Kommunfullmäktige är kommunens högsta beslutande organ, motsvarande riksdagen på kommunal nivå." },
+    { q: "Vilka är de två viktigaste rättsprinciperna?", opts: ["Legalitetsprincipen (ingen får straffas för något som inte var förbjudet) och Likabehandlingsprincipen (alla är lika inför lagen)", "Demokratiprincipen och Toleransprincipen", "Värnplikt och Skatteplikten", "Rösträttsprincipen och Valsekretessen"], ans: 0, exp: "Två viktiga rättsprinciper för rättssäkerhet är legalitetsprincipen och likabehandlingsprincipen." },
+    { q: "Vad är skillnaden mellan partival och personval?", opts: ["I partival röstar man på ett parti; i personval röstar man på en enskild kandidat", "Partival är helt förbjudet i Sverige", "De är samma sak", "Personval tillåts bara för presidenter"], ans: 0, exp: "Vi röstar främst på partier (partival), men kan också göra personval genom att kryssa för en kandidat." },
+    { q: "Vilka är riksdagens tre huvuduppgifter?", opts: ["Lagstiftningsmakt, Finansmakt och Kontrollmakt", "Militär ledning, Poliskontroll och Skatteinsamling", "Utbildning, Sjukvård och Vägunderhåll", "Krig, Fred och Diplomati"], ans: 0, exp: "Riksdagens tre huvuduppgifter är att stifta lagar, besluta om budgeten och kontrollera regeringen." },
+    { q: "Vad är en proposition?", opts: ["Ett förslag till riksdagen som kommer från regeringen", "Ett äktenskapsförslag", "En förslag från ett politiskt parti", "En matematisk ekvation"], ans: 0, exp: "En proposition är ett förslag till riksdagen som kommer från regeringen." },
+    { q: "Vad är en motion?", opts: ["Ett förslag till riksdagen som kommer från en eller flera riksdagsledamöter", "En rörelse eller dans", "Ett förslag från regeringen", "En folkomröstning"], ans: 0, exp: "En motion är ett förslag till riksdagen från en eller flera riksdagsledamöter." },
+    { q: "Vad är ett utskott i riksdagen?", opts: ["Arbetsgrupper inom riksdagen som bereder olika ärenden före riksdagen fattar beslut", "En grupp som granskar domstolarna", "En militär organisation", "En privat företagsklubb"], ans: 0, exp: "Ett utskott är en arbetsgrupp inom riksdagen som bereder ärenden innan riksdagen fattar beslut." },
+    { q: "Vilka två typer av val kan förekomma?", opts: ["Proportionella val (där partier får mandat enligt röstandel) och Majoritetsval (där största vinnaren tar mandatet)", "Privata val och Offentliga val", "Hemliga val och Öppna val", "Direkta val och Indirekta val"], ans: 0, exp: "Det finns proportionella val (Sverige) och majoritetsval (USA, Storbritannien). Proportionella ger bättre spegelbild av opinionen." },
+    { q: "Hur ändras en grundlag i Sverige?", opts: ["Fler än hälften av riksdagen måste rösta för det, sedan bordläggs ärendet till efter nästa val, och sedan måste nyvalda riksdagen fatta samma beslut igen", "En enskild politiker kan ändra grundlagen", "Grundlagar kan aldrig ändras", "Endast regeringen kan ändra grundlagar"], ans: 0, exp: "Grundlagsändringar är avsiktligt komplicerade för att skydda demokratin. Det krävs två beslut med val emellan." },
+    { q: "Vilka folkförsamlingar väljer vi i Sverige?", opts: ["Riksdagen, Regionfullmäktige, Kommunfullmäktige och Europaparlamentet", "Bara Riksdagen", "Endast kommune- och regionfullmäktige", "Bara Europaparlamentet och Riksdagen"], ans: 0, exp: "Vi väljer till fyra folkförsamlingar: Riksdagen (349 ledamöter, 4 år), Regionfullmäktige (4 år), Kommunfullmäktige (4 år) och Europaparlamentet (5 år)." }
 ];
 
-        // Helper function: Fisher-Yates shuffle
-        function shuffleArray(array) {
-            const arr = [...array];
-            for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
-            }
-            return arr;
-        }
+function shuffle(arr) { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
-        // State
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let shuffledQuestions = [];
-        let selectedAnswers = [];
-        let startTime = 0;
-        let timerInterval = null;
-        let questionShuffles = [];
+let idx = 0, score = 0, shuffled = [], answers = [], start = 0, timer = null;
 
-        function startQuiz() {
-            shuffledQuestions = shuffleArray(quizData);
-            selectedAnswers = new Array(shuffledQuestions.length).fill(null);
-            questionShuffles = shuffledQuestions.map(q => {
-                const shuffled = [...q.options];
-                const correctIndex = q.options.indexOf(q.options[q.correct]);
-                shuffled.sort(() => Math.random() - 0.5);
-                const newCorrectIndex = shuffled.indexOf(q.options[q.correct]);
-                return { shuffled, correctIndex: newCorrectIndex, original: q.correct };
-            });
+function startQuiz() {
+    shuffled = shuffle(questions);
+    answers = new Array(30).fill(null);
+    idx = 0;
+    score = 0;
+    start = Date.now();
+    timer = setInterval(() => {
+        const s = Math.floor((Date.now() - start) / 1000);
+        document.getElementById('timer').textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+    }, 1000);
+    document.getElementById('screen-start').classList.add('hidden');
+    document.getElementById('screen-quiz').classList.remove('hidden');
+    showQuestion();
+}
 
-            currentQuestionIndex = 0;
-            score = 0;
-            startTime = Date.now();
-            timerInterval = setInterval(updateTimer, 1000);
+function showQuestion() {
+    const q = shuffled[idx];
+    document.getElementById('q-current').textContent = idx + 1;
+    document.getElementById('question-text').textContent = q.q;
+    document.getElementById('score').textContent = score;
+    document.getElementById('progress-bar').style.width = (idx / 30) * 100 + '%';
+    const opts = shuffle([...q.opts]);
+    const container = document.getElementById('answers-container');
+    container.innerHTML = '';
+    opts.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-btn w-full text-left p-4 rounded-xl font-semibold text-lg';
+        btn.textContent = opt;
+        btn.onclick = () => selectAnswer(opt === q.opts[q.ans], q.exp);
+        container.appendChild(btn);
+    });
+}
 
-            document.getElementById('screen-start').classList.add('hidden');
-            document.getElementById('screen-quiz').classList.remove('hidden');
+function selectAnswer(isCorrect, exp) {
+    if (isCorrect) score++;
+    document.getElementById('modal-icon').textContent = isCorrect ? '✓' : '✗';
+    document.getElementById('modal-icon').className = isCorrect ? 'text-3xl text-green-600' : 'text-3xl text-red-600';
+    document.getElementById('modal-label').textContent = isCorrect ? 'Rätt!' : 'Fel!';
+    document.getElementById('modal-explanation').textContent = exp;
+    document.getElementById('modal-backdrop').classList.remove('hidden');
+    document.getElementById('btn-next').classList.remove('hidden');
+}
 
-            displayQuestion();
-        }
+function closeModal() { document.getElementById('modal-backdrop').classList.add('hidden'); }
 
-        function displayQuestion() {
-            const q = shuffledQuestions[currentQuestionIndex];
-            const shuffle = questionShuffles[currentQuestionIndex];
+function nextQuestion() {
+    idx++;
+    if (idx < 30) showQuestion();
+    else endQuiz();
+}
 
-            document.getElementById('q-current').textContent = currentQuestionIndex + 1;
-            document.getElementById('q-total').textContent = shuffledQuestions.length;
-            document.getElementById('question-text').textContent = q.question;
+function endQuiz() {
+    clearInterval(timer);
+    const t = Math.floor((Date.now() - start) / 1000);
+    const timeStr = String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0');
+    document.getElementById('screen-quiz').classList.add('hidden');
+    document.getElementById('screen-results').classList.remove('hidden');
+    document.getElementById('final-score').textContent = score;
+    document.getElementById('final-time').textContent = timeStr;
+    const p = (score / 30) * 100;
+    if (p >= 90) { document.getElementById('result-emoji').textContent = '🏆'; document.getElementById('result-feedback').textContent = 'Utmärkt! Du behärskar demokrati perfekt!'; }
+    else if (p >= 75) { document.getElementById('result-emoji').textContent = '👍'; document.getElementById('result-feedback').textContent = 'Bra jobbat! Du förstår väl hur demokratin fungerar.'; }
+    else if (p >= 60) { document.getElementById('result-emoji').textContent = '✓'; document.getElementById('result-feedback').textContent = 'Godkänt. Repetera de svåra områdena!'; }
+    else { document.getElementById('result-emoji').textContent = '💪'; document.getElementById('result-feedback').textContent = 'Öva mer! Läs pluggmaterialet och försök igen.'; }
+}
 
-            const progressPercent = ((currentQuestionIndex) / shuffledQuestions.length) * 100;
-            document.getElementById('progress-bar').style.width = progressPercent + '%';
-
-            const container = document.getElementById('answers-container');
-            container.innerHTML = '';
-
-            shuffle.shuffled.forEach((option, index) => {
-                const isSelected = selectedAnswers[currentQuestionIndex] === index;
-                const btn = document.createElement('button');
-                btn.className = 'quiz-btn w-full text-left p-4 rounded-xl font-semibold text-lg transition-all';
-                if (isSelected) btn.classList.add('selected');
-                btn.textContent = option;
-                btn.onclick = () => selectAnswer(index);
-                container.appendChild(btn);
-            });
-
-            document.getElementById('btn-next').classList.add('hidden');
-        }
-
-        function selectAnswer(index) {
-            selectedAnswers[currentQuestionIndex] = index;
-            const q = shuffledQuestions[currentQuestionIndex];
-            const shuffle = questionShuffles[currentQuestionIndex];
-
-            if (index === shuffle.correctIndex) {
-                score++;
-            }
-
-            updateScore();
-            showFeedback(index === shuffle.correctIndex, q);
-        }
-
-        function updateScore() {
-            document.getElementById('score').textContent = score;
-        }
-
-        function showFeedback(isCorrect, question) {
-            const modal = document.getElementById('modal-backdrop');
-            document.getElementById('modal-icon').textContent = isCorrect ? '✓' : '✗';
-            document.getElementById('modal-label').textContent = isCorrect ? 'Rätt!' : 'Fel!';
-            if (isCorrect) {
-                document.getElementById('modal-icon').classList.remove('text-red-600');
-                document.getElementById('modal-icon').classList.add('text-green-600');
-            } else {
-                document.getElementById('modal-icon').classList.remove('text-green-600');
-                document.getElementById('modal-icon').classList.add('text-red-600');
-            }
-            document.getElementById('modal-explanation').textContent = question.explanation;
-            modal.classList.remove('hidden');
-        }
-
-        function closeModal() {
-            document.getElementById('modal-backdrop').classList.add('hidden');
-            document.getElementById('btn-next').classList.remove('hidden');
-        }
-
-        function nextQuestion() {
-            currentQuestionIndex++;
-            if (currentQuestionIndex < shuffledQuestions.length) {
-                displayQuestion();
-            } else {
-                endQuiz();
-            }
-        }
-
-        function updateTimer() {
-            const elapsed = Math.floor((Date.now() - startTime) / 1000);
-            const mins = String(Math.floor(elapsed / 60)).padStart(2, '0');
-            const secs = String(elapsed % 60).padStart(2, '0');
-            document.getElementById('timer').textContent = `${mins}:${secs}`;
-        }
-
-        function endQuiz() {
-            clearInterval(timerInterval);
-
-            const elapsed = Math.floor((Date.now() - startTime) / 1000);
-            const mins = String(Math.floor(elapsed / 60)).padStart(2, '0');
-            const secs = String(elapsed % 60).padStart(2, '0');
-
-            document.getElementById('screen-quiz').classList.add('hidden');
-            document.getElementById('screen-results').classList.remove('hidden');
-
-            document.getElementById('final-score').textContent = score;
-            document.getElementById('final-time').textContent = `${mins}:${secs}`;
-
-            let emoji = '🎉';
-            let feedback = '';
-            const percent = (score / 30) * 100;
-
-            if (percent >= 90) {
-                emoji = '🏆';
-                feedback = 'Utmärkt! Du behärskar demokrati och statsskick på hög nivå!';
-            } else if (percent >= 75) {
-                emoji = '👍';
-                feedback = 'Bra jobbat! Du förstår väl hur den svenska demokratin fungerar.';
-            } else if (percent >= 60) {
-                emoji = '✓';
-                feedback = 'Godkänt. Du kan grunderna, men repetera svåra områden.';
-            } else if (percent >= 40) {
-                emoji = '📚';
-                feedback = 'Du behöver träna mer. Läs igenom materialet och försök igen!';
-            } else {
-                emoji = '💪';
-                feedback = 'Börja med pluggmaterialet och begreppen, sedan quizet igen!';
-            }
-
-            document.getElementById('result-emoji').textContent = emoji;
-            document.getElementById('result-feedback').textContent = feedback;
-
-            // Missade frågor
-            const missed = [];
-            shuffledQuestions.forEach((q, idx) => {
-                const shuffle = questionShuffles[idx];
-                if (selectedAnswers[idx] !== shuffle.correctIndex) {
-                    missed.push({ question: q.question, index: idx + 1 });
-                }
-            });
-
-            if (missed.length > 0) {
-                document.getElementById('missed-section').classList.remove('hidden');
-                document.getElementById('missed-list').innerHTML = missed.map(m =>
-                    `<div class="bg-red-50 border-l-4 border-red-500 p-3 rounded text-sm text-slate-700">
-                        <strong>Fråga ${m.index}:</strong> ${m.question}
-                    </div>`
-                ).join('');
-            }
-
-            // Fullständigt facit
-            document.getElementById('review-list').innerHTML = shuffledQuestions.map((q, idx) => {
-                const shuffle = questionShuffles[idx];
-                const isCorrect = selectedAnswers[idx] === shuffle.correctIndex;
-                const bgColor = isCorrect ? 'bg-green-50' : 'bg-red-50';
-                const borderColor = isCorrect ? 'border-green-500' : 'border-red-500';
-                const icon = isCorrect ? '✓' : '✗';
-                const iconColor = isCorrect ? 'text-green-600' : 'text-red-600';
-
-                return `<div class="${bgColor} border-l-4 ${borderColor} p-4 rounded">
-                    <div class="flex gap-2 mb-2">
-                        <span class="${iconColor} font-bold text-lg">${icon}</span>
-                        <strong>Fråga ${idx + 1}:</strong>
-                    </div>
-                    <p class="text-slate-700 mb-2">${q.question}</p>
-                    <p class="text-sm text-slate-600 mb-1"><strong>Ditt svar:</strong> ${shuffle.shuffled[selectedAnswers[idx]]}</p>
-                    <p class="text-sm text-green-700"><strong>Rätt svar:</strong> ${q.options[q.correct]}</p>
-                </div>`;
-            }).join('');
-        }
-
-        function resetQuiz() {
-            document.getElementById('screen-results').classList.add('hidden');
-            document.getElementById('screen-start').classList.remove('hidden');
-        }
+function resetQuiz() {
+    document.getElementById('screen-results').classList.add('hidden');
+    document.getElementById('screen-start').classList.remove('hidden');
+}
     </script>
-
 </body>
 </html>
