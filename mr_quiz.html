@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mänskliga rättigheter – Quiz | Samhällskunskap nivå 1a1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary:       #d97706;
+      --primary-light: #fef9c3;
+      --primary-dark:  #b45309;
+      --correct-bg:    #dcfce7;
+      --correct-border:#16a34a;
+      --correct-text:  #16a34a;
+      --wrong-bg:      #fee2e2;
+      --wrong-border:  #dc2626;
+      --wrong-text:    #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'EB Garamond', Georgia, serif; background: #fffbeb; min-height: 100vh; color: #1e293b; }
+
+    a.back-btn {
+      display: inline-block; padding: 8px 16px; color: var(--primary);
+      text-decoration: none; font-size: 0.95rem; position: fixed;
+      top: 14px; left: 14px; z-index: 200; border-radius: 8px; transition: background 0.2s;
+    }
+    a.back-btn:hover { background: var(--primary-light); }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Start screen ── */
+    #screen-start { max-width: 560px; margin: 0 auto; padding: 90px 24px 40px; text-align: center; }
+    .badge {
+      display: inline-block; background: var(--primary-light); color: var(--primary);
+      padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;
+      letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 20px;
+    }
+    #screen-start h1 {
+      font-size: 2.4rem; font-weight: 600; font-style: italic;
+      color: #0f172a; margin-bottom: 8px;
+    }
+    #screen-start .subtitle { font-size: 1.05rem; color: #64748b; margin-bottom: 32px; }
+    .info-cards { display: flex; gap: 12px; justify-content: center; margin-bottom: 36px; flex-wrap: wrap; }
+    .info-card {
+      background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 16px 20px; text-align: center; flex: 1; min-width: 100px; max-width: 140px;
+    }
+    .info-card .num { font-size: 1.7rem; font-weight: 600; color: var(--primary); }
+    .info-card .lbl { font-size: 0.78rem; color: #94a3b8; margin-top: 2px; }
+
+    /* ── Quiz screen ── */
+    #screen-quiz { max-width: 700px; margin: 0 auto; padding: 70px 20px 60px; }
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .timer {
+      background: white; border: 1px solid #e2e8f0; border-radius: 20px;
+      padding: 5px 14px; font-size: 0.92rem; color: #475569; font-variant-numeric: tabular-nums;
+    }
+    .score-pill {
+      background: var(--primary-light); color: var(--primary-dark);
+      border-radius: 20px; padding: 5px 14px; font-size: 0.92rem; font-weight: 600;
+    }
+    .progress-wrap { background: #e2e8f0; border-radius: 4px; height: 6px; overflow: hidden; margin-bottom: 6px; }
+    .progress-bar { background: var(--primary); height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+    .q-counter { font-size: 0.82rem; color: #94a3b8; text-align: right; margin-bottom: 22px; }
+    .q-text { font-size: 1.25rem; font-weight: 600; line-height: 1.55; color: #0f172a; margin-bottom: 22px; }
+    .opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+    .opt-btn {
+      background: white; border: 2px solid #e2e8f0; border-radius: 12px;
+      padding: 13px 18px; text-align: left; font-size: 1rem; font-family: inherit;
+      cursor: pointer; transition: border-color 0.15s, background 0.15s; line-height: 1.45;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--primary); background: var(--primary-light); }
+    .opt-btn:disabled { cursor: default; }
+    .opt-btn.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); font-weight: 600; }
+    .opt-btn.wrong   { background: var(--wrong-bg);   border-color: var(--wrong-border);   color: var(--wrong-text); }
+    .opt-btn.dimmed  { opacity: 0.4; }
+    .nav-row { display: flex; gap: 12px; align-items: center; }
+    .btn-back {
+      background: white; border: 2px solid #e2e8f0; border-radius: 10px;
+      padding: 10px 20px; font-family: inherit; font-size: 0.9rem; color: #64748b; cursor: pointer;
+    }
+    .btn-back:hover { border-color: #94a3b8; }
+    .btn-next {
+      background: var(--primary); border: none; border-radius: 10px;
+      padding: 10px 28px; font-family: inherit; font-size: 0.9rem; font-weight: 600;
+      color: white; cursor: pointer; margin-left: auto; transition: background 0.15s;
+    }
+    .btn-next:hover { background: var(--primary-dark); }
+
+    /* ── Modal ── */
+    #modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 500; padding: 20px;
+    }
+    #modal-overlay.hidden { display: none; }
+    .modal-box {
+      background: white; border-radius: 20px; padding: 32px;
+      max-width: 520px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .modal-icon  { font-size: 2.6rem; margin-bottom: 10px; }
+    .modal-verdict { font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; }
+    .modal-verdict.c { color: var(--correct-text); }
+    .modal-verdict.w { color: var(--wrong-text); }
+    .modal-expl { font-size: 0.98rem; color: #475569; line-height: 1.7; margin-bottom: 24px; }
+
+    /* ── Result screen ── */
+    #screen-result { max-width: 700px; margin: 0 auto; padding: 80px 20px 80px; }
+    .res-header { text-align: center; margin-bottom: 30px; }
+    .score-ring {
+      width: 120px; height: 120px; border-radius: 50%;
+      border: 5px solid var(--primary); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; margin: 0 auto 18px;
+    }
+    .score-ring .rnum { font-size: 2rem; font-weight: 600; color: var(--primary); line-height: 1; }
+    .score-ring .rlbl { font-size: 0.72rem; color: #94a3b8; }
+    .res-title  { font-size: 1.8rem; font-weight: 600; font-style: italic; margin-bottom: 6px; }
+    .res-msg    { font-size: 1rem; color: #64748b; margin-bottom: 4px; }
+    .res-time   { font-size: 0.85rem; color: #94a3b8; margin-bottom: 28px; }
+    .stats-row  { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+    .stat-box {
+      flex: 1; min-width: 80px; background: white; border: 1px solid #e2e8f0;
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .stat-box .snum { font-size: 1.6rem; font-weight: 600; }
+    .stat-box .slbl { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
+    .stat-box.cs .snum { color: var(--correct-text); }
+    .stat-box.ws .snum { color: var(--wrong-text); }
+    .section-hd {
+      font-size: 1.05rem; font-weight: 600; color: #0f172a;
+      margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0;
+    }
+    .missed-section { margin-bottom: 32px; }
+    .missed-item {
+      background: var(--wrong-bg); border-left: 4px solid var(--wrong-border);
+      border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-size: 0.92rem;
+    }
+    .facit-item {
+      background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 14px 16px; margin-bottom: 10px;
+    }
+    .facit-item.fc { border-left: 4px solid var(--correct-border); }
+    .facit-item.fw { border-left: 4px solid var(--wrong-border); }
+    .fi-num { font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .fi-q   { font-size: 0.93rem; font-weight: 600; color: #0f172a; margin-bottom: 8px; line-height: 1.4; }
+    .fi-row { font-size: 0.88rem; padding: 2px 0; }
+    .fi-row .lbl { color: #94a3b8; }
+    .fi-row.ya-ok  { color: var(--correct-text); }
+    .fi-row.ya-bad { color: var(--wrong-text); }
+    .fi-row.ra     { color: var(--correct-text); font-weight: 600; margin-top: 2px; }
+
+    .btn-primary {
+      display: inline-block; background: var(--primary); color: white; border: none;
+      border-radius: 12px; padding: 13px 36px; font-size: 1.05rem; font-family: inherit;
+      font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s;
+    }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+    .btn-primary:active { transform: none; }
+
+    @media (max-width: 500px) {
+      #screen-start h1 { font-size: 1.85rem; }
+      .q-text { font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<a href="politik.html" class="back-btn">← Tillbaka</a>
+
+<!-- ═══════════ START ═══════════ -->
+<div id="screen-start" class="screen active">
+  <div class="badge">Samhällskunskap nivå 1a1 · Politik</div>
+  <h1>⚖️ Mänskliga rättigheter</h1>
+  <p class="subtitle">30 frågor om rättigheters historia, FN, Europarådet och kränkningar</p>
+  <div class="info-cards">
+    <div class="info-card"><div class="num">30</div><div class="lbl">Frågor</div></div>
+    <div class="info-card"><div class="num">4</div><div class="lbl">Alternativ</div></div>
+    <div class="info-card"><div class="num">⏱</div><div class="lbl">Timer</div></div>
+  </div>
+  <button class="btn-primary" onclick="startQuiz()">Starta Quiz →</button>
+</div>
+
+<!-- ═══════════ QUIZ ═══════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-header">
+    <div class="timer" id="timer">⏱ 0:00</div>
+    <div class="score-pill" id="score-pill">Poäng: 0</div>
+  </div>
+  <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+  <div class="q-counter" id="q-counter">Fråga 1 av 30</div>
+  <div class="q-text" id="q-text"></div>
+  <div class="opts" id="opts"></div>
+  <div class="nav-row">
+    <button class="btn-back" id="btn-back" onclick="goBack()" style="display:none">← Bakåt</button>
+    <button class="btn-next" id="btn-next" onclick="goNext()" style="display:none">Nästa →</button>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL ═══════════ -->
+<div id="modal-overlay" class="hidden">
+  <div class="modal-box">
+    <div class="modal-icon"    id="modal-icon"></div>
+    <div class="modal-verdict" id="modal-verdict"></div>
+    <div class="modal-expl"    id="modal-expl"></div>
+    <button class="btn-primary" onclick="closeModal()">Nästa fråga →</button>
+  </div>
+</div>
+
+<!-- ═══════════ RESULT ═══════════ -->
+<div id="screen-result" class="screen">
+  <div class="res-header">
+    <div class="score-ring">
+      <div class="rnum" id="r-score"></div>
+      <div class="rlbl">poäng</div>
+    </div>
+    <div class="res-title" id="r-title"></div>
+    <div class="res-msg"   id="r-msg"></div>
+    <div class="res-time"  id="r-time"></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-box cs"><div class="snum" id="s-correct">0</div><div class="slbl">Rätt</div></div>
+    <div class="stat-box ws"><div class="snum" id="s-wrong">0</div><div class="slbl">Fel</div></div>
+    <div class="stat-box"><div class="snum" id="s-pct">0%</div><div class="slbl">Andel rätt</div></div>
+  </div>
+  <div class="missed-section" id="missed-section"></div>
+  <div class="section-hd">Fullständigt facit</div>
+  <div id="facit-list"></div>
+  <div style="text-align:center;margin-top:32px">
+    <button class="btn-primary" onclick="restartQuiz()">↺ Gör om quizet</button>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    q: 'Vad menas med att mänskliga rättigheter är universella?',
+    opts: [
+      'De gäller alla människor, överallt och i alla tider, oavsett kultur, religion eller landets lagar',
+      'De gäller bara medborgare i demokratiska stater',
+      'De gäller bara FN:s 193 medlemsländer',
+      'De gäller bara vuxna personer som är myndiga'
+    ],
+    correct: 'De gäller alla människor, överallt och i alla tider, oavsett kultur, religion eller landets lagar',
+    expl: 'Universalitet är en grundprincip för mänskliga rättigheter – de gäller alla människor bara för att de är människor, oavsett nationalitet, religion, kön eller politisk åsikt.'
+  },
+  {
+    q: 'I vilka tre huvudkategorier brukar mänskliga rättigheter delas in?',
+    opts: [
+      'Personliga, politiska samt ekonomiska, sociala och kulturella rättigheter',
+      'Civila, militära och religiösa rättigheter',
+      'Nationella, regionala och lokala rättigheter',
+      'Barnens, kvinnornas och äldres rättigheter'
+    ],
+    correct: 'Personliga, politiska samt ekonomiska, sociala och kulturella rättigheter',
+    expl: 'Mänskliga rättigheter brukar delas in i tre kategorier: personliga rättigheter (t.ex. rätt till liv), politiska rättigheter (t.ex. rösträtt) samt ekonomiska, sociala och kulturella rättigheter (t.ex. rätt till utbildning och arbete).'
+  },
+  {
+    q: 'Vilken 1600-talsfilosof formulerade idén om att alla människor föds med naturliga rättigheter till liv, frihet och egendom?',
+    opts: [
+      'John Locke',
+      'Thomas Hobbes',
+      'Jean-Jacques Rousseau',
+      'Immanuel Kant'
+    ],
+    correct: 'John Locke',
+    expl: 'John Locke var en brittisk filosof som hävdade att alla människor föds med naturliga rättigheter: rätt till liv, frihet och egendom. Hans idéer lade grunden för moderna mänskliga rättigheter och påverkade bland annat den amerikanska självständighetsförklaringen.'
+  },
+  {
+    q: 'Vad var Kyroskylindren, skapad ca 539 f.v.t.?',
+    opts: [
+      'En rättighetsförklaring som bl.a. befriade slavar och garanterade religionsfrihet',
+      'Det första moderna passet för internationella resor',
+      'En militärlag som tillät erövring av grannländer',
+      'Det äldsta kända handelsdokumentet från Persien'
+    ],
+    correct: 'En rättighetsförklaring som bl.a. befriade slavar och garanterade religionsfrihet',
+    expl: 'Kyroskylindren skapades av perserkungen Kyros den store och anses av många vara världens första rättighetsförklaring. Den befriade slavar och garanterade religionsfrihet för dem som levde i imperiet.'
+  },
+  {
+    q: 'Vilket år grundades Förenta nationerna (FN)?',
+    opts: ['1945', '1919', '1948', '1939'],
+    correct: '1945',
+    expl: 'FN grundades 1945 efter andra världskriget, för att förhindra framtida krig och kränkningar av mänskliga rättigheter. San Francisco-stadgan undertecknades av de 51 ursprungsländerna.'
+  },
+  {
+    q: 'Hur många länder grundade FN år 1945?',
+    opts: ['51 länder', '16 länder', '100 länder', '193 länder'],
+    correct: '51 länder',
+    expl: 'FN grundades 1945 av 51 länder. Idag har organisationen 193 medlemsstater och arbetar med fred, säkerhet, humanitärt bistånd och mänskliga rättigheter.'
+  },
+  {
+    q: 'Hur många artiklar innehåller FN:s allmänna förklaring om de mänskliga rättigheterna, antagen 1948?',
+    opts: ['30 artiklar', '50 artiklar', '10 artiklar', '100 artiklar'],
+    correct: '30 artiklar',
+    expl: 'FN:s allmänna förklaring om de mänskliga rättigheterna antogs den 10 december 1948 och innehåller 30 artiklar som täcker allt från rätten till liv och frihet till rätten till utbildning och arbete.'
+  },
+  {
+    q: 'Är FN:s allmänna förklaring om de mänskliga rättigheterna från 1948 juridiskt bindande för länder?',
+    opts: [
+      'Nej, den är inte juridiskt bindande',
+      'Ja, alla länder måste följa den eller riskerar sanktioner',
+      'Ja, men bara för FN:s permanenta säkerhetsrådsmedlemmar',
+      'Ja, men bara för EU-länder'
+    ],
+    correct: 'Nej, den är inte juridiskt bindande',
+    expl: 'FN:s allmänna förklaring är en deklaration, inte ett bindande avtal. Den är ett politiskt och moraliskt dokument. Konventionerna däremot är juridiskt bindande för de länder som ratificerar dem.'
+  },
+  {
+    q: 'Vad är skillnaden mellan en deklaration och en konvention inom mänskliga rättigheter?',
+    opts: [
+      'Konventioner är juridiskt bindande för stater som skriver under; deklarationen är det inte',
+      'En deklaration är bindande; en konvention är bara en rekommendation',
+      'Deklarationer gäller individer; konventioner gäller bara stater',
+      'Det finns ingen principiell skillnad mellan deklarationer och konventioner'
+    ],
+    correct: 'Konventioner är juridiskt bindande för stater som skriver under; deklarationen är det inte',
+    expl: 'En deklaration (som FN:s från 1948) är ett politiskt och moraliskt ställningstagande, men inte juridiskt bindande. En konvention är ett avtal som de länder som skriver under och ratificerar är juridiskt skyldiga att följa.'
+  },
+  {
+    q: 'Vilket år antogs de två viktigaste FN-konventionerna om mänskliga rättigheter – de s.k. kärnkonventionerna?',
+    opts: ['1966', '1948', '1945', '1989'],
+    correct: '1966',
+    expl: 'År 1966 antogs FN:s konvention om medborgerliga och politiska rättigheter samt konventionen om ekonomiska, sociala och kulturella rättigheter – de två kärnkonventionerna som är juridiskt bindande för de stater som ratificerat dem.'
+  },
+  {
+    q: 'Vilken FN-konvention ger barn under 18 år specifika rättigheter som rätt till skydd, utbildning och deltagande?',
+    opts: [
+      'Barnkonventionen',
+      'Flyktingkonventionen',
+      'Europakonventionen',
+      'Konventionen mot tortyr'
+    ],
+    correct: 'Barnkonventionen',
+    expl: 'Barnkonventionen antogs av FN 1989 och ger barn under 18 år specifika rättigheter, bland annat rätt till skydd, utbildning, lek och deltagande. Den är ratificerad av nästan alla världens länder.'
+  },
+  {
+    q: 'Vilken rättslig status har Europakonventionen om de mänskliga rättigheterna i Sverige?',
+    opts: [
+      'Den är gällande lag i Sverige',
+      'Den är bara en rekommendation utan laglig status',
+      'Den gäller enbart för EU-medborgare bosatta i Sverige',
+      'Den gäller enbart i brottmål, inte i civila tvister'
+    ],
+    correct: 'Den är gällande lag i Sverige',
+    expl: 'Europakonventionen inkorporerades i svensk rätt 1995 och är sedan dess gällande lag i Sverige. Det innebär att den kan åberopas direkt i svenska domstolar.'
+  },
+  {
+    q: 'Vilket år bildades Europarådet?',
+    opts: ['1949', '1957', '1945', '1995'],
+    correct: '1949',
+    expl: 'Europarådet bildades 1949 som ett svar på andra världskrigets fasor. Det är en separat organisation från EU och fokuserar på mänskliga rättigheter, demokrati och rättsstatsprincipen. Idag har det 46 medlemsstater.'
+  },
+  {
+    q: 'Vad kan Europadomstolen för de mänskliga rättigheterna göra med stater som kränker sina medborgares rättigheter?',
+    opts: [
+      'Döma dem för brott mot sina medborgares rättigheter',
+      'Utesluta dem ur FN',
+      'Kräva militärt ingripande mot staten',
+      'Fängsla statsledarna personligen'
+    ],
+    correct: 'Döma dem för brott mot sina medborgares rättigheter',
+    expl: 'Europadomstolen kan döma stater som kränker europakonventionens bestämmelser. Den kan döma länder att betala skadestånd till kränkta individer och kräva att lagar ändras.'
+  },
+  {
+    q: 'Under vilken organisation lyder Europadomstolen för de mänskliga rättigheterna?',
+    opts: ['Europarådet', 'Europeiska unionen (EU)', 'FN:s säkerhetsråd', 'NATO'],
+    correct: 'Europarådet',
+    expl: 'Europadomstolen är Europarådets domstol – inte EU:s. Europarådet grundades 1949 och har 46 medlemsstater, vilket är fler än EU:s 27.'
+  },
+  {
+    q: 'Vad innebär kollektiva rättigheter?',
+    opts: [
+      'En folkgrupps rätt att bevara sitt språk och sin kultur och ha ett visst självbestämmande',
+      'Rätten för alla individer att träffas i grupp',
+      'Rättigheter som tillkommer alla EU-medborgare gemensamt',
+      'Rättigheter som gäller hela familjer snarare än enskilda individer'
+    ],
+    correct: 'En folkgrupps rätt att bevara sitt språk och sin kultur och ha ett visst självbestämmande',
+    expl: 'Kollektiva rättigheter gäller grupper av människor, t.ex. folkgrupper och urfolk, snarare än individer. De inkluderar rätten till kulturell identitet, språk, religion och i vissa fall politiskt självbestämmande.'
+  },
+  {
+    q: 'Vilket folk erkänns som urfolk i Sverige?',
+    opts: ['Samerna', 'Tornedalingarna', 'Romer', 'Sverigefinnar'],
+    correct: 'Samerna',
+    expl: 'Samerna är det enda folk som erkänns som urfolk i Sverige. De har levt i området länge innan nationsgränserna drogs och har speciella rättigheter kopplade till bl.a. renskötseln och sitt språk.'
+  },
+  {
+    q: 'Vilka grupper räknas som nationella minoriteter i Sverige, förutom samerna?',
+    opts: [
+      'Judar, romer, tornedalingar och sverigefinnar',
+      'Somalier, irakier, syrier och afghaner',
+      'Danskar, norrmän, tyskar och polacker',
+      'Katoliker, muslimer, hinduer och buddhister'
+    ],
+    correct: 'Judar, romer, tornedalingar och sverigefinnar',
+    expl: 'Sverige har fem erkända nationella minoriteter: samer (även urfolk), judar, romer, tornedalingar och sverigefinnar. Dessa grupper har funnits i Sverige länge och har lagstadgade rättigheter.'
+  },
+  {
+    q: 'Vilket år antog FN deklarationen om urfolks rättigheter?',
+    opts: ['2007', '1948', '1966', '1989'],
+    correct: '2007',
+    expl: 'FN:s deklaration om urfolks rättigheter antogs 2007 och erkänner urfolkens rätt till land, kultur, språk och självbestämmande. Det är en deklaration, inte en juridiskt bindande konvention.'
+  },
+  {
+    q: 'Hur många suveräna stater finns det ungefär i världen?',
+    opts: ['Omkring 195 stater', 'Omkring 50 stater', 'Omkring 500 stater', 'Exakt 100 stater'],
+    correct: 'Omkring 195 stater',
+    expl: 'Det finns ungefär 195 suveräna stater i världen, varav 193 är FN-medlemmar. En suverän stat är ett land med eget territorium, befolkning och regering som inte är underordnad en annan stats styre.'
+  },
+  {
+    q: 'Vad hände Rosa Parks när hon år 1955 vägrade ge upp sin bussplats för en vit passagerare i Alabama?',
+    opts: [
+      'Hon arresterades och dömdes senare till böter',
+      'Hon fick nobelpriset för sin protest',
+      'Ingenting – buschaufförer hade ingen lag att luta sig mot',
+      'Hon fick sparken från sitt arbete och utvisades'
+    ],
+    correct: 'Hon arresterades och dömdes senare till böter',
+    expl: 'Rosa Parks arresterades för att ha brutit mot raslagarna. Händelsen utlöste en 381 dagar lång bussbojkott i Montgomery och stärkte medborgarrättsrörelsen i USA.'
+  },
+  {
+    q: 'Vilket historiskt genombrott nådde medborgarrättsrörelsen i USA år 1964?',
+    opts: [
+      'En lag som förbjöd rasåtskillnad och gav alla USA:s medborgare samma rättigheter',
+      'Slaveriet avskaffades i USA',
+      'Barack Obama valdes till USA:s president',
+      'Alabama fick en ny grundlag med lika rättigheter för alla'
+    ],
+    correct: 'En lag som förbjöd rasåtskillnad och gav alla USA:s medborgare samma rättigheter',
+    expl: 'Civil Rights Act 1964 förbjöd diskriminering baserad på ras, hudfärg, religion, kön eller nationellt ursprung och gav alla medborgare lika rättigheter. Det var ett historiskt genombrott för medborgarrättsrörelsen.'
+  },
+  {
+    q: 'Vad betyder ordet apartheid?',
+    opts: [
+      'Rasåtskillnad',
+      'Folkförtryck',
+      'Apartheid är ett egennamn utan direkt översättning',
+      'Politisk exil'
+    ],
+    correct: 'Rasåtskillnad',
+    expl: 'Apartheid är ett afrikaans-ord som betyder "åtskillnad" eller rasåtskillnad. Det syftar på det sydafrikanska systemet av institutionell rasåtskillnad 1948–1994 som förtryckte den svarta befolkningsmajoriteten.'
+  },
+  {
+    q: 'Vem ledde motståndet mot apartheid i Sydafrika och valdes 1994 till landets president?',
+    opts: ['Nelson Mandela', 'Desmond Tutu', 'Steve Biko', 'F.W. de Klerk'],
+    correct: 'Nelson Mandela',
+    expl: 'Nelson Mandela tillbringade 27 år i fängelse för sin kamp mot apartheid. Han släpptes 1990, och 1994 valdes han till Sydafrikas första svarta president i det första demokratiska valet som tillät alla raser att rösta.'
+  },
+  {
+    q: 'Vilka tre organisationer arbetar med att bevaka och rapportera om kränkningar av mänskliga rättigheter?',
+    opts: [
+      'Amnesty, Human Rights Watch och Reportrar utan gränser',
+      'WHO, UNICEF och UNESCO',
+      'Röda korset, Läkare utan gränser och Save the Children',
+      'Greenpeace, WWF och Transparency International'
+    ],
+    correct: 'Amnesty, Human Rights Watch och Reportrar utan gränser',
+    expl: 'Amnesty International, Human Rights Watch och Reportrar utan gränser är tre välkända människorättsorganisationer. De dokumenterar kränkningar, lobbar hos regeringar och informerar allmänheten om situationen i världen.'
+  },
+  {
+    q: 'Vad menas med en kränkning av mänskliga rättigheter?',
+    opts: [
+      'Att behandla en person nedsättande i ord eller handling, eller göra ingrepp i någons rättigheter',
+      'Att inte hålla med om ett lands lagstiftning',
+      'Att kritisera en statsledares beslut',
+      'Att vägra skriva under ett internationellt avtal'
+    ],
+    correct: 'Att behandla en person nedsättande i ord eller handling, eller göra ingrepp i någons rättigheter',
+    expl: 'En kränkning innebär att någons mänskliga rättigheter åsidosätts – t.ex. att tortyr används, att press censureras, att någon diskrimineras eller behandlas nedsättande. Det är ofta stater som är ansvariga för sådana kränkningar.'
+  },
+  {
+    q: 'Vad är ett hatbrott?',
+    opts: [
+      'Brott som begås p.g.a. att gärningsmannen har fördomar mot en annan grupp i samhället',
+      'Brott med extrem våldsanvändning mot slumpmässiga offer',
+      'Brott som riktas mot utländska diplomater',
+      'Brott som begås i krig mot civila'
+    ],
+    correct: 'Brott som begås p.g.a. att gärningsmannen har fördomar mot en annan grupp i samhället',
+    expl: 'Hatbrott motiveras av fördomar mot en grupps ras, etnicitet, religion, sexuella läggning eller funktionsnedsättning. De är extra allvarliga för att de riktar sig mot en person just för att de tillhör en viss grupp.'
+  },
+  {
+    q: 'Hur heter det brott i Sverige som innebär att man sprider uttalanden som hotar eller uttrycker förakt mot en folkgrupp?',
+    opts: [
+      'Hets mot folkgrupp',
+      'Rasistbrott',
+      'Diskrimineringsbrott',
+      'Folkförtryck'
+    ],
+    correct: 'Hets mot folkgrupp',
+    expl: 'Hets mot folkgrupp är ett brott i Sverige som innebär att man sprider uttalanden eller meddelanden som hotar, uttrycker förakt för eller kränker en folkgrupp baserat på exempelvis ras, etnicitet, religion eller sexuell läggning.'
+  },
+  {
+    q: 'Vilka länder verkställer flest dödsstraff i världen, enligt Amnesty International?',
+    opts: [
+      'Kina, Iran, Saudiarabien, Egypten och USA',
+      'Ryssland, Nordkorea, Kuba, Venezuela och Zimbabwe',
+      'USA, Australien, Kanada, Japan och Israel',
+      'Somalia, Sudan, Etiopien, Jemen och Afghanistan'
+    ],
+    correct: 'Kina, Iran, Saudiarabien, Egypten och USA',
+    expl: 'Kina avrättar fler än alla andra länder kombinerat. Bland de länder som verkställer flest dödsstraff finns Iran, Saudiarabien, Egypten och USA. Dödsstraff anses av Amnesty och FN strida mot rätten till liv.'
+  },
+  {
+    q: 'Vad menas med naturrätt i sammanhanget mänskliga rättigheter?',
+    opts: [
+      'Att människan har rättigheter som inte ens demokratiskt valda politiker får kränka',
+      'En lag om rätten att använda naturen och naturtillgångar fritt',
+      'Regler om djurens rättigheter i naturen',
+      'En princip om att stater äger alla naturresurser inom sina gränser'
+    ],
+    correct: 'Att människan har rättigheter som inte ens demokratiskt valda politiker får kränka',
+    expl: 'Naturrätten är en filosofisk teori om att det finns rättigheter inbyggda i den mänskliga naturen – de existerar oberoende av vad lagar säger. Mänskliga rättigheter bygger delvis på naturrätten: ingen stat, inte ens en demokrati, kan legitimt kränka dem.'
+  }
+];
+
+// ── State ──────────────────────────────────────────────────
+let shuffled = [];
+let states   = []; // { opts:[], chosen:string|null, correct:string, answered:bool }
+let cur      = 0;
+let score    = 0;
+let timerInterval = null;
+let startTime = 0;
+
+// ── Helpers ────────────────────────────────────────────────
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function fmtTime(ms) {
+  const s = Math.floor(ms / 1000);
+  return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+}
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ── Start ──────────────────────────────────────────────────
+function startQuiz() {
+  shuffled = shuffle(QUESTIONS);
+  states   = shuffled.map(q => ({
+    opts:     shuffle(q.opts),
+    chosen:   null,
+    correct:  q.correct,
+    answered: false
+  }));
+  cur   = 0;
+  score = 0;
+  startTime = Date.now();
+  timerInterval = setInterval(() => {
+    document.getElementById('timer').textContent = '⏱ ' + fmtTime(Date.now() - startTime);
+  }, 500);
+  show('screen-quiz');
+  renderQuestion();
+}
+
+// ── Render question ────────────────────────────────────────
+function renderQuestion() {
+  const q  = shuffled[cur];
+  const st = states[cur];
+  const n  = shuffled.length;
+
+  document.getElementById('q-counter').textContent = 'Fråga ' + (cur + 1) + ' av ' + n;
+  document.getElementById('q-text').textContent    = q.q;
+  document.getElementById('progress-bar').style.width = ((cur / n) * 100) + '%';
+  document.getElementById('score-pill').textContent   = 'Poäng: ' + score;
+
+  const container = document.getElementById('opts');
+  container.innerHTML = '';
+  st.opts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = opt;
+    if (st.answered) {
+      btn.disabled = true;
+      if (opt === st.correct) {
+        btn.classList.add('correct');
+      } else if (opt === st.chosen) {
+        btn.classList.add('wrong');
+      } else {
+        btn.classList.add('dimmed');
+      }
+    } else {
+      btn.onclick = () => answerQuestion(opt);
+    }
+    container.appendChild(btn);
+  });
+
+  document.getElementById('btn-back').style.display = cur > 0 ? 'block' : 'none';
+  document.getElementById('btn-next').style.display = st.answered ? 'block' : 'none';
+}
+
+// ── Answer ─────────────────────────────────────────────────
+function answerQuestion(chosen) {
+  const st = states[cur];
+  if (st.answered) return;
+
+  const isCorrect = chosen === st.correct;
+  st.chosen   = chosen;
+  st.answered = true;
+  if (isCorrect) score++;
+
+  const btns = document.querySelectorAll('#opts .opt-btn');
+  btns.forEach(btn => {
+    btn.disabled = true;
+    if (btn.textContent === st.correct) {
+      btn.classList.add('correct');
+    } else if (btn.textContent === chosen) {
+      btn.classList.add('wrong');
+    } else {
+      btn.classList.add('dimmed');
+    }
+  });
+
+  document.getElementById('score-pill').textContent = 'Poäng: ' + score;
+  document.getElementById('btn-next').style.display = 'block';
+
+  setTimeout(() => {
+    const icon    = document.getElementById('modal-icon');
+    const verdict = document.getElementById('modal-verdict');
+    icon.textContent    = isCorrect ? '✅' : '❌';
+    verdict.textContent = isCorrect ? 'Rätt!' : 'Fel!';
+    verdict.className   = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
+    document.getElementById('modal-expl').textContent = shuffled[cur].expl;
+    document.getElementById('modal-overlay').classList.remove('hidden');
+  }, 600);
+}
+
+// ── Modal close → next ─────────────────────────────────────
+function closeModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  goNext();
+}
+
+// ── Navigation ─────────────────────────────────────────────
+function goNext() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  if (cur < shuffled.length - 1) {
+    cur++;
+    renderQuestion();
+  } else {
+    endQuiz();
+  }
+}
+
+function goBack() {
+  if (cur > 0) {
+    cur--;
+    renderQuestion();
+  }
+}
+
+// ── End quiz ───────────────────────────────────────────────
+function endQuiz() {
+  clearInterval(timerInterval);
+  const elapsed = fmtTime(Date.now() - startTime);
+  const n       = shuffled.length;
+  const pct     = Math.round((score / n) * 100);
+
+  show('screen-result');
+
+  document.getElementById('r-score').textContent   = score + '/' + n;
+  document.getElementById('s-correct').textContent = score;
+  document.getElementById('s-wrong').textContent   = n - score;
+  document.getElementById('s-pct').textContent     = pct + '%';
+  document.getElementById('r-time').textContent    = 'Tid: ' + elapsed;
+  document.getElementById('progress-bar').style.width = '100%';
+
+  let title, msg;
+  if      (pct >= 90) { title = '🏆 Strålande!';   msg = 'Imponerande! Du behärskar mänskliga rättigheter.'; }
+  else if (pct >= 75) { title = '👍 Bra jobbat!';  msg = 'Bra resultat! Läs igenom det du missade en gång till.'; }
+  else if (pct >= 60) { title = '✓ Godkänt!';      msg = 'Du klarar provet! Repetera de svåra delarna.'; }
+  else                { title = '💪 Öva mer!';      msg = 'Läs pluggmaterialet och försök igen.'; }
+  document.getElementById('r-title').textContent = title;
+  document.getElementById('r-msg').textContent   = msg;
+
+  // Missed questions
+  const missed  = states.filter(st => st.chosen !== st.correct);
+  const missedEl = document.getElementById('missed-section');
+  if (missed.length > 0) {
+    missedEl.innerHTML = '<div class="section-hd">Frågor du missade (' + missed.length + ')</div>';
+    missed.forEach(st => {
+      const idx  = states.indexOf(st);
+      const item = document.createElement('div');
+      item.className = 'missed-item';
+      item.textContent = (idx + 1) + '. ' + shuffled[idx].q;
+      missedEl.appendChild(item);
+    });
+  }
+
+  // Full facit
+  const facitEl = document.getElementById('facit-list');
+  facitEl.innerHTML = '';
+  states.forEach((st, i) => {
+    const q      = shuffled[i];
+    const ok     = st.chosen === st.correct;
+    const item   = document.createElement('div');
+    item.className = 'facit-item ' + (ok ? 'fc' : 'fw');
+
+    const num = document.createElement('div');
+    num.className = 'fi-num';
+    num.textContent = 'Fråga ' + (i + 1);
+
+    const qEl = document.createElement('div');
+    qEl.className = 'fi-q';
+    qEl.textContent = q.q;
+
+    const ya = document.createElement('div');
+    ya.className = 'fi-row ' + (ok ? 'ya-ok' : 'ya-bad');
+    ya.innerHTML = '<span class="lbl">Ditt svar: </span>' + (st.chosen || '–') + (ok ? ' ✓' : ' ✗');
+
+    item.appendChild(num);
+    item.appendChild(qEl);
+    item.appendChild(ya);
+
+    if (!ok) {
+      const ra = document.createElement('div');
+      ra.className = 'fi-row ra';
+      ra.innerHTML = '<span class="lbl">Rätt svar: </span>' + st.correct;
+      item.appendChild(ra);
+    }
+
+    facitEl.appendChild(item);
+  });
+}
+
+// ── Restart ────────────────────────────────────────────────
+function restartQuiz() {
+  clearInterval(timerInterval);
+  show('screen-start');
+}
+</script>
+</body>
+</html>
