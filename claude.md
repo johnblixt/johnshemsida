@@ -481,10 +481,21 @@ Icke-exempel-vyn är en interaktiv 'Välj rätt tillämpning'-övning där eleve
 - 'Börja om'-knapp som blandar om ordningen
 
 ### Tillbaka-knapp — gäller ALLA filer
-- Varje fil (quiz, begreppslista, lucktext, uppgifter) ska ha en **tillbaka-knapp** som länkar till `index.html`
+- Varje fil (quiz, begreppslista, lucktext, uppgifter) ska ha en **tillbaka-knapp** (se [Tillbaka-navigering](#tillbaka-navigering) för vart den ska länka)
 - Placeras högst upp till vänster
 - Text: "← Tillbaka till startsidan"
 - Stil: diskret, matchar ämnets färg vid hover
+
+## Tillbaka-navigering
+
+Alla tillbaka-knappar/länkar ska använda smart navigering, aldrig hårdkodas till index.html:
+
+- Om document.referrer finns och tillhör samma domän → history.back()
+- Om referrer saknas (direktlänk/bokmärke) → fallback till områdets portalsida
+  (t.ex. jur1-portal.html, nk-portal.html), inte startsidan
+- Implementera som en delad funktion (gemensam JS-fil eller redan återanvänt inline-script),
+  aldrig kopierad kod i varje fil
+- Detta gäller alla nya sidor som skapas framöver (quiz, begreppslistor, pluggmaterial)
 
 ### Header i begreppsfil
 - Tillbaka-länk till `index.html` (pil + "Tillbaka till startsidan")
