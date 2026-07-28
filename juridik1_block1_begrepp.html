@@ -71,6 +71,51 @@ function makeOptions(currentItem, allData) {
   return shuffleArray([currentItem, ...distractors.slice(0, 3)]);
 }
 
+const VIEWS = ['Lista', 'Flashcards', 'Lucktext', 'Scenario', 'Icke-ex.'];
+const SCORE_VIEWS = ['Lucktext', 'Scenario', 'Icke-ex.'];
+const PROGRESS_KEY = 'jur1_block1_progress';
+const RANK_SALT = 'jur1block1sakerhet';
+const RANK_ORDER = { D: 1, C: 2, B: 3, A: 4, S: 5 };
+
+function loadProgress() {
+  try {
+    const raw = sessionStorage.getItem(PROGRESS_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return { completed: {}, best: {} };
+}
+
+function saveProgress(progress) {
+  try {
+    sessionStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+  } catch (e) {}
+}
+
+function computeRank(progress) {
+  const completedCount = VIEWS.filter(v => progress.completed[v]).length;
+  if (completedCount === 0) return null;
+  if (completedCount === 5) {
+    const allPerfect = SCORE_VIEWS.every(v => (progress.best[v] || 0) >= 100);
+    return allPerfect ? 'S' : 'A';
+  }
+  if (completedCount === 4) return 'A';
+  if (completedCount === 3) return 'B';
+  if (completedCount === 2) return 'C';
+  return 'D';
+}
+
+function computeVerificationCode(progress, rank) {
+  const d = new Date();
+  const dateStr = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+  const completedViews = VIEWS.filter(v => progress.completed[v]).sort().join(',');
+  const input = dateStr + '|' + completedViews + '|' + (rank || '-') + '|' + RANK_SALT;
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) {
+    hash = (hash + input.charCodeAt(i) * (i + 1)) % 1679616; // 36^4
+  }
+  return 'JUR1-' + hash.toString(36).toUpperCase().padStart(4, '0');
+}
+
 const lucktextData = [
   { id: 1,  term: 'Konstitutionell rätt',        sentence: 'Läraren förklarade att _____ handlar om hur grundlagarna skyddar medborgarnas fri- och rättigheter och reglerar den offentliga maktens kontroll.', definition: concepts[0].definition },
   { id: 2,  term: 'Demokrati',                   sentence: 'Sverige styrs med _____ som grund, vilket innebär att medborgarna kan påverka politiken genom regelbundna val.', definition: concepts[1].definition },
@@ -131,7 +176,7 @@ const scenarioData = [
   { id: 27, term: 'Successionsrätten',             scenario: 'Principen att monarkens äldsta barn automatiskt ärver rätten till tronen när monarken avgår eller dör.' },
 ];
 
-function LucktextView() {
+function LucktextView({ onComplete }) {
   const normalize = (s) => s.trim().toLowerCase();
   const initStates = () => lucktextData.map(() => ({ value: '', status: 'unanswered', attempts: 0 }));
 
@@ -140,6 +185,10 @@ function LucktextView() {
 
   const finished = states.every(s => s.status === 'correct' || s.status === 'revealed');
   const correctCount = states.filter(s => s.status === 'correct').length;
+
+  React.useEffect(() => {
+    if (finished) onComplete((correctCount / lucktextData.length) * 100);
+  }, [finished, correctCount, onComplete]);
 
   const handleInput = (idx, val) => {
     setStates(prev => {
@@ -308,7 +357,7 @@ function LucktextView() {
   );
 }
 
-function FlashcardView() {
+function FlashcardView({ onComplete }) {
   const total = concepts.length;
   const [deck, setDeck] = React.useState(() => shuffleArray([...concepts]));
   const [deckIdx, setDeckIdx] = React.useState(0);
@@ -337,6 +386,7 @@ function FlashcardView() {
     if (nextIdx >= deck.length) {
       setDeckIdx(nextIdx);
       setPhase(newKudeInte.length === 0 ? 'allDone' : 'roundEnd');
+      onComplete();
     } else {
       setDeckIdx(nextIdx);
     }
@@ -440,7 +490,7 @@ function FlashcardView() {
   );
 }
 
-function ScenarioView() {
+function ScenarioView({ onComplete }) {
   const total = scenarioData.length;
   const [items, setItems] = React.useState(() => shuffleArray([...scenarioData]));
   const [idx, setIdx] = React.useState(0);
@@ -448,6 +498,10 @@ function ScenarioView() {
   const [selected, setSelected] = React.useState(null);
   const [score, setScore] = React.useState(0);
   const [phase, setPhase] = React.useState('playing');
+
+  React.useEffect(() => {
+    if (phase === 'done') onComplete((score / total) * 100);
+  }, [phase]);
 
   const current = items[idx];
   const isAnswered = selected !== null;
@@ -676,7 +730,7 @@ const ickeExData = [
     explanation: 'Successionsrätten innebär arvsrätt till tronen — monarken utses inte via riksdagsröstning utan positionen ärvs.' },
 ];
 
-function IckeExView() {
+function IckeExView({ onComplete }) {
   const total = ickeExData.length;
 
   const makeQuestion = (item) => {
@@ -699,6 +753,10 @@ function IckeExView() {
 
   const current = questions[idx];
   const isAnswered = chosen !== null;
+
+  React.useEffect(() => {
+    if (phase === 'done') onComplete((score / total) * 100);
+  }, [phase]);
 
   const choose = (option) => {
     if (isAnswered) return;
@@ -816,9 +874,19 @@ function IckeExView() {
   );
 }
 
-const VIEWS = ['Lista', 'Flashcards', 'Lucktext', 'Scenario', 'Icke-ex.'];
+function ListView({ onComplete }) {
+  const sentinelRef = React.useRef(null);
 
-function ListView() {
+  React.useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) onComplete();
+    }, { threshold: 1.0 });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [onComplete]);
+
   return (
     <div className="flex flex-col gap-3">
       {concepts.map((c) => (
@@ -841,12 +909,63 @@ function ListView() {
           </div>
         </div>
       ))}
+      <div ref={sentinelRef} style={{ height: 1 }} />
     </div>
   );
 }
 
 function App() {
   const [activeView, setActiveView] = React.useState('Lista');
+  const [progress, setProgress] = React.useState(loadProgress);
+  const [celebrateRank, setCelebrateRank] = React.useState(null);
+  const prevRankRef = React.useRef(computeRank(loadProgress()));
+
+  React.useEffect(() => {
+    saveProgress(progress);
+  }, [progress]);
+
+  const markComplete = React.useCallback((view, pct) => {
+    setProgress(prev => {
+      const nextCompleted = { ...prev.completed };
+      const nextBest = { ...prev.best };
+      let changed = false;
+
+      if (typeof pct === 'number' && !(nextBest[view] >= pct)) {
+        nextBest[view] = pct;
+        changed = true;
+      }
+
+      const thresholdMet = typeof pct === 'number' ? pct >= 80 : true;
+      if (thresholdMet && !nextCompleted[view]) {
+        nextCompleted[view] = true;
+        changed = true;
+      }
+
+      return changed ? { completed: nextCompleted, best: nextBest } : prev;
+    });
+  }, []);
+
+  const completeLista = React.useCallback(() => markComplete('Lista'), [markComplete]);
+  const completeFlashcards = React.useCallback(() => markComplete('Flashcards'), [markComplete]);
+  const completeLucktext = React.useCallback((pct) => markComplete('Lucktext', pct), [markComplete]);
+  const completeScenario = React.useCallback((pct) => markComplete('Scenario', pct), [markComplete]);
+  const completeIckeEx = React.useCallback((pct) => markComplete('Icke-ex.', pct), [markComplete]);
+
+  const rank = computeRank(progress);
+  const completedCount = VIEWS.filter(v => progress.completed[v]).length;
+  const code = computeVerificationCode(progress, rank);
+
+  React.useEffect(() => {
+    const prevOrder = prevRankRef.current ? RANK_ORDER[prevRankRef.current] : 0;
+    const newOrder = rank ? RANK_ORDER[rank] : 0;
+    if (newOrder > prevOrder) {
+      setCelebrateRank(rank);
+      const t = setTimeout(() => setCelebrateRank(null), 2500);
+      prevRankRef.current = rank;
+      return () => clearTimeout(t);
+    }
+    prevRankRef.current = rank;
+  }, [rank]);
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">
@@ -867,6 +986,27 @@ function App() {
         <div className="w-32" />
       </div>
 
+      {/* Progress + rank */}
+      <div className="mb-4">
+        <div className="flex items-center justify-between mb-1.5 flex-wrap gap-2">
+          <span className="text-sm font-semibold text-slate-600">{completedCount}/5 avsnitt klara</span>
+          {rank && (
+            <span
+              className="text-xs font-bold px-2.5 py-1 rounded-full"
+              style={{ background: PRIMARY_LIGHT, color: PRIMARY_TEXT }}
+            >
+              Rank: {rank} · Kod: {code}
+            </span>
+          )}
+        </div>
+        <div className="w-full bg-slate-200 rounded-full h-1.5">
+          <div className="h-1.5 rounded-full transition-all" style={{ width: `${(completedCount / 5) * 100}%`, background: PRIMARY }} />
+        </div>
+        {completedCount === 5 && rank !== 'S' && (
+          <p className="text-xs text-slate-400 mt-1.5 italic">100% på alla poängvyer krävs för S-rank</p>
+        )}
+      </div>
+
       {/* Toggle */}
       <div className="flex gap-1 bg-slate-100 rounded-2xl p-1 mb-6 overflow-x-auto">
         {VIEWS.map((view) => (
@@ -881,21 +1021,39 @@ function App() {
             }
           >
             {view}
+            {progress.completed[view] && (
+              <span className="ml-1" style={{ color: activeView === view ? '#fff' : '#16a34a' }}>✓</span>
+            )}
           </button>
         ))}
       </div>
 
       {/* Content */}
-      {activeView === 'Lista' && <ListView />}
-      {activeView === 'Flashcards' && <FlashcardView />}
-      {activeView === 'Lucktext' && <LucktextView />}
-      {activeView === 'Scenario' && <ScenarioView />}
-      {activeView === 'Icke-ex.' && <IckeExView />}
+      {activeView === 'Lista' && <ListView onComplete={completeLista} />}
+      {activeView === 'Flashcards' && <FlashcardView onComplete={completeFlashcards} />}
+      {activeView === 'Lucktext' && <LucktextView onComplete={completeLucktext} />}
+      {activeView === 'Scenario' && <ScenarioView onComplete={completeScenario} />}
+      {activeView === 'Icke-ex.' && <IckeExView onComplete={completeIckeEx} />}
 
       {/* Footer */}
       <footer className="mt-10 text-center text-xs text-slate-400 italic">
         Källa: Juridik nivå 1 – begreppslista Block 1
       </footer>
+
+      {/* Rank celebration overlay */}
+      {celebrateRank && (
+        <div
+          className="fixed inset-0 flex items-center justify-center z-50 px-4"
+          style={{ background: 'rgba(15, 23, 42, 0.55)' }}
+          onClick={() => setCelebrateRank(null)}
+        >
+          <div className="bg-white rounded-3xl px-10 py-8 text-center shadow-2xl">
+            <div className="text-5xl mb-3">{celebrateRank === 'S' ? '🎉🏆🎉' : '🎉'}</div>
+            <p className="text-3xl font-bold" style={{ color: PRIMARY_TEXT }}>{celebrateRank}-RANK!</p>
+            <p className="text-slate-400 text-sm mt-2">Ny rank uppnådd</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
