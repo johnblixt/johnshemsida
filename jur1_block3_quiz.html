@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Avtalsrätt, konsumenträtt och köprätt – Quiz | Juridik 1 Block 3</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0d9488;
+      --primary-light: #ccfbf1;
+      --primary-dark: #0f766e;
+      --correct-bg: #dcfce7;
+      --correct-border: #16a34a;
+      --correct-text: #16a34a;
+      --wrong-bg: #fee2e2;
+      --wrong-border: #dc2626;
+      --wrong-text: #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'EB Garamond', Georgia, serif; background: #fdf2f8; min-height: 100vh; color: #1e293b; }
+
+    a.back-btn {
+      display: inline-block; padding: 8px 16px; color: var(--primary);
+      text-decoration: none; font-size: 0.95rem; position: fixed;
+      top: 14px; left: 14px; z-index: 200; border-radius: 8px; transition: background 0.2s;
+    }
+    a.back-btn:hover { background: var(--primary-light); }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Start screen ── */
+    #screen-start { max-width: 560px; margin: 0 auto; padding: 90px 24px 40px; text-align: center; }
+    .badge {
+      display: inline-block; background: var(--primary-light); color: var(--primary);
+      padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;
+      letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 20px;
+    }
+    #screen-start h1 {
+      font-size: 2.2rem; font-weight: 600; font-style: italic;
+      color: #0f172a; margin-bottom: 8px;
+    }
+    #screen-start .subtitle { font-size: 1.05rem; color: #64748b; margin-bottom: 32px; }
+    .info-cards { display: flex; gap: 12px; justify-content: center; margin-bottom: 36px; flex-wrap: wrap; }
+    .info-card {
+      background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 16px 20px; text-align: center; flex: 1; min-width: 100px; max-width: 140px;
+    }
+    .info-card .num { font-size: 1.7rem; font-weight: 600; color: var(--primary); }
+    .info-card .lbl { font-size: 0.78rem; color: #94a3b8; margin-top: 2px; }
+
+    /* ── Quiz screen ── */
+    #screen-quiz { max-width: 700px; margin: 0 auto; padding: 70px 20px 60px; }
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .timer {
+      background: white; border: 1px solid #e2e8f0; border-radius: 20px;
+      padding: 5px 14px; font-size: 0.92rem; color: #475569; font-variant-numeric: tabular-nums;
+    }
+    .score-pill {
+      background: var(--primary-light); color: var(--primary-dark);
+      border-radius: 20px; padding: 5px 14px; font-size: 0.92rem; font-weight: 600;
+    }
+    .progress-wrap { background: #e2e8f0; border-radius: 4px; height: 6px; overflow: hidden; margin-bottom: 6px; }
+    .progress-bar { background: var(--primary); height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+    .q-counter { font-size: 0.82rem; color: #94a3b8; text-align: right; margin-bottom: 22px; }
+    .type-badge {
+      display: inline-block; font-size: 0.72rem; text-transform: uppercase;
+      letter-spacing: 0.08em; padding: 2px 10px; border-radius: 20px; margin-bottom: 10px;
+    }
+    .type-badge.mc { background: #ede9fe; color: #6d28d9; }
+    .type-badge.tf  { background: #fef9c3; color: #854d0e; }
+    .q-text { font-size: 1.25rem; font-weight: 600; line-height: 1.55; color: #0f172a; margin-bottom: 22px; }
+    .opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+    .opts.two { flex-direction: row; gap: 14px; }
+    .opt-btn {
+      background: white; border: 2px solid #e2e8f0; border-radius: 12px;
+      padding: 13px 18px; text-align: left; font-size: 1rem; font-family: inherit;
+      cursor: pointer; transition: border-color 0.15s, background 0.15s; line-height: 1.45;
+    }
+    .opts.two .opt-btn { flex: 1; text-align: center; font-size: 1.15rem; padding: 18px 12px; }
+    .opt-btn:hover:not(:disabled) { border-color: var(--primary); background: var(--primary-light); }
+    .opt-btn:disabled { cursor: default; }
+    .opt-btn.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); font-weight: 600; }
+    .opt-btn.wrong   { background: var(--wrong-bg);   border-color: var(--wrong-border);   color: var(--wrong-text); }
+    .opt-btn.dimmed  { opacity: 0.4; }
+    .nav-row { display: flex; gap: 12px; align-items: center; }
+    .btn-back {
+      background: white; border: 2px solid #e2e8f0; border-radius: 10px;
+      padding: 10px 20px; font-family: inherit; font-size: 0.9rem; color: #64748b; cursor: pointer;
+    }
+    .btn-back:hover { border-color: #94a3b8; }
+    .btn-next {
+      background: var(--primary); border: none; border-radius: 10px;
+      padding: 10px 28px; font-family: inherit; font-size: 0.9rem; font-weight: 600;
+      color: white; cursor: pointer; margin-left: auto; transition: background 0.15s;
+    }
+    .btn-next:hover { background: var(--primary-dark); }
+
+    /* ── Modal ── */
+    #modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 500; padding: 20px;
+    }
+    #modal-overlay.hidden { display: none; }
+    .modal-box {
+      background: white; border-radius: 20px; padding: 32px;
+      max-width: 520px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .modal-icon  { font-size: 2.6rem; margin-bottom: 10px; }
+    .modal-verdict { font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; }
+    .modal-verdict.c { color: var(--correct-text); }
+    .modal-verdict.w { color: var(--wrong-text); }
+    .modal-expl { font-size: 0.98rem; color: #475569; line-height: 1.7; margin-bottom: 24px; }
+
+    /* ── Result screen ── */
+    #screen-result { max-width: 700px; margin: 0 auto; padding: 80px 20px 80px; }
+    .res-header { text-align: center; margin-bottom: 30px; }
+    .score-ring {
+      width: 120px; height: 120px; border-radius: 50%;
+      border: 5px solid var(--primary); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; margin: 0 auto 18px;
+    }
+    .score-ring .rnum { font-size: 2rem; font-weight: 600; color: var(--primary); line-height: 1; }
+    .score-ring .rlbl { font-size: 0.72rem; color: #94a3b8; }
+    .res-title  { font-size: 1.8rem; font-weight: 600; font-style: italic; margin-bottom: 6px; }
+    .res-msg    { font-size: 1rem; color: #64748b; margin-bottom: 4px; }
+    .res-time   { font-size: 0.85rem; color: #94a3b8; margin-bottom: 28px; }
+    .stats-row  { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+    .stat-box {
+      flex: 1; min-width: 80px; background: white; border: 1px solid #e2e8f0;
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .stat-box .snum { font-size: 1.6rem; font-weight: 600; }
+    .stat-box .slbl { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
+    .stat-box.cs .snum { color: var(--correct-text); }
+    .stat-box.ws .snum { color: var(--wrong-text); }
+    .section-hd {
+      font-size: 1.05rem; font-weight: 600; color: #0f172a;
+      margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0;
+    }
+    .missed-section { margin-bottom: 32px; }
+    .missed-item {
+      background: var(--wrong-bg); border-left: 4px solid var(--wrong-border);
+      border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-size: 0.92rem;
+    }
+    .facit-item {
+      background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 14px 16px; margin-bottom: 10px;
+    }
+    .facit-item.fc { border-left: 4px solid var(--correct-border); }
+    .facit-item.fw { border-left: 4px solid var(--wrong-border); }
+    .fi-num { font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .fi-q   { font-size: 0.93rem; font-weight: 600; color: #0f172a; margin-bottom: 8px; line-height: 1.4; }
+    .fi-row { font-size: 0.88rem; padding: 2px 0; }
+    .fi-row .lbl { color: #94a3b8; }
+    .fi-row.ya-ok  { color: var(--correct-text); }
+    .fi-row.ya-bad { color: var(--wrong-text); }
+    .fi-row.ra     { color: var(--correct-text); font-weight: 600; margin-top: 2px; }
+
+    .btn-primary {
+      display: inline-block; background: var(--primary); color: white; border: none;
+      border-radius: 12px; padding: 13px 36px; font-size: 1.05rem; font-family: inherit;
+      font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s;
+    }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+    .btn-primary:active { transform: none; }
+
+    @media (max-width: 500px) {
+      #screen-start h1 { font-size: 1.7rem; }
+      .q-text { font-size: 1.1rem; }
+    }
+  </style>
+  <script src="jur1_nav.js"></script>
+</head>
+<body>
+
+<a href="index.html" class="back-btn" onclick="jur1GoBack(event)">← Tillbaka till startsidan</a>
+
+<!-- ═══════════ START ═══════════ -->
+<div id="screen-start" class="screen active">
+  <div class="badge">Juridik 1 · Block 3</div>
+  <h1>Avtalsrätt, konsumenträtt och köprätt samt konsumentkrediter</h1>
+  <p class="subtitle">Quiz med flervalsfrågor och Rätt/Fel-påståenden</p>
+  <div class="info-cards">
+    <div class="info-card"><div class="num">30</div><div class="lbl">Frågor</div></div>
+    <div class="info-card"><div class="num">18</div><div class="lbl">Flerval</div></div>
+    <div class="info-card"><div class="num">12</div><div class="lbl">Rätt / Fel</div></div>
+  </div>
+  <button class="btn-primary" onclick="startQuiz()">Starta Quiz →</button>
+</div>
+
+<!-- ═══════════ QUIZ ═══════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-header">
+    <div class="timer" id="timer">⏱ 0:00</div>
+    <div class="score-pill" id="score-pill">Poäng: 0</div>
+  </div>
+  <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+  <div class="q-counter" id="q-counter">Fråga 1 av 30</div>
+  <div id="type-badge-wrap"></div>
+  <div class="q-text" id="q-text"></div>
+  <div class="opts" id="opts"></div>
+  <div class="nav-row">
+    <button class="btn-back" id="btn-back" onclick="goBack()" style="display:none">← Bakåt</button>
+    <button class="btn-next" id="btn-next" onclick="goNext()" style="display:none">Nästa →</button>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL ═══════════ -->
+<div id="modal-overlay" class="hidden">
+  <div class="modal-box">
+    <div class="modal-icon"    id="modal-icon"></div>
+    <div class="modal-verdict" id="modal-verdict"></div>
+    <div class="modal-expl"    id="modal-expl"></div>
+    <button class="btn-primary" onclick="closeModal()">Nästa fråga →</button>
+  </div>
+</div>
+
+<!-- ═══════════ RESULT ═══════════ -->
+<div id="screen-result" class="screen">
+  <div class="res-header">
+    <div class="score-ring">
+      <div class="rnum" id="r-score"></div>
+      <div class="rlbl">poäng</div>
+    </div>
+    <div class="res-title" id="r-title"></div>
+    <div class="res-msg"   id="r-msg"></div>
+    <div class="res-time"  id="r-time"></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-box cs"><div class="snum" id="s-correct">0</div><div class="slbl">Rätt</div></div>
+    <div class="stat-box ws"><div class="snum" id="s-wrong">0</div><div class="slbl">Fel</div></div>
+    <div class="stat-box"><div class="snum" id="s-pct">0%</div><div class="slbl">Andel rätt</div></div>
+  </div>
+  <div class="missed-section" id="missed-section"></div>
+  <div class="section-hd">Fullständigt facit</div>
+  <div id="facit-list"></div>
+  <div style="text-align:center;margin-top:32px">
+    <button class="btn-primary" onclick="restartQuiz()">↺ Gör om quizet</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// QUESTION DATA  (18 MC + 12 TF = 30 questions)
+// Källor: juridikblock3_uppgifter.md (frågeunderlag: Repetera- och
+//         Rätt eller fel-uppgifter för kapitel 6-8)
+//         juridikblock3material.md (svar + förklaringar)
+// ════════════════════════════════════════════════════════════
+const QUESTIONS = [
+
+  // ── DEL 1: AVTALSRÄTT (Kapitel 6) ──
+
+  // MC 1 – Uppg 1A
+  {
+    type: 'mc',
+    q: 'Vad menas med rättssubjekt?',
+    opts: [
+      'Den part som kan ingå avtal, det vill säga har både rättskapacitet och rättslig handlingsförmåga',
+      'En person som bara får äga saker men aldrig ingå några avtal',
+      'En juridisk person som alltid måste ha en fullmäktig som ombud',
+      'En person som fyllt 16 år och därför får ingå alla typer av avtal'
+    ],
+    correct: 0,
+    expl: 'Ett rättssubjekt är den part som kan ingå avtal. Ett rättssubjekt har både rättskapacitet (förmågan att äga egendom och ha skulder, som man har från födseln) och rättslig handlingsförmåga (förmågan att utföra rättsligt bindande handlingar, som man får vid 18 års ålder).'
+  },
+
+  // MC 2 – Uppg 1B
+  {
+    type: 'mc',
+    q: 'Vad gäller enligt föräldrabalken 9 kap. för den som fyllt 16 år men inte 18 år?',
+    opts: [
+      'Personen har rätt att ingå avtal för pengar hen själv tjänat genom eget arbete',
+      'Personen får ingå vilka avtal som helst, precis som en myndig person',
+      'Personen får låna pengar fritt utan att en kreditprövning görs',
+      'Personen behöver förmyndarens skriftliga godkännande för varje köp'
+    ],
+    correct: 0,
+    expl: 'Enligt föräldrabalken 9 kap. har den som fyllt 16 år rätt att ingå avtal för pengar hen tjänat på eget arbete. Full rättslig handlingsförmåga att ingå vilka avtal som helst får man först vid 18 års ålder.'
+  },
+
+  // MC 3 – Uppg 1C/1D
+  {
+    type: 'mc',
+    q: 'Vad är skillnaden mellan ett anbud och ett utbud, till exempel en annons?',
+    opts: [
+      'Ett anbud riktas till en bestämd person eller krets och går att svara ja eller nej till, medan ett utbud är en uppmaning till en obestämd krets att lämna ett anbud',
+      'Det finns ingen skillnad, båda är juridiskt bindande erbjudanden',
+      'Ett utbud är alltid skriftligt medan ett anbud alltid är muntligt',
+      'Ett anbud gäller bara vid köp mellan företag, ett utbud bara vid köp från konsumenter'
+    ],
+    correct: 0,
+    expl: 'Ett anbud ska vara utformat så att det går att svara ja eller nej till, och riktas mot en bestämd person eller krets. Ett erbjudande till en obestämd krets, till exempel en annons, är i stället ett utbud - bara en uppmaning att lämna ett anbud, inte bindande för avsändaren.'
+  },
+
+  // MC 4 – Uppg 1I
+  {
+    type: 'mc',
+    q: 'Vad innebär ocker som ogiltighetsgrund enligt avtalslagen?',
+    opts: [
+      'Att någon blivit utnyttjad och ingått ett ekonomiskt dåligt avtal i en situation där personen snabbt behövde pengar eller var beroende av motparten',
+      'Att avtalet innehåller ett för högt pris jämfört med marknadspriset',
+      'Att en av parterna är en juridisk person i stället för en fysisk person',
+      'Att avtalet ingåtts muntligt i stället för skriftligt'
+    ],
+    correct: 0,
+    expl: 'Ocker innebär att någon blivit utnyttjad och ingått ett ekonomiskt dåligt avtal i en situation där personen snabbt behövde pengar eller på något sätt var beroende av motparten. Det är en av de ogiltighetsgrunder som räknas upp i AvtL 3 kap.'
+  },
+
+  // MC 5 – Uppg 1K/1L
+  {
+    type: 'mc',
+    q: 'Vilka tre parter ingår i en affär som görs med hjälp av fullmakt?',
+    opts: [
+      'Fullmaktsgivare (huvudman), fullmäktig (mellanman) och tredje man',
+      'Köparen, säljaren och en jurist som bevittnar affären',
+      'Förmyndare, förvaltare och god man',
+      'Anbudsgivare, mottagare och Kronofogden'
+    ],
+    correct: 0,
+    expl: 'Den som skriver fullmakten kallas fullmaktsgivare eller huvudman, den som får fullmakten kallas fullmäktig eller mellanman, och den som affären görs med kallas tredje man.'
+  },
+
+  // MC 6 – Uppg 1N
+  {
+    type: 'mc',
+    q: 'Vad är en ställningsfullmakt?',
+    opts: [
+      'En fullmakt som följer med en anställning och ger rätt att utföra sådant som ingår i arbetsuppgifterna',
+      'En fullmakt som måste bevittnas av två oberoende personer för att gälla',
+      'En fullmakt som bara gäller vid köp av fast egendom',
+      'En fullmakt som en anhörig får när någon blir långvarigt sjuk'
+    ],
+    correct: 0,
+    expl: 'Anställda som gör affärer för arbetsgivarens räkning har en ställningsfullmakt - en rätt att utföra sådant som ingår i deras arbetsuppgifter. Det sista alternativet beskriver i stället en framtidsfullmakt.'
+  },
+
+  // TF 7 – Uppg 3C
+  {
+    type: 'tf',
+    q: 'Påstående: Ett avtal kräver två aktiva parter, en som lämnar ett anbud och en som accepterar anbudet.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. Enligt anbud-accept-modellen krävs enligt huvudregeln två aktiva parter: en som lämnar ett anbud och en som accepterar det genom en accept.'
+  },
+
+  // TF 8 – Uppg 3E
+  {
+    type: 'tf',
+    q: 'Påstående: Vid skriftliga och muntliga anbud har mottagaren skälig betänketid.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Vid ett muntligt anbud ges ingen betänketid alls - anbudet måste accepteras direkt om inte parterna avtalat om en längre svarstid. Det är först vid skriftliga anbud utan angiven svarsdag som legal acceptfrist (skälig betänketid) gäller.'
+  },
+
+  // TF 9 – Uppg 3L
+  {
+    type: 'tf',
+    q: 'Påstående: En fullmakt är till för att mellanmannen ska veta vad hen får göra.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. En skriftlig fullmakt är till för att tredje man ska kunna kontrollera att mellanmannen har behörighet att göra affären för huvudmannens räkning - inte i första hand för att mellanmannen själv ska veta vad hen får göra.'
+  },
+
+  // TF 10 – Uppg 3O
+  {
+    type: 'tf',
+    q: 'Påstående: En framtidsfullmakt skrivs innan den behövs.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. En framtidsfullmakt är en fullmakt som skrivs i förväg och som kan användas om personen som gett fullmakten i framtiden inte längre själv kan sköta sin ekonomi.'
+  },
+
+  // ── DEL 2: KÖP- OCH KONSUMENTRÄTT (Kapitel 7) ──
+
+  // MC 11 – Uppg 1A
+  {
+    type: 'mc',
+    q: 'Mellan vilka parter gäller konsumentköplagen, och vad omfattar den?',
+    opts: [
+      'Köp där köparen är konsument och säljaren är näringsidkare, samt köp av husdjur',
+      'Köp mellan två privatpersoner, till exempel via Marketplace',
+      'Endast köp av digitalt innehåll, inte fysiska varor',
+      'Köp mellan två näringsidkare, till exempel mellan två företag'
+    ],
+    correct: 0,
+    expl: 'Enligt KKL 1 kap. 1 § gäller lagen skydd för konsumenter vid köp av varor där köparen är konsument och säljaren är näringsidkare. Lagen gäller även vid köp av husdjur, samt digitalt innehåll och digitala tjänster.'
+  },
+
+  // MC 12 – Uppg 1E
+  {
+    type: 'mc',
+    q: 'Vad gäller om ett fel på en vara upptäcks efter två år men innan tre år gått sedan köpet?',
+    opts: [
+      'Det gäller omvänd bevisbörda - konsumenten måste själv visa att felet beror på bristande kvalitet',
+      'Felet räknas fortfarande som ursprungligt och säljaren måste bevisa motsatsen',
+      'Reklamationsrätten har redan gått ut och inget kan göras',
+      'Konsumenten får automatiskt en helt ny vara utan att behöva bevisa något'
+    ],
+    correct: 0,
+    expl: 'Under de första två åren betraktas alla fel som ursprungliga och säljaren måste bevisa att konsumenten orsakat felet. Efter två år och fram till tre år gäller i stället omvänd bevisbörda - då måste konsumenten själv kunna visa att felet beror på bristande kvalitet.'
+  },
+
+  // MC 13 – Uppg 1J
+  {
+    type: 'mc',
+    q: 'Hur mycket får slutpriset som mest bli om konsumenten fått ett ungefärligt pris innan en reparation enligt konsumenttjänstlagen?',
+    opts: [
+      'Högst 15 procent högre än det pris som angetts',
+      'Högst 5 procent högre än det pris som angetts',
+      'Slutpriset får aldrig avvika från det ungefärliga priset',
+      'Högst dubbelt så högt som det pris som angetts'
+    ],
+    correct: 0,
+    expl: 'Har företaget lämnat ett pris på ett arbete får slutpriset inte bli mer än 15 procent högre än det avtalade priset. I exemplet med Kristinas bilreparation kunde priset därför höjas från 3 000 kronor till som mest 3 450 kronor.'
+  },
+
+  // MC 14 – Uppg 1L
+  {
+    type: 'mc',
+    q: 'Hur lång är reklamationstiden enligt konsumenttjänstlagen för arbeten på en byggnad eller mark?',
+    opts: [
+      'Tio år',
+      'Två år, precis som för lösa saker',
+      'Tre år, samma som den vanliga reklamationstiden',
+      'Fem år'
+    ],
+    correct: 0,
+    expl: 'Den vanliga reklamationstiden enligt konsumenttjänstlagen är tre år, men vid arbeten på hus och mark är reklamationstiden i stället hela tio år.'
+  },
+
+  // MC 15 – Uppg 1O
+  {
+    type: 'mc',
+    q: 'Vad är den största skillnaden i reklamationsrätt mellan köplagen och konsumentköplagen?',
+    opts: [
+      'Köplagens skydd är betydligt mer begränsat - köparen förlorar rätten att reklamera fel hen borde ha upptäckt vid en undersökning, och reklamationstiden är kortare än i konsumentköplagen',
+      'Köplagen ger köparen en längre reklamationstid än konsumentköplagen',
+      'Det finns ingen skillnad, båda lagarna ger identiskt skydd',
+      'Köplagen gäller bara vid köp av fast egendom, konsumentköplagen bara vid köp av lös egendom'
+    ],
+    correct: 0,
+    expl: 'Köplagen ger köparen betydligt sämre skydd. Enligt KöpL 20 § kan köparen inte åberopa fel hen borde ha upptäckt vid en undersökning, och enligt KöpL 32 § förloras reklamationsrätten om inte reklamation sker inom två år - jämfört med konsumentköplagens tre år med omvänd bevisbörda efter två år.'
+  },
+
+  // MC 16 – Uppg 1P
+  {
+    type: 'mc',
+    q: 'Hur länge gäller ångerrätten vid distansköp enligt lagen om distansavtal, och när börjar tiden räknas?',
+    opts: [
+      '14 dagar, och tiden börjar räknas när köparen har tagit emot varan',
+      '30 dagar, och tiden börjar räknas när köpet betalats',
+      '14 dagar, och tiden börjar räknas redan när beställningen läggs',
+      'Ångerrätten gäller så länge varan inte används, utan någon tidsgräns'
+    ],
+    correct: 0,
+    expl: 'Distansavtalslagen ger köparen möjlighet att ångra ett köp inom 14 dagar. Tiden för ångerrätten startar när köparen har tagit emot varan. Vid köp av en tjänst räknas tiden i stället från dagen då avtalet tecknades.'
+  },
+
+  // TF 17 – Uppg 3A
+  {
+    type: 'tf',
+    q: 'Påstående: De flesta av konsumentlagarna är tvingande till säljarnas fördel.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Konsumentlagarna betraktar konsumenten som den svagare parten och är därför tvingande till konsumentens fördel, inte säljarens. Konsumenten får erbjudas bättre villkor än lagen, men aldrig sämre.'
+  },
+
+  // TF 18 – Uppg 3D
+  {
+    type: 'tf',
+    q: 'Påstående: Säljaren har rätt att reparera samma fel två gånger.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. Vid reparation har säljaren rätt att reparera samma fel två gånger. Uppkommer felet en tredje gång har kunden i stället rätt att få en ny vara eller välja en annan åtgärd.'
+  },
+
+  // TF 19 – Uppg 3H
+  {
+    type: 'tf',
+    q: 'Påstående: Öppet köp och bytesrätt regleras inte i någon lag.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. Konsumentköplagen ger ingen laglig ångerrätt för en vara som redan lämnats över. Öppet köp och bytesrätt är i stället frivilliga erbjudanden från handlare, och är inte reglerade i lag.'
+  },
+
+  // TF 20 – Uppg 3N
+  {
+    type: 'tf',
+    q: 'Påstående: Du har alltid samma rätt att reklamera, oavsett var och av vem du köpt en vara.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Reklamationsrätten skiljer sig åt beroende på om varan köpts av en näringsidkare (konsumentköplagen, tre år) eller av en privatperson (köplagen, mer begränsat skydd och kortare tid), samt beroende på om köpet skett i Sverige eller till exempel inom EU.'
+  },
+
+  // ── DEL 3: KONSUMENTKREDITER (Kapitel 8) ──
+
+  // MC 21 – Uppg 1A
+  {
+    type: 'mc',
+    q: 'För vilken period gäller räntan på en kredit om inget annat anges?',
+    opts: [
+      'Räntan anges alltid som en årsränta',
+      'Räntan anges alltid per månad om inget annat sägs',
+      'Räntan anges alltid för hela lånets löptid som ett engångsbelopp',
+      'Räntan anges per vecka enligt konsumentkreditlagen'
+    ],
+    correct: 0,
+    expl: 'Räntan för en kredit anges alltid i årsränta, och kan vara antingen rörlig eller fast under en viss tid.'
+  },
+
+  // MC 22 – Uppg 1C
+  {
+    type: 'mc',
+    q: 'När kan en långivare säga upp ett lån i förtid och kräva tillbaka hela summan?',
+    opts: [
+      'Om det finns ett förbehåll om det i avtalet, till exempel om låntagaren inte betalat i tid, gjort sig oanträffbar eller om säkerheten för lånet försämrats',
+      'Långivaren kan alltid säga upp ett lån i förtid, oavsett vad som står i avtalet',
+      'Bara om låntagaren själv begär det skriftligt',
+      'Endast om Kronofogden beslutat om det i förväg'
+    ],
+    correct: 0,
+    expl: 'Kreditgivaren får säga upp lånet och kräva tillbaka hela den lånade summan om det finns ett förbehåll om det i avtalet. Giltiga skäl kan vara att låntagaren inte betalat delbetalningarna i tid, gjort sig oanträffbar, eller att säkerheten för lånet försämrats genom vårdslöshet.'
+  },
+
+  // MC 23 – Uppg 1H
+  {
+    type: 'mc',
+    q: 'Vad är ett skuldebrev?',
+    opts: [
+      'Ett låneavtal som anger skuldbeloppet samt villkor för ränta och återbetalning av lånet',
+      'Ett intyg från Kronofogden om att en skuld är preskriberad',
+      'En ansökan om skuldsanering som skickas till tingsrätten',
+      'Ett kvitto på att en skuld redan är helt återbetald'
+    ],
+    correct: 0,
+    expl: 'Ett skuldebrev är ett låneavtal som innehåller skuldbeloppet samt villkor för ränta och återbetalning. Det innehåller normalt beloppet, tidpunkt för återbetalning, räntan och gäldenärens signatur, och bevisar att gäldenären är skyldig borgenären pengar.'
+  },
+
+  // MC 24 – Uppg 7A
+  {
+    type: 'mc',
+    q: 'Hur hög får räntan på ett lån vara som högst enligt konsumentkreditlagens räntetak?',
+    opts: [
+      '20 procent plus referensräntan',
+      '8 procent plus referensräntan',
+      '50 procent plus referensräntan',
+      'Räntan är obegränsad så länge kreditprövning gjorts'
+    ],
+    correct: 0,
+    expl: 'Från den 1 mars 2025 gäller ett räntetak i konsumentkreditlagen: högsta ränta som får tas ut för ett lån är 20 procent plus referensräntan. Dessutom finns ett kostnadstak - alla kostnader för lånet får tillsammans aldrig bli högre än det lånade beloppet.'
+  },
+
+  // MC 25 – Uppg 8C
+  {
+    type: 'mc',
+    q: 'Vad är skillnaden mellan proprieborgen och enkel borgen?',
+    opts: [
+      'Vid proprieborgen kan långivaren kräva borgensmannen på betalning direkt, utan att först ha krävt låntagaren; vid enkel borgen måste låntagaren krävas först och visas oförmögen att betala',
+      'Proprieborgen gäller bara privatlån, enkel borgen bara företagslån',
+      'Enkel borgen innebär att borgensmannen aldrig behöver betala något alls',
+      'Det finns ingen skillnad, bara olika namn på samma sak'
+    ],
+    correct: 0,
+    expl: 'Vid proprieborgen tar borgensmannen på sig ansvaret som för egen skuld - långivaren kan kräva betalning direkt av borgensmannen, utan krav på att låntagaren krävts först. Vid enkel borgen måste i stället gäldenären kontaktas först, och långivaren måste kunna bevisa att låntagaren inte kan betala innan kravet går till borgensmannen.'
+  },
+
+  // MC 26 – Uppg 1M
+  {
+    type: 'mc',
+    q: 'Hur avbryts preskriptionstiden för en skuld?',
+    opts: [
+      'Genom att en påminnelse skickas eller en delbetalning görs, då börjar preskriptionstiden räknas om',
+      'Preskriptionstiden kan aldrig avbrytas när den väl börjat',
+      'Genom att gäldenären flyttar till en ny adress',
+      'Genom att borgenären säljer skulden till ett inkassoföretag'
+    ],
+    correct: 0,
+    expl: 'Varje gång en påminnelse skickas, eller en delbetalning görs, sker ett preskriptionsavbrott. Preskriptionstiden börjar då räknas om igen från början.'
+  },
+
+  // TF 27 – Uppg 3C
+  {
+    type: 'tf',
+    q: 'Påstående: Med effektiv ränta menas den vanliga räntan plus alla avgifter.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. Den effektiva räntan är den totala kostnaden för lånet i förhållande till det lånade beloppet, och i den ingår räntan plus alla avgifter för lånet, till exempel uppläggningskostnad och utskick av fakturor.'
+  },
+
+  // TF 28 – Uppg 3H
+  {
+    type: 'tf',
+    q: 'Påstående: Säljaren kan själv hämta en bil som sålts med återtagandeförbehåll om inte betalningarna görs i tid.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Säljaren får inte själv hämta varan, utan måste göra en ansökan om handräckning hos Kronofogden för att få tillbaka den.'
+  },
+
+  // TF 29 – Uppg 3K
+  {
+    type: 'tf',
+    q: 'Påstående: Ett blancolån är ett lån med en bil som säkerhet.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Ett blancolån är ett lån utan säkerhet, och har därför en hög ränta. Ett lån med säkerhet i exempelvis en bil är i stället ett avbetalningslån.'
+  },
+
+  // TF 30 – Uppg 3N
+  {
+    type: 'tf',
+    q: 'Påstående: Om en låntagare inte betalar sina skulder kan borgenärerna driva in dem - först med en påminnelse, därefter med inkasso och slutligen med hjälp av Kronofogden. Låntagaren ska betala alla kostnader.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. Betalas inte en skuld skickas normalt först en påminnelse, sedan kan ett inkassoföretag kopplas in, och till sist kan borgenären ansöka om betalningsföreläggande hos Kronofogden. Låntagaren är skyldig att betala kostnaderna för både påminnelsen och inkassokravet.'
+  }
+
+];
+
+// ════════════════════════════════════════════════════════════
+// FISHER-YATES SHUFFLE
+// ════════════════════════════════════════════════════════════
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// ════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════
+let qs = [];      // shuffled questions with per-question state
+let cur = 0;      // current question index
+let score = 0;
+let elapsed = 0;
+let timerID = null;
+
+function buildState() {
+  const shuffled = shuffleArray([...QUESTIONS]);
+  qs = shuffled.map(q => {
+    const indices = q.opts.map((_, i) => i);
+    return {
+      ...q,
+      shuffledIdx: shuffleArray(indices), // original option indices in display order
+      selectedDisplay: null,              // which display position was clicked
+      answered: false
+    };
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// SCREENS
+// ════════════════════════════════════════════════════════════
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ════════════════════════════════════════════════════════════
+// TIMER
+// ════════════════════════════════════════════════════════════
+function fmt(s) {
+  const m = Math.floor(s / 60);
+  const ss = String(s % 60).padStart(2, '0');
+  return `⏱ ${m}:${ss}`;
+}
+function startTimer() {
+  elapsed = 0;
+  timerID = setInterval(() => {
+    elapsed++;
+    document.getElementById('timer').textContent = fmt(elapsed);
+  }, 1000);
+}
+function stopTimer() { clearInterval(timerID); }
+
+// ════════════════════════════════════════════════════════════
+// START
+// ════════════════════════════════════════════════════════════
+function startQuiz() {
+  buildState();
+  cur = 0;
+  score = 0;
+  show('screen-quiz');
+  startTimer();
+  render();
+}
+
+// ════════════════════════════════════════════════════════════
+// RENDER QUESTION
+// ════════════════════════════════════════════════════════════
+function render() {
+  const q = qs[cur];
+  const total = qs.length;
+
+  document.getElementById('progress-bar').style.width = (cur / total * 100) + '%';
+  document.getElementById('q-counter').textContent = `Fråga ${cur + 1} av ${total}`;
+  document.getElementById('score-pill').textContent = `Poäng: ${score}`;
+
+  const badgeWrap = document.getElementById('type-badge-wrap');
+  badgeWrap.innerHTML = q.type === 'mc'
+    ? '<span class="type-badge mc">Flerval</span>'
+    : '<span class="type-badge tf">Rätt eller Fel</span>';
+
+  document.getElementById('q-text').textContent = q.q;
+
+  const optsEl = document.getElementById('opts');
+  optsEl.innerHTML = '';
+  optsEl.className = 'opts' + (q.type === 'tf' ? ' two' : '');
+
+  q.shuffledIdx.forEach((origIdx, displayPos) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = q.opts[origIdx];
+    btn.disabled = q.answered;
+
+    if (q.answered) {
+      const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+      if (displayPos === correctDisplay)       btn.classList.add('correct');
+      else if (displayPos === q.selectedDisplay) btn.classList.add('wrong');
+      else                                      btn.classList.add('dimmed');
+    } else {
+      btn.addEventListener('click', () => handleAnswer(displayPos));
+    }
+
+    optsEl.appendChild(btn);
+  });
+
+  document.getElementById('btn-back').style.display = cur > 0 ? 'inline-block' : 'none';
+  document.getElementById('btn-next').style.display = q.answered ? 'inline-block' : 'none';
+  document.getElementById('btn-next').textContent =
+    cur === total - 1 ? 'Se resultat →' : 'Nästa →';
+}
+
+// ════════════════════════════════════════════════════════════
+// HANDLE ANSWER
+// ════════════════════════════════════════════════════════════
+function handleAnswer(displayPos) {
+  const q = qs[cur];
+  if (q.answered) return;
+
+  q.answered = true;
+  q.selectedDisplay = displayPos;
+
+  const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+  const isCorrect = displayPos === correctDisplay;
+  if (isCorrect) score++;
+
+  const btns = document.querySelectorAll('.opt-btn');
+  btns.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === correctDisplay)       btn.classList.add('correct');
+    else if (i === displayPos)      btn.classList.add('wrong');
+    else                            btn.classList.add('dimmed');
+  });
+
+  document.getElementById('btn-next').style.display = 'inline-block';
+  document.getElementById('btn-next').textContent =
+    cur === qs.length - 1 ? 'Se resultat →' : 'Nästa →';
+  document.getElementById('score-pill').textContent = `Poäng: ${score}`;
+
+  setTimeout(() => showModal(isCorrect, q.expl), 600);
+}
+
+// ════════════════════════════════════════════════════════════
+// MODAL
+// ════════════════════════════════════════════════════════════
+function showModal(isCorrect, expl) {
+  document.getElementById('modal-icon').textContent    = isCorrect ? '✅' : '❌';
+  document.getElementById('modal-verdict').textContent = isCorrect ? 'Rätt svar!' : 'Fel svar';
+  document.getElementById('modal-verdict').className   = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
+  document.getElementById('modal-expl').textContent    = expl;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  goNext();
+}
+
+// ════════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════════
+function goBack() {
+  if (cur > 0) { cur--; render(); }
+}
+
+function goNext() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  if (cur < qs.length - 1) {
+    cur++;
+    render();
+  } else {
+    showResults();
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// RESULTS
+// ════════════════════════════════════════════════════════════
+function showResults() {
+  stopTimer();
+  show('screen-result');
+
+  const total = qs.length;
+  const wrong = total - score;
+  const pct   = Math.round(score / total * 100);
+
+  document.getElementById('r-score').textContent   = `${score}/${total}`;
+  document.getElementById('s-correct').textContent = score;
+  document.getElementById('s-wrong').textContent   = wrong;
+  document.getElementById('s-pct').textContent     = pct + '%';
+
+  const m = Math.floor(elapsed / 60);
+  const s = String(elapsed % 60).padStart(2, '0');
+  document.getElementById('r-time').textContent = `Tid: ${m}:${s}`;
+
+  let title, msg;
+  if (pct >= 90)      { title = '🏆 Utmärkt!';          msg = 'Du behärskar avtalsrätt, köp- och konsumenträtt samt konsumentkrediter på hög nivå.'; }
+  else if (pct >= 75) { title = '✅ Redo för provet!';   msg = 'Bra resultat – du har koll på det centrala.'; }
+  else if (pct >= 55) { title = '📖 Öva lite till';      msg = 'Du är på rätt spår men behöver repetera en del.'; }
+  else                { title = '💡 Fortsätt repetera'; msg = 'Gå igenom materialet och försök igen.'; }
+
+  document.getElementById('r-title').textContent = title;
+  document.getElementById('r-msg').textContent   = msg;
+
+  // Missade frågor
+  const missedEl = document.getElementById('missed-section');
+  const missed = qs.filter(q => q.answered && q.shuffledIdx.indexOf(q.correct) !== q.selectedDisplay);
+  if (missed.length > 0) {
+    missedEl.innerHTML = `<div class="section-hd">Missade frågor (${missed.length})</div>`;
+    missed.forEach(q => {
+      const div = document.createElement('div');
+      div.className = 'missed-item';
+      div.textContent = q.q;
+      missedEl.appendChild(div);
+    });
+  } else {
+    missedEl.innerHTML = '';
+  }
+
+  // Fullständigt facit
+  const facitEl = document.getElementById('facit-list');
+  facitEl.innerHTML = '';
+  qs.forEach((q, i) => {
+    const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+    const isCorrect  = q.answered && q.selectedDisplay === correctDisplay;
+    const notAnswered = !q.answered;
+
+    const div = document.createElement('div');
+    div.className = 'facit-item ' + (notAnswered ? '' : isCorrect ? 'fc' : 'fw');
+
+    const correctOptText  = q.opts[q.correct];
+    const selectedOptText = q.answered ? q.opts[q.shuffledIdx[q.selectedDisplay]] : null;
+
+    let inner = `<div class="fi-num">Fråga ${i + 1}</div>`;
+    inner += `<div class="fi-q">${q.q}</div>`;
+
+    if (notAnswered) {
+      inner += `<div class="fi-row"><span class="lbl">Ditt svar: </span>— (inte besvarad)</div>`;
+      inner += `<div class="fi-row ra"><span class="lbl">Rätt svar: </span>${correctOptText}</div>`;
+    } else if (isCorrect) {
+      inner += `<div class="fi-row ya-ok">✓ <span class="lbl">Ditt svar: </span>${selectedOptText}</div>`;
+    } else {
+      inner += `<div class="fi-row ya-bad">✗ <span class="lbl">Ditt svar: </span>${selectedOptText}</div>`;
+      inner += `<div class="fi-row ra"><span class="lbl">Rätt svar: </span>${correctOptText}</div>`;
+    }
+
+    div.innerHTML = inner;
+    facitEl.appendChild(div);
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// RESTART
+// ════════════════════════════════════════════════════════════
+function restartQuiz() {
+  stopTimer();
+  show('screen-start');
+}
+</script>
+</body>
+</html>
