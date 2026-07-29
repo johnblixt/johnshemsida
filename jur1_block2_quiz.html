@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Familje- och arvsrätt – Quiz | Juridik 1 Block 2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0d9488;
+      --primary-light: #ccfbf1;
+      --primary-dark: #0f766e;
+      --correct-bg: #dcfce7;
+      --correct-border: #16a34a;
+      --correct-text: #16a34a;
+      --wrong-bg: #fee2e2;
+      --wrong-border: #dc2626;
+      --wrong-text: #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'EB Garamond', Georgia, serif; background: #fdf2f8; min-height: 100vh; color: #1e293b; }
+
+    a.back-btn {
+      display: inline-block; padding: 8px 16px; color: var(--primary);
+      text-decoration: none; font-size: 0.95rem; position: fixed;
+      top: 14px; left: 14px; z-index: 200; border-radius: 8px; transition: background 0.2s;
+    }
+    a.back-btn:hover { background: var(--primary-light); }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Start screen ── */
+    #screen-start { max-width: 560px; margin: 0 auto; padding: 90px 24px 40px; text-align: center; }
+    .badge {
+      display: inline-block; background: var(--primary-light); color: var(--primary);
+      padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;
+      letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 20px;
+    }
+    #screen-start h1 {
+      font-size: 2.4rem; font-weight: 600; font-style: italic;
+      color: #0f172a; margin-bottom: 8px;
+    }
+    #screen-start .subtitle { font-size: 1.05rem; color: #64748b; margin-bottom: 32px; }
+    .info-cards { display: flex; gap: 12px; justify-content: center; margin-bottom: 36px; flex-wrap: wrap; }
+    .info-card {
+      background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 16px 20px; text-align: center; flex: 1; min-width: 100px; max-width: 140px;
+    }
+    .info-card .num { font-size: 1.7rem; font-weight: 600; color: var(--primary); }
+    .info-card .lbl { font-size: 0.78rem; color: #94a3b8; margin-top: 2px; }
+
+    /* ── Quiz screen ── */
+    #screen-quiz { max-width: 700px; margin: 0 auto; padding: 70px 20px 60px; }
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .timer {
+      background: white; border: 1px solid #e2e8f0; border-radius: 20px;
+      padding: 5px 14px; font-size: 0.92rem; color: #475569; font-variant-numeric: tabular-nums;
+    }
+    .score-pill {
+      background: var(--primary-light); color: var(--primary-dark);
+      border-radius: 20px; padding: 5px 14px; font-size: 0.92rem; font-weight: 600;
+    }
+    .progress-wrap { background: #e2e8f0; border-radius: 4px; height: 6px; overflow: hidden; margin-bottom: 6px; }
+    .progress-bar { background: var(--primary); height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+    .q-counter { font-size: 0.82rem; color: #94a3b8; text-align: right; margin-bottom: 22px; }
+    .type-badge {
+      display: inline-block; font-size: 0.72rem; text-transform: uppercase;
+      letter-spacing: 0.08em; padding: 2px 10px; border-radius: 20px; margin-bottom: 10px;
+    }
+    .type-badge.mc { background: #ede9fe; color: #6d28d9; }
+    .type-badge.tf  { background: #fef9c3; color: #854d0e; }
+    .q-text { font-size: 1.25rem; font-weight: 600; line-height: 1.55; color: #0f172a; margin-bottom: 22px; }
+    .opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+    .opts.two { flex-direction: row; gap: 14px; }
+    .opt-btn {
+      background: white; border: 2px solid #e2e8f0; border-radius: 12px;
+      padding: 13px 18px; text-align: left; font-size: 1rem; font-family: inherit;
+      cursor: pointer; transition: border-color 0.15s, background 0.15s; line-height: 1.45;
+    }
+    .opts.two .opt-btn { flex: 1; text-align: center; font-size: 1.15rem; padding: 18px 12px; }
+    .opt-btn:hover:not(:disabled) { border-color: var(--primary); background: var(--primary-light); }
+    .opt-btn:disabled { cursor: default; }
+    .opt-btn.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); font-weight: 600; }
+    .opt-btn.wrong   { background: var(--wrong-bg);   border-color: var(--wrong-border);   color: var(--wrong-text); }
+    .opt-btn.dimmed  { opacity: 0.4; }
+    .nav-row { display: flex; gap: 12px; align-items: center; }
+    .btn-back {
+      background: white; border: 2px solid #e2e8f0; border-radius: 10px;
+      padding: 10px 20px; font-family: inherit; font-size: 0.9rem; color: #64748b; cursor: pointer;
+    }
+    .btn-back:hover { border-color: #94a3b8; }
+    .btn-next {
+      background: var(--primary); border: none; border-radius: 10px;
+      padding: 10px 28px; font-family: inherit; font-size: 0.9rem; font-weight: 600;
+      color: white; cursor: pointer; margin-left: auto; transition: background 0.15s;
+    }
+    .btn-next:hover { background: var(--primary-dark); }
+
+    /* ── Modal ── */
+    #modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 500; padding: 20px;
+    }
+    #modal-overlay.hidden { display: none; }
+    .modal-box {
+      background: white; border-radius: 20px; padding: 32px;
+      max-width: 520px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .modal-icon  { font-size: 2.6rem; margin-bottom: 10px; }
+    .modal-verdict { font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; }
+    .modal-verdict.c { color: var(--correct-text); }
+    .modal-verdict.w { color: var(--wrong-text); }
+    .modal-expl { font-size: 0.98rem; color: #475569; line-height: 1.7; margin-bottom: 24px; }
+
+    /* ── Result screen ── */
+    #screen-result { max-width: 700px; margin: 0 auto; padding: 80px 20px 80px; }
+    .res-header { text-align: center; margin-bottom: 30px; }
+    .score-ring {
+      width: 120px; height: 120px; border-radius: 50%;
+      border: 5px solid var(--primary); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; margin: 0 auto 18px;
+    }
+    .score-ring .rnum { font-size: 2rem; font-weight: 600; color: var(--primary); line-height: 1; }
+    .score-ring .rlbl { font-size: 0.72rem; color: #94a3b8; }
+    .res-title  { font-size: 1.8rem; font-weight: 600; font-style: italic; margin-bottom: 6px; }
+    .res-msg    { font-size: 1rem; color: #64748b; margin-bottom: 4px; }
+    .res-time   { font-size: 0.85rem; color: #94a3b8; margin-bottom: 28px; }
+    .stats-row  { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+    .stat-box {
+      flex: 1; min-width: 80px; background: white; border: 1px solid #e2e8f0;
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .stat-box .snum { font-size: 1.6rem; font-weight: 600; }
+    .stat-box .slbl { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
+    .stat-box.cs .snum { color: var(--correct-text); }
+    .stat-box.ws .snum { color: var(--wrong-text); }
+    .section-hd {
+      font-size: 1.05rem; font-weight: 600; color: #0f172a;
+      margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0;
+    }
+    .missed-section { margin-bottom: 32px; }
+    .missed-item {
+      background: var(--wrong-bg); border-left: 4px solid var(--wrong-border);
+      border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-size: 0.92rem;
+    }
+    .facit-item {
+      background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 14px 16px; margin-bottom: 10px;
+    }
+    .facit-item.fc { border-left: 4px solid var(--correct-border); }
+    .facit-item.fw { border-left: 4px solid var(--wrong-border); }
+    .fi-num { font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .fi-q   { font-size: 0.93rem; font-weight: 600; color: #0f172a; margin-bottom: 8px; line-height: 1.4; }
+    .fi-row { font-size: 0.88rem; padding: 2px 0; }
+    .fi-row .lbl { color: #94a3b8; }
+    .fi-row.ya-ok  { color: var(--correct-text); }
+    .fi-row.ya-bad { color: var(--wrong-text); }
+    .fi-row.ra     { color: var(--correct-text); font-weight: 600; margin-top: 2px; }
+
+    .btn-primary {
+      display: inline-block; background: var(--primary); color: white; border: none;
+      border-radius: 12px; padding: 13px 36px; font-size: 1.05rem; font-family: inherit;
+      font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s;
+    }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+    .btn-primary:active { transform: none; }
+
+    @media (max-width: 500px) {
+      #screen-start h1 { font-size: 1.85rem; }
+      .q-text { font-size: 1.1rem; }
+    }
+  </style>
+  <script src="jur1_nav.js"></script>
+</head>
+<body>
+
+<a href="index.html" class="back-btn" onclick="jur1GoBack(event)">← Tillbaka till startsidan</a>
+
+<!-- ═══════════ START ═══════════ -->
+<div id="screen-start" class="screen active">
+  <div class="badge">Juridik 1 · Block 2</div>
+  <h1>Familje- och arvsrätt</h1>
+  <p class="subtitle">Quiz med flervalsfrågor och Rätt/Fel-påståenden</p>
+  <div class="info-cards">
+    <div class="info-card"><div class="num">30</div><div class="lbl">Frågor</div></div>
+    <div class="info-card"><div class="num">23</div><div class="lbl">Flerval</div></div>
+    <div class="info-card"><div class="num">7</div><div class="lbl">Rätt / Fel</div></div>
+  </div>
+  <button class="btn-primary" onclick="startQuiz()">Starta Quiz →</button>
+</div>
+
+<!-- ═══════════ QUIZ ═══════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-header">
+    <div class="timer" id="timer">⏱ 0:00</div>
+    <div class="score-pill" id="score-pill">Poäng: 0</div>
+  </div>
+  <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+  <div class="q-counter" id="q-counter">Fråga 1 av 30</div>
+  <div id="type-badge-wrap"></div>
+  <div class="q-text" id="q-text"></div>
+  <div class="opts" id="opts"></div>
+  <div class="nav-row">
+    <button class="btn-back" id="btn-back" onclick="goBack()" style="display:none">← Bakåt</button>
+    <button class="btn-next" id="btn-next" onclick="goNext()" style="display:none">Nästa →</button>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL ═══════════ -->
+<div id="modal-overlay" class="hidden">
+  <div class="modal-box">
+    <div class="modal-icon"    id="modal-icon"></div>
+    <div class="modal-verdict" id="modal-verdict"></div>
+    <div class="modal-expl"    id="modal-expl"></div>
+    <button class="btn-primary" onclick="closeModal()">Nästa fråga →</button>
+  </div>
+</div>
+
+<!-- ═══════════ RESULT ═══════════ -->
+<div id="screen-result" class="screen">
+  <div class="res-header">
+    <div class="score-ring">
+      <div class="rnum" id="r-score"></div>
+      <div class="rlbl">poäng</div>
+    </div>
+    <div class="res-title" id="r-title"></div>
+    <div class="res-msg"   id="r-msg"></div>
+    <div class="res-time"  id="r-time"></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-box cs"><div class="snum" id="s-correct">0</div><div class="slbl">Rätt</div></div>
+    <div class="stat-box ws"><div class="snum" id="s-wrong">0</div><div class="slbl">Fel</div></div>
+    <div class="stat-box"><div class="snum" id="s-pct">0%</div><div class="slbl">Andel rätt</div></div>
+  </div>
+  <div class="missed-section" id="missed-section"></div>
+  <div class="section-hd">Fullständigt facit</div>
+  <div id="facit-list"></div>
+  <div style="text-align:center;margin-top:32px">
+    <button class="btn-primary" onclick="restartQuiz()">↺ Gör om quizet</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// QUESTION DATA  (23 MC + 7 TF = 30 questions)
+// Källor: jur1_block2_uppgifter_data.md (frågeunderlag)
+//         jur1_block2_familje_arvsratt.md (svar + förklaringar)
+// ════════════════════════════════════════════════════════════
+const QUESTIONS = [
+
+  // ── DEL 1: ATT LEVA TILLSAMMANS ──
+
+  // MC 1 – Uppg 1A
+  {
+    type: 'mc',
+    q: 'Vilka två samlevnadsformer finns lagreglerade i Sverige?',
+    opts: [
+      'Samboskap och äktenskap',
+      'Samboskap och registrerat partnerskap',
+      'Äktenskap och registrerat partnerskap',
+      'Sammanboende och äktenskap utan tidsgräns'
+    ],
+    correct: 0,
+    expl: 'Svensk lagstiftning erbjuder två lagreglerade samlevnadsformer: samboskapet och äktenskapet. De regleras i sambolagen respektive äktenskapsbalken. Registrerat partnerskap fanns tidigare men avskaffades när äktenskapsbalken blev könsneutral 2009.'
+  },
+
+  // MC 2 – Uppg 1C
+  {
+    type: 'mc',
+    q: 'Vilka rekvisit måste vara uppfyllda för att ett par ska räknas som sambor enligt sambolagen?',
+    opts: [
+      'Två personer bor stadigvarande tillsammans i ett parförhållande och har gemensamt hushåll',
+      'Paret måste ha bott ihop i minst två år och ha gemensam ekonomi',
+      'Paret måste vara folkbokförda på samma adress och ha gemensamma barn',
+      'Paret måste ha undertecknat ett samboavtal hos Skatteverket'
+    ],
+    correct: 0,
+    expl: 'Enligt sambolagen 1 § avses med sambor "två personer som stadigvarande bor tillsammans i ett parförhållande och har gemensamt hushåll". Paret bör ha bott tillsammans åtminstone ett halvår. Reglerna är könsneutrala.'
+  },
+
+  // MC 3 – Uppg 1D
+  {
+    type: 'mc',
+    q: 'Vad är samboegendom?',
+    opts: [
+      'Bostad och bohag som samborna skaffat för gemensam användning',
+      'All egendom som samborna äger, oavsett när den köptes',
+      'Endast sådant som samborna köpt tillsammans och betalat exakt hälften var för',
+      'Enbart den gemensamma bostaden, inte möbler eller hushållsmaskiner'
+    ],
+    correct: 0,
+    expl: 'Samboegendom är bohag (t.ex. soffa, säng, matbord, hushållsmaskiner) och en bostad som skaffats för gemensam användning. Egendom som en av samborna hade sedan tidigare, som Lisens skinnsoffa eller Henrys bil i exemplet, ingår inte.'
+  },
+
+  // MC 4 – Uppg 1G
+  {
+    type: 'mc',
+    q: 'Sambolagens regler om bodelning är dispositiva. Vad innebär det?',
+    opts: [
+      'Samborna kan avtala om att göra på ett annat sätt än vad lagen säger, till exempel genom ett samboavtal',
+      'Reglerna gäller bara om ingen av samborna har barn sedan tidigare',
+      'Reglerna kan aldrig ändras, oavsett vad samborna kommer överens om',
+      'Bodelningen måste alltid godkännas av tingsrätten innan den blir giltig'
+    ],
+    correct: 0,
+    expl: 'Dispositiv betyder att lagens regler kan avtalas bort. Samborna kan skriva ett samboavtal om att exempelvis lagen om samäganderätt ska gälla i stället för sambolagens bodelningsregler.'
+  },
+
+  // MC 5 – Uppg 1J
+  {
+    type: 'mc',
+    q: 'Vilket av följande är ett hinder för äktenskap enligt äktenskapsbalken?',
+    opts: [
+      'Månggifte, det vill säga att redan vara gift med en annan person',
+      'Att paret inte har bott ihop i minst sex månader innan vigseln',
+      'Att en av parterna tidigare varit gift och skild',
+      'Att paret inte har gemensam ekonomi'
+    ],
+    correct: 0,
+    expl: 'Månggifte är förbjudet i svensk rätt. Andra hinder är att vara under 18 år samt nära släktskap i rakt upp- eller nedstigande led eller med ett helsyskon (halvsyskon/adoptivsyskon kräver tillstånd från länsstyrelsen).'
+  },
+
+  // MC 6 – Uppg 1L
+  {
+    type: 'mc',
+    q: 'Vad kallas makars gemensamma egendom i äktenskapet med en juridisk term?',
+    opts: [
+      'Giftorättsgods',
+      'Samboegendom',
+      'Enskild egendom',
+      'Bohag'
+    ],
+    correct: 0,
+    expl: 'Makars egendom är giftorättsgods om den inte är enskild egendom. Det är giftorättsgodset som ingår i bodelningen vid äktenskapsskillnad eller vid ena makens död.'
+  },
+
+  // MC 7 – Uppg 1O
+  {
+    type: 'mc',
+    q: 'Vad är ett äktenskapsförord?',
+    opts: [
+      'Ett skriftligt avtal mellan makar om att viss eller all egendom inte ska vara giftorättsgods',
+      'En muntlig överenskommelse om vem som ska bo kvar i bostaden vid skilsmässa',
+      'Ett intyg från Skatteverket om att inget hinder för äktenskap finns',
+      'En ansökan till tingsrätten om äktenskapsskillnad'
+    ],
+    correct: 0,
+    expl: 'Ett äktenskapsförord är ett skriftligt avtal om att all egendom, eller viss egendom, inte ska vara giftorättsgods. Det ska upprättas skriftligt och registreras hos Skatteverket för att vara giltigt.'
+  },
+
+  // TF 8 – Uppg 4C
+  {
+    type: 'tf',
+    q: 'Påstående: Reglerna som gäller äktenskap finns i äktenskapsbalken. Både den och sambolagen är könsneutrala, vilket innebär att de gäller oavsett sambornas eller makarnas kön.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. Äktenskapsbalken reglerar äktenskap och blev helt könsneutral 2009. Sambolagen är också könsneutral. Båda lagarna gäller alltså oavsett kön på parterna.'
+  },
+
+  // TF 9 – Uppg 4I
+  {
+    type: 'tf',
+    q: 'Påstående: Om det bara är den ena maken som vill skiljas kräver lagen en betänketid i sju månader.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Betänketiden är sex månader, inte sju. Den krävs om bara en av makarna vill skiljas, eller om någon av makarna har vårdnaden om barn under 16 år som bor med den föräldern.'
+  },
+
+  // ── DEL 2: FÖRÄLDRAR OCH BARN ──
+
+  // MC 10 – Uppg 1A
+  {
+    type: 'mc',
+    q: 'Vad heter FN:s konvention om barns rättigheter, och när blev den svensk lag?',
+    opts: [
+      'Barnkonventionen, som blev svensk lag 2020',
+      'Barnkonventionen, som blev svensk lag 2010',
+      'Föräldrabalken, som blev svensk lag 1990',
+      'Barnkonventionen, som ännu inte är svensk lag men följs frivilligt'
+    ],
+    correct: 0,
+    expl: 'Barnkonventionen antogs av FN i början av 1990-talet men infördes som egen lag i Sverige först 2020. Det innebär att barnperspektivet är upphöjt till lag och därmed får en högre status.'
+  },
+
+  // MC 11 – Uppg 1B
+  {
+    type: 'mc',
+    q: 'Vilken lag reglerar de flesta frågor om föräldrar och barn i Sverige?',
+    opts: [
+      'Föräldrabalken',
+      'Äktenskapsbalken',
+      'Socialtjänstlagen',
+      'Barnkonventionen'
+    ],
+    correct: 0,
+    expl: 'I svensk lagstiftning finns de flesta regler som gäller barn i föräldrabalken, till exempel regler om vårdnad, faderskap och adoption.'
+  },
+
+  // MC 12 – Uppg 1C
+  {
+    type: 'mc',
+    q: 'Vad innebär faderskapspresumtionen?',
+    opts: [
+      'Om en kvinna är gift när hon föder ett barn utgår lagen ifrån att mannen hon är gift med är far till barnet',
+      'Att mannen alltid måste göra ett DNA-test innan han räknas som far till barnet',
+      'Att pappan automatiskt blir vårdnadshavare oavsett om han är gift med barnets mamma',
+      'Att socialnämnden alltid ska utreda vem som är far innan faderskapet fastställs'
+    ],
+    correct: 0,
+    expl: 'Faderskapspresumtionen innebär att man presumerar, det vill säga utgår ifrån, att mannen en kvinna är gift med är far till det barn hon föder. För samkönade äktenskap gäller samma princip.'
+  },
+
+  // MC 13 – Uppg 1E
+  {
+    type: 'mc',
+    q: 'Vem blir vårdnadshavare till ett barn som föds av en ogift kvinna?',
+    opts: [
+      'Kvinnan blir ensam vårdnadshavare, tills föräldraskapet bekräftats och gemensam vårdnad sökts',
+      'Båda föräldrarna blir automatiskt gemensamma vårdnadshavare direkt vid födseln',
+      'Socialnämnden blir vårdnadshavare tills föräldrarna gift sig',
+      'Ingen blir vårdnadshavare förrän domstol beslutat i frågan'
+    ],
+    correct: 0,
+    expl: 'Om kvinnan inte är gift när hon föder blir hon ensam vårdnadshavare. För att partnern också ska bli vårdnadshavare krävs en föräldraskapsbekräftelse och en ansökan om gemensam vårdnad.'
+  },
+
+  // MC 14 – Uppg 1F
+  {
+    type: 'mc',
+    q: 'Vad innebär det att vara vårdnadshavare för ett barn?',
+    opts: [
+      'Att ge barnet omvårdnad, trygghet och god fostran samt att försörja och ha tillsyn över barnet',
+      'Att enbart ansvara för barnets ekonomi och förmögenhet',
+      'Att ha rätt att bestämma över barnet fram till 15 års ålder',
+      'Att vara juridiskt ansvarig endast om föräldrarna är gifta'
+    ],
+    correct: 0,
+    expl: 'Föräldrabalken anger att vårdnadshavare ska ge barnet "omvårdnad, trygghet och en god fostran". Vårdnadshavaren ska också försörja barnet och ha tillsyn över det, fram till att barnet fyller 18 år.'
+  },
+
+  // MC 15 – Uppg 1I
+  {
+    type: 'mc',
+    q: 'Vad krävs för att en person ska kunna adoptera ett barn i Sverige?',
+    opts: [
+      'Personen måste ha fyllt 18 år; makar och sambor får enligt huvudregeln endast adoptera tillsammans',
+      'Personen måste vara gift, ensamstående får inte adoptera',
+      'Personen måste ha fyllt 25 år och vara svensk medborgare',
+      'Paret måste ha varit gifta i minst fem år innan ansökan'
+    ],
+    correct: 0,
+    expl: 'Den som fyllt 18 år får adoptera. Makar och sambor får enligt huvudregeln endast adoptera tillsammans, men även ensamstående personer och samkönade par kan adoptera enligt svensk lag.'
+  },
+
+  // MC 16 – Uppg 1J
+  {
+    type: 'mc',
+    q: 'Vilken instans har ansvaret för att göra adoptionsutredningar i Sverige?',
+    opts: [
+      'Kommunerna',
+      'Skatteverket',
+      'Försäkringskassan',
+      'Domstolarna'
+    ],
+    correct: 0,
+    expl: 'I Sverige är det kommunerna som har ansvar för att förbereda och utreda de personer som vill adoptera, det vill säga ta reda på om de är lämpliga som adoptivföräldrar.'
+  },
+
+  // MC 17 – Fördjupning BO/BRIS
+  {
+    type: 'mc',
+    q: 'Vad är Barnombudsmannen (BO)?',
+    opts: [
+      'En statlig myndighet som arbetar med information och opinionsbildning för att stärka barns rättsliga ställning',
+      'En ideell organisation som driver stödlinjer för barn via telefon och chatt',
+      'En domstol som avgör tvister om vårdnad och umgänge',
+      'En avdelning inom socialtjänsten som utreder omhändertaganden'
+    ],
+    correct: 0,
+    expl: 'Barnombudsmannen (BO) är en statlig myndighet som driver på och bevakar efterlevnaden av barnkonventionen. BRIS (Barnens rätt i samhället) är i stället en ideell barnrättsorganisation som bland annat driver stödlinjer för barn.'
+  },
+
+  // TF 18 – Uppg 3A
+  {
+    type: 'tf',
+    q: 'Påstående: FN:s barnkonvention blev svensk lag 2010. Det innebär att barnperspektivet är upphöjt till lag och därmed får en högre status.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Barnkonventionen blev svensk lag 2020, inte 2010. Resten av påståendet om barnperspektivets högre status stämmer, men årtalet är fel.'
+  },
+
+  // TF 19 – Uppg 3D
+  {
+    type: 'tf',
+    q: 'Påstående: Svensk rätt utgår inte ifrån att den man som en kvinna är gift med också är pappa till de barn hon föder under äktenskapet. Pappan måste göra ett faderskapstest!',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Det är precis tvärtom: enligt faderskapspresumtionen utgår svensk rätt ifrån att mannen kvinnan är gift med är far till barnet, utan att något faderskapstest krävs.'
+  },
+
+  // TF 20 – Uppg 3E
+  {
+    type: 'tf',
+    q: 'Påstående: Ensamstående har inte rätt att adoptera.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Även ensamstående personer har rätt att adoptera enligt svensk lag, precis som samkönade par.'
+  },
+
+  // TF 21 – Uppg 3I
+  {
+    type: 'tf',
+    q: 'Påstående: Om föräldrarna separerar bestämmer socialtjänsten om var barnet eller barnen ska bo och hur kostnaderna ska fördelas.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Det är i första hand föräldrarna själva som ska komma överens. Socialtjänsten kan hjälpa till att formulera avtal, men om föräldrarna inte kommer överens är det till slut domstol som beslutar, inte socialtjänsten.'
+  },
+
+  // ── DEL 3: ARVSRÄTT ──
+
+  // MC 22 – Uppg 1A
+  {
+    type: 'mc',
+    q: 'Vad innebär den legala arvsordningen?',
+    opts: [
+      'Att det är den avlidnes släktingar som ärver enligt en bestämd turordning om inget testamente finns',
+      'Att staten alltid ärver om den avlidne inte var gift',
+      'Att endast bröstarvingar någonsin kan ärva, oavsett testamente',
+      'Att arvet fördelas lika mellan alla släktingar oavsett släktskapsgrad'
+    ],
+    correct: 0,
+    expl: 'Den legala arvsordningen i ärvdabalken avgör vilka som är berättigade till arv på grund av släktskap med arvlåtaren. Barn ärver först, och saknas barn går arvet vidare till arvsgrupp 2 och sedan arvsgrupp 3.'
+  },
+
+  // MC 23 – Uppg 1B
+  {
+    type: 'mc',
+    q: 'Vad kallas barn till arvlåtaren i den legala arvsordningen?',
+    opts: [
+      'Bröstarvingar',
+      'Testamentstagare',
+      'Dödsbodelägare',
+      'Särkullbarn'
+    ],
+    correct: 0,
+    expl: 'Barn (och barnbarn) till den avlidne kallas bröstarvingar och tillhör arvsgrupp 1, som ärver först. Särkullbarn är en särskild sorts bröstarvinge – ett barn som inte är gemensamt med den efterlevande maken.'
+  },
+
+  // MC 24 – Uppg 1C
+  {
+    type: 'mc',
+    q: 'Vad gäller för en efterlevande makas eller makes arvsrätt?',
+    opts: [
+      'Den efterlevande maken/makan ärver före de gemensamma barnen, som får vänta på sitt arv tills båda föräldrarna gått bort',
+      'De gemensamma barnen ärver alltid direkt, oavsett om ena föräldern lever',
+      'Maken eller makan får bara ärva om det finns ett testamente',
+      'Maken/makan och barnen delar arvet exakt lika, direkt vid dödsfallet'
+    ],
+    correct: 0,
+    expl: 'Makes arvsrätt innebär att den efterlevande maken eller makan ärver före de gemensamma barnen. Barnen får vänta på sitt arv, som ett efterarv, tills även den andra föräldern har gått bort.'
+  },
+
+  // MC 25 – Uppg 1D
+  {
+    type: 'mc',
+    q: 'Vad är ett särkullbarn?',
+    opts: [
+      'Ett barn som inte är gemensamt i äktenskapet, det vill säga barn till bara den ena maken',
+      'Ett barnbarn som ärver i sin avlidne förälders ställe',
+      'Ett barn som adopterats av den avlidne',
+      'Ett barn som inte har någon arvsrätt alls'
+    ],
+    correct: 0,
+    expl: 'Ett särkullbarn är ett barn som inte är gemensamt i äktenskapet. Ett särkullbarn har rätt att få ut sitt arv direkt, till skillnad från gemensamma barn som får vänta tills båda föräldrarna avlidit.'
+  },
+
+  // MC 26 – Uppg 1E
+  {
+    type: 'mc',
+    q: 'Vad är Allmänna arvsfonden, och när tillfaller arvet den?',
+    opts: [
+      'En statlig myndighet som får arvet när det saknas legala arvingar och testamente',
+      'En fond som alla arvingar måste betala en avgift till innan arvskifte',
+      'En stiftelse som förvaltar arv åt minderåriga arvingar',
+      'En fond som enbart tar emot arv efter ogifta personer utan barn'
+    ],
+    correct: 0,
+    expl: 'När det inte finns några legala arvingar eller något testamente tillfaller arvet Allmänna arvsfonden. Medlen används till projekt som stödjer barn, ungdomar, äldre och personer med funktionsnedsättning.'
+  },
+
+  // MC 27 – Uppg 1G
+  {
+    type: 'mc',
+    q: 'Vilka är de viktigaste formella kraven för att ett testamente ska vara giltigt?',
+    opts: [
+      'Det ska vara skriftligt och daterat, samt bevittnat av två samtidigt närvarande vittnen',
+      'Det räcker att det är muntligt om två vittnen kan bekräfta innehållet',
+      'Det måste registreras och godkännas av Skatteverket för att gälla',
+      'Det måste skrivas av en jurist och undertecknas av samtliga arvingar'
+    ],
+    correct: 0,
+    expl: 'Ett testamente måste vara skriftligt och daterat för att vara giltigt, och det måste bevittnas av två personer som är samtidigt närvarande när testator undertecknar handlingen.'
+  },
+
+  // MC 28 – Uppg 1H
+  {
+    type: 'mc',
+    q: 'Vad är laglotten?',
+    opts: [
+      'Hälften av arvslotten, som en bröstarvinge alltid har rätt till',
+      'Hela arvet efter en förälder, om inget testamente finns',
+      'Den del av arvet som Allmänna arvsfonden alltid har rätt till',
+      'Ett minimibelopp som en efterlevande make alltid får behålla'
+    ],
+    correct: 0,
+    expl: 'Laglotten är hälften av arvslotten efter en förälder. Barnens arvsrätt får inte kränkas av ett testamente – de har alltid rätt till sin laglott, medan resten kan testamenteras bort.'
+  },
+
+  // MC 29 – Uppg 1I
+  {
+    type: 'mc',
+    q: 'Vad är en bouppteckning?',
+    opts: [
+      'En förteckning över den avlidnes tillgångar och skulder',
+      'Ett avtal om hur arvet ska fördelas mellan arvingarna',
+      'En ansökan om att få ärva som skickas till tingsrätten',
+      'Ett intyg om vilka som är dödsbodelägare, utfärdat av domstol'
+    ],
+    correct: 0,
+    expl: 'En bouppteckning är en förteckning av en avliden persons tillgångar och skulder. Den ska upprättas inom tre månader från dödsfallet och sedan godkännas och registreras av Skatteverket.'
+  },
+
+  // TF 30 – Uppg 3B
+  {
+    type: 'tf',
+    q: 'Påstående: Ett dödsbo är inte en juridisk person.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Ett dödsbo är en juridisk person, precis som ett företag eller en organisation, och förvaltas av dödsbodelägarna tills det skiftas.'
+  }
+
+];
+
+// ════════════════════════════════════════════════════════════
+// FISHER-YATES SHUFFLE
+// ════════════════════════════════════════════════════════════
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// ════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════
+let qs = [];      // shuffled questions with per-question state
+let cur = 0;      // current question index
+let score = 0;
+let elapsed = 0;
+let timerID = null;
+
+function buildState() {
+  const shuffled = shuffleArray([...QUESTIONS]);
+  qs = shuffled.map(q => {
+    const indices = q.opts.map((_, i) => i);
+    return {
+      ...q,
+      shuffledIdx: shuffleArray(indices), // original option indices in display order
+      selectedDisplay: null,              // which display position was clicked
+      answered: false
+    };
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// SCREENS
+// ════════════════════════════════════════════════════════════
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ════════════════════════════════════════════════════════════
+// TIMER
+// ════════════════════════════════════════════════════════════
+function fmt(s) {
+  const m = Math.floor(s / 60);
+  const ss = String(s % 60).padStart(2, '0');
+  return `⏱ ${m}:${ss}`;
+}
+function startTimer() {
+  elapsed = 0;
+  timerID = setInterval(() => {
+    elapsed++;
+    document.getElementById('timer').textContent = fmt(elapsed);
+  }, 1000);
+}
+function stopTimer() { clearInterval(timerID); }
+
+// ════════════════════════════════════════════════════════════
+// START
+// ════════════════════════════════════════════════════════════
+function startQuiz() {
+  buildState();
+  cur = 0;
+  score = 0;
+  show('screen-quiz');
+  startTimer();
+  render();
+}
+
+// ════════════════════════════════════════════════════════════
+// RENDER QUESTION
+// ════════════════════════════════════════════════════════════
+function render() {
+  const q = qs[cur];
+  const total = qs.length;
+
+  document.getElementById('progress-bar').style.width = (cur / total * 100) + '%';
+  document.getElementById('q-counter').textContent = `Fråga ${cur + 1} av ${total}`;
+  document.getElementById('score-pill').textContent = `Poäng: ${score}`;
+
+  const badgeWrap = document.getElementById('type-badge-wrap');
+  badgeWrap.innerHTML = q.type === 'mc'
+    ? '<span class="type-badge mc">Flerval</span>'
+    : '<span class="type-badge tf">Rätt eller Fel</span>';
+
+  document.getElementById('q-text').textContent = q.q;
+
+  const optsEl = document.getElementById('opts');
+  optsEl.innerHTML = '';
+  optsEl.className = 'opts' + (q.type === 'tf' ? ' two' : '');
+
+  q.shuffledIdx.forEach((origIdx, displayPos) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = q.opts[origIdx];
+    btn.disabled = q.answered;
+
+    if (q.answered) {
+      const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+      if (displayPos === correctDisplay)       btn.classList.add('correct');
+      else if (displayPos === q.selectedDisplay) btn.classList.add('wrong');
+      else                                      btn.classList.add('dimmed');
+    } else {
+      btn.addEventListener('click', () => handleAnswer(displayPos));
+    }
+
+    optsEl.appendChild(btn);
+  });
+
+  document.getElementById('btn-back').style.display = cur > 0 ? 'inline-block' : 'none';
+  document.getElementById('btn-next').style.display = q.answered ? 'inline-block' : 'none';
+  document.getElementById('btn-next').textContent =
+    cur === total - 1 ? 'Se resultat →' : 'Nästa →';
+}
+
+// ════════════════════════════════════════════════════════════
+// HANDLE ANSWER
+// ════════════════════════════════════════════════════════════
+function handleAnswer(displayPos) {
+  const q = qs[cur];
+  if (q.answered) return;
+
+  q.answered = true;
+  q.selectedDisplay = displayPos;
+
+  const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+  const isCorrect = displayPos === correctDisplay;
+  if (isCorrect) score++;
+
+  const btns = document.querySelectorAll('.opt-btn');
+  btns.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === correctDisplay)       btn.classList.add('correct');
+    else if (i === displayPos)      btn.classList.add('wrong');
+    else                            btn.classList.add('dimmed');
+  });
+
+  document.getElementById('btn-next').style.display = 'inline-block';
+  document.getElementById('btn-next').textContent =
+    cur === qs.length - 1 ? 'Se resultat →' : 'Nästa →';
+  document.getElementById('score-pill').textContent = `Poäng: ${score}`;
+
+  setTimeout(() => showModal(isCorrect, q.expl), 600);
+}
+
+// ════════════════════════════════════════════════════════════
+// MODAL
+// ════════════════════════════════════════════════════════════
+function showModal(isCorrect, expl) {
+  document.getElementById('modal-icon').textContent    = isCorrect ? '✅' : '❌';
+  document.getElementById('modal-verdict').textContent = isCorrect ? 'Rätt svar!' : 'Fel svar';
+  document.getElementById('modal-verdict').className   = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
+  document.getElementById('modal-expl').textContent    = expl;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  goNext();
+}
+
+// ════════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════════
+function goBack() {
+  if (cur > 0) { cur--; render(); }
+}
+
+function goNext() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  if (cur < qs.length - 1) {
+    cur++;
+    render();
+  } else {
+    showResults();
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// RESULTS
+// ════════════════════════════════════════════════════════════
+function showResults() {
+  stopTimer();
+  show('screen-result');
+
+  const total = qs.length;
+  const wrong = total - score;
+  const pct   = Math.round(score / total * 100);
+
+  document.getElementById('r-score').textContent   = `${score}/${total}`;
+  document.getElementById('s-correct').textContent = score;
+  document.getElementById('s-wrong').textContent   = wrong;
+  document.getElementById('s-pct').textContent     = pct + '%';
+
+  const m = Math.floor(elapsed / 60);
+  const s = String(elapsed % 60).padStart(2, '0');
+  document.getElementById('r-time').textContent = `Tid: ${m}:${s}`;
+
+  let title, msg;
+  if (pct >= 90)      { title = '🏆 Utmärkt!';          msg = 'Du behärskar familje- och arvsrätt på hög nivå.'; }
+  else if (pct >= 75) { title = '✅ Redo för provet!';   msg = 'Bra resultat – du har koll på det centrala.'; }
+  else if (pct >= 55) { title = '📖 Öva lite till';      msg = 'Du är på rätt spår men behöver repetera en del.'; }
+  else                { title = '💡 Fortsätt repetera'; msg = 'Gå igenom materialet och försök igen.'; }
+
+  document.getElementById('r-title').textContent = title;
+  document.getElementById('r-msg').textContent   = msg;
+
+  // Missade frågor
+  const missedEl = document.getElementById('missed-section');
+  const missed = qs.filter(q => q.answered && q.shuffledIdx.indexOf(q.correct) !== q.selectedDisplay);
+  if (missed.length > 0) {
+    missedEl.innerHTML = `<div class="section-hd">Missade frågor (${missed.length})</div>`;
+    missed.forEach(q => {
+      const div = document.createElement('div');
+      div.className = 'missed-item';
+      div.textContent = q.q;
+      missedEl.appendChild(div);
+    });
+  } else {
+    missedEl.innerHTML = '';
+  }
+
+  // Fullständigt facit
+  const facitEl = document.getElementById('facit-list');
+  facitEl.innerHTML = '';
+  qs.forEach((q, i) => {
+    const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+    const isCorrect  = q.answered && q.selectedDisplay === correctDisplay;
+    const notAnswered = !q.answered;
+
+    const div = document.createElement('div');
+    div.className = 'facit-item ' + (notAnswered ? '' : isCorrect ? 'fc' : 'fw');
+
+    const correctOptText  = q.opts[q.correct];
+    const selectedOptText = q.answered ? q.opts[q.shuffledIdx[q.selectedDisplay]] : null;
+
+    let inner = `<div class="fi-num">Fråga ${i + 1}</div>`;
+    inner += `<div class="fi-q">${q.q}</div>`;
+
+    if (notAnswered) {
+      inner += `<div class="fi-row"><span class="lbl">Ditt svar: </span>— (inte besvarad)</div>`;
+      inner += `<div class="fi-row ra"><span class="lbl">Rätt svar: </span>${correctOptText}</div>`;
+    } else if (isCorrect) {
+      inner += `<div class="fi-row ya-ok">✓ <span class="lbl">Ditt svar: </span>${selectedOptText}</div>`;
+    } else {
+      inner += `<div class="fi-row ya-bad">✗ <span class="lbl">Ditt svar: </span>${selectedOptText}</div>`;
+      inner += `<div class="fi-row ra"><span class="lbl">Rätt svar: </span>${correctOptText}</div>`;
+    }
+
+    div.innerHTML = inner;
+    facitEl.appendChild(div);
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// RESTART
+// ════════════════════════════════════════════════════════════
+function restartQuiz() {
+  stopTimer();
+  show('screen-start');
+}
+</script>
+</body>
+</html>

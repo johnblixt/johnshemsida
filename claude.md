@@ -576,3 +576,20 @@ Allt som skapas för de fyra nya kurserna — quiz, begreppslista, pluggmaterial
 - Läs styrdokumentet noggrant innan du skapar något
 - Begrepp, frågor och förklaringar ska spegla kursens centrala innehåll och kunskapskrav enligt PDF:en
 - Om ett begrepp eller en fråga inte kan härledas ur styrdokumentet ska det inte inkluderas
+
+---
+
+## Progress- och rank-system för begreppsövningsfiler
+
+Alla begreppsfiler med flera övningsvyer (Lista/Flashcards/Lucktext/Scenario/Icke-ex. eller motsvarande) ska ha progress-tracking enligt denna standard:
+
+- **Lagring:** sessionStorage, nyckel-mönster `<prefix>_progress` (t.ex. `jur1_block1_progress`, `nk_a1_progress`). Rensas när fliken stängs — ingen inloggning.
+- **Klart-kriterier:**
+  - Läsvy (Lista): scrollat till botten (IntersectionObserver)
+  - Flashcards: sorterat alla kort en gång
+  - Poängbaserade vyer (quiz/scenario/lucktext-typ): minst 80% rätt
+- **Rank:** baseras på antal avklarade vyer av totalt antal (5 = S om samtliga poängvyer även har 100%, annars A; 4=A, 3=B, 2=C, 1=D, 0=ingen)
+- **UI:** bock på toggle-pill, progressrad med "X/N avsnitt klara" + rank-badge, firande overlay vid ny rank
+- **Verifieringskod:** "PREFIX-XXXX" genererad från datum + avklarade vyer + rank + saltsträng (unik per fil), ändras dagligen — låter läraren snabbt syna en skärmdump utan att behöva logga in eleven någonstans
+
+Använd samma mönster (state lyft till toppkomponenten, onComplete-callback till varje vy-komponent) oavsett antal vyer i filen.

@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Juridik Block 2 – Begrepp</title>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: 'EB Garamond', Georgia, serif; background: #fdf2f8; }
+    .flip-card { perspective: 1000px; height: 350px; width: 100%; max-width: 400px; cursor: pointer; }
+    .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+    .flipped-classes { transform: rotateY(180deg); }
+    .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+    .flip-card-back { transform: rotateY(180deg); }
+  </style>
+</head>
+<body class="min-h-screen">
+
+<div id="root"></div>
+
+<script type="text/babel">
+const PRIMARY = '#0d9488';
+const PRIMARY_LIGHT = '#ccfbf1';
+const PRIMARY_TEXT = '#134e4a';
+
+const concepts = [
+  { id: 1, term: 'Sambolagen', definition: 'Den lag där reglerna om samboskap finns.' },
+  { id: 2, term: 'Samboavtal', definition: 'Ett avtal där samborna kan skriva hur de vill göra med sin egendom vid en separation.' },
+  { id: 3, term: 'Kvarsittanderätt', definition: 'Begäran hos tingsrätten om rätten att ensam få bo kvar i bostaden.' },
+  { id: 4, term: 'Äktenskapsbalken', definition: 'Den lag där reglerna om äktenskap finns.' },
+  { id: 5, term: 'Könsneutral', definition: 'Reglerna gäller oavsett kön på parterna.' },
+  { id: 6, term: 'Erkännande', definition: 'Innebär att ett par som kommer från ett annat land, och som redan är gifta, även betraktas som gifta i Sverige ur ett juridiskt perspektiv.' },
+  { id: 7, term: 'Hindersprövning', definition: 'En kontroll av om det finns något hinder för äktenskap mellan två personer.' },
+  { id: 8, term: 'Vigsel', definition: 'En ceremoni där två personer ingår äktenskap.' },
+  { id: 9, term: 'Underhållsskyldighet', definition: 'Innebär att om makarnas ekonomiska situation är olik, har den ena maken skyldighet att tillskjuta pengar till den andra maken som inte har lika god ekonomi.' },
+  { id: 10, term: 'Giftorättsgods', definition: 'Är den egendom som ingår i bodelning vid äktenskapsskillnad eller vid ena makens död.' },
+  { id: 11, term: 'Giftorätt', definition: 'Är en vilande äganderätt till hälften av den gemensamma egendomen.' },
+  { id: 12, term: 'Enskild egendom', definition: 'Är egendom som inte ingår i bodelning och som inte omfattas av giftorätten.' },
+  { id: 13, term: 'Testamente', definition: 'Ett dokument där en person skrivit ner sin sista/yttersta vilja.' },
+  { id: 14, term: 'Äktenskapsförord', definition: 'Ett skriftligt avtal mellan makar om att all egendom, eller viss egendom, inte ska vara giftorättsgods under pågående äktenskap.' },
+  { id: 15, term: 'Äktenskapsskillnad', definition: 'Det juridiska begreppet för det vi i dagligt tal kallar "skilsmässa".' },
+  { id: 16, term: 'Betänketid', definition: 'Innebär att makarna får sex månader på sig att tänka igenom ett livsavgörande beslut.' },
+  { id: 17, term: 'Fullföljd av äktenskapsskillnad', definition: 'Innebär att en av makarna, efter att betänketiden har passerat, begär att äktenskapet ska upplösas.' },
+  { id: 18, term: 'Bodelning vid äktenskap', definition: 'Att dela upp egendom mellan makar vid ena makens död eller vid äktenskapsskillnad.' },
+  { id: 19, term: 'Skiftesliked', definition: 'Pengarna den ena parten ska betala till den andra så att de får lika mycket vid en bodelning.' },
+  { id: 20, term: 'Oskäligt', definition: 'Betyder i detta fall att det inte är rimligt att dela helt lika i bodelningen.' },
+  { id: 21, term: 'Jämkning', definition: 'Innebär i detta fall att undantag görs från reglerna för hur giftorättsgodset ska fördelas.' },
+  { id: 22, term: 'Barnkonventionen', definition: 'En FN-konvention om barns rättigheter.' },
+  { id: 23, term: 'Föräldrabalken', definition: 'Den lag som reglerar barns och föräldrars rättsliga relationer.' },
+  { id: 24, term: 'Inkorporera', definition: 'Betyder införliva.' },
+  { id: 25, term: 'Barnets bästa', definition: 'Är utgångspunkten för lagstiftning där barn berörs.' },
+  { id: 26, term: 'Faderskapspresumtion', definition: 'En regel som utgår från att mannen som kvinnan är gift med är far till hennes barn.' },
+  { id: 27, term: 'Vårdnadshavare', definition: 'Den förälder som har vårdnaden om barnet, oftast båda föräldrarna.' },
+  { id: 28, term: 'Föräldraskapsbekräftelse', definition: 'Om föräldrarna till barnet inte är gifta med varandra måste partnern erkänna föräldraskapet.' },
+  { id: 29, term: 'Bevittna', definition: 'Ett intyg om att ha sett på när dokumentet undertecknades.' },
+  { id: 30, term: 'Adoptera', definition: 'Att få ett barn i sin vård i ett varaktigt föräldra-barnförhållande.' },
+  { id: 31, term: 'Haagkonventionen', definition: 'En internationell överenskommelse från 1996 om barns rättigheter.' },
+  { id: 32, term: 'Omvårdnad', definition: 'Vårdnadshavaren ska se till att barnet tas om hand, både fysiskt och psykiskt.' },
+  { id: 33, term: 'Trygghet', definition: 'Vårdnadshavare ska ge barnet trygghet och vägledning.' },
+  { id: 34, term: 'God fostran', definition: 'Innebär att uppfostra barnet till en självständig person.' },
+  { id: 35, term: 'Försörjning och tillsyn', definition: 'Vårdnadshavare har en skyldighet att försörja och se efter barnet.' },
+  { id: 36, term: 'Tillsynsansvar', definition: 'Vårdnadshavarens ansvar att se till så att barnet inte orsakar skada.' },
+  { id: 37, term: 'Förmyndare', definition: 'Har ansvar för barnets ekonomiska förhållanden.' },
+  { id: 38, term: 'Överförmyndare', definition: 'Är en kommunal tjänsteman som har tillsynsansvar över förmyndarnas förvaltning.' },
+  { id: 39, term: 'Orosanmälan', definition: 'Att anmäla till en myndighet att man är orolig för att ett barn far illa.' },
+  { id: 40, term: 'Omhändertagande', definition: 'Ett barn kan omhändertas mot föräldrarnas vilja, enligt särskild lag med bestämmelser om vård av unga (LVU).' },
+  { id: 41, term: 'Gemensam vårdnad', definition: 'Föräldrar som är gifta med varandra har automatiskt gemensam vårdnad av barnet.' },
+  { id: 42, term: 'Boendeförälder', definition: 'Den förälder som barnet bor mest hos om föräldrarna är separerade.' },
+  { id: 43, term: 'Umgänge', definition: 'Barn har rätt att träffa och umgås med den förälder de inte bor tillsammans med.' },
+  { id: 44, term: 'Underhållsbidrag', definition: 'Bidrag som den förälder som barnet inte bor med ska lämna till barnets försörjning.' },
+  { id: 45, term: 'Underhållsstöd', definition: 'Stöd för barnet som betalas ut av Försäkringskassan under vissa omständigheter.' },
+  { id: 46, term: 'Dödsbo', definition: 'Är en död persons tillgångar och skulder. Dödsboet är en juridisk person.' },
+  { id: 47, term: 'Juridisk person', definition: 'Är en sammanslutning som har egen rättskapacitet, det vill säga kan ingå avtal, äga tillgångar och ta på sig skulder.' },
+  { id: 48, term: 'Dödsbodelägare', definition: 'Är de personer som förvaltar dödsboet, exempelvis barn, make eller maka.' },
+  { id: 49, term: 'Ärvdabalken', definition: 'Är den lag som innehåller regler om arv.' },
+  { id: 50, term: 'Arvlåtare', definition: 'Den som dött och efterlämnar ett arv.' },
+  { id: 51, term: 'Arvinge', definition: 'Den som ärver.' },
+  { id: 52, term: 'Arv', definition: 'Det som arvingarna ärver. Kan till exempel vara pengar, fastigheter och smycken.' },
+  { id: 53, term: 'Legala arvsordningen', definition: 'Avgör vilka som är berättigade till arv på grund av släktskap med den avlidne, det vill säga arvlåtaren.' },
+  { id: 54, term: 'Bröstarvinge', definition: 'Barn eller barnbarn till den avlidne.' },
+  { id: 55, term: 'Istadarätt', definition: 'Innebär att en levande släkting träder in och tar en avliden släktings arv.' },
+  { id: 56, term: 'Allmänna arvsfonden', definition: 'Statlig myndighet som förvaltar medel från dödsbon som saknar arvingar.' },
+  { id: 57, term: 'Makes arvsrätt', definition: 'Efterlevande make eller maka ärver före gemensamma barn.' },
+  { id: 58, term: 'Fri förfoganderätt', definition: 'Innebär att maken/makan kan använda arvet hur den vill, alltså även förbruka det helt, men inte testamentera bort det.' },
+  { id: 59, term: 'Särkullbarn', definition: 'Barn som inte är barn till båda makarna.' },
+  { id: 60, term: 'Testamente', definition: 'Ett juridiskt dokument med instruktioner om arvet och vem eller vilka som ska ärva.' },
+  { id: 61, term: 'Testator', definition: 'Den som skrivit ett testamente.' },
+  { id: 62, term: 'Testamentstagare', definition: 'Den som ärver egendom via testamente.' },
+  { id: 63, term: 'Laglott', definition: 'Hälften av arvet efter den avlidne som den avlidnes barn alltid har rätt till.' },
+  { id: 64, term: 'Klandra', definition: 'Att överklaga innehållet i ett testamente.' },
+  { id: 65, term: 'Delgivning', definition: 'Att få ett dokument överlämnat till sig av en myndighetsperson.' },
+  { id: 66, term: 'Bouppteckning', definition: 'Förteckning av en avliden persons tillgångar och skulder.' },
+  { id: 67, term: 'Förrättningsmän', definition: 'De två personer som gör bouppteckningen.' },
+  { id: 68, term: 'Bouppgivare', definition: 'Den person som lämnar uppgifter om den avlidnes tillgångar och skulder.' },
+  { id: 69, term: 'Fullmakt', definition: 'Rätt att företräda någon annan.' },
+  { id: 70, term: 'Arvskifte', definition: 'Handling som skrivs för att fördela arvet mellan arvingarna.' },
+];
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+function makeOptions(currentItem, allData) {
+  const distractors = allData.filter(d => d.id !== currentItem.id);
+  shuffleArray(distractors);
+  return shuffleArray([currentItem, ...distractors.slice(0, 3)]);
+}
+
+const VIEWS = ['Lista', 'Flashcards', 'Lucktext', 'Scenario', 'Icke-ex.'];
+const SCORE_VIEWS = ['Lucktext', 'Scenario', 'Icke-ex.'];
+const PROGRESS_KEY = 'jur1_block2_progress';
+const RANK_SALT = 'jur1block2familjarv';
+const RANK_ORDER = { D: 1, C: 2, B: 3, A: 4, S: 5 };
+
+function loadProgress() {
+  try {
+    const raw = sessionStorage.getItem(PROGRESS_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return { completed: {}, best: {} };
+}
+
+function saveProgress(progress) {
+  try {
+    sessionStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+  } catch (e) {}
+}
+
+function computeRank(progress) {
+  const completedCount = VIEWS.filter(v => progress.completed[v]).length;
+  if (completedCount === 0) return null;
+  if (completedCount === 5) {
+    const allPerfect = SCORE_VIEWS.every(v => (progress.best[v] || 0) >= 100);
+    return allPerfect ? 'S' : 'A';
+  }
+  if (completedCount === 4) return 'A';
+  if (completedCount === 3) return 'B';
+  if (completedCount === 2) return 'C';
+  return 'D';
+}
+
+function computeVerificationCode(progress, rank) {
+  const d = new Date();
+  const dateStr = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+  const completedViews = VIEWS.filter(v => progress.completed[v]).sort().join(',');
+  const input = dateStr + '|' + completedViews + '|' + (rank || '-') + '|' + RANK_SALT;
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) {
+    hash = (hash + input.charCodeAt(i) * (i + 1)) % 1679616; // 36^4
+  }
+  return 'JUR1B2-' + hash.toString(36).toUpperCase().padStart(4, '0');
+}
+
+const lucktextData = [
+  { id: 1,  term: 'Sambolagen',                     sentence: '_____ är den lag som sambor kan luta sig mot om det uppstår tvister kring deras gemensamma hem.', definition: concepts[0].definition },
+  { id: 2,  term: 'Samboavtal',                      sentence: 'Paret skrev ett _____ för att i förväg bestämma hur deras egendom skulle delas om de flyttade isär.', definition: concepts[1].definition },
+  { id: 3,  term: 'Kvarsittanderätt',                sentence: 'Efter separationen begärde hon _____ hos tingsrätten för att få bo kvar i lägenheten på egen hand.', definition: concepts[2].definition },
+  { id: 4,  term: 'Äktenskapsbalken',                sentence: 'Reglerna om vigsel och bodelning mellan makar finns samlade i _____.', definition: concepts[3].definition },
+  { id: 5,  term: 'Könsneutral',                     sentence: 'Äktenskapslagstiftningen i Sverige är _____, vilket innebär att samma regler gäller oavsett vilket kön parterna har.', definition: concepts[4].definition },
+  { id: 6,  term: 'Erkännande',                      sentence: 'Genom _____ betraktas ett par som redan gift sig utomlands som gifta även i Sverige.', definition: concepts[5].definition },
+  { id: 7,  term: 'Hindersprövning',                 sentence: 'Innan vigseln måste paret genomgå en _____ för att kontrollera att inget hindrar äktenskapet.', definition: concepts[6].definition },
+  { id: 8,  term: 'Vigsel',                          sentence: 'Vid _____ förklaras de två parterna för äkta makar inför en behörig förrättare.', definition: concepts[7].definition },
+  { id: 9,  term: 'Underhållsskyldighet',            sentence: 'Eftersom mannen tjänade betydligt mer än sin fru hade han en _____ att bidra ekonomiskt till hushållet.', definition: concepts[8].definition },
+  { id: 10, term: 'Giftorättsgods',                  sentence: 'Bilen och huset räknades som _____ eftersom paret inte hade skrivit något äktenskapsförord.', definition: concepts[9].definition },
+  { id: 11, term: 'Giftorätt',                       sentence: 'Så länge äktenskapet varar har båda makar en vilande _____ till hälften av den gemensamma egendomen.', definition: concepts[10].definition },
+  { id: 12, term: 'Enskild egendom',                 sentence: 'Tack vare äktenskapsförordet blev sommarstugan makens _____ som inte skulle ingå i en framtida bodelning.', definition: concepts[11].definition },
+  { id: 13, term: 'Testamente',                      sentence: 'I sitt _____ skrev den äldre kvinnan ner sin sista vilja om hur hennes tillgångar skulle fördelas.', definition: concepts[12].definition },
+  { id: 14, term: 'Äktenskapsförord',                sentence: 'Makarna skrev ett _____ för att bestämma att hans företag inte skulle vara giftorättsgods.', definition: concepts[13].definition },
+  { id: 15, term: 'Äktenskapsskillnad',              sentence: 'Efter tio års äktenskap ansökte paret om _____ hos tingsrätten.', definition: concepts[14].definition },
+  { id: 16, term: 'Betänketid',                      sentence: 'Eftersom paret hade barn under sexton år fick de en _____ på sex månader innan skilsmässan kunde gå igenom.', definition: concepts[15].definition },
+  { id: 17, term: 'Fullföljd av äktenskapsskillnad', sentence: 'När de sex månaderna hade passerat begärde mannen en _____ för att äktenskapet formellt skulle upplösas.', definition: concepts[16].definition },
+  { id: 18, term: 'Bodelning vid äktenskap',         sentence: 'Vid skilsmässan gjorde paret en _____ för att dela upp sina tillgångar och skulder.', definition: concepts[17].definition },
+  { id: 19, term: 'Skiftesliked',                    sentence: 'Eftersom mannen hade betydligt mer tillgångar fick han betala _____ till sin före detta fru för att de skulle få lika mycket.', definition: concepts[18].definition },
+  { id: 20, term: 'Oskäligt',                        sentence: 'Domstolen ansåg att en jämn fördelning skulle vara _____ eftersom äktenskapet bara varat i några månader.', definition: concepts[19].definition },
+  { id: 21, term: 'Jämkning',                        sentence: 'På grund av det korta äktenskapet gjordes en _____ så att kvinnan fick behålla mer av sin egen egendom.', definition: concepts[20].definition },
+  { id: 22, term: 'Barnkonventionen',                sentence: '_____ slår fast att varje barn har rätt att få sina åsikter hörda i frågor som rör dem.', definition: concepts[21].definition },
+  { id: 23, term: 'Föräldrabalken',                  sentence: 'Reglerna om vårdnad, boende och umgänge för barn finns i _____.', definition: concepts[22].definition },
+  { id: 24, term: 'Inkorporera',                     sentence: 'När Sverige valde att _____ barnkonventionen blev den en del av svensk lag.', definition: concepts[23].definition },
+  { id: 25, term: 'Barnets bästa',                   sentence: 'Domstolen utgick alltid från principen om _____ när den beslutade om vårdnaden.', definition: concepts[24].definition },
+  { id: 26, term: 'Faderskapspresumtion',            sentence: 'Tack vare _____ behövde paret inte göra något särskilt för att mannen skulle registreras som far till barnet.', definition: concepts[25].definition },
+  { id: 27, term: 'Vårdnadshavare',                  sentence: 'Som _____ ansvarar föräldern för barnets uppfostran och trygghet.', definition: concepts[26].definition },
+  { id: 28, term: 'Föräldraskapsbekräftelse',        sentence: 'Eftersom paret inte var gifta fick pappan skriva under en _____ för att bli registrerad som far.', definition: concepts[27].definition },
+  { id: 29, term: 'Bevittna',                        sentence: 'Två personer fick _____ namnteckningen på testamentet för att det skulle vara giltigt.', definition: concepts[28].definition },
+  { id: 30, term: 'Adoptera',                        sentence: 'Paret valde att _____ ett barn efter att ha väntat i flera år på ett godkännande.', definition: concepts[29].definition },
+  { id: 31, term: 'Haagkonventionen',                sentence: '_____ reglerar internationella frågor om bland annat bortförda barn mellan olika länder.', definition: concepts[30].definition },
+  { id: 32, term: 'Omvårdnad',                       sentence: 'Vårdnadshavaren har ansvar för barnets _____, både fysiskt och psykiskt.', definition: concepts[31].definition },
+  { id: 33, term: 'Trygghet',                        sentence: 'Föräldern ska ge barnet _____ och en god vägledning genom uppväxten.', definition: concepts[32].definition },
+  { id: 34, term: 'God fostran',                     sentence: 'Målet med föräldraskapet är att ge barnet en _____ som gör det till en självständig vuxen.', definition: concepts[33].definition },
+  { id: 35, term: 'Försörjning och tillsyn',         sentence: 'Vårdnadshavaren har en skyldighet som gäller _____ av barnet fram till myndighetsdagen.', definition: concepts[34].definition },
+  { id: 36, term: 'Tillsynsansvar',                  sentence: 'Föräldrarnas _____ innebär att de ska se till att barnet inte skadar sig själv eller andra.', definition: concepts[35].definition },
+  { id: 37, term: 'Förmyndare',                      sentence: 'Barnets _____ sköter barnets ekonomiska angelägenheter fram tills barnet blir myndigt.', definition: concepts[36].definition },
+  { id: 38, term: 'Överförmyndare',                  sentence: 'Kommunens _____ kontrollerar regelbundet att förmyndarna sköter barnets pengar korrekt.', definition: concepts[37].definition },
+  { id: 39, term: 'Orosanmälan',                     sentence: 'Läraren gjorde en _____ till socialtjänsten eftersom hon misstänkte att eleven for illa hemma.', definition: concepts[38].definition },
+  { id: 40, term: 'Omhändertagande',                 sentence: 'Socialtjänsten beslutade om ett _____ av barnet enligt lagen med särskilda bestämmelser om vård av unga.', definition: concepts[39].definition },
+  { id: 41, term: 'Gemensam vårdnad',                sentence: 'Eftersom föräldrarna var gifta med varandra hade de automatiskt _____ om barnet.', definition: concepts[40].definition },
+  { id: 42, term: 'Boendeförälder',                  sentence: 'Efter separationen blev mamman _____ eftersom barnet bodde mest hos henne.', definition: concepts[41].definition },
+  { id: 43, term: 'Umgänge',                         sentence: 'Trots att föräldrarna separerat hade barnet rätt till _____ med den förälder hen inte bodde hos.', definition: concepts[42].definition },
+  { id: 44, term: 'Underhållsbidrag',                sentence: 'Pappan betalade _____ varje månad eftersom barnet bodde hos mamman.', definition: concepts[43].definition },
+  { id: 45, term: 'Underhållsstöd',                  sentence: 'Familjen fick _____ från Försäkringskassan eftersom den bidragsskyldiga föräldern inte kunde betala.', definition: concepts[44].definition },
+  { id: 46, term: 'Dödsbo',                          sentence: 'Efter mannens död förvaltades hans tillgångar och skulder av _____.', definition: concepts[45].definition },
+  { id: 47, term: 'Juridisk person',                 sentence: 'Ett dödsbo räknas som en _____ eftersom det kan äga tillgångar och ingå avtal på egen hand.', definition: concepts[46].definition },
+  { id: 48, term: 'Dödsbodelägare',                  sentence: 'Barnen och den efterlevande maken var _____ som tillsammans förvaltade boet.', definition: concepts[47].definition },
+  { id: 49, term: 'Ärvdabalken',                     sentence: 'Reglerna om vem som ärver och hur mycket finns samlade i _____.', definition: concepts[48].definition },
+  { id: 50, term: 'Arvlåtare',                       sentence: 'Mannen som gick bort och lämnade efter sig en förmögenhet kallas _____.', definition: concepts[49].definition },
+  { id: 51, term: 'Arvinge',                         sentence: 'Som son till den avlidne var han en självklar _____.', definition: concepts[50].definition },
+  { id: 52, term: 'Arv',                             sentence: 'Barnen delade på ett _____ som bestod av både pengar och en sommarstuga.', definition: concepts[51].definition },
+  { id: 53, term: 'Legala arvsordningen',            sentence: 'Eftersom det inte fanns något testamente följde fördelningen den _____.', definition: concepts[52].definition },
+  { id: 54, term: 'Bröstarvinge',                    sentence: 'Som _____ hade dottern alltid rätt till sin laglott, oavsett vad testamentet sa.', definition: concepts[53].definition },
+  { id: 55, term: 'Istadarätt',                      sentence: 'Eftersom sonen hade avlidit före sin far trädde barnbarnen in genom _____ och fick ärva i hans ställe.', definition: concepts[54].definition },
+  { id: 56, term: 'Allmänna arvsfonden',             sentence: 'Eftersom mannen saknade både släktingar och testamente tillföll hans tillgångar _____.', definition: concepts[55].definition },
+  { id: 57, term: 'Makes arvsrätt',                  sentence: 'Tack vare _____ ärvde änkan hela boet framför parets gemensamma barn.', definition: concepts[56].definition },
+  { id: 58, term: 'Fri förfoganderätt',              sentence: 'Änkan fick egendomen med _____, vilket innebar att hon kunde använda och förbruka den men inte testamentera bort den.', definition: concepts[57].definition },
+  { id: 59, term: 'Särkullbarn',                     sentence: 'Eftersom sonen bara var barn till den avlidne mannen, och inte till hans nya fru, räknades han som _____.', definition: concepts[58].definition },
+  { id: 60, term: 'Testamente',                      sentence: 'I sitt _____ bestämde mannen att en välgörenhetsorganisation skulle få en del av arvet.', definition: concepts[59].definition },
+  { id: 61, term: 'Testator',                        sentence: 'Kvinnan som skrev ner sina önskemål om arvet i dokumentet kallas _____.', definition: concepts[60].definition },
+  { id: 62, term: 'Testamentstagare',                sentence: 'Vännen som fick ärva smyckena enligt dokumentet var en _____.', definition: concepts[61].definition },
+  { id: 63, term: 'Laglott',                         sentence: 'Trots testamentet hade barnen alltid rätt att kräva sin _____, det vill säga hälften av arvet.', definition: concepts[62].definition },
+  { id: 64, term: 'Klandra',                         sentence: 'Dottern valde att _____ testamentet eftersom hon ansåg att det inte var giltigt.', definition: concepts[63].definition },
+  { id: 65, term: 'Delgivning',                      sentence: 'Genom en _____ fick arvingen ett viktigt dokument officiellt överlämnat till sig.', definition: concepts[64].definition },
+  { id: 66, term: 'Bouppteckning',                   sentence: 'Efter dödsfallet gjordes en _____ över den avlidnes samtliga tillgångar och skulder.', definition: concepts[65].definition },
+  { id: 67, term: 'Förrättningsmän',                 sentence: 'Två utomstående personer utsågs till _____ som skulle sköta bouppteckningen.', definition: concepts[66].definition },
+  { id: 68, term: 'Bouppgivare',                     sentence: 'Den efterlevande makan agerade _____ och lämnade uppgifter om boets innehåll.', definition: concepts[67].definition },
+  { id: 69, term: 'Fullmakt',                        sentence: 'Med en _____ kunde systern sköta alla bankärenden å sin sjuka brors vägnar.', definition: concepts[68].definition },
+  { id: 70, term: 'Arvskifte',                       sentence: 'När bouppteckningen var klar upprättades ett _____ för att fördela arvet mellan syskonen.', definition: concepts[69].definition },
+];
+
+const scenarioData = [
+  { id: 1,  term: 'Sambolagen',                     scenario: 'Lisen och Henry har bott ihop utan att gifta sig i fem år, och undrar vilka regler som avgör hur deras gemensamma bohag ska delas om de separerar.' },
+  { id: 2,  term: 'Samboavtal',                      scenario: 'Innan paret flyttade ihop skrev de ett eget dokument om att bara det de köpt tillsammans skulle delas om de någonsin gick skilda vägar.' },
+  { id: 3,  term: 'Kvarsittanderätt',                scenario: 'Efter separationen fick Samed ensam rätt att bo kvar i den gemensamma hyreslägenheten tillsammans med barnen, medan Otis fick flytta ut.' },
+  { id: 4,  term: 'Äktenskapsbalken',                scenario: 'Alla regler om vigsel, underhåll och bodelning mellan makar är samlade i en och samma lagbok som ursprungligen skrevs redan 1734.' },
+  { id: 5,  term: 'Könsneutral',                     scenario: 'Sedan 2009 gäller exakt samma regler för vilka som får gifta sig, oavsett vilket kön de två parterna har.' },
+  { id: 6,  term: 'Erkännande',                      scenario: 'Paret gifte sig utomlands innan de flyttade till Sverige, och betraktas rättsligt som gifta även här trots att vigseln skedde i ett annat land.' },
+  { id: 7,  term: 'Hindersprövning',                 scenario: 'Innan bröllopet kontrollerade Skatteverket att inget hindrade de två från att gifta sig, och utfärdade sedan ett intyg giltigt i fyra månader.' },
+  { id: 8,  term: 'Vigsel',                          scenario: 'Inför två vittnen svarade båda parterna ja på frågan, och förrättaren förklarade dem för äkta makar.' },
+  { id: 9,  term: 'Underhållsskyldighet',            scenario: 'Eftersom mannen tjänade betydligt mer än sin fru var han tvungen att bidra ekonomiskt så att de kunde ha samma levnadsstandard.' },
+  { id: 10, term: 'Giftorättsgods',                  scenario: 'Bilen och möblerna som paret köpt under äktenskapet skulle räknas in när deras tillgångar delades upp, eftersom inget särskilt avtal fanns.' },
+  { id: 11, term: 'Giftorätt',                       scenario: 'Så länge äktenskapet varade hade båda makar en vilande rätt till hälften av den andras tillgångar, trots att bara en av dem stod som ägare.' },
+  { id: 12, term: 'Enskild egendom',                 scenario: 'Tack vare gåvobrevet blev sommarstugan makens helt egen, och den skulle inte räknas in om paret någonsin skildes.' },
+  { id: 13, term: 'Testamente',                      scenario: 'I ett dokument skrev den äldre kvinnan ner exakt hur hon ville att hennes tillgångar skulle fördelas efter sin bortgång.' },
+  { id: 14, term: 'Äktenskapsförord',                scenario: 'Makarna skrev och registrerade hos Skatteverket ett avtal om att mannens andel i familjeföretaget inte skulle räknas med om de någonsin skildes.' },
+  { id: 15, term: 'Äktenskapsskillnad',              scenario: 'Efter tio års samliv lämnade paret gemensamt in en ansökan till tingsrätten om att upplösa sitt äktenskap.' },
+  { id: 16, term: 'Betänketid',                      scenario: 'Eftersom paret hade ett barn under 16 år boende hos sig fick de vänta sex månader innan skilsmässan kunde gå igenom.' },
+  { id: 17, term: 'Fullföljd av äktenskapsskillnad', scenario: 'När de sex månaderna hade passerat lämnade mannen in en ny ansökan för att äktenskapet formellt skulle upplösas.' },
+  { id: 18, term: 'Bodelning vid äktenskap',         scenario: 'När paret skildes räknade de ihop alla tillgångar och skulder som inte var enskild egendom och delade summan lika mellan sig.' },
+  { id: 19, term: 'Skiftesliked',                    scenario: 'Eftersom mannen hade betydligt mer tillgångar fick han betala ett belopp i pengar till sin före detta fru så att de fick lika mycket var.' },
+  { id: 20, term: 'Oskäligt',                        scenario: 'Domstolen ansåg att en helt jämn fördelning av tillgångarna inte var rimlig eftersom äktenskapet bara hade varat i några månader.' },
+  { id: 21, term: 'Jämkning',                        scenario: 'Eftersom äktenskapet bara varat två år fick paret bara dela en mindre andel av sina sammanlagda tillgångar i stället för allt.' },
+  { id: 22, term: 'Barnkonventionen',                scenario: 'Sedan 2020 är FN:s överenskommelse om barns rättigheter en del av svensk lag, med bland annat rätten för barn att få sina åsikter hörda.' },
+  { id: 23, term: 'Föräldrabalken',                  scenario: 'Reglerna om vårdnad, boende och umgänge för barn finns samlade i en och samma lag.' },
+  { id: 24, term: 'Inkorporera',                     scenario: 'När Sverige valde att göra FN:s överenskommelse om barns rättigheter till en del av den svenska lagstiftningen skedde det på flera olika sätt.' },
+  { id: 25, term: 'Barnets bästa',                   scenario: 'Domstolen utgick alltid ifrån vad som var mest gynnsamt för barnet, inte vad någon av föräldrarna själva önskade, när den beslutade om boende och umgänge.' },
+  { id: 26, term: 'Faderskapspresumtion',            scenario: 'Eftersom kvinnan var gift när hon födde barnet antog man automatiskt att mannen hon var gift med var pappa till barnet, utan någon särskild utredning.' },
+  { id: 27, term: 'Vårdnadshavare',                  scenario: 'Som den som juridiskt ansvarar för barnet fick föräldern bestämma var barnet skulle bo och gå i skola.' },
+  { id: 28, term: 'Föräldraskapsbekräftelse',        scenario: 'Eftersom paret inte var gifta fick pappan underteckna en handling där han erkände att han var far till barnet.' },
+  { id: 29, term: 'Bevittna',                        scenario: 'Två utomstående personer såg på när dokumentet undertecknades och intygade det med sina egna namnteckningar.' },
+  { id: 30, term: 'Adoptera',                        scenario: 'Paret väntade i flera år på ett godkännande innan de fick ta emot ett barn i sin vård som om det vore deras eget.' },
+  { id: 31, term: 'Haagkonventionen',                scenario: 'En internationell överenskommelse från 1996 reglerar hur länder ska samarbeta kring skydd av barn vid gränsöverskridande adoptioner.' },
+  { id: 32, term: 'Omvårdnad',                        scenario: 'Föräldern såg till att barnet fick mat, kläder och sjukvård, både fysiskt och psykiskt, varje dag.' },
+  { id: 33, term: 'Trygghet',                        scenario: 'Föräldern gav barnet stöd och vägledning så att det kände sig säkert genom hela uppväxten.' },
+  { id: 34, term: 'God fostran',                     scenario: 'Målet med föräldraskapet var att lära barnet hur det skulle uppföra sig, så att det växte upp till en självständig och fungerande vuxen.' },
+  { id: 35, term: 'Försörjning och tillsyn',         scenario: 'Föräldern hade en skyldighet att se till att barnet fick mat och kläder samt gick i skolan varje dag.' },
+  { id: 36, term: 'Tillsynsansvar',                  scenario: 'Föräldrarna fick betala för de krossade fönsterrutorna eftersom de ansvarade för att barnen inte skulle orsaka skada på andras egendom.' },
+  { id: 37, term: 'Förmyndare',                      scenario: 'Så länge barnet var omyndigt var föräldern ansvarig för att sköta och förvalta barnets pengar och tillgångar.' },
+  { id: 38, term: 'Överförmyndare',                  scenario: 'En kommunal tjänsteman utsågs för att kontrollera att föräldern skötte barnets förmögenhet på rätt sätt.' },
+  { id: 39, term: 'Orosanmälan',                      scenario: 'Läraren hörde av sig till socialtjänsten eftersom hon misstänkte att en elev for illa hemma.' },
+  { id: 40, term: 'Omhändertagande',                 scenario: 'Efter att missförhållandena i hemmet upptäckts flyttades barnen till ett familjehem, mot föräldrarnas vilja, enligt en särskild lag om vård av unga.' },
+  { id: 41, term: 'Gemensam vårdnad',                scenario: 'Eftersom föräldrarna var gifta med varandra fick de automatiskt dela på det juridiska ansvaret för barnet.' },
+  { id: 42, term: 'Boendeförälder',                  scenario: 'Efter separationen bodde barnet mest hos mamman, medan pappan fick regelbunden kontakt genom besök.' },
+  { id: 43, term: 'Umgänge',                         scenario: 'Trots att föräldrarna hade separerat hade barnet rätt att regelbundet träffa den förälder det inte bodde tillsammans med.' },
+  { id: 44, term: 'Underhållsbidrag',                scenario: 'Eftersom barnen bodde hos pappan var mamman skyldig att varje månad betala honom en inkomstbaserad summa för att bidra till barnens försörjning.' },
+  { id: 45, term: 'Underhållsstöd',                  scenario: 'När den bidragsskyldiga föräldern inte betalade fick familjen i stället pengar utbetalade direkt av Försäkringskassan.' },
+  { id: 46, term: 'Dödsbo',                          scenario: 'Efter mannens död förvaltades hans samlade tillgångar och skulder gemensamt av hans barn och maka.' },
+  { id: 47, term: 'Juridisk person',                 scenario: 'Dödsboet kunde själv ingå avtal, äga tillgångar och ha skulder, precis som ett företag eller en organisation kan.' },
+  { id: 48, term: 'Dödsbodelägare',                  scenario: 'Barnen och den efterlevande makan var de personer som gemensamt hade rätt att förvalta den avlidnes tillgångar och skulder.' },
+  { id: 49, term: 'Ärvdabalken',                     scenario: 'Reglerna om vem som får ärva och hur mycket finns samlade i en och samma lag med rötter i romersk rätt.' },
+  { id: 50, term: 'Arvlåtare',                       scenario: 'Mannen som gick bort och lämnade efter sig en förmögenhet på 500 000 kronor är den vars tillgångar nu ska fördelas.' },
+  { id: 51, term: 'Arvinge',                         scenario: 'Som dotter till den avlidne hade hon en självklar rätt att få del av hans tillgångar.' },
+  { id: 52, term: 'Arv',                             scenario: 'Barnen delade på pengar, en sommarstuga och smycken efter sin bortgångna förälder.' },
+  { id: 53, term: 'Legala arvsordningen',            scenario: 'Eftersom det inte fanns något testamente följde fördelningen av tillgångarna den ordning som släktskapet till den avlidne avgjorde.' },
+  { id: 54, term: 'Bröstarvinge',                    scenario: 'Som barn till den avlidne hade dottern alltid rätt till sin laglott, oavsett vad ett testamente sa.' },
+  { id: 55, term: 'Istadarätt',                      scenario: 'Eftersom dottern hade avlidit före sin far trädde hennes egna barn in i hennes ställe och fick hennes andel av morfaderns tillgångar.' },
+  { id: 56, term: 'Allmänna arvsfonden',             scenario: 'Eftersom mannen varken hade släktingar kvar eller skrivit testamente tillföll hela hans förmögenhet en statlig myndighet som stödjer barn- och ungdomsprojekt.' },
+  { id: 57, term: 'Makes arvsrätt',                  scenario: 'När Stella dog ärvde hennes man John hennes tillgångar, medan deras gemensamma barn fick vänta tills även han gått bort.' },
+  { id: 58, term: 'Fri förfoganderätt',              scenario: 'Änkan kunde använda och till och med sälja det hon ärvt precis som hon ville, men hon fick inte skriva ett testamente om att ge bort det till någon annan.' },
+  { id: 59, term: 'Särkullbarn',                     scenario: 'Eftersom dottern bara var barn till den avlidne mannen, och inte till hans nya fru, hade hon rätt att få ut sin del av tillgångarna direkt.' },
+  { id: 60, term: 'Testamente',                      scenario: 'I ett juridiskt dokument bestämde mannen att en välgörenhetsorganisation skulle få ärva en del av hans tillgångar efter hans död.' },
+  { id: 61, term: 'Testator',                        scenario: 'Kvinnan som skrev ner sina önskemål om hur hennes tillgångar skulle fördelas efter sin död måste själv vara myndig för att dokumentet skulle gälla.' },
+  { id: 62, term: 'Testamentstagare',                scenario: 'Vännen som enligt dokumentet skulle få ärva smyckena var inte alls släkt med den avlidne.' },
+  { id: 63, term: 'Laglott',                         scenario: 'Trots att pappan skrivit ett dokument om att allt skulle gå till hans nya fru hade barnen ändå rätt att kräva hälften av hans tillgångar.' },
+  { id: 64, term: 'Klandra',                         scenario: 'Dottern valde att inom sex månader överklaga innehållet i sin fars sista vilja eftersom hon ansåg att den inte var giltig.' },
+  { id: 65, term: 'Delgivning',                      scenario: 'Arvingen fick ett viktigt dokument officiellt överlämnat till sig av en myndighetsperson, vilket satte igång en sexmånadersfrist.' },
+  { id: 66, term: 'Bouppteckning',                   scenario: 'Inom tre månader efter dödsfallet upprättades en fullständig förteckning över den avlidnes samtliga tillgångar och skulder.' },
+  { id: 67, term: 'Förrättningsmän',                 scenario: 'Två utomstående personer, som inte fick vara släkt med den avlidne, utsågs för att sköta arbetet med att räkna upp boets tillgångar och skulder.' },
+  { id: 68, term: 'Bouppgivare',                     scenario: 'Sonen, som kände till sin fars ekonomi bäst, var den som lämnade uppgifterna om tillgångar och skulder till de två som skulle göra förteckningen.' },
+  { id: 69, term: 'Fullmakt',                        scenario: 'Eftersom hennes bror var sjuk fick systern rätt att sköta alla hans bankärenden i hans ställe.' },
+  { id: 70, term: 'Arvskifte',                       scenario: 'När förteckningen över den avlidnes tillgångar var klar och godkänd skrevs en handling som fördelade lägenheten, lösöret och pengarna mellan de tre syskonen.' },
+];
+
+function LucktextView({ onComplete }) {
+  const normalize = (s) => s.trim().toLowerCase();
+  const initStates = () => lucktextData.map(() => ({ value: '', status: 'unanswered', attempts: 0 }));
+
+  const [states, setStates] = React.useState(initStates);
+  const [struckTerms, setStruckTerms] = React.useState(new Set());
+
+  const finished = states.every(s => s.status === 'correct' || s.status === 'revealed');
+  const correctCount = states.filter(s => s.status === 'correct').length;
+
+  React.useEffect(() => {
+    if (finished) onComplete((correctCount / lucktextData.length) * 100);
+  }, [finished, correctCount, onComplete]);
+
+  const handleInput = (idx, val) => {
+    setStates(prev => {
+      const next = [...prev];
+      next[idx] = { ...next[idx], value: val };
+      return next;
+    });
+  };
+
+  const check = (idx) => {
+    const item = lucktextData[idx];
+    const state = states[idx];
+    if (state.status === 'correct' || state.status === 'revealed') return;
+    setStates(prev => {
+      const next = [...prev];
+      if (normalize(state.value) === normalize(item.term)) {
+        next[idx] = { ...state, status: 'correct' };
+        setStruckTerms(s => new Set([...s, item.term]));
+      } else if (state.attempts === 0) {
+        next[idx] = { ...state, status: 'warning', attempts: 1 };
+      } else {
+        next[idx] = { ...state, status: 'wrong', attempts: state.attempts + 1 };
+      }
+      return next;
+    });
+  };
+
+  const correctAll = () => {
+    setStates(prev => prev.map((state, idx) => {
+      if (state.status === 'correct') return state;
+      return { ...state, status: 'revealed', value: lucktextData[idx].term };
+    }));
+    setStruckTerms(new Set(lucktextData.map(d => d.term)));
+  };
+
+  const restart = () => {
+    setStates(initStates());
+    setStruckTerms(new Set());
+  };
+
+  const borderColor = (status) => {
+    if (status === 'correct') return '#16a34a';
+    if (status === 'revealed' || status === 'wrong') return '#dc2626';
+    if (status === 'warning') return '#f97316';
+    return '#e2e8f0';
+  };
+
+  return (
+    <div>
+      {/* Begreppsbank */}
+      <div className="bg-white rounded-2xl border border-slate-200 p-4 mb-6 shadow-sm">
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Begreppsbank</p>
+        <div className="flex flex-wrap gap-2">
+          {lucktextData.map(item => (
+            <span
+              key={item.id}
+              className="px-2 py-1 rounded-lg text-sm font-medium transition-all"
+              style={
+                struckTerms.has(item.term)
+                  ? { background: '#f0fdf4', color: '#86efac', textDecoration: 'line-through' }
+                  : { background: PRIMARY_LIGHT, color: PRIMARY_TEXT }
+              }
+            >
+              {item.term}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Sentences */}
+      <div className="flex flex-col gap-4 mb-6">
+        {lucktextData.map((item, idx) => {
+          const state = states[idx];
+          const parts = item.sentence.split('_____');
+          const inputWidth = Math.max(item.term.length * 9, 130);
+
+          return (
+            <div
+              key={item.id}
+              className="bg-white rounded-xl shadow-sm p-4"
+              style={{ border: `1.5px solid ${borderColor(state.status)}` }}
+            >
+              <p className="text-slate-700 text-sm leading-relaxed mb-2 flex flex-wrap items-baseline gap-x-1">
+                <span>{parts[0]}</span>
+                <input
+                  type="text"
+                  value={state.value}
+                  onChange={e => handleInput(idx, e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && check(idx)}
+                  disabled={state.status === 'correct' || state.status === 'revealed'}
+                  placeholder="skriv begrepp…"
+                  className="border-b-2 bg-transparent outline-none px-1 text-sm font-semibold"
+                  style={{
+                    width: inputWidth + 'px',
+                    maxWidth: '100%',
+                    borderBottomColor: borderColor(state.status) === '#e2e8f0' ? PRIMARY : borderColor(state.status),
+                    color: state.status === 'correct' ? '#16a34a' : state.status === 'revealed' ? '#dc2626' : '#1e293b',
+                  }}
+                />
+                <span>{parts[1]}</span>
+              </p>
+
+              {state.status === 'warning' && (
+                <p className="text-orange-500 text-xs font-medium mt-1">Är du säker att du stavat rätt?</p>
+              )}
+              {state.status === 'wrong' && (
+                <p className="text-red-500 text-xs font-medium mt-1">Fel svar — prova igen eller tryck "Rätta alla".</p>
+              )}
+              {(state.status === 'correct' || state.status === 'revealed') && (
+                <div
+                  className="mt-2 text-xs rounded-lg p-2 leading-relaxed"
+                  style={{
+                    background: state.status === 'correct' ? '#dcfce7' : '#fee2e2',
+                    color: state.status === 'correct' ? '#15803d' : '#dc2626',
+                  }}
+                >
+                  {state.status === 'correct' ? '✓ Rätt! ' : `✗ Rätt svar: ${item.term}. `}
+                  {item.definition}
+                </div>
+              )}
+
+              {state.status !== 'correct' && state.status !== 'revealed' && (
+                <button
+                  onClick={() => check(idx)}
+                  className="mt-2 text-xs font-bold px-3 py-1 rounded-lg text-white"
+                  style={{ background: PRIMARY }}
+                >
+                  Kontrollera
+                </button>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Result */}
+      {finished && (
+        <div className="rounded-2xl p-6 text-center mb-4 border-2" style={{ background: '#f0fdfa', borderColor: PRIMARY }}>
+          <p className="text-2xl font-bold mb-1" style={{ color: PRIMARY_TEXT }}>
+            {correctCount} / {lucktextData.length} rätt
+          </p>
+          <p className="text-slate-500 text-sm">
+            {correctCount === lucktextData.length
+              ? '🎉 Perfekt! Du kan alla begrepp!'
+              : correctCount >= Math.round(lucktextData.length * 0.8)
+              ? '👍 Bra jobbat! Öva lite till på de du missat.'
+              : '📚 Fortsätt öva – du är på rätt spår!'}
+          </p>
+        </div>
+      )}
+
+      <div className="flex gap-3 mb-6">
+        {!finished && (
+          <button onClick={correctAll} className="flex-1 bg-slate-200 text-slate-700 font-bold py-2 rounded-xl text-sm hover:bg-slate-300 transition-colors">
+            Rätta alla
+          </button>
+        )}
+        <button
+          onClick={restart}
+          className="flex-1 text-white font-bold py-2 rounded-xl text-sm transition-colors"
+          style={{ background: PRIMARY }}
+        >
+          Börja om
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ListView({ onComplete }) {
+  const sentinelRef = React.useRef(null);
+
+  React.useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) onComplete();
+    }, { threshold: 1.0 });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [onComplete]);
+
+  return (
+    <div className="flex flex-col gap-3">
+      {concepts.map((c) => (
+        <div
+          key={c.id}
+          className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border-l-8 pl-4 pr-4 py-3"
+          style={{ borderLeftColor: PRIMARY }}
+        >
+          <div className="flex items-start gap-3">
+            <span
+              className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mt-0.5"
+              style={{ background: PRIMARY_LIGHT, color: PRIMARY_TEXT }}
+            >
+              {c.id}
+            </span>
+            <div>
+              <p className="font-bold text-slate-800 text-base leading-snug">{c.term}</p>
+              <p className="text-slate-500 text-sm mt-1 leading-relaxed">{c.definition}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+      <div ref={sentinelRef} style={{ height: 1 }} />
+    </div>
+  );
+}
+
+function FlashcardView({ onComplete }) {
+  const total = concepts.length;
+  const [deck, setDeck] = React.useState(() => shuffleArray([...concepts]));
+  const [deckIdx, setDeckIdx] = React.useState(0);
+  const [isFlipped, setIsFlipped] = React.useState(false);
+  const [kudeInte, setKudeInte] = React.useState([]);
+  const [kunde, setKunde] = React.useState([]);
+  const [phase, setPhase] = React.useState('playing');
+
+  const restartAll = () => {
+    setDeck(shuffleArray([...concepts]));
+    setDeckIdx(0);
+    setIsFlipped(false);
+    setKudeInte([]);
+    setKunde([]);
+    setPhase('playing');
+  };
+
+  const sort = (pile) => {
+    const card = deck[deckIdx];
+    const newKudeInte = pile === 'kudeInte' ? [...kudeInte, card] : kudeInte;
+    const newKunde    = pile === 'kunde'    ? [...kunde, card]    : kunde;
+    const nextIdx = deckIdx + 1;
+    setKudeInte(newKudeInte);
+    setKunde(newKunde);
+    setIsFlipped(false);
+    if (nextIdx >= deck.length) {
+      setDeckIdx(nextIdx);
+      setPhase(newKudeInte.length === 0 ? 'allDone' : 'roundEnd');
+      onComplete();
+    } else {
+      setDeckIdx(nextIdx);
+    }
+  };
+
+  const nextRound = () => {
+    setDeck(shuffleArray([...kudeInte]));
+    setDeckIdx(0);
+    setIsFlipped(false);
+    setKudeInte([]);
+    setPhase('playing');
+  };
+
+  if (phase === 'allDone') return (
+    <div className="flex flex-col items-center gap-6">
+      <div className="bg-green-50 border-2 border-green-400 rounded-3xl p-8 text-center w-full max-w-sm">
+        <div className="text-5xl mb-4">🎉</div>
+        <p className="text-2xl font-bold text-green-700 mb-2">Alla kort klarade!</p>
+        <p className="text-slate-600 mb-6">Du behärskar <span className="font-bold text-green-700">{kunde.length} av {total}</span> begrepp.</p>
+        <button onClick={restartAll} className="w-full text-white px-8 py-3 rounded-2xl font-bold transition-colors" style={{ background: PRIMARY }}>Börja om med alla</button>
+      </div>
+    </div>
+  );
+
+  if (phase === 'roundEnd') return (
+    <div className="flex flex-col items-center gap-6">
+      <div className="bg-white border-2 border-slate-200 rounded-3xl p-8 text-center w-full max-w-sm shadow-sm">
+        <p className="text-lg font-bold text-slate-700 mb-4">Runda klar!</p>
+        <div className="flex justify-center gap-8 mb-6">
+          <div className="text-center">
+            <p className="text-3xl font-bold text-green-600">{kunde.length}</p>
+            <p className="text-xs text-slate-400 uppercase tracking-wide mt-1">Kunde</p>
+          </div>
+          <div className="text-center">
+            <p className="text-3xl font-bold text-red-500">{kudeInte.length}</p>
+            <p className="text-xs text-slate-400 uppercase tracking-wide mt-1">Kunde inte</p>
+          </div>
+        </div>
+        <div className="flex flex-col gap-3">
+          <button onClick={nextRound} className="w-full bg-slate-900 text-white px-8 py-3 rounded-2xl font-bold hover:bg-slate-800 transition-colors">
+            Öva på Kunde inte ({kudeInte.length} kort) →
+          </button>
+          <button onClick={restartAll} className="w-full text-white px-8 py-3 rounded-2xl font-bold transition-colors" style={{ background: PRIMARY }}>
+            Börja om med alla
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const card = deck[deckIdx];
+  const remaining = deck.length - deckIdx;
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="flex gap-3 mb-5 w-full max-w-sm">
+        <div className="flex-1 bg-red-50 border border-red-200 rounded-xl p-2 text-center">
+          <p className="text-xl font-bold text-red-500">{kudeInte.length}</p>
+          <p className="text-[10px] text-red-400 uppercase tracking-wide font-bold">Kunde inte</p>
+        </div>
+        <div className="flex-1 bg-slate-100 border border-slate-200 rounded-xl p-2 text-center">
+          <p className="text-xl font-bold text-slate-400">{remaining}</p>
+          <p className="text-[10px] text-slate-400 uppercase tracking-wide font-bold">Kvar</p>
+        </div>
+        <div className="flex-1 bg-green-50 border border-green-200 rounded-xl p-2 text-center">
+          <p className="text-xl font-bold text-green-500">{kunde.length}</p>
+          <p className="text-[10px] text-green-400 uppercase tracking-wide font-bold">Kunde</p>
+        </div>
+      </div>
+      <div className="flip-card mb-5" onClick={() => setIsFlipped(!isFlipped)}>
+        <div className={`flip-card-inner ${isFlipped ? 'flipped-classes' : ''}`}>
+          <div className="flip-card-front" style={{ background: PRIMARY }}>
+            <h2 className="text-3xl font-bold text-white text-center px-4">{card.term}</h2>
+            <div className="absolute bottom-6 animate-pulse">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-white font-bold opacity-70">Klicka för svar</span>
+            </div>
+          </div>
+          <div className="flip-card-back bg-white" style={{ border: `2px solid ${PRIMARY}` }}>
+            <p className="text-xl leading-relaxed text-slate-800 font-medium px-4">{card.definition}</p>
+            <div className="absolute bottom-6">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">Klicka för att vända</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {isFlipped && (
+        <div className="flex gap-3 w-full max-w-sm mb-4">
+          <button onClick={() => sort('kudeInte')} className="flex-1 bg-red-100 text-red-700 border-2 border-red-300 font-bold py-3 rounded-2xl hover:bg-red-200 active:scale-95 transition-all">
+            ✗ Kunde inte
+          </button>
+          <button onClick={() => sort('kunde')} className="flex-1 bg-green-100 text-green-700 border-2 border-green-300 font-bold py-3 rounded-2xl hover:bg-green-200 active:scale-95 transition-all">
+            ✓ Kunde
+          </button>
+        </div>
+      )}
+      <div className="flex flex-col items-center gap-2 mt-1">
+        <p className="text-slate-500 font-medium bg-slate-200 px-4 py-1 rounded-full text-xs">{deckIdx + 1} av {deck.length}</p>
+        <button onClick={restartAll} className="text-slate-400 text-xs hover:text-slate-600 transition-colors underline">↺ Börja om med alla</button>
+      </div>
+    </div>
+  );
+}
+
+function ScenarioView({ onComplete }) {
+  const total = scenarioData.length;
+  const [items, setItems] = React.useState(() => shuffleArray([...scenarioData]));
+  const [idx, setIdx] = React.useState(0);
+  const [options, setOptions] = React.useState(() => makeOptions(items[0], scenarioData));
+  const [selected, setSelected] = React.useState(null);
+  const [score, setScore] = React.useState(0);
+  const [phase, setPhase] = React.useState('playing');
+
+  React.useEffect(() => {
+    if (phase === 'done') onComplete((score / total) * 100);
+  }, [phase]);
+
+  const current = items[idx];
+  const isAnswered = selected !== null;
+
+  const handleSelect = (opt) => {
+    if (isAnswered) return;
+    setSelected(opt);
+    if (opt.id === current.id) setScore(s => s + 1);
+  };
+
+  const handleNext = () => {
+    const nextIdx = idx + 1;
+    if (nextIdx >= total) {
+      setPhase('done');
+    } else {
+      setOptions(makeOptions(items[nextIdx], scenarioData));
+      setIdx(nextIdx);
+      setSelected(null);
+    }
+  };
+
+  const restart = () => {
+    const newItems = shuffleArray([...scenarioData]);
+    setItems(newItems);
+    setIdx(0);
+    setOptions(makeOptions(newItems[0], scenarioData));
+    setSelected(null);
+    setScore(0);
+    setPhase('playing');
+  };
+
+  if (phase === 'done') return (
+    <div className="flex flex-col items-center gap-6">
+      <div className="rounded-3xl p-8 text-center w-full" style={{ background: PRIMARY_LIGHT, border: `2px solid ${PRIMARY}` }}>
+        <div className="text-5xl mb-4">🎯</div>
+        <p className="text-2xl font-bold mb-1" style={{ color: PRIMARY_TEXT }}>{score} / {total} rätt</p>
+        <p className="text-slate-500 text-sm mb-6">
+          {score === total
+            ? 'Perfekt! Du kopplar ihop alla situationer rätt.'
+            : score >= Math.round(total * 0.8)
+            ? 'Bra jobbat! Öva lite till på de du missat.'
+            : 'Fortsätt öva – du lär dig!'}
+        </p>
+        <button onClick={restart} className="text-white font-bold px-8 py-3 rounded-2xl" style={{ background: PRIMARY }}>
+          Börja om
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-slate-400 font-medium">{idx + 1} av {total}</span>
+        <span className="text-xs font-bold px-3 py-1 rounded-full" style={{ background: PRIMARY_LIGHT, color: PRIMARY_TEXT }}>
+          {score} rätt
+        </span>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-1.5 mb-1">
+        <div className="h-1.5 rounded-full transition-all" style={{ width: `${(idx / total) * 100}%`, background: PRIMARY }} />
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm p-5 border-l-4" style={{ borderLeftColor: PRIMARY }}>
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Vilket begrepp beskrivs?</p>
+        <p className="text-slate-800 text-base leading-relaxed">{current.scenario}</p>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        {options.map(opt => {
+          const isCorrect = opt.id === current.id;
+          const isSelected = selected && selected.id === opt.id;
+          let bg = '#ffffff', border = '#e2e8f0', textColor = '#1e293b';
+          if (isAnswered) {
+            if (isCorrect) { bg = '#dcfce7'; border = '#16a34a'; textColor = '#15803d'; }
+            else if (isSelected) { bg = '#fee2e2'; border = '#dc2626'; textColor = '#dc2626'; }
+          }
+          return (
+            <button
+              key={opt.id}
+              onClick={() => handleSelect(opt)}
+              disabled={isAnswered}
+              className="w-full text-left px-4 py-3 rounded-xl font-semibold text-sm transition-all border-2"
+              style={{ background: bg, borderColor: border, color: textColor }}
+            >
+              {opt.term}
+            </button>
+          );
+        })}
+      </div>
+
+      {isAnswered && (
+        <div
+          className="rounded-xl p-4 text-sm leading-relaxed"
+          style={
+            selected.id === current.id
+              ? { background: '#dcfce7', color: '#15803d' }
+              : { background: '#fee2e2', color: '#dc2626' }
+          }
+        >
+          {selected.id === current.id ? '✓ Rätt! ' : `✗ Rätt svar: ${current.term}. `}
+          {concepts.find(c => c.id === current.id).definition}
+        </div>
+      )}
+
+      {isAnswered && (
+        <button
+          onClick={handleNext}
+          className="w-full text-white font-bold py-3 rounded-2xl text-sm"
+          style={{ background: PRIMARY }}
+        >
+          {idx + 1 < total ? 'Nästa scenario →' : 'Visa resultat'}
+        </button>
+      )}
+    </div>
+  );
+}
+
+const ickeExData = [
+  { id: 1,  term: 'Sambolagen',
+    correct: 'Lisa och Oskar har bott ihop i tre år utan att gifta sig – vid en separation avgör sambolagen hur deras gemensamma bostad och bohag ska delas.',
+    trap:    'Lisa och Oskar är gifta sedan tre år tillbaka – vid en skilsmässa avgör sambolagen hur deras gemensamma egendom ska delas.',
+    explanation: 'Sambolagen gäller ogifta par som bor tillsammans – gifta par regleras istället av äktenskapsbalken.' },
+  { id: 2,  term: 'Samboavtal',
+    correct: 'Innan Elin och Noa flyttade ihop skrev de ett avtal om att bara den gemensamt köpta bilen skulle delas om de separerade.',
+    trap:    'Innan Elin och Noa gifte sig skrev de ett avtal om vilken egendom som skulle vara enskild egendom i äktenskapet.',
+    explanation: 'Ett samboavtal reglerar sambors egendom vid separation – avtal mellan blivande makar om enskild egendom är ett äktenskapsförord.' },
+  { id: 3,  term: 'Kvarsittanderätt',
+    correct: 'Efter separationen fick Nour ensam rätt att bo kvar i den gemensamma lägenheten, medan hennes expartner fick flytta ut.',
+    trap:    'Efter separationen sålde paret bostaden och delade lika på köpeskillingen.',
+    explanation: 'Kvarsittanderätt handlar om rätten att ensam bo kvar i bostaden – att sälja och dela vinsten är en helt annan lösning.' },
+  { id: 4,  term: 'Äktenskapsbalken',
+    correct: 'Reglerna om vigsel, underhållsskyldighet och bodelning mellan makar finns samlade i en och samma lagbok.',
+    trap:    'Reglerna om vårdnad, boende och umgänge för barn finns samlade i en och samma lagbok.',
+    explanation: 'Äktenskapsbalken reglerar förhållandet mellan makar – regler om barn finns i föräldrabalken.' },
+  { id: 5,  term: 'Könsneutral',
+    correct: 'Sedan 2009 gäller exakt samma äktenskapsregler oavsett vilket kön de två som gifter sig har.',
+    trap:    'Sedan 2009 får endast par av olika kön gifta sig enligt äktenskapsbalken.',
+    explanation: 'Att lagstiftningen är könsneutral innebär tvärtom att samma regler gäller oavsett kön.' },
+  { id: 6,  term: 'Erkännande',
+    correct: 'Paret gifte sig i Libanon innan de flyttade till Sverige, och betraktas rättsligt som gifta även här.',
+    trap:    'Paret gifte sig i Sverige och måste sedan låta ett annat land godkänna äktenskapet för att det ska gälla där.',
+    explanation: 'Erkännande handlar om att ett utomlands ingånget äktenskap även gäller i Sverige – inte om att svenska äktenskap ska godkännas utomlands.' },
+  { id: 7,  term: 'Hindersprövning',
+    correct: 'Innan bröllopet kontrollerade Skatteverket att inget, till exempel nära släktskap, hindrade paret från att gifta sig.',
+    trap:    'Under vigseln frågade förrättaren de närvarande om någon kände till skäl att paret inte borde gifta sig.',
+    explanation: 'Hindersprövningen sker hos Skatteverket innan vigseln – inte som en fråga till gästerna under själva ceremonin.' },
+  { id: 8,  term: 'Vigsel',
+    correct: 'Inför två vittnen svarade båda parterna ja, och förrättaren förklarade dem för äkta makar.',
+    trap:    'Paret lämnade in en ansökan om äktenskap till Skatteverket och blev automatiskt gifta när den godkändes.',
+    explanation: 'Vigseln är själva ceremonin där paret blir gifta – inte en administrativ ansökan som godkänns av en myndighet.' },
+  { id: 9,  term: 'Underhållsskyldighet',
+    correct: 'Eftersom mannen tjänade betydligt mer än sin fru var han skyldig att bidra ekonomiskt så att de kunde leva på samma standard.',
+    trap:    'Eftersom mannen tjänade betydligt mer än sin fru fick han automatiskt en större andel av det gemensamma giftorättsgodset vid en bodelning.',
+    explanation: 'Underhållsskyldighet handlar om att bidra ekonomiskt under äktenskapet – det påverkar inte hur giftorättsgodset delas vid en bodelning.' },
+  { id: 10, term: 'Giftorättsgods',
+    correct: 'Bilen och möblerna paret köpt tillsammans under äktenskapet räknades in när deras tillgångar delades upp vid skilsmässan.',
+    trap:    'Sommarstugan som mannen fått i gåva med villkoret att den skulle vara hans egen räknades in när tillgångarna delades upp vid skilsmässan.',
+    explanation: 'Giftorättsgods är egendom som ingår i bodelningen – gåvor med villkor om enskild egendom räknas istället som just enskild egendom.' },
+  { id: 11, term: 'Giftorätt',
+    correct: 'Så länge äktenskapet varade hade båda makar en vilande rätt till hälften av den andras egendom, trots att bara en av dem stod som ägare.',
+    trap:    'Så länge äktenskapet varade ägde båda makar automatiskt hälften var av allt som stod skrivet på den andras namn.',
+    explanation: 'Giftorätten är en vilande rätt som aktualiseras först vid bodelning – den ger inte omedelbart delat ägande under pågående äktenskap.' },
+  { id: 12, term: 'Enskild egendom',
+    correct: 'Tack vare äktenskapsförordet blev sommarstugan makens egen, och skulle inte ingå om paret någonsin skildes.',
+    trap:    'Tack vare att bilen stod registrerad enbart i makens namn räknades den som hans enskilda egendom vid en bodelning.',
+    explanation: 'Enskild egendom uppstår genom äktenskapsförord, gåva eller testamente med villkor – inte bara för att egendomen står i en makes namn.' },
+  { id: 13, term: 'Testamente',
+    correct: 'I ett dokument skrev den äldre kvinnan ner sin sista vilja om hur hennes tillgångar skulle fördelas efter hennes död.',
+    trap:    'I ett avtal kom makarna överens om att viss egendom inte skulle vara giftorättsgods under det pågående äktenskapet.',
+    explanation: 'Ett testamente reglerar vad som ska hända med tillgångarna efter döden – avtal om egendom under pågående äktenskap är ett äktenskapsförord.' },
+  { id: 14, term: 'Äktenskapsförord',
+    correct: 'Makarna skrev och registrerade hos Skatteverket ett avtal om att företaget inte skulle räknas som giftorättsgods.',
+    trap:    'Makarna skrev ett dokument hos en jurist om hur deras tillgångar skulle fördelas mellan deras barn efter att båda gått bort.',
+    explanation: 'Äktenskapsförord reglerar vad som ska vara enskild egendom under äktenskapet – fördelning av arv efter döden regleras i ett testamente.' },
+  { id: 15, term: 'Äktenskapsskillnad',
+    correct: 'Efter tio års äktenskap lämnade paret gemensamt in en ansökan till tingsrätten om att upplösa sitt äktenskap.',
+    trap:    'Efter tre års samboskap lämnade paret in en ansökan till tingsrätten om att upplösa sitt samboförhållande.',
+    explanation: 'Äktenskapsskillnad är det juridiska begreppet för skilsmässa mellan gifta – samboförhållanden upplöses inte via tingsrätten på samma sätt.' },
+  { id: 16, term: 'Betänketid',
+    correct: 'Eftersom paret hade ett barn under 16 år fick de vänta sex månader innan skilsmässan kunde gå igenom.',
+    trap:    'Eftersom paret var överens om skilsmässan och inte hade barn fick de vänta sex månader innan den gick igenom.',
+    explanation: 'Betänketid krävs bland annat om det finns barn under 16 år i hemmet – är paret överens och saknar barn kan skilsmässan gå igenom direkt.' },
+  { id: 17, term: 'Fullföljd av äktenskapsskillnad',
+    correct: 'När de sex månaderna av betänketid hade passerat lämnade mannen in en ny ansökan för att äktenskapet formellt skulle upplösas.',
+    trap:    'Innan betänketiden ens hade börjat löpa lämnade mannen in en ansökan om att äktenskapet omedelbart skulle upplösas.',
+    explanation: 'Fullföljd sker efter att betänketiden har passerat – den kan inte ersätta eller föregå betänketiden.' },
+  { id: 18, term: 'Bodelning vid äktenskap',
+    correct: 'När paret skildes räknade de ihop alla tillgångar och skulder som inte var enskild egendom och delade summan lika mellan sig.',
+    trap:    'När paret skildes fick var och en behålla exakt det de själva köpt och betalat för, oavsett vad äktenskapsförordet sa.',
+    explanation: 'Bodelning innebär att giftorättsgodset läggs samman och delas lika – vem som ursprungligen betalat för egendomen saknar i sig betydelse.' },
+  { id: 19, term: 'Skiftesliked',
+    correct: 'Eftersom mannen hade betydligt mer tillgångar fick han betala ett belopp i pengar till sin före detta fru så att de fick lika mycket var.',
+    trap:    'Eftersom mannen hade betydligt mer tillgångar fick han behålla dem mot att han istället betalade underhållsbidrag till barnen varje månad.',
+    explanation: 'Skiftesliked är en engångssumma som jämnar ut en bodelning – underhållsbidrag till barn är en helt annan typ av betalning.' },
+  { id: 20, term: 'Oskäligt',
+    correct: 'Domstolen ansåg att en helt jämn fördelning av tillgångarna inte var rimlig eftersom äktenskapet bara hade varat i några månader.',
+    trap:    'Domstolen ansåg att en jämn fördelning av tillgångarna var fullt rimlig eftersom äktenskapet hade varat i över tjugo år.',
+    explanation: 'Oskäligt beskriver just situationer där en jämn delning inte är rimlig, till exempel vid mycket korta äktenskap – inte när delningen är rimlig.' },
+  { id: 21, term: 'Jämkning',
+    correct: 'Eftersom äktenskapet bara varat två år fick paret bara dela en mindre andel av sina sammanlagda tillgångar istället för allt.',
+    trap:    'Eftersom äktenskapet varat i tjugo år fick paret dela precis hälften var av alla sina tillgångar, som huvudregeln säger.',
+    explanation: 'Jämkning är ett undantag från huvudregeln om att dela allt lika – en vanlig, jämn delning enligt huvudregeln är inte jämkning.' },
+  { id: 22, term: 'Barnkonventionen',
+    correct: 'Sedan 2020 är FN:s överenskommelse om barns rättigheter en del av svensk lag, med bland annat rätten för barn att få sina åsikter hörda.',
+    trap:    'Sedan 1996 gäller en internationell överenskommelse om hur länder ska samarbeta kring gränsöverskridande adoptioner och bortförda barn.',
+    explanation: 'Barnkonventionen är FN:s allmänna konvention om barns rättigheter – regler om internationella adoptioner och bortförande finns i Haagkonventionen.' },
+  { id: 23, term: 'Föräldrabalken',
+    correct: 'Reglerna om vårdnad, boende och umgänge för barn finns samlade i en och samma lag.',
+    trap:    'Reglerna om vigsel, underhållsskyldighet och bodelning mellan makar finns samlade i en och samma lag.',
+    explanation: 'Föräldrabalken reglerar barns och föräldrars rättsliga relationer – makars förhållanden regleras i äktenskapsbalken.' },
+  { id: 24, term: 'Inkorporera',
+    correct: 'När Sverige valde att göra FN:s barnkonvention till en del av den svenska lagstiftningen skedde det genom en särskild lag.',
+    trap:    'När Sverige valde att skriva om innehållet i FN:s barnkonvention och sprida ut det i flera redan existerande svenska lagar.',
+    explanation: 'Att inkorporera betyder att införliva en internationell överenskommelse som den är, som en egen lag – inte att skriva om och sprida ut innehållet.' },
+  { id: 25, term: 'Barnets bästa',
+    correct: 'Domstolen utgick alltid ifrån vad som var mest gynnsamt för barnet, inte vad någon av föräldrarna själva önskade, när den beslutade om boende.',
+    trap:    'Domstolen utgick alltid ifrån vad föräldrarna gemensamt kommit överens om, oavsett vad som var bäst för barnet.',
+    explanation: 'Barnets bästa är den grundläggande utgångspunkten i all lagstiftning som rör barn – föräldrarnas egna önskemål är inte avgörande.' },
+  { id: 26, term: 'Faderskapspresumtion',
+    correct: 'Eftersom kvinnan var gift när hon födde barnet antog man automatiskt att mannen hon var gift med var pappa till barnet.',
+    trap:    'Eftersom paret inte var gifta fick mannen skriva under en handling där han erkände att han var pappa till barnet.',
+    explanation: 'Faderskapspresumtion gäller automatiskt för gifta par – ogifta föräldrar måste istället göra en föräldraskapsbekräftelse.' },
+  { id: 27, term: 'Vårdnadshavare',
+    correct: 'Som den som juridiskt ansvarar för barnet fick föräldern bestämma var barnet skulle bo och gå i skola.',
+    trap:    'Som den förälder barnet bodde mest hos fick föräldern automatiskt ensam bestämma var barnet skulle gå i skola, utan den andra förälderns inflytande.',
+    explanation: 'Vårdnadshavare är den eller de som har det juridiska ansvaret för barnet – att vara boendeförälder ger i sig inte ensam beslutanderätt.' },
+  { id: 28, term: 'Föräldraskapsbekräftelse',
+    correct: 'Eftersom paret inte var gifta fick pappan underteckna en handling där han erkände att han var far till barnet.',
+    trap:    'Eftersom paret var gifta blev mannen automatiskt registrerad som far till barnet utan att behöva underteckna något dokument.',
+    explanation: 'Föräldraskapsbekräftelse krävs när föräldrarna inte är gifta – för gifta par gäller istället faderskapspresumtionen automatiskt.' },
+  { id: 29, term: 'Bevittna',
+    correct: 'Två utomstående personer såg på när dokumentet undertecknades och intygade det med sina egna namnteckningar.',
+    trap:    'En person läste noggrant igenom hela testamentets innehåll för att kontrollera att det var juridiskt korrekt formulerat.',
+    explanation: 'Att bevittna innebär att intyga att man såg undertecknandet ske – inte att granska innehållet i dokumentet.' },
+  { id: 30, term: 'Adoptera',
+    correct: 'Paret väntade i flera år på ett godkännande innan de fick ta emot ett barn i sin vård som om det vore deras eget.',
+    trap:    'Paret tog hand om ett släktbarn under några veckors sommarlov medan barnets föräldrar var bortresta.',
+    explanation: 'Att adoptera innebär ett varaktigt föräldra-barnförhållande – tillfällig barnvakt under en kortare period är inte adoption.' },
+  { id: 31, term: 'Haagkonventionen',
+    correct: 'En internationell överenskommelse från 1996 reglerar hur länder ska samarbeta kring skydd av barn vid gränsöverskridande adoptioner.',
+    trap:    'En FN-överenskommelse från 1989 slår fast att varje barn har rätt att få sina åsikter hörda i frågor som rör dem.',
+    explanation: 'Haagkonventionen rör internationellt samarbete kring barn, bland annat adoptioner – rätten att bli hörd kommer från barnkonventionen.' },
+  { id: 32, term: 'Omvårdnad',
+    correct: 'Föräldern såg till att barnet fick mat, kläder och sjukvård, både fysiskt och psykiskt, varje dag.',
+    trap:    'Föräldern kontrollerade regelbundet att barnets ekonomiska tillgångar förvaltades på ett korrekt sätt.',
+    explanation: 'Omvårdnad handlar om barnets fysiska och psykiska omsorg – ansvaret för barnets ekonomi ligger istället hos förmyndaren.' },
+  { id: 33, term: 'Trygghet',
+    correct: 'Föräldern gav barnet stöd och vägledning så att det kände sig säkert genom hela uppväxten.',
+    trap:    'Föräldern såg till att barnet alltid hade tillräckligt med mat, kläder och tak över huvudet.',
+    explanation: 'Trygghet handlar om emotionellt stöd och vägledning – det materiella ansvaret för mat och kläder är istället försörjning.' },
+  { id: 34, term: 'God fostran',
+    correct: 'Målet med föräldraskapet var att lära barnet hur det skulle uppföra sig, så att det växte upp till en självständig och fungerande vuxen.',
+    trap:    'Målet med föräldraskapet var att se till att barnet aldrig utsattes för någon risk att skada sig själv.',
+    explanation: 'God fostran handlar om att uppfostra barnet till en självständig person – att skydda barnet från skador är istället tillsynsansvaret.' },
+  { id: 35, term: 'Försörjning och tillsyn',
+    correct: 'Föräldern hade en skyldighet att se till att barnet fick mat och kläder samt gick i skolan varje dag.',
+    trap:    'Föräldern hade en skyldighet att förvalta barnets sparade pengar på ett bankkonto fram till myndighetsdagen.',
+    explanation: 'Försörjning och tillsyn rör barnets dagliga behov – att förvalta barnets pengar hör istället till förmyndarens uppgift.' },
+  { id: 36, term: 'Tillsynsansvar',
+    correct: 'Föräldrarna fick betala för de krossade fönsterrutorna eftersom de ansvarade för att barnen inte skulle orsaka skada på andras egendom.',
+    trap:    'Föräldrarna fick betala böter eftersom de inte skickat in en orosanmälan om ett annat barn i grannskapet.',
+    explanation: 'Tillsynsansvar handlar om att se till att det egna barnet inte orsakar skada – orosanmälan handlar om oro för ett barn som far illa.' },
+  { id: 37, term: 'Förmyndare',
+    correct: 'Så länge barnet var omyndigt var föräldern ansvarig för att sköta och förvalta barnets pengar och tillgångar.',
+    trap:    'Så länge barnet var omyndigt var en kommunal tjänsteman ansvarig för att kontrollera hur föräldern skötte barnets pengar.',
+    explanation: 'Förmyndaren sköter själv barnets ekonomi – att kontrollera förmyndarens förvaltning är istället överförmyndarens uppgift.' },
+  { id: 38, term: 'Överförmyndare',
+    correct: 'En kommunal tjänsteman utsågs för att kontrollera att föräldern skötte barnets förmögenhet på rätt sätt.',
+    trap:    'En förälder utsågs för att sköta och placera barnets sparade pengar fram till myndighetsdagen.',
+    explanation: 'Överförmyndaren är en kommunal tjänsteman med tillsyn över förmyndare – att själv sköta barnets pengar är förmyndarens roll.' },
+  { id: 39, term: 'Orosanmälan',
+    correct: 'Läraren hörde av sig till socialtjänsten eftersom hon misstänkte att en elev for illa hemma.',
+    trap:    'Socialtjänsten flyttade barnet till ett familjehem mot föräldrarnas vilja efter en utredning.',
+    explanation: 'Orosanmälan är själva anmälan om oro till en myndighet – att faktiskt flytta ett barn mot föräldrarnas vilja är ett omhändertagande.' },
+  { id: 40, term: 'Omhändertagande',
+    correct: 'Efter att missförhållandena i hemmet upptäckts flyttades barnen till ett familjehem, mot föräldrarnas vilja, enligt en särskild lag om vård av unga.',
+    trap:    'En orolig granne hörde av sig till socialtjänsten med misstankar om att barnen for illa i hemmet.',
+    explanation: 'Omhändertagande innebär att barnet faktiskt flyttas mot föräldrarnas vilja – att bara anmäla oro är en orosanmälan.' },
+  { id: 41, term: 'Gemensam vårdnad',
+    correct: 'Eftersom föräldrarna var gifta med varandra fick de automatiskt dela på det juridiska ansvaret för barnet.',
+    trap:    'Eftersom barnet bodde mest hos mamman fick hon automatiskt ensam vårdnad om barnet, utan att pappan behövde göra något.',
+    explanation: 'Gifta föräldrar får automatiskt gemensam vårdnad – vem barnet bor mest hos avgör istället vem som är boendeförälder, inte vårdnaden.' },
+  { id: 42, term: 'Boendeförälder',
+    correct: 'Efter separationen bodde barnet mest hos mamman, medan pappan fick regelbunden kontakt genom besök.',
+    trap:    'Efter separationen fortsatte båda föräldrarna att ha gemensam vårdnad om barnet trots att de bodde på olika adresser.',
+    explanation: 'Boendeförälder är den förälder barnet bor mest hos i vardagen – gemensam vårdnad handlar om det juridiska ansvaret, oavsett boende.' },
+  { id: 43, term: 'Umgänge',
+    correct: 'Trots att föräldrarna hade separerat hade barnet rätt att regelbundet träffa den förälder det inte bodde tillsammans med.',
+    trap:    'Trots att föräldrarna hade separerat var den förälder barnet inte bodde hos skyldig att betala ett månatligt bidrag till barnets försörjning.',
+    explanation: 'Umgänge handlar om barnets rätt att träffa den andra föräldern – ekonomiskt bidrag till försörjningen är istället underhållsbidrag.' },
+  { id: 44, term: 'Underhållsbidrag',
+    correct: 'Eftersom barnen bodde hos pappan var mamman skyldig att varje månad betala honom en summa för att bidra till barnens försörjning.',
+    trap:    'Eftersom den bidragsskyldiga föräldern inte kunde betala fick familjen istället pengar utbetalade direkt av Försäkringskassan.',
+    explanation: 'Underhållsbidrag betalas direkt av den bidragsskyldiga föräldern – när den inte kan betala träder istället underhållsstöd från Försäkringskassan in.' },
+  { id: 45, term: 'Underhållsstöd',
+    correct: 'När den bidragsskyldiga föräldern inte betalade fick familjen istället pengar utbetalade direkt av Försäkringskassan.',
+    trap:    'Varje månad betalade den förälder barnet inte bodde hos en summa direkt till den andra föräldern för barnets försörjning.',
+    explanation: 'Underhållsstöd betalas ut av Försäkringskassan – när föräldern själv betalar direkt till den andra föräldern kallas det underhållsbidrag.' },
+  { id: 46, term: 'Dödsbo',
+    correct: 'Efter mannens död förvaltades hans samlade tillgångar och skulder gemensamt av hans barn och maka.',
+    trap:    'Efter mannens död fick hans barn och maka omedelbart varsin bestämd andel av alla hans tillgångar utan någon gemensam förvaltning.',
+    explanation: 'Dödsboet är den avlidnes samlade tillgångar och skulder, som förvaltas gemensamt fram till arvskiftet – tillgångarna delas inte ut direkt.' },
+  { id: 47, term: 'Juridisk person',
+    correct: 'Dödsboet kunde själv ingå avtal, äga tillgångar och ha skulder, precis som ett företag eller en organisation kan.',
+    trap:    'Dödsboet bestod av de fysiska personer, till exempel barn och maka, som hade rätt att ärva den avlidne.',
+    explanation: 'Juridisk person beskriver att en sammanslutning har egen rättskapacitet – de fysiska personerna som ärver kallas istället dödsbodelägare.' },
+  { id: 48, term: 'Dödsbodelägare',
+    correct: 'Barnen och den efterlevande makan var de personer som gemensamt hade rätt att förvalta den avlidnes tillgångar och skulder.',
+    trap:    'Dödsboet i sig kunde ingå avtal, äga tillgångar och ha skulder på samma sätt som ett företag.',
+    explanation: 'Dödsbodelägare är de fysiska personerna som förvaltar dödsboet – att dödsboet självt kan ingå avtal beskriver istället att det är en juridisk person.' },
+  { id: 49, term: 'Ärvdabalken',
+    correct: 'Reglerna om vem som får ärva och hur mycket finns samlade i en och samma lag.',
+    trap:    'Reglerna om vårdnad, boende och umgänge för barn finns samlade i en och samma lag.',
+    explanation: 'Ärvdabalken innehåller reglerna om arv – regler om barn finns i föräldrabalken.' },
+  { id: 50, term: 'Arvlåtare',
+    correct: 'Mannen som gick bort och lämnade efter sig en förmögenhet på 500 000 kronor är den vars tillgångar nu ska fördelas.',
+    trap:    'Dottern som ärvde pengarna och sommarstugan efter sin bortgångna far är den som nu tar emot tillgångarna.',
+    explanation: 'Arvlåtaren är den avlidne personen vars tillgångar fördelas – den som tar emot arvet kallas istället arvinge.' },
+  { id: 51, term: 'Arvinge',
+    correct: 'Som dotter till den avlidne hade hon en självklar rätt att få del av hans tillgångar.',
+    trap:    'Som den person som avlidit och lämnade efter sig tillgångar var han den vars egendom nu skulle fördelas.',
+    explanation: 'Arvinge är den som ärver – den avlidne personen vars tillgångar fördelas kallas istället arvlåtare.' },
+  { id: 52, term: 'Arv',
+    correct: 'Barnen delade på pengar, en sommarstuga och smycken efter sin bortgångna förälder.',
+    trap:    'Barnen skrev under en handling som formellt fördelade tillgångarna mellan dem efter att bouppteckningen var klar.',
+    explanation: 'Arv är själva tillgångarna som ärvs – handlingen som fördelar dem är istället ett arvskifte.' },
+  { id: 53, term: 'Legala arvsordningen',
+    correct: 'Eftersom det inte fanns något testamente följde fördelningen av tillgångarna den ordning som släktskapet till den avlidne avgjorde.',
+    trap:    'Eftersom den avlidne skrivit ett testamente följde fördelningen av tillgångarna exakt de instruktioner som stod där.',
+    explanation: 'Legala arvsordningen gäller när det saknas testamente – finns ett giltigt testamente styr istället det fördelningen.' },
+  { id: 54, term: 'Bröstarvinge',
+    correct: 'Som barn till den avlidne hade dottern alltid rätt till sin laglott, oavsett vad ett testamente sa.',
+    trap:    'Som den avlidnes efterlevande make hade han alltid rätt att ärva före deras gemensamma barn.',
+    explanation: 'Bröstarvinge syftar på den avlidnes barn eller barnbarn – en efterlevande makes rätt att ärva regleras istället av makes arvsrätt.' },
+  { id: 55, term: 'Istadarätt',
+    correct: 'Eftersom dottern hade avlidit före sin far trädde hennes egna barn in i hennes ställe och fick hennes andel av morfaderns tillgångar.',
+    trap:    'Eftersom mannen saknade både släktingar och testamente tillföll hela hans förmögenhet en statlig myndighet istället.',
+    explanation: 'Istadarätt handlar om att en levande släkting träder in i en avliden släktings ställe – när arvingar helt saknas går arvet istället till Allmänna arvsfonden.' },
+  { id: 56, term: 'Allmänna arvsfonden',
+    correct: 'Eftersom mannen varken hade släktingar kvar eller skrivit testamente tillföll hela hans förmögenhet en statlig myndighet som stödjer barn- och ungdomsprojekt.',
+    trap:    'Eftersom mannens dotter hade avlidit före honom trädde hans barnbarn in i hennes ställe och ärvde i stället för henne.',
+    explanation: 'Allmänna arvsfonden tar emot arv när arvingar helt saknas – när barnbarn träder in i en avliden förälders ställe handlar det istället om istadarätt.' },
+  { id: 57, term: 'Makes arvsrätt',
+    correct: 'När Stella dog ärvde hennes man John hennes tillgångar, medan deras gemensamma barn fick vänta tills även han gått bort.',
+    trap:    'När Stella dog delade hennes man John och deras gemensamma barn genast lika på alla hennes tillgångar.',
+    explanation: 'Makes arvsrätt innebär att den efterlevande maken ärver före gemensamma barn – barnen får vänta med sitt arv, inte dela direkt.' },
+  { id: 58, term: 'Fri förfoganderätt',
+    correct: 'Änkan kunde använda och till och med sälja det hon ärvt precis som hon ville, men hon fick inte testamentera bort det till någon annan.',
+    trap:    'Änkan kunde använda det hon ärvt som hon ville, och hade dessutom full rätt att testamentera bort det i sitt eget testamente.',
+    explanation: 'Fri förfoganderätt tillåter att egendomen används och förbrukas – men den får inte testamenteras bort, till skillnad från full äganderätt.' },
+  { id: 59, term: 'Särkullbarn',
+    correct: 'Eftersom dottern bara var barn till den avlidne mannen, och inte till hans nya fru, hade hon rätt att få ut sin del av tillgångarna direkt.',
+    trap:    'Eftersom sonen var barn till både den avlidne mannen och hans fru fick han vänta med sitt arv tills även hon gått bort.',
+    explanation: 'Särkullbarn är barn till bara den ena maken och har rätt att få ut sitt arv direkt – gemensamma barn får istället vänta enligt makes arvsrätt.' },
+  { id: 60, term: 'Testamente',
+    correct: 'I ett juridiskt dokument bestämde mannen att en välgörenhetsorganisation skulle få ärva en del av hans tillgångar efter hans död.',
+    trap:    'I en handling registrerad hos Skatteverket bestämde makarna att en viss egendom inte skulle vara giftorättsgods under det pågående äktenskapet.',
+    explanation: 'Testamente reglerar vem som ska ärva efter dödsfallet – avtal om egendom under pågående äktenskap är ett äktenskapsförord.' },
+  { id: 61, term: 'Testator',
+    correct: 'Kvinnan som skrev ner sina önskemål om hur hennes tillgångar skulle fördelas efter sin död måste själv vara myndig för att dokumentet skulle gälla.',
+    trap:    'Vännen som enligt dokumentet skulle få ärva smyckena var inte alls släkt med den avlidne kvinnan.',
+    explanation: 'Testator är den som skriver testamentet – den som ärver enligt testamentet kallas istället testamentstagare.' },
+  { id: 62, term: 'Testamentstagare',
+    correct: 'Vännen som enligt dokumentet skulle få ärva smyckena var inte alls släkt med den avlidne.',
+    trap:    'Kvinnan som skrev ner sina önskemål om hur hennes tillgångar skulle fördelas var noga med att formulera varje detalj korrekt.',
+    explanation: 'Testamentstagare är den som tar emot arv genom testamentet – den som skrivit testamentet kallas istället testator.' },
+  { id: 63, term: 'Laglott',
+    correct: 'Trots att pappan skrivit ett dokument om att allt skulle gå till hans nya fru hade barnen ändå rätt att kräva hälften av hans tillgångar.',
+    trap:    'Trots att pappan var missnöjd med sitt eget testamente ansåg tingsrätten att han inte längre hade rätt att skriva ett nytt.',
+    explanation: 'Laglott är den del av arvet som bröstarvingar alltid har rätt till trots testamentet – det handlar inte om testatorns egen rätt att ändra sitt testamente.' },
+  { id: 64, term: 'Klandra',
+    correct: 'Dottern valde att inom sex månader överklaga innehållet i sin fars sista vilja eftersom hon ansåg att den inte var giltig.',
+    trap:    'Dottern valde att skriva under som vittne när hennes fars testamente undertecknades, för att intyga att det gick rätt till.',
+    explanation: 'Att klandra innebär att överklaga ett testamente man anser är ogiltigt – att bevittna undertecknandet är en helt annan handling.' },
+  { id: 65, term: 'Delgivning',
+    correct: 'Arvingen fick ett viktigt dokument officiellt överlämnat till sig av en myndighetsperson, vilket satte igång en sexmånadersfrist.',
+    trap:    'Arvingen skrev under ett intyg om att hon själv sett testamentet undertecknas av sin far.',
+    explanation: 'Delgivning är den formella överlämningen av ett dokument av en myndighetsperson – att bevittna en namnteckning är något annat.' },
+  { id: 66, term: 'Bouppteckning',
+    correct: 'Inom tre månader efter dödsfallet upprättades en fullständig förteckning över den avlidnes samtliga tillgångar och skulder.',
+    trap:    'Efter att förteckningen över tillgångar och skulder var klar upprättades en handling som fördelade dem mellan arvingarna.',
+    explanation: 'Bouppteckning är förteckningen över tillgångar och skulder – att sedan fördela dem mellan arvingarna kallas istället arvskifte.' },
+  { id: 67, term: 'Förrättningsmän',
+    correct: 'Två utomstående personer, som inte fick vara släkt med den avlidne, utsågs för att sköta arbetet med att räkna upp boets tillgångar och skulder.',
+    trap:    'Den avlidnes son, som kände till sin fars ekonomi bäst, lämnade själv alla uppgifter om tillgångar och skulder till bouppteckningen.',
+    explanation: 'Förrättningsmännen är de utomstående personer som genomför bouppteckningen – den som lämnar uppgifterna om boet är istället bouppgivaren.' },
+  { id: 68, term: 'Bouppgivare',
+    correct: 'Sonen, som kände till sin fars ekonomi bäst, var den som lämnade uppgifterna om tillgångar och skulder till de två som skulle göra förteckningen.',
+    trap:    'De två utomstående personerna som inte fick vara släkt med den avlidne genomförde själva arbetet med att räkna upp boets tillgångar.',
+    explanation: 'Bouppgivaren lämnar uppgifter om boet, ofta en närstående – själva arbetet med bouppteckningen utförs istället av förrättningsmännen.' },
+  { id: 69, term: 'Fullmakt',
+    correct: 'Eftersom hennes bror var sjuk fick systern rätt att sköta alla hans bankärenden i hans ställe.',
+    trap:    'Eftersom hennes bror var sjuk fick systern automatiskt ärva hans tillgångar i förtid, innan han avlidit.',
+    explanation: 'Fullmakt ger rätt att företräda någon annan, till exempel i ekonomiska ärenden – det innebär inte att man ärver tillgångarna.' },
+  { id: 70, term: 'Arvskifte',
+    correct: 'När förteckningen över den avlidnes tillgångar var klar och godkänd skrevs en handling som fördelade lägenheten, lösöret och pengarna mellan de tre syskonen.',
+    trap:    'Innan dödsfallet hade skett upprättades en fullständig förteckning över personens tillgångar och skulder.',
+    explanation: 'Arvskifte är handlingen som fördelar arvet mellan arvingarna, efter bouppteckningen – att göra en förteckning över tillgångar är istället bouppteckningen, och sker efter dödsfallet.' },
+];
+
+function IckeExView({ onComplete }) {
+  const total = ickeExData.length;
+
+  const makeQuestion = (item) => {
+    const correctFirst = Math.random() < 0.5;
+    return {
+      item,
+      optionA: correctFirst ? item.correct : item.trap,
+      optionB: correctFirst ? item.trap : item.correct,
+      correctIsA: correctFirst,
+    };
+  };
+
+  const [questions, setQuestions] = React.useState(() =>
+    shuffleArray([...ickeExData]).map(makeQuestion)
+  );
+  const [idx, setIdx] = React.useState(0);
+  const [chosen, setChosen] = React.useState(null); // 'A' | 'B' | null
+  const [score, setScore] = React.useState(0);
+  const [phase, setPhase] = React.useState('playing'); // 'playing' | 'done'
+
+  const current = questions[idx];
+  const isAnswered = chosen !== null;
+
+  React.useEffect(() => {
+    if (phase === 'done') onComplete((score / total) * 100);
+  }, [phase]);
+
+  const choose = (option) => {
+    if (isAnswered) return;
+    setChosen(option);
+    const isCorrect = (option === 'A') === current.correctIsA;
+    if (isCorrect) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (idx + 1 >= total) {
+      setPhase('done');
+    } else {
+      setIdx(idx + 1);
+      setChosen(null);
+    }
+  };
+
+  const restart = () => {
+    setQuestions(shuffleArray([...ickeExData]).map(makeQuestion));
+    setIdx(0);
+    setChosen(null);
+    setScore(0);
+    setPhase('playing');
+  };
+
+  if (phase === 'done') return (
+    <div className="flex flex-col items-center gap-6">
+      <div className="rounded-3xl p-8 text-center w-full" style={{ background: PRIMARY_LIGHT, border: `2px solid ${PRIMARY}` }}>
+        <div className="text-5xl mb-4">🎯</div>
+        <p className="text-2xl font-bold mb-1" style={{ color: PRIMARY_TEXT }}>{score} / {total} rätt</p>
+        <p className="text-slate-500 text-sm mb-6">
+          {score === total
+            ? 'Perfekt! Du kan skilja rätt tillämpning från fällan!'
+            : score >= Math.round(total * 0.8)
+            ? 'Bra jobbat! Öva lite till på de du missat.'
+            : 'Fortsätt öva — du är på rätt spår!'}
+        </p>
+        <button onClick={restart} className="text-white font-bold px-8 py-3 rounded-2xl" style={{ background: PRIMARY }}>
+          Börja om
+        </button>
+      </div>
+    </div>
+  );
+
+  const chosenCorrect = chosen !== null && (chosen === 'A') === current.correctIsA;
+  const aCorrect = current.correctIsA;
+  const bCorrect = !current.correctIsA;
+
+  const optionStyle = (option) => {
+    if (!isAnswered) return { background: '#ffffff', borderColor: '#e2e8f0', color: '#1e293b' };
+    const thisCorrect = (option === 'A') ? aCorrect : bCorrect;
+    const thisChosen = chosen === option;
+    if (thisCorrect) return { background: '#dcfce7', borderColor: '#16a34a', color: '#15803d' };
+    if (thisChosen) return { background: '#fee2e2', borderColor: '#dc2626', color: '#dc2626' };
+    return { background: '#f8fafc', borderColor: '#e2e8f0', color: '#94a3b8' };
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-slate-400 font-medium">{idx + 1} av {total}</span>
+        <span className="text-xs font-bold px-3 py-1 rounded-full" style={{ background: PRIMARY_LIGHT, color: PRIMARY_TEXT }}>
+          {score} rätt
+        </span>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-1.5 mb-1">
+        <div className="h-1.5 rounded-full transition-all" style={{ width: `${(idx / total) * 100}%`, background: PRIMARY }} />
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm p-5 border-l-4" style={{ borderLeftColor: PRIMARY }}>
+        <p className="text-xs font-bold uppercase tracking-wide mb-1" style={{ color: PRIMARY }}>Begrepp</p>
+        <p className="text-xl font-bold text-slate-800">{current.item.term}</p>
+        <p className="text-slate-500 text-xs mt-1">Vilket alternativ beskriver en korrekt tillämpning?</p>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        {['A', 'B'].map(option => {
+          const text = option === 'A' ? current.optionA : current.optionB;
+          const s = optionStyle(option);
+          return (
+            <button
+              key={option}
+              onClick={() => choose(option)}
+              disabled={isAnswered}
+              className="w-full text-left px-4 py-4 rounded-xl text-sm border-2 transition-all leading-relaxed"
+              style={{ background: s.background, borderColor: s.borderColor, color: s.color, fontWeight: isAnswered && (option === 'A' ? aCorrect : bCorrect) ? 700 : 500 }}
+            >
+              <span className="font-bold mr-2">{option}.</span>{text}
+            </button>
+          );
+        })}
+      </div>
+
+      {isAnswered && (
+        <>
+          <div
+            className="rounded-xl p-4 text-sm leading-relaxed"
+            style={chosenCorrect
+              ? { background: '#dcfce7', color: '#15803d' }
+              : { background: '#fee2e2', color: '#dc2626' }}
+          >
+            {chosenCorrect ? '✓ Rätt! ' : '✗ Fel! '}
+            {current.item.explanation}
+          </div>
+          <button
+            onClick={next}
+            className="w-full text-white font-bold py-3 rounded-2xl text-sm"
+            style={{ background: PRIMARY }}
+          >
+            {idx + 1 < total ? 'Nästa begrepp →' : 'Visa resultat'}
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
+function App() {
+  const [activeView, setActiveView] = React.useState('Lista');
+  const [progress, setProgress] = React.useState(loadProgress);
+  const [celebrateRank, setCelebrateRank] = React.useState(null);
+  const prevRankRef = React.useRef(computeRank(loadProgress()));
+
+  React.useEffect(() => {
+    saveProgress(progress);
+  }, [progress]);
+
+  const markComplete = React.useCallback((view, pct) => {
+    setProgress(prev => {
+      const nextCompleted = { ...prev.completed };
+      const nextBest = { ...prev.best };
+      let changed = false;
+
+      if (typeof pct === 'number' && !(nextBest[view] >= pct)) {
+        nextBest[view] = pct;
+        changed = true;
+      }
+
+      const thresholdMet = typeof pct === 'number' ? pct >= 80 : true;
+      if (thresholdMet && !nextCompleted[view]) {
+        nextCompleted[view] = true;
+        changed = true;
+      }
+
+      return changed ? { completed: nextCompleted, best: nextBest } : prev;
+    });
+  }, []);
+
+  const completeLista = React.useCallback(() => markComplete('Lista'), [markComplete]);
+  const completeFlashcards = React.useCallback(() => markComplete('Flashcards'), [markComplete]);
+  const completeLucktext = React.useCallback((pct) => markComplete('Lucktext', pct), [markComplete]);
+  const completeScenario = React.useCallback((pct) => markComplete('Scenario', pct), [markComplete]);
+  const completeIckeEx = React.useCallback((pct) => markComplete('Icke-ex.', pct), [markComplete]);
+
+  const rank = computeRank(progress);
+  const completedCount = VIEWS.filter(v => progress.completed[v]).length;
+  const code = computeVerificationCode(progress, rank);
+
+  React.useEffect(() => {
+    const prevOrder = prevRankRef.current ? RANK_ORDER[prevRankRef.current] : 0;
+    const newOrder = rank ? RANK_ORDER[rank] : 0;
+    if (newOrder > prevOrder) {
+      setCelebrateRank(rank);
+      const t = setTimeout(() => setCelebrateRank(null), 2500);
+      prevRankRef.current = rank;
+      return () => clearTimeout(t);
+    }
+    prevRankRef.current = rank;
+  }, [rank]);
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 py-6">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <a
+          href="index.html"
+          className="text-sm font-medium transition-colors"
+          style={{ color: '#64748b' }}
+          onMouseEnter={e => e.currentTarget.style.color = PRIMARY}
+          onMouseLeave={e => e.currentTarget.style.color = '#64748b'}
+        >
+          ← Tillbaka till startsidan
+        </a>
+        <h1 className="text-xl font-bold text-center" style={{ color: PRIMARY_TEXT }}>
+          Juridik – Block 2
+        </h1>
+        <div className="w-32" />
+      </div>
+
+      {/* Progress + rank */}
+      <div className="mb-4">
+        <div className="flex items-center justify-between mb-1.5 flex-wrap gap-2">
+          <span className="text-sm font-semibold text-slate-600">{completedCount}/5 avsnitt klara</span>
+          {rank && (
+            <span
+              className="text-xs font-bold px-2.5 py-1 rounded-full"
+              style={{ background: PRIMARY_LIGHT, color: PRIMARY_TEXT }}
+            >
+              Rank: {rank} · Kod: {code}
+            </span>
+          )}
+        </div>
+        <div className="w-full bg-slate-200 rounded-full h-1.5">
+          <div className="h-1.5 rounded-full transition-all" style={{ width: `${(completedCount / 5) * 100}%`, background: PRIMARY }} />
+        </div>
+        {completedCount === 5 && rank !== 'S' && (
+          <p className="text-xs text-slate-400 mt-1.5 italic">100% på alla poängvyer krävs för S-rank</p>
+        )}
+      </div>
+
+      {/* Toggle */}
+      <div className="flex gap-1 bg-slate-100 rounded-2xl p-1 mb-6 overflow-x-auto">
+        {VIEWS.map((view) => (
+          <button
+            key={view}
+            onClick={() => setActiveView(view)}
+            className="flex-1 min-w-0 px-2 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap"
+            style={
+              activeView === view
+                ? { background: PRIMARY, color: '#fff' }
+                : { color: '#94a3b8', background: 'transparent' }
+            }
+          >
+            {view}
+            {progress.completed[view] && (
+              <span className="ml-1" style={{ color: activeView === view ? '#fff' : '#16a34a' }}>✓</span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Content */}
+      {activeView === 'Lista' && <ListView onComplete={completeLista} />}
+      {activeView === 'Flashcards' && <FlashcardView onComplete={completeFlashcards} />}
+      {activeView === 'Lucktext' && <LucktextView onComplete={completeLucktext} />}
+      {activeView === 'Scenario' && <ScenarioView onComplete={completeScenario} />}
+      {activeView === 'Icke-ex.' && <IckeExView onComplete={completeIckeEx} />}
+
+      {/* Footer */}
+      <footer className="mt-10 text-center text-xs text-slate-400 italic">
+        Källa: Juridik nivå 1 – begreppslista Block 2 (Familje- och arvsrätt)
+      </footer>
+
+      {/* Rank celebration overlay */}
+      {celebrateRank && (
+        <div
+          className="fixed inset-0 flex items-center justify-center z-50 px-4"
+          style={{ background: 'rgba(15, 23, 42, 0.55)' }}
+          onClick={() => setCelebrateRank(null)}
+        >
+          <div className="bg-white rounded-3xl px-10 py-8 text-center shadow-2xl">
+            <div className="text-5xl mb-3">{celebrateRank === 'S' ? '🎉🏆🎉' : '🎉'}</div>
+            <p className="text-3xl font-bold" style={{ color: PRIMARY_TEXT }}>{celebrateRank}-RANK!</p>
+            <p className="text-slate-400 text-sm mt-2">Ny rank uppnådd</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
