@@ -26,6 +26,8 @@
 const { useState } = React;
 
 const PRIMARY = "#0d9488";
+const PRIMARY_LIGHT = "#ccfbf1";
+const PRIMARY_TEXT = "#134e4a";
 
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -33,6 +35,12 @@ function shuffleArray(array) {
     [array[i], array[j]] = [array[j], array[i]];
   }
   return array;
+}
+
+function makeOptions(currentItem, allData) {
+  const distractors = allData.filter(d => d.id !== currentItem.id);
+  shuffleArray(distractors);
+  return shuffleArray([currentItem, ...distractors.slice(0, 3)]);
 }
 
 const concepts = [
@@ -100,6 +108,164 @@ const lucktextData = [
   { id: 29, term: "Borgen", sentence: "För att banken skulle godkänna lånet gick pappan i _____ och lovade betala om sonen inte kunde.", definition: "Någon annan än låntagaren garanterar att betalningarna görs." },
   { id: 30, term: "Skuldsanering", sentence: "Eftersom kvinnan var svårt skuldsatt och inte kunde betala sina skulder ansökte hon om _____.", definition: "Möjlighet för svårt skuldsatta personer att lösa sina ekonomiska problem." },
 ];
+
+const scenarioData = [
+  { id: 1, term: "Rättssubjekt", scenario: "Ett aktiebolag och en privatperson skriver båda under samma köpekontrakt och blir juridiskt bundna av det, trots att den ena är en juridisk person och den andra en människa av kött och blod.", definition: "Den part som kan ingå avtal." },
+  { id: 2, term: "Anbud", scenario: "En säljare skickar ett prisförslag på en soffa till en specifik kund, som bara kan tacka ja eller nej till det som föreslås.", definition: "Ett erbjudande som det går att svara ja eller nej till (acceptera eller avslå), riktat till en viss person eller krets." },
+  { id: 3, term: "Löftesprincipen", scenario: "Trots att en vecka har gått sedan prisförslaget skickades är säljaren fortfarande bunden av sitt pris, eftersom köparen varken tackat nej eller låtit svarstiden gå ut.", definition: "Anbudet är bindande tills det avslagits eller tiden som erbjudandet gäller har gått ut." },
+  { id: 4, term: "Accept", scenario: "Köparen svarar 'Ja, jag tar bilen för det priset du föreslog', rakt av och utan några ändringar, inom den tid som gällde.", definition: "Meddelande om att anbudet accepteras." },
+  { id: 5, term: "Oren accept", scenario: "Istället för att bara säga ja till priset svarar köparen, i tid, att hon vill betala mindre — vilket gör att hennes svar juridiskt räknas som ett helt nytt erbjudande.", definition: "Mottagaren gör ändringar i anbudet. Det räknas då som ett nytt anbud." },
+  { id: 6, term: "Sen accept", scenario: "Köparen skriver ett rakt och oförändrat 'ja' till erbjudandet, men mejlet skickas iväg två dagar efter att svarsfristen redan gått ut, vilket gör att svaret räknas som ett nytt erbjudande.", definition: "Accepten kommer efter sista svarsdag eller efter att den legala acceptfristen (betänketiden) gått ut. Räknas som ett nytt anbud." },
+  { id: 7, term: "Ocker", scenario: "En person som akut behöver pengar till hyran skriver under ett låneavtal med orimligt höga avgifter som långivaren utnyttjat hens utsatta situation till.", definition: "Om någon blivit utnyttjad och ingått ett ekonomiskt dåligt avtal i en situation där personen snabbt behövde pengar eller på något sätt är beroende av motparten." },
+  { id: 8, term: "Standardavtal", scenario: "Alla flygbolag använder liknande, i förväg formulerade villkor för bagage och avbokning som skrivs ut på nytt mot varje enskild kund.", definition: "Avtal med samma innehåll som används inom en viss bransch." },
+  { id: 9, term: "Framtidsfullmakt", scenario: "Innan hon blev sjuk skrev en kvinna ett dokument som gav sonen rätt att sköta hennes bankärenden längre fram, den dag hon själv inte längre kan fatta egna beslut.", definition: "En fullmakt som kan användas i framtiden om det behövs." },
+  { id: 10, term: "Konsumentköplagen", scenario: "En privatperson köper en tv av en elektronikbutik och skyddas av regler som gäller specifikt när ett företag säljer en vara till en vanlig kund.", definition: "Reglerar konsumenters rättigheter vid köp av varor från näringsidkare." },
+  { id: 11, term: "Dröjsmål", scenario: "Paketet skulle ha levererats på tisdagen men dök inte upp förrän en vecka senare.", definition: "Försening, försenad leverans eller betalning." },
+  { id: 12, term: "Reklamera", scenario: "När klänningen visade sig ha ett hål i sömmen kontaktade kunden butiken för att påpeka felet och kräva rättelse.", definition: "Att anmärka till säljaren att det är fel på varan." },
+  { id: 13, term: "Konsumenttjänstlagen", scenario: "En snickare anlitas av en privatperson för att bygga en altan, och arbetet regleras av lagen som gäller när ett företag utför ett arbete åt en vanlig kund.", definition: "Reglerar konsumenters köp av tjänster från näringsidkare." },
+  { id: 14, term: "Köplagen", scenario: "Ett företag säljer kontorsmöbler till ett annat företag — en affär som regleras av lagen som gäller när ingen av parterna är en vanlig kund utan agerar i sin yrkesroll.", definition: "Reglerar köp mellan företag och mellan privatpersoner." },
+  { id: 15, term: "Allmänna reklamationsnämnden (ARN)", scenario: "Eftersom butiken vägrade byta ut den trasiga varan vände sig kunden till en myndighet som kostnadsfritt prövar tvisten mellan parterna, utan att det blir en rättegång i domstol.", definition: "En myndighet som prövar tvister mellan konsumenter och företag." },
+  { id: 16, term: "Dröjsmålsränta", scenario: "Eftersom fakturan inte betalades i tid fick kunden dessutom betala en extra avgift som läggs på skulden ända fram till dess att den är betald.", definition: "Den ränta borgenären har rätt att få från förfallodagen tills räkningen betalas, om kredittagaren inte betalar fakturan i tid." },
+  { id: 17, term: "Återtagandeförbehåll", scenario: "I köpeavtalet för soffan stod det att säljaren fick hämta tillbaka möbeln om köparen slutade betala sina avbetalningar.", definition: "En säkerhet för ett lån i form av ett villkor om att säljaren kan ta tillbaka varan om betalningarna inte sköts." },
+  { id: 18, term: "Bankkort", scenario: "När hon handlade i mataffären drogs pengarna direkt från hennes eget konto, utan att hon lånade något alls.", definition: "Den vanligaste typen av kort från banken, pengarna dras direkt från kontot vid köp." },
+  { id: 19, term: "Kreditkort", scenario: "Han kunde handla för mer pengar än vad som fanns på hans konto, tack vare en beviljad lånegräns kopplad till kortet.", definition: "Ett kort som ger möjlighet att låna pengar upp till en beviljad gräns." },
+  { id: 20, term: "Blancolån", scenario: "Eftersom han inte hade något att lämna som säkerhet fick han låna pengar till en betydligt högre kostnad än vanligt.", definition: "Ett lån utan säkerhet och har därför en hög ränta." },
+  { id: 21, term: "Skuldebrev", scenario: "När två vänner lånade 20 000 kronor till varandra skrev de ner exakt hur mycket som lånats, vilken ränta som gällde och när pengarna skulle betalas tillbaka.", definition: "Låneavtal med skuldbelopp samt villkor för ränta och återbetalning av lånet." },
+  { id: 22, term: "Pant", scenario: "För att få låna pengar lämnade han sin bil till banken som säkerhet, med rätt för banken att sälja den om han inte betalar.", definition: "Lös egendom som en låntagare lämnar som säkerhet för ett lån." },
+  { id: 23, term: "Bestrida", scenario: "Kvinnan ansåg att fakturan var felaktig och meddelade avsändaren att hon inte alls gick med på att skulden stämde.", definition: "Att protestera, att inte gå med på att skulden stämmer, och att meddela det." },
+  { id: 24, term: "Betalningsföreläggande", scenario: "När mannen varken betalade eller protesterade mot kravet fattade Kronofogden ett beslut som gjorde skulden officiellt fastställd och registrerad.", definition: "Innebär att skulden förs in i Kronofogdens register, och att den därmed är godkänd och beslutad av myndigheten." },
+  { id: 25, term: "Verkställighet", scenario: "Efter att skulden blivit fastställd genomförde Kronofogden själva åtgärden och mätte ut mannens bil för att sälja den och betala skulden.", definition: "Innebär att ett myndighetsbeslut genomförs, exempelvis utmätning av egendom." },
+  { id: 26, term: "Preskription", scenario: "Efter tio år utan en enda påminnelse eller betalning hade långivarens rätt att kräva pengarna helt upphört att gälla.", definition: "Rätten till eller ansvaret för något är borta efter att det gått för lång tid." },
+  { id: 27, term: "Konsumentkreditlagen", scenario: "När ett företag lånar ut pengar till en privatperson måste det följa särskilda regler om information och kostnader som bara gäller den typen av utlåning till vanliga kunder.", definition: "Den lag som reglerar kreditgivning till konsumenter." },
+  { id: 28, term: "Effektiv ränta", scenario: "För att jämföra flera låns verkliga kostnad, inklusive alla avgifter och uppläggningskostnader, tittade hon på ett och samma procenttal för varje lån.", definition: "Den verkliga kostnaden för ett lån räknat i procent av lånebeloppet." },
+  { id: 29, term: "Borgen", scenario: "För att banken skulle godkänna sonens lån lovade pappan skriftligt att själv betala om sonen inte kunde.", definition: "Någon annan än låntagaren garanterar att betalningarna görs." },
+  { id: 30, term: "Skuldsanering", scenario: "Eftersom kvinnan var så svårt skuldsatt att hon aldrig skulle kunna betala allt fick hon hjälp av Kronofogden att sätta upp en plan där en del av skulderna skrevs av.", definition: "Möjlighet för svårt skuldsatta personer att lösa sina ekonomiska problem." },
+];
+
+function ScenarioView() {
+  const total = scenarioData.length;
+  const [items, setItems] = useState(() => shuffleArray([...scenarioData]));
+  const [idx, setIdx] = useState(0);
+  const [options, setOptions] = useState(() => makeOptions(items[0], scenarioData));
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [phase, setPhase] = useState('playing');
+
+  const current = items[idx];
+  const isAnswered = selected !== null;
+
+  const handleSelect = (opt) => {
+    if (isAnswered) return;
+    setSelected(opt);
+    if (opt.id === current.id) setScore(s => s + 1);
+  };
+
+  const handleNext = () => {
+    const nextIdx = idx + 1;
+    if (nextIdx >= total) {
+      setPhase('done');
+    } else {
+      setOptions(makeOptions(items[nextIdx], scenarioData));
+      setIdx(nextIdx);
+      setSelected(null);
+    }
+  };
+
+  const restart = () => {
+    const newItems = shuffleArray([...scenarioData]);
+    setItems(newItems);
+    setIdx(0);
+    setOptions(makeOptions(newItems[0], scenarioData));
+    setSelected(null);
+    setScore(0);
+    setPhase('playing');
+  };
+
+  if (phase === 'done') return (
+    <div className="flex flex-col items-center gap-6">
+      <div className="rounded-3xl p-8 text-center w-full max-w-sm" style={{ background: PRIMARY_LIGHT, border: `2px solid ${PRIMARY}` }}>
+        <div className="text-5xl mb-4">🎯</div>
+        <p className="text-2xl font-bold mb-1" style={{ color: PRIMARY_TEXT }}>{score} / {total} rätt</p>
+        <p className="text-slate-500 text-sm mb-6">
+          {score === total
+            ? 'Perfekt! Du kopplar ihop alla situationer rätt.'
+            : score >= Math.round(total * 0.8)
+            ? 'Bra jobbat! Öva lite till på de du missat.'
+            : 'Fortsätt öva – du lär dig!'}
+        </p>
+        <button onClick={restart} className="text-white font-bold px-8 py-3 rounded-2xl" style={{ background: PRIMARY }}>
+          Börja om
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col gap-4 max-w-2xl mx-auto">
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-slate-400 font-medium">{idx + 1} av {total}</span>
+        <span className="text-xs font-bold px-3 py-1 rounded-full" style={{ background: PRIMARY_LIGHT, color: PRIMARY_TEXT }}>
+          {score} rätt
+        </span>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-1.5 mb-1">
+        <div className="h-1.5 rounded-full transition-all" style={{ width: `${(idx / total) * 100}%`, background: PRIMARY }} />
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm p-5 border-l-4" style={{ borderLeftColor: PRIMARY }}>
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Vilket begrepp beskrivs?</p>
+        <p className="text-slate-800 text-base leading-relaxed">{current.scenario}</p>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        {options.map(opt => {
+          const isCorrect = opt.id === current.id;
+          const isSelected = selected && selected.id === opt.id;
+          let bg = '#ffffff', border = '#e2e8f0', textColor = '#1e293b';
+          if (isAnswered) {
+            if (isCorrect) { bg = '#dcfce7'; border = '#16a34a'; textColor = '#15803d'; }
+            else if (isSelected) { bg = '#fee2e2'; border = '#dc2626'; textColor = '#dc2626'; }
+          }
+          return (
+            <button
+              key={opt.id}
+              onClick={() => handleSelect(opt)}
+              disabled={isAnswered}
+              className="w-full text-left px-4 py-3 rounded-xl font-semibold text-sm transition-all border-2"
+              style={{ background: bg, borderColor: border, color: textColor }}
+            >
+              {opt.term}
+            </button>
+          );
+        })}
+      </div>
+
+      {isAnswered && (
+        <div
+          className="rounded-xl p-4 text-sm leading-relaxed"
+          style={
+            selected.id === current.id
+              ? { background: '#dcfce7', color: '#15803d' }
+              : { background: '#fee2e2', color: '#dc2626' }
+          }
+        >
+          {selected.id === current.id ? '✓ Rätt! ' : `✗ Rätt svar: ${current.term}. `}
+          {current.definition}
+        </div>
+      )}
+
+      {isAnswered && (
+        <button
+          onClick={handleNext}
+          className="w-full text-white font-bold py-3 rounded-2xl text-sm"
+          style={{ background: PRIMARY }}
+        >
+          {idx + 1 >= total ? 'Se resultat' : 'Nästa →'}
+        </button>
+      )}
+    </div>
+  );
+}
 
 function LucktextView() {
   const normalize = (s) => s.trim().toLowerCase();
@@ -297,7 +463,7 @@ function BackButton() {
 
 function ToggleRow({ active, onChange }) {
   const views = ["Lista", "Flashcards", "Lucktext", "Scenario", "Icke-ex."];
-  const enabled = ["Lista", "Flashcards", "Lucktext"];
+  const enabled = ["Lista", "Flashcards", "Lucktext", "Scenario"];
   return (
     <div className="flex justify-center mb-8">
       <div className="bg-white rounded-full shadow-sm border border-slate-200 p-1 inline-flex flex-wrap justify-center gap-1">
@@ -503,6 +669,7 @@ function App() {
       {view === "Lista" && <ListView />}
       {view === "Flashcards" && <FlashcardView />}
       {view === "Lucktext" && <LucktextView />}
+      {view === "Scenario" && <ScenarioView />}
 
       <footer className="text-center mt-12 mb-4">
         <p className="italic text-slate-400 text-sm">Källa: Juridik nivå 1 begreppslista – Block 3</p>
