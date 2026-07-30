@@ -142,6 +142,162 @@ const scenarioData = [
   { id: 30, term: "Skuldsanering", scenario: "Eftersom kvinnan var så svårt skuldsatt att hon aldrig skulle kunna betala allt fick hon hjälp av Kronofogden att sätta upp en plan där en del av skulderna skrevs av.", definition: "Möjlighet för svårt skuldsatta personer att lösa sina ekonomiska problem." },
 ];
 
+const nonExampleData = [
+  { id: 1, term: "Rättssubjekt", optionA: "Ett aktiebolag ingår ett leasingavtal för en tjänstebil – eftersom bolaget är en juridisk person räknas det som rättssubjekt i avtalet.", optionB: "En anställd fyller i och skriver under en beställningsblankett åt sin arbetsgivare – eftersom hen skrev under för hand räknas hen som rättssubjekt i avtalet, inte bolaget.", correct: "A", explanation: "Ett rättssubjekt är den part som kan ingå avtal – ett företag är en juridisk person och blir självt bundet av avtalet, även om det är en anställd som undertecknar handlingen i egenskap av företrädare." },
+  { id: 2, term: "Anbud", optionA: "En säljare skickar ett skriftligt prisförslag på en begagnad bil till en specifik köpare, som bara kan tacka ja eller nej.", optionB: "En affisch i skyltfönstret annonserar 'Extrapris denna vecka: cyklar för 999 kr!', riktad till alla som passerar förbi.", correct: "A", explanation: "Ett anbud ska vara riktat till en viss person eller krets och gå att svara ja eller nej på. Generell reklam till allmänheten räknas normalt inte som ett bindande anbud." },
+  { id: 3, term: "Löftesprincipen", optionA: "Trots att en vecka gått sedan prisförslaget skickades är säljaren fortfarande bunden av sitt pris, eftersom köparen varken tackat nej eller låtit svarstiden gå ut.", optionB: "Säljaren ändrar sig dagen efter att ha skickat sitt prisförslag och meddelar att erbjudandet inte längre gäller, trots att köparen ännu inte svarat och svarstiden inte gått ut.", correct: "A", explanation: "Enligt löftesprincipen är ett anbud bindande tills det avslagits eller tiden gått ut – man kan inte ensidigt återkalla det bara genom att ångra sig." },
+  { id: 4, term: "Accept", optionA: "Köparen svarar 'Ja, jag köper bilen för det priset', utan några ändringar, inom svarstiden.", optionB: "Köparen svarar inom svarstiden 'Ja, men jag vill ha vinterdäcken på köpet' och räknar med att detta är en accept som binder säljaren till exakt det ursprungliga priset.", correct: "A", explanation: "En accept ska vara ett oförändrat ja till anbudet. Ett svar med tillägg eller ändringar räknas inte som accept utan som en oren accept, det vill säga ett nytt anbud." },
+  { id: 5, term: "Oren accept", optionA: "Köparens oförändrade 'ja' skickas iväg, men mejlet kommer fram två dagar efter att svarstiden gått ut.", optionB: "Köparen svarar i tid, men kräver ett lägre pris än det som föreslogs, vilket gör svaret till ett nytt anbud.", correct: "B", explanation: "En oren accept innebär att mottagaren gör ändringar i innehållet, inte att svaret kommer för sent – det senare kallas istället sen accept." },
+  { id: 6, term: "Sen accept", optionA: "Köparens oförändrade 'ja' skickas iväg två dagar efter att svarsfristen redan gått ut.", optionB: "Köparen svarar i tid men ändrar villkoren i sitt svar, och räknar med att det ändå räknas som en sen accept.", correct: "A", explanation: "En sen accept handlar om att svaret kommer för sent, trots att det i övrigt är oförändrat – ett svar med ändrat innehåll är istället en oren accept." },
+  { id: 7, term: "Ocker", optionA: "En person som akut behöver pengar till hyran skriver under ett lån med orimligt höga avgifter som långivaren utnyttjat hens trängda situation till.", optionB: "En kund handlar en dyr klocka på rea och ångrar sig efteråt eftersom hen tycker priset var för högt jämfört med andra butiker.", correct: "A", explanation: "Ocker kräver att motparten utnyttjat någons nödsituation eller beroendeställning – ett köp man frivilligt ångrar för att det var dyrt är inte ocker." },
+  { id: 8, term: "Standardavtal", optionA: "Alla flygbolag använder liknande, i förväg formulerade villkor för bagage och avbokning, som är desamma oavsett vilken kund som bokar.", optionB: "Två företag förhandlar fram ett skräddarsytt avtal om leveranstider som är unikt för just deras affärsrelation, men kallar det sitt 'standardavtal' eftersom de tänker återanvända det i framtiden.", correct: "A", explanation: "Ett standardavtal har samma innehåll och används generellt inom en bransch – ett unikt förhandlat avtal mellan två specifika parter är inte ett standardavtal, även om det återanvänds." },
+  { id: 9, term: "Framtidsfullmakt", optionA: "En man skriver en fullmakt som ger grannen rätt att hämta ut ett paket åt honom nästa vecka medan han är bortrest.", optionB: "Innan hon blev sjuk skrev en kvinna ett dokument som gav sonen rätt att sköta hennes bankärenden den dag hon själv inte längre kan fatta egna beslut.", correct: "B", explanation: "En framtidsfullmakt är avsedd att träda in vid en framtida, bestående oförmåga att fatta beslut – en vanlig fullmakt för ett enskilt, kortsiktigt ärende är något annat." },
+  { id: 10, term: "Konsumentköplagen", optionA: "En privatperson köper en tv av en elektronikbutik.", optionB: "En privatperson köper en tv av en annan privatperson via en secondhand-app, och räknar med att köpet ändå omfattas av konsumentköplagen eftersom köparen är konsument.", correct: "A", explanation: "Konsumentköplagen kräver att säljaren är en näringsidkare – köp mellan privatpersoner omfattas inte, oavsett vem köparen är." },
+  { id: 11, term: "Dröjsmål", optionA: "Kunden får paketet i tid, men varan visar sig vara trasig när hon öppnar den.", optionB: "Paketet skulle ha kommit på tisdagen men dök inte upp förrän en vecka senare.", correct: "B", explanation: "Dröjsmål handlar specifikt om försening i tid – att varan är felaktig är ett annat fel, inte ett dröjsmål." },
+  { id: 12, term: "Reklamera", optionA: "Kunden ångrar sitt köp av en tröja vars färg hon egentligen inte gillar, och lämnar tillbaka den oanvänd.", optionB: "När klänningen visade sig ha ett hål i sömmen kontaktade kunden butiken för att påpeka felet.", correct: "B", explanation: "Att reklamera innebär att anmärka på ett fel i varan – att ångra ett köp man bara blivit less på är inte samma sak som en reklamation." },
+  { id: 13, term: "Konsumenttjänstlagen", optionA: "En privatperson säljer sin gamla soffa till en annan privatperson.", optionB: "En snickare anlitas av en privatperson för att bygga en altan.", correct: "B", explanation: "Konsumenttjänstlagen gäller tjänster som en näringsidkare utför åt en konsument – köp av en vara mellan privatpersoner omfattas inte alls." },
+  { id: 14, term: "Köplagen", optionA: "En privatperson köper en soffa från en möbelbutik, och räknar med att köpet regleras av köplagen eftersom det handlar om ett köp.", optionB: "Ett företag säljer kontorsmöbler till ett annat företag.", correct: "B", explanation: "När en näringsidkare säljer till en konsument gäller konsumentköplagen. Köplagen gäller istället köp mellan företag eller mellan privatpersoner." },
+  { id: 15, term: "Allmänna reklamationsnämnden (ARN)", optionA: "En kund stämmer butiken i tingsrätten och får en dom som butiken är skyldig att följa.", optionB: "En kund som inte fått gehör hos butiken vänder sig till en myndighet som kostnadsfritt prövar tvisten och lämnar en rekommendation.", correct: "B", explanation: "ARN är ingen domstol och fattar inga bindande domar – myndigheten prövar tvisten och ger en rekommendation, till skillnad från en rättegång i tingsrätten." },
+  { id: 16, term: "Dröjsmålsränta", optionA: "Eftersom fakturan inte betalades i tid fick kunden dessutom betala en extra avgift som läggs på skulden fram till dess att den betalas.", optionB: "Låntagaren betalar en fast årlig ränta på sitt bolån, som är en del av det ursprungliga avtalet.", correct: "A", explanation: "Dröjsmålsränta utgår specifikt vid försenad betalning – den ordinarie räntan som avtalats i förväg för ett lån är något annat." },
+  { id: 17, term: "Återtagandeförbehåll", optionA: "För att få låna pengar lämnar en man sin bil till banken som säkerhet.", optionB: "I köpeavtalet för soffan stod det att säljaren fick hämta tillbaka möbeln om köparen slutade betala sina avbetalningar.", correct: "B", explanation: "Återtagandeförbehåll ger säljaren rätt att ta tillbaka just den sålda varan vid utebliven betalning. Att lämna egendom som säkerhet för ett lån kallas istället pant." },
+  { id: 18, term: "Bankkort", optionA: "När hon handlade i mataffären drogs pengarna direkt från hennes eget konto.", optionB: "Han handlade för mer pengar än vad som fanns på kontot, tack vare en beviljad lånegräns kopplad till kortet.", correct: "A", explanation: "Ett bankkort drar pengar direkt från det egna kontot. Att kunna handla för lånade pengar upp till en beviljad gräns är utmärkande för ett kreditkort." },
+  { id: 19, term: "Kreditkort", optionA: "Pengarna drogs direkt från hennes eget konto, utan att hon lånade något alls.", optionB: "Han kunde handla för mer pengar än vad som fanns på hans konto, tack vare en beviljad lånegräns kopplad till kortet.", correct: "B", explanation: "Ett kreditkort ger möjlighet att låna upp till en beviljad gräns. Att pengarna dras direkt från det egna kontot är istället utmärkande för ett bankkort." },
+  { id: 20, term: "Blancolån", optionA: "Han lämnade sin bil som säkerhet till banken och fick därför ett lån med lägre ränta.", optionB: "Eftersom han inte hade något att lämna som säkerhet fick han låna pengar till en betydligt högre kostnad än vanligt.", correct: "B", explanation: "Ett blancolån saknar säkerhet och har därför hög ränta. Ett lån där låntagaren lämnat en säkerhet, som en bil, är inte ett blancolån." },
+  { id: 21, term: "Skuldebrev", optionA: "När två vänner lånade 20 000 kronor till varandra skrev de ner exakt hur mycket som lånats, räntan och när pengarna skulle betalas tillbaka.", optionB: "Två vänner kommer muntligt överens om att den ena lånar 20 000 kronor av den andra, utan att skriva ner något.", correct: "A", explanation: "Ett skuldebrev är just det skriftliga dokumentet med lånebelopp och villkor för ränta och återbetalning – en muntlig överenskommelse utan papper är inget skuldebrev." },
+  { id: 22, term: "Pant", optionA: "För att få låna pengar lämnade han sin bil till banken som säkerhet, med rätt för banken att sälja den om han inte betalar.", optionB: "I köpeavtalet för soffan stod det att säljaren fick hämta tillbaka möbeln om köparen slutade betala sina avbetalningar, och han kallade detta sin pant till säljaren.", correct: "A", explanation: "Pant är egendom som låntagaren själv lämnar som säkerhet till långivaren. Säljarens rätt att återta den sålda varan kallas istället återtagandeförbehåll." },
+  { id: 23, term: "Bestrida", optionA: "Kvinnan ansåg att fakturan var felaktig och meddelade avsändaren att hon inte gick med på att skulden stämde.", optionB: "Mannen tyckte fakturan var fel men betalade ändå hela beloppet i tid för att undvika problem, och kallade det att han bestred skulden.", correct: "A", explanation: "Att bestrida innebär att aktivt protestera och meddela att man inte godkänner kravet. Att bara betala trots tvivel, utan att protestera, är inte att bestrida." },
+  { id: 24, term: "Betalningsföreläggande", optionA: "Kronofogden åker hem till mannen och mäter ut hans bil för att sälja den och betala skulden.", optionB: "När mannen varken betalade eller bestred kravet fattade Kronofogden ett beslut som gjorde skulden officiellt fastställd och registrerad.", correct: "B", explanation: "Ett betalningsföreläggande fastställer och registrerar skulden. Att faktiskt genomföra en åtgärd, som att mäta ut egendom, kallas istället verkställighet." },
+  { id: 25, term: "Verkställighet", optionA: "Efter att skulden blivit fastställd genomförde Kronofogden själva åtgärden och mätte ut mannens bil för att sälja den.", optionB: "Skulden fördes in i Kronofogdens register efter att mannen varken betalat eller bestritt kravet, vilket gjorde den officiellt fastställd.", correct: "A", explanation: "Verkställighet innebär att ett myndighetsbeslut faktiskt genomförs, till exempel genom utmätning. Att bara registrera och fastställa skulden är istället ett betalningsföreläggande." },
+  { id: 26, term: "Preskription", optionA: "Efter tio år utan en enda påminnelse eller betalning hade långivarens rätt att kräva pengarna helt upphört att gälla.", optionB: "Kvinnan menade att fakturan var felaktig och meddelade avsändaren att hon inte gick med på att skulden stämde, och räknade med att skulden därmed var preskriberad.", correct: "A", explanation: "Preskription handlar om att en rättighet upphör efter för lång tid. Att protestera mot en skuld man anser är felaktig kallas istället att bestrida den." },
+  { id: 27, term: "Konsumentkreditlagen", optionA: "En elektronikbutik säljer en tv till en privatperson, och en anställd säger att köpet regleras av konsumentkreditlagen eftersom kunden är konsument.", optionB: "Ett företag lånar ut pengar till en privatperson och måste följa särskilda regler om information och kostnader vid den typen av utlåning.", correct: "B", explanation: "Konsumentkreditlagen reglerar just kreditgivning och lån till konsumenter. Köp av en vara regleras istället av konsumentköplagen." },
+  { id: 28, term: "Effektiv ränta", optionA: "Låneavtalet anger en ränta på 5 % per år, vilket är den räntesats som står angiven i kontraktet.", optionB: "För att jämföra flera låns verkliga kostnad, inklusive alla avgifter och uppläggningskostnader, tittade hon på ett och samma procenttal för varje lån.", correct: "B", explanation: "Den effektiva räntan räknar in alla avgifter och visar lånets verkliga totalkostnad. Den avtalade räntesatsen ensam visar inte hela kostnaden." },
+  { id: 29, term: "Borgen", optionA: "För att få låna pengar lämnade sonen sin bil till banken som säkerhet för lånet.", optionB: "För att banken skulle godkänna sonens lån lovade pappan skriftligt att själv betala om sonen inte kunde.", correct: "B", explanation: "Borgen innebär att en person går i god för att betala om låntagaren inte kan. Att lämna egendom som säkerhet är istället pant." },
+  { id: 30, term: "Skuldsanering", optionA: "Efter tio år utan en enda betalning eller påminnelse upphörde skulden automatiskt att gälla utan att kvinnan behövde göra något.", optionB: "Eftersom kvinnan var så svårt skuldsatt att hon aldrig skulle kunna betala allt fick hon hjälp av Kronofogden att sätta upp en plan där en del av skulderna skrevs av.", correct: "B", explanation: "Skuldsanering är en aktiv process man ansöker om hos Kronofogden. Att en skuld automatiskt försvinner efter lång tid är istället preskription." },
+];
+
+function NonExampleView() {
+  const total = nonExampleData.length;
+  const [items, setItems] = useState(() => shuffleArray([...nonExampleData]));
+  const [idx, setIdx] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [phase, setPhase] = useState('playing');
+
+  const current = items[idx];
+  const isAnswered = selected !== null;
+
+  const handleSelect = (letter) => {
+    if (isAnswered) return;
+    setSelected(letter);
+    if (letter === current.correct) setScore(s => s + 1);
+  };
+
+  const handleNext = () => {
+    const nextIdx = idx + 1;
+    if (nextIdx >= total) {
+      setPhase('done');
+    } else {
+      setIdx(nextIdx);
+      setSelected(null);
+    }
+  };
+
+  const restart = () => {
+    setItems(shuffleArray([...nonExampleData]));
+    setIdx(0);
+    setSelected(null);
+    setScore(0);
+    setPhase('playing');
+  };
+
+  if (phase === 'done') return (
+    <div className="flex flex-col items-center gap-6">
+      <div className="rounded-3xl p-8 text-center w-full max-w-sm" style={{ background: PRIMARY_LIGHT, border: `2px solid ${PRIMARY}` }}>
+        <div className="text-5xl mb-4">🧠</div>
+        <p className="text-2xl font-bold mb-1" style={{ color: PRIMARY_TEXT }}>{score} / {total} rätt</p>
+        <p className="text-slate-500 text-sm mb-6">
+          {score === total
+            ? 'Perfekt! Du ser skillnaden på riktiga tillämpningar och fällor.'
+            : score >= Math.round(total * 0.8)
+            ? 'Bra jobbat! Öva lite till på de du missat.'
+            : 'Fortsätt öva – du lär dig!'}
+        </p>
+        <button onClick={restart} className="text-white font-bold px-8 py-3 rounded-2xl" style={{ background: PRIMARY }}>
+          Börja om
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col gap-4 max-w-2xl mx-auto">
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-slate-400 font-medium">{idx + 1} av {total}</span>
+        <span className="text-xs font-bold px-3 py-1 rounded-full" style={{ background: PRIMARY_LIGHT, color: PRIMARY_TEXT }}>
+          {score} rätt
+        </span>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-1.5 mb-1">
+        <div className="h-1.5 rounded-full transition-all" style={{ width: `${(idx / total) * 100}%`, background: PRIMARY }} />
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm p-5 border-l-4" style={{ borderLeftColor: PRIMARY }}>
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Vilket exempel visar begreppet rätt?</p>
+        <p className="text-lg font-bold" style={{ color: PRIMARY_TEXT }}>{current.term}</p>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        {['A', 'B'].map(letter => {
+          const text = letter === 'A' ? current.optionA : current.optionB;
+          const isCorrect = letter === current.correct;
+          const isSelected = selected === letter;
+          let bg = '#ffffff', border = '#e2e8f0', textColor = '#1e293b';
+          if (isAnswered) {
+            if (isCorrect) { bg = '#dcfce7'; border = '#16a34a'; textColor = '#15803d'; }
+            else if (isSelected) { bg = '#fee2e2'; border = '#dc2626'; textColor = '#dc2626'; }
+          }
+          return (
+            <button
+              key={letter}
+              onClick={() => handleSelect(letter)}
+              disabled={isAnswered}
+              className="w-full text-left px-4 py-3 rounded-xl font-medium text-sm transition-all border-2 flex gap-3 items-start"
+              style={{ background: bg, borderColor: border, color: textColor }}
+            >
+              <span className="font-bold flex-shrink-0">{letter}</span>
+              <span>{text}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {isAnswered && (
+        <div
+          className="rounded-xl p-4 text-sm leading-relaxed"
+          style={
+            selected === current.correct
+              ? { background: '#dcfce7', color: '#15803d' }
+              : { background: '#fee2e2', color: '#dc2626' }
+          }
+        >
+          {selected === current.correct ? '✓ Rätt! ' : `✗ Rätt svar: Alternativ ${current.correct}. `}
+          {current.explanation}
+        </div>
+      )}
+
+      {isAnswered && (
+        <button
+          onClick={handleNext}
+          className="w-full text-white font-bold py-3 rounded-2xl text-sm"
+          style={{ background: PRIMARY }}
+        >
+          {idx + 1 >= total ? 'Se resultat' : 'Nästa →'}
+        </button>
+      )}
+    </div>
+  );
+}
+
 function ScenarioView() {
   const total = scenarioData.length;
   const [items, setItems] = useState(() => shuffleArray([...scenarioData]));
@@ -463,7 +619,7 @@ function BackButton() {
 
 function ToggleRow({ active, onChange }) {
   const views = ["Lista", "Flashcards", "Lucktext", "Scenario", "Icke-ex."];
-  const enabled = ["Lista", "Flashcards", "Lucktext", "Scenario"];
+  const enabled = ["Lista", "Flashcards", "Lucktext", "Scenario", "Icke-ex."];
   return (
     <div className="flex justify-center mb-8">
       <div className="bg-white rounded-full shadow-sm border border-slate-200 p-1 inline-flex flex-wrap justify-center gap-1">
@@ -670,6 +826,7 @@ function App() {
       {view === "Flashcards" && <FlashcardView />}
       {view === "Lucktext" && <LucktextView />}
       {view === "Scenario" && <ScenarioView />}
+      {view === "Icke-ex." && <NonExampleView />}
 
       <footer className="text-center mt-12 mb-4">
         <p className="italic text-slate-400 text-sm">Källa: Juridik nivå 1 begreppslista – Block 3</p>
