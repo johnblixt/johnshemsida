@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anställningsvillkor och Arbetsmiljö – Quiz | Juridik 1 Block 4</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0d9488;
+      --primary-light: #ccfbf1;
+      --primary-dark: #0f766e;
+      --correct-bg: #dcfce7;
+      --correct-border: #16a34a;
+      --correct-text: #16a34a;
+      --wrong-bg: #fee2e2;
+      --wrong-border: #dc2626;
+      --wrong-text: #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'EB Garamond', Georgia, serif; background: #fdf2f8; min-height: 100vh; color: #1e293b; }
+
+    a.back-btn {
+      display: inline-block; padding: 8px 16px; color: var(--primary);
+      text-decoration: none; font-size: 0.95rem; position: fixed;
+      top: 14px; left: 14px; z-index: 200; border-radius: 8px; transition: background 0.2s;
+    }
+    a.back-btn:hover { background: var(--primary-light); }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Start screen ── */
+    #screen-start { max-width: 560px; margin: 0 auto; padding: 90px 24px 40px; text-align: center; }
+    .badge {
+      display: inline-block; background: var(--primary-light); color: var(--primary);
+      padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;
+      letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 20px;
+    }
+    #screen-start h1 {
+      font-size: 2.2rem; font-weight: 600; font-style: italic;
+      color: #0f172a; margin-bottom: 8px;
+    }
+    #screen-start .subtitle { font-size: 1.05rem; color: #64748b; margin-bottom: 32px; }
+    .info-cards { display: flex; gap: 12px; justify-content: center; margin-bottom: 36px; flex-wrap: wrap; }
+    .info-card {
+      background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 16px 20px; text-align: center; flex: 1; min-width: 100px; max-width: 140px;
+    }
+    .info-card .num { font-size: 1.7rem; font-weight: 600; color: var(--primary); }
+    .info-card .lbl { font-size: 0.78rem; color: #94a3b8; margin-top: 2px; }
+
+    /* ── Quiz screen ── */
+    #screen-quiz { max-width: 700px; margin: 0 auto; padding: 70px 20px 60px; }
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .timer {
+      background: white; border: 1px solid #e2e8f0; border-radius: 20px;
+      padding: 5px 14px; font-size: 0.92rem; color: #475569; font-variant-numeric: tabular-nums;
+    }
+    .score-pill {
+      background: var(--primary-light); color: var(--primary-dark);
+      border-radius: 20px; padding: 5px 14px; font-size: 0.92rem; font-weight: 600;
+    }
+    .progress-wrap { background: #e2e8f0; border-radius: 4px; height: 6px; overflow: hidden; margin-bottom: 6px; }
+    .progress-bar { background: var(--primary); height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+    .q-counter { font-size: 0.82rem; color: #94a3b8; text-align: right; margin-bottom: 22px; }
+    .type-badge {
+      display: inline-block; font-size: 0.72rem; text-transform: uppercase;
+      letter-spacing: 0.08em; padding: 2px 10px; border-radius: 20px; margin-bottom: 10px;
+    }
+    .type-badge.mc { background: #ede9fe; color: #6d28d9; }
+    .type-badge.tf  { background: #fef9c3; color: #854d0e; }
+    .q-text { font-size: 1.25rem; font-weight: 600; line-height: 1.55; color: #0f172a; margin-bottom: 22px; }
+    .opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+    .opts.two { flex-direction: row; gap: 14px; }
+    .opt-btn {
+      background: white; border: 2px solid #e2e8f0; border-radius: 12px;
+      padding: 13px 18px; text-align: left; font-size: 1rem; font-family: inherit;
+      cursor: pointer; transition: border-color 0.15s, background 0.15s; line-height: 1.45;
+    }
+    .opts.two .opt-btn { flex: 1; text-align: center; font-size: 1.15rem; padding: 18px 12px; }
+    .opt-btn:hover:not(:disabled) { border-color: var(--primary); background: var(--primary-light); }
+    .opt-btn:disabled { cursor: default; }
+    .opt-btn.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); font-weight: 600; }
+    .opt-btn.wrong   { background: var(--wrong-bg);   border-color: var(--wrong-border);   color: var(--wrong-text); }
+    .opt-btn.dimmed  { opacity: 0.4; }
+    .nav-row { display: flex; gap: 12px; align-items: center; }
+    .btn-back {
+      background: white; border: 2px solid #e2e8f0; border-radius: 10px;
+      padding: 10px 20px; font-family: inherit; font-size: 0.9rem; color: #64748b; cursor: pointer;
+    }
+    .btn-back:hover { border-color: #94a3b8; }
+    .btn-next {
+      background: var(--primary); border: none; border-radius: 10px;
+      padding: 10px 28px; font-family: inherit; font-size: 0.9rem; font-weight: 600;
+      color: white; cursor: pointer; margin-left: auto; transition: background 0.15s;
+    }
+    .btn-next:hover { background: var(--primary-dark); }
+
+    /* ── Modal ── */
+    #modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 500; padding: 20px;
+    }
+    #modal-overlay.hidden { display: none; }
+    .modal-box {
+      background: white; border-radius: 20px; padding: 32px;
+      max-width: 520px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .modal-icon  { font-size: 2.6rem; margin-bottom: 10px; }
+    .modal-verdict { font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; }
+    .modal-verdict.c { color: var(--correct-text); }
+    .modal-verdict.w { color: var(--wrong-text); }
+    .modal-expl { font-size: 0.98rem; color: #475569; line-height: 1.7; margin-bottom: 24px; }
+
+    /* ── Result screen ── */
+    #screen-result { max-width: 700px; margin: 0 auto; padding: 80px 20px 80px; }
+    .res-header { text-align: center; margin-bottom: 30px; }
+    .score-ring {
+      width: 120px; height: 120px; border-radius: 50%;
+      border: 5px solid var(--primary); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; margin: 0 auto 18px;
+    }
+    .score-ring .rnum { font-size: 2rem; font-weight: 600; color: var(--primary); line-height: 1; }
+    .score-ring .rlbl { font-size: 0.72rem; color: #94a3b8; }
+    .res-title  { font-size: 1.8rem; font-weight: 600; font-style: italic; margin-bottom: 6px; }
+    .res-msg    { font-size: 1rem; color: #64748b; margin-bottom: 4px; }
+    .res-time   { font-size: 0.85rem; color: #94a3b8; margin-bottom: 28px; }
+    .stats-row  { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+    .stat-box {
+      flex: 1; min-width: 80px; background: white; border: 1px solid #e2e8f0;
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .stat-box .snum { font-size: 1.6rem; font-weight: 600; }
+    .stat-box .slbl { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
+    .stat-box.cs .snum { color: var(--correct-text); }
+    .stat-box.ws .snum { color: var(--wrong-text); }
+    .section-hd {
+      font-size: 1.05rem; font-weight: 600; color: #0f172a;
+      margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0;
+    }
+    .missed-section { margin-bottom: 32px; }
+    .missed-item {
+      background: var(--wrong-bg); border-left: 4px solid var(--wrong-border);
+      border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-size: 0.92rem;
+    }
+    .facit-item {
+      background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 14px 16px; margin-bottom: 10px;
+    }
+    .facit-item.fc { border-left: 4px solid var(--correct-border); }
+    .facit-item.fw { border-left: 4px solid var(--wrong-border); }
+    .fi-num { font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .fi-q   { font-size: 0.93rem; font-weight: 600; color: #0f172a; margin-bottom: 8px; line-height: 1.4; }
+    .fi-row { font-size: 0.88rem; padding: 2px 0; }
+    .fi-row .lbl { color: #94a3b8; }
+    .fi-row.ya-ok  { color: var(--correct-text); }
+    .fi-row.ya-bad { color: var(--wrong-text); }
+    .fi-row.ra     { color: var(--correct-text); font-weight: 600; margin-top: 2px; }
+
+    .btn-primary {
+      display: inline-block; background: var(--primary); color: white; border: none;
+      border-radius: 12px; padding: 13px 36px; font-size: 1.05rem; font-family: inherit;
+      font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s;
+    }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+    .btn-primary:active { transform: none; }
+
+    @media (max-width: 500px) {
+      #screen-start h1 { font-size: 1.7rem; }
+      .q-text { font-size: 1.1rem; }
+    }
+  </style>
+  <script src="jur1_nav.js"></script>
+</head>
+<body>
+
+<a href="index.html" class="back-btn" onclick="jur1GoBack(event)">← Tillbaka till startsidan</a>
+
+<!-- ═══════════ START ═══════════ -->
+<div id="screen-start" class="screen active">
+  <div class="badge">Juridik 1 · Block 4</div>
+  <h1>Anställningsvillkor och Arbetsmiljö</h1>
+  <p class="subtitle">Quiz med flervalsfrågor och Rätt/Fel-påståenden</p>
+  <div class="info-cards">
+    <div class="info-card"><div class="num">30</div><div class="lbl">Frågor</div></div>
+    <div class="info-card"><div class="num">15</div><div class="lbl">Flerval</div></div>
+    <div class="info-card"><div class="num">15</div><div class="lbl">Rätt / Fel</div></div>
+  </div>
+  <button class="btn-primary" onclick="startQuiz()">Starta Quiz →</button>
+</div>
+
+<!-- ═══════════ QUIZ ═══════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-header">
+    <div class="timer" id="timer">⏱ 0:00</div>
+    <div class="score-pill" id="score-pill">Poäng: 0</div>
+  </div>
+  <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+  <div class="q-counter" id="q-counter">Fråga 1 av 30</div>
+  <div id="type-badge-wrap"></div>
+  <div class="q-text" id="q-text"></div>
+  <div class="opts" id="opts"></div>
+  <div class="nav-row">
+    <button class="btn-back" id="btn-back" onclick="goBack()" style="display:none">← Bakåt</button>
+    <button class="btn-next" id="btn-next" onclick="goNext()" style="display:none">Nästa →</button>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL ═══════════ -->
+<div id="modal-overlay" class="hidden">
+  <div class="modal-box">
+    <div class="modal-icon"    id="modal-icon"></div>
+    <div class="modal-verdict" id="modal-verdict"></div>
+    <div class="modal-expl"    id="modal-expl"></div>
+    <button class="btn-primary" onclick="closeModal()">Nästa fråga →</button>
+  </div>
+</div>
+
+<!-- ═══════════ RESULT ═══════════ -->
+<div id="screen-result" class="screen">
+  <div class="res-header">
+    <div class="score-ring">
+      <div class="rnum" id="r-score"></div>
+      <div class="rlbl">poäng</div>
+    </div>
+    <div class="res-title" id="r-title"></div>
+    <div class="res-msg"   id="r-msg"></div>
+    <div class="res-time"  id="r-time"></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-box cs"><div class="snum" id="s-correct">0</div><div class="slbl">Rätt</div></div>
+    <div class="stat-box ws"><div class="snum" id="s-wrong">0</div><div class="slbl">Fel</div></div>
+    <div class="stat-box"><div class="snum" id="s-pct">0%</div><div class="slbl">Andel rätt</div></div>
+  </div>
+  <div class="missed-section" id="missed-section"></div>
+  <div class="section-hd">Fullständigt facit</div>
+  <div id="facit-list"></div>
+  <div style="text-align:center;margin-top:32px">
+    <button class="btn-primary" onclick="restartQuiz()">↺ Gör om quizet</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// QUESTION DATA  (15 MC + 15 TF = 30 questions)
+// Källor: block4_uppgifter.md (frågeunderlag: Repetera- och
+//         Rätt eller fel-uppgifter för kapitel 9-10)
+//         block4arbetsrattmaterial.md (svar + förklaringar)
+// ════════════════════════════════════════════════════════════
+const QUESTIONS = [
+
+  // ── DEL 1: ANSTÄLLNINGSVILLKOR (Kapitel 9) ──
+
+  // MC 1 – Uppg 1A
+  {
+    type: 'mc',
+    q: 'Vilka typer av villkor kan ett kollektivavtal reglera, enligt läromaterialet?',
+    opts: [
+      'Lön och andra anställningsvillkor, när lönerna ska betalas ut samt semesterregler',
+      'Endast hur många semesterdagar en anställd får spara till nästa år',
+      'Bara vilka arbetskläder de anställda ska bära på arbetsplatsen',
+      'Enbart avgiften till den fackliga organisationen'
+    ],
+    correct: 0,
+    expl: 'Ett kollektivavtal kan bland annat reglera lön och andra anställningsvillkor, när lönerna ska betalas ut, semesterregler samt regler som ersätter eller kompletterar lagstiftningen, till exempel hur anställningar får ske.'
+  },
+
+  // MC 2 – Uppg 1C
+  {
+    type: 'mc',
+    q: 'Vilken uppgift har Arbetsdomstolen (AD)?',
+    opts: [
+      'AD är en domstol som dömer i arbetsrättsliga konflikter, till exempel tvister om uppsägning eller avsked',
+      'AD är en myndighet som godkänner nya kollektivavtal innan de börjar gälla',
+      'AD är en avdelning inom Arbetsmiljöverket som utfärdar föreskrifter om arbetsmiljön',
+      'AD är en nämnd som beslutar om storleken på arbetslöshetsersättningen'
+    ],
+    correct: 0,
+    expl: 'Arbetsdomstolen (AD) är en domstol som dömer i arbetsrättsliga konflikter. En vanlig typ av mål handlar om tvister om uppsägning eller avsked, och domar i AD går inte att överklaga.'
+  },
+
+  // MC 3 – Uppg 1D
+  {
+    type: 'mc',
+    q: 'Vad kännetecknar en särskild visstidsanställning enligt LAS?',
+    opts: [
+      'En tidsbegränsad anställning för att lösa en tillfällig ökning av arbetsbelastningen eller för ett visst projekt',
+      'En anställning utan slutdatum, det som i vardagligt tal kallas fast anställning',
+      'En anställning som bara får användas som vikariat under någon annans föräldraledighet',
+      'En anställning som alltid måste pågå i minst två år innan den kan avslutas'
+    ],
+    correct: 0,
+    expl: 'En särskild visstidsanställning är en anställning som är tillfällig för att lösa en tillfällig ökning av arbetsbelastningen eller för ett visst projekt. Det är en av de tidsbegränsade anställningsformer som LAS tillåter, vid sidan av vikariat och säsongsarbete.'
+  },
+
+  // MC 4 – Uppg 1F
+  {
+    type: 'mc',
+    q: 'Vad räknas som sakliga skäl för uppsägning enligt LAS?',
+    opts: [
+      'Arbetsbrist eller skäl som rör arbetstagaren personligen, till exempel misskötsel av arbetet',
+      'Att arbetsgivaren helt enkelt inte längre trivs med den anställda',
+      'Att den anställda är medlem i en fackförening',
+      'Att den anställda blivit sjukskriven en kortare period'
+    ],
+    correct: 0,
+    expl: 'Sakliga skäl för uppsägning är arbetsbrist eller skäl som rör arbetstagaren personligen, till exempel att arbetstagaren misskött sitt arbete. Sjukdom är normalt sett inte en grund för uppsägning av personliga skäl, och föreningsrätten skyddar den som är fackligt ansluten.'
+  },
+
+  // MC 5 – Uppg 1G
+  {
+    type: 'mc',
+    q: 'Varför måste arbetsgivaren upprätta en turordningslista vid uppsägning på grund av arbetsbrist?',
+    opts: [
+      "För att följa turordningsreglerna i LAS, principen 'sist in, först ut'",
+      'För att kunna välja fritt vilka anställda som ska sägas upp, utan någon särskild ordning',
+      'För att bestämma vilka anställda som ska befordras till ny chef',
+      'För att avgöra vilka anställda som får utökad sysselsättningsgrad'
+    ],
+    correct: 0,
+    expl: "Vid uppsägning på grund av arbetsbrist måste arbetsgivaren följa turordningsreglerna i LAS. Turordningslistan visar i vilken ordning de anställda anställdes, och principen är 'sist in, först ut'."
+  },
+
+  // MC 6 – Uppg 1I
+  {
+    type: 'mc',
+    q: 'Vad innebär arbetsgivarens förhandlingsskyldighet enligt MBL 11 §?',
+    opts: [
+      'Arbetsgivaren måste förhandla med de fackliga organisationerna innan beslut om viktigare förändringar i verksamheten tas',
+      'Arbetsgivaren måste alltid rätta sig helt efter fackets krav',
+      'Arbetsgivaren behöver bara förhandla om det är facket som tagit initiativ till frågan',
+      'Arbetsgivaren måste förhandla individuellt med varje anställd inför alla beslut'
+    ],
+    correct: 0,
+    expl: 'Enligt MBL 11 § är arbetsgivaren skyldig att förhandla med de fackliga organisationerna innan beslut tas om viktigare förändringar i verksamheten, till exempel omorganisation eller uppsägning på grund av arbetsbrist. Skyldigheten gäller oavsett vem som tagit initiativ till frågan, men kommer parterna inte överens är det till slut arbetsgivaren som bestämmer.'
+  },
+
+  // MC 7 – Uppg 1K
+  {
+    type: 'mc',
+    q: 'Vad innebär föreningsrätten enligt MBL 7 §?',
+    opts: [
+      'Rätten för både anställda och arbetsgivare att organisera sig fackligt respektive i en arbetsgivarorganisation, en rätt som inte får kränkas',
+      'Rätten för arbetsgivaren att neka anställda att gå med i en fackförening',
+      'Rätten för facket att ensamt bestämma vilka personer som ska anställas',
+      'Rätten att bilda vilken förening som helst på fritiden, utan koppling till arbetslivet'
+    ],
+    correct: 0,
+    expl: 'Föreningsrätten regleras i regeringsformen och i MBL 7 §. Den ger både anställda och arbetsgivare rätt att organisera sig, och den får inte kränkas, till exempel genom att arbetsgivaren hindrar någon från att gå med i facket.'
+  },
+
+  // MC 8 – Uppg 1O
+  {
+    type: 'mc',
+    q: 'Vad är ett intjänandeår enligt semesterlagen?',
+    opts: [
+      'Året före semesteråret, det år som semestern normalt har tjänats in under',
+      'Det år som semestern faktiskt tas ut',
+      'Den första anställningsmånaden, oavsett vilket år den infaller',
+      'Ett år som bara gäller för timanställda'
+    ],
+    correct: 0,
+    expl: 'Semestern som tas ut under semesteråret (1 april–31 mars) har normalt tjänats in under intjänandeåret, som är året före semesteråret. Har den anställda inte arbetat hela intjänandeåret blir den betalda semestern proportionell mot hur många månader hen varit anställd.'
+  },
+
+  // TF 9 – Uppg 3A
+  {
+    type: 'tf',
+    q: 'Påstående: En dom i Arbetsdomstolen går inte att överklaga.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. En tingsrättsdom kan överklagas till Arbetsdomstolen, men domar i Arbetsdomstolen går inte att överklaga vidare.'
+  },
+
+  // TF 10 – Uppg 3C
+  {
+    type: 'tf',
+    q: 'Påstående: En arbetsgivare har rätt att förbjuda facklig aktivitet på arbetsplatsen.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Föreningsrätten skyddar rätten att organisera sig fackligt och får inte kränkas, till exempel genom att arbetsgivaren hindrar en anställd från att vara med i facket eller bedriva facklig aktivitet.'
+  },
+
+  // TF 11 – Uppg 3F
+  {
+    type: 'tf',
+    q: 'Påstående: En provanställning får avslutas av arbetsgivaren utan motivering.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. Om arbetsgivaren vill avsluta en provanställning kan det göras utan motivering, men senast två veckor innan provanställningen tar slut.'
+  },
+
+  // TF 12 – Uppg 3I
+  {
+    type: 'tf',
+    q: 'Påstående: Vid uppsägning av personliga skäl får den anställda ingen lön under uppsägningstiden.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Den anställda har rätt till lön och andra anställningsförmåner under hela uppsägningstiden, oavsett om uppsägningen beror på arbetsbrist eller personliga skäl. Det är först vid ett avsked som lönen upphör omedelbart.'
+  },
+
+  // TF 13 – Uppg 3L
+  {
+    type: 'tf',
+    q: 'Påstående: Diskrimineringslagen skyddar medlemmar i politiska partier från att bli trakasserade på grund av sin politiska inställning.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. De sju diskrimineringsgrunderna i lagens 1 § är kön, könsöverskridande identitet eller uttryck, etnisk tillhörighet, religion eller annan trosuppfattning, funktionsnedsättning, sexuell läggning och ålder. Politisk tillhörighet ingår inte bland dessa grunder.'
+  },
+
+  // TF 14 – Uppg 3M
+  {
+    type: 'tf',
+    q: 'Påstående: Bristande tillgänglighet för rullstolsburna är diskriminering enligt diskrimineringslagen.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. Bristande tillgänglighet är en av de former av diskriminering som lagen tar upp - det gäller när en arbetsplats är utformad så att den som har en fysisk funktionsnedsättning inte kan arbeta där.'
+  },
+
+  // TF 15 – Uppg 3O
+  {
+    type: 'tf',
+    q: 'Påstående: Det finns en lag om rätt till ledighet för utbildning.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. Lagen om rätt till ledighet för utbildning är en av flera ledighetslagar utöver semesterlagen. Den som arbetat i minst åtta år kan dessutom få omställningsstudiestöd enligt lagen om omställningsstudiestöd.'
+  },
+
+  // ── DEL 2: ARBETSMILJÖ (Kapitel 10) ──
+
+  // MC 16 – Uppg 1A
+  {
+    type: 'mc',
+    q: 'Hur beskrivs begreppet arbetsmiljö i läromaterialet?',
+    opts: [
+      'Ett brett begrepp som omfattar både den fysiska och den psykiska arbetsmiljön, till exempel ergonomi, kemiska ämnen, ledarskap och stress',
+      'Ett begrepp som bara handlar om belysning och luftkvalitet i lokalerna',
+      'Ett begrepp som bara gäller lönen och andra ekonomiska villkor',
+      'Ett begrepp som enbart avser skyddsutrustning som andningsskydd och hjälmar'
+    ],
+    correct: 0,
+    expl: 'Arbetsmiljö är ett brett begrepp som omfattar alla förutsättningar på en arbetsplats. Den delas in i fysisk arbetsmiljö (till exempel belysning, luft, kemiska ämnen och ergonomi) och psykisk arbetsmiljö (till exempel ledarskap, organisation och stress).'
+  },
+
+  // MC 17 – Uppg 1C
+  {
+    type: 'mc',
+    q: 'Vad är en arbetssjukdom?',
+    opts: [
+      'Besvär orsakade av långvarig exponering i en ohälsosam arbetsmiljö',
+      'En akut skada som uppstår vid en enskild olycka på arbetsplatsen',
+      'Vilken sjukdom som helst som en anställd råkar ut för, oavsett orsak',
+      'En skada som bara drabbar den som arbetar inom byggbranschen'
+    ],
+    correct: 0,
+    expl: 'En arbetssjukdom är besvär orsakade av långvarig exponering i arbetsmiljön, till exempel en förslitningsskada i ryggen efter många år av tunga lyft. Det skiljer sig från en arbetsolycka, som är en akut händelse.'
+  },
+
+  // MC 18 – Uppg 1F
+  {
+    type: 'mc',
+    q: 'Vad innebär systematiskt arbetsmiljöarbete?',
+    opts: [
+      'Att arbetsgivaren på ett organiserat sätt samverkar med de anställda om arbetsmiljön, bland annat genom regelbundna skyddsronder',
+      'Att arbetsgivaren en gång om året skriver en rapport utan att göra några förändringar',
+      'Att bara skyddsombudet ansvarar för hela arbetsmiljöarbetet på egen hand',
+      'Att arbetsmiljöarbetet sker helt informellt, utan någon organiserad form'
+    ],
+    correct: 0,
+    expl: 'Systematiskt arbetsmiljöarbete innebär att arbetsgivaren på ett organiserat sätt ska samverka med de anställda om arbetsmiljön, som en del av arbetsplaneringen. Ett sätt att göra det är genom regelbundna skyddsronder tillsammans med skyddsombud.'
+  },
+
+  // MC 19 – Uppg 1G
+  {
+    type: 'mc',
+    q: 'Vad är ett skyddsombud?',
+    opts: [
+      'De anställdas företrädare i arbetsmiljöfrågor, som bland annat kan stoppa arbetet vid fara för liv eller hälsa',
+      'En arbetsledare som har ett särskilt chefsansvar för arbetsmiljön',
+      'En tjänsteman på Arbetsmiljöverket som gör inspektioner',
+      'En jurist som företräder arbetsgivaren i Arbetsdomstolen'
+    ],
+    correct: 0,
+    expl: 'Skyddsombudet är de anställdas företrädare i arbetsmiljöfrågor. Skyddsombudet ska bland annat bevaka skyddet mot ohälsa och olycksfall och kan, om arbetsgivaren inte åtgärdar ett problem, göra ett skyddsstopp vid fara för liv eller hälsa.'
+  },
+
+  // MC 20 – Uppg 1K
+  {
+    type: 'mc',
+    q: 'Vad är mertid?',
+    opts: [
+      'Arbetstid som en deltidsanställd arbetar utöver sin ordinarie arbetstid',
+      'Arbetstid som en heltidsanställd arbetar utöver 40 timmar i veckan',
+      'Den tid en anställd är på jobbet men inte arbetar, till exempel jourtid',
+      'Den tid en anställd är ledig men ändå måste kunna rycka in vid behov'
+    ],
+    correct: 0,
+    expl: 'Mertid är arbetstid utöver ordinarie arbetstid för en deltidsanställd, och regleras i arbetstidslagen 10 och 10 a §§. Det som kallas övertid gäller i stället för den som redan arbetar heltid.'
+  },
+
+  // MC 21 – Uppg 1M
+  {
+    type: 'mc',
+    q: 'Vad är dygnsvila?',
+    opts: [
+      'En sammanhängande ledighet på minst elva timmar under varje 24-timmarsperiod, där tiden 00.00–05.00 alltid ska ingå',
+      'En sammanhängande ledighet på minst 36 timmar under en sjudagarsperiod',
+      'En kort paus på minst 30 minuter efter fem timmars arbete',
+      'En ledighet på minst åtta timmar som bara gäller vid nattarbete'
+    ],
+    correct: 0,
+    expl: 'Dygnsvila är en sammanhängande ledighet på elva timmar under varje 24-timmarsperiod, och i de elva timmarna ska tiden mellan 00.00 och 05.00 ingå. Det är i stället veckovila som innebär minst 36 timmars sammanhängande ledighet under en sjudagarsperiod.'
+  },
+
+  // MC 22 – Uppg 1O
+  {
+    type: 'mc',
+    q: 'Var finns de detaljerade reglerna om minderårigas arbetsliv?',
+    opts: [
+      "I arbetsmiljölagens 5 kap. och i Arbetsmiljöverkets föreskrift 'Minderårigas arbetsmiljö'",
+      'Enbart i skollagen, som reglerar allt arbete för den som går i skolan',
+      'I brottsbalken, som reglerar straff för arbetsgivare som bryter mot reglerna',
+      'I diskrimineringslagen, som reglerar ålder som diskrimineringsgrund'
+    ],
+    correct: 0,
+    expl: "Reglerna om minderåriga i arbetslivet finns i arbetsmiljölagens 5 kap. och detaljregleras i Arbetsmiljöverkets föreskrift 'Minderårigas arbetsmiljö'. Föreskriften skiljer mellan yngre barn, äldre barn och ungdomar och reglerar bland annat vilka arbetsuppgifter och arbetstider som är tillåtna."
+  },
+
+  // TF 23 – Uppg 3A
+  {
+    type: 'tf',
+    q: 'Påstående: Arbetsmiljölagen (AML) är en ramlag som inte innehåller detaljerade regler om arbetsmiljön.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. Arbetsmiljölagen är en ramlag som beskriver riktlinjer och mål för arbetsmiljöarbetet, medan de detaljerade reglerna i stället finns i Arbetsmiljöverkets föreskrifter.'
+  },
+
+  // TF 24 – Uppg 3C
+  {
+    type: 'tf',
+    q: 'Påstående: Arbetsmiljölagen ställer krav på att arbetsgivaren ska ge arbetstagarna skyddsutrustning om det behövs.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. Arbetsgivaren ska ge arbetstagarna tillräckliga instruktioner för arbetet och tillhandahålla skyddsutrustning, till exempel andningsskydd, om det är nödvändigt.'
+  },
+
+  // TF 25 – Uppg 3F
+  {
+    type: 'tf',
+    q: 'Påstående: Ett skyddsombud är en arbetsledare som har ett särskilt ansvar för arbetsplatsens arbetsmiljö.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Skyddsombudet är de anställdas företrädare i arbetsmiljöfrågor, inte en arbetsledare. Ansvaret för arbetsmiljön ligger i stället på arbetsgivaren.'
+  },
+
+  // TF 26 – Uppg 3I
+  {
+    type: 'tf',
+    q: 'Påstående: Ett företag som inte har följt arbetsmiljölagen kan dömas för arbetsmiljöbrott.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. Vid en allvarlig olycka eller ett misstänkt brott mot arbetsmiljölagen görs en brottsutredning, och företaget kan då dömas till en sanktionsavgift eller en företagsbot, som i fallen med Kolmårdens djurpark och skolans simolycka.'
+  },
+
+  // TF 27 – Uppg 3K
+  {
+    type: 'tf',
+    q: 'Påstående: Enligt arbetstidslagen är det tillåtet att ha ett schema med arbetstid som varierar mellan olika veckor.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. Vid skiftarbete, till exempel inom sjukvård eller butik, får arbetstiden beräknas som ett genomsnitt på 40 timmar under en fyraveckorsperiod, så att antalet arbetade timmar kan variera mellan olika veckor.'
+  },
+
+  // TF 28 – Uppg 3M
+  {
+    type: 'tf',
+    q: 'Påstående: Nödfallsövertid får tas ut utan tidsbegränsning vid en nödsituation som innebär fara för liv, hälsa eller egendom, till exempel för att rädda utrustning vid en brand.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. I situationer som innebär fara för skada på liv, hälsa eller egendom och som kräver en omedelbar insats får nödfallsövertid tas ut utan tidsbegränsning, precis som när personalen på elektronikvaruhuset arbetade hela natten för att rädda utrustning undan en brand.'
+  },
+
+  // TF 29 – Uppg 3N
+  {
+    type: 'tf',
+    q: 'Påstående: Mertid är arbetstid som en deltidsanställd gör utöver sin ordinarie arbetstid. Det får högst vara så att den anställda arbetar heltid. I övrigt finns inga gränser för mertiden.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Det stämmer att mertid är arbetstid utöver ordinarie arbetstid för en deltidsanställd, men det finns visst gränser: arbetsgivaren får beordra högst 48 timmars allmän mertid under en fyraveckorsperiod eller 50 timmar per månad, och totalt högst 200 timmar per år, samt ytterligare högst 150 timmars extra mertid om det finns särskilda skäl.'
+  },
+
+  // TF 30 – Uppg 3P
+  {
+    type: 'tf',
+    q: 'Påstående: Vid nattarbete får arbetstagaren arbeta högst nio timmar per arbetspass.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Vid nattarbete är tillåten arbetstid per arbetspass högst åtta timmar enligt arbetstidslagen.'
+  }
+
+];
+
+// ════════════════════════════════════════════════════════════
+// FISHER-YATES SHUFFLE
+// ════════════════════════════════════════════════════════════
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// ════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════
+let qs = [];      // shuffled questions with per-question state
+let cur = 0;      // current question index
+let score = 0;
+let elapsed = 0;
+let timerID = null;
+
+function buildState() {
+  const shuffled = shuffleArray([...QUESTIONS]);
+  qs = shuffled.map(q => {
+    const indices = q.opts.map((_, i) => i);
+    return {
+      ...q,
+      shuffledIdx: shuffleArray(indices), // original option indices in display order
+      selectedDisplay: null,              // which display position was clicked
+      answered: false
+    };
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// SCREENS
+// ════════════════════════════════════════════════════════════
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ════════════════════════════════════════════════════════════
+// TIMER
+// ════════════════════════════════════════════════════════════
+function fmt(s) {
+  const m = Math.floor(s / 60);
+  const ss = String(s % 60).padStart(2, '0');
+  return `⏱ ${m}:${ss}`;
+}
+function startTimer() {
+  elapsed = 0;
+  timerID = setInterval(() => {
+    elapsed++;
+    document.getElementById('timer').textContent = fmt(elapsed);
+  }, 1000);
+}
+function stopTimer() { clearInterval(timerID); }
+
+// ════════════════════════════════════════════════════════════
+// START
+// ════════════════════════════════════════════════════════════
+function startQuiz() {
+  buildState();
+  cur = 0;
+  score = 0;
+  show('screen-quiz');
+  startTimer();
+  render();
+}
+
+// ════════════════════════════════════════════════════════════
+// RENDER QUESTION
+// ════════════════════════════════════════════════════════════
+function render() {
+  const q = qs[cur];
+  const total = qs.length;
+
+  document.getElementById('progress-bar').style.width = (cur / total * 100) + '%';
+  document.getElementById('q-counter').textContent = `Fråga ${cur + 1} av ${total}`;
+  document.getElementById('score-pill').textContent = `Poäng: ${score}`;
+
+  const badgeWrap = document.getElementById('type-badge-wrap');
+  badgeWrap.innerHTML = q.type === 'mc'
+    ? '<span class="type-badge mc">Flerval</span>'
+    : '<span class="type-badge tf">Rätt eller Fel</span>';
+
+  document.getElementById('q-text').textContent = q.q;
+
+  const optsEl = document.getElementById('opts');
+  optsEl.innerHTML = '';
+  optsEl.className = 'opts' + (q.type === 'tf' ? ' two' : '');
+
+  q.shuffledIdx.forEach((origIdx, displayPos) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = q.opts[origIdx];
+    btn.disabled = q.answered;
+
+    if (q.answered) {
+      const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+      if (displayPos === correctDisplay)       btn.classList.add('correct');
+      else if (displayPos === q.selectedDisplay) btn.classList.add('wrong');
+      else                                      btn.classList.add('dimmed');
+    } else {
+      btn.addEventListener('click', () => handleAnswer(displayPos));
+    }
+
+    optsEl.appendChild(btn);
+  });
+
+  document.getElementById('btn-back').style.display = cur > 0 ? 'inline-block' : 'none';
+  document.getElementById('btn-next').style.display = q.answered ? 'inline-block' : 'none';
+  document.getElementById('btn-next').textContent =
+    cur === total - 1 ? 'Se resultat →' : 'Nästa →';
+}
+
+// ════════════════════════════════════════════════════════════
+// HANDLE ANSWER
+// ════════════════════════════════════════════════════════════
+function handleAnswer(displayPos) {
+  const q = qs[cur];
+  if (q.answered) return;
+
+  q.answered = true;
+  q.selectedDisplay = displayPos;
+
+  const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+  const isCorrect = displayPos === correctDisplay;
+  if (isCorrect) score++;
+
+  const btns = document.querySelectorAll('.opt-btn');
+  btns.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === correctDisplay)       btn.classList.add('correct');
+    else if (i === displayPos)      btn.classList.add('wrong');
+    else                            btn.classList.add('dimmed');
+  });
+
+  document.getElementById('btn-next').style.display = 'inline-block';
+  document.getElementById('btn-next').textContent =
+    cur === qs.length - 1 ? 'Se resultat →' : 'Nästa →';
+  document.getElementById('score-pill').textContent = `Poäng: ${score}`;
+
+  setTimeout(() => showModal(isCorrect, q.expl), 600);
+}
+
+// ════════════════════════════════════════════════════════════
+// MODAL
+// ════════════════════════════════════════════════════════════
+function showModal(isCorrect, expl) {
+  document.getElementById('modal-icon').textContent    = isCorrect ? '✅' : '❌';
+  document.getElementById('modal-verdict').textContent = isCorrect ? 'Rätt svar!' : 'Fel svar';
+  document.getElementById('modal-verdict').className   = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
+  document.getElementById('modal-expl').textContent    = expl;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  goNext();
+}
+
+// ════════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════════
+function goBack() {
+  if (cur > 0) { cur--; render(); }
+}
+
+function goNext() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  if (cur < qs.length - 1) {
+    cur++;
+    render();
+  } else {
+    showResults();
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// RESULTS
+// ════════════════════════════════════════════════════════════
+function showResults() {
+  stopTimer();
+  show('screen-result');
+
+  const total = qs.length;
+  const wrong = total - score;
+  const pct   = Math.round(score / total * 100);
+
+  document.getElementById('r-score').textContent   = `${score}/${total}`;
+  document.getElementById('s-correct').textContent = score;
+  document.getElementById('s-wrong').textContent   = wrong;
+  document.getElementById('s-pct').textContent     = pct + '%';
+
+  const m = Math.floor(elapsed / 60);
+  const s = String(elapsed % 60).padStart(2, '0');
+  document.getElementById('r-time').textContent = `Tid: ${m}:${s}`;
+
+  let title, msg;
+  if (pct >= 90)      { title = '🏆 Utmärkt!';          msg = 'Du behärskar anställningsvillkor och arbetsmiljö på hög nivå.'; }
+  else if (pct >= 75) { title = '✅ Redo för provet!';   msg = 'Bra resultat – du har koll på det centrala.'; }
+  else if (pct >= 55) { title = '📖 Öva lite till';      msg = 'Du är på rätt spår men behöver repetera en del.'; }
+  else                { title = '💡 Fortsätt repetera'; msg = 'Gå igenom materialet och försök igen.'; }
+
+  document.getElementById('r-title').textContent = title;
+  document.getElementById('r-msg').textContent   = msg;
+
+  // Missade frågor
+  const missedEl = document.getElementById('missed-section');
+  const missed = qs.filter(q => q.answered && q.shuffledIdx.indexOf(q.correct) !== q.selectedDisplay);
+  if (missed.length > 0) {
+    missedEl.innerHTML = `<div class="section-hd">Missade frågor (${missed.length})</div>`;
+    missed.forEach(q => {
+      const div = document.createElement('div');
+      div.className = 'missed-item';
+      div.textContent = q.q;
+      missedEl.appendChild(div);
+    });
+  } else {
+    missedEl.innerHTML = '';
+  }
+
+  // Fullständigt facit
+  const facitEl = document.getElementById('facit-list');
+  facitEl.innerHTML = '';
+  qs.forEach((q, i) => {
+    const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+    const isCorrect  = q.answered && q.selectedDisplay === correctDisplay;
+    const notAnswered = !q.answered;
+
+    const div = document.createElement('div');
+    div.className = 'facit-item ' + (notAnswered ? '' : isCorrect ? 'fc' : 'fw');
+
+    const correctOptText  = q.opts[q.correct];
+    const selectedOptText = q.answered ? q.opts[q.shuffledIdx[q.selectedDisplay]] : null;
+
+    let inner = `<div class="fi-num">Fråga ${i + 1}</div>`;
+    inner += `<div class="fi-q">${q.q}</div>`;
+
+    if (notAnswered) {
+      inner += `<div class="fi-row"><span class="lbl">Ditt svar: </span>— (inte besvarad)</div>`;
+      inner += `<div class="fi-row ra"><span class="lbl">Rätt svar: </span>${correctOptText}</div>`;
+    } else if (isCorrect) {
+      inner += `<div class="fi-row ya-ok">✓ <span class="lbl">Ditt svar: </span>${selectedOptText}</div>`;
+    } else {
+      inner += `<div class="fi-row ya-bad">✗ <span class="lbl">Ditt svar: </span>${selectedOptText}</div>`;
+      inner += `<div class="fi-row ra"><span class="lbl">Rätt svar: </span>${correctOptText}</div>`;
+    }
+
+    div.innerHTML = inner;
+    facitEl.appendChild(div);
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// RESTART
+// ════════════════════════════════════════════════════════════
+function restartQuiz() {
+  stopTimer();
+  show('screen-start');
+}
+</script>
+</body>
+</html>
