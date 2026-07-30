@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Block 3 – Juridik nivå 1 – Begrepp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  body { font-family: 'EB Garamond', serif; }
+</style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState } = React;
+
+const concepts = [
+  { term: "Rättssubjekt", definition: "Den part som kan ingå avtal." },
+  { term: "Anbud", definition: "Ett erbjudande som det går att svara ja eller nej till (acceptera eller avslå), riktat till en viss person eller krets." },
+  { term: "Löftesprincipen", definition: "Anbudet är bindande tills det avslagits eller tiden som erbjudandet gäller har gått ut." },
+  { term: "Accept", definition: "Meddelande om att anbudet accepteras." },
+  { term: "Oren accept", definition: "Mottagaren gör ändringar i anbudet. Det räknas då som ett nytt anbud." },
+  { term: "Sen accept", definition: "Accepten kommer efter sista svarsdag eller efter att den legala acceptfristen (betänketiden) gått ut. Räknas som ett nytt anbud." },
+  { term: "Ocker", definition: "Om någon blivit utnyttjad och ingått ett ekonomiskt dåligt avtal i en situation där personen snabbt behövde pengar eller på något sätt är beroende av motparten." },
+  { term: "Standardavtal", definition: "Avtal med samma innehåll som används inom en viss bransch." },
+  { term: "Framtidsfullmakt", definition: "En fullmakt som kan användas i framtiden om det behövs." },
+  { term: "Konsumentköplagen", definition: "Reglerar konsumenters rättigheter vid köp av varor från näringsidkare." },
+  { term: "Dröjsmål", definition: "Försening, försenad leverans eller betalning." },
+  { term: "Reklamera", definition: "Att anmärka till säljaren att det är fel på varan." },
+  { term: "Konsumenttjänstlagen", definition: "Reglerar konsumenters köp av tjänster från näringsidkare." },
+  { term: "Köplagen", definition: "Reglerar köp mellan företag och mellan privatpersoner." },
+  { term: "Allmänna reklamationsnämnden (ARN)", definition: "En myndighet som prövar tvister mellan konsumenter och företag." },
+  { term: "Dröjsmålsränta", definition: "Den ränta borgenären har rätt att få från förfallodagen tills räkningen betalas, om kredittagaren inte betalar fakturan i tid." },
+  { term: "Återtagandeförbehåll", definition: "En säkerhet för ett lån i form av ett villkor om att säljaren kan ta tillbaka varan om betalningarna inte sköts." },
+  { term: "Bankkort", definition: "Den vanligaste typen av kort från banken, pengarna dras direkt från kontot vid köp." },
+  { term: "Kreditkort", definition: "Ett kort som ger möjlighet att låna pengar upp till en beviljad gräns." },
+  { term: "Blancolån", definition: "Ett lån utan säkerhet och har därför en hög ränta." },
+  { term: "Skuldebrev", definition: "Låneavtal med skuldbelopp samt villkor för ränta och återbetalning av lånet." },
+  { term: "Pant", definition: "Lös egendom som en låntagare lämnar som säkerhet för ett lån." },
+  { term: "Bestrida", definition: "Att protestera, att inte gå med på att skulden stämmer, och att meddela det." },
+  { term: "Betalningsföreläggande", definition: "Innebär att skulden förs in i Kronofogdens register, och att den därmed är godkänd och beslutad av myndigheten." },
+  { term: "Verkställighet", definition: "Innebär att ett myndighetsbeslut genomförs, exempelvis utmätning av egendom." },
+  { term: "Preskription", definition: "Rätten till eller ansvaret för något är borta efter att det gått för lång tid." },
+  { term: "Konsumentkreditlagen", definition: "Den lag som reglerar kreditgivning till konsumenter." },
+  { term: "Effektiv ränta", definition: "Den verkliga kostnaden för ett lån räknat i procent av lånebeloppet." },
+  { term: "Borgen", definition: "Någon annan än låntagaren garanterar att betalningarna görs." },
+  { term: "Skuldsanering", definition: "Möjlighet för svårt skuldsatta personer att lösa sina ekonomiska problem." },
+];
+
+function BackButton() {
+  const goBack = () => {
+    const ref = document.referrer;
+    if (ref && ref.indexOf(window.location.host) !== -1) {
+      history.back();
+    } else {
+      window.location.href = "index.html";
+    }
+  };
+  return (
+    <button
+      onClick={goBack}
+      className="text-slate-500 hover:text-teal-600 transition-colors text-sm font-medium"
+    >
+      ← Tillbaka till startsidan
+    </button>
+  );
+}
+
+function ToggleRow({ active }) {
+  const views = ["Lista", "Flashcards", "Lucktext", "Scenario", "Icke-ex."];
+  return (
+    <div className="flex justify-center mb-8">
+      <div className="bg-white rounded-full shadow-sm border border-slate-200 p-1 inline-flex flex-wrap justify-center gap-1">
+        {views.map((v) => (
+          <button
+            key={v}
+            disabled={v !== "Lista"}
+            className={
+              v === active
+                ? "px-4 py-2 rounded-full font-semibold text-white text-sm"
+                : "px-4 py-2 rounded-full font-semibold text-slate-400 text-sm cursor-default"
+            }
+            style={v === active ? { background: "#0d9488" } : {}}
+          >
+            {v}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ListView() {
+  return (
+    <div className="flex flex-col gap-4 max-w-2xl mx-auto">
+      {concepts.map((c, i) => (
+        <div
+          key={c.term}
+          className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow p-5 border-l-8"
+          style={{ borderLeftColor: "#0d9488" }}
+        >
+          <div className="flex items-start gap-4">
+            <span
+              className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm"
+              style={{ background: "#f0fdfa", color: "#0d9488" }}
+            >
+              {i + 1}
+            </span>
+            <div>
+              <p className="font-bold text-slate-800 text-lg">{c.term}</p>
+              <p className="text-slate-500 mt-1">{c.definition}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="flex items-center justify-between mb-6">
+        <BackButton />
+        <h1 className="text-2xl font-bold italic text-slate-800 text-center flex-1 -ml-[140px] tracking-wide">
+          BLOCK 3 · JURIDIK NIVÅ 1 · BEGREPP
+        </h1>
+        <div style={{ width: "140px" }}></div>
+      </div>
+
+      <ToggleRow active="Lista" />
+
+      <ListView />
+
+      <footer className="text-center mt-12 mb-4">
+        <p className="italic text-slate-400 text-sm">Källa: Juridik nivå 1 begreppslista – Block 3</p>
+      </footer>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
