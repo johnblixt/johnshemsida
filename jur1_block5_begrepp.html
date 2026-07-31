@@ -142,7 +142,7 @@ function Header() {
 
 function ViewToggle({ view, setView }) {
   const views = ["Lista", "Flashcards", "Lucktext", "Scenario", "Icke-ex."];
-  const enabled = ["Lista", "Flashcards", "Lucktext", "Scenario"];
+  const enabled = ["Lista", "Flashcards", "Lucktext", "Scenario", "Icke-ex."];
   return (
     <div className="flex justify-center flex-wrap gap-1 max-w-3xl mx-auto px-4 mt-4 mb-8">
       <div className="bg-white rounded-full p-1 shadow-sm border border-slate-200 flex flex-wrap gap-1">
@@ -237,6 +237,43 @@ function makeOptions(currentItem, allData) {
   shuffleArray(distractors);
   return shuffleArray([currentItem, ...distractors.slice(0, 3)]);
 }
+
+const nonExampleData = [
+  { id: 1, term: "Skadestånd", correctSide: "A", correct: "Den som krossat grannens fönster med en fotboll betalar för att fönstret ska kunna lagas.", trap: "Den som krossat grannens fönster döms till fängelse för skadegörelse.", explanation: "Skadestånd är ekonomisk ersättning för en skada, inte ett straff som fängelse. Straff och skadestånd är två separata rättsliga påföljder." },
+  { id: 2, term: "Skadeståndslagen", correctSide: "B", correct: "En cyklist som utan avtal med en fotgängare kör på och skadar personen får ersättningsskyldigheten bedömd enligt den allmänna lagen om skadestånd.", trap: "En hantverkare som skadar kundens golv under ett uppdrag hen avtalat om får ersättningen reglerad enligt skadeståndslagen.", explanation: "Skadeståndslagen gäller i situationer utan avtal mellan parterna. Skador som uppstår inom ett avtalsförhållande, som ett hantverksuppdrag, regleras istället utifrån avtalet." },
+  { id: 3, term: "Skadestånd i avtalsförhållande", correctSide: "A", correct: "En snickare som av misstag skadar kundens golv under ett uppdrag hen avtalat om får ersättningsskyldigheten bedömd utifrån det avtalet.", trap: "En cyklist som kör på en okänd fotgängare på gatan får ersättningsskyldigheten bedömd enligt skadeståndslagen.", explanation: "Skadestånd i avtalsförhållande gäller när skadan uppstår mellan parter med ett avtal, som ett uppdrag. Skador mellan parter utan avtal regleras istället av den allmänna skadeståndslagen." },
+  { id: 4, term: "Personskada", correctSide: "B", correct: "En cyklist som blir påkörd bryter armen och får ont i nacken.", trap: "En lastbil som backar in i en lyktstolpe böjer stolpen.", explanation: "Personskada är fysisk eller psykisk skada på en person, som ett brutet ben. Skada på ett föremål, som en lyktstolpe, är istället en sakskada." },
+  { id: 5, term: "Sakskada", correctSide: "A", correct: "En lastbil backar in i en lyktstolpe och böjer den.", trap: "En fotgängare blir påkörd av en cykel och bryter foten.", explanation: "Sakskada är skada på egendom, som en lyktstolpe. Skada på en persons kropp, som ett brutet ben, är istället en personskada." },
+  { id: 6, term: "Ren förmögenhetsskada", correctSide: "B", correct: "En rådgivare ger felaktig ekonomisk information som gör att en kund förlorar pengar, utan att någon person eller sak skadas fysiskt.", trap: "En hantverkare spiller färg på kundens matta under ett arbete.", explanation: "Ren förmögenhetsskada är ekonomisk skada som inte hänger ihop med en skada på person eller sak, som felaktig rådgivning. Att en fysisk sak, som en matta, skadas är istället en sakskada." },
+  { id: 7, term: "Kränkning", correctSide: "A", correct: "Ett rånoffer känner sig rädd och förnedrad långt efter händelsen, trots att hen inte skadades fysiskt.", trap: "Ett rånoffer får en whiplash-skada i nacken under händelsen.", explanation: "Kränkning handlar om känslor som rädsla, obehag och förnedring till följd av ett brott. En fysisk skada, som whiplash, räknas istället som en personskada." },
+  { id: 8, term: "Skadeståndsansvar", correctSide: "B", correct: "En bilist som kör vårdslöst och orsakar en krock blir skyldig att betala för skadorna.", trap: "En bilist som kör helt enligt reglerna men ändå råkar ut för en olycka orsakad av väderförhållanden blir automatiskt skyldig att betala skadestånd.", explanation: "Skadeståndsansvar förutsätter normalt att skadan orsakats avsiktligt eller genom vårdslöshet. Att bara vara inblandad i en olycka utan eget vållande grundar i regel inte skadeståndsansvar." },
+  { id: 9, term: "Ersättning för kränkning", correctSide: "A", correct: "Ett brottsoffer får ett belopp baserat på ett schablonbelopp som kompensation för den rädsla och otrygghet hen känt.", trap: "Ett brottsoffer får tillbaka exakt den summa pengar som stals under rånet.", explanation: "Ersättning för kränkning baseras på ett schablonbelopp för den känslomässiga påverkan, inte på det exakta ekonomiska belopp som stulits." },
+  { id: 10, term: "Adekvat kausalitet", correctSide: "B", correct: "Domstolen prövar om skadan verkligen är en tillräckligt direkt och förutsägbar följd av handlingen innan skadestånd kan dömas ut.", trap: "Domstolen sänker skadeståndsbeloppet med hänsyn till den skadelidandes egen ekonomi.", explanation: "Adekvat kausalitet handlar om sambandet mellan handling och skada. Att sänka beloppet med hänsyn till omständigheter är istället jämkning av skadestånd." },
+  { id: 11, term: "Jämkning av skadestånd", correctSide: "A", correct: "Domstolen sänker det belopp en person ska betala i skadestånd med hänsyn till omständigheterna i fallet.", trap: "Domstolen prövar om det finns ett tillräckligt direkt samband mellan handlingen och skadan innan skadestånd kan dömas ut.", explanation: "Jämkning innebär en sänkning av skadeståndsbeloppet. Att pröva sambandet mellan handling och skada handlar istället om adekvat kausalitet." },
+  { id: 12, term: "Minderårigas skadeståndsansvar", correctSide: "B", correct: "En tioåring som råkar krossa en ruta bedöms mildare än en vuxen skulle blivit, med hänsyn till sin ålder och utveckling.", trap: "Föräldrarna till en tioåring som krossat en ruta får alltid betala hela beloppet istället för barnet.", explanation: "Minderårigas skadeståndsansvar handlar om att barnets eget ansvar bedöms utifrån ålder och utveckling. Att föräldrarna istället betalar, begränsat till ett maxbelopp, hör till vårdnadshavarens ansvar." },
+  { id: 13, term: "Vårdnadshavarens ansvar", correctSide: "A", correct: "Föräldrarna till barnet som klottrat på skolans vägg får betala för skadan, men aldrig mer än en femtedels prisbasbelopp.", trap: "Barnet som klottrat på skolans vägg bedöms själv utifrån sin ålder och mognad, utan någon beloppsgräns för föräldrarna.", explanation: "Vårdnadshavarens ansvar gäller specifikt föräldrarnas begränsade betalningsskyldighet, max en femtedels prisbasbelopp. Att barnets eget ansvar bedöms utifrån ålder och utveckling hör istället till minderårigas skadeståndsansvar." },
+  { id: 14, term: "Principalansvar", correctSide: "B", correct: "En budfirma får stå för de skador som en av dess chaufförer orsakar när hen kör budbilen under arbetstid.", trap: "En snickare som skadar sig själv med sitt eget verktyg på sin fritid får själv stå för kostnaden.", explanation: "Principalansvar gäller arbetsgivarens ansvar för skador som anställda orsakar i tjänsten. Skador på egen fritid, utanför arbetet, omfattas inte av principalansvaret." },
+  { id: 15, term: "Strikt ansvar", correctSide: "A", correct: "Ägaren av ett kärnkraftverk blir skyldig att betala skadestånd för en skada även utan att ha gjort något fel.", trap: "En bilist som kört vårdslöst och orsakat en krock blir skyldig att betala skadestånd.", explanation: "Strikt ansvar innebär ansvar även utan vårdslöshet, och gäller särskilt farlig verksamhet. Ansvar som bygger på att någon kört vårdslöst är istället vanligt skadeståndsansvar." },
+  { id: 16, term: "Lagen om tillsyn över hundar och katter", correctSide: "B", correct: "En hundägare vars hund sprungit lös och bitit en förbipasserande blir ansvarig enligt särskilda regler för hundägare.", trap: "En bonde vars ko rymt och ätit upp grannens gröda blir ansvarig enligt särskilda regler för lantbrukets djur.", explanation: "Lagen om tillsyn över hundar och katter reglerar just hund- och kattägares ansvar. Ansvar för lantbrukets djur, som kor, regleras istället av ägofredslagen." },
+  { id: 17, term: "Ägofredslagen", correctSide: "A", correct: "En bonde vars ko rymt och ätit upp grannens gröda blir ansvarig enligt reglerna för lantbrukets djur.", trap: "En hundägare vars hund sprungit lös och bitit en förbipasserande blir ansvarig enligt reglerna för hundägare.", explanation: "Ägofredslagen reglerar bland annat ansvar för lantbrukets djur, som kor. Hundägares ansvar regleras istället av lagen om tillsyn över hundar och katter." },
+  { id: 18, term: "Ersättning för personskada", correctSide: "B", correct: "Den som blivit påkörd får pengar för sjukvårdskostnader, förlorad inkomst och ett bestående men efter olyckan.", trap: "Den krossade rutan byts ut och kostnaden för det nya glaset betalas av den som orsakade skadan.", explanation: "Ersättning för personskada omfattar bland annat sjukvårdskostnader och inkomstbortfall efter en skada på en person. Att en trasig ruta ersätts är istället ersättning för sakskada." },
+  { id: 19, term: "Ersättning för sakskador", correctSide: "A", correct: "Den krossade rutan byts ut och kostnaden för det nya glaset betalas av den som orsakade skadan.", trap: "Den som blivit påkörd får pengar för sjukvårdskostnader och förlorad inkomst.", explanation: "Ersättning för sakskador handlar om värdet eller reparationskostnaden för skadad egendom, som en ruta. Ersättning för sjukvårdskostnader och inkomstbortfall gäller istället personskador." },
+  { id: 20, term: "Dagsvärdet", correctSide: "B", correct: "En stulen tio år gammal cykel ersätts med vad en lika gammal och sliten cykel skulle kosta att köpa begagnad idag.", trap: "En stulen cykel ersätts alltid med priset för en helt ny cykel av samma modell.", explanation: "Dagsvärdet är vad saken faktiskt är värd, exempelvis på begagnatmarknaden, vid skadetillfället — med hänsyn till ålder och slitage, inte priset för en ny motsvarande vara." },
+  { id: 21, term: "Schablon", correctSide: "A", correct: "Istället för att räkna ut exakt belopp för en viss skadetyp använder försäkringsbolaget en färdig tumregel ur en lista.", trap: "Försäkringsbolaget anlitar en oberoende expert som utreder exakt vad just den här skadan kostat att åtgärda.", explanation: "En schablon är ett fast belopp ur en lista med tumregler, som används istället för en individuell utredning av varje enskild skada." },
+  { id: 22, term: "Brottsoffermyndigheten", correctSide: "B", correct: "Ett brottsoffer som vill veta mer om sina rättigheter och möjlighet till ersättning vänder sig till en statlig myndighet som arbetar just för brottsoffer.", trap: "Ett brottsoffer som blivit diskriminerad på jobbet vänder sig till en myndighet som utreder diskrimineringsärenden.", explanation: "Brottsoffermyndigheten är en statlig myndighet som specifikt främjar brottsoffers rättigheter. Diskrimineringsärenden hanteras istället av Diskrimineringsombudsmannen, en annan myndighet." },
+  { id: 23, term: "Skadeståndsprocessen", correctSide: "A", correct: "En tvist om skadestånd avgörs antingen i en civil rättegång efter stämning eller i samband med att gärningspersonen döms för brottet.", trap: "En tvist om skadestånd måste alltid avgöras genom att brottsoffret själv driver ett separat brottmål mot den skyldige.", explanation: "Skadeståndet kan tas upp antingen genom en civilprocess efter stämning eller i samma rättegång som ett brottmål — brottsoffret behöver alltså inte driva ett eget brottmål." },
+  { id: 24, term: "Försäkringsavtalslagen", correctSide: "B", correct: "En försäkringstagare skyddas av regler som gäller oavsett vad som står i det finstilta i avtalet, eftersom lagen alltid gäller till kundens fördel.", trap: "Ett försäkringsbolag kan fritt skriva egna villkor i avtalet som ger kunden sämre skydd än vad som annars gäller.", explanation: "Försäkringsavtalslagen är tvingande till försäkringstagarens fördel, vilket betyder att bolaget inte fritt kan avtala bort kundens skydd till det sämre." },
+  { id: 25, term: "Hemförsäkring", correctSide: "A", correct: "Familjens bostad, lösöre och medlemmarnas ansvar täcks alla av en och samma paketlösning som de tecknat hos försäkringsbolaget.", trap: "Familjens bil täcks av en obligatorisk grundförsäkring som krävs för att fordonet ska få köras på väg.", explanation: "Hemförsäkringen är en paketförsäkring som täcker olika situationer i hemmet. Den obligatoriska grundförsäkringen för fordon är istället trafikförsäkringen." },
+  { id: 26, term: "Ansvarsskydd", correctSide: "B", correct: "När familjens barn råkar orsaka en skada på en lekkamrat täcker en del av hemförsäkringen kravet som riktas mot familjen.", trap: "När familjens tv går sönder efter ett strömavbrott ersätts kostnaden för en ny tv genom hemförsäkringen.", explanation: "Ansvarsskydd är den del av hemförsäkringen som täcker skadeståndskrav mot familjen, till exempel för skador barn orsakat. Ersättning för en egen trasig tv hör istället till en annan del av hemförsäkringen." },
+  { id: 27, term: "Trafikförsäkring", correctSide: "A", correct: "Ingen bil får lagligt köras på vägen utan den obligatoriska grundförsäkring som täcker skador på andra i trafiken.", trap: "En bilägare som själv orsakat en krock kan välja en frivillig tilläggsförsäkring för att få ersättning för skador på den egna bilen.", explanation: "Trafikförsäkringen är den obligatoriska grundförsäkringen som alla motorfordon måste ha. Frivilliga tilläggsförsäkringar för den egna bilen är istället hel- eller halvförsäkring." },
+  { id: 28, term: "Hel- och halvförsäkring", correctSide: "B", correct: "En bilägare som valt den dyrare av två frivilliga tilläggsförsäkringar får ersättning för sin egen bil även när hen själv orsakat krocken.", trap: "Alla motorfordon måste enligt lag ha denna försäkring för att få köras på vägarna.", explanation: "Hel- och halvförsäkring är frivilliga tilläggsförsäkringar som ger olika skydd för den egna bilen. Den obligatoriska grundförsäkring som krävs enligt lag är istället trafikförsäkringen." },
+  { id: 29, term: "Skadereglering", correctSide: "A", correct: "Försäkringsbolaget går igenom alla papper och bevis för att bedöma hur mycket kunden faktiskt har rätt att få ut.", trap: "Kunden och försäkringsbolaget kommer överens om priset på försäkringen innan avtalet tecknas.", explanation: "Skadereglering är försäkringsbolagets bedömning av rätten till ersättning efter en skada. Att komma överens om priset på försäkringen sker istället innan avtalet tecknas." },
+  { id: 30, term: "Självrisk", correctSide: "B", correct: "Av en totalkostnad på 8 000 kronor får bilägaren själv stå för de första 1 500 kronorna innan försäkringen träder in.", trap: "Av en totalkostnad på 8 000 kronor betalar försäkringsbolaget hela beloppet utan något avdrag.", explanation: "Självrisk är den del av kostnaden som inte ersätts av försäkringsbolaget utan som kunden själv får betala. Att bolaget betalar allt utan avdrag innebär motsatsen — ingen självrisk." },
+].map((d) => ({
+  ...d,
+  optionA: d.correctSide === "A" ? d.correct : d.trap,
+  optionB: d.correctSide === "B" ? d.correct : d.trap,
+}));
 
 function FlashcardView() {
   const total = concepts.length;
@@ -495,6 +532,129 @@ function ScenarioView() {
   );
 }
 
+function NonExampleView() {
+  const total = nonExampleData.length;
+  const [items, setItems] = useState(() => shuffleArray([...nonExampleData]));
+  const [idx, setIdx] = useState(0);
+  const [selectedSide, setSelectedSide] = useState(null);
+  const [score, setScore] = useState(0);
+  const [phase, setPhase] = useState("playing");
+
+  const current = items[idx];
+  const isAnswered = selectedSide !== null;
+
+  const handleSelect = (side) => {
+    if (isAnswered) return;
+    setSelectedSide(side);
+    if (side === current.correctSide) setScore((s) => s + 1);
+  };
+
+  const handleNext = () => {
+    const nextIdx = idx + 1;
+    if (nextIdx >= total) {
+      setPhase("done");
+    } else {
+      setIdx(nextIdx);
+      setSelectedSide(null);
+    }
+  };
+
+  const restart = () => {
+    setItems(shuffleArray([...nonExampleData]));
+    setIdx(0);
+    setSelectedSide(null);
+    setScore(0);
+    setPhase("playing");
+  };
+
+  if (phase === "done") return (
+    <div className="max-w-3xl mx-auto px-4 pb-16 flex flex-col items-center gap-6">
+      <div className="rounded-3xl p-8 text-center w-full max-w-sm" style={{ background: PRIMARY_LIGHT, border: `2px solid ${PRIMARY}` }}>
+        <div className="text-5xl mb-4">🔍</div>
+        <p className="text-2xl font-bold mb-1" style={{ color: PRIMARY_TEXT }}>{score} / {total} rätt</p>
+        <p className="text-slate-500 text-sm mb-6">
+          {score === total
+            ? "Perfekt! Du ser skillnaden mellan rätt tillämpning och fällan varje gång."
+            : score >= Math.round(total * 0.8)
+            ? "Bra jobbat! Öva lite till på de begrepp du blandade ihop."
+            : "Fortsätt öva – vanliga missuppfattningar tar tid att lära sig se igenom."}
+        </p>
+        <button onClick={restart} className="text-white font-bold px-8 py-3 rounded-2xl" style={{ background: PRIMARY }}>
+          Börja om
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="max-w-3xl mx-auto px-4 pb-16 flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-slate-400 font-medium">{idx + 1} av {total}</span>
+        <span className="text-xs font-bold px-3 py-1 rounded-full" style={{ background: PRIMARY_LIGHT, color: PRIMARY_TEXT }}>
+          {score} rätt
+        </span>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-1.5 mb-1">
+        <div className="h-1.5 rounded-full transition-all" style={{ width: `${(idx / total) * 100}%`, background: PRIMARY }} />
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm p-5 border-l-4" style={{ borderLeftColor: PRIMARY }}>
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Vilket exempel visar rätt tillämpning av</p>
+        <p className="text-slate-800 text-xl font-bold">{current.term}?</p>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        {["A", "B"].map((side) => {
+          const text = side === "A" ? current.optionA : current.optionB;
+          const isCorrect = side === current.correctSide;
+          const isSelected = selectedSide === side;
+          let bg = "#ffffff", border = "#e2e8f0", textColor = "#1e293b";
+          if (isAnswered) {
+            if (isCorrect) { bg = "#dcfce7"; border = "#16a34a"; textColor = "#15803d"; }
+            else if (isSelected) { bg = "#fee2e2"; border = "#dc2626"; textColor = "#dc2626"; }
+          }
+          return (
+            <button
+              key={side}
+              onClick={() => handleSelect(side)}
+              disabled={isAnswered}
+              className="w-full text-left px-4 py-3 rounded-xl font-medium text-sm transition-all border-2 flex gap-3"
+              style={{ background: bg, borderColor: border, color: textColor }}
+            >
+              <span className="font-bold flex-shrink-0">{side}.</span>
+              <span>{text}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {isAnswered && (
+        <div
+          className="rounded-xl p-4 text-sm leading-relaxed"
+          style={
+            selectedSide === current.correctSide
+              ? { background: "#dcfce7", color: "#15803d" }
+              : { background: "#fee2e2", color: "#dc2626" }
+          }
+        >
+          {selectedSide === current.correctSide ? "✓ Rätt! " : `✗ Fel — rätt svar var alternativ ${current.correctSide}. `}
+          {current.explanation}
+        </div>
+      )}
+
+      {isAnswered && (
+        <button
+          onClick={handleNext}
+          className="w-full text-white font-bold py-3 rounded-2xl text-sm"
+          style={{ background: PRIMARY }}
+        >
+          {idx + 1 >= total ? "Se resultat" : "Nästa →"}
+        </button>
+      )}
+    </div>
+  );
+}
+
 function LucktextView() {
   const [answers, setAnswers] = useState(() =>
     lucktextItems.map(() => ({ value: "", status: "unanswered", attempts: 0 }))
@@ -682,6 +842,7 @@ function App() {
       {view === "Flashcards" && <FlashcardView />}
       {view === "Lucktext" && <LucktextView />}
       {view === "Scenario" && <ScenarioView />}
+      {view === "Icke-ex." && <NonExampleView />}
       <Footer />
     </div>
   );
