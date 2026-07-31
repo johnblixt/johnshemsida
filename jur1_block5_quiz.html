@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skadeståndsrätt – Quiz | Juridik 1 Block 5</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0d9488;
+      --primary-light: #ccfbf1;
+      --primary-dark: #0f766e;
+      --correct-bg: #dcfce7;
+      --correct-border: #16a34a;
+      --correct-text: #16a34a;
+      --wrong-bg: #fee2e2;
+      --wrong-border: #dc2626;
+      --wrong-text: #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'EB Garamond', Georgia, serif; background: #fdf2f8; min-height: 100vh; color: #1e293b; }
+
+    a.back-btn {
+      display: inline-block; padding: 8px 16px; color: var(--primary);
+      text-decoration: none; font-size: 0.95rem; position: fixed;
+      top: 14px; left: 14px; z-index: 200; border-radius: 8px; transition: background 0.2s;
+    }
+    a.back-btn:hover { background: var(--primary-light); }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Start screen ── */
+    #screen-start { max-width: 560px; margin: 0 auto; padding: 90px 24px 40px; text-align: center; }
+    .badge {
+      display: inline-block; background: var(--primary-light); color: var(--primary);
+      padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;
+      letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 20px;
+    }
+    #screen-start h1 {
+      font-size: 2.2rem; font-weight: 600; font-style: italic;
+      color: #0f172a; margin-bottom: 8px;
+    }
+    #screen-start .subtitle { font-size: 1.05rem; color: #64748b; margin-bottom: 32px; }
+    .info-cards { display: flex; gap: 12px; justify-content: center; margin-bottom: 36px; flex-wrap: wrap; }
+    .info-card {
+      background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 16px 20px; text-align: center; flex: 1; min-width: 100px; max-width: 140px;
+    }
+    .info-card .num { font-size: 1.7rem; font-weight: 600; color: var(--primary); }
+    .info-card .lbl { font-size: 0.78rem; color: #94a3b8; margin-top: 2px; }
+
+    /* ── Quiz screen ── */
+    #screen-quiz { max-width: 700px; margin: 0 auto; padding: 70px 20px 60px; }
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .timer {
+      background: white; border: 1px solid #e2e8f0; border-radius: 20px;
+      padding: 5px 14px; font-size: 0.92rem; color: #475569; font-variant-numeric: tabular-nums;
+    }
+    .score-pill {
+      background: var(--primary-light); color: var(--primary-dark);
+      border-radius: 20px; padding: 5px 14px; font-size: 0.92rem; font-weight: 600;
+    }
+    .progress-wrap { background: #e2e8f0; border-radius: 4px; height: 6px; overflow: hidden; margin-bottom: 6px; }
+    .progress-bar { background: var(--primary); height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+    .q-counter { font-size: 0.82rem; color: #94a3b8; text-align: right; margin-bottom: 22px; }
+    .type-badge {
+      display: inline-block; font-size: 0.72rem; text-transform: uppercase;
+      letter-spacing: 0.08em; padding: 2px 10px; border-radius: 20px; margin-bottom: 10px;
+    }
+    .type-badge.mc { background: #ede9fe; color: #6d28d9; }
+    .type-badge.tf  { background: #fef9c3; color: #854d0e; }
+    .q-text { font-size: 1.25rem; font-weight: 600; line-height: 1.55; color: #0f172a; margin-bottom: 22px; }
+    .opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+    .opts.two { flex-direction: row; gap: 14px; }
+    .opt-btn {
+      background: white; border: 2px solid #e2e8f0; border-radius: 12px;
+      padding: 13px 18px; text-align: left; font-size: 1rem; font-family: inherit;
+      cursor: pointer; transition: border-color 0.15s, background 0.15s; line-height: 1.45;
+    }
+    .opts.two .opt-btn { flex: 1; text-align: center; font-size: 1.15rem; padding: 18px 12px; }
+    .opt-btn:hover:not(:disabled) { border-color: var(--primary); background: var(--primary-light); }
+    .opt-btn:disabled { cursor: default; }
+    .opt-btn.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); font-weight: 600; }
+    .opt-btn.wrong   { background: var(--wrong-bg);   border-color: var(--wrong-border);   color: var(--wrong-text); }
+    .opt-btn.dimmed  { opacity: 0.4; }
+    .nav-row { display: flex; gap: 12px; align-items: center; }
+    .btn-back {
+      background: white; border: 2px solid #e2e8f0; border-radius: 10px;
+      padding: 10px 20px; font-family: inherit; font-size: 0.9rem; color: #64748b; cursor: pointer;
+    }
+    .btn-back:hover { border-color: #94a3b8; }
+    .btn-next {
+      background: var(--primary); border: none; border-radius: 10px;
+      padding: 10px 28px; font-family: inherit; font-size: 0.9rem; font-weight: 600;
+      color: white; cursor: pointer; margin-left: auto; transition: background 0.15s;
+    }
+    .btn-next:hover { background: var(--primary-dark); }
+
+    /* ── Modal ── */
+    #modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 500; padding: 20px;
+    }
+    #modal-overlay.hidden { display: none; }
+    .modal-box {
+      background: white; border-radius: 20px; padding: 32px;
+      max-width: 520px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .modal-icon  { font-size: 2.6rem; margin-bottom: 10px; }
+    .modal-verdict { font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; }
+    .modal-verdict.c { color: var(--correct-text); }
+    .modal-verdict.w { color: var(--wrong-text); }
+    .modal-expl { font-size: 0.98rem; color: #475569; line-height: 1.7; margin-bottom: 24px; }
+
+    /* ── Result screen ── */
+    #screen-result { max-width: 700px; margin: 0 auto; padding: 80px 20px 80px; }
+    .res-header { text-align: center; margin-bottom: 30px; }
+    .score-ring {
+      width: 120px; height: 120px; border-radius: 50%;
+      border: 5px solid var(--primary); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; margin: 0 auto 18px;
+    }
+    .score-ring .rnum { font-size: 2rem; font-weight: 600; color: var(--primary); line-height: 1; }
+    .score-ring .rlbl { font-size: 0.72rem; color: #94a3b8; }
+    .res-title  { font-size: 1.8rem; font-weight: 600; font-style: italic; margin-bottom: 6px; }
+    .res-msg    { font-size: 1rem; color: #64748b; margin-bottom: 4px; }
+    .res-time   { font-size: 0.85rem; color: #94a3b8; margin-bottom: 28px; }
+    .stats-row  { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+    .stat-box {
+      flex: 1; min-width: 80px; background: white; border: 1px solid #e2e8f0;
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .stat-box .snum { font-size: 1.6rem; font-weight: 600; }
+    .stat-box .slbl { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
+    .stat-box.cs .snum { color: var(--correct-text); }
+    .stat-box.ws .snum { color: var(--wrong-text); }
+    .section-hd {
+      font-size: 1.05rem; font-weight: 600; color: #0f172a;
+      margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0;
+    }
+    .missed-section { margin-bottom: 32px; }
+    .missed-item {
+      background: var(--wrong-bg); border-left: 4px solid var(--wrong-border);
+      border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-size: 0.92rem;
+    }
+    .facit-item {
+      background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 14px 16px; margin-bottom: 10px;
+    }
+    .facit-item.fc { border-left: 4px solid var(--correct-border); }
+    .facit-item.fw { border-left: 4px solid var(--wrong-border); }
+    .fi-num { font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .fi-q   { font-size: 0.93rem; font-weight: 600; color: #0f172a; margin-bottom: 8px; line-height: 1.4; }
+    .fi-row { font-size: 0.88rem; padding: 2px 0; }
+    .fi-row .lbl { color: #94a3b8; }
+    .fi-row.ya-ok  { color: var(--correct-text); }
+    .fi-row.ya-bad { color: var(--wrong-text); }
+    .fi-row.ra     { color: var(--correct-text); font-weight: 600; margin-top: 2px; }
+
+    .btn-primary {
+      display: inline-block; background: var(--primary); color: white; border: none;
+      border-radius: 12px; padding: 13px 36px; font-size: 1.05rem; font-family: inherit;
+      font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s;
+    }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+    .btn-primary:active { transform: none; }
+
+    @media (max-width: 500px) {
+      #screen-start h1 { font-size: 1.7rem; }
+      .q-text { font-size: 1.1rem; }
+    }
+  </style>
+  <script src="jur1_nav.js"></script>
+</head>
+<body>
+
+<a href="index.html" class="back-btn" onclick="jur1GoBack(event)">← Tillbaka till startsidan</a>
+
+<!-- ═══════════ START ═══════════ -->
+<div id="screen-start" class="screen active">
+  <div class="badge">Juridik 1 · Block 5</div>
+  <h1>Skadeståndsrätt</h1>
+  <p class="subtitle">Quiz med flervalsfrågor och Rätt/Fel-påståenden</p>
+  <div class="info-cards">
+    <div class="info-card"><div class="num">30</div><div class="lbl">Frågor</div></div>
+    <div class="info-card"><div class="num">18</div><div class="lbl">Flerval</div></div>
+    <div class="info-card"><div class="num">12</div><div class="lbl">Rätt / Fel</div></div>
+  </div>
+  <button class="btn-primary" onclick="startQuiz()">Starta Quiz →</button>
+</div>
+
+<!-- ═══════════ QUIZ ═══════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-header">
+    <div class="timer" id="timer">⏱ 0:00</div>
+    <div class="score-pill" id="score-pill">Poäng: 0</div>
+  </div>
+  <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+  <div class="q-counter" id="q-counter">Fråga 1 av 30</div>
+  <div id="type-badge-wrap"></div>
+  <div class="q-text" id="q-text"></div>
+  <div class="opts" id="opts"></div>
+  <div class="nav-row">
+    <button class="btn-back" id="btn-back" onclick="goBack()" style="display:none">← Bakåt</button>
+    <button class="btn-next" id="btn-next" onclick="goNext()" style="display:none">Nästa →</button>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL ═══════════ -->
+<div id="modal-overlay" class="hidden">
+  <div class="modal-box">
+    <div class="modal-icon"    id="modal-icon"></div>
+    <div class="modal-verdict" id="modal-verdict"></div>
+    <div class="modal-expl"    id="modal-expl"></div>
+    <button class="btn-primary" onclick="closeModal()">Nästa fråga →</button>
+  </div>
+</div>
+
+<!-- ═══════════ RESULT ═══════════ -->
+<div id="screen-result" class="screen">
+  <div class="res-header">
+    <div class="score-ring">
+      <div class="rnum" id="r-score"></div>
+      <div class="rlbl">poäng</div>
+    </div>
+    <div class="res-title" id="r-title"></div>
+    <div class="res-msg"   id="r-msg"></div>
+    <div class="res-time"  id="r-time"></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-box cs"><div class="snum" id="s-correct">0</div><div class="slbl">Rätt</div></div>
+    <div class="stat-box ws"><div class="snum" id="s-wrong">0</div><div class="slbl">Fel</div></div>
+    <div class="stat-box"><div class="snum" id="s-pct">0%</div><div class="slbl">Andel rätt</div></div>
+  </div>
+  <div class="missed-section" id="missed-section"></div>
+  <div class="section-hd">Fullständigt facit</div>
+  <div id="facit-list"></div>
+  <div style="text-align:center;margin-top:32px">
+    <button class="btn-primary" onclick="restartQuiz()">↺ Gör om quizet</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// QUESTION DATA  (18 MC + 12 TF = 30 questions)
+// Källor: block5_uppgifter.md (frågeunderlag: Repetera-,
+//         Rätt eller fel-, Vilken slags skada- och
+//         Undantag och jämkning-uppgifterna för kapitel 11)
+//         block5_skadestandsratt_material.md (svar + förklaringar)
+// ════════════════════════════════════════════════════════════
+const QUESTIONS = [
+
+  // ── DEL 1: GRUNDLÄGGANDE BEGREPP (Uppg 1, Repetera) ──
+
+  // MC 1 – Uppg 1A
+  {
+    type: 'mc',
+    q: 'Vad är skadestånd?',
+    opts: [
+      'Ersättning för en skada',
+      'Ett straff som betalas till staten vid brott',
+      'En avgift som alltid betalas till ett försäkringsbolag',
+      'Ett bötesbelopp som döms ut i ett brottmål'
+    ],
+    correct: 0,
+    expl: 'Skadestånd är ersättning för en skada. Det skiljer sig från böter, som är ett straff som betalas till staten, inte en ersättning till den som drabbats.'
+  },
+
+  // MC 2 – Uppg 1B
+  {
+    type: 'mc',
+    q: 'Vilka är de fyra typerna av skador som skadeståndslagen reglerar?',
+    opts: [
+      'Personskada, sakskada, ren förmögenhetsskada och kränkning',
+      'Personskada, sakskada, ekonomisk skada och brottsskada',
+      'Fysisk skada, psykisk skada, materiell skada och ideell skada',
+      'Sakskada, förmögenhetsskada, kränkning och dödsfall'
+    ],
+    correct: 0,
+    expl: 'Skadeståndslagen beskriver fyra olika typer av skador: personskada, sakskada, ren förmögenhetsskada och kränkning.'
+  },
+
+  // MC 3 – Uppg 1D
+  {
+    type: 'mc',
+    q: 'Vad krävs för att någon ska vara ansvarig för en skada, enligt culparegeln?',
+    opts: [
+      'Att skadan orsakats avsiktligt (uppsåt) eller genom vårdslöshet (culpa)',
+      'Att skadan bara orsakats med avsikt, aldrig genom vårdslöshet',
+      'Att den som orsakat skadan blivit dömd för brott i en brottmålsrättegång',
+      'Att skadan skett i samband med ett avtalsförhållande'
+    ],
+    correct: 0,
+    expl: 'Culparegeln i skadeståndslagen 2 kap. innebär att den som uppsåtligen (dolus) eller av vårdslöshet (culpa) orsakar en person- eller sakskada ska ersätta den. En fällande brottmålsdom krävs inte för skadeståndsansvar.'
+  },
+
+  // MC 4 – Uppg 1E
+  {
+    type: 'mc',
+    q: 'Vad betyder "adekvat kausalitet"?',
+    opts: [
+      'Det direkta och relevanta sambandet som krävs mellan en handling och en skada',
+      'Att skadan högst får uppgå till ett prisbasbelopp',
+      'Att flera personer varit inblandade i samma skadehändelse',
+      'Att skadan måste ha inträffat samma dygn som handlingen'
+    ],
+    correct: 0,
+    expl: 'Adekvat kausalitet innebär att det finns ett direkt och relevant samband mellan handlingen och skadan. Annat som inträffar till följd av skadan, men som saknar det direkta sambandet, ger inget skadeståndsansvar.'
+  },
+
+  // MC 5 – Uppg 1F
+  {
+    type: 'mc',
+    q: 'Är en 5-åring skadeståndsansvarig för skador hen orsakar?',
+    opts: [
+      'Ansvaret bedöms med hänsyn till ålder och utveckling, och en så ung person blir troligen inte betalningsskyldig',
+      'Nej, minderåriga har aldrig något skadeståndsansvar enligt lag',
+      'Ja, ett barn bär alltid samma ansvar som en vuxen enligt skadeståndslagen',
+      'Nej, det är uteslutande vårdnadshavaren, aldrig barnet, som kan bli ersättningsskyldig'
+    ],
+    correct: 0,
+    expl: 'Minderårigas skadeståndsansvar begränsas av vad som är skäligt med hänsyn till ålder och utveckling, handlingen, ansvarsförsäkringar och övriga omständigheter. En 17-åring kan få betala för en krossad ruta, medan en 5-åring kanske inte alls blir betalningsansvarig.'
+  },
+
+  // MC 6 – Uppg 1G
+  {
+    type: 'mc',
+    q: 'Vilket skadeståndsansvar har en arbetsgivare för skador som anställda orsakar (principalansvar)?',
+    opts: [
+      'Arbetsgivaren har ansvar för skador som en anställd orsakar i sin tjänsteutövning',
+      'Arbetsgivaren ansvarar bara om den anställda blivit dömd för brott',
+      'Arbetsgivaren ansvarar för allt den anställda gör, även på fritiden',
+      'Arbetsgivaren har inget ansvar – den anställda får alltid stå för skadan själv'
+    ],
+    correct: 0,
+    expl: 'Principalansvaret innebär att arbetsgivaren har skadeståndsansvar för det en medarbetare orsakar i sin tjänsteutövning. Om skadan i stället sker på fritiden är medarbetaren själv ansvarig, och undantag finns om den anställda orsakat skadan med avsikt eller grov vårdslöshet.'
+  },
+
+  // MC 7 – Uppg 1H
+  {
+    type: 'mc',
+    q: 'Hur regleras ansvaret om en lantbrukares gris rymmer och orsakar skada?',
+    opts: [
+      'Enligt Ägofredslagen, som reglerar ansvaret för lantbrukets djur',
+      'Enligt lagen om tillsyn över hundar och katter',
+      'Enligt skadeståndslagens regler om strikt ansvar för farlig verksamhet',
+      'Lantbrukaren har inget ansvar eftersom djuret rymt av misstag'
+    ],
+    correct: 0,
+    expl: 'Skadeståndslagen gäller skador orsakade av djur som marsvin, råttor och ormar, men inte lantbrukets djur, eftersom det i stället regleras i Ägofredslagen.'
+  },
+
+  // MC 8 – Uppg 1I
+  {
+    type: 'mc',
+    q: 'Hur värderas en sakskada?',
+    opts: [
+      'Med sakens värde eller kostnaden för reparation, och vid totalskada med dagsvärdet',
+      'Alltid med vad det skulle kosta att köpa varan helt ny',
+      'Enbart utifrån vad ägaren själv anser att saken är värd',
+      'Med ett schablonbelopp som är detsamma för alla sakskador'
+    ],
+    correct: 0,
+    expl: 'Sakskador ersätts med sakens värde eller reparationskostnaden. Vid en totalskada, när reparation inte är möjlig, ska ersättningen vara dagsvärdet, det vill säga det verkliga värdet vid tiden för skadan.'
+  },
+
+  // MC 9 – Uppg 1J
+  {
+    type: 'mc',
+    q: 'Behöver den som orsakat en skada ersätta allt, även om den skadelidande har en egen försäkring?',
+    opts: [
+      'Nej, skadeståndet kan minskas om den skadelidande har en försäkring som täcker skadan',
+      'Ja, försäkringar påverkar aldrig skadeståndets storlek',
+      'Nej, då upphör skadeståndsansvaret helt och den skadelidande får bara vända sig till sitt eget försäkringsbolag',
+      'Ja, men bara om den skadelidande saknar hemförsäkring'
+    ],
+    correct: 0,
+    expl: 'Den skadelidandes egna försäkringar kan ha betydelse för skadeståndsbeloppet. Finns det en försäkring kan skadeståndet exempelvis minskas till självrisken, och försäkringsbolaget kan i sin tur stämma den som orsakade skadan.'
+  },
+
+  // MC 10 – Uppg 1K
+  {
+    type: 'mc',
+    q: 'Täcker en hemförsäkring alla hushållsmedlemmars skadeståndsansvar?',
+    opts: [
+      'Ja, ansvarsskyddet i hemförsäkringen täcker skadeståndskrav mot alla som ingår i försäkringen, både vuxna och barn',
+      'Nej, hemförsäkringen gäller bara den som står som försäkringstagare',
+      'Nej, hemförsäkringen täcker aldrig skador som orsakats av barn i hushållet',
+      'Ja, men bara om den skadelidande godkänner det i förväg'
+    ],
+    correct: 0,
+    expl: 'Ansvarsskyddet i en hemförsäkring täcker skadeståndskrav som riktas mot alla som ingår i försäkringen, både vuxna och barn, och tar även över föräldrarnas ansvar för skador som barnen orsakat.'
+  },
+
+  // MC 11 – Uppg 1L
+  {
+    type: 'mc',
+    q: 'Hur ersätts en skada av försäkringsbolagen?',
+    opts: [
+      'Genom skadereglering, där bolagets representant bedömer skadans omfattning med hänsyn till den skadelidandes intresse',
+      'Genom att alltid betala ut ett fast schablonbelopp oavsett skadans omfattning',
+      'Genom att alltid kräva att skadan prövas i domstol innan ersättning betalas ut',
+      'Genom att enbart ersätta skador som skett genom brott'
+    ],
+    correct: 0,
+    expl: 'Skadereglering innebär att försäkringsbolagets representant bedömer skadornas omfattning, med hänsyn till försäkringstagarens/den skadelidandes intresse i första hand. Ersättningen ska motsvara kostnaden för reparation eller återanskaffning, med avdrag för ålder och slitage.'
+  },
+
+  // ── DEL 2: RÄTT ELLER FEL (Uppg 3) ──
+
+  // TF 12 – Uppg 3A
+  {
+    type: 'tf',
+    q: 'Påstående: Böter är ersättning för en skada.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Böter är ett straff som betalas till staten vid brott. Skadestånd är i stället ersättning för en skada, till den som drabbats.'
+  },
+
+  // TF 13 – Uppg 3B
+  {
+    type: 'tf',
+    q: 'Påstående: Skadeståndslagen reglerar skadestånd i alla situationer utom vid avtalsförhållanden.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. Skadeståndslagen behandlar endast skadestånd utanför avtalsförhållanden. I avtalsförhållanden, till exempel vid konsumentköp, löses skadestånd med hjälp av andra lagar.'
+  },
+
+  // TF 14 – Uppg 3C
+  {
+    type: 'tf',
+    q: 'Påstående: Personskada innebär en fysisk eller psykisk skada på en person.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. Personskada kan vara både fysisk och psykisk, till exempel en utslagen tand eller ett chocktillstånd, och kan även innefatta inkomstförlust samt sveda och värk respektive lyte och men.'
+  },
+
+  // TF 15 – Uppg 3D
+  {
+    type: 'tf',
+    q: 'Påstående: Sakförstörelse är en skada på fast eller lös egendom.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. En sakskada är en skada på fast eller lös egendom, till exempel brandskador, en krossad ruta eller en förlorad möbel.'
+  },
+
+  // TF 16 – Uppg 3E
+  {
+    type: 'tf',
+    q: 'Påstående: Kränkning är en känslomässig skada.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. Kränkning är en känslomässig skada, som rädsla, obehag, förnedring och liknande.'
+  },
+
+  // TF 17 – Uppg 3F
+  {
+    type: 'tf',
+    q: 'Påstående: Den som orsakat en person- eller sakskada avsiktligt eller genom vårdslöshet har skadeståndsansvar.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. Enligt skadeståndslagen 2 kap. 1 § ska den som uppsåtligen eller av vårdslöshet vållar person- eller sakskada ersätta skadan.'
+  },
+
+  // TF 18 – Uppg 3G
+  {
+    type: 'tf',
+    q: 'Påstående: Skadestånd kan jämkas om den som orsakat skadan har varit kraftigt berusad.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Påverkan av alkohol eller narkotika är varken en ursäkt eller ett skäl för nedsättning av skadeståndsansvaret. Jämkning kan i stället ske exempelvis vid en allvarlig psykisk störning som inte är självförvållad.'
+  },
+
+  // TF 19 – Uppg 3H
+  {
+    type: 'tf',
+    q: 'Påstående: Chefsansvar är arbetsgivarens ansvar för skador som anställda orsakar i tjänsten.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Arbetsgivarens ansvar för skador som anställda orsakar i tjänsten kallas principalansvar, inte chefsansvar.'
+  },
+
+  // TF 20 – Uppg 3I
+  {
+    type: 'tf',
+    q: 'Påstående: Strikt ansvar är ansvar för skador som inte är orsakade medvetet eller av vårdslöshet.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. Vid strikt ansvar, som gäller till exempel farlig verksamhet och djurägares ansvar för sina djur, krävs inte att skadan orsakats medvetet eller genom vårdslöshet.'
+  },
+
+  // TF 21 – Uppg 3J
+  {
+    type: 'tf',
+    q: 'Påstående: Ägofredslagen reglerar ägarens ansvar för husdjur som hundar och katter.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Ägofredslagen reglerar i stället ansvaret för lantbrukets djur. Hund- respektive kattägares ansvar regleras av lagen om tillsyn över hundar och katter.'
+  },
+
+  // TF 22 – Uppg 3K
+  {
+    type: 'tf',
+    q: 'Påstående: Dagsvärdet är det en sak är värd vid tidpunkten för skadan.',
+    opts: ['Rätt', 'Fel'],
+    correct: 0,
+    expl: 'Påståendet är rätt. Dagsvärdet är vad en sak är värd, exempelvis på begagnatmarknaden, vid tidpunkten för skadan. Det används som ersättning vid en totalskada.'
+  },
+
+  // TF 23 – Uppg 3L
+  {
+    type: 'tf',
+    q: 'Påstående: En försäkring kan ge ersättning för skador orsakade av att försäkringstagaren begått ett brott.',
+    opts: ['Rätt', 'Fel'],
+    correct: 1,
+    expl: 'Påståendet är fel. Försäkringar täcker inte skadeståndsskyldighet för skador till följd av att försäkringstagaren begått ett brott.'
+  },
+
+  // ── DEL 3: VILKEN SLAGS SKADA (Uppg 4) ──
+
+  // MC 24 – Uppg 4A
+  {
+    type: 'mc',
+    q: 'En expert på tv-programmet Antikrundan har precis värderat en fin vas till 25 000 kronor när han vänder sig om och välter ner den på marken. Vasen går i tusen bitar. Vilken slags skada handlar det om?',
+    opts: ['Sakskada', 'Personskada', 'Ren förmögenhetsskada', 'Kränkning'],
+    correct: 0,
+    expl: 'Det är en sakskada, eftersom vasen är lös egendom som fysiskt förstörs. Sakskador är skador på fast eller lös egendom.'
+  },
+
+  // MC 25 – Uppg 4B
+  {
+    type: 'mc',
+    q: 'Anna blev otroligt förolämpad vid en publicering i Aftonbladet. Hon var tillfälligt häktad för ett allvarligt brott, och tidningen skrev om fallet som om hon var skyldig med både namn och bild på henne. Hon släpptes ur häktet och blev snabbt avskriven från fallet. Tidningen blev sedan fälld för förtal. Vilken slags skada handlar det om?',
+    opts: ['Kränkning', 'Personskada', 'Sakskada', 'Ren förmögenhetsskada'],
+    correct: 0,
+    expl: 'Det är en kränkning, det vill säga en känslomässig skada som rädsla, obehag och förnedring. Grovt förtal är ett brott som kan ge rätt till kränkningsersättning enligt skadeståndslagen 2 kap. 3 §.'
+  },
+
+  // MC 26 – Uppg 4C
+  {
+    type: 'mc',
+    q: 'Restaurang Trivas är nystartad. Ägaren Ester upptäcker att ett Instagramkonto startats om restaurangen där den kallas för "Skithuset", och att den som ligger bakom kontot är en konkurrent i samma område. Affärerna gick uselt och Ester förlorade nästan halva sin försäljning medan kontot var uppe. Konkurrenten dömdes för förtal. Vilken slags skada handlar det om?',
+    opts: ['Ren förmögenhetsskada', 'Sakskada', 'Personskada', 'Kränkning'],
+    correct: 0,
+    expl: 'Det är en ren förmögenhetsskada, eftersom det är en ekonomisk skada (förlorad försäljning) som inte hänger ihop med en person- eller sakskada. Skadan uppstod genom ett brott (förtal), vilket krävs för att en ren förmögenhetsskada ska ersättas enligt skadeståndslagen.'
+  },
+
+  // MC 27 – Uppg 4D
+  {
+    type: 'mc',
+    q: 'Den första riktiga vinterdagen i Hedemora halkade Britt på trottoaren utanför kommunhuset, som var glashal efter frost. Hon bröt höger lårbenshals och fick dessutom sjukhussjukan, och var sjuk i nästan ett år efter händelsen. Vilken slags skada handlar det om?',
+    opts: ['Personskada', 'Sakskada', 'Ren förmögenhetsskada', 'Kränkning'],
+    correct: 0,
+    expl: 'Det är en personskada, eftersom Britt drabbas av en fysisk skada (brutet lårben) samt efterföljande sjukdom. Personskador kan även ge rätt till ersättning för sveda och värk samt lyte och men.'
+  },
+
+  // ── DEL 4: UNDANTAG OCH JÄMKNING AV ANSVARET (Uppg 5) ──
+
+  // MC 28 – Uppg 5A
+  {
+    type: 'mc',
+    q: 'Hur kan skadeståndsansvaret jämkas för minderåriga?',
+    opts: [
+      'Ansvaret bedöms utifrån vad som är skäligt med hänsyn till ålder och utveckling, handlingen, ansvarsförsäkringar och övriga omständigheter',
+      'Skadeståndsansvaret faller alltid bort helt för den som är under 18 år',
+      'Vårdnadshavaren får alltid betala hela beloppet i stället för barnet',
+      'Barnet får alltid betala fullt skadestånd oavsett ålder'
+    ],
+    correct: 0,
+    expl: 'Minderårigas skadeståndsansvar begränsas till vad som är skäligt med hänsyn till ålder och utveckling, handlingen, ansvarsförsäkringar och övriga omständigheter. Vårdnadshavarens ansvar är dessutom begränsat till högst en femtedels prisbasbelopp per skadehändelse.'
+  },
+
+  // MC 29 – Uppg 5B
+  {
+    type: 'mc',
+    q: 'Hur kan ansvaret jämkas för skador orsakade av den som är svårt psykiskt sjuk?',
+    opts: [
+      'Ersättningen sätts ned till en nivå som är rimlig med hänsyn till personens sinnestillstånd, försäkring och ekonomiska förhållanden, förutsatt att störningen inte är självförvållad',
+      'Personen blir aldrig ersättningsskyldig om orsaken är en psykisk störning',
+      'Ersättningen jämkas bara om störningen är självförvållad, till exempel genom berusning',
+      'Personen får alltid betala fullt skadestånd oavsett sitt sinnestillstånd'
+    ],
+    correct: 0,
+    expl: 'Om skadan vållats på grund av en allvarlig psykisk störning som inte är självförvållad ska skadan ersättas i den utsträckning som är rimlig med hänsyn till personens sinnestillstånd, ansvarsförsäkring, ekonomiska omständigheter och annat.'
+  },
+
+  // MC 30 – Uppg 5C
+  {
+    type: 'mc',
+    q: 'Hur kan ansvaret jämkas när den drabbade själv har varit medverkande i händelseförloppet?',
+    opts: [
+      'Skadeståndet kan sättas ned om den skadelidande själv med uppsåt eller grov vårdslöshet medverkat till att skadan uppstod, till exempel vid nödvärn',
+      'Skadeståndet kan aldrig påverkas av att den skadelidande själv medverkat',
+      'Den skadelidande förlorar då automatiskt hela sin rätt till ersättning',
+      'Jämkning sker bara om den skadelidande var mer skyldig än den som orsakade skadan'
+    ],
+    correct: 0,
+    expl: 'En jämkning är tänkbar om den skadelidande själv med uppsåt eller grov vårdslöshet medverkat till att skadan uppstått, till exempel vid nödvärn eller nödrätt – som när en person som försvarar sig mot en angripare orsakar denne en tandskada.'
+  }
+
+];
+
+// ════════════════════════════════════════════════════════════
+// FISHER-YATES SHUFFLE
+// ════════════════════════════════════════════════════════════
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// ════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════
+let qs = [];      // shuffled questions with per-question state
+let cur = 0;      // current question index
+let score = 0;
+let elapsed = 0;
+let timerID = null;
+
+function buildState() {
+  const shuffled = shuffleArray([...QUESTIONS]);
+  qs = shuffled.map(q => {
+    const indices = q.opts.map((_, i) => i);
+    return {
+      ...q,
+      shuffledIdx: shuffleArray(indices), // original option indices in display order
+      selectedDisplay: null,              // which display position was clicked
+      answered: false
+    };
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// SCREENS
+// ════════════════════════════════════════════════════════════
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ════════════════════════════════════════════════════════════
+// TIMER
+// ════════════════════════════════════════════════════════════
+function fmt(s) {
+  const m = Math.floor(s / 60);
+  const ss = String(s % 60).padStart(2, '0');
+  return `⏱ ${m}:${ss}`;
+}
+function startTimer() {
+  elapsed = 0;
+  timerID = setInterval(() => {
+    elapsed++;
+    document.getElementById('timer').textContent = fmt(elapsed);
+  }, 1000);
+}
+function stopTimer() { clearInterval(timerID); }
+
+// ════════════════════════════════════════════════════════════
+// START
+// ════════════════════════════════════════════════════════════
+function startQuiz() {
+  buildState();
+  cur = 0;
+  score = 0;
+  show('screen-quiz');
+  startTimer();
+  render();
+}
+
+// ════════════════════════════════════════════════════════════
+// RENDER QUESTION
+// ════════════════════════════════════════════════════════════
+function render() {
+  const q = qs[cur];
+  const total = qs.length;
+
+  document.getElementById('progress-bar').style.width = (cur / total * 100) + '%';
+  document.getElementById('q-counter').textContent = `Fråga ${cur + 1} av ${total}`;
+  document.getElementById('score-pill').textContent = `Poäng: ${score}`;
+
+  const badgeWrap = document.getElementById('type-badge-wrap');
+  badgeWrap.innerHTML = q.type === 'mc'
+    ? '<span class="type-badge mc">Flerval</span>'
+    : '<span class="type-badge tf">Rätt eller Fel</span>';
+
+  document.getElementById('q-text').textContent = q.q;
+
+  const optsEl = document.getElementById('opts');
+  optsEl.innerHTML = '';
+  optsEl.className = 'opts' + (q.type === 'tf' ? ' two' : '');
+
+  q.shuffledIdx.forEach((origIdx, displayPos) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = q.opts[origIdx];
+    btn.disabled = q.answered;
+
+    if (q.answered) {
+      const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+      if (displayPos === correctDisplay)       btn.classList.add('correct');
+      else if (displayPos === q.selectedDisplay) btn.classList.add('wrong');
+      else                                      btn.classList.add('dimmed');
+    } else {
+      btn.addEventListener('click', () => handleAnswer(displayPos));
+    }
+
+    optsEl.appendChild(btn);
+  });
+
+  document.getElementById('btn-back').style.display = cur > 0 ? 'inline-block' : 'none';
+  document.getElementById('btn-next').style.display = q.answered ? 'inline-block' : 'none';
+  document.getElementById('btn-next').textContent =
+    cur === total - 1 ? 'Se resultat →' : 'Nästa →';
+}
+
+// ════════════════════════════════════════════════════════════
+// HANDLE ANSWER
+// ════════════════════════════════════════════════════════════
+function handleAnswer(displayPos) {
+  const q = qs[cur];
+  if (q.answered) return;
+
+  q.answered = true;
+  q.selectedDisplay = displayPos;
+
+  const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+  const isCorrect = displayPos === correctDisplay;
+  if (isCorrect) score++;
+
+  const btns = document.querySelectorAll('.opt-btn');
+  btns.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === correctDisplay)       btn.classList.add('correct');
+    else if (i === displayPos)      btn.classList.add('wrong');
+    else                            btn.classList.add('dimmed');
+  });
+
+  document.getElementById('btn-next').style.display = 'inline-block';
+  document.getElementById('btn-next').textContent =
+    cur === qs.length - 1 ? 'Se resultat →' : 'Nästa →';
+  document.getElementById('score-pill').textContent = `Poäng: ${score}`;
+
+  setTimeout(() => showModal(isCorrect, q.expl), 600);
+}
+
+// ════════════════════════════════════════════════════════════
+// MODAL
+// ════════════════════════════════════════════════════════════
+function showModal(isCorrect, expl) {
+  document.getElementById('modal-icon').textContent    = isCorrect ? '✅' : '❌';
+  document.getElementById('modal-verdict').textContent = isCorrect ? 'Rätt svar!' : 'Fel svar';
+  document.getElementById('modal-verdict').className   = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
+  document.getElementById('modal-expl').textContent    = expl;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  goNext();
+}
+
+// ════════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════════
+function goBack() {
+  if (cur > 0) { cur--; render(); }
+}
+
+function goNext() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  if (cur < qs.length - 1) {
+    cur++;
+    render();
+  } else {
+    showResults();
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// RESULTS
+// ════════════════════════════════════════════════════════════
+function showResults() {
+  stopTimer();
+  show('screen-result');
+
+  const total = qs.length;
+  const wrong = total - score;
+  const pct   = Math.round(score / total * 100);
+
+  document.getElementById('r-score').textContent   = `${score}/${total}`;
+  document.getElementById('s-correct').textContent = score;
+  document.getElementById('s-wrong').textContent   = wrong;
+  document.getElementById('s-pct').textContent     = pct + '%';
+
+  const m = Math.floor(elapsed / 60);
+  const s = String(elapsed % 60).padStart(2, '0');
+  document.getElementById('r-time').textContent = `Tid: ${m}:${s}`;
+
+  let title, msg;
+  if (pct >= 90)      { title = '🏆 Utmärkt!';          msg = 'Du behärskar skadeståndsrätten på hög nivå.'; }
+  else if (pct >= 75) { title = '✅ Redo för provet!';   msg = 'Bra resultat – du har koll på det centrala.'; }
+  else if (pct >= 55) { title = '📖 Öva lite till';      msg = 'Du är på rätt spår men behöver repetera en del.'; }
+  else                { title = '💡 Fortsätt repetera'; msg = 'Gå igenom materialet och försök igen.'; }
+
+  document.getElementById('r-title').textContent = title;
+  document.getElementById('r-msg').textContent   = msg;
+
+  // Missade frågor
+  const missedEl = document.getElementById('missed-section');
+  const missed = qs.filter(q => q.answered && q.shuffledIdx.indexOf(q.correct) !== q.selectedDisplay);
+  if (missed.length > 0) {
+    missedEl.innerHTML = `<div class="section-hd">Missade frågor (${missed.length})</div>`;
+    missed.forEach(q => {
+      const div = document.createElement('div');
+      div.className = 'missed-item';
+      div.textContent = q.q;
+      missedEl.appendChild(div);
+    });
+  } else {
+    missedEl.innerHTML = '';
+  }
+
+  // Fullständigt facit
+  const facitEl = document.getElementById('facit-list');
+  facitEl.innerHTML = '';
+  qs.forEach((q, i) => {
+    const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+    const isCorrect  = q.answered && q.selectedDisplay === correctDisplay;
+    const notAnswered = !q.answered;
+
+    const div = document.createElement('div');
+    div.className = 'facit-item ' + (notAnswered ? '' : isCorrect ? 'fc' : 'fw');
+
+    const correctOptText  = q.opts[q.correct];
+    const selectedOptText = q.answered ? q.opts[q.shuffledIdx[q.selectedDisplay]] : null;
+
+    let inner = `<div class="fi-num">Fråga ${i + 1}</div>`;
+    inner += `<div class="fi-q">${q.q}</div>`;
+
+    if (notAnswered) {
+      inner += `<div class="fi-row"><span class="lbl">Ditt svar: </span>— (inte besvarad)</div>`;
+      inner += `<div class="fi-row ra"><span class="lbl">Rätt svar: </span>${correctOptText}</div>`;
+    } else if (isCorrect) {
+      inner += `<div class="fi-row ya-ok">✓ <span class="lbl">Ditt svar: </span>${selectedOptText}</div>`;
+    } else {
+      inner += `<div class="fi-row ya-bad">✗ <span class="lbl">Ditt svar: </span>${selectedOptText}</div>`;
+      inner += `<div class="fi-row ra"><span class="lbl">Rätt svar: </span>${correctOptText}</div>`;
+    }
+
+    div.innerHTML = inner;
+    facitEl.appendChild(div);
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// RESTART
+// ════════════════════════════════════════════════════════════
+function restartQuiz() {
+  stopTimer();
+  show('screen-start');
+}
+</script>
+</body>
+</html>
