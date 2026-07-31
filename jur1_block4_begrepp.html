@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Begrepp – Block 4 Juridik</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  body { font-family: 'EB Garamond', serif; background: #f8fafc; }
+  .concept-badge { background: #ccfbf1; color: #0d9488; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const PRIMARY = "#0d9488";
+
+const concepts = [
+  { term: "Kollektivavtal", definition: "Avtal mellan ett fackförbund och en arbetsgivarorganisation." },
+  { term: "Fredsplikt", definition: "Innebär att så länge ett kollektivavtal gäller får parterna inte vidta stridsåtgärder." },
+  { term: "Arbetsdomstolen (AD)", definition: "En domstol som dömer i arbetsrättsliga konflikter." },
+  { term: "Tidsbegränsad anställning", definition: "Anställning för begränsad tid, exempelvis vikariat eller säsongsarbete." },
+  { term: "Provanställning", definition: "Provperiod som inleder en tillsvidareanställning." },
+  { term: "Sakliga skäl för uppsägning", definition: "Arbetsbrist eller skäl som rör arbetstagaren personligen, till exempel att arbetstagaren misskött sitt arbete." },
+  { term: "Turordningslista", definition: "En lista där de anställda står i den tidsordning de anställdes, används vid uppsägning på grund av arbetsbrist." },
+  { term: "Avsked", definition: "Arbetsgivarens rätt att avsluta en anställning direkt utan uppsägningstid vid grov misskötsel." },
+  { term: "Föreningsrätt", definition: "Rätten för både anställda och företag att organisera sig. Får inte kränkas." },
+  { term: "Informationsplikt", definition: "Arbetsgivarens skyldighet att informera de fackliga organisationerna om företagets ekonomi och utveckling." },
+  { term: "Diskrimineringsgrunderna", definition: "Är exempelvis kön, ålder, religion och sexuell läggning." },
+  { term: "Diskrimineringsombudsmannen (DO)", definition: "Utövar tillsyn och driver enskilda fall av diskriminering i domstol." },
+  { term: "Semesterår", definition: "Det år semestern tas ut, räknas enligt lagen från den 1 april till den 31 mars." },
+  { term: "Uppsägning", definition: "Att avsluta en anställning. Det kan både den anställda och arbetsgivaren göra." },
+  { term: "Uppsägningstid", definition: "Den tid en anställd jobbar kvar efter att ha sagt upp sig eller blivit uppsagd." },
+  { term: "Arbetsmiljö", definition: "Alla fysiska och psykiska förutsättningar som finns på en arbetsplats." },
+  { term: "Fysisk arbetsmiljö", definition: "Allt som påverkar kroppen, såsom belysning, luft, kemiska ämnen och ergonomi." },
+  { term: "Psykisk arbetsmiljö", definition: "Psykiska och sociala faktorer, som ledarskap, organisation och stress." },
+  { term: "Arbetssjukdom", definition: "Besvär orsakade av långvarig exponering i en ohälsosam arbetsmiljö." },
+  { term: "Systematiskt arbetsmiljöarbete", definition: "Arbetsgivaren ska på ett organiserat sätt samverka med de anställda om arbetsmiljön." },
+  { term: "Skyddsombud", definition: "De anställdas företrädare i arbetsmiljöfrågor." },
+  { term: "Skyddskommitté", definition: "En samverkanskommitté som ska finnas på arbetsplatser med fler än 50 anställda och består av representanter för arbetsgivare och arbetstagare." },
+  { term: "Arbetsmiljöverket", definition: "Myndighet som övervakar och utfärdar föreskrifter för arbetsmiljön." },
+  { term: "Arbetsmiljöverkets föreskrifter", definition: "Praktiska detaljföreskrifter för arbetsmiljön." },
+  { term: "Jourtid", definition: "Arbetstid där den anställda står till förfogande på arbetsplatsen men inte arbetar." },
+  { term: "Allmän övertid", definition: "Får vara högst 48 timmar under en fyraveckorsperiod eller 50 timmar under en månad, max 200 timmar per år." },
+  { term: "Nödfallsövertid", definition: "Får tas ut utan tidsbegränsning vid en nödsituation för att rädda liv, hälsa och egendom." },
+  { term: "Mertid", definition: "Arbetstid utöver ordinarie arbetstid för en deltidsanställd." },
+  { term: "Dygnsvila", definition: "Sammanhängande ledighet på minst elva timmar under en 24-timmarsperiod." },
+  { term: "Rast", definition: "Avbrott i arbetet, praxis är 30 minuter. Ska läggas in efter fem timmars arbete. Arbetstagaren har då rätt att lämna arbetsplatsen." },
+];
+
+function goBack() {
+  const ref = document.referrer;
+  if (ref && ref.indexOf(window.location.host) !== -1) {
+    history.back();
+  } else {
+    window.location.href = "index.html";
+  }
+}
+
+function Header() {
+  return (
+    <div className="flex items-center justify-between max-w-3xl mx-auto px-4 pt-6 pb-2">
+      <a
+        href="index.html"
+        onClick={(e) => { e.preventDefault(); goBack(); }}
+        className="text-sm font-medium text-slate-500 hover:text-[#0d9488] transition-colors"
+      >
+        ← Tillbaka till startsidan
+      </a>
+      <h1 className="text-2xl font-bold italic text-center text-slate-800 tracking-wide">
+        Block 4 — Juridik
+      </h1>
+      <div className="w-32"></div>
+    </div>
+  );
+}
+
+function ViewToggle() {
+  const views = ["Lista", "Flashcards", "Lucktext", "Scenario", "Icke-ex."];
+  return (
+    <div className="flex justify-center flex-wrap gap-1 max-w-3xl mx-auto px-4 mt-4 mb-8">
+      <div className="bg-white rounded-full p-1 shadow-sm border border-slate-200 flex flex-wrap gap-1">
+        {views.map((v) => (
+          <button
+            key={v}
+            disabled={v !== "Lista"}
+            className={
+              "px-4 py-2 rounded-full text-sm font-semibold transition-colors " +
+              (v === "Lista"
+                ? "text-white"
+                : "text-slate-400 cursor-not-allowed")
+            }
+            style={v === "Lista" ? { background: PRIMARY } : {}}
+          >
+            {v}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ListView() {
+  return (
+    <div className="max-w-3xl mx-auto px-4 pb-16 flex flex-col gap-3">
+      {concepts.map((c, i) => (
+        <div
+          key={c.term}
+          className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow p-5 flex gap-4 items-start"
+          style={{ borderLeft: `8px solid ${PRIMARY}` }}
+        >
+          <span className="concept-badge flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">
+            {i + 1}
+          </span>
+          <div>
+            <p className="font-bold text-slate-800 text-lg">{c.term}</p>
+            <p className="text-slate-500 mt-1 leading-snug">{c.definition}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="text-center text-slate-400 text-sm italic pb-10">
+      Källa: Juridik nivå 1, begreppslista
+    </footer>
+  );
+}
+
+function App() {
+  return (
+    <div>
+      <Header />
+      <ViewToggle />
+      <ListView />
+      <Footer />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
