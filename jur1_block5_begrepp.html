@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Begrepp – Block 5 Juridik</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  body { font-family: 'EB Garamond', serif; background: #f8fafc; }
+  .concept-badge { background: #ccfbf1; color: #0d9488; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const PRIMARY = "#0d9488";
+const PRIMARY_LIGHT = "#ccfbf1";
+const PRIMARY_TEXT = "#134e4a";
+
+const concepts = [
+  { term: "Skadestånd", definition: "Ersättning för en skada." },
+  { term: "Skadeståndslagen", definition: "Den lag som reglerar skadestånd i alla situationer utom i avtalsförhållanden." },
+  { term: "Skadestånd i avtalsförhållande", definition: "Skadestånd som ska regleras till följd av ett avtal mellan två parter." },
+  { term: "Personskada", definition: "Fysisk eller psykisk skada på en person." },
+  { term: "Sakskada", definition: "Skada på fast eller lös egendom." },
+  { term: "Ren förmögenhetsskada", definition: "Ekonomisk skada som inte hänger ihop med en person- eller sakskada." },
+  { term: "Kränkning", definition: "Känslor av rädsla, obehag, förnedring och liknande." },
+  { term: "Skadeståndsansvar", definition: "Har den som orsakat en skada avsiktligt eller genom vårdslöshet." },
+  { term: "Ersättning för kränkning", definition: "Kränkning ersätts normalt med ett belopp som beror på allvaret i kränkningen. Det finns ett schablonbelopp för många kränkningar." },
+  { term: "Adekvat kausalitet", definition: "Det direkta och relevanta sambandet som krävs mellan en handling och en skada för att skadeståndsansvar ska uppstå." },
+  { term: "Jämkning av skadestånd", definition: "Innebär en sänkning av skadeståndet i vissa situationer." },
+  { term: "Minderårigas skadeståndsansvar", definition: "Ansvar för skador som de orsakar med hänsyn till ålder och utveckling, handlingen, ansvarsförsäkringar och övriga omständigheter." },
+  { term: "Vårdnadshavarens ansvar", definition: "Gäller för de skador som barn orsakar, men med högst en femtedels prisbasbelopp per skada." },
+  { term: "Principalansvar", definition: "Arbetsgivarens ansvar för skador som anställda orsakar i tjänsten." },
+  { term: "Strikt ansvar", definition: "Ansvar för skador även om de inte uppstått till följd av vårdslöshet." },
+  { term: "Lagen om tillsyn över hundar och katter", definition: "Reglerar hund- respektive kattägares ansvar." },
+  { term: "Ägofredslagen", definition: "Regler bland annat om ansvar för lantbrukets djur." },
+  { term: "Ersättning för personskada", definition: "Kan exempelvis vara skadestånd för sjukvårds-, medicin- och reskostnader samt för inkomstbortfall. Även bestående skador kan ersättas." },
+  { term: "Ersättning för sakskador", definition: "Sakskador ersätts med värdet eller kostnaden för reparation." },
+  { term: "Dagsvärdet", definition: "Vad en sak är värd, exempelvis på begagnatmarknaden, vid tidpunkten för skadan." },
+  { term: "Schablon", definition: "Ett belopp ur en lista med tumregler för hur en skada ska ersättas." },
+  { term: "Brottsoffermyndigheten", definition: "En statlig myndighet som främjar brottsoffers rättigheter." },
+  { term: "Skadeståndsprocessen", definition: "Skadestånd kan antingen rättsligt behandlas genom en civilprocess/dom i ett tvistemål efter stämning eller beslutas vid en brottmålsrättegång." },
+  { term: "Försäkringsavtalslagen", definition: "En skyddslagstiftning som reglerar person- och sakförsäkringar. Reglerna är tvingande till försäkringstagarens fördel." },
+  { term: "Hemförsäkring", definition: "En paketförsäkring för olika situationer som finns i hemmet." },
+  { term: "Ansvarsskydd", definition: "Täcker skadeståndskrav som riktas mot alla som ingår i försäkringen, både vuxna och barn. Tar även över föräldrarnas ansvar för skadeståndsskyldighet i samband med skador som orsakats av barn." },
+  { term: "Trafikförsäkring", definition: "Nödvändig försäkring för motorfordon." },
+  { term: "Hel- och halvförsäkring", definition: "Frivilliga försäkringar för motorfordon som täcker olika typer av skador. Helförsäkringen täcker även skador på den egna bilen om föraren orsakat en krock, vilket inte halvförsäkringen gör." },
+  { term: "Skadereglering", definition: "Försäkringsbolagets bedömning av rätt till ersättning för en skada." },
+  { term: "Självrisk", definition: "Det belopp som inte ersätts av försäkringsbolaget." },
+];
+
+function goBack() {
+  const ref = document.referrer;
+  if (ref && ref.indexOf(window.location.host) !== -1) {
+    history.back();
+  } else {
+    window.location.href = "index.html";
+  }
+}
+
+function Header() {
+  return (
+    <div className="flex items-center justify-between max-w-3xl mx-auto px-4 pt-6 pb-2">
+      <a
+        href="index.html"
+        onClick={(e) => { e.preventDefault(); goBack(); }}
+        className="text-sm font-medium text-slate-500 hover:text-[#0d9488] transition-colors"
+      >
+        ← Tillbaka till startsidan
+      </a>
+      <h1 className="text-2xl font-bold italic text-center text-slate-800 tracking-wide">
+        Block 5 — Juridik
+      </h1>
+      <div className="w-32"></div>
+    </div>
+  );
+}
+
+function ViewToggle({ view, setView }) {
+  const views = ["Lista", "Flashcards", "Lucktext", "Scenario", "Icke-ex."];
+  const enabled = ["Lista"];
+  return (
+    <div className="flex justify-center flex-wrap gap-1 max-w-3xl mx-auto px-4 mt-4 mb-8">
+      <div className="bg-white rounded-full p-1 shadow-sm border border-slate-200 flex flex-wrap gap-1">
+        {views.map((v) => (
+          <button
+            key={v}
+            disabled={!enabled.includes(v)}
+            onClick={() => enabled.includes(v) && setView(v)}
+            className={
+              "px-4 py-2 rounded-full text-sm font-semibold transition-colors " +
+              (v === view
+                ? "text-white"
+                : enabled.includes(v)
+                ? "text-slate-500 hover:text-slate-700"
+                : "text-slate-400 cursor-not-allowed")
+            }
+            style={v === view ? { background: PRIMARY } : {}}
+          >
+            {v}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ListView() {
+  return (
+    <div className="max-w-3xl mx-auto px-4 pb-16 flex flex-col gap-3">
+      {concepts.map((c, i) => (
+        <div
+          key={c.term}
+          className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow p-5 flex gap-4 items-start"
+          style={{ borderLeft: `8px solid ${PRIMARY}` }}
+        >
+          <span className="concept-badge flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">
+            {i + 1}
+          </span>
+          <div>
+            <p className="font-bold text-slate-800 text-lg">{c.term}</p>
+            <p className="text-slate-500 mt-1 leading-snug">{c.definition}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="text-center text-slate-400 text-sm italic pb-10">
+      Källa: Juridik nivå 1, begreppslista
+    </footer>
+  );
+}
+
+function App() {
+  const [view, setView] = useState("Lista");
+  return (
+    <div>
+      <Header />
+      <ViewToggle view={view} setView={setView} />
+      {view === "Lista" && <ListView />}
+      <Footer />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
