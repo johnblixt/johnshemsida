@@ -62,6 +62,57 @@ const concepts = [
   { term: "Självrisk", definition: "Det belopp som inte ersätts av försäkringsbolaget." },
 ];
 
+const lucktextSentences = [
+  "Efter att grannens fönster krossats av en fotboll fick den skyldige betala ___ för reparationen.",
+  "När skadan inte uppstått i något avtalsförhållande är det ___ som avgör vem som ska betala.",
+  "När en hantverkare orsakar en skada under ett uppdrag hen avtalat om med kunden regleras ersättningen som ___.",
+  "Efter bilolyckan fick föraren brutna revben och konstaterades ha lidit en ___.",
+  "Bilens lackering repades i kollisionen, vilket räknas som en ___.",
+  "Revisorn gav ett felaktigt råd som ledde till att företaget förlorade pengar, utan att någon person eller sak skadades fysiskt — det kallas en ___.",
+  "Att bli utsatt för ett brott kan orsaka rädsla och förnedring, vilket i lagens mening räknas som en ___.",
+  "Den som med flit eller genom vårdslöshet orsakat en skada bär normalt ___.",
+  "Domstolen dömde ut ett schablonbelopp till brottsoffret som ___.",
+  "För att skadestånd ska kunna krävas måste det finnas ett tillräckligt direkt samband mellan handlingen och skadan, vilket kallas ___.",
+  "I vissa fall kan domstolen sänka det belopp som ska betalas i skadestånd, en så kallad ___.",
+  "När en tolvåring råkar krossa en ruta bedöms ansvaret utifrån barnets ålder och utveckling, enligt reglerna om ___.",
+  "Föräldrarna till barnet som orsakade skadan fick betala, men aldrig mer än en femtedels prisbasbelopp, enligt ___.",
+  "När en anställd på lagret av misstag skadar en kollega under arbetstid är det arbetsgivaren som får bära ansvaret, enligt ___.",
+  "Ägaren till kraftledningen fick betala skadestånd trots att ingen vårdslöshet kunde bevisas, eftersom verksamheten omfattas av ___.",
+  "När grannens hund sprang lös och bet en förbipasserande blev det tydligt vems ansvar det var enligt ___.",
+  "När kon rymde från betesmarken och orsakade skada på grannens gröda reglerades ansvaret enligt ___.",
+  "Efter olyckan fick den skadade pengar för sjukvårdskostnader, förlorad inkomst och ett bestående men, det vill säga ___.",
+  "Den krossade rutan ersattes med kostnaden för en ny, enligt reglerna om ___.",
+  "Den stulna cykeln ersattes med vad en likadan, begagnad cykel skulle kosta att köpa just nu, det vill säga ___.",
+  "Istället för att räkna ut exakt belopp använde försäkringsbolaget en färdig tumregel ur en lista, en så kallad ___.",
+  "Den som utsatts för ett brott kan vända sig till ___ för att få hjälp att driva sin rätt till ersättning.",
+  "Skadeståndet kan antingen krävas i en civilrättslig tvist efter stämning eller i samband med en brottmålsrättegång, det kallas ___.",
+  "Reglerna som skyddar den som tecknat en försäkring och som inte går att avtala bort till kundens nackdel finns i ___.",
+  "Familjen tecknade en paketförsäkring som täcker det mesta som kan hända i bostaden, en så kallad ___.",
+  "När barnet av misstag orsakade en skada täcktes föräldrarnas skadeståndsansvar av familjens ___ i hemförsäkringen.",
+  "Alla motorfordon måste enligt lag ha en ___ för att få köras på vägarna.",
+  "Bilägaren som själv orsakat krocken fick ändå ersättning för skadorna på sin egen bil eftersom hen valt den dyrare av de två frivilliga försäkringarna, ___.",
+  "Försäkringsbolaget gick igenom underlaget och bedömde hur mycket kunden hade rätt till, en process som kallas ___.",
+  "Av totalkostnaden på 10 000 kronor fick bilägaren själv betala de första 2 000 kronorna, den så kallade ___.",
+];
+
+const lucktextAnswerOverrides = {};
+
+const lucktextItems = concepts.map((c, i) => ({
+  term: c.term,
+  sentence: lucktextSentences[i],
+  explanation: c.definition,
+  answers: lucktextAnswerOverrides[c.term] || [c.term],
+}));
+
+function normalizeAnswer(str) {
+  return str.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+function isCorrectAnswer(input, item) {
+  const norm = normalizeAnswer(input);
+  return item.answers.some((a) => normalizeAnswer(a) === norm);
+}
+
 function goBack() {
   const ref = document.referrer;
   if (ref && ref.indexOf(window.location.host) !== -1) {
@@ -91,7 +142,7 @@ function Header() {
 
 function ViewToggle({ view, setView }) {
   const views = ["Lista", "Flashcards", "Lucktext", "Scenario", "Icke-ex."];
-  const enabled = ["Lista", "Flashcards"];
+  const enabled = ["Lista", "Flashcards", "Lucktext"];
   return (
     <div className="flex justify-center flex-wrap gap-1 max-w-3xl mx-auto px-4 mt-4 mb-8">
       <div className="bg-white rounded-full p-1 shadow-sm border border-slate-200 flex flex-wrap gap-1">
@@ -280,6 +331,175 @@ function FlashcardView() {
   );
 }
 
+function LucktextView() {
+  const [answers, setAnswers] = useState(() =>
+    lucktextItems.map(() => ({ value: "", status: "unanswered", attempts: 0 }))
+  );
+
+  const correctCount = answers.filter((a) => a.status === "correct").length;
+  const doneCount = answers.filter((a) => a.status === "correct" || a.status === "revealed").length;
+  const allDone = doneCount === lucktextItems.length;
+
+  const updateAnswer = (idx, patch) => {
+    setAnswers((prev) => {
+      const next = [...prev];
+      next[idx] = { ...next[idx], ...patch };
+      return next;
+    });
+  };
+
+  const checkAnswer = (idx) => {
+    const item = lucktextItems[idx];
+    const state = answers[idx];
+    if (state.status === "correct" || state.status === "revealed") return;
+    if (isCorrectAnswer(state.value, item)) {
+      updateAnswer(idx, { status: "correct" });
+    } else {
+      const attempts = state.attempts + 1;
+      updateAnswer(idx, { attempts, status: attempts >= 2 ? "wrong" : "warn" });
+    }
+  };
+
+  const rattaAlla = () => {
+    setAnswers((prev) =>
+      prev.map((a, i) =>
+        a.status === "correct" ? a : { ...a, status: "revealed", value: lucktextItems[i].term }
+      )
+    );
+  };
+
+  const restart = () => {
+    setAnswers(lucktextItems.map(() => ({ value: "", status: "unanswered", attempts: 0 })));
+  };
+
+  const gradeFeedback = (score, total) => {
+    const pct = score / total;
+    if (pct >= 0.9) return "Utmärkt! Du är redo för provet! 🎉";
+    if (pct >= 0.7) return "Bra jobbat! Nästan i mål.";
+    if (pct >= 0.5) return "Godkänt, men öva gärna lite till.";
+    return "Öva lite till på begreppen innan provet.";
+  };
+
+  return (
+    <div className="max-w-3xl mx-auto px-4 pb-16">
+      <p className="text-sm text-slate-500 mb-4 text-center">
+        Fyll i rätt begrepp i luckan och tryck Enter för att kolla ditt svar. Begrepp du klarat stryks över nedan.
+      </p>
+
+      <div className="bg-white rounded-2xl shadow-sm p-4 mb-8 border border-slate-200">
+        <p className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">Begreppsbank</p>
+        <div className="flex flex-wrap gap-2">
+          {lucktextItems.map((item, i) => {
+            const st = answers[i].status;
+            const done = st === "correct" || st === "revealed";
+            return (
+              <span
+                key={item.term}
+                className={
+                  "px-3 py-1 rounded-full text-xs font-semibold border " +
+                  (done
+                    ? st === "correct"
+                      ? "line-through text-green-600 bg-green-50 border-green-200"
+                      : "line-through text-slate-400 bg-slate-100 border-slate-200"
+                    : "text-slate-600 bg-slate-50 border-slate-200")
+                }
+              >
+                {item.term}
+              </span>
+            );
+          })}
+        </div>
+      </div>
+
+      {allDone && (
+        <div className="bg-white border-2 rounded-3xl p-8 text-center mb-8 shadow-sm" style={{ borderColor: PRIMARY }}>
+          <p className="text-2xl font-bold text-slate-800 mb-2">
+            {correctCount} / {lucktextItems.length} rätt
+          </p>
+          <p className="text-slate-500 mb-6">{gradeFeedback(correctCount, lucktextItems.length)}</p>
+          <button
+            onClick={restart}
+            className="text-white px-8 py-3 rounded-2xl font-bold transition-colors"
+            style={{ background: PRIMARY }}
+          >
+            Börja om
+          </button>
+        </div>
+      )}
+
+      {!allDone && (
+        <div className="flex justify-end mb-4">
+          <button onClick={rattaAlla} className="text-sm font-semibold text-slate-500 hover:text-slate-700 underline">
+            Rätta alla
+          </button>
+        </div>
+      )}
+
+      <div className="flex flex-col gap-4">
+        {lucktextItems.map((item, i) => {
+          const state = answers[i];
+          const [before, after] = item.sentence.split("___");
+          const locked = state.status === "correct" || state.status === "revealed";
+          const borderColor =
+            state.status === "correct"
+              ? "#16a34a"
+              : state.status === "revealed" || state.status === "wrong"
+              ? "#dc2626"
+              : "#e2e8f0";
+          const bg =
+            state.status === "correct"
+              ? "#dcfce7"
+              : state.status === "revealed" || state.status === "wrong"
+              ? "#fee2e2"
+              : "#ffffff";
+
+          return (
+            <div
+              key={item.term}
+              className="rounded-2xl p-5 shadow-sm border-2 transition-colors"
+              style={{ borderColor, background: bg }}
+            >
+              <p className="text-slate-800 leading-relaxed mb-2">
+                <span className="text-xs text-slate-400 font-bold mr-2">{i + 1}.</span>
+                {before}
+                <input
+                  type="text"
+                  value={state.value}
+                  disabled={locked}
+                  onChange={(e) => updateAnswer(i, { value: e.target.value })}
+                  onKeyDown={(e) => e.key === "Enter" && checkAnswer(i)}
+                  className="inline-block mx-1 px-2 py-1 border-b-2 border-slate-300 focus:outline-none focus:border-slate-600 bg-transparent font-semibold text-slate-800 disabled:text-slate-600"
+                  style={{ borderColor: locked ? borderColor : undefined, minWidth: "140px" }}
+                  placeholder="skriv begrepp..."
+                />
+                {after}
+              </p>
+
+              {state.status === "warn" && (
+                <p className="text-orange-500 text-sm font-semibold mt-1">Är du säker att du stavat rätt? Försök igen.</p>
+              )}
+              {state.status === "wrong" && (
+                <p className="text-red-600 text-sm font-semibold mt-1">
+                  Fel svar. Försök igen eller tryck på "Rätta alla".
+                </p>
+              )}
+              {locked && (
+                <div className="mt-2 text-sm">
+                  <p className={state.status === "correct" ? "text-green-700 font-bold" : "text-red-700 font-bold"}>
+                    {state.status === "correct" ? "Rätt: " : "Rätt svar: "}
+                    {item.term}
+                  </p>
+                  <p className="text-slate-600 mt-1">{item.explanation}</p>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function Footer() {
   return (
     <footer className="text-center text-slate-400 text-sm italic pb-10">
@@ -296,6 +516,7 @@ function App() {
       <ViewToggle view={view} setView={setView} />
       {view === "Lista" && <ListView />}
       {view === "Flashcards" && <FlashcardView />}
+      {view === "Lucktext" && <LucktextView />}
       <Footer />
     </div>
   );
