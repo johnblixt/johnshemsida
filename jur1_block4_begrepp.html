@@ -26,6 +26,8 @@
 const { useState, useEffect } = React;
 
 const PRIMARY = "#0d9488";
+const PRIMARY_LIGHT = "#ccfbf1";
+const PRIMARY_TEXT = "#134e4a";
 
 const concepts = [
   { term: "Kollektivavtal", definition: "Avtal mellan ett fackförbund och en arbetsgivarorganisation." },
@@ -105,6 +107,39 @@ const lucktextItems = concepts.map((c, i) => ({
   answers: lucktextAnswerOverrides[c.term] || [c.term],
 }));
 
+const scenarioData = [
+  { id: 1, term: "Kollektivavtal", scenario: "Fackförbundet inom handeln och arbetsgivarorganisationen för butiksägare skriver tillsammans under en gemensam överenskommelse som reglerar löner och villkor för alla anställda i branschen.", definition: "Avtal mellan ett fackförbund och en arbetsgivarorganisation." },
+  { id: 2, term: "Fredsplikt", scenario: "Trots missnöje med lönenivån avstår facket från att arrangera en strejk, eftersom den nu gällande överenskommelsen med arbetsgivarorganisationen förbjuder båda sidor att sätta press genom stridsåtgärder så länge den löper.", definition: "Innebär att så länge ett kollektivavtal gäller får parterna inte vidta stridsåtgärder." },
+  { id: 3, term: "Arbetsdomstolen (AD)", scenario: "En tvist om huruvida en anställd blev avslutad på korrekta grunder avgörs slutligt i en särskild domstol som enbart hanterar konflikter mellan arbetsgivare och arbetstagare.", definition: "En domstol som dömer i arbetsrättsliga konflikter." },
+  { id: 4, term: "Tidsbegränsad anställning", scenario: "En student anställs för att täcka upp under en kollegas föräldraledighet och vet redan från start exakt vilket datum tjänsten upphör.", definition: "Anställning för begränsad tid, exempelvis vikariat eller säsongsarbete." },
+  { id: 5, term: "Provanställning", scenario: "De första sex månaderna på det nya jobbet är en inledande testperiod som, om allt går bra, automatiskt övergår i en fast tjänst utan att arbetsgivaren behöver vidta någon särskild åtgärd.", definition: "Provperiod som inleder en tillsvidareanställning." },
+  { id: 6, term: "Sakliga skäl för uppsägning", scenario: "Innan arbetsgivaren kan avsluta en anställning med löpande arbetstid kvar måste hen kunna visa antingen att det saknas arbete att utföra eller att den anställda själv skött sitt arbete dåligt.", definition: "Arbetsbrist eller skäl som rör arbetstagaren personligen, till exempel att arbetstagaren misskött sitt arbete." },
+  { id: 7, term: "Turordningslista", scenario: "När företaget tvingas dra ner på personal avgörs vilka som får gå kvar utifrån vem som anställdes senast, enligt principen sist in, först ut.", definition: "En lista där de anställda står i den tidsordning de anställdes, används vid uppsägning på grund av arbetsbrist." },
+  { id: 8, term: "Avsked", scenario: "Efter att ha stulit pengar ur kassan får den anställda lämna arbetsplatsen samma dag, utan någon tid kvar att arbeta.", definition: "Arbetsgivarens rätt att avsluta en anställning direkt utan uppsägningstid vid grov misskötsel." },
+  { id: 9, term: "Föreningsrätt", scenario: "En arbetsgivare hotar att avsluta en anställds tjänst för att personen gått med i facket, trots att lagen skyddar både anställdas och företagens rätt att ansluta sig till en organisation.", definition: "Rätten för både anställda och företag att organisera sig. Får inte kränkas." },
+  { id: 10, term: "Informationsplikt", scenario: "Ledningen kallar regelbundet till möte med de fackliga representanterna för att berätta om företagets ekonomiska läge och planerade förändringar, precis som lagen kräver.", definition: "Arbetsgivarens skyldighet att informera de fackliga organisationerna om företagets ekonomi och utveckling." },
+  { id: 11, term: "Diskrimineringsgrunderna", scenario: "En lista över vilka personliga egenskaper som aldrig får ligga till grund för att någon missgynnas omfattar bland annat kön, ålder, trosuppfattning och sexuell läggning.", definition: "Är exempelvis kön, ålder, religion och sexuell läggning." },
+  { id: 12, term: "Diskrimineringsombudsmannen (DO)", scenario: "En kvinna som blivit förbisedd vid en befordran på grund av sin graviditet vänder sig till en myndighet som kan utreda fallet och företräda henne i en rättsprocess.", definition: "Utövar tillsyn och driver enskilda fall av diskriminering i domstol." },
+  { id: 13, term: "Semesterår", scenario: "Den tolvmånadersperiod som används för att räkna ut hur mycket ledighet en anställd tjänat in börjar inte i januari, utan mitt i våren.", definition: "Det år semestern tas ut, räknas enligt lagen från den 1 april till den 31 mars." },
+  { id: 14, term: "Uppsägning", scenario: "En anställd som bestämt sig för att byta karriär meddelar sin chef skriftligt att hen vill avsluta anställningen, med en viss tid kvar att arbeta innan tjänsten upphör helt.", definition: "Att avsluta en anställning. Det kan både den anställda och arbetsgivaren göra." },
+  { id: 15, term: "Uppsägningstid", scenario: "Efter att ha lämnat sitt avslutningsbesked fortsätter den anställda att arbeta ytterligare tre månader innan tjänsten faktiskt upphör.", definition: "Den tid en anställd jobbar kvar efter att ha sagt upp sig eller blivit uppsagd." },
+  { id: 16, term: "Arbetsmiljö", scenario: "Allt som påverkar hur de anställda mår och fungerar på jobbet – från belysning och luft till stämning och ledarskap – räknas till en och samma helhet på arbetsplatsen.", definition: "Alla fysiska och psykiska förutsättningar som finns på en arbetsplats." },
+  { id: 17, term: "Fysisk arbetsmiljö", scenario: "Dålig belysning, tunga lyft och kemiska ämnen i luften är exempel på sådant som kan skada kroppen hos den som arbetar på lagret.", definition: "Allt som påverkar kroppen, såsom belysning, luft, kemiska ämnen och ergonomi." },
+  { id: 18, term: "Psykisk arbetsmiljö", scenario: "Ständig tidspress, otydligt ledarskap och en dålig stämning mellan kollegorna gör att flera anställda mår allt sämre, trots att lokalerna i sig är fräscha och väl utrustade.", definition: "Psykiska och sociala faktorer, som ledarskap, organisation och stress." },
+  { id: 19, term: "Arbetssjukdom", scenario: "Efter tjugo år med tungt, upprepat kroppsarbete utvecklar en anställd ont i ryggen som läkaren kopplar direkt till de långvariga förhållandena på jobbet.", definition: "Besvär orsakade av långvarig exponering i en ohälsosam arbetsmiljö." },
+  { id: 20, term: "Systematiskt arbetsmiljöarbete", scenario: "Företaget har fasta rutiner för att regelbundet undersöka, riskbedöma och åtgärda problem på arbetsplatsen tillsammans med personalen, år efter år.", definition: "Arbetsgivaren ska på ett organiserat sätt samverka med de anställda om arbetsmiljön." },
+  { id: 21, term: "Skyddsombud", scenario: "När taket började läcka i personalmatsalen var det en särskilt utsedd kollega, vald av de anställda, som förde frågan vidare till ledningen.", definition: "De anställdas företrädare i arbetsmiljöfrågor." },
+  { id: 22, term: "Skyddskommitté", scenario: "På den stora fabriken, som har över femtio anställda, träffas representanter för både ledning och personal regelbundet i ett gemensamt forum för att gå igenom arbetsmiljöfrågor.", definition: "En samverkanskommitté som ska finnas på arbetsplatser med fler än 50 anställda och består av representanter för arbetsgivare och arbetstagare." },
+  { id: 23, term: "Arbetsmiljöverket", scenario: "Efter en allvarlig olycka på byggarbetsplatsen kommer inspektörer från en statlig myndighet för att granska hur arbetet bedrivits och om reglerna följts.", definition: "Myndighet som övervakar och utfärdar föreskrifter för arbetsmiljön." },
+  { id: 24, term: "Arbetsmiljöverkets föreskrifter", scenario: "De exakta gränsvärdena för hur mycket en anställd får lyfta för hand under en arbetsdag finns nedskrivna i myndighetens detaljerade regelsamling, inte i själva lagen.", definition: "Praktiska detaljföreskrifter för arbetsmiljön." },
+  { id: 25, term: "Jourtid", scenario: "En sjuksköterska sover över på sjukhuset under natten, redo att rycka in om något inträffar, utan att för den skull utföra några arbetsuppgifter större delen av tiden.", definition: "Arbetstid där den anställda står till förfogande på arbetsplatsen men inte arbetar." },
+  { id: 26, term: "Allmän övertid", scenario: "Under en särskilt pressad period får en anställd arbeta extra utöver ordinarie schema, men arbetsgivaren måste hålla sig inom de fasta timgränser per månad och år som lagen sätter för sådan extra arbetstid.", definition: "Får vara högst 48 timmar under en fyraveckorsperiod eller 50 timmar under en månad, max 200 timmar per år." },
+  { id: 27, term: "Nödfallsövertid", scenario: "När branden bryter ut på fabriken jobbar personalen långt in på natten för att rädda utrustning och liv, utan att någon övre timgräns alls gäller den kvällen.", definition: "Får tas ut utan tidsbegränsning vid en nödsituation för att rädda liv, hälsa och egendom." },
+  { id: 28, term: "Mertid", scenario: "En anställd som normalt jobbar tjugo timmar i veckan hoppar in och arbetar några extra timmar en vecka, men når ändå inte upp till vad en heltidstjänst skulle innebära.", definition: "Arbetstid utöver ordinarie arbetstid för en deltidsanställd." },
+  { id: 29, term: "Dygnsvila", scenario: "Mellan sitt kvällspass och sitt morgonpass måste en anställd garanteras en sammanhängande ledig period på minst elva timmar innan hen får schemaläggas igen.", definition: "Sammanhängande ledighet på minst elva timmar under en 24-timmarsperiod." },
+  { id: 30, term: "Rast", scenario: "Efter att ha arbetat i fem timmar i sträck får en anställd ett kort avbrott på ungefär trettio minuter, och har då rätt att lämna arbetsplatsen helt om hen vill.", definition: "Avbrott i arbetet, praxis är 30 minuter. Ska läggas in efter fem timmars arbete. Arbetstagaren har då rätt att lämna arbetsplatsen." },
+];
+
 function normalizeAnswer(str) {
   return str.trim().toLowerCase().replace(/\s+/g, " ");
 }
@@ -120,6 +155,12 @@ function shuffleArray(array) {
     [array[i], array[j]] = [array[j], array[i]];
   }
   return array;
+}
+
+function makeOptions(currentItem, allData) {
+  const distractors = allData.filter((d) => d.id !== currentItem.id);
+  shuffleArray(distractors);
+  return shuffleArray([currentItem, ...distractors.slice(0, 3)]);
 }
 
 function goBack() {
@@ -151,7 +192,7 @@ function Header() {
 
 function ViewToggle({ view, setView }) {
   const views = ["Lista", "Flashcards", "Lucktext", "Scenario", "Icke-ex."];
-  const enabled = ["Lista", "Flashcards", "Lucktext"];
+  const enabled = ["Lista", "Flashcards", "Lucktext", "Scenario"];
   return (
     <div className="flex justify-center flex-wrap gap-1 max-w-3xl mx-auto px-4 mt-4 mb-8">
       <div className="bg-white rounded-full p-1 shadow-sm border border-slate-200 flex flex-wrap gap-1">
@@ -328,6 +369,131 @@ function FlashcardView() {
         <p className="text-slate-500 font-medium bg-slate-200 px-4 py-1 rounded-full text-xs">{deckIdx + 1} av {deck.length}</p>
         <button onClick={restartAll} className="text-slate-400 text-xs hover:text-slate-600 transition-colors underline">↺ Börja om med alla</button>
       </div>
+    </div>
+  );
+}
+
+function ScenarioView() {
+  const total = scenarioData.length;
+  const [items, setItems] = useState(() => shuffleArray([...scenarioData]));
+  const [idx, setIdx] = useState(0);
+  const [options, setOptions] = useState(() => makeOptions(items[0], scenarioData));
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [phase, setPhase] = useState('playing');
+
+  const current = items[idx];
+  const isAnswered = selected !== null;
+
+  const handleSelect = (opt) => {
+    if (isAnswered) return;
+    setSelected(opt);
+    if (opt.id === current.id) setScore((s) => s + 1);
+  };
+
+  const handleNext = () => {
+    const nextIdx = idx + 1;
+    if (nextIdx >= total) {
+      setPhase('done');
+    } else {
+      setOptions(makeOptions(items[nextIdx], scenarioData));
+      setIdx(nextIdx);
+      setSelected(null);
+    }
+  };
+
+  const restart = () => {
+    const newItems = shuffleArray([...scenarioData]);
+    setItems(newItems);
+    setIdx(0);
+    setOptions(makeOptions(newItems[0], scenarioData));
+    setSelected(null);
+    setScore(0);
+    setPhase('playing');
+  };
+
+  if (phase === 'done') return (
+    <div className="max-w-3xl mx-auto px-4 pb-16 flex flex-col items-center gap-6">
+      <div className="rounded-3xl p-8 text-center w-full max-w-sm" style={{ background: PRIMARY_LIGHT, border: `2px solid ${PRIMARY}` }}>
+        <div className="text-5xl mb-4">🎯</div>
+        <p className="text-2xl font-bold mb-1" style={{ color: PRIMARY_TEXT }}>{score} / {total} rätt</p>
+        <p className="text-slate-500 text-sm mb-6">
+          {score === total
+            ? 'Perfekt! Du kopplar ihop alla situationer rätt.'
+            : score >= Math.round(total * 0.8)
+            ? 'Bra jobbat! Öva lite till på de du missat.'
+            : 'Fortsätt öva – du lär dig!'}
+        </p>
+        <button onClick={restart} className="text-white font-bold px-8 py-3 rounded-2xl" style={{ background: PRIMARY }}>
+          Börja om
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="max-w-3xl mx-auto px-4 pb-16 flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-slate-400 font-medium">{idx + 1} av {total}</span>
+        <span className="text-xs font-bold px-3 py-1 rounded-full" style={{ background: PRIMARY_LIGHT, color: PRIMARY_TEXT }}>
+          {score} rätt
+        </span>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-1.5 mb-1">
+        <div className="h-1.5 rounded-full transition-all" style={{ width: `${(idx / total) * 100}%`, background: PRIMARY }} />
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm p-5 border-l-4" style={{ borderLeftColor: PRIMARY }}>
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Vilket begrepp beskrivs?</p>
+        <p className="text-slate-800 text-base leading-relaxed">{current.scenario}</p>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        {options.map((opt) => {
+          const isCorrect = opt.id === current.id;
+          const isSelected = selected && selected.id === opt.id;
+          let bg = '#ffffff', border = '#e2e8f0', textColor = '#1e293b';
+          if (isAnswered) {
+            if (isCorrect) { bg = '#dcfce7'; border = '#16a34a'; textColor = '#15803d'; }
+            else if (isSelected) { bg = '#fee2e2'; border = '#dc2626'; textColor = '#dc2626'; }
+          }
+          return (
+            <button
+              key={opt.id}
+              onClick={() => handleSelect(opt)}
+              disabled={isAnswered}
+              className="w-full text-left px-4 py-3 rounded-xl font-semibold text-sm transition-all border-2"
+              style={{ background: bg, borderColor: border, color: textColor }}
+            >
+              {opt.term}
+            </button>
+          );
+        })}
+      </div>
+
+      {isAnswered && (
+        <div
+          className="rounded-xl p-4 text-sm leading-relaxed"
+          style={
+            selected.id === current.id
+              ? { background: '#dcfce7', color: '#15803d' }
+              : { background: '#fee2e2', color: '#dc2626' }
+          }
+        >
+          {selected.id === current.id ? '✓ Rätt! ' : `✗ Rätt svar: ${current.term}. `}
+          {current.definition}
+        </div>
+      )}
+
+      {isAnswered && (
+        <button
+          onClick={handleNext}
+          className="w-full text-white font-bold py-3 rounded-2xl text-sm"
+          style={{ background: PRIMARY }}
+        >
+          {idx + 1 >= total ? 'Se resultat' : 'Nästa →'}
+        </button>
+      )}
     </div>
   );
 }
@@ -518,6 +684,7 @@ function App() {
       {view === "Lista" && <ListView />}
       {view === "Flashcards" && <FlashcardView />}
       {view === "Lucktext" && <LucktextView />}
+      {view === "Scenario" && <ScenarioView />}
       <Footer />
     </div>
   );
