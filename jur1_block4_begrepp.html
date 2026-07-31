@@ -60,6 +60,60 @@ const concepts = [
   { term: "Rast", definition: "Avbrott i arbetet, praxis är 30 minuter. Ska läggas in efter fem timmars arbete. Arbetstagaren har då rätt att lämna arbetsplatsen." },
 ];
 
+const lucktextSentences = [
+  "Facket och arbetsgivarorganisationen skrev under ett nytt ___ som reglerar löner och villkor för de anställda.",
+  "Så länge avtalet gällde rådde ___, vilket innebar att facket inte fick vidta stridsåtgärder.",
+  "Tvisten om uppsägningen avgjordes till slut i ___.",
+  "Hon jobbade som vikarie under sommaren, vilket är ett exempel på en ___.",
+  "De första sex månaderna på jobbet kallades ___, innan tjänsten blev permanent.",
+  "Arbetsgivaren måste ha ___ innan en anställd får sägas upp.",
+  "Vid neddragningarna användes en ___ för att avgöra vem som fick gå först.",
+  "Eftersom han stal pengar från kassan fick han lämna jobbet direkt utan uppsägningstid — det kallas ___.",
+  "Ingen arbetsgivare får hindra en anställd från att gå med i facket, det skyddas av ___.",
+  "Företaget var enligt lag tvunget att berätta för facket om den ekonomiska situationen, en så kallad ___.",
+  "Kön, ålder och religion är exempel på ___.",
+  "Kvinnan anmälde sin arbetsgivare till ___ efter att ha blivit förbisedd vid en befordran på grund av sin graviditet.",
+  "Enligt lagen räknas ___ från den 1 april till den 31 mars.",
+  "Efter att ha bestämt sig för att byta karriär lämnade hon in sin ___.",
+  "Han fick jobba kvar i tre månader efter att ha sagt upp sig, det var hans ___.",
+  "Både belysningen och stämningen på kontoret räknas till arbetsplatsens ___.",
+  "Dålig belysning och tunga lyft är exempel på brister i den ___.",
+  "Stress och en dålig relation till chefen är exempel på faktorer i den ___.",
+  "Efter tjugo år med tungt kroppsarbete fick han ont i ryggen, vilket klassades som en ___.",
+  "Företaget hade rutiner för att regelbundet undersöka och förbättra arbetsmiljön tillsammans med de anställda, det kallas ___.",
+  "När taket läckte var det ___ som anmälde problemet till arbetsgivaren.",
+  "På den stora fabriken med över femtio anställda fanns en ___ där både chefer och anställda satt med.",
+  "Efter en olycka på byggarbetsplatsen gjorde ___ en inspektion.",
+  "De exakta reglerna för hur mycket en anställd får lyfta finns i ___.",
+  "Sjuksköterskan fick sova på sjukhuset under natten ifall något hände, det räknades som ___.",
+  "Under en särskilt hektisk månad fick han jobba extra, men aldrig mer än vad reglerna för ___ tillåter.",
+  "När branden bröt ut fick personalen jobba långt över sin vanliga arbetstid utan begränsning, det kallas ___.",
+  "Deltidsanställda som jobbar extra timmar utöver sitt schema, men under heltidsmåttet, har jobbat ___.",
+  "Mellan sina arbetspass måste hon ha minst elva timmars sammanhängande ledighet, det kallas ___.",
+  "Efter fem timmars arbete fick han en halvtimmes paus då han fick lämna arbetsplatsen, det kallas ___.",
+];
+
+const lucktextAnswerOverrides = {
+  "Arbetsdomstolen (AD)": ["Arbetsdomstolen", "AD"],
+  "Diskrimineringsombudsmannen (DO)": ["Diskrimineringsombudsmannen", "DO"],
+};
+
+const lucktextItems = concepts.map((c, i) => ({
+  term: c.term,
+  sentence: lucktextSentences[i],
+  explanation: c.definition,
+  answers: lucktextAnswerOverrides[c.term] || [c.term],
+}));
+
+function normalizeAnswer(str) {
+  return str.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+function isCorrectAnswer(input, item) {
+  const norm = normalizeAnswer(input);
+  return item.answers.some((a) => normalizeAnswer(a) === norm);
+}
+
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -97,7 +151,7 @@ function Header() {
 
 function ViewToggle({ view, setView }) {
   const views = ["Lista", "Flashcards", "Lucktext", "Scenario", "Icke-ex."];
-  const enabled = ["Lista", "Flashcards"];
+  const enabled = ["Lista", "Flashcards", "Lucktext"];
   return (
     <div className="flex justify-center flex-wrap gap-1 max-w-3xl mx-auto px-4 mt-4 mb-8">
       <div className="bg-white rounded-full p-1 shadow-sm border border-slate-200 flex flex-wrap gap-1">
@@ -278,6 +332,175 @@ function FlashcardView() {
   );
 }
 
+function LucktextView() {
+  const [answers, setAnswers] = useState(() =>
+    lucktextItems.map(() => ({ value: "", status: "unanswered", attempts: 0 }))
+  );
+
+  const correctCount = answers.filter((a) => a.status === "correct").length;
+  const doneCount = answers.filter((a) => a.status === "correct" || a.status === "revealed").length;
+  const allDone = doneCount === lucktextItems.length;
+
+  const updateAnswer = (idx, patch) => {
+    setAnswers((prev) => {
+      const next = [...prev];
+      next[idx] = { ...next[idx], ...patch };
+      return next;
+    });
+  };
+
+  const checkAnswer = (idx) => {
+    const item = lucktextItems[idx];
+    const state = answers[idx];
+    if (state.status === "correct" || state.status === "revealed") return;
+    if (isCorrectAnswer(state.value, item)) {
+      updateAnswer(idx, { status: "correct" });
+    } else {
+      const attempts = state.attempts + 1;
+      updateAnswer(idx, { attempts, status: attempts >= 2 ? "wrong" : "warn" });
+    }
+  };
+
+  const rattaAlla = () => {
+    setAnswers((prev) =>
+      prev.map((a, i) =>
+        a.status === "correct" ? a : { ...a, status: "revealed", value: lucktextItems[i].term }
+      )
+    );
+  };
+
+  const restart = () => {
+    setAnswers(lucktextItems.map(() => ({ value: "", status: "unanswered", attempts: 0 })));
+  };
+
+  const gradeFeedback = (score, total) => {
+    const pct = score / total;
+    if (pct >= 0.9) return "Utmärkt! Du är redo för provet! 🎉";
+    if (pct >= 0.7) return "Bra jobbat! Nästan i mål.";
+    if (pct >= 0.5) return "Godkänt, men öva gärna lite till.";
+    return "Öva lite till på begreppen innan provet.";
+  };
+
+  return (
+    <div className="max-w-3xl mx-auto px-4 pb-16">
+      <p className="text-sm text-slate-500 mb-4 text-center">
+        Fyll i rätt begrepp i luckan och tryck Enter för att kolla ditt svar. Begrepp du klarat stryks över nedan.
+      </p>
+
+      <div className="bg-white rounded-2xl shadow-sm p-4 mb-8 border border-slate-200">
+        <p className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">Begreppsbank</p>
+        <div className="flex flex-wrap gap-2">
+          {lucktextItems.map((item, i) => {
+            const st = answers[i].status;
+            const done = st === "correct" || st === "revealed";
+            return (
+              <span
+                key={item.term}
+                className={
+                  "px-3 py-1 rounded-full text-xs font-semibold border " +
+                  (done
+                    ? st === "correct"
+                      ? "line-through text-green-600 bg-green-50 border-green-200"
+                      : "line-through text-slate-400 bg-slate-100 border-slate-200"
+                    : "text-slate-600 bg-slate-50 border-slate-200")
+                }
+              >
+                {item.term}
+              </span>
+            );
+          })}
+        </div>
+      </div>
+
+      {allDone && (
+        <div className="bg-white border-2 rounded-3xl p-8 text-center mb-8 shadow-sm" style={{ borderColor: PRIMARY }}>
+          <p className="text-2xl font-bold text-slate-800 mb-2">
+            {correctCount} / {lucktextItems.length} rätt
+          </p>
+          <p className="text-slate-500 mb-6">{gradeFeedback(correctCount, lucktextItems.length)}</p>
+          <button
+            onClick={restart}
+            className="text-white px-8 py-3 rounded-2xl font-bold transition-colors"
+            style={{ background: PRIMARY }}
+          >
+            Börja om
+          </button>
+        </div>
+      )}
+
+      {!allDone && (
+        <div className="flex justify-end mb-4">
+          <button onClick={rattaAlla} className="text-sm font-semibold text-slate-500 hover:text-slate-700 underline">
+            Rätta alla
+          </button>
+        </div>
+      )}
+
+      <div className="flex flex-col gap-4">
+        {lucktextItems.map((item, i) => {
+          const state = answers[i];
+          const [before, after] = item.sentence.split("___");
+          const locked = state.status === "correct" || state.status === "revealed";
+          const borderColor =
+            state.status === "correct"
+              ? "#16a34a"
+              : state.status === "revealed" || state.status === "wrong"
+              ? "#dc2626"
+              : "#e2e8f0";
+          const bg =
+            state.status === "correct"
+              ? "#dcfce7"
+              : state.status === "revealed" || state.status === "wrong"
+              ? "#fee2e2"
+              : "#ffffff";
+
+          return (
+            <div
+              key={item.term}
+              className="rounded-2xl p-5 shadow-sm border-2 transition-colors"
+              style={{ borderColor, background: bg }}
+            >
+              <p className="text-slate-800 leading-relaxed mb-2">
+                <span className="text-xs text-slate-400 font-bold mr-2">{i + 1}.</span>
+                {before}
+                <input
+                  type="text"
+                  value={state.value}
+                  disabled={locked}
+                  onChange={(e) => updateAnswer(i, { value: e.target.value })}
+                  onKeyDown={(e) => e.key === "Enter" && checkAnswer(i)}
+                  className="inline-block mx-1 px-2 py-1 border-b-2 border-slate-300 focus:outline-none focus:border-slate-600 bg-transparent font-semibold text-slate-800 disabled:text-slate-600"
+                  style={{ borderColor: locked ? borderColor : undefined, minWidth: "140px" }}
+                  placeholder="skriv begrepp..."
+                />
+                {after}
+              </p>
+
+              {state.status === "warn" && (
+                <p className="text-orange-500 text-sm font-semibold mt-1">Är du säker att du stavat rätt? Försök igen.</p>
+              )}
+              {state.status === "wrong" && (
+                <p className="text-red-600 text-sm font-semibold mt-1">
+                  Fel svar. Försök igen eller tryck på "Rätta alla".
+                </p>
+              )}
+              {locked && (
+                <div className="mt-2 text-sm">
+                  <p className={state.status === "correct" ? "text-green-700 font-bold" : "text-red-700 font-bold"}>
+                    {state.status === "correct" ? "Rätt: " : "Rätt svar: "}
+                    {item.term}
+                  </p>
+                  <p className="text-slate-600 mt-1">{item.explanation}</p>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function Footer() {
   return (
     <footer className="text-center text-slate-400 text-sm italic pb-10">
@@ -294,6 +517,7 @@ function App() {
       <ViewToggle view={view} setView={setView} />
       {view === "Lista" && <ListView />}
       {view === "Flashcards" && <FlashcardView />}
+      {view === "Lucktext" && <LucktextView />}
       <Footer />
     </div>
   );
