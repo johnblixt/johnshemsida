@@ -142,7 +142,7 @@ function Header() {
 
 function ViewToggle({ view, setView }) {
   const views = ["Lista", "Flashcards", "Lucktext", "Scenario", "Icke-ex."];
-  const enabled = ["Lista", "Flashcards", "Lucktext"];
+  const enabled = ["Lista", "Flashcards", "Lucktext", "Scenario"];
   return (
     <div className="flex justify-center flex-wrap gap-1 max-w-3xl mx-auto px-4 mt-4 mb-8">
       <div className="bg-white rounded-full p-1 shadow-sm border border-slate-200 flex flex-wrap gap-1">
@@ -197,6 +197,45 @@ function shuffleArray(array) {
     [array[i], array[j]] = [array[j], array[i]];
   }
   return array;
+}
+
+const scenarioData = [
+  { id: 1, term: "Skadestånd", scenario: "En pojke sparkar sönder grannens fönsterruta med en fotboll och måste betala för att rutan ska kunna bytas ut.", definition: "Ersättning för en skada." },
+  { id: 2, term: "Skadeståndslagen", scenario: "Två personer som inte har något avtal med varandra hamnar i tvist om vem som ska betala för en skada, och det är denna lag som avgör.", definition: "Den lag som reglerar skadestånd i alla situationer utom i avtalsförhållanden." },
+  { id: 3, term: "Skadestånd i avtalsförhållande", scenario: "En snickare som skadar kundens golv medan hen utför ett uppdrag som parterna kommit överens om får sin ersättningsskyldighet reglerad utifrån det uppdraget.", definition: "Skadestånd som ska regleras till följd av ett avtal mellan två parter." },
+  { id: 4, term: "Personskada", scenario: "En cyklist blir påkörd och får en bruten arm samt ont i nacken efter olyckan.", definition: "Fysisk eller psykisk skada på en person." },
+  { id: 5, term: "Sakskada", scenario: "En lastbil backar in i en lyktstolpe och böjer den.", definition: "Skada på fast eller lös egendom." },
+  { id: 6, term: "Ren förmögenhetsskada", scenario: "En mäklare ger felaktig rådgivning som gör att en kund förlorar pengar på en affär, utan att något föremål eller någon person kommer till skada.", definition: "Ekonomisk skada som inte hänger ihop med en person- eller sakskada." },
+  { id: 7, term: "Kränkning", scenario: "Ett rånoffer känner sig rädd, förnedrad och otrygg länge efter händelsen, trots att hen inte skadades fysiskt.", definition: "Känslor av rädsla, obehag, förnedring och liknande." },
+  { id: 8, term: "Skadeståndsansvar", scenario: "En bilist som kör vårdslöst och orsakar en krock blir skyldig att betala för skadorna.", definition: "Har den som orsakat en skada avsiktligt eller genom vårdslöshet." },
+  { id: 9, term: "Ersättning för kränkning", scenario: "Ett brottsoffer får ett bestämt belopp utbetalt som kompensation för den rädsla och otrygghet händelsen orsakat, baserat på hur allvarlig händelsen var.", definition: "Kränkning ersätts normalt med ett belopp som beror på allvaret i kränkningen. Det finns ett schablonbelopp för många kränkningar." },
+  { id: 10, term: "Adekvat kausalitet", scenario: "Domstolen prövar om skadan verkligen är en tillräckligt direkt följd av handlingen innan skadestånd kan dömas ut.", definition: "Det direkta och relevanta sambandet som krävs mellan en handling och en skada för att skadeståndsansvar ska uppstå." },
+  { id: 11, term: "Jämkning av skadestånd", scenario: "Trots att en person orsakat en skada sänker domstolen det belopp hen måste betala med hänsyn till omständigheterna.", definition: "Innebär en sänkning av skadeståndet i vissa situationer." },
+  { id: 12, term: "Minderårigas skadeståndsansvar", scenario: "En tioåring som råkar krossa en ruta bedöms mildare än en vuxen skulle blivit, med hänsyn till ålder och mognad.", definition: "Ansvar för skador som de orsakar med hänsyn till ålder och utveckling, handlingen, ansvarsförsäkringar och övriga omständigheter." },
+  { id: 13, term: "Vårdnadshavarens ansvar", scenario: "Föräldrarna till barnet som klottrat på skolans vägg får betala för skadan, men aldrig mer än ett visst maxbelopp.", definition: "Gäller för de skador som barn orsakar, men med högst en femtedels prisbasbelopp per skada." },
+  { id: 14, term: "Principalansvar", scenario: "En budfirma får stå för de skador som en av dess chaufförer orsakar när hen kör budbilen under en arbetsdag.", definition: "Arbetsgivarens ansvar för skador som anställda orsakar i tjänsten." },
+  { id: 15, term: "Strikt ansvar", scenario: "Ägaren av en farlig verksamhet, som ett kärnkraftverk, kan bli skyldig att betala skadestånd även utan att ha gjort något fel.", definition: "Ansvar för skador även om de inte uppstått till följd av vårdslöshet." },
+  { id: 16, term: "Lagen om tillsyn över hundar och katter", scenario: "En hundägare vars hund sprungit lös och bitit en förbipasserande blir ansvarig enligt särskilda regler för just den här sortens djur.", definition: "Reglerar hund- respektive kattägares ansvar." },
+  { id: 17, term: "Ägofredslagen", scenario: "En bonde vars ko rymt och ätit upp grannens gröda får ansvara för skadan enligt regler som gäller just lantbrukets djur.", definition: "Regler bland annat om ansvar för lantbrukets djur." },
+  { id: 18, term: "Ersättning för personskada", scenario: "Den som blivit påkörd får pengar för sjukhusbesök, mediciner, resor till vården och den inkomst hen förlorat under sjukskrivningen.", definition: "Kan exempelvis vara skadestånd för sjukvårds-, medicin- och reskostnader samt för inkomstbortfall. Även bestående skador kan ersättas." },
+  { id: 19, term: "Ersättning för sakskador", scenario: "Den krossade rutan byts ut och kostnaden för det nya glaset betalas av den som orsakade skadan.", definition: "Sakskador ersätts med värdet eller kostnaden för reparation." },
+  { id: 20, term: "Dagsvärdet", scenario: "En stulen tio år gammal cykel ersätts inte med priset för en ny, utan med vad en lika gammal och sliten cykel skulle kosta att köpa begagnad idag.", definition: "Vad en sak är värd, exempelvis på begagnatmarknaden, vid tidpunkten för skadan." },
+  { id: 21, term: "Schablon", scenario: "Istället för att räkna ut exakt hur mycket en viss typ av skada ska ersättas med använder försäkringsbolaget en färdig tumregel ur en lista.", definition: "Ett belopp ur en lista med tumregler för hur en skada ska ersättas." },
+  { id: 22, term: "Brottsoffermyndigheten", scenario: "Ett brottsoffer som vill veta mer om sina rättigheter och möjligheten att få ersättning vänder sig till en statlig myndighet som arbetar just för brottsoffer.", definition: "En statlig myndighet som främjar brottsoffers rättigheter." },
+  { id: 23, term: "Skadeståndsprocessen", scenario: "En tvist om skadestånd kan antingen avgöras i en civil rättegång efter att den ena parten stämt den andra, eller tas upp i samband med att gärningspersonen döms för brottet.", definition: "Skadestånd kan antingen rättsligt behandlas genom en civilprocess/dom i ett tvistemål efter stämning eller beslutas vid en brottmålsrättegång." },
+  { id: 24, term: "Försäkringsavtalslagen", scenario: "En försäkringstagare skyddas av regler som gäller oavsett vad som står i det finstilta i avtalet, eftersom lagen alltid gäller till kundens fördel.", definition: "En skyddslagstiftning som reglerar person- och sakförsäkringar. Reglerna är tvingande till försäkringstagarens fördel." },
+  { id: 25, term: "Hemförsäkring", scenario: "Familjens bostad, lösöre och medlemmarnas ansvar täcks alla av en och samma paketlösning som de tecknat hos försäkringsbolaget.", definition: "En paketförsäkring för olika situationer som finns i hemmet." },
+  { id: 26, term: "Ansvarsskydd", scenario: "När familjens barn råkar orsaka en skada på en lekkamrat täcker en del av hemförsäkringen kravet som riktas mot familjen.", definition: "Täcker skadeståndskrav som riktas mot alla som ingår i försäkringen, både vuxna och barn. Tar även över föräldrarnas ansvar för skadeståndsskyldighet i samband med skador som orsakats av barn." },
+  { id: 27, term: "Trafikförsäkring", scenario: "Ingen bil får lagligt köras på vägen utan den obligatoriska grundförsäkring som täcker skador på andra i trafiken.", definition: "Nödvändig försäkring för motorfordon." },
+  { id: 28, term: "Hel- och halvförsäkring", scenario: "En bilägare som valt den dyrare av två frivilliga tilläggsförsäkringar får ersättning för sin egen bil även när hen själv orsakat krocken, vilket den billigare varianten inte hade gett.", definition: "Frivilliga försäkringar för motorfordon som täcker olika typer av skador. Helförsäkringen täcker även skador på den egna bilen om föraren orsakat en krock, vilket inte halvförsäkringen gör." },
+  { id: 29, term: "Skadereglering", scenario: "Försäkringsbolaget går igenom alla papper och bevis för att bedöma hur mycket kunden faktiskt har rätt att få ut.", definition: "Försäkringsbolagets bedömning av rätt till ersättning för en skada." },
+  { id: 30, term: "Självrisk", scenario: "Av en totalkostnad på 8 000 kronor får bilägaren själv stå för de första 1 500 kronorna innan försäkringen träder in.", definition: "Det belopp som inte ersätts av försäkringsbolaget." },
+];
+
+function makeOptions(currentItem, allData) {
+  const distractors = allData.filter((d) => d.id !== currentItem.id);
+  shuffleArray(distractors);
+  return shuffleArray([currentItem, ...distractors.slice(0, 3)]);
 }
 
 function FlashcardView() {
@@ -327,6 +366,131 @@ function FlashcardView() {
         <p className="text-slate-500 font-medium bg-slate-200 px-4 py-1 rounded-full text-xs">{deckIdx + 1} av {deck.length}</p>
         <button onClick={restartAll} className="text-slate-400 text-xs hover:text-slate-600 transition-colors underline">↺ Börja om med alla</button>
       </div>
+    </div>
+  );
+}
+
+function ScenarioView() {
+  const total = scenarioData.length;
+  const [items, setItems] = useState(() => shuffleArray([...scenarioData]));
+  const [idx, setIdx] = useState(0);
+  const [options, setOptions] = useState(() => makeOptions(items[0], scenarioData));
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [phase, setPhase] = useState('playing');
+
+  const current = items[idx];
+  const isAnswered = selected !== null;
+
+  const handleSelect = (opt) => {
+    if (isAnswered) return;
+    setSelected(opt);
+    if (opt.id === current.id) setScore((s) => s + 1);
+  };
+
+  const handleNext = () => {
+    const nextIdx = idx + 1;
+    if (nextIdx >= total) {
+      setPhase('done');
+    } else {
+      setOptions(makeOptions(items[nextIdx], scenarioData));
+      setIdx(nextIdx);
+      setSelected(null);
+    }
+  };
+
+  const restart = () => {
+    const newItems = shuffleArray([...scenarioData]);
+    setItems(newItems);
+    setIdx(0);
+    setOptions(makeOptions(newItems[0], scenarioData));
+    setSelected(null);
+    setScore(0);
+    setPhase('playing');
+  };
+
+  if (phase === 'done') return (
+    <div className="max-w-3xl mx-auto px-4 pb-16 flex flex-col items-center gap-6">
+      <div className="rounded-3xl p-8 text-center w-full max-w-sm" style={{ background: PRIMARY_LIGHT, border: `2px solid ${PRIMARY}` }}>
+        <div className="text-5xl mb-4">🎯</div>
+        <p className="text-2xl font-bold mb-1" style={{ color: PRIMARY_TEXT }}>{score} / {total} rätt</p>
+        <p className="text-slate-500 text-sm mb-6">
+          {score === total
+            ? 'Perfekt! Du kopplar ihop alla situationer rätt.'
+            : score >= Math.round(total * 0.8)
+            ? 'Bra jobbat! Öva lite till på de du missat.'
+            : 'Fortsätt öva – du lär dig!'}
+        </p>
+        <button onClick={restart} className="text-white font-bold px-8 py-3 rounded-2xl" style={{ background: PRIMARY }}>
+          Börja om
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="max-w-3xl mx-auto px-4 pb-16 flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-slate-400 font-medium">{idx + 1} av {total}</span>
+        <span className="text-xs font-bold px-3 py-1 rounded-full" style={{ background: PRIMARY_LIGHT, color: PRIMARY_TEXT }}>
+          {score} rätt
+        </span>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-1.5 mb-1">
+        <div className="h-1.5 rounded-full transition-all" style={{ width: `${(idx / total) * 100}%`, background: PRIMARY }} />
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm p-5 border-l-4" style={{ borderLeftColor: PRIMARY }}>
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Vilket begrepp beskrivs?</p>
+        <p className="text-slate-800 text-base leading-relaxed">{current.scenario}</p>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        {options.map((opt) => {
+          const isCorrect = opt.id === current.id;
+          const isSelected = selected && selected.id === opt.id;
+          let bg = '#ffffff', border = '#e2e8f0', textColor = '#1e293b';
+          if (isAnswered) {
+            if (isCorrect) { bg = '#dcfce7'; border = '#16a34a'; textColor = '#15803d'; }
+            else if (isSelected) { bg = '#fee2e2'; border = '#dc2626'; textColor = '#dc2626'; }
+          }
+          return (
+            <button
+              key={opt.id}
+              onClick={() => handleSelect(opt)}
+              disabled={isAnswered}
+              className="w-full text-left px-4 py-3 rounded-xl font-semibold text-sm transition-all border-2"
+              style={{ background: bg, borderColor: border, color: textColor }}
+            >
+              {opt.term}
+            </button>
+          );
+        })}
+      </div>
+
+      {isAnswered && (
+        <div
+          className="rounded-xl p-4 text-sm leading-relaxed"
+          style={
+            selected.id === current.id
+              ? { background: '#dcfce7', color: '#15803d' }
+              : { background: '#fee2e2', color: '#dc2626' }
+          }
+        >
+          {selected.id === current.id ? '✓ Rätt! ' : `✗ Rätt svar: ${current.term}. `}
+          {current.definition}
+        </div>
+      )}
+
+      {isAnswered && (
+        <button
+          onClick={handleNext}
+          className="w-full text-white font-bold py-3 rounded-2xl text-sm"
+          style={{ background: PRIMARY }}
+        >
+          {idx + 1 >= total ? 'Se resultat' : 'Nästa →'}
+        </button>
+      )}
     </div>
   );
 }
@@ -517,6 +681,7 @@ function App() {
       {view === "Lista" && <ListView />}
       {view === "Flashcards" && <FlashcardView />}
       {view === "Lucktext" && <LucktextView />}
+      {view === "Scenario" && <ScenarioView />}
       <Footer />
     </div>
   );
