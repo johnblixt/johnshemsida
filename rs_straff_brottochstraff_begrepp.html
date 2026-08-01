@@ -37,7 +37,7 @@
     }
   </script>
   <script type="text/babel">
-    const { useState } = React;
+    const { useState, useMemo } = React;
 
     const concepts = [
       { term: "Brott", definition: "Är en handling som är beskriven i en författning och som det finns ett straff föreskrivet för." },
@@ -251,6 +251,411 @@
       );
     }
 
+    const lucktextData = [
+      { pre: "Att medvetet spraymåla klotter på någon annans husvägg räknas som ett ", post: " eftersom handlingen är beskriven i lag och har ett straff kopplat till sig.", answers: ["brott"] },
+      { pre: "De flesta brott och deras påföljder regleras i den centrala lag som förkortas ", post: ".", answers: ["brb", "brottsbalken"] },
+      { pre: "Att någon knuffar en person som faller och slår i huvudet är ett tydligt exempel på ", post: " mellan handlingen och skadan.", answers: ["adekvat kausalitet"] },
+      { pre: "När en gärningsperson medvetet och avsiktligt utför en brottslig handling talar man om ", post: ", vilket på latin kallas dolus.", answers: ["uppsåt"] },
+      { pre: "Om en person skjuter mot en annan med det uttalade syftet att döda denne är det fråga om ", post: ", den högsta graden av uppsåt.", answers: ["direkt uppsåt"] },
+      { pre: "En person som är praktiskt taget säker på att en handling kommer leda till en viss följd, trots att det inte var själva målet, agerar med ", post: ".", answers: ["insiktsuppsåt"] },
+      { pre: "Att köra vårdslöst och strunta i om någon skadas, utan att det direkt var avsikten, kan bedömas som ", post: ", den lägsta graden av uppsåt.", answers: ["likgiltighetsuppsåt"] },
+      { pre: "Att av misstag glömma en tänd spis och orsaka en brand är ett exempel på ", post: ", vilket på latin kallas culpa.", answers: ["vårdslöshet", "oaktsamhet"] },
+      { pre: "Den konkreta handling som en gärningsperson faktiskt utför, till exempel att ta något som tillhör någon annan, kallas de ", post: ".", answers: ["objektiva rekvisiten", "objektiva rekvisit"] },
+      { pre: "Gärningspersonens avsikt eller sinnestillstånd vid brottstillfället beskrivs som de ", post: ".", answers: ["subjektiva rekvisiten", "subjektiva rekvisit"] },
+      { pre: "När både handlingen och avsikten måste vara uppfyllda samtidigt för att brott ska föreligga talar man om ", post: ".", answers: ["kumulativa rekvisit"] },
+      { pre: "När det räcker att endast ett av flera villkor är uppfyllt för att handlingen ska anses brottslig rör det sig om ", post: ".", answers: ["alternativa rekvisit"] },
+      { pre: "Att en domstol aldrig får döma någon för en handling som inte finns beskriven som brott i lag följer av ", post: ".", answers: ["legalitetsprincipen"] },
+      { pre: "Att en ny lag inte får tillämpas på handlingar som begicks innan lagen trädde i kraft kallas ", post: ".", answers: ["retroaktivitetsförbudet"] },
+      { pre: "Att en domstol inte får tänja på en lags ordalydelse för att få den att omfatta ett fall den egentligen inte täcker följer av ", post: ".", answers: ["analogiförbudet"] },
+      { pre: "Kravet på att brottsbeskrivningar i lag måste vara tydliga och precisa, och inte vaga, kallas ", post: ".", answers: ["obestämdhetsförbudet"] },
+      { pre: "Tanken att strängare straff avskräcker allmänheten i stort från att begå brott kallas ", post: ".", answers: ["allmänprevention"] },
+      { pre: "När straffet syftar till att avskräcka just den dömda personen från att begå nya brott handlar det om ", post: ".", answers: ["individualprevention"] },
+      { pre: "Tanken om att gärningspersonen ska drabbas av samma lidande som brottsoffret utsattes för kallas ", post: ".", answers: ["talionprincipen"] },
+      { pre: "Brås årliga enkätundersökning om medborgarnas oro för brott och utsatthet förkortas ", post: ".", answers: ["ntu", "nationella trygghetsundersökningen"] },
+      { pre: "Att en dömd person förlorar körkortet eller döms till skadestånd utöver själva straffet kallas ", post: ".", answers: ["annan rättsverkan"] },
+      { pre: "Det spann mellan lägsta och högsta straff som lagen tillåter för ett visst brott kallas ", post: ".", answers: ["straffskalan", "straffskala"] },
+      { pre: "Hur allvarligt ett brott anses vara i jämförelse med andra brott beskrivs genom brottets ", post: ".", answers: ["straffvärde"] },
+      { pre: "När domstolen bedömer att den dömde klarar sig utan övervakning och därför slipper fängelse döms personen till ", post: ".", answers: ["villkorlig dom"] },
+      { pre: "En påföljd för unga lagöverträdare som kan vara sluten och pågå från några veckor till flera år kallas ", post: ".", answers: ["ungdomsvård"] },
+      { pre: "Att en intagen släpps ut från anstalten innan strafftiden är helt avtjänad, men på prov, kallas ", post: ".", answers: ["villkorlig frigivning"] },
+      { pre: "Det enda straffet i svensk rätt som inte har något bestämt slutdatum kallas ", post: ".", answers: ["livstid", "livstids fängelse"] },
+      { pre: "När polis, kommun, socialtjänst och kriminalvård samarbetar för att sysselsätta ungdomar och minska brottsligheten i utsatta områden kallas det ", post: ".", answers: ["förebyggande arbete"] },
+      { pre: "Myndigheten som arbetar för att minska brottsligheten och öka tryggheten i Sverige förkortas ", post: ".", answers: ["brå", "brottsförebyggande rådet"] },
+      { pre: "De brott som aldrig anmäls till polisen, och som är särskilt vanliga inom sexualbrott, utgör brottslighetens ", post: ".", answers: ["mörkertal"] }
+    ];
+
+    const scenarioData = [
+      { scenario: "Elin sprejmålar olovligen på en husvägg. Handlingen finns beskriven i lag och kan leda till böter.", distractors: ["Annan rättsverkan", "Straffvärde", "Mörkertal"] },
+      { scenario: "En jurist slår upp vilket straff som gäller för misshandel i den lag där de flesta brott och påföljder finns samlade.", distractors: ["Legalitetsprincipen", "Straffskalan", "Annan rättsverkan"] },
+      { scenario: "En man knuffar en annan person i en trappa, som faller och bryter benet. Sambandet mellan knuffen och skadan är uppenbart.", distractors: ["Objektiva rekvisit", "Straffvärde", "Vårdslöshet"] },
+      { scenario: "En person planerar och genomför medvetet en stöld, fullt medveten om vad hen gör.", distractors: ["Vårdslöshet", "Adekvat kausalitet", "Subjektiva rekvisit"] },
+      { scenario: "En person köper en kniv i det uttalade syftet att döda sin granne, och gör sedan precis det.", distractors: ["Insiktsuppsåt", "Likgiltighetsuppsåt", "Vårdslöshet"] },
+      { scenario: "En person tänder eld på en bil, fullt medveten om att en granne troligen sover i baksätet, trots att syftet bara var att förstöra bilen.", distractors: ["Direkt uppsåt", "Likgiltighetsuppsåt", "Vårdslöshet"] },
+      { scenario: "En förare kör om i en skarp kurva trots att hen inser risken för en kollision, men struntar i om det händer eller inte.", distractors: ["Direkt uppsåt", "Insiktsuppsåt", "Vårdslöshet"] },
+      { scenario: "En person glömmer en tänd spisplatta och lämnar lägenheten, vilket oavsiktligt orsakar en brand.", distractors: ["Likgiltighetsuppsåt", "Uppsåt", "Adekvat kausalitet"] },
+      { scenario: "Åklagaren beskriver exakt vad den tilltalade fysiskt gjorde: tog en väska som tillhörde en annan person.", distractors: ["Subjektiva rekvisit", "Kumulativa rekvisit", "Alternativa rekvisit"] },
+      { scenario: "Domstolen bedömer vad den tilltalade visste och avsåg när hen utförde handlingen.", distractors: ["Objektiva rekvisit", "Uppsåt", "Adekvat kausalitet"] },
+      { scenario: "För att dömas krävs att åklagaren bevisar både att personen utförde handlingen och att personen hade avsikt att göra det – båda delarna måste vara uppfyllda.", distractors: ["Alternativa rekvisit", "Objektiva rekvisit", "Subjektiva rekvisit"] },
+      { scenario: "Lagtexten anger att brottet är fullbordat om gärningspersonen antingen stal eller skadade egendomen – det räcker att ett av villkoren stämmer.", distractors: ["Kumulativa rekvisit", "Objektiva rekvisit", "Subjektiva rekvisit"] },
+      { scenario: "En domare vägrar döma en person för en handling som inte finns beskriven som brottslig i någon lag.", distractors: ["Retroaktivitetsförbudet", "Analogiförbudet", "Obestämdhetsförbudet"] },
+      { scenario: "Riksdagen inför en ny lag mot en handling, men domstolen får inte tillämpa lagen på något som skedde innan lagen trädde i kraft.", distractors: ["Legalitetsprincipen", "Analogiförbudet", "Obestämdhetsförbudet"] },
+      { scenario: "En åklagare vill döma någon för ett fall som ligger nära en brottsbeskrivning men inte riktigt täcks av ordalydelsen – domstolen vägrar tänja på texten.", distractors: ["Retroaktivitetsförbudet", "Legalitetsprincipen", "Obestämdhetsförbudet"] },
+      { scenario: "Lagstiftaren måste formulera brottsbeskrivningar tydligt, så att medborgarna kan förstå vad som är förbjudet – vaga formuleringar godtas inte.", distractors: ["Legalitetsprincipen", "Retroaktivitetsförbudet", "Analogiförbudet"] },
+      { scenario: "Strängare straff för rattfylleri införs i hopp om att avskräcka befolkningen i stort från att begå brottet.", distractors: ["Individualprevention", "Talionprincipen", "Straffvärde"] },
+      { scenario: "En redan dömd person får ett strängt straff i hopp om att just den personen inte ska återfalla i brott.", distractors: ["Allmänprevention", "Talionprincipen", "Villkorlig frigivning"] },
+      { scenario: "Tanken bakom straffet är att gärningspersonen ska drabbas av ungefär samma lidande som brottsoffret utsattes för.", distractors: ["Allmänprevention", "Individualprevention", "Straffvärde"] },
+      { scenario: "Brå skickar varje år ut en enkät till tusentals medborgare för att mäta oro för brott och faktisk utsatthet.", distractors: ["Brottsförebyggande rådet (Brå)", "Mörkertal", "Straffvärde"] },
+      { scenario: "Utöver fängelsestraffet döms personen även att betala skadestånd till offret och förlorar sitt körkort.", distractors: ["Straffskalan", "Straffvärde", "Villkorlig dom"] },
+      { scenario: "Lagen anger att ett visst brott kan ge allt mellan böter och fyra års fängelse.", distractors: ["Straffvärde", "Annan rättsverkan", "Villkorlig dom"] },
+      { scenario: "Domstolen bedömer att ett grovt rån är betydligt allvarligare än en enkel stöld och dömer därför ut ett strängare straff.", distractors: ["Straffskalan", "Annan rättsverkan", "Talionprincipen"] },
+      { scenario: "Domstolen bedömer att den dömda personen klarar sig utan fängelse eller övervakning och beslutar om en mildare påföljd på prov.", distractors: ["Villkorlig frigivning", "Ungdomsvård", "Livstid"] },
+      { scenario: "En 16-åring som begått brott döms till en vårdinsats som kan vara sluten och pågå allt från några veckor till flera år.", distractors: ["Villkorlig dom", "Villkorlig frigivning", "Förebyggande arbete"] },
+      { scenario: "En intagen som avtjänat två tredjedelar av sitt fängelsestraff släpps ut från anstalten men står fortfarande under prövning.", distractors: ["Villkorlig dom", "Ungdomsvård", "Livstid"] },
+      { scenario: "En person döms för mord till ett fängelsestraff som saknar ett bestämt slutdatum.", distractors: ["Villkorlig frigivning", "Straffskalan", "Ungdomsvård"] },
+      { scenario: "Polis, kommun, socialtjänst och kriminalvård samarbetar för att erbjuda ungdomar i ett utsatt område fritidsaktiviteter för att minska brottsligheten.", distractors: ["Brottsförebyggande rådet (Brå)", "Individualprevention", "Allmänprevention"] },
+      { scenario: "En svensk myndighet tar fram statistik och forskning om brottslighet för att hjälpa samhället minska brott och öka tryggheten.", distractors: ["Nationella trygghetsundersökningen (NTU)", "Förebyggande arbete", "Mörkertal"] },
+      { scenario: "Många sexualbrott anmäls aldrig till polisen, vilket gör att den officiella statistiken visar färre brott än vad som faktiskt begåtts.", distractors: ["Nationella trygghetsundersökningen (NTU)", "Annan rättsverkan", "Straffvärde"] }
+    ];
+
+    const ickeData = [
+      { optionA: "Att parkera bilen en timme längre än tillåtet på en avgiftsbelagd parkering.", optionB: "Att medvetet spraymåla klotter på en skolvägg utan tillstånd.", correct: 'B', explanation: "Klotter (skadegörelse) är straffbelagt i brottsbalken och räknas som brott. En felparkeringsavgift är en administrativ sanktion, inte ett straff för ett brott." },
+      { optionA: "Lagen som innehåller de flesta brott och deras straff, till exempel misshandel och stöld.", optionB: "Lagen som reglerar hur skatter ska betalas till staten.", correct: 'A', explanation: "Brottsbalken samlar de flesta brott och deras straff. Skattefrågor regleras i annan lagstiftning, inte i brottsbalken." },
+      { optionA: "En person knuffar en annan i en trappa, som faller och bryter armen.", optionB: "En person blir arg efter ett bråk och mår dåligt av det flera år senare på grund av en helt separat sjukdom.", correct: 'A', explanation: "I det första fallet finns ett tydligt och direkt orsakssamband mellan handling och skada. I det andra fallet är sambandet för indirekt och oklart för att räknas som adekvat kausalitet." },
+      { optionA: "En person snubblar av misstag och råkar knuffa omkull någon.", optionB: "En person planerar och genomför medvetet en stöld i en butik.", correct: 'B', explanation: "Uppsåt kräver att handlingen är medveten och avsiktlig. Att snubbla av misstag är en oavsiktlig handling utan uppsåt." },
+      { optionA: "En person skjuter mot någon med det uttalade målet att döda personen.", optionB: "En person kör för fort och inser att det finns en risk att någon kan skadas, men bryr sig inte.", correct: 'A', explanation: "Direkt uppsåt innebär att effekten är gärningspersonens egentliga syfte. Alternativ B beskriver istället likgiltighetsuppsåt." },
+      { optionA: "En person är praktiskt taget säker på att handlingen leder till en viss följd, även om det inte var själva syftet.", optionB: "En person hoppas att en viss följd inte ska inträffa, men gör handlingen ändå utan att tro att den kommer hända.", correct: 'A', explanation: "Insiktsuppsåt innebär att man är nästan säker på följden. Alternativ B beskriver snarare vårdslöshet, eftersom personen inte trodde att följden skulle inträffa." },
+      { optionA: "En förare inser risken för en kollision men är fullständigt likgiltig inför om den inträffar.", optionB: "En förare är helt säker på att en olycka kommer ske om hen fortsätter köra som hen gör.", correct: 'A', explanation: "Likgiltighetsuppsåt kännetecknas av likgiltighet inför risken. Alternativ B, där personen är säker på följden, beskriver istället insiktsuppsåt." },
+      { optionA: "En person glömmer en tänd spisplatta och orsakar oavsiktligt en brand.", optionB: "En person tänder medvetet eld på en byggnad för att få ut försäkringspengar.", correct: 'A', explanation: "Vårdslöshet (oaktsamhet) innebär att man av misstag orsakar något. Alternativ B är en medveten och avsiktlig handling, alltså uppsåt, inte vårdslöshet." },
+      { optionA: "Vad gärningspersonen konkret gjorde, till exempel tog en cykel som tillhörde någon annan.", optionB: "Vad gärningspersonen tänkte och avsåg när hen tog cykeln.", correct: 'A', explanation: "Objektiva rekvisit handlar om den konkreta handlingen. Vad personen tänkte och avsåg hör istället till de subjektiva rekvisiten." },
+      { optionA: "Den fysiska handlingen att ta en cykel som tillhör någon annan.", optionB: "Gärningspersonens avsikt att tillägna sig cykeln permanent.", correct: 'B', explanation: "Subjektiva rekvisit handlar om avsikten bakom handlingen. Den fysiska handlingen i sig hör till de objektiva rekvisiten." },
+      { optionA: "Både handling och avsikt måste vara bevisade samtidigt för att brottet ska anses begånget.", optionB: "Det räcker att antingen handlingen eller avsikten är bevisad för att brottet ska anses begånget.", correct: 'A', explanation: "Kumulativa rekvisit kräver att samtliga villkor är uppfyllda samtidigt. Att det räcker med ett av villkoren beskriver istället alternativa rekvisit." },
+      { optionA: "Lagen kräver att både stöld och skadegörelse måste ha skett för att brottet ska vara fullbordat.", optionB: "Lagen anger att det räcker att gärningspersonen antingen stal eller skadade egendomen för att brottet ska vara fullbordat.", correct: 'B', explanation: "Alternativa rekvisit innebär att det räcker att ett av flera villkor är uppfyllt. Att båda måste vara uppfyllda beskriver istället kumulativa rekvisit." },
+      { optionA: "En domstol vägrar döma någon för en handling som inte finns beskriven som brott i lag.", optionB: "En domstol dömer ut ett hårdare straff än vad lagen tillåter eftersom brottet var särskilt allvarligt.", correct: 'A', explanation: "Legalitetsprincipen innebär att ingen får dömas utan stöd i lag. Alternativ B skulle bryta mot principen om att straffet måste hålla sig inom lagens straffskala." },
+      { optionA: "En ny lag mot en handling tillämpas även på handlingar som begicks innan lagen infördes.", optionB: "En ny lag mot en handling tillämpas bara på handlingar som begås efter att lagen trätt i kraft.", correct: 'B', explanation: "Retroaktivitetsförbudet innebär att lagar inte får tillämpas bakåt i tiden. Alternativ A beskriver precis det förbudet förhindrar." },
+      { optionA: "En domstol dömer en person för ett fall som ligger nära en brottsbeskrivning, trots att det inte riktigt täcks av ordalydelsen, eftersom det \"borde\" vara brottsligt.", optionB: "En domstol frikänner en person eftersom fallet inte riktigt täcks av lagens ordalydelse, trots att handlingen liknar ett brott.", correct: 'B', explanation: "Analogiförbudet innebär att domstolen inte får tänja på lagens ordalydelse. Alternativ A beskriver precis det som förbudet förhindrar." },
+      { optionA: "En lag formuleras med en vag text som \"olämpligt beteende\", utan att precisera vad som avses.", optionB: "En lag formuleras tydligt och specifikt så att medborgarna kan förstå exakt vad som är förbjudet.", correct: 'B', explanation: "Obestämdhetsförbudet kräver att brottsbeskrivningar är tydliga och precisa. Alternativ A beskriver en lag som bryter mot förbudet." },
+      { optionA: "Strängare straff för ett brott införs för att avskräcka allmänheten i stort från att begå det.", optionB: "En redan dömd person får hjälp och stöd för att inte återfalla i brott.", correct: 'A', explanation: "Allmänprevention riktar sig mot samhället i stort. Att fokusera på en redan dömd persons återfall beskriver istället individualprevention." },
+      { optionA: "Ett strängt straff används för att avskräcka samhället i stort från att begå ett visst brott.", optionB: "En redan dömd person får ett straff som ska hindra just den personen från att begå nya brott.", correct: 'B', explanation: "Individualprevention riktar sig mot den enskilda gärningspersonen. Att avskräcka samhället i stort beskriver istället allmänprevention." },
+      { optionA: "Tanken att straffet ska motsvara samma lidande som brottsoffret utsattes för.", optionB: "Tanken att straffet ska anpassas för att förhindra att gärningspersonen begår fler brott i framtiden.", correct: 'A', explanation: "Talionprincipen bygger på tanken om lika lidande för lika brott. Alternativ B beskriver istället individualprevention." },
+      { optionA: "En årlig enkätundersökning från Brå om medborgarnas oro för och utsatthet för brott.", optionB: "Den officiella brottsstatistik som bygger enbart på polisanmälningar.", correct: 'A', explanation: "NTU bygger på enkätsvar och fångar även brott som aldrig anmäls. Statistik som enbart bygger på polisanmälningar missar mörkertalet." },
+      { optionA: "Utöver fängelsestraffet förlorar den dömda personen sitt körkort och döms att betala skadestånd.", optionB: "Domstolen bestämmer det exakta antalet månaders fängelse utifrån brottets allvar.", correct: 'A', explanation: "Annan rättsverkan är ytterligare åtgärder utöver själva straffet. Att bestämma strafflängden utifrån brottets allvar handlar istället om straffvärde." },
+      { optionA: "Lagen anger att brottet kan ge mellan böter och fyra års fängelse.", optionB: "Domstolen bedömer att just detta brott är särskilt allvarligt jämfört med liknande fall.", correct: 'A', explanation: "Straffskalan är lagens angivna spann mellan lägsta och högsta straff. Bedömningen av hur allvarligt ett specifikt brott är kallas istället straffvärde." },
+      { optionA: "Lagen anger det lägsta och högsta straffet som är möjligt för ett visst brott.", optionB: "Domstolen bedömer att ett grovt rån är allvarligare än en enkel stöld och dömer därför strängare.", correct: 'B', explanation: "Straffvärde handlar om hur allvarligt ett specifikt brott bedöms vara. Lagens spann mellan lägsta och högsta straff kallas istället straffskalan." },
+      { optionA: "Domstolen bedömer att den dömda personen klarar sig utan övervakning och döms till en påföljd på prov.", optionB: "En intagen släpps ut från fängelset innan strafftiden är slut, men på prov.", correct: 'A', explanation: "Villkorlig dom döms ut direkt istället för fängelse. Att släppas ut i förtid från ett redan påbörjat fängelsestraff kallas istället villkorlig frigivning." },
+      { optionA: "En vuxen person döms till ett långt fängelsestraff för ett grovt brott.", optionB: "En 16-åring döms till en vårdinsats som kan pågå från några veckor till flera år.", correct: 'B', explanation: "Ungdomsvård är en påföljd för unga lagöverträdare. Fängelsestraff för vuxna är en helt annan typ av påföljd." },
+      { optionA: "En intagen släpps ut från anstalten innan strafftiden är helt avtjänad, men på prov.", optionB: "Domstolen dömer en person till en påföljd på prov istället för fängelse redan från start.", correct: 'A', explanation: "Villkorlig frigivning innebär att man släpps ut i förtid från ett pågående fängelsestraff. Att dömas till en prövopåföljd direkt kallas istället villkorlig dom." },
+      { optionA: "Ett straff som har ett bestämt slutdatum långt fram i tiden, till exempel 25 år.", optionB: "Ett straff som helt saknar ett bestämt slutdatum.", correct: 'B', explanation: "Livstid är det enda straffet som saknar ett bestämt slutdatum. Ett långt men tidsbestämt straff är inte livstid, även om det är många år." },
+      { optionA: "Polis, kommun, socialtjänst och kriminalvård samarbetar för att erbjuda ungdomar i utsatta områden aktiviteter för att minska brottsligheten.", optionB: "En myndighet tar fram statistik och forskning om brottsutvecklingen i Sverige.", correct: 'A', explanation: "Förebyggande arbete handlar om samverkan mellan flera samhällsaktörer. Att ta fram statistik och forskning är istället Brås huvuduppgift." },
+      { optionA: "En myndighet som samordnar fritidsaktiviteter för ungdomar i utsatta områden.", optionB: "En myndighet som tar fram statistik och forskning för att minska brottsligheten och öka tryggheten i Sverige.", correct: 'B', explanation: "Brås huvuduppgift är att ta fram statistik och forskning. Att samordna konkreta fritidsaktiviteter är snarare en del av det bredare förebyggande arbetet mellan flera aktörer." },
+      { optionA: "Antalet brott som aldrig anmäls till polisen och därför inte syns i statistiken.", optionB: "Antalet brott som klaras upp och leder till en fällande dom.", correct: 'A', explanation: "Mörkertalet är brott som aldrig anmäls. Andelen brott som klaras upp kallas istället uppklarningsprocent." }
+    ];
+
+    function gradeText(pct) {
+      if (pct >= 90) return 'Utmärkt! Redo för provet!';
+      if (pct >= 70) return 'Bra jobbat! Nästan redo.';
+      if (pct >= 50) return 'På god väg, men öva lite till.';
+      return 'Öva mer på begreppen innan provet.';
+    }
+
+    function LucktextView() {
+      const initial = () => concepts.map(() => ({ value: '', status: 'idle', attempts: 0 }));
+      const [items, setItems] = useState(initial);
+
+      const setValue = (i, value) => {
+        setItems(prev => {
+          const next = [...prev];
+          next[i] = { ...next[i], value };
+          return next;
+        });
+      };
+
+      const submit = (i) => {
+        setItems(prev => {
+          const item = prev[i];
+          if (item.status === 'correct' || item.status === 'revealed') return prev;
+          const norm = item.value.trim().toLowerCase();
+          const ok = lucktextData[i].answers.includes(norm);
+          const next = [...prev];
+          if (ok) {
+            next[i] = { ...item, status: 'correct' };
+          } else {
+            const attempts = item.attempts + 1;
+            next[i] = { ...item, attempts, status: attempts >= 2 ? 'wrong2' : 'wrong1' };
+          }
+          return next;
+        });
+      };
+
+      const correctAll = () => {
+        setItems(prev => prev.map(item => item.status === 'correct' ? item : { ...item, status: 'revealed' }));
+      };
+
+      const restart = () => setItems(initial());
+
+      const score = items.filter(it => it.status === 'correct').length;
+      const total = concepts.length;
+      const allDone = items.every(it => it.status === 'correct' || it.status === 'revealed');
+
+      return (
+        <div>
+          <div className="bg-white rounded-2xl border-2 border-slate-200 p-4 mb-6">
+            <p className="text-sm font-bold text-slate-500 uppercase tracking-wide mb-3">Begreppsbank</p>
+            <div className="flex flex-wrap gap-2">
+              {concepts.map((c, i) => {
+                const done = items[i].status === 'correct' || items[i].status === 'revealed';
+                return (
+                  <span key={i} className={`text-xs px-3 py-1 rounded-full border ${done ? 'line-through text-slate-300 border-slate-200 bg-slate-50' : 'text-slate-700 border-slate-300 bg-white'}`}>
+                    {c.term}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-sm font-bold text-slate-500">{score} / {total} rätt</p>
+            <div className="flex gap-2">
+              <button onClick={correctAll} className="text-xs font-bold px-4 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-colors">Rätta alla</button>
+              <button onClick={restart} className="text-xs font-bold px-4 py-2 rounded-xl border-2 border-slate-300 text-slate-600 hover:bg-slate-100 transition-colors">Börja om</button>
+            </div>
+          </div>
+
+          {allDone && (
+            <div className="bg-white border-2 rounded-3xl p-6 text-center mb-6" style={{ borderColor: P }}>
+              <p className="text-2xl font-bold mb-1" style={{ color: PDARK }}>{score} / {total} rätt</p>
+              <p className="text-slate-600">{gradeText((score / total) * 100)}</p>
+            </div>
+          )}
+
+          <div className="grid gap-4">
+            {lucktextData.map((data, i) => {
+              const item = items[i];
+              const locked = item.status === 'correct' || item.status === 'revealed';
+              const borderClass =
+                item.status === 'correct' ? 'border-green-500' :
+                item.status === 'revealed' ? 'border-red-400' :
+                item.status === 'wrong2' ? 'border-red-300' :
+                item.status === 'wrong1' ? 'border-orange-300' :
+                'border-slate-200';
+              return (
+                <div key={i} className={`bg-white p-5 rounded-2xl border-2 ${borderClass}`}>
+                  <p className="leading-relaxed">
+                    <span className="text-slate-400 font-bold mr-1">{i + 1}.</span>
+                    {data.pre}
+                    <input
+                      type="text"
+                      value={item.value}
+                      disabled={locked}
+                      onChange={e => setValue(i, e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') submit(i); }}
+                      className={`inline-block mx-1 px-2 py-1 border-b-2 focus:outline-none w-40 text-center ${locked ? 'bg-slate-50' : 'bg-white'}`}
+                      style={{ borderColor: item.status === 'correct' ? '#16a34a' : item.status === 'revealed' ? '#dc2626' : P }}
+                    />
+                    {data.post}
+                  </p>
+                  {item.status === 'wrong1' && <p className="text-orange-500 text-sm font-bold mt-2">Är du säker att du stavat rätt?</p>}
+                  {item.status === 'wrong2' && <p className="text-red-600 text-sm font-bold mt-2">Fel. Kontrollera stavningen och försök igen.</p>}
+                  {item.status === 'correct' && <p className="text-green-700 text-sm mt-2">✓ Rätt! {concepts[i].definition}</p>}
+                  {item.status === 'revealed' && <p className="text-red-600 text-sm mt-2">Rätt svar: <strong>{concepts[i].term}</strong>. {concepts[i].definition}</p>}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    function ScenarioView() {
+      const total = scenarioData.length;
+      const buildOrder = () => shuffleArray(scenarioData.map((_, i) => i));
+      const [order, setOrder] = useState(buildOrder);
+      const [qIdx, setQIdx] = useState(0);
+      const [selected, setSelected] = useState(null);
+      const [score, setScore] = useState(0);
+      const [phase, setPhase] = useState('playing');
+
+      const dataIdx = order[qIdx];
+      const q = scenarioData[dataIdx];
+      const concept = concepts[dataIdx];
+      const options = useMemo(() => shuffleArray([concept.term, ...q.distractors]), [dataIdx]);
+
+      const choose = (opt) => {
+        if (selected !== null) return;
+        setSelected(opt);
+        if (opt === concept.term) setScore(s => s + 1);
+      };
+
+      const next = () => {
+        if (qIdx + 1 >= total) {
+          setPhase('done');
+        } else {
+          setQIdx(qIdx + 1);
+          setSelected(null);
+        }
+      };
+
+      const restart = () => {
+        setOrder(buildOrder());
+        setQIdx(0);
+        setSelected(null);
+        setScore(0);
+        setPhase('playing');
+      };
+
+      if (phase === 'done') {
+        const pct = (score / total) * 100;
+        return (
+          <div className="bg-white border-2 rounded-3xl p-8 text-center" style={{ borderColor: P }}>
+            <p className="text-3xl font-bold mb-2" style={{ color: PDARK }}>{score} / {total} rätt</p>
+            <p className="text-slate-600 mb-6">{gradeText(pct)}</p>
+            <button onClick={restart} style={{ background: P }} className="text-white px-8 py-3 rounded-2xl font-bold">Gör om</button>
+          </div>
+        );
+      }
+
+      return (
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-bold text-slate-500">Fråga {qIdx + 1} av {total}</p>
+            <p className="text-sm font-bold text-slate-500">Poäng: {score}</p>
+          </div>
+          <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+            <div className="h-2 rounded-full transition-all" style={{ width: `${(qIdx / total) * 100}%`, background: P }}></div>
+          </div>
+
+          <div className="bg-white p-6 rounded-2xl border-2 border-slate-200 mb-5">
+            <p className="text-lg leading-relaxed">{q.scenario}</p>
+          </div>
+
+          <div className="grid gap-3">
+            {options.map((opt, i) => {
+              const isCorrect = opt === concept.term;
+              const isSelected = selected === opt;
+              let cls = 'bg-white border-2 border-slate-200 hover:border-slate-300';
+              if (selected !== null) {
+                if (isCorrect) cls = 'bg-green-50 border-2 border-green-500 text-green-800';
+                else if (isSelected) cls = 'bg-red-50 border-2 border-red-500 text-red-800';
+                else cls = 'bg-white border-2 border-slate-100 text-slate-400';
+              }
+              return (
+                <button key={i} onClick={() => choose(opt)} disabled={selected !== null} className={`text-left px-5 py-3 rounded-2xl font-medium transition-colors ${cls}`}>
+                  {opt}
+                </button>
+              );
+            })}
+          </div>
+
+          {selected !== null && (
+            <div className="mt-5 bg-slate-50 border-2 border-slate-200 rounded-2xl p-4">
+              <p className="text-slate-700">{concept.definition}</p>
+              <button onClick={next} style={{ background: P }} className="mt-4 text-white px-6 py-2 rounded-xl font-bold">
+                {qIdx + 1 >= total ? 'Se resultat' : 'Nästa →'}
+              </button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function IckeExView() {
+      const total = ickeData.length;
+      const buildOrder = () => shuffleArray(ickeData.map((_, i) => i));
+      const [order, setOrder] = useState(buildOrder);
+      const [qIdx, setQIdx] = useState(0);
+      const [selected, setSelected] = useState(null);
+      const [score, setScore] = useState(0);
+      const [phase, setPhase] = useState('playing');
+
+      const dataIdx = order[qIdx];
+      const q = ickeData[dataIdx];
+      const concept = concepts[dataIdx];
+
+      const choose = (letter) => {
+        if (selected !== null) return;
+        setSelected(letter);
+        if (letter === q.correct) setScore(s => s + 1);
+      };
+
+      const next = () => {
+        if (qIdx + 1 >= total) {
+          setPhase('done');
+        } else {
+          setQIdx(qIdx + 1);
+          setSelected(null);
+        }
+      };
+
+      const restart = () => {
+        setOrder(buildOrder());
+        setQIdx(0);
+        setSelected(null);
+        setScore(0);
+        setPhase('playing');
+      };
+
+      if (phase === 'done') {
+        const pct = (score / total) * 100;
+        return (
+          <div className="bg-white border-2 rounded-3xl p-8 text-center" style={{ borderColor: P }}>
+            <p className="text-3xl font-bold mb-2" style={{ color: PDARK }}>{score} / {total} rätt</p>
+            <p className="text-slate-600 mb-6">{gradeText(pct)}</p>
+            <button onClick={restart} style={{ background: P }} className="text-white px-8 py-3 rounded-2xl font-bold">Börja om</button>
+          </div>
+        );
+      }
+
+      const options = [
+        { letter: 'A', text: q.optionA },
+        { letter: 'B', text: q.optionB }
+      ];
+
+      return (
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-bold text-slate-500">Fråga {qIdx + 1} av {total}</p>
+            <p className="text-sm font-bold text-slate-500">Poäng: {score}</p>
+          </div>
+          <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+            <div className="h-2 rounded-full transition-all" style={{ width: `${(qIdx / total) * 100}%`, background: P }}></div>
+          </div>
+
+          <div className="bg-white p-5 rounded-2xl border-l-8 mb-5 shadow-sm" style={{ borderColor: P }}>
+            <p className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Begrepp</p>
+            <h3 className="text-xl font-bold">{concept.term}</h3>
+          </div>
+
+          <p className="text-sm text-slate-500 mb-3 font-medium">Vilket alternativ är ett korrekt exempel på begreppet?</p>
+
+          <div className="grid gap-3">
+            {options.map(opt => {
+              const isCorrect = opt.letter === q.correct;
+              const isSelected = selected === opt.letter;
+              let cls = 'bg-white border-2 border-slate-200 hover:border-slate-300';
+              if (selected !== null) {
+                if (isCorrect) cls = 'bg-green-50 border-2 border-green-500 text-green-800';
+                else if (isSelected) cls = 'bg-red-50 border-2 border-red-500 text-red-800';
+                else cls = 'bg-white border-2 border-slate-100 text-slate-400';
+              }
+              return (
+                <button key={opt.letter} onClick={() => choose(opt.letter)} disabled={selected !== null} className={`text-left px-5 py-4 rounded-2xl font-medium transition-colors ${cls}`}>
+                  <span className="font-bold mr-2">{opt.letter}.</span>{opt.text}
+                </button>
+              );
+            })}
+          </div>
+
+          {selected !== null && (
+            <div className="mt-5 bg-slate-50 border-2 border-slate-200 rounded-2xl p-4">
+              <p className="text-slate-700">{q.explanation}</p>
+              <button onClick={next} style={{ background: P }} className="mt-4 text-white px-6 py-2 rounded-xl font-bold">
+                {qIdx + 1 >= total ? 'Se resultat' : 'Nästa →'}
+              </button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
     function App() {
       const [view, setView] = useState('list');
 
@@ -261,9 +666,9 @@
       const tabs = [
         ['list', 'Lista', true],
         ['flashcards', 'Flashcards', true],
-        ['lucktext', 'Lucktext', false],
-        ['scenario', 'Scenario', false],
-        ['icke', 'Icke-ex.', false]
+        ['lucktext', 'Lucktext', true],
+        ['scenario', 'Scenario', true],
+        ['icke', 'Icke-ex.', true]
       ];
 
       return (
@@ -294,6 +699,9 @@
           <main className="max-w-2xl mx-auto">
             {view === 'list' && <ListView />}
             {view === 'flashcards' && <FlashcardView />}
+            {view === 'lucktext' && <LucktextView />}
+            {view === 'scenario' && <ScenarioView />}
+            {view === 'icke' && <IckeExView />}
           </main>
 
           <footer className="mt-12 text-center text-slate-400 text-sm italic pb-8">Källa: Brott och straff – begreppslista</footer>
