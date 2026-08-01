@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Begrepp – Rättsfilosofi och juridisk metod</title>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: 'EB Garamond', serif; }
+    .flip-card { perspective: 1000px; height: 350px; width: 100%; max-width: 400px; cursor: pointer; }
+    .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+    .flipped-classes { transform: rotateY(180deg); }
+    .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+    .flip-card-front { background-color: #0d9488; border: 6px solid white; }
+    .flip-card-back { background-color: white; border: 6px solid #0d9488; transform: rotateY(180deg); }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+  <div id="root"></div>
+  <script>
+    function smartBack(e) {
+      if (e) e.preventDefault();
+      var ref = document.referrer;
+      if (ref) {
+        try {
+          if (new URL(ref).origin === window.location.origin) {
+            history.back();
+            return;
+          }
+        } catch (err) {}
+      }
+      window.location.href = 'index.html';
+    }
+  </script>
+  <script type="text/babel">
+    const { useState } = React;
+
+    const concepts = [
+      { term: "Norm", definition: "Oskrivna regler och ideal som styr hur vi beter oss mot varandra." },
+      { term: "Sociala regler", definition: "Vad som är brukligt i sociala sammanhang." },
+      { term: "Moralregler", definition: "Handlar om hur vi ska agera i livet." },
+      { term: "Etik", definition: "Beskriver våra argument för vår moral, det vill säga hur vi tänker och resonerar angående de moraliska dilemman som vi möter i livet." },
+      { term: "Yrkesetik", definition: "Handlingsregler med argument för de förhållningssätt som ska prägla arbetet." },
+      { term: "Rättsordningen", definition: "De olika rättsreglerna som gäller i ett land, tillsammans." },
+      { term: "Sambolagen", definition: "Lag som är ett ekonomiskt skyddsnät för den ekonomiskt svagare parten i ett samboförhållande, stiftad 1988." },
+      { term: "1734 års lag", definition: "Den första gemensamma, nedtecknade lagen för Sverige som helhet." },
+      { term: "Analogisk tillämpning", definition: "Innebär att juristen studerar liknande lagar och vad som står att finna där." },
+      { term: "Rättsmedvetande", definition: "Den allmänna synen i samhället på vad som är rätt och fel." },
+      { term: "Det rättspositiva tänkandet", definition: "Domar kan endast baseras på aktuell lagstiftning." },
+      { term: "Rättspositivism", definition: "Juridisk gällande rätt är helt skild från moraliska omdömen." },
+      { term: "Bolagsjurist", definition: "En jurist som är anställd av ett företag och som framförallt arbetar med bolagsrätt." },
+      { term: "Advokat", definition: "En jurist som tillhandahåller juridiska tjänster eller som är rättegångsombud." },
+      { term: "Juridisk metod", definition: "En arbetsmetod vars syfte är att försöka uppnå den mest sannolika och riktiga lösningen på en juridisk fråga eller ett juridiskt problem." },
+      { term: "Rättskällor", definition: "Är lagar, förordningar, förarbeten, domstolspraxis och sedvänja. Hit kan juristen vända sig för att få hjälp med att lösa en juridisk fråga." },
+      { term: "Rättsfrågorna", definition: "De juridiska frågor som en beskriven situation handlar om, steg två i den juridiska metoden." },
+      { term: "Rekvisit", definition: "Är villkor eller kriterier för att en paragraf ska vara tillämplig, exempelvis att en gärningsperson handlar med uppsåt." },
+      { term: "Förarbeten", definition: "Är olika dokument som är skrivna inför att en ny lag ska stiftas." },
+      { term: "Domstolspraxis", definition: "Är tidigare domstolsavgöranden som visar hur domstolen tolkat en viss rättsregel i en viss situation." },
+      { term: "Prejudikat", definition: "En dom i ett tidigare fall som används som vägledning i senare bedömningar av mål eller ärenden." },
+      { term: "Juridisk doktrin", definition: "Är juridisk speciallitteratur eller juridisk forskning." },
+      { term: "Sedvänja", definition: "En affärstradition anses vara en sedvänja om den är etablerad och har funnits länge." },
+      { term: "Bodelning", definition: "Hur egendom ska fördelas mellan två makar vid en äktenskapsskillnad." },
+      { term: "Betänketid", definition: "Den tid, normalt sex månader, som föräldrar med gemensamma barn under 16 år måste ha innan tingsrätten kan besluta om äktenskapsskillnad." },
+      { term: "Slutsatsen", definition: "Steg fem i juridisk metod: att ta ställning och bestämma en juridiskt hållbar lösning." },
+      { term: "Lagtolkning", definition: "Tolkning av lagtext som kan ske med olika tolkningsmetoder." },
+      { term: "Bokstavstolkning", definition: "Innebär att lagen tolkas ordagrant." },
+      { term: "Teleologisk tolkning", definition: "Innebär att juristen ställer sig frågan vad syftet med lagen är." },
+      { term: "E contrario-slut", definition: "Om det som står i lagtexten är förbjudet så borde det som inte står i texten därmed vara tillåtet." }
+    ];
+
+    function shuffleArray(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    const P = '#0d9488';
+    const PLIGHT = '#ccfbf1';
+    const PDARK = '#134e4a';
+
+    function ListView() {
+      const [query, setQuery] = useState('');
+      const q = query.trim().toLowerCase();
+      const filtered = concepts
+        .map((c, i) => ({ ...c, index: i }))
+        .filter(c => !q || c.term.toLowerCase().includes(q) || c.definition.toLowerCase().includes(q));
+
+      return (
+        <div>
+          <input
+            type="text"
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            placeholder="Sök begrepp eller definition..."
+            className="w-full mb-6 border-2 border-slate-200 rounded-2xl px-5 py-3 text-lg focus:outline-none focus:border-teal-600"
+          />
+          <div className="grid gap-4">
+            {filtered.map(item => (
+              <div key={item.index} className="bg-white p-5 rounded-2xl border-l-8 shadow-sm hover:shadow-md transition-shadow" style={{ borderColor: P }}>
+                <div className="flex items-center gap-3 mb-1">
+                  <span className="text-xs font-bold px-2 py-1 rounded-lg" style={{ background: PLIGHT, color: PDARK }}>{item.index + 1}</span>
+                  <h3 className="text-lg font-bold">{item.term}</h3>
+                </div>
+                <p className="text-slate-600 leading-relaxed ml-10">{item.definition}</p>
+              </div>
+            ))}
+            {filtered.length === 0 && (
+              <p className="text-center text-slate-400 py-8">Inga begrepp matchar sökningen.</p>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    function FlashcardView() {
+      const total = concepts.length;
+      const [deck, setDeck] = useState(() => shuffleArray([...concepts]));
+      const [deckIdx, setDeckIdx] = useState(0);
+      const [isFlipped, setIsFlipped] = useState(false);
+      const [kudeInte, setKudeInte] = useState([]);
+      const [kunde, setKunde] = useState([]);
+      const [phase, setPhase] = useState('playing'); // 'playing' | 'roundEnd' | 'allDone'
+
+      const restartAll = () => {
+        setDeck(shuffleArray([...concepts]));
+        setDeckIdx(0);
+        setIsFlipped(false);
+        setKudeInte([]);
+        setKunde([]);
+        setPhase('playing');
+      };
+
+      const sort = (pile) => {
+        const card = deck[deckIdx];
+        const newKudeInte = pile === 'kudeInte' ? [...kudeInte, card] : kudeInte;
+        const newKunde    = pile === 'kunde'    ? [...kunde, card]    : kunde;
+        const nextIdx = deckIdx + 1;
+        setKudeInte(newKudeInte);
+        setKunde(newKunde);
+        setIsFlipped(false);
+        if (nextIdx >= deck.length) {
+          setDeckIdx(nextIdx);
+          setPhase(newKudeInte.length === 0 ? 'allDone' : 'roundEnd');
+        } else {
+          setDeckIdx(nextIdx);
+        }
+      };
+
+      const nextRound = () => {
+        setDeck(shuffleArray([...kudeInte]));
+        setDeckIdx(0);
+        setIsFlipped(false);
+        setKudeInte([]);
+        setPhase('playing');
+      };
+
+      if (phase === 'allDone') return (
+        <div className="flex flex-col items-center gap-6">
+          <div className="bg-green-50 border-2 border-green-400 rounded-3xl p-8 text-center w-full max-w-sm">
+            <div className="text-5xl mb-4">🎉</div>
+            <p className="text-2xl font-bold text-green-700 mb-2">Alla kort klarade!</p>
+            <p className="text-slate-600 mb-6">Du behärskar <span className="font-bold text-green-700">{kunde.length} av {total}</span> begrepp.</p>
+            <button onClick={restartAll} style={{ background: P }} className="w-full text-white px-8 py-3 rounded-2xl font-bold transition-colors">Börja om med alla</button>
+          </div>
+        </div>
+      );
+
+      if (phase === 'roundEnd') return (
+        <div className="flex flex-col items-center gap-6">
+          <div className="bg-white border-2 border-slate-200 rounded-3xl p-8 text-center w-full max-w-sm shadow-sm">
+            <p className="text-lg font-bold text-slate-700 mb-4">Runda klar!</p>
+            <div className="flex justify-center gap-8 mb-6">
+              <div className="text-center">
+                <p className="text-3xl font-bold text-green-600">{kunde.length}</p>
+                <p className="text-xs text-slate-400 uppercase tracking-wide mt-1">Kunde</p>
+              </div>
+              <div className="text-center">
+                <p className="text-3xl font-bold text-red-500">{kudeInte.length}</p>
+                <p className="text-xs text-slate-400 uppercase tracking-wide mt-1">Kunde inte</p>
+              </div>
+            </div>
+            <div className="flex flex-col gap-3">
+              <button onClick={nextRound} className="w-full bg-slate-900 text-white px-8 py-3 rounded-2xl font-bold hover:bg-slate-800 transition-colors">
+                Öva på Kunde inte ({kudeInte.length} kort) →
+              </button>
+              <button onClick={restartAll} style={{ background: P }} className="w-full text-white px-8 py-3 rounded-2xl font-bold transition-colors">
+                Börja om med alla
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+
+      const card = deck[deckIdx];
+      const remaining = deck.length - deckIdx;
+
+      return (
+        <div className="flex flex-col items-center">
+          <div className="flex gap-3 mb-5 w-full max-w-sm">
+            <div className="flex-1 bg-red-50 border border-red-200 rounded-xl p-2 text-center">
+              <p className="text-xl font-bold text-red-500">{kudeInte.length}</p>
+              <p className="text-[10px] text-red-400 uppercase tracking-wide font-bold">Kunde inte</p>
+            </div>
+            <div className="flex-1 bg-slate-100 border border-slate-200 rounded-xl p-2 text-center">
+              <p className="text-xl font-bold text-slate-400">{remaining}</p>
+              <p className="text-[10px] text-slate-400 uppercase tracking-wide font-bold">Kvar</p>
+            </div>
+            <div className="flex-1 bg-green-50 border border-green-200 rounded-xl p-2 text-center">
+              <p className="text-xl font-bold text-green-500">{kunde.length}</p>
+              <p className="text-[10px] text-green-400 uppercase tracking-wide font-bold">Kunde</p>
+            </div>
+          </div>
+          <div className="flip-card mb-5" onClick={() => setIsFlipped(!isFlipped)}>
+            <div className={`flip-card-inner ${isFlipped ? 'flipped-classes' : ''}`}>
+              <div className="flip-card-front">
+                <h2 className="text-3xl font-bold text-white text-center px-4">{card.term}</h2>
+                <div className="absolute bottom-6 animate-pulse">
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-white font-bold opacity-70">Klicka för svar</span>
+                </div>
+              </div>
+              <div className="flip-card-back">
+                <p className="text-xl leading-relaxed text-slate-800 font-medium px-4">{card.definition}</p>
+                <div className="absolute bottom-6">
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">Klicka för att vända</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          {isFlipped && (
+            <div className="flex gap-3 w-full max-w-sm mb-4">
+              <button onClick={() => sort('kudeInte')} className="flex-1 bg-red-100 text-red-700 border-2 border-red-300 font-bold py-3 rounded-2xl hover:bg-red-200 active:scale-95 transition-all">
+                ✗ Kunde inte
+              </button>
+              <button onClick={() => sort('kunde')} className="flex-1 bg-green-100 text-green-700 border-2 border-green-300 font-bold py-3 rounded-2xl hover:bg-green-200 active:scale-95 transition-all">
+                ✓ Kunde
+              </button>
+            </div>
+          )}
+          <div className="flex flex-col items-center gap-2 mt-1">
+            <p className="text-slate-500 font-medium bg-slate-200 px-4 py-1 rounded-full text-xs">{deckIdx + 1} av {deck.length}</p>
+            <button onClick={restartAll} className="text-slate-400 text-xs hover:text-slate-600 transition-colors underline">↺ Börja om med alla</button>
+          </div>
+        </div>
+      );
+    }
+
+    function App() {
+      const [view, setView] = useState('list');
+
+      const activeTab = 'text-white font-bold shadow-sm';
+      const inactiveTab = 'text-slate-500';
+      const disabledTab = 'text-slate-300 cursor-not-allowed';
+
+      const tabs = [
+        ['list', 'Lista', true],
+        ['flashcards', 'Flashcards', true],
+        ['lucktext', 'Lucktext', false],
+        ['scenario', 'Scenario', false],
+        ['icke', 'Icke-ex.', false]
+      ];
+
+      return (
+        <div className="min-h-screen p-4 md:p-8">
+          <header className="max-w-2xl mx-auto mb-8 flex items-center justify-between">
+            <a href="index.html" onClick={smartBack} className="text-slate-500 hover:text-teal-600 transition-colors flex items-center gap-2 font-medium text-sm">← Tillbaka till startsidan</a>
+            <h1 className="text-2xl md:text-3xl font-bold text-center">Rättsfilosofi och juridisk metod</h1>
+            <div className="w-36"></div>
+          </header>
+
+          <div className="max-w-2xl mx-auto mb-10 flex bg-white p-1 rounded-full shadow-md border border-slate-200 overflow-x-auto">
+            {tabs.map(([v, label, enabled]) => (
+              <button
+                key={v}
+                onClick={() => enabled && setView(v)}
+                disabled={!enabled}
+                title={enabled ? '' : 'Kommer snart'}
+                className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm whitespace-nowrap ${
+                  !enabled ? disabledTab : view === v ? activeTab : inactiveTab
+                }`}
+                style={enabled && view === v ? { background: P } : {}}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <main className="max-w-2xl mx-auto">
+            {view === 'list' && <ListView />}
+            {view === 'flashcards' && <FlashcardView />}
+          </main>
+
+          <footer className="mt-12 text-center text-slate-400 text-sm italic pb-8">Källa: Rättsfilosofi och juridisk metod – begreppslista</footer>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
