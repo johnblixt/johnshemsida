@@ -84,6 +84,112 @@ const concepts = [
   { term: "Nödvärnsexcess", definition: "Innebär att en person som blir utsatt för exempelvis våld brukar mer våld mot gärningspersonen än vad situationen kräver." },
 ];
 
+const lucktextData = [
+  { pre: "De flesta brott, som misshandel och stöld, samt deras straff finns samlade i en och samma lag som förkortas ", post: ".", answers: ["brb", "brottsbalken"] },
+  { pre: "Brott som narkotikabrott och trafikbrott regleras inte i brottsbalken utan i egna lagar som tillsammans kallas ", post: ".", answers: ["specialstraffrätten"] },
+  { pre: "När en person planerat och medvetet skjuter ihjäl en annan människa, utan förmildrande omständigheter, begår personen ", post: ".", answers: ["mord"] },
+  { pre: "En kvinna dödar avsiktligt sin man efter att i åratal ha utsatts för grov misshandel av honom, vilket gör brottet mindre grovt än normalt och bedöms som ", post: ".", answers: ["dråp"] },
+  { pre: "Att medvetet slå en annan person så att hen får ont och blir blåslagen räknas som ", post: ".", answers: ["misshandel"] },
+  { pre: "En bilförare som kör vårdslöst och av misstag kör ihjäl en fotgängare, utan avsikt att döda, gör sig skyldig till ", post: ".", answers: ["vållande till annans död"] },
+  { pre: "Att svinga en kniv mot någon och säga att man tänker skada personen, i syfte att skrämmas, räknas som ", post: ".", answers: ["olaga hot"] },
+  { pre: "Att klättra in genom ett fönster till en villa utan att bli insläppt, eller att vägra lämna en lägenhet trots uppmaning, räknas som ", post: ".", answers: ["hemfridsbrott och olaga intrång", "hemfridsbrott", "olaga intrång"] },
+  { pre: "Att under flera månader upprepade gånger trakassera, hota och följa efter en före detta partner räknas som ", post: ".", answers: ["olaga förföljelse", "stalkning"] },
+  { pre: "Att tvinga sin 16-åriga dotter att gifta sig med en man hon inte vill gifta sig med räknas som ", post: ".", answers: ["äktenskapstvång"] },
+  { pre: "Att med våld föra bort en person i en bil och hålla henne fången mot sin vilja räknas som ", post: ".", answers: ["människorov"] },
+  { pre: "Att med hot om våld tvinga någon att skriva under ett skuldebrev räknas som ", post: ".", answers: ["olaga tvång"] },
+  { pre: "Att i smyg ta en cykel som tillhör en granne, med avsikt att behålla den för gott, räknas som ", post: ".", answers: ["stöld"] },
+  { pre: "Att gå in i en affär, hota personalen med kniv och kräva pengar ur kassan räknas som ", post: ".", answers: ["rån"] },
+  { pre: "Att låna grannens bil utan lov för att köra en sväng, utan avsikt att behålla den, räknas som ", post: ".", answers: ["tillgrepp av fortskaffningsmedel"] },
+  { pre: "Att på egen hand knycka tillbaka sin egen stulna cykel som man hittar hos tjuven, istället för att anmäla det till polisen, räknas som ", post: ".", answers: ["självtäkt"] },
+  { pre: "Att lura en äldre person att betala för en falsk vara som aldrig levereras räknas som ", post: ".", answers: ["bedrägeri"] },
+  { pre: "Att köpa en cykel man vet är stulen och sedan sälja den vidare för egen vinning räknas som ", post: ".", answers: ["häleri"] },
+  { pre: "En kassör som gång på gång tar pengar ur företagets kassa som hen har hand om, för egen vinning, gör sig skyldig till ", post: ".", answers: ["förskingring"] },
+  { pre: "En upphandlare som tar emot pengar från en leverantör i utbyte mot att gynna leverantören i en upphandling gör sig skyldig till ", post: ".", answers: ["tagande av muta"] },
+  { pre: "Ett byggföretag som erbjuder en kommunal tjänsteman en dyr present för att få ett bygglov beviljat gör sig skyldigt till ", post: ".", answers: ["givande av muta", "bestickning"] },
+  { pre: "Att genomföra ett samlag med någon som tydligt inte samtyckt till det räknas som ", post: ".", answers: ["våldtäkt"] },
+  { pre: "Att tafsa på en annan persons kropp på ett sexuellt sätt, utan att det handlar om samlag och utan samtycke, räknas som ", post: ".", answers: ["sexuellt övergrepp"] },
+  { pre: "Att sprida ett falskt rykte om att en kollega stulit pengar från jobbet, vilket får andra att se ner på hen, räknas som ", post: ".", answers: ["förtal"] },
+  { pre: "Att under ett upphetsat gräl kalla en granne ett kränkande skällsord rakt i ansiktet räknas som ", post: ".", answers: ["förolämpning"] },
+  { pre: "Att förfalska en väns namnteckning på ett kontrakt för att utge sig för att vara personen räknas som ", post: ".", answers: ["urkundsförfalskning"] },
+  { pre: "Att medvetet tända eld på ett flerfamiljshus där människor sover, med fara för deras liv, räknas som ", post: ".", answers: ["mordbrand"] },
+  { pre: "När deltagarna i en demonstration tillsammans forcerar en polisavspärrning och hindrar polisens arbete räknas det som ", post: ".", answers: ["upplopp"] },
+  { pre: "Att knuffa undan en angripare som just attackerat en med kniv, med våld som står i proportion till hotet, är ett exempel på ", post: ".", answers: ["nödvärnsrätten"] },
+  { pre: "Att fortsätta slå en angripare som redan ligger medvetslös på marken, långt mer våld än vad situationen krävde, är ett exempel på ", post: ".", answers: ["nödvärnsexcess"] },
+];
+
+const scenarioData = [
+  { scenario: "En advokat slår upp vilket straff som gäller för ett brott i den lag där de flesta brotten i Sverige finns samlade.", distractors: ["Specialstraffrätten", "Urkundsförfalskning", "Nödvärnsrätten"] },
+  { scenario: "En polis utreder ett brott mot en lag som ligger helt utanför den centrala brottslagen, till exempel en trafikförfattning.", distractors: ["Brottsbalken (BrB)", "Nödvärnsrätten", "Häleri"] },
+  { scenario: "En man planerar noga och skjuter medvetet ihjäl sin granne efter en långvarig konflikt.", distractors: ["Dråp", "Vållande till annans död", "Nödvärnsexcess"] },
+  { scenario: "En person dödar avsiktligt en annan människa, men omständigheterna – som årslång svår misshandel från offret – gör att brottet bedöms vara mindre grovt än normalt.", distractors: ["Mord", "Vållande till annans död", "Nödvärnsexcess"] },
+  { scenario: "En person slår en annan med knuten näve så att den drabbade får ont och blir blåtira.", distractors: ["Olaga hot", "Olaga tvång", "Nödvärnsexcess"] },
+  { scenario: "En förare somnar bakom ratten på grund av trötthet och kör av misstag ihjäl en cyklist, helt utan avsikt att skada någon.", distractors: ["Mord", "Dråp", "Nödvärnsexcess"] },
+  { scenario: "En man håller upp ett basebollträ mot en granne och säger att han ska slå honom om han inte flyttar sin bil.", distractors: ["Olaga tvång", "Människorov", "Rån"] },
+  { scenario: "En person klättrar in genom ett öppet fönster till en lägenhet han inte bor i, utan att någon bjudit in honom.", distractors: ["Människorov", "Olaga tvång", "Upplopp"] },
+  { scenario: "En man skickar hundratals meddelanden, dyker upp utanför sin ex-partners jobb och följer efter henne under flera månaders tid.", distractors: ["Olaga hot", "Olaga tvång", "Hemfridsbrott och olaga intrång"] },
+  { scenario: "Föräldrar tvingar sin minderåriga dotter att gifta sig med en man som familjen valt åt henne, mot hennes vilja.", distractors: ["Människorov", "Olaga tvång", "Hemfridsbrott och olaga intrång"] },
+  { scenario: "En grupp män griper tag i en kvinna på gatan, släpar in henne i en bil och kör iväg med henne mot hennes vilja.", distractors: ["Olaga tvång", "Hemfridsbrott och olaga intrång", "Rån"] },
+  { scenario: "En man hotar att skada en affärspartner om denne inte skriver under ett avtal han inte vill ingå.", distractors: ["Olaga hot", "Rån", "Bedrägeri"] },
+  { scenario: "En person smyger in på en obevakad cykelparkering och tar en cykel som inte är hens, med planen att behålla den för gott.", distractors: ["Rån", "Tillgrepp av fortskaffningsmedel", "Häleri"] },
+  { scenario: "En man går fram till en kvinna på en öde gata, håller en kniv mot henne och kräver att få hennes plånbok.", distractors: ["Stöld", "Olaga tvång", "Häleri"] },
+  { scenario: "En tonåring tar en moped som står olåst utanför skolan för att åka en sväng, och lämnar sedan tillbaka den där han hittade den.", distractors: ["Stöld", "Rån", "Självtäkt"] },
+  { scenario: "En kvinna upptäcker sin stulna telefon hos en bekant och tar den tillbaka själv på plats, utan att kontakta polisen.", distractors: ["Stöld", "Rån", "Tillgrepp av fortskaffningsmedel"] },
+  { scenario: "En person skapar en falsk annons på nätet och lurar köpare att betala i förskott för varor som aldrig skickas.", distractors: ["Häleri", "Förskingring", "Urkundsförfalskning"] },
+  { scenario: "En person köper billiga elektronikprylar av en bekant, trots att hen misstänker att varorna är stulna, och säljer dem sedan vidare.", distractors: ["Bedrägeri", "Stöld", "Förskingring"] },
+  { scenario: "En ekonomiansvarig på ett företag flyttar successivt över företagets pengar till sitt eget privata konto utan tillåtelse.", distractors: ["Bedrägeri", "Häleri", "Stöld"] },
+  { scenario: "En tjänsteman på en kommun tar emot en dyr klocka av ett byggföretag strax innan hen ska fatta beslut om vilket företag som får ett kontrakt.", distractors: ["Givande av muta (\"bestickning\")", "Förskingring", "Bedrägeri"] },
+  { scenario: "En entreprenör erbjuder en byggnadsinspektör kontanter för att inspektören ska blunda för brister vid en besiktning.", distractors: ["Tagande av muta", "Förskingring", "Bedrägeri"] },
+  { scenario: "En person genomför samlag med en annan person trots att den andra tydligt sagt nej och inte samtyckt.", distractors: ["Sexuellt övergrepp", "Olaga tvång", "Olaga hot"] },
+  { scenario: "En person tar på en annan persons bröst på ett sexuellt sätt på ett fullsatt tåg, utan att personen samtyckt och utan att det handlar om samlag.", distractors: ["Våldtäkt", "Olaga tvång", "Förolämpning"] },
+  { scenario: "En person sprider ett osant påstående om att en granne begått ett brott, vilket gör att andra grannar börjar se ner på personen.", distractors: ["Förolämpning", "Olaga hot", "Olaga förföljelse (\"stalkning\")"] },
+  { scenario: "Två grannar bråkar om ett staket och den ena kallar den andra ett grovt öknamn rakt i ansiktet.", distractors: ["Förtal", "Olaga hot", "Olaga tvång"] },
+  { scenario: "En person kopierar en väns id-kort och ändrar bilden till sitt eget foto för att kunna legitimera sig som vännen.", distractors: ["Bedrägeri", "Häleri", "Förskingring"] },
+  { scenario: "En person tänder eld på en lägenhetsbyggnad mitt i natten, väl medveten om att flera familjer sover inne i huset.", distractors: ["Upplopp", "Förskingring", "Nödvärnsexcess"] },
+  { scenario: "En folkmassa vid en demonstration river tillsammans ner polisens avspärrningar och trycker undan poliserna som försöker stoppa dem.", distractors: ["Olaga tvång", "Olaga hot", "Mordbrand"] },
+  { scenario: "En kvinna som blir attackerad med kniv på en mörk gata knuffar och slår undan angriparen med våld som inte är uppenbart oförsvarligt i förhållande till hotet.", distractors: ["Nödvärnsexcess", "Olaga tvång", "Självtäkt"] },
+  { scenario: "En man som knuffats till marken reser sig och slår sedan sönder angriparens ansikte upprepade gånger, trots att angriparen redan slutat attackera.", distractors: ["Nödvärnsrätten", "Misshandel", "Mord"] },
+];
+
+const ickeData = [
+  { optionA: "Den lag som samlar de flesta brotten och deras straff, exempelvis misshandel och stöld.", optionB: "Ett samlingsnamn för de olika specialstrafflagar som ligger utanför den centrala brottslagen.", correct: 'A', explanation: "Brottsbalken samlar de flesta brotten och deras straff. Alternativ B beskriver istället specialstraffrätten." },
+  { optionA: "Alla brott som är beskrivna i den centrala lag där de flesta brotten samlas.", optionB: "De brott som regleras i egna lagar utanför den centrala brottslagen, exempelvis narkotikabrott.", correct: 'B', explanation: "Specialstraffrätten är brott som regleras utanför brottsbalken. Alternativ A beskriver istället brottsbalken." },
+  { optionA: "En person dödar en annan avsiktligt och brottet bedöms vara av normalgraden, utan förmildrande omständigheter.", optionB: "En person dödar en annan avsiktligt men under starkt kränkande omständigheter som gör brottet mindre grovt.", correct: 'A', explanation: "Mord är avsiktligt dödande av normalgraden. Alternativ B, med förmildrande omständigheter, beskriver istället dråp." },
+  { optionA: "En person dödar avsiktligt en annan människa under omständigheter som gör brottet mindre grovt, till exempel efter långvarig svår kränkning.", optionB: "En person dödar en annan människa av misstag genom grov ovarsamhet, utan avsikt att döda.", correct: 'A', explanation: "Dråp är avsiktligt dödande som bedöms vara mindre grovt. Alternativ B, utan avsikt, beskriver istället vållande till annans död." },
+  { optionA: "En person knuffar och slår en annan person så att denne får ont och blir skadad.", optionB: "En person hotar att slå en annan person men rör aldrig vid hen.", correct: 'A', explanation: "Misshandel kräver att kroppsskada eller smärta faktiskt tillfogas. Alternativ B, ett hot utan fysisk beröring, är istället olaga hot." },
+  { optionA: "En person dödar av misstag en annan genom grov ovarsamhet, till exempel vårdslös bilkörning.", optionB: "En person dödar medvetet en annan efter att noga ha planerat det.", correct: 'A', explanation: "Vållande till annans död sker av oaktsamhet, utan avsikt. Alternativ B, med planering och avsikt, beskriver istället mord." },
+  { optionA: "En person hotar en annan med våld för att skrämma personen, utan att kräva att hen gör något specifikt.", optionB: "En person tvingar med hot om våld en annan person att skriva under ett papper.", correct: 'A', explanation: "Olaga hot handlar om att skrämma genom hot om våld. Alternativ B, där hotet används för att tvinga fram en handling, är istället olaga tvång." },
+  { optionA: "En person tar sig in i någon annans bostad utan lov och vägrar gå därifrån trots uppmaning.", optionB: "En person knackar på en dörr men går därifrån direkt när ingen öppnar.", correct: 'A', explanation: "Hemfridsbrott och olaga intrång innebär att ta sig in eller stanna kvar utan lov. Att lämna en dörr direkt är ingen brottslig handling alls." },
+  { optionA: "En person skickar ett enda argt meddelande till en annan efter ett bråk.", optionB: "En person begår upprepade brottsliga handlingar, som hot och förföljelse, mot samma person under lång tid.", correct: 'B', explanation: "Olaga förföljelse kräver upprepade handlingar över tid. Ett enstaka argt meddelande uppfyller inte det kravet." },
+  { optionA: "Två vuxna personer gifter sig frivilligt efter att ha känt varandra länge.", optionB: "Ett barn tvingas av sina föräldrar att gifta sig mot sin vilja.", correct: 'B', explanation: "Äktenskapstvång kräver tvång och att den som gifts bort är ett barn. Ett frivilligt äktenskap mellan vuxna är inte brottsligt." },
+  { optionA: "En person tvingar en annan att underteckna ett kontrakt genom hot om våld.", optionB: "En person för bort en annan människa mot hennes vilja och håller henne fången.", correct: 'B', explanation: "Människorov handlar om att föra bort och hålla fången. Alternativ A, att tvinga fram en underskrift, är istället olaga tvång." },
+  { optionA: "En person hotar en annan med våld utan att kräva att personen gör något specifikt.", optionB: "En person tvingar, genom hot om våld, en annan att skriva under ett dokument mot sin vilja.", correct: 'B', explanation: "Olaga tvång kräver att hotet används för att tvinga fram en handling. Alternativ A, ett hot utan krav, är istället olaga hot." },
+  { optionA: "En person tar en cykel i smyg, utan att någon ser, med avsikt att behålla den för alltid.", optionB: "En person hotar cykelns ägare med våld för att tvinga hen att lämna över cykeln.", correct: 'A', explanation: "Stöld sker i smyg och utan våld. Alternativ B, med hot om våld, är istället rån." },
+  { optionA: "En person tar smygande en handväska som lämnats oövervakad på en bänk.", optionB: "En person hotar en väktare med ett vapen för att tvinga fram butikens dagskassa.", correct: 'B', explanation: "Rån innebär hot om eller bruk av våld för att komma över egendom. Alternativ A, som sker i smyg utan våld, är istället stöld." },
+  { optionA: "En person tar en bil utan lov för en kort tur och lämnar tillbaka den efteråt utan avsikt att behålla den.", optionB: "En person tar en bil utan lov med målet att sälja den och behålla pengarna.", correct: 'A', explanation: "Tillgrepp av fortskaffningsmedel saknar avsikt att behålla fordonet. Alternativ B, med avsikt att behålla vinsten, är istället stöld." },
+  { optionA: "En person tar tillbaka sin egen stulna egendom på egen hand istället för att låta polisen hantera det.", optionB: "En person tar någon annans egendom som hen aldrig ägt, för att behålla den själv.", correct: 'A', explanation: "Självtäkt handlar om att ta tillbaka sin egen egendom. Alternativ B, att ta någon annans egendom man aldrig ägt, är istället stöld." },
+  { optionA: "En person vilseleder en annan att betala pengar för något som aldrig levereras, och tjänar själv på det.", optionB: "En person säljer vidare stöldgods som hen vet är stulet.", correct: 'A', explanation: "Bedrägeri innebär att vilseleda någon till en betalning. Alternativ B, att hantera stöldgods, är istället häleri." },
+  { optionA: "En person stjäl en cykel direkt från en cykelparkering.", optionB: "En person köper och säljer vidare en cykel som hen vet är stulen.", correct: 'B', explanation: "Häleri innebär att hantera egendom man vet är stulen, utan att själv ha stulit den. Alternativ A är istället stöld." },
+  { optionA: "En person utnyttjar sin förtroendeposition, som att hantera någon annans pengar, för att sko sig själv.", optionB: "En person lurar en främling att betala för en vara som aldrig skickas.", correct: 'A', explanation: "Förskingring kräver att gärningspersonen utnyttjar en förtroendeställning. Alternativ B, riktat mot en främling utan förtroendeförhållande, är istället bedrägeri." },
+  { optionA: "En tjänsteperson tar emot pengar av ett företag i utbyte mot att gynna företaget i ett kommande beslut.", optionB: "Ett företag erbjuder en tjänsteperson pengar för att få ett gynnsamt beslut.", correct: 'A', explanation: "Tagande av muta beskriver den som tar emot mutan. Alternativ B, där företaget erbjuder mutan, är istället givande av muta." },
+  { optionA: "En tjänsteperson tar emot en gåva från ett företag i utbyte mot ett gynnsamt beslut.", optionB: "Ett företag erbjuder en tjänsteperson en gåva för att få ett gynnsamt beslut.", correct: 'B', explanation: "Givande av muta beskriver den som erbjuder mutan. Alternativ A, där tjänstepersonen tar emot den, är istället tagande av muta." },
+  { optionA: "En person genomför ett samlag med någon som inte samtyckt till det.", optionB: "En person tar på en annan persons kropp på ett sexuellt sätt utan samtycke, utan att det handlar om samlag.", correct: 'A', explanation: "Våldtäkt avser samlag eller en likvärdig sexuell handling utan samtycke. Alternativ B, som inte är samlag, är istället sexuellt övergrepp." },
+  { optionA: "En person genomför ett fullbordat samlag med någon utan samtycke.", optionB: "En person tar på en annan persons kropp på ett sexuellt sätt utan samtycke, men det handlar inte om samlag.", correct: 'B', explanation: "Sexuellt övergrepp omfattar andra sexuella handlingar än samlag. Alternativ A, ett fullbordat samlag, är istället våldtäkt." },
+  { optionA: "En person sprider ett osant påstående om en annan person som gör att andra ser ner på hen.", optionB: "En person kallar en annan person ett grovt skällsord rakt i ansiktet under ett gräl.", correct: 'A', explanation: "Förtal innebär att sprida uppgifter som utsätter någon för missaktning. Alternativ B, ett tillmäle rakt i ansiktet, är istället förolämpning." },
+  { optionA: "En person sprider ett falskt rykte om en kollega bakom hens rygg som gör att andra kollegor tappar respekt för hen.", optionB: "En person kallar en annan person ett kränkande öknamn rakt i ansiktet under ett tillfälligt gräl.", correct: 'B', explanation: "Förolämpning är ett milt kränkande tillmäle direkt till personen. Alternativ A, ett spritt falskt rykte, är istället förtal." },
+  { optionA: "En person förfalskar en annan persons namnteckning på ett dokument för att utge sig för att vara hen.", optionB: "En person lurar en säljare att skicka en vara utan att betala för den.", correct: 'A', explanation: "Urkundsförfalskning handlar om att förfalska handlingar eller identitet. Alternativ B, att vilseleda till en betalning, är istället bedrägeri." },
+  { optionA: "En person tänder eld på en byggnad där människor befinner sig, vilket innebär fara för deras liv.", optionB: "En person bränner skräp i en tunna på sin egen bakgård en vindstilla dag.", correct: 'A', explanation: "Mordbrand kräver fara för liv, hälsa eller omfattande förstörelse. Alternativ B, en kontrollerad trädgårdsbrasa utan fara, är inte brottsligt." },
+  { optionA: "En ensam person går förbi en avspärrning som ingen bevakar.", optionB: "En folksamling agerar tillsammans för att hindra polisen och forcera en avspärrning.", correct: 'B', explanation: "Upplopp kräver att flera personer tillsammans hindrar polisen eller begår brott. En ensam persons agerande uppfyller inte det kravet." },
+  { optionA: "En person som blir attackerad försvarar sig med våld som står i rimlig proportion till angreppet.", optionB: "En person som blivit knuffad slår tillbaka betydligt hårdare än vad situationen krävde.", correct: 'A', explanation: "Nödvärnsrätten gäller våld som inte är uppenbart oförsvarligt. Alternativ B, med orimligt mycket våld, beskriver istället nödvärnsexcess." },
+  { optionA: "En person försvarar sig med våld som står i proportion till det angrepp hen utsattes för.", optionB: "En person som utsatts för ett angrepp brukar betydligt mer våld mot angriparen än vad situationen krävde.", correct: 'B', explanation: "Nödvärnsexcess innebär att mer våld används än vad situationen krävde. Alternativ A, med proportionerligt våld, beskriver istället nödvärnsrätten." },
+];
+
+function gradeText(pct) {
+  if (pct >= 90) return 'Utmärkt! Redo för provet!';
+  if (pct >= 70) return 'Bra jobbat! Nästan redo.';
+  if (pct >= 50) return 'På god väg, men öva lite till.';
+  return 'Öva mer på begreppen innan provet.';
+}
+
 function Header() {
   return (
     <div className="flex items-center justify-between max-w-4xl mx-auto px-4 pt-6 pb-2">
@@ -108,9 +214,9 @@ function ToggleRow({ view, setView }) {
   const tabs = [
     { key: "lista", label: "Lista", disabled: false },
     { key: "flashcards", label: "Flashcards", disabled: false },
-    { key: "lucktext", label: "Lucktext", disabled: true },
-    { key: "scenario", label: "Scenario", disabled: true },
-    { key: "ickeex", label: "Icke-ex.", disabled: true },
+    { key: "lucktext", label: "Lucktext", disabled: false },
+    { key: "scenario", label: "Scenario", disabled: false },
+    { key: "ickeex", label: "Icke-ex.", disabled: false },
   ];
   return (
     <div className="flex justify-center px-4 mb-8">
@@ -324,6 +430,309 @@ function FlashcardView() {
   );
 }
 
+function LucktextView() {
+  const initial = () => concepts.map(() => ({ value: '', status: 'idle', attempts: 0 }));
+  const [items, setItems] = useState(initial);
+
+  const setValue = (i, value) => {
+    setItems(prev => {
+      const next = [...prev];
+      next[i] = { ...next[i], value };
+      return next;
+    });
+  };
+
+  const submit = (i) => {
+    setItems(prev => {
+      const item = prev[i];
+      if (item.status === 'correct' || item.status === 'revealed') return prev;
+      const norm = item.value.trim().toLowerCase();
+      const ok = lucktextData[i].answers.includes(norm);
+      const next = [...prev];
+      if (ok) {
+        next[i] = { ...item, status: 'correct' };
+      } else {
+        const attempts = item.attempts + 1;
+        next[i] = { ...item, attempts, status: attempts >= 2 ? 'wrong2' : 'wrong1' };
+      }
+      return next;
+    });
+  };
+
+  const correctAll = () => {
+    setItems(prev => prev.map(item => item.status === 'correct' ? item : { ...item, status: 'revealed' }));
+  };
+
+  const restart = () => setItems(initial());
+
+  const score = items.filter(it => it.status === 'correct').length;
+  const total = concepts.length;
+  const allDone = items.every(it => it.status === 'correct' || it.status === 'revealed');
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 pb-16">
+      <div className="bg-white rounded-2xl border-2 border-slate-200 p-4 mb-6">
+        <p className="text-sm font-bold text-slate-500 uppercase tracking-wide mb-3">Begreppsbank</p>
+        <div className="flex flex-wrap gap-2">
+          {concepts.map((c, i) => {
+            const done = items[i].status === 'correct' || items[i].status === 'revealed';
+            return (
+              <span key={i} className={`text-xs px-3 py-1 rounded-full border ${done ? 'line-through text-slate-300 border-slate-200 bg-slate-50' : 'text-slate-700 border-slate-300 bg-white'}`}>
+                {c.term}
+              </span>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-sm font-bold text-slate-500">{score} / {total} rätt</p>
+        <div className="flex gap-2">
+          <button onClick={correctAll} className="text-xs font-bold px-4 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-colors">Rätta alla</button>
+          <button onClick={restart} className="text-xs font-bold px-4 py-2 rounded-xl border-2 border-slate-300 text-slate-600 hover:bg-slate-100 transition-colors">Börja om</button>
+        </div>
+      </div>
+
+      {allDone && (
+        <div className="bg-white border-2 rounded-3xl p-6 text-center mb-6" style={{ borderColor: PRIMARY }}>
+          <p className="text-2xl font-bold mb-1" style={{ color: PRIMARY_TEXT }}>{score} / {total} rätt</p>
+          <p className="text-slate-600">{gradeText((score / total) * 100)}</p>
+        </div>
+      )}
+
+      <div className="grid gap-4">
+        {lucktextData.map((data, i) => {
+          const item = items[i];
+          const locked = item.status === 'correct' || item.status === 'revealed';
+          const borderClass =
+            item.status === 'correct' ? 'border-green-500' :
+            item.status === 'revealed' ? 'border-red-400' :
+            item.status === 'wrong2' ? 'border-red-300' :
+            item.status === 'wrong1' ? 'border-orange-300' :
+            'border-slate-200';
+          return (
+            <div key={i} className={`bg-white p-5 rounded-2xl border-2 ${borderClass}`}>
+              <p className="leading-relaxed">
+                <span className="text-slate-400 font-bold mr-1">{i + 1}.</span>
+                {data.pre}
+                <input
+                  type="text"
+                  value={item.value}
+                  disabled={locked}
+                  onChange={e => setValue(i, e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') submit(i); }}
+                  className={`inline-block mx-1 px-2 py-1 border-b-2 focus:outline-none w-40 text-center ${locked ? 'bg-slate-50' : 'bg-white'}`}
+                  style={{ borderColor: item.status === 'correct' ? '#16a34a' : item.status === 'revealed' ? '#dc2626' : PRIMARY }}
+                />
+                {data.post}
+              </p>
+              {item.status === 'wrong1' && <p className="text-orange-500 text-sm font-bold mt-2">Är du säker att du stavat rätt?</p>}
+              {item.status === 'wrong2' && <p className="text-red-600 text-sm font-bold mt-2">Fel. Kontrollera stavningen och försök igen.</p>}
+              {item.status === 'correct' && <p className="text-green-700 text-sm mt-2">✓ Rätt! {concepts[i].definition}</p>}
+              {item.status === 'revealed' && <p className="text-red-600 text-sm mt-2">Rätt svar: <strong>{concepts[i].term}</strong>. {concepts[i].definition}</p>}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function ScenarioView() {
+  const total = scenarioData.length;
+  const buildOrder = () => shuffleArray(scenarioData.map((_, i) => i));
+  const [order, setOrder] = useState(buildOrder);
+  const [qIdx, setQIdx] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [phase, setPhase] = useState('playing');
+
+  const dataIdx = order[qIdx];
+  const q = scenarioData[dataIdx];
+  const concept = concepts[dataIdx];
+  const options = useMemo(() => shuffleArray([concept.term, ...q.distractors]), [dataIdx]);
+
+  const choose = (opt) => {
+    if (selected !== null) return;
+    setSelected(opt);
+    if (opt === concept.term) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (qIdx + 1 >= total) {
+      setPhase('done');
+    } else {
+      setQIdx(qIdx + 1);
+      setSelected(null);
+    }
+  };
+
+  const restart = () => {
+    setOrder(buildOrder());
+    setQIdx(0);
+    setSelected(null);
+    setScore(0);
+    setPhase('playing');
+  };
+
+  if (phase === 'done') {
+    const pct = (score / total) * 100;
+    return (
+      <div className="max-w-2xl mx-auto px-4 pb-16">
+        <div className="bg-white border-2 rounded-3xl p-8 text-center" style={{ borderColor: PRIMARY }}>
+          <p className="text-3xl font-bold mb-2" style={{ color: PRIMARY_TEXT }}>{score} / {total} rätt</p>
+          <p className="text-slate-600 mb-6">{gradeText(pct)}</p>
+          <button onClick={restart} style={{ background: PRIMARY }} className="text-white px-8 py-3 rounded-2xl font-bold">Gör om</button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 pb-16">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-sm font-bold text-slate-500">Fråga {qIdx + 1} av {total}</p>
+        <p className="text-sm font-bold text-slate-500">Poäng: {score}</p>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+        <div className="h-2 rounded-full transition-all" style={{ width: `${(qIdx / total) * 100}%`, background: PRIMARY }}></div>
+      </div>
+
+      <div className="bg-white p-6 rounded-2xl border-2 border-slate-200 mb-5">
+        <p className="text-lg leading-relaxed">{q.scenario}</p>
+      </div>
+
+      <div className="grid gap-3">
+        {options.map((opt, i) => {
+          const isCorrect = opt === concept.term;
+          const isSelected = selected === opt;
+          let cls = 'bg-white border-2 border-slate-200 hover:border-slate-300';
+          if (selected !== null) {
+            if (isCorrect) cls = 'bg-green-50 border-2 border-green-500 text-green-800';
+            else if (isSelected) cls = 'bg-red-50 border-2 border-red-500 text-red-800';
+            else cls = 'bg-white border-2 border-slate-100 text-slate-400';
+          }
+          return (
+            <button key={i} onClick={() => choose(opt)} disabled={selected !== null} className={`text-left px-5 py-3 rounded-2xl font-medium transition-colors ${cls}`}>
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+
+      {selected !== null && (
+        <div className="mt-5 bg-slate-50 border-2 border-slate-200 rounded-2xl p-4">
+          <p className="text-slate-700">{concept.definition}</p>
+          <button onClick={next} style={{ background: PRIMARY }} className="mt-4 text-white px-6 py-2 rounded-xl font-bold">
+            {qIdx + 1 >= total ? 'Se resultat' : 'Nästa →'}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function IckeExView() {
+  const total = ickeData.length;
+  const buildOrder = () => shuffleArray(ickeData.map((_, i) => i));
+  const [order, setOrder] = useState(buildOrder);
+  const [qIdx, setQIdx] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [phase, setPhase] = useState('playing');
+
+  const dataIdx = order[qIdx];
+  const q = ickeData[dataIdx];
+  const concept = concepts[dataIdx];
+
+  const choose = (letter) => {
+    if (selected !== null) return;
+    setSelected(letter);
+    if (letter === q.correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (qIdx + 1 >= total) {
+      setPhase('done');
+    } else {
+      setQIdx(qIdx + 1);
+      setSelected(null);
+    }
+  };
+
+  const restart = () => {
+    setOrder(buildOrder());
+    setQIdx(0);
+    setSelected(null);
+    setScore(0);
+    setPhase('playing');
+  };
+
+  if (phase === 'done') {
+    const pct = (score / total) * 100;
+    return (
+      <div className="max-w-2xl mx-auto px-4 pb-16">
+        <div className="bg-white border-2 rounded-3xl p-8 text-center" style={{ borderColor: PRIMARY }}>
+          <p className="text-3xl font-bold mb-2" style={{ color: PRIMARY_TEXT }}>{score} / {total} rätt</p>
+          <p className="text-slate-600 mb-6">{gradeText(pct)}</p>
+          <button onClick={restart} style={{ background: PRIMARY }} className="text-white px-8 py-3 rounded-2xl font-bold">Börja om</button>
+        </div>
+      </div>
+    );
+  }
+
+  const options = [
+    { letter: 'A', text: q.optionA },
+    { letter: 'B', text: q.optionB }
+  ];
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 pb-16">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-sm font-bold text-slate-500">Fråga {qIdx + 1} av {total}</p>
+        <p className="text-sm font-bold text-slate-500">Poäng: {score}</p>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+        <div className="h-2 rounded-full transition-all" style={{ width: `${(qIdx / total) * 100}%`, background: PRIMARY }}></div>
+      </div>
+
+      <div className="bg-white p-5 rounded-2xl border-l-8 mb-5 shadow-sm" style={{ borderColor: PRIMARY }}>
+        <p className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Begrepp</p>
+        <h3 className="text-xl font-bold">{concept.term}</h3>
+      </div>
+
+      <p className="text-sm text-slate-500 mb-3 font-medium">Vilket alternativ är ett korrekt exempel på begreppet?</p>
+
+      <div className="grid gap-3">
+        {options.map(opt => {
+          const isCorrect = opt.letter === q.correct;
+          const isSelected = selected === opt.letter;
+          let cls = 'bg-white border-2 border-slate-200 hover:border-slate-300';
+          if (selected !== null) {
+            if (isCorrect) cls = 'bg-green-50 border-2 border-green-500 text-green-800';
+            else if (isSelected) cls = 'bg-red-50 border-2 border-red-500 text-red-800';
+            else cls = 'bg-white border-2 border-slate-100 text-slate-400';
+          }
+          return (
+            <button key={opt.letter} onClick={() => choose(opt.letter)} disabled={selected !== null} className={`text-left px-5 py-4 rounded-2xl font-medium transition-colors ${cls}`}>
+              <span className="font-bold mr-2">{opt.letter}.</span>{opt.text}
+            </button>
+          );
+        })}
+      </div>
+
+      {selected !== null && (
+        <div className="mt-5 bg-slate-50 border-2 border-slate-200 rounded-2xl p-4">
+          <p className="text-slate-700">{q.explanation}</p>
+          <button onClick={next} style={{ background: PRIMARY }} className="mt-4 text-white px-6 py-2 rounded-xl font-bold">
+            {qIdx + 1 >= total ? 'Se resultat' : 'Nästa →'}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function App() {
   const [view, setView] = useState("lista");
 
@@ -333,6 +742,9 @@ function App() {
       <ToggleRow view={view} setView={setView} />
       {view === "lista" && <ListView />}
       {view === "flashcards" && <FlashcardView key="flashcards" />}
+      {view === "lucktext" && <LucktextView />}
+      {view === "scenario" && <ScenarioView key="scenario" />}
+      {view === "ickeex" && <IckeExView key="ickeex" />}
       <footer className="text-center text-slate-400 italic text-sm mt-10">
         Källa: Brottsbalken och specialstrafflagarna begreppslista
       </footer>
