@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brott och straff – Quiz | Rätten och samhället</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0d9488;
+      --primary-light: #ccfbf1;
+      --primary-dark: #0f766e;
+      --correct-bg: #dcfce7;
+      --correct-border: #16a34a;
+      --correct-text: #16a34a;
+      --wrong-bg: #fee2e2;
+      --wrong-border: #dc2626;
+      --wrong-text: #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'EB Garamond', Georgia, serif; background: #fff1f2; min-height: 100vh; color: #000; }
+
+    a.back-btn {
+      display: inline-block; padding: 8px 16px; color: var(--primary);
+      text-decoration: none; font-size: 0.95rem; position: fixed;
+      top: 14px; left: 14px; z-index: 200; border-radius: 8px; transition: background 0.2s;
+    }
+    a.back-btn:hover { background: var(--primary-light); }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Start screen ── */
+    #screen-start { max-width: 560px; margin: 0 auto; padding: 90px 24px 40px; text-align: center; }
+    .badge {
+      display: inline-block; background: var(--primary-light); color: var(--primary-dark);
+      padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;
+      letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 20px;
+    }
+    #screen-start h1 {
+      font-size: 2.4rem; font-weight: 600; font-style: italic;
+      color: #000; margin-bottom: 8px;
+    }
+    #screen-start .subtitle { font-size: 1.05rem; color: #000; opacity: 0.65; margin-bottom: 32px; }
+    .info-cards { display: flex; gap: 12px; justify-content: center; margin-bottom: 36px; flex-wrap: wrap; }
+    .info-card {
+      background: white; border: 1px solid #fecdd3; border-radius: 12px;
+      padding: 16px 20px; text-align: center; flex: 1; min-width: 100px; max-width: 140px;
+    }
+    .info-card .num { font-size: 1.7rem; font-weight: 600; color: var(--primary); }
+    .info-card .lbl { font-size: 0.78rem; color: #000; opacity: 0.55; margin-top: 2px; }
+
+    /* ── Quiz screen ── */
+    #screen-quiz { max-width: 700px; margin: 0 auto; padding: 70px 20px 60px; }
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .timer {
+      background: white; border: 1px solid #fecdd3; border-radius: 20px;
+      padding: 5px 14px; font-size: 0.92rem; color: #000; font-variant-numeric: tabular-nums;
+    }
+    .score-pill {
+      background: var(--primary-light); color: var(--primary-dark);
+      border-radius: 20px; padding: 5px 14px; font-size: 0.92rem; font-weight: 600;
+    }
+    .progress-wrap { background: #fecdd3; border-radius: 4px; height: 6px; overflow: hidden; margin-bottom: 6px; }
+    .progress-bar { background: var(--primary); height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+    .q-counter { font-size: 0.82rem; color: #000; opacity: 0.55; text-align: right; margin-bottom: 22px; }
+    .type-badge {
+      display: inline-block; font-size: 0.72rem; text-transform: uppercase;
+      letter-spacing: 0.08em; padding: 2px 10px; border-radius: 20px; margin-bottom: 10px;
+    }
+    .type-badge.concept { background: #ede9fe; color: #6d28d9; }
+    .type-badge.scenario { background: #fef9c3; color: #854d0e; }
+    .q-text { font-size: 1.2rem; font-weight: 600; line-height: 1.55; color: #000; margin-bottom: 22px; white-space: pre-line; }
+    .opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+    .opt-btn {
+      background: white; border: 2px solid #fecdd3; border-radius: 12px;
+      padding: 13px 18px; text-align: left; font-size: 1rem; font-family: inherit;
+      color: #000; cursor: pointer; transition: border-color 0.15s, background 0.15s; line-height: 1.45;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--primary); background: var(--primary-light); }
+    .opt-btn:disabled { cursor: default; }
+    .opt-btn.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); font-weight: 600; }
+    .opt-btn.wrong   { background: var(--wrong-bg);   border-color: var(--wrong-border);   color: var(--wrong-text); }
+    .opt-btn.dimmed  { opacity: 0.4; }
+    .nav-row { display: flex; gap: 12px; align-items: center; }
+    .btn-back {
+      background: white; border: 2px solid #fecdd3; border-radius: 10px;
+      padding: 10px 20px; font-family: inherit; font-size: 0.9rem; color: #000; opacity: 0.7; cursor: pointer;
+    }
+    .btn-back:hover { border-color: var(--primary); opacity: 1; }
+    .btn-next {
+      background: var(--primary); border: none; border-radius: 10px;
+      padding: 10px 28px; font-family: inherit; font-size: 0.9rem; font-weight: 600;
+      color: white; cursor: pointer; margin-left: auto; transition: background 0.15s;
+    }
+    .btn-next:hover { background: var(--primary-dark); }
+
+    /* ── Modal ── */
+    #modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 500; padding: 20px;
+    }
+    #modal-overlay.hidden { display: none; }
+    .modal-box {
+      background: white; border-radius: 20px; padding: 32px;
+      max-width: 520px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .modal-icon  { font-size: 2.6rem; margin-bottom: 10px; }
+    .modal-verdict { font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; }
+    .modal-verdict.c { color: var(--correct-text); }
+    .modal-verdict.w { color: var(--wrong-text); }
+    .modal-expl { font-size: 0.98rem; color: #000; opacity: 0.8; line-height: 1.7; margin-bottom: 24px; }
+
+    /* ── Result screen ── */
+    #screen-result { max-width: 700px; margin: 0 auto; padding: 80px 20px 80px; }
+    .res-header { text-align: center; margin-bottom: 30px; }
+    .score-ring {
+      width: 120px; height: 120px; border-radius: 50%;
+      border: 5px solid var(--primary); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; margin: 0 auto 18px;
+    }
+    .score-ring .rnum { font-size: 2rem; font-weight: 600; color: var(--primary); line-height: 1; }
+    .score-ring .rlbl { font-size: 0.72rem; color: #000; opacity: 0.55; }
+    .res-title  { font-size: 1.8rem; font-weight: 600; font-style: italic; margin-bottom: 6px; color: #000; }
+    .res-msg    { font-size: 1rem; color: #000; opacity: 0.7; margin-bottom: 4px; }
+    .res-time   { font-size: 0.85rem; color: #000; opacity: 0.5; margin-bottom: 28px; }
+    .stats-row  { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+    .stat-box {
+      flex: 1; min-width: 80px; background: white; border: 1px solid #fecdd3;
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .stat-box .snum { font-size: 1.6rem; font-weight: 600; }
+    .stat-box .slbl { font-size: 0.75rem; color: #000; opacity: 0.55; margin-top: 2px; }
+    .stat-box.cs .snum { color: var(--correct-text); }
+    .stat-box.ws .snum { color: var(--wrong-text); }
+    .section-hd {
+      font-size: 1.05rem; font-weight: 600; color: #000;
+      margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #fecdd3;
+    }
+    .missed-section { margin-bottom: 32px; }
+    .missed-item {
+      background: var(--wrong-bg); border-left: 4px solid var(--wrong-border);
+      border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-size: 0.92rem;
+    }
+    .facit-item {
+      background: white; border: 1px solid #fecdd3; border-radius: 12px;
+      padding: 14px 16px; margin-bottom: 10px;
+    }
+    .facit-item.fc { border-left: 4px solid var(--correct-border); }
+    .facit-item.fw { border-left: 4px solid var(--wrong-border); }
+    .fi-num { font-size: 0.72rem; color: #000; opacity: 0.5; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .fi-q   { font-size: 0.93rem; font-weight: 600; color: #000; margin-bottom: 8px; line-height: 1.4; white-space: pre-line; }
+    .fi-row { font-size: 0.88rem; padding: 2px 0; }
+    .fi-row .lbl { color: #000; opacity: 0.55; }
+    .fi-row.ya-ok  { color: var(--correct-text); }
+    .fi-row.ya-bad { color: var(--wrong-text); }
+    .fi-row.ra     { color: var(--correct-text); font-weight: 600; margin-top: 2px; }
+
+    .btn-primary {
+      display: inline-block; background: var(--primary); color: white; border: none;
+      border-radius: 12px; padding: 13px 36px; font-size: 1.05rem; font-family: inherit;
+      font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s;
+    }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+    .btn-primary:active { transform: none; }
+
+    @media (max-width: 500px) {
+      #screen-start h1 { font-size: 1.85rem; }
+      .q-text { font-size: 1.05rem; }
+    }
+  </style>
+</head>
+<body>
+
+<a href="rs_straff.html" class="back-btn" onclick="smartBack(event)">← Tillbaka till startsidan</a>
+
+<!-- ═══════════ START ═══════════ -->
+<div id="screen-start" class="screen active">
+  <div class="badge">Rätten och samhället · Brott och straff (del 1)</div>
+  <h1>Brott och straff</h1>
+  <p class="subtitle">Quiz med flervalsfrågor om brottsrekvisit, uppsåt, påföljder och brottsförebyggande arbete</p>
+  <div class="info-cards">
+    <div class="info-card"><div class="num">30</div><div class="lbl">Frågor</div></div>
+    <div class="info-card"><div class="num">25</div><div class="lbl">Begrepp</div></div>
+    <div class="info-card"><div class="num">5</div><div class="lbl">Scenario</div></div>
+  </div>
+  <button class="btn-primary" onclick="startQuiz()">Starta Quiz →</button>
+</div>
+
+<!-- ═══════════ QUIZ ═══════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-header">
+    <div class="timer" id="timer">⏱ 0:00</div>
+    <div class="score-pill" id="score-pill">Poäng: 0</div>
+  </div>
+  <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+  <div class="q-counter" id="q-counter">Fråga 1 av 30</div>
+  <div id="type-badge-wrap"></div>
+  <div class="q-text" id="q-text"></div>
+  <div class="opts" id="opts"></div>
+  <div class="nav-row">
+    <button class="btn-back" id="btn-back" onclick="goBack()" style="display:none">← Bakåt</button>
+    <button class="btn-next" id="btn-next" onclick="goNext()" style="display:none">Nästa →</button>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL ═══════════ -->
+<div id="modal-overlay" class="hidden">
+  <div class="modal-box">
+    <div class="modal-icon"  id="modal-icon"></div>
+    <div class="modal-verdict" id="modal-verdict"></div>
+    <div class="modal-expl"   id="modal-expl"></div>
+    <button class="btn-primary" onclick="closeModal()">Nästa fråga →</button>
+  </div>
+</div>
+
+<!-- ═══════════ RESULT ═══════════ -->
+<div id="screen-result" class="screen">
+  <div class="res-header">
+    <div class="score-ring">
+      <div class="rnum" id="r-score"></div>
+      <div class="rlbl">poäng</div>
+    </div>
+    <div class="res-title"  id="r-title"></div>
+    <div class="res-msg"    id="r-msg"></div>
+    <div class="res-time"   id="r-time"></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-box cs"><div class="snum" id="s-correct">0</div><div class="slbl">Rätt</div></div>
+    <div class="stat-box ws"><div class="snum" id="s-wrong">0</div><div class="slbl">Fel</div></div>
+    <div class="stat-box"><div class="snum" id="s-pct">0%</div><div class="slbl">Andel rätt</div></div>
+  </div>
+  <div class="missed-section" id="missed-section"></div>
+  <div class="section-hd">Fullständigt facit</div>
+  <div id="facit-list"></div>
+  <div style="text-align:center;margin-top:32px">
+    <button class="btn-primary" onclick="restartQuiz()">↺ Gör om quizet</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// TILLBAKA-NAVIGERING
+// ════════════════════════════════════════════════════════════
+function smartBack(e) {
+  if (e) e.preventDefault();
+  var ref = document.referrer;
+  if (ref) {
+    try {
+      if (new URL(ref).origin === window.location.origin) {
+        history.back();
+        return;
+      }
+    } catch (err) {}
+  }
+  window.location.href = 'rs_straff.html';
+}
+
+// ════════════════════════════════════════════════════════════
+// QUESTION DATA  (25 begreppsfrågor + 5 scenariofrågor = 30)
+// Källor: brott_och_straff_uppgifter.md ("Kan du detta?" samt
+// uppgift 3, 4, 5, 6, 7, 9 och 10) och brott_och_straff_material.md
+// ════════════════════════════════════════════════════════════
+const QUESTIONS = [
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad är ett brott i lagens mening?',
+    opts: [
+      'En gärning som är beskriven i en författning och som det finns ett straff föreskrivet för',
+      'Varje handling som allmänheten uppfattar som omoralisk eller felaktig',
+      'En handling som orsakat skada på en annan person, oavsett om den är beskriven i lag',
+      'En handling som polisen väljer att utreda och lagföra'
+    ],
+    correct: 0,
+    expl: 'I lagens mening är ett brott en gärning, det vill säga en handling, som är beskriven i en författning och som det finns ett straff föreskrivet för. Brottsbalken (BrB) är den centrala författningen för brott och brottspåföljder.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad menas med "adekvat kausalitet"?',
+    opts: [
+      'Ett tydligt orsakssamband mellan en gärning och dess verkan',
+      'Att gärningspersonen hade uppsåt att begå brottet',
+      'Att en handling är beskriven i brottsbalken',
+      'Att domstolen bedömer brottets straffvärde i förhållande till andra brott'
+    ],
+    correct: 0,
+    expl: 'Adekvat kausalitet innebär att det måste finnas ett tydligt orsakssamband mellan gärningen och dess verkan för att ett brott ska anses ha begåtts.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad är skillnaden mellan objektiva och subjektiva rekvisit?',
+    opts: [
+      'Objektiva rekvisit är själva handlingen och dess konsekvenser, medan subjektiva rekvisit är gärningspersonens avsikt (uppsåt)',
+      'Objektiva rekvisit är gärningspersonens avsikt, medan subjektiva rekvisit är själva handlingen',
+      'Objektiva rekvisit gäller endast grova brott, medan subjektiva rekvisit gäller ringa brott',
+      'Objektiva rekvisit avser straffskalan, medan subjektiva rekvisit avser straffvärdet'
+    ],
+    correct: 0,
+    expl: 'Objektiva rekvisit är själva handlingen som utförs samt dess konsekvenser. Subjektiva rekvisit är gärningspersonens avsikt, det vill säga uppsåt. Huvudregeln är att båda måste vara uppfyllda (kumulativa rekvisit) för att gärningen ska betraktas som ett brott.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad innebär "legalitetsprincipen"?',
+    opts: [
+      'Att en domstol inte får döma för en handling som inte motsvaras av något brott i lag',
+      'Att alla brott automatiskt ska leda till fängelse oavsett omständigheter',
+      'Att en lag kan tillämpas retroaktivt om brottet anses tillräckligt allvarligt',
+      'Att domstolen får döma utifrån vad som anses moraliskt rätt, även om handlingen inte är brottslig'
+    ],
+    correct: 0,
+    expl: 'Legalitetsprincipen innebär att en domstol inte får döma för en handling som inte motsvaras av något brott i lag. Den består av retroaktivitetsförbudet, analogiförbudet och obestämdhetsförbudet.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad innebär "talionprincipen", som uttrycks med orden "öga för öga, tand för tand"?',
+    opts: [
+      'Att gärningspersonen ska utsättas för samma skada eller lidande som brottsoffret lidit, en del av den absoluta straffteorin',
+      'Att straffet ska anpassas för att förebygga att gärningspersonen begår nya brott',
+      'Att straffet i första hand ska avskräcka allmänheten från att begå samma brott',
+      'Att gärningspersonen i stället ska genomgå vård eller behandling'
+    ],
+    correct: 0,
+    expl: 'Talionprincipen innebär att gärningspersonen ska utsättas för samma skada/lidande som brottsoffret lidit. Grundprincipen bakom Hammurabis lagar var just denna princip, som är en del av den absoluta straffteorin.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad innebär påföljden "villkorlig dom"?',
+    opts: [
+      'Den utdöms när det bedöms att den dömde kan avhålla sig från fortsatt brottslighet utan övervakning, med en prövotid på två år',
+      'Att den dömde döms till fängelse men avtjänar straffet med elektronisk fotboja i hemmet',
+      'Att den dömde får regelbunden kontakt med en övervakare under hela prövotiden',
+      'Att domen upphävs helt om den dömde inte begår nya brott inom ett år'
+    ],
+    correct: 0,
+    expl: 'Villkorlig dom utdöms när det anses att den dömde kan klara att avhålla sig från fortsatt brottslig verksamhet utan övervakning. En villkorlig dom kan bli aktuell vid en förmodad engångshändelse, och prövotiden är två år.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad innebär påföljden "ungdomsvård"?',
+    opts: [
+      'En påföljd för unga som fyllt 15 men inte 18 år (undantagsvis upp till 21 år), som kan vara sluten och där tiden varierar från två veckor till flera år',
+      'En påföljd som endast innebär böter anpassade efter den unges inkomst',
+      'En påföljd där den unge måste arbeta mellan 20 och 150 timmar som straff',
+      'En påföljd som innebär elektronisk fotboja och regelbunden kontakt med en koordinator'
+    ],
+    correct: 0,
+    expl: 'Ungdomsvård planeras i samarbete med socialtjänsten och kan i vissa fall vara sluten, om ungdomar begår ett allvarligt brott som annars skulle lett till fängelse. Tiden varierar från två veckor till flera år.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilket alternativ räknas, enligt materialet, till kategorin "andra påföljder" – skilt från fängelse och böter?',
+    opts: [
+      'Särskild vård, samhällstjänst och elektronisk fotboja',
+      'Skadestånd, utvisning och körkortsindragning',
+      'Fängelse, böter och förverkande av egendom',
+      'Näringsförbud, skattetillägg och förverkande av egendom'
+    ],
+    correct: 0,
+    expl: 'De olika påföljderna delas in i fängelse, böter, andra påföljder (särskild vård, samhällstjänst, elektronisk fotboja med mera) samt övriga påföljder (till exempel förverkande av egendom). Skadestånd, utvisning och körkortsindragning räknas i stället som "annan rättsverkan".'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilka principer ska enligt materialet alltid vägas in när en domstol bestämmer påföljd för ett brott?',
+    opts: [
+      'Den individualpreventiva principen (att den dömde inte ska begå brott igen) och den allmänpreventiva principen (att avskräcka allmänheten)',
+      'Endast brottsoffrets önskemål om hur strängt straffet bör vara',
+      'Endast den tilltalades ekonomiska situation vid brottstillfället',
+      'Enbart hur stort mörkertalet är för den aktuella brottstypen'
+    ],
+    correct: 0,
+    expl: 'Det finns i svensk rätt två uttalade principer som eftersträvas då en person döms för ett brott: den individualpreventiva och den allmänpreventiva principen. När domstolen utdömer påföljd för ett begånget brott ska båda principerna vägas in i bedömningen.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilket av följande är, enligt Gårdstensmodellen, exempel på brottsförebyggande arbete i ett särskilt utsatt område?',
+    opts: [
+      'Trygghetsvärdar, att engagera de boende i skötseln av området samt att skapa arbetstillfällen och utbildning',
+      'Att stänga alla offentliga platser i området efter klockan 20 varje kväll',
+      'Att höja straffskalorna för samtliga brott som begås i området',
+      'Att enbart öka antalet polisanmälningar av mindre brott i området'
+    ],
+    correct: 0,
+    expl: 'Gårdstensmodellen går i korthet ut på att kommun, polis, fastighetsägare och lokaltrafik samarbetar. Ökad service, trygghetsvärdar, att engagera de boende i skötseln av området och att skapa arbetstillfällen och utbildning är viktiga delar i modellen.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad är Brottsförebyggande rådets (Brå) huvuduppgift?',
+    opts: [
+      'Att verka för att brottsligheten minskar och tryggheten ökar i samhället, bland annat genom statistik, forskning och stöd till lokalt brottsförebyggande arbete',
+      'Att utreda enskilda brottsmisstankar och lagföra gärningspersoner',
+      'Att besluta om påföljder och döma i brottmål',
+      'Att administrera fängelser och frivård i Sverige'
+    ],
+    correct: 0,
+    expl: 'Brottsförebyggande rådet (Brå) är en myndighet som har som uppgift att verka för att brottsligheten minskar i landet och att tryggheten ökar i samhället. Rådet tar bland annat fram statistik, ger underlag till reformer, bedriver forskning och stödjer lokalt brottsförebyggande arbete.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad undersöker Nationella trygghetsundersökningen (NTU), och vilken nytta har den för brottsbekämpande myndigheter?',
+    opts: [
+      'Den undersöker medborgarnas oro för brott och om de utsatts för brott, vilket ger myndigheterna kunskap om brott som inte syns i polisanmälningsstatistiken',
+      'Den mäter enbart hur många brott som klaras upp av polisen varje år',
+      'Den redovisar domstolarnas genomsnittliga strafflängder för olika brottstyper',
+      'Den mäter allmänhetens kunskap om gällande lagstiftning'
+    ],
+    correct: 0,
+    expl: 'NTU är en omfattande enkätundersökning som undersöker medborgarnas oro för att bli utsatta för brott samt om de faktiskt blivit utsatta. Eftersom det finns ett stort mörkertal i brottsstatistiken – bara anmälda brott syns där – ger NTU myndigheterna kunskap som annars skulle saknas.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad innebär "direkt uppsåt"?',
+    opts: [
+      'Den högsta graden av uppsåt, där gärningspersonen har som direkt syfte att åstadkomma effekten av handlingen',
+      'Att gärningspersonen var praktiskt taget säker på följden, även om det inte var syftet',
+      'Att gärningspersonen insåg risken för följden men var likgiltig inför om den skulle inträffa',
+      'Att gärningspersonen agerade oaktsamt utan att alls inse risken'
+    ],
+    correct: 0,
+    expl: 'Direkt uppsåt (även kallat avsiktsuppsåt) är den högsta graden av uppsåt. Gärningspersonen har som direkt syfte att åstadkomma effekten av handlingen.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad innebär "insiktsuppsåt"?',
+    opts: [
+      'Den lägre graden av uppsåt, där gärningspersonen var praktiskt taget säker på att handlingen skulle leda till en viss följd, även om det inte var själva syftet',
+      'Att gärningspersonen hade som direkt syfte att åstadkomma effekten av handlingen',
+      'Att gärningspersonen insåg risken men var likgiltig inför om följden skulle inträffa',
+      'Att gärningspersonen inte alls kunde förutse följden av sin handling'
+    ],
+    correct: 0,
+    expl: 'Insiktsuppsåt är den lägre graden av uppsåt. Gärningspersonen var praktiskt taget säker på att handlingen skulle leda till en viss följd, även om det inte var själva syftet med handlingen.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad innebär "likgiltighetsuppsåt"?',
+    opts: [
+      'Den lägsta graden av uppsåt, där gärningspersonen insåg risken för följden men var likgiltig inför om den skulle inträffa eller inte',
+      'Att gärningspersonen var praktiskt taget säker på följden, även om det inte var syftet',
+      'Att gärningspersonen hade som direkt syfte att åstadkomma effekten av handlingen',
+      'Att gärningspersonen agerade utan någon som helst insikt om risken'
+    ],
+    correct: 0,
+    expl: 'Likgiltighetsuppsåt är den lägsta graden av uppsåt. Gärningspersonen insåg risken för följden men var likgiltig inför om den skulle inträffa eller inte.'
+  },
+  {
+    type: 'mc', subtype: 'scenario',
+    q: 'Enligt 13 kap. 1 § brottsbalken kan den som "anlägger brand, som innebär fara för annans liv eller hälsa eller för omfattande förstörelse av annans egendom" dömas för mordbrand till fängelse i lägst två och högst åtta år.\n\nScenario: Erik tänder medvetet eld på en förrådsbyggnad mitt i natten. Elden sprider sig snabbt och hotar att nå grannfastigheten där en familj sover.\n\nVilka objektiva rekvisit måste vara uppfyllda för att Erik ska kunna dömas för mordbrand?',
+    opts: [
+      'Att han anlagt en brand som innebär fara för annans liv eller hälsa, eller för omfattande förstörelse av annans egendom',
+      'Att han haft som direkt syfte att skada familjen i grannfastigheten',
+      'Att branden faktiskt spridit sig till grannfastigheten och orsakat skada där',
+      'Att Erik tidigare dömts för ett liknande brott'
+    ],
+    correct: 0,
+    expl: 'De objektiva rekvisiten för mordbrand är att gärningspersonen anlagt en brand som innebär fara för annans liv eller hälsa, eller för omfattande förstörelse av annans egendom – det räcker med fara, branden behöver inte faktiskt ha spridit sig och orsakat skada. Syftet med handlingen hör i stället till de subjektiva rekvisiten.'
+  },
+  {
+    type: 'mc', subtype: 'scenario',
+    q: 'Samma scenario: Om Erik i stället av misstag orsakar branden, till exempel genom att slarvigt hantera ett stearinljus utan att inse risken för spridning – räcker det med oaktsamhet (culpa) för att han ska kunna dömas för mordbrand enligt paragrafen?',
+    opts: [
+      'Nej, eftersom paragrafen inte uttryckligen anger att oaktsamhet räcker krävs uppsåt för att kunna dömas för mordbrand',
+      'Ja, eftersom mordbrand alltid kan dömas ut vid oaktsamhet oavsett hur paragrafen är formulerad',
+      'Ja, men bara om branden faktiskt har orsakat en persons död',
+      'Nej, eftersom mordbrand endast kan dömas ut om gärningspersonen är över 21 år'
+    ],
+    correct: 0,
+    expl: 'Huvudregeln är att uppsåt krävs för att en gärning ska anses brottslig. Om det i stället räcker att gärningspersonen agerat oaktsamt måste det uttryckligen stå så i paragrafen. Eftersom 13 kap. 1 § inte anger att oaktsamhet räcker krävs uppsåt för att Erik ska kunna dömas för mordbrand.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad menas med "annan rättsverkan" av ett brott?',
+    opts: [
+      'Ytterligare åtgärder utöver straffet, till exempel skadestånd, utvisning, körkortsindragning eller förverkande av egendom',
+      'Ett annat namn för själva straffet, till exempel fängelse eller böter',
+      'Den tid det tar innan ett brott preskriberas',
+      'Registreringen som görs i belastningsregistret'
+    ],
+    correct: 0,
+    expl: 'Ett brott kan leda till "annan rättsverkan" utöver själva straffet, till exempel skadestånd, utvisning, körkortsindragning eller förverkande av egendom.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad avgör ett brotts "straffvärde"?',
+    opts: [
+      'Hur allvarligt brottet är i relation till andra brott, vilket avgör var i straffskalan straffet hamnar',
+      'Hur många personer som anmält brottet till polisen',
+      'Hur stort mörkertalet är för den aktuella brottstypen',
+      'Enbart den dömdes tidigare belastningsregister'
+    ],
+    correct: 0,
+    expl: 'Straffvärdet anger hur allvarligt ett brott är i relation till andra brott, och avgör var i straffskalan straffet för en viss gärningsperson hamnar.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad innebär "retroaktivitetsförbudet", en del av legalitetsprincipen?',
+    opts: [
+      'Att föreskrifter om vad som är brottsligt inte får införas i efterhand',
+      'Att en lag inte får tolkas analogt utöver vad ordalydelsen tillåter',
+      'Att en föreskrift om brottslighet måste vara bestämd till sin utformning',
+      'Att en dömd person endast kan överklaga en dom en gång'
+    ],
+    correct: 0,
+    expl: 'Retroaktivitetsförbudet innebär att föreskrifter om vad som är brottsligt inte får införas i efterhand. Det är, tillsammans med analogiförbudet och obestämdhetsförbudet, en del av legalitetsprincipen.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad är skillnaden mellan allmänprevention och individualprevention?',
+    opts: [
+      'Allmänprevention innebär att straffet ska avskräcka allmänheten från att begå samma brott, medan individualprevention innebär att straffet ska avskräcka den dömde från att begå nya brott',
+      'Allmänprevention gäller endast unga lagöverträdare, medan individualprevention gäller vuxna',
+      'Allmänprevention är en del av den absoluta straffteorin, medan individualprevention är en del av talionprincipen',
+      'Allmänprevention innebär vedergällning för brottsoffret, medan individualprevention innebär ekonomisk kompensation'
+    ],
+    correct: 0,
+    expl: 'Allmänprevention innebär att straffet ska förebygga brott genom avskräckning av allmänheten, och är en del av den relativa straffteorin. Individualprevention innebär att straffet ska vara tillräckligt avskräckande för att just den dömde inte ska begå eller upprepa brottslighet.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad kännetecknar påföljden fängelse?',
+    opts: [
+      'Det är den strängaste påföljden och döms ut för allvarliga brott med högt straffvärde; det kan vara tidsbestämt (sammanlagt högst 18 år vid flera brott) eller livstid',
+      'Det är en påföljd som alltid kombineras med skyddstillsyn och en övervakare',
+      'Det döms alltid ut i kombination med böter för att öka avskräckningseffekten',
+      'Det är begränsat till högst fem års strafftid oavsett hur allvarligt brottet är'
+    ],
+    correct: 0,
+    expl: 'Fängelse är den strängaste påföljden och döms ut för allvarliga brott med högt straffvärde. Ett fängelsestraff kan vara tidsbestämt (högst sammanlagt 18 år om personen begått flera brott) eller livstid.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad innebär "livstids fängelse"?',
+    opts: [
+      'Ett straff som inte är tidsbestämt; den dömde kan ansöka om att få straffet omvandlat till ett tidsbegränsat straff',
+      'Ett straff på exakt 25 års fängelse utan möjlighet till villkorlig frigivning',
+      'Ett straff som endast kan dömas ut för brott som lett till fler än ett dödsfall',
+      'Ett straff som automatiskt omvandlas till 18 års fängelse efter halva strafftiden'
+    ],
+    correct: 0,
+    expl: 'Livstid är ett straff som inte är tidsbestämt. Den som dömts till livstids fängelse kan ansöka om att få straffet omvandlat till ett tidsbegränsat straff.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'En gärningsperson döms till ett tioårigt fängelsestraff. Vad krävs för villkorlig frigivning, och tidigast när kan den dömde friges?',
+    opts: [
+      'Två tredjedelar av straffet måste vara avtjänat och den dömde ska ha uppfört sig väl under fängelsevistelsen – tidigast efter cirka 6 år och 8 månader',
+      'Hälften av straffet måste vara avtjänat, det vill säga tidigast efter 5 år',
+      'Hela straffet måste avtjänas innan villkorlig frigivning kan beviljas',
+      'En tredjedel av straffet måste vara avtjänat, det vill säga tidigast efter cirka 3 år och 4 månader'
+    ],
+    correct: 0,
+    expl: 'Om en intern uppför sig väl under sin tid som frihetsberövad kan villkorlig frigivning bli aktuell. Ett krav är att två tredjedelar av det utdömda fängelsestraffet är avtjänat. För ett tioårigt straff blir det tidigast efter cirka 6 år och 8 månader.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Ge exempel på hur det går att arbeta brottsförebyggande enligt materialet.',
+    opts: [
+      'Genom samverkan mellan polis, kommun och socialtjänst kring ungdomar, samt genom att poliser syns och interagerar med allmänheten på allmänna platser',
+      'Genom att enbart förlänga straffskalorna för fler brottstyper, vilket forskningen visar är mest effektivt',
+      'Genom att avskaffa Brottsförebyggande rådets verksamhet till förmån för fler poliser',
+      'Genom att enbart öka antalet fängelseplatser i landet'
+    ],
+    correct: 0,
+    expl: 'Det förebyggande arbetet sker i samverkan mellan polisen, kommunerna, socialtjänsten och kriminalvården, bland annat genom att poliser syns och interagerar med medborgarna. Forskning som citeras i materialet visar tvärtom att enbart skärpta straff och fler fängelseplatser ofta är dyrt och verkningslöst.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilken uppgift har Brottsförebyggande rådet (Brå) enligt materialets lista över dess uppgifter?',
+    opts: [
+      'Att bland annat ansvara för den officiella rättsstatistiken, genomföra trygghetsundersökningar och stödja lokala brottsförebyggande insatser',
+      'Att döma i brottmål och besluta om påföljder för dömda personer',
+      'Att ansvara för frivård, häkte och fängelse i Sverige',
+      'Att utfärda böter direkt till personer som begått trafikbrott'
+    ],
+    correct: 0,
+    expl: 'Brå ansvarar bland annat för den officiella rättsstatistiken, tar fram fakta om brottslighet, genomför årliga trygghetsundersökningar, ger underlag till regeringen och myndigheter samt startar, stödjer och informerar om lokala brottsförebyggande insatser.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Ge exempel på vad Polismyndigheten kan göra i det brottsförebyggande arbetet.',
+    opts: [
+      'Vara närvarande och synlig på allmänna platser samt samarbeta med fastighetsägare i utsatta områden, till exempel för att sysselsätta ungdomar',
+      'Besluta om vilka straff som ska dömas ut för olika brott',
+      'Genomföra Nationella trygghetsundersökningen helt på egen hand utan samarbete med Brå',
+      'Bevilja villkorlig frigivning för intagna i fängelse'
+    ],
+    correct: 0,
+    expl: 'Polisen har en central roll i det förebyggande arbetet genom sin närvaro på allmänna platser och genom att samarbeta med kommunerna, Brå, försäkringsbolagen och ibland fastighetsägare i särskilt utsatta områden, exempelvis för att sysselsätta ungdomar.'
+  },
+  {
+    type: 'mc', subtype: 'scenario',
+    q: 'Scenario: Natalie har kört på Pontus med sin bil. Pontus fick höger ben allvarligt skadat och bröt dessutom högerarmen i samband med olyckan.\n\nVilket alternativ beskriver "direkt uppsåt" i detta fall?',
+    opts: [
+      'Natalie siktade medvetet in bilen mot Pontus i syfte att skada honom, och det var hennes direkta avsikt att köra på honom',
+      'Natalie körde mot Pontus och var praktiskt taget säker på att hon skulle träffa honom, även om det inte var hennes egentliga syfte',
+      'Natalie körde vårdslöst nära Pontus, insåg risken att träffa honom men brydde sig inte om huruvida det skulle ske',
+      'Natalie tappade kontrollen över bilen på grund av ouppmärksamhet, utan att alls inse risken för Pontus'
+    ],
+    correct: 0,
+    expl: 'Direkt uppsåt är den högsta graden av uppsåt: gärningspersonen har som direkt syfte att åstadkomma effekten av handlingen. I Natalies fall innebär det att hon medvetet siktade in bilen mot Pontus för att skada honom.'
+  },
+  {
+    type: 'mc', subtype: 'scenario',
+    q: 'Samma scenario som föregående fråga. Vilket alternativ beskriver "insiktsuppsåt" i detta fall?',
+    opts: [
+      'Natalie körde mot Pontus i ett annat syfte, men var praktiskt taget säker på att hon skulle köra på honom, även om det inte var hennes huvudsakliga avsikt',
+      'Natalie siktade medvetet in bilen mot Pontus med det direkta syftet att skada honom',
+      'Natalie insåg risken att köra på Pontus men var likgiltig för om det skulle inträffa',
+      'Natalie kunde omöjligen ha förutsett att Pontus befann sig i vägen'
+    ],
+    correct: 0,
+    expl: 'Insiktsuppsåt är den lägre graden av uppsåt: gärningspersonen var praktiskt taget säker på följden, även om det inte var själva syftet. I Natalies fall innebär det att hon var nästan säker på att köra på Pontus, trots att det inte var hennes huvudsakliga avsikt.'
+  },
+  {
+    type: 'mc', subtype: 'scenario',
+    q: 'Samma scenario som föregående fråga. Vilket alternativ beskriver "likgiltighetsuppsåt" i detta fall?',
+    opts: [
+      'Natalie insåg risken att träffa Pontus med bilen men var likgiltig inför om olyckan skulle inträffa eller inte',
+      'Natalie var praktiskt taget säker på att hon skulle köra på Pontus, trots att det inte var hennes syfte',
+      'Natalie körde in i Pontus med det uttalade syftet att skada honom',
+      'Natalie var helt omedveten om att Pontus befann sig i närheten av bilen'
+    ],
+    correct: 0,
+    expl: 'Likgiltighetsuppsåt är den lägsta graden av uppsåt: gärningspersonen insåg risken för följden men var likgiltig inför om den skulle inträffa eller inte. I Natalies fall innebär det att hon insåg risken men struntade i om olyckan skulle ske.'
+  }
+];
+
+// ════════════════════════════════════════════════════════════
+// FISHER-YATES SHUFFLE
+// ════════════════════════════════════════════════════════════
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// ════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════
+let qs = [];        // shuffled questions with per-question state
+let cur = 0;        // current question index
+let score = 0;
+let elapsed = 0;
+let timerID = null;
+
+function buildState() {
+  const shuffled = shuffleArray([...QUESTIONS]);
+  qs = shuffled.map(q => {
+    const indices = q.opts.map((_, i) => i);
+    return {
+      ...q,
+      shuffledIdx: shuffleArray(indices),  // original option indices in display order
+      selectedDisplay: null,               // which display position was clicked
+      answered: false
+    };
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// SCREENS
+// ════════════════════════════════════════════════════════════
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ════════════════════════════════════════════════════════════
+// TIMER
+// ════════════════════════════════════════════════════════════
+function fmt(s) {
+  const m = Math.floor(s / 60);
+  const ss = String(s % 60).padStart(2, '0');
+  return `⏱ ${m}:${ss}`;
+}
+function startTimer() {
+  elapsed = 0;
+  timerID = setInterval(() => {
+    elapsed++;
+    document.getElementById('timer').textContent = fmt(elapsed);
+  }, 1000);
+}
+function stopTimer() {
+  clearInterval(timerID);
+}
+
+// ════════════════════════════════════════════════════════════
+// START
+// ════════════════════════════════════════════════════════════
+function startQuiz() {
+  buildState();
+  cur = 0;
+  score = 0;
+  show('screen-quiz');
+  startTimer();
+  render();
+}
+
+// ════════════════════════════════════════════════════════════
+// RENDER QUESTION
+// ════════════════════════════════════════════════════════════
+function render() {
+  const q = qs[cur];
+  const total = qs.length;
+
+  // Progress
+  document.getElementById('progress-bar').style.width = (cur / total * 100) + '%';
+  document.getElementById('q-counter').textContent = `Fråga ${cur + 1} av ${total}`;
+  document.getElementById('score-pill').textContent = `Poäng: ${score}`;
+
+  // Type badge
+  const badgeWrap = document.getElementById('type-badge-wrap');
+  badgeWrap.innerHTML = q.subtype === 'concept'
+    ? '<span class="type-badge concept">Begreppsfråga</span>'
+    : '<span class="type-badge scenario">Scenario</span>';
+
+  // Question text
+  document.getElementById('q-text').textContent = q.q;
+
+  // Options
+  const optsEl = document.getElementById('opts');
+  optsEl.innerHTML = '';
+  optsEl.className = 'opts';
+
+  q.shuffledIdx.forEach((origIdx, displayPos) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = q.opts[origIdx];
+    btn.disabled = q.answered;
+
+    if (q.answered) {
+      const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+      if (displayPos === correctDisplay) {
+        btn.classList.add('correct');
+      } else if (displayPos === q.selectedDisplay) {
+        btn.classList.add('wrong');
+      } else {
+        btn.classList.add('dimmed');
+      }
+    } else {
+      btn.addEventListener('click', () => handleAnswer(displayPos));
+    }
+
+    optsEl.appendChild(btn);
+  });
+
+  // Nav buttons
+  document.getElementById('btn-back').style.display = cur > 0 ? 'inline-block' : 'none';
+  document.getElementById('btn-next').style.display = q.answered ? 'inline-block' : 'none';
+  document.getElementById('btn-next').textContent =
+    cur === total - 1 ? 'Se resultat →' : 'Nästa →';
+}
+
+// ════════════════════════════════════════════════════════════
+// HANDLE ANSWER
+// ════════════════════════════════════════════════════════════
+function handleAnswer(displayPos) {
+  const q = qs[cur];
+  if (q.answered) return;
+
+  q.answered = true;
+  q.selectedDisplay = displayPos;
+
+  const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+  const isCorrect = displayPos === correctDisplay;
+  if (isCorrect) score++;
+
+  // Lock options immediately
+  const btns = document.querySelectorAll('.opt-btn');
+  btns.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === correctDisplay) btn.classList.add('correct');
+    else if (i === displayPos) btn.classList.add('wrong');
+    else btn.classList.add('dimmed');
+  });
+
+  // Show next button
+  document.getElementById('btn-next').style.display = 'inline-block';
+  document.getElementById('btn-next').textContent =
+    cur === qs.length - 1 ? 'Se resultat →' : 'Nästa →';
+  document.getElementById('score-pill').textContent = `Poäng: ${score}`;
+
+  // Modal after 600 ms
+  setTimeout(() => showModal(isCorrect, q.expl), 600);
+}
+
+// ════════════════════════════════════════════════════════════
+// MODAL
+// ════════════════════════════════════════════════════════════
+function showModal(isCorrect, expl) {
+  document.getElementById('modal-icon').textContent    = isCorrect ? '✅' : '❌';
+  document.getElementById('modal-verdict').textContent = isCorrect ? 'Rätt svar!' : 'Fel svar';
+  document.getElementById('modal-verdict').className   = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
+  document.getElementById('modal-expl').textContent    = expl;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  goNext();
+}
+
+// ════════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════════
+function goBack() {
+  if (cur > 0) { cur--; render(); }
+}
+
+function goNext() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  if (cur < qs.length - 1) {
+    cur++;
+    render();
+  } else {
+    showResults();
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// RESULTS
+// ════════════════════════════════════════════════════════════
+function showResults() {
+  stopTimer();
+  show('screen-result');
+
+  const total = qs.length;
+  const wrong = total - score;
+  const pct   = Math.round(score / total * 100);
+
+  document.getElementById('r-score').textContent = `${score}/${total}`;
+  document.getElementById('s-correct').textContent = score;
+  document.getElementById('s-wrong').textContent   = wrong;
+  document.getElementById('s-pct').textContent     = pct + '%';
+
+  const m = Math.floor(elapsed / 60);
+  const s = String(elapsed % 60).padStart(2, '0');
+  document.getElementById('r-time').textContent = `Tid: ${m}:${s}`;
+
+  let title, msg;
+  if (pct >= 90)      { title = '🏆 Utmärkt!';             msg = 'Du behärskar brott och straff på hög nivå.'; }
+  else if (pct >= 75) { title = '✅ Redo för provet!';      msg = 'Bra resultat – du har koll på det centrala.'; }
+  else if (pct >= 55) { title = '📖 Öva lite till';        msg = 'Du är på rätt spår men behöver repetera en del.'; }
+  else                { title = '💡 Fortsätt repetera';    msg = 'Gå igenom materialet och försök igen.'; }
+
+  document.getElementById('r-title').textContent = title;
+  document.getElementById('r-msg').textContent   = msg;
+
+  // Missed questions
+  const missedEl = document.getElementById('missed-section');
+  const missed = qs.filter(q => q.answered && q.shuffledIdx.indexOf(q.correct) !== q.selectedDisplay);
+  if (missed.length > 0) {
+    missedEl.innerHTML = `<div class="section-hd">Missade frågor (${missed.length})</div>`;
+    missed.forEach(q => {
+      const div = document.createElement('div');
+      div.className = 'missed-item';
+      div.textContent = q.q;
+      missedEl.appendChild(div);
+    });
+  } else {
+    missedEl.innerHTML = '';
+  }
+
+  // Full facit
+  const facitEl = document.getElementById('facit-list');
+  facitEl.innerHTML = '';
+  qs.forEach((q, i) => {
+    const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+    const isCorrect = q.answered && q.selectedDisplay === correctDisplay;
+    const notAnswered = !q.answered;
+
+    const div = document.createElement('div');
+    div.className = 'facit-item ' + (notAnswered ? '' : isCorrect ? 'fc' : 'fw');
+
+    const correctOptText = q.opts[q.correct];
+    const selectedOptText = q.answered
+      ? q.opts[q.shuffledIdx[q.selectedDisplay]]
+      : null;
+
+    let inner = `<div class="fi-num">Fråga ${i + 1}</div>`;
+    inner += `<div class="fi-q">${q.q}</div>`;
+
+    if (notAnswered) {
+      inner += `<div class="fi-row"><span class="lbl">Ditt svar: </span>— (inte besvarad)</div>`;
+      inner += `<div class="fi-row ra"><span class="lbl">Rätt svar: </span>${correctOptText}</div>`;
+    } else if (isCorrect) {
+      inner += `<div class="fi-row ya-ok">✓ <span class="lbl">Ditt svar: </span>${selectedOptText}</div>`;
+    } else {
+      inner += `<div class="fi-row ya-bad">✗ <span class="lbl">Ditt svar: </span>${selectedOptText}</div>`;
+      inner += `<div class="fi-row ra"><span class="lbl">Rätt svar: </span>${correctOptText}</div>`;
+    }
+
+    div.innerHTML = inner;
+    facitEl.appendChild(div);
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// RESTART
+// ════════════════════════════════════════════════════════════
+function restartQuiz() {
+  stopTimer();
+  show('screen-start');
+}
+</script>
+</body>
+</html>
