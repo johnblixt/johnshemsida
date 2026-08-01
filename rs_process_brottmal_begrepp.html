@@ -61,6 +61,112 @@ const concepts = [
   { term: "Ekobrottsmyndigheten", definition: "Den myndighet som ansvarar för bekämpning av ekonomisk brottslighet, så kallade \"eko-brott\"." }
 ];
 
+const lucktextData = [
+  { pre: "Det rättsområde som reglerar hur ett förfarande vid domstol, exempelvis en rättegång, ska gå till kallas ", post: ".", answers: ["processrätten"] },
+  { pre: "Den konkreta lagtext som samlar de centrala processrättsliga reglerna för hur en rättegång ska gå till förkortas ", post: ".", answers: ["rb", "rättegångsbalken"] },
+  { pre: "Ett domstolsärende där frågan är om en person ska hållas ansvarig för ett brott kallas ett ", post: ".", answers: ["brottmål"] },
+  { pre: "Principen som innebär att ingen kan straffas för en gärning som inte var brottslig när den begicks kallas ", post: ".", answers: ["legalitetsprincipen"] },
+  { pre: "Principen om att domstolar och myndigheter ska vara sakliga, opartiska och behandla alla lika inför lagen kallas ", post: ".", answers: ["objektivitetsprincipen"] },
+  { pre: "Principen om att bevisning och utredning i en rättegång ska presenteras muntligt inför domstolen kallas ", post: ".", answers: ["muntlighetsprincipen"] },
+  { pre: "Principen som ger allmänheten rätt att närvara vid förhandlingar och ta del av handlingar som kommit in till domstolen kallas ", post: ".", answers: ["offentlighetsprincipen"] },
+  { pre: "När åskådare inte tillåts vara med i rättssalen under en förhandling sker den bakom ", post: ".", answers: ["stängda dörrar", "lyckta dörrar"] },
+  { pre: "Hela arbetsgången, från att ett brott begås till att gärningspersonen får sin dom, kallas ", post: ".", answers: ["brottmålsprocessen"] },
+  { pre: "Den brottsutredning som vanligtvis inleds på polisens initiativ efter att ett brott anmälts kallas en ", post: ".", answers: ["förundersökning"] },
+  { pre: "Den person, antingen en polistjänsteman eller en åklagare, som har det övergripande ansvaret för en brottsutredning kallas ", post: ".", answers: ["förundersökningsledaren"] },
+  { pre: "Ett tillfälligt frihetsberövande, beslutat av åklagare, som kan ske i väntan på att domstolen prövar frågan om häktning kallas ", post: ".", answers: ["anhållan"] },
+  { pre: "Ett domstolsbeslut om att hålla kvar en person på sannolika skäl misstänkt för ett brott som kan ge minst ett års fängelse, på grund av flyktrisk eller risk för bevisundanröjande, kallas ", post: ".", answers: ["häktning"] },
+  { pre: "När åklagaren formellt begär att domstolen ska pröva om en misstänkt person är skyldig till ett brott har åklagaren väckt ", post: ".", answers: ["åtal"] },
+  { pre: "Den person som drabbats av ett brott kallas i rättsprocessen för ", post: ".", answers: ["målsägaren", "målsägande"] },
+  { pre: "Den jurist som utses av domstolen för att förbereda och föra en misstänkt persons talan kallas en ", post: ".", answers: ["offentlig försvarare"] },
+  { pre: "Den person som utses av domstolen för att ge stöd åt den som drabbats av brottet under rättegången kallas ett ", post: ".", answers: ["målsägarbiträde"] },
+  { pre: "Det som i vardagligt tal kallas rättegång heter formellt en ", post: ".", answers: ["huvudförhandling"] },
+  { pre: "Den högtidliga försäkran ett vittne avlägger inför domstolen om att tala sanning kallas ", post: ".", answers: ["vittnesed"] },
+  { pre: "När åklagaren under huvudförhandlingen berättar fritt om vad som enligt åklagaren har hänt kallas det för ", post: ".", answers: ["sakframställning"] },
+  { pre: "Att läsa upp gärningsbeskrivningen och ange vilka brott åklagaren anser att den tilltalade begått kallas att åklagaren ", post: ".", answers: ["yrkar ansvar för gärning", "yrka ansvar för gärning"] },
+  { pre: "Den avslutande sammanfattning och argumentation som parterna håller i slutet av huvudförhandlingen kallas en ", post: ".", answers: ["slutplädering"] },
+  { pre: "Rättens formella avgörande efter en huvudförhandling kallas en ", post: ".", answers: ["dom"] },
+  { pre: "När tiden för att överklaga en dom gått ut utan att någon part gjort det säger man att domen har vunnit ", post: ".", answers: ["laga kraft"] },
+  { pre: "Den tredje och sista instansen bland de allmänna domstolarna förkortas ", post: ".", answers: ["hd", "högsta domstolen"] },
+  { pre: "En dom, ofta avkunnad av Högsta domstolen, som därefter används som vägledning för hur liknande mål ska bedömas kallas en ", post: ".", answers: ["prejudicerande dom", "prejudikat"] },
+  { pre: "Möjligheten att pröva en dom som redan vunnit laga kraft på nytt, om nya omständigheter eller bevis kommit fram, kallas ", post: ".", answers: ["resning"] },
+  { pre: "Den myndighet som fungerar som en serviceorganisation åt Sveriges domstolar kallas ", post: ".", answers: ["domstolsverket"] },
+  { pre: "Myndigheten som brottsoffer kan vända sig till för att få stöd, exempelvis ekonomisk ersättning, kallas ", post: ".", answers: ["brottsoffermyndigheten"] },
+  { pre: "Den myndighet som särskilt ansvarar för att bekämpa ekonomisk brottslighet kallas ", post: ".", answers: ["ekobrottsmyndigheten"] }
+];
+
+const scenarioData = [
+  { scenario: "En lärare förklarar att detta rättsområde inte avgör om en handling är brottslig, utan istället hur domstolen ska gå till väga vid en rättegång.", distractors: ["Rättegångsbalken (RB)", "Brottmålsprocessen", "Legalitetsprincipen"] },
+  { scenario: "En advokat slår upp den specifika lagtext där de centrala reglerna för hur en rättegång ska genomföras finns samlade.", distractors: ["Processrätten", "Domstolsverket", "Laga kraft"] },
+  { scenario: "En tingsrätt sammanträder för att avgöra om en åtalad person är skyldig till det brott hen anklagas för.", distractors: ["Huvudförhandling", "Åtal", "Förundersökning"] },
+  { scenario: "En domare vägrar döma ut ett straff för en handling, eftersom handlingen inte var förbjuden enligt lag när den utfördes.", distractors: ["Objektivitetsprincipen", "Offentlighetsprincipen", "Muntlighetsprincipen"] },
+  { scenario: "En åklagare är noga med att utreda både bevis som talar för och emot den misstänkte, utan att gynna någon sida.", distractors: ["Legalitetsprincipen", "Muntlighetsprincipen", "Offentlighetsprincipen"] },
+  { scenario: "Ett vittne redogör högt och tydligt för sin iakttagelse inför rätten, istället för att bara lämna in en skriftlig redogörelse.", distractors: ["Offentlighetsprincipen", "Objektivitetsprincipen", "Vittnesed"] },
+  { scenario: "En journalist sätter sig i publiken under en rättegång för att bevaka den, och begär även ut handlingar som skickats in till domstolen.", distractors: ["Muntlighetsprincipen", "Stängda dörrar (\"lyckta dörrar\")", "Objektivitetsprincipen"] },
+  { scenario: "Domstolen beslutar att stänga ute alla åskådare från salen under en särskilt känslig del av förhandlingen.", distractors: ["Offentlighetsprincipen", "Muntlighetsprincipen", "Häktning"] },
+  { scenario: "En lärare ritar upp ett flödesschema som visar varje steg rättsväsendet tar sig igenom, från att ett brott upptäcks tills en dom meddelas.", distractors: ["Förundersökning", "Brottmål", "Huvudförhandling"] },
+  { scenario: "Polisen börjar samla in bevis och förhöra vittnen direkt efter att en anmälan om inbrott kommit in.", distractors: ["Häktning", "Anhållan", "Åtal"] },
+  { scenario: "En åklagare tar över ansvaret för att styra en pågående brottsutredning i ett allvarligare fall.", distractors: ["Offentlig försvarare", "Målsägarbiträde", "Domstolsverket"] },
+  { scenario: "En åklagare beslutar att en misstänkt person tillfälligt ska hållas frihetsberövad i väntan på att domstolen prövar frågan om ett längre frihetsberövande.", distractors: ["Häktning", "Förundersökning", "Åtal"] },
+  { scenario: "En domstol beslutar att en person som på sannolika skäl misstänks för ett grovt brott ska sitta frihetsberövad under resten av utredningen, eftersom det finns risk att personen annars flyr eller förstör bevis.", distractors: ["Anhållan", "Åtal", "Resning"] },
+  { scenario: "En åklagare lämnar in en formell begäran till tingsrätten om att pröva skuldfrågan för en misstänkt person.", distractors: ["Förundersökning", "Häktning", "Sakframställning"] },
+  { scenario: "En kvinna vars lägenhet blivit utsatt för inbrott deltar i rättegången eftersom det är hon som drabbats av brottet.", distractors: ["Målsägarbiträde", "Offentlig försvarare", "Förundersökningsledaren"] },
+  { scenario: "En misstänkt person som inte har råd med en egen advokat får en jurist utsedd av domstolen för att förbereda och föra hens talan.", distractors: ["Målsägarbiträde", "Förundersökningsledaren", "Domstolsverket"] },
+  { scenario: "En person som utsatts för ett brott får hjälp av en särskilt utsedd jurist som stöttar henne genom hela rättsprocessen.", distractors: ["Offentlig försvarare", "Målsägaren", "Vittnesed"] },
+  { scenario: "Parterna, vittnena och domaren samlas i rättssalen för att muntligt gå igenom hela målet inför att domstolen ska döma.", distractors: ["Förundersökning", "Slutplädering", "Sakframställning"] },
+  { scenario: "Innan hen får berätta vad hen sett inför rätten lovar personen högtidligt att endast säga sanningen.", distractors: ["Sakframställning", "Slutplädering", "Muntlighetsprincipen"] },
+  { scenario: "I inledningen av rättegången berättar åklagaren fritt om händelseförloppet så som åklagaren uppfattar det.", distractors: ["Slutplädering", "Yrka ansvar för gärning", "Vittnesed"] },
+  { scenario: "Åklagaren läser formellt upp vilka specifika brott hen anser att den tilltalade gjort sig skyldig till.", distractors: ["Sakframställning", "Slutplädering", "Åtal"] },
+  { scenario: "I slutet av rättegången sammanfattar båda parterna vad som kommit fram och argumenterar för sin sak en sista gång.", distractors: ["Sakframställning", "Yrka ansvar för gärning", "Dom"] },
+  { scenario: "Efter att rättegången avslutats meddelar domstolen sitt formella avgörande i målet.", distractors: ["Laga kraft", "Resning", "Prejudicerande dom"] },
+  { scenario: "Ingen av parterna överklagar domstolens avgörande inom den tid som är tillåten, vilket gör att avgörandet börjar gälla definitivt.", distractors: ["Dom", "Resning", "Prejudicerande dom"] },
+  { scenario: "Ett mål som redan avgjorts i två lägre instanser tas upp av landets högsta rättsliga instans för att avgöra en principiellt viktig fråga.", distractors: ["Domstolsverket", "Ekobrottsmyndigheten", "Prejudicerande dom"] },
+  { scenario: "Advokater i ett liknande mål hänvisar till ett tidigare avgörande från Högsta domstolen som vägledning för hur deras eget mål bör bedömas.", distractors: ["Laga kraft", "Resning", "Dom"] },
+  { scenario: "Flera år efter att domen börjat gälla definitivt upptäcks nytt DNA-bevis, vilket gör att målet tas upp på nytt för prövning.", distractors: ["Laga kraft", "Prejudicerande dom", "Dom"] },
+  { scenario: "En myndighet ser till att domstolarna runt om i landet får administrativt stöd och resurser för att fungera, utan att själv döma i mål.", distractors: ["Brottsoffermyndigheten", "Ekobrottsmyndigheten", "Högsta domstolen"] },
+  { scenario: "En person som utsatts för brott ansöker om ekonomisk ersättning hos en särskild statlig myndighet inriktad på att stötta just brottsoffer.", distractors: ["Domstolsverket", "Ekobrottsmyndigheten", "Målsägarbiträde"] },
+  { scenario: "En särskild myndighet utreder ett misstänkt bokföringsbrott som begåtts av ett företags ledning.", distractors: ["Domstolsverket", "Brottsoffermyndigheten", "Förundersökningsledaren"] }
+];
+
+const ickeData = [
+  { optionA: "Det rättsområde som avgör hur en huvudförhandling ska gå till, till exempel i vilken ordning parterna får tala.", optionB: "Det system av regler som avgör om en gärning är straffbar eller inte.", correct: 'A', explanation: "Processrätten reglerar förfarandet vid domstol. Alternativ B, att avgöra om en gärning är straffbar, hör istället till straffrätten." },
+  { optionA: "Den konkreta lagtext som anger de centrala reglerna för hur en rättegång ska genomföras.", optionB: "Det övergripande rättsområde som handlar om domstolsförfaranden i stort, utan att i sig vara en specifik lag.", correct: 'A', explanation: "Rättegångsbalken är den specifika lagtexten. Alternativ B beskriver istället det bredare rättsområdet processrätten." },
+  { optionA: "Ett domstolsmål där frågan är om en person ska dömas för ett brott.", optionB: "Ett domstolsmål där två privatpersoner tvistar om ett skadestånd efter en bilolycka, utan brottsmisstanke.", correct: 'A', explanation: "Ett brottmål handlar om ansvar för brott. Alternativ B beskriver istället ett tvistemål mellan enskilda parter." },
+  { optionA: "En domare vägrar döma ut straff för en gärning som inte var olaglig när den begicks, trots att lagen ändrats sedan dess.", optionB: "En domare behandlar den tilltalade och åklagaren lika och är noga med att inte gynna någon part.", correct: 'A', explanation: "Legalitetsprincipen innebär att ingen kan straffas för något som inte var brottsligt vid tidpunkten. Alternativ B beskriver istället objektivitetsprincipen." },
+  { optionA: "En åklagare redovisar även bevisning som talar till den misstänktes fördel, inte bara det som styrker misstanke.", optionB: "En domstol håller förhandlingen öppen för allmänheten att närvara vid.", correct: 'A', explanation: "Objektivitetsprincipen handlar om saklighet och opartiskhet. Alternativ B beskriver istället offentlighetsprincipen." },
+  { optionA: "Ett vittne berättar muntligt inför rätten vad hen sett, istället för att endast lämna in en skriven berättelse.", optionB: "Allmänheten tillåts sitta med i rättssalen och lyssna på förhandlingen.", correct: 'A', explanation: "Muntlighetsprincipen handlar om att material ska framföras muntligt. Alternativ B beskriver istället offentlighetsprincipen." },
+  { optionA: "En utomstående person får sitta med och lyssna på en rättegång samt begära ut handlingar som lämnats in till domstolen.", optionB: "En domstol stänger ute åskådare från rättssalen under en känslig förhandling.", correct: 'A', explanation: "Offentlighetsprincipen ger allmänheten rätt till insyn. Alternativ B beskriver istället stängda dörrar, som är ett undantag från insynen." },
+  { optionA: "Domstolen håller en förhandling där ingen från allmänheten släpps in i salen.", optionB: "Domstolen håller en förhandling som är öppen för vem som helst att bevaka.", correct: 'A', explanation: "Stängda dörrar innebär att åskådare inte släpps in. Alternativ B beskriver istället det normala läget enligt offentlighetsprincipen." },
+  { optionA: "Hela kedjan av steg rättsväsendet går igenom, från att ett brott begås till att en dom meddelas.", optionB: "Enbart den fas där polisen samlar bevis innan åtal väcks.", correct: 'A', explanation: "Brottmålsprocessen omfattar hela arbetsgången. Alternativ B beskriver istället bara förundersökningen, en av flera faser." },
+  { optionA: "Polisen samlar bevis och håller förhör i syfte att utreda ett misstänkt brott.", optionB: "En åklagare beslutar att väcka talan mot en misstänkt person inför domstol.", correct: 'A', explanation: "Förundersökningen är brottsutredningen. Alternativ B beskriver istället åtal, ett senare steg i processen." },
+  { optionA: "En polistjänsteman eller åklagare som har det övergripande ansvaret för en brottsutredning.", optionB: "En jurist som utses för att företräda och stötta den misstänkte under processen.", correct: 'A', explanation: "Förundersökningsledaren leder utredningen. Alternativ B beskriver istället den offentliga försvararen." },
+  { optionA: "En åklagare beslutar om ett kortvarigt frihetsberövande i väntan på domstolens prövning av häktningsfrågan.", optionB: "En domstol beslutar att en misstänkt person, på sannolika skäl misstänkt för ett brott med minst ett års straffvärde, ska sitta frihetsberövad under resten av utredningen.", correct: 'A', explanation: "Anhållan är ett tillfälligt beslut av åklagaren i väntan på domstolens prövning. Alternativ B, domstolens längre frihetsberövande, är istället häktning." },
+  { optionA: "En domstol beslutar att hålla kvar en person på sannolika skäl misstänkt för ett allvarligt brott, på grund av flyktrisk eller risk för bevisundanröjande.", optionB: "En åklagare fattar ett snabbt beslut om ett kortvarigt frihetsberövande i avvaktan på domstolens prövning.", correct: 'A', explanation: "Häktning är domstolens beslut om ett längre frihetsberövande. Alternativ B, åklagarens snabba och kortvariga beslut, är istället anhållan." },
+  { optionA: "En åklagare lämnar formellt in en begäran till domstolen om att pröva om en misstänkt är skyldig till ett brott.", optionB: "En åklagare inleder en utredning för att samla bevis om ett misstänkt brott.", correct: 'A', explanation: "Åtal innebär att begära domstolens prövning av skuldfrågan. Alternativ B beskriver istället förundersökningen, som sker tidigare." },
+  { optionA: "Den person som personligen drabbats av det brott som prövas i rättegången.", optionB: "Den jurist som utses av domstolen för att stötta den drabbade under processen.", correct: 'A', explanation: "Målsägaren är den som drabbats av brottet. Alternativ B beskriver istället målsägarbiträdet, en jurist som stöttar målsäganden." },
+  { optionA: "En jurist utsedd av domstolen för att förbereda och föra den misstänktes talan.", optionB: "En jurist utsedd av domstolen för att stötta den som drabbats av brottet under rättegången.", correct: 'A', explanation: "Offentlig försvarare företräder den misstänkte. Alternativ B beskriver istället målsägarbiträdet, som stöttar målsäganden." },
+  { optionA: "En jurist som utses för att ge stöd åt den som drabbats av brottet under processen.", optionB: "Personen som själv blivit utsatt för brottet och vars sak prövas i rättegången.", correct: 'A', explanation: "Målsägarbiträdet stöttar målsäganden. Alternativ B beskriver istället målsäganden själv." },
+  { optionA: "Det sammanträde i rättssalen där hela målet gås igenom muntligt inför domstolen, det som i vardagstal kallas rättegång.", optionB: "Endast den avslutande sammanfattningen som parterna håller innan domstolen drar sig tillbaka för att besluta.", correct: 'A', explanation: "Huvudförhandlingen är hela rättegångstillfället. Alternativ B beskriver istället bara slutpläderingen, en del av huvudförhandlingen." },
+  { optionA: "En högtidlig försäkran som ett vittne avlägger inför rätten om att endast tala sanning.", optionB: "Åklagarens muntliga redogörelse för vad som enligt åklagaren har hänt.", correct: 'A', explanation: "Vittneseden är vittnets sanningsförsäkran. Alternativ B beskriver istället sakframställningen, som hålls av åklagaren." },
+  { optionA: "Åklagarens muntliga redogörelse i början av huvudförhandlingen för vad som enligt åklagaren har hänt.", optionB: "Åklagarens sammanfattande tal i slutet av förhandlingen om vad som framkommit under rättegången.", correct: 'A', explanation: "Sakframställningen sker i inledningen av huvudförhandlingen. Alternativ B, det sammanfattande talet i slutet, är istället slutpläderingen." },
+  { optionA: "Åklagaren läser upp gärningsbeskrivningen och anger formellt vilka brott den tilltalade anses ha begått.", optionB: "Åklagaren berättar fritt och löpande om vad som enligt åklagaren hänt, utan att formellt ange brottsrubriceringar.", correct: 'A', explanation: "Att yrka ansvar för gärning är att formellt ange brottsrubriceringarna. Alternativ B beskriver istället sakframställningen." },
+  { optionA: "Partens avslutande sammanfattning och argumentation, som hålls i slutet av huvudförhandlingen innan domstolen avgör målet.", optionB: "Åklagarens inledande fria berättelse om vad som enligt åklagaren har hänt.", correct: 'A', explanation: "Slutpläderingen hålls i slutet av förhandlingen. Alternativ B beskriver istället sakframställningen, som hålls i inledningen." },
+  { optionA: "Domstolens formella avgörande i målet, som meddelas efter huvudförhandlingen.", optionB: "Det förhållande att ett avgörande inte längre kan överklagas eftersom tiden för det gått ut.", correct: 'A', explanation: "Domen är själva avgörandet. Alternativ B beskriver istället laga kraft, som handlar om att avgörandet blivit definitivt." },
+  { optionA: "Ett avgörande som ingen part överklagat inom rätt tid, och som därför gäller definitivt.", optionB: "Ett avgörande som prövas på nytt trots att det redan gäller definitivt, eftersom nya bevis framkommit.", correct: 'A', explanation: "Laga kraft innebär att avgörandet gäller definitivt. Alternativ B, en ny prövning trots detta, beskriver istället resning." },
+  { optionA: "Den tredje och sista instansen bland de allmänna domstolarna.", optionB: "Den myndighet som fungerar som en serviceorganisation åt domstolarna i landet.", correct: 'A', explanation: "Högsta domstolen är den sista instansen. Alternativ B beskriver istället Domstolsverket." },
+  { optionA: "Ett tidigare avgörande, ofta från Högsta domstolen, som används som vägledning för hur liknande mål ska bedömas.", optionB: "Ett vanligt avgörande i en enskild tingsrätt som enbart gäller parterna i det målet.", correct: 'A', explanation: "En prejudicerande dom fungerar som vägledning för andra mål. Alternativ B beskriver istället en dom utan sådan vägledande verkan." },
+  { optionA: "En dom som redan gäller definitivt prövas på nytt sedan nya avgörande bevis kommit fram.", optionB: "En dom börjar gälla definitivt eftersom ingen part överklagat i tid.", correct: 'A', explanation: "Resning innebär en ny prövning av en dom som redan vunnit laga kraft. Alternativ B beskriver istället själva laga kraft." },
+  { optionA: "En myndighet som ger administrativt stöd åt domstolarna, utan att själv döma i enskilda mål.", optionB: "En myndighet dit brottsoffer kan vända sig för att få stöd och ekonomisk ersättning.", correct: 'A', explanation: "Domstolsverket ger service åt domstolarna. Alternativ B beskriver istället Brottsoffermyndigheten." },
+  { optionA: "En myndighet dit den som drabbats av brott kan vända sig för stöd, till exempel ekonomisk ersättning.", optionB: "En jurist som utses av domstolen för att personligen stötta målsäganden under själva rättegången.", correct: 'A', explanation: "Brottsoffermyndigheten ger stöd åt brottsoffer på myndighetsnivå. Alternativ B beskriver istället målsägarbiträdet." },
+  { optionA: "Den myndighet som särskilt ansvarar för att bekämpa ekonomisk brottslighet, som bokförings- och skattebrott.", optionB: "Den myndighet som ger administrativt stöd åt landets domstolar.", correct: 'A', explanation: "Ekobrottsmyndigheten bekämpar ekonomisk brottslighet. Alternativ B beskriver istället Domstolsverket." }
+];
+
+function gradeText(pct) {
+  if (pct >= 90) return "Utmärkt! Redo för provet!";
+  if (pct >= 70) return "Bra jobbat! Nästan redo.";
+  if (pct >= 50) return "På god väg, men öva lite till.";
+  return "Öva mer på begreppen innan provet.";
+}
+
 function shuffleArray(array) {
   const arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -94,9 +200,9 @@ function ViewToggle({ view, setView }) {
   const views = [
     { key: "lista", label: "Lista", active: true },
     { key: "flashcards", label: "Flashcards", active: true },
-    { key: "lucktext", label: "Lucktext", active: false },
-    { key: "scenario", label: "Scenario", active: false },
-    { key: "ickeex", label: "Icke-ex.", active: false }
+    { key: "lucktext", label: "Lucktext", active: true },
+    { key: "scenario", label: "Scenario", active: true },
+    { key: "ickeex", label: "Icke-ex.", active: true }
   ];
   return (
     <div className="flex justify-center flex-wrap gap-2 my-6">
@@ -346,12 +452,319 @@ function FlashcardView() {
   );
 }
 
-function ComingSoonView({ label }) {
+function LucktextView() {
+  const initial = () => concepts.map(() => ({ value: "", status: "idle", attempts: 0 }));
+  const [items, setItems] = useState(initial);
+
+  const setValue = (i, value) => {
+    setItems((prev) => {
+      const next = [...prev];
+      next[i] = { ...next[i], value };
+      return next;
+    });
+  };
+
+  const submit = (i) => {
+    setItems((prev) => {
+      const item = prev[i];
+      if (item.status === "correct" || item.status === "revealed") return prev;
+      const norm = item.value.trim().toLowerCase();
+      const ok = lucktextData[i].answers.includes(norm);
+      const next = [...prev];
+      if (ok) {
+        next[i] = { ...item, status: "correct" };
+      } else {
+        const attempts = item.attempts + 1;
+        next[i] = { ...item, attempts, status: attempts >= 2 ? "wrong2" : "wrong1" };
+      }
+      return next;
+    });
+  };
+
+  const correctAll = () => {
+    setItems((prev) => prev.map((item) => (item.status === "correct" ? item : { ...item, status: "revealed" })));
+  };
+
+  const restart = () => setItems(initial());
+
+  const score = items.filter((it) => it.status === "correct").length;
+  const total = concepts.length;
+  const allDone = items.every((it) => it.status === "correct" || it.status === "revealed");
+
   return (
-    <div className="max-w-xl mx-auto px-4 pb-16 text-center">
-      <div className="bg-white rounded-3xl border-2 border-dashed border-slate-200 p-10">
-        <p className="text-slate-400 text-lg">{label} kommer snart.</p>
+    <div className="max-w-2xl mx-auto px-4 pb-16">
+      <div className="bg-white rounded-2xl border-2 border-slate-200 p-4 mb-6">
+        <p className="text-sm font-bold text-slate-500 uppercase tracking-wide mb-3">Begreppsbank</p>
+        <div className="flex flex-wrap gap-2">
+          {concepts.map((c, i) => {
+            const done = items[i].status === "correct" || items[i].status === "revealed";
+            return (
+              <span
+                key={i}
+                className={
+                  "text-xs px-3 py-1 rounded-full border " +
+                  (done ? "line-through text-slate-300 border-slate-200 bg-slate-50" : "text-slate-700 border-slate-300 bg-white")
+                }
+              >
+                {c.term}
+              </span>
+            );
+          })}
+        </div>
       </div>
+
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-sm font-bold text-slate-500">{score} / {total} rätt</p>
+        <div className="flex gap-2">
+          <button onClick={correctAll} className="text-xs font-bold px-4 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-colors">
+            Rätta alla
+          </button>
+          <button onClick={restart} className="text-xs font-bold px-4 py-2 rounded-xl border-2 border-slate-300 text-slate-600 hover:bg-slate-100 transition-colors">
+            Börja om
+          </button>
+        </div>
+      </div>
+
+      {allDone && (
+        <div className="bg-white border-2 rounded-3xl p-6 text-center mb-6" style={{ borderColor: PRIMARY }}>
+          <p className="text-2xl font-bold mb-1" style={{ color: "#115e59" }}>{score} / {total} rätt</p>
+          <p className="text-slate-600">{gradeText((score / total) * 100)}</p>
+        </div>
+      )}
+
+      <div className="grid gap-4">
+        {lucktextData.map((data, i) => {
+          const item = items[i];
+          const locked = item.status === "correct" || item.status === "revealed";
+          const borderClass =
+            item.status === "correct" ? "border-green-500" :
+            item.status === "revealed" ? "border-red-400" :
+            item.status === "wrong2" ? "border-red-300" :
+            item.status === "wrong1" ? "border-orange-300" :
+            "border-slate-200";
+          return (
+            <div key={i} className={`bg-white p-5 rounded-2xl border-2 ${borderClass}`}>
+              <p className="leading-relaxed">
+                <span className="text-slate-400 font-bold mr-1">{i + 1}.</span>
+                {data.pre}
+                <input
+                  type="text"
+                  value={item.value}
+                  disabled={locked}
+                  onChange={(e) => setValue(i, e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") submit(i); }}
+                  className={`inline-block mx-1 px-2 py-1 border-b-2 focus:outline-none w-40 text-center ${locked ? "bg-slate-50" : "bg-white"}`}
+                  style={{ borderColor: item.status === "correct" ? "#16a34a" : item.status === "revealed" ? "#dc2626" : PRIMARY }}
+                />
+                {data.post}
+              </p>
+              {item.status === "wrong1" && <p className="text-orange-500 text-sm font-bold mt-2">Är du säker att du stavat rätt?</p>}
+              {item.status === "wrong2" && <p className="text-red-600 text-sm font-bold mt-2">Fel. Kontrollera stavningen och försök igen.</p>}
+              {item.status === "correct" && <p className="text-green-700 text-sm mt-2">✓ Rätt! {concepts[i].definition}</p>}
+              {item.status === "revealed" && <p className="text-red-600 text-sm mt-2">Rätt svar: <strong>{concepts[i].term}</strong>. {concepts[i].definition}</p>}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function ScenarioView() {
+  const total = scenarioData.length;
+  const buildOrder = () => shuffleArray(scenarioData.map((_, i) => i));
+  const [order, setOrder] = useState(buildOrder);
+  const [qIdx, setQIdx] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [phase, setPhase] = useState("playing");
+
+  const dataIdx = order[qIdx];
+  const q = scenarioData[dataIdx];
+  const concept = concepts[dataIdx];
+  const options = useMemo(() => shuffleArray([concept.term, ...q.distractors]), [dataIdx]);
+
+  const choose = (opt) => {
+    if (selected !== null) return;
+    setSelected(opt);
+    if (opt === concept.term) setScore((s) => s + 1);
+  };
+
+  const next = () => {
+    if (qIdx + 1 >= total) {
+      setPhase("done");
+    } else {
+      setQIdx(qIdx + 1);
+      setSelected(null);
+    }
+  };
+
+  const restart = () => {
+    setOrder(buildOrder());
+    setQIdx(0);
+    setSelected(null);
+    setScore(0);
+    setPhase("playing");
+  };
+
+  if (phase === "done") {
+    const pct = (score / total) * 100;
+    return (
+      <div className="max-w-2xl mx-auto px-4 pb-16">
+        <div className="bg-white border-2 rounded-3xl p-8 text-center" style={{ borderColor: PRIMARY }}>
+          <p className="text-3xl font-bold mb-2" style={{ color: "#115e59" }}>{score} / {total} rätt</p>
+          <p className="text-slate-600 mb-6">{gradeText(pct)}</p>
+          <button onClick={restart} style={{ background: PRIMARY }} className="text-white px-8 py-3 rounded-2xl font-bold">
+            Gör om
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 pb-16">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-sm font-bold text-slate-500">Fråga {qIdx + 1} av {total}</p>
+        <p className="text-sm font-bold text-slate-500">Poäng: {score}</p>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+        <div className="h-2 rounded-full transition-all" style={{ width: `${(qIdx / total) * 100}%`, background: PRIMARY }}></div>
+      </div>
+
+      <div className="bg-white p-6 rounded-2xl border-2 border-slate-200 mb-5">
+        <p className="text-lg leading-relaxed">{q.scenario}</p>
+      </div>
+
+      <div className="grid gap-3">
+        {options.map((opt, i) => {
+          const isCorrect = opt === concept.term;
+          const isSelected = selected === opt;
+          let cls = "bg-white border-2 border-slate-200 hover:border-slate-300";
+          if (selected !== null) {
+            if (isCorrect) cls = "bg-green-50 border-2 border-green-500 text-green-800";
+            else if (isSelected) cls = "bg-red-50 border-2 border-red-500 text-red-800";
+            else cls = "bg-white border-2 border-slate-100 text-slate-400";
+          }
+          return (
+            <button key={i} onClick={() => choose(opt)} disabled={selected !== null} className={`text-left px-5 py-3 rounded-2xl font-medium transition-colors ${cls}`}>
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+
+      {selected !== null && (
+        <div className="mt-5 bg-slate-50 border-2 border-slate-200 rounded-2xl p-4">
+          <p className="text-slate-700">{concept.definition}</p>
+          <button onClick={next} style={{ background: PRIMARY }} className="mt-4 text-white px-6 py-2 rounded-xl font-bold">
+            {qIdx + 1 >= total ? "Se resultat" : "Nästa →"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function IckeExView() {
+  const total = ickeData.length;
+  const buildOrder = () => shuffleArray(ickeData.map((_, i) => i));
+  const [order, setOrder] = useState(buildOrder);
+  const [qIdx, setQIdx] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [phase, setPhase] = useState("playing");
+
+  const dataIdx = order[qIdx];
+  const q = ickeData[dataIdx];
+  const concept = concepts[dataIdx];
+
+  const choose = (letter) => {
+    if (selected !== null) return;
+    setSelected(letter);
+    if (letter === q.correct) setScore((s) => s + 1);
+  };
+
+  const next = () => {
+    if (qIdx + 1 >= total) {
+      setPhase("done");
+    } else {
+      setQIdx(qIdx + 1);
+      setSelected(null);
+    }
+  };
+
+  const restart = () => {
+    setOrder(buildOrder());
+    setQIdx(0);
+    setSelected(null);
+    setScore(0);
+    setPhase("playing");
+  };
+
+  if (phase === "done") {
+    const pct = (score / total) * 100;
+    return (
+      <div className="max-w-2xl mx-auto px-4 pb-16">
+        <div className="bg-white border-2 rounded-3xl p-8 text-center" style={{ borderColor: PRIMARY }}>
+          <p className="text-3xl font-bold mb-2" style={{ color: "#115e59" }}>{score} / {total} rätt</p>
+          <p className="text-slate-600 mb-6">{gradeText(pct)}</p>
+          <button onClick={restart} style={{ background: PRIMARY }} className="text-white px-8 py-3 rounded-2xl font-bold">
+            Börja om
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const options = [
+    { letter: "A", text: q.optionA },
+    { letter: "B", text: q.optionB }
+  ];
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 pb-16">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-sm font-bold text-slate-500">Fråga {qIdx + 1} av {total}</p>
+        <p className="text-sm font-bold text-slate-500">Poäng: {score}</p>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+        <div className="h-2 rounded-full transition-all" style={{ width: `${(qIdx / total) * 100}%`, background: PRIMARY }}></div>
+      </div>
+
+      <div className="bg-white p-5 rounded-2xl border-l-8 mb-5 shadow-sm" style={{ borderColor: PRIMARY }}>
+        <p className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Begrepp</p>
+        <h3 className="text-xl font-bold">{concept.term}</h3>
+      </div>
+
+      <p className="text-sm text-slate-500 mb-3 font-medium">Vilket alternativ är ett korrekt exempel på begreppet?</p>
+
+      <div className="grid gap-3">
+        {options.map((opt) => {
+          const isCorrect = opt.letter === q.correct;
+          const isSelected = selected === opt.letter;
+          let cls = "bg-white border-2 border-slate-200 hover:border-slate-300";
+          if (selected !== null) {
+            if (isCorrect) cls = "bg-green-50 border-2 border-green-500 text-green-800";
+            else if (isSelected) cls = "bg-red-50 border-2 border-red-500 text-red-800";
+            else cls = "bg-white border-2 border-slate-100 text-slate-400";
+          }
+          return (
+            <button key={opt.letter} onClick={() => choose(opt.letter)} disabled={selected !== null} className={`text-left px-5 py-4 rounded-2xl font-medium transition-colors ${cls}`}>
+              <span className="font-bold mr-2">{opt.letter}.</span>{opt.text}
+            </button>
+          );
+        })}
+      </div>
+
+      {selected !== null && (
+        <div className="mt-5 bg-slate-50 border-2 border-slate-200 rounded-2xl p-4">
+          <p className="text-slate-700">{q.explanation}</p>
+          <button onClick={next} style={{ background: PRIMARY }} className="mt-4 text-white px-6 py-2 rounded-xl font-bold">
+            {qIdx + 1 >= total ? "Se resultat" : "Nästa →"}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -364,10 +777,10 @@ function App() {
       <Header />
       <ViewToggle view={view} setView={setView} />
       {view === "lista" && <ListView />}
-      {view === "flashcards" && <FlashcardView />}
-      {view === "lucktext" && <ComingSoonView label="Lucktext" />}
-      {view === "scenario" && <ComingSoonView label="Scenario" />}
-      {view === "ickeex" && <ComingSoonView label="Icke-exempel" />}
+      {view === "flashcards" && <FlashcardView key="flashcards" />}
+      {view === "lucktext" && <LucktextView />}
+      {view === "scenario" && <ScenarioView key="scenario" />}
+      {view === "ickeex" && <IckeExView key="ickeex" />}
       <footer className="text-center text-slate-400 italic text-sm mt-10">
         Källa: Processrätt vid brottmål begreppslista
       </footer>
