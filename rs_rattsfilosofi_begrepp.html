@@ -85,6 +85,130 @@
     const PLIGHT = '#ccfbf1';
     const PDARK = '#134e4a';
 
+    const lucktextSentences = [
+      "Att det anses passande att tacka när man får en gåva, utan att det står i någon lag, är ett exempel på en ___.",
+      "Att skaka hand när man hälsar på någon eller bära svart kostym på en begravning är exempel på ___.",
+      "Att inte ljuga, inte vara otrogen och inte bruka droger är exempel på vad som brukar kallas ___.",
+      "Resonemanget kring varför det är fel att slå sitt barn, det vill säga argumenten bakom vår moraluppfattning, kallas ___.",
+      "Advokaternas vägledande regler om god advokatsed är ett exempel på handlingsregler som ska prägla arbetet, det vill säga ___.",
+      "Alla de rättsregler som gäller i Sverige, sedda som en helhet, kallas tillsammans för ___.",
+      "När ett ogift par separerar och den ena parten har betydligt sämre ekonomi är det denna lag, stiftad 1988, som ska skydda den svagare parten: ___.",
+      "Innan Sverige fick sin första gemensamma, nedtecknade lagstiftning styrdes landet av olika landskapslagar, men detta ändrades genom ___.",
+      "När en jurist studerar en liknande lag för vägledning i en situation som inte regleras direkt kallas det ___.",
+      "Den allmänna uppfattningen i samhället om vad som är rätt och fel, som lagstiftningen behöver följa för att anses legitim, kallas ___.",
+      "Att en domstol enbart kan grunda sin dom på gällande lag, och aldrig på vad domaren personligen tycker är moraliskt rätt, är kärnan i ___.",
+      "Att en lag är juridiskt gällande oavsett om den uppfattas som moraliskt bra eller dålig, det vill säga att juridik och moral hålls isär, kallas ___.",
+      "En person som är anställd av ett företag och som framförallt arbetar med bolagsrättsliga frågor kallas ___.",
+      "En jurist som tillhandahåller juridiska tjänster till allmänheten eller uppträder som rättegångsombud kallas ___.",
+      "Arbetssättet som jurister använder för att nå den mest sannolika och juridiskt riktiga lösningen på ett problem kallas ___.",
+      "Lagar, förarbeten, domstolspraxis, doktrin och sedvänja är exempel på det som juristen vänder sig till för att lösa en juridisk fråga, så kallade ___.",
+      "I steg två av juridisk metod bestämmer juristen vilka juridiska frågor en beskriven situation faktiskt handlar om, det vill säga ___.",
+      "De villkor som måste vara uppfyllda, till exempel att en gärningsperson handlat med uppsåt, för att en paragraf ska kunna tillämpas kallas ___.",
+      "De dokument som tas fram och utreder behovet av en lag innan den stiftas kallas ___.",
+      "Tidigare avgöranden från till exempel Högsta domstolen, som visar hur en rättsregel brukar tolkas, kallas ___.",
+      "En särskild vägledande dom från Högsta domstolen som senare mål bedöms utifrån kallas ___.",
+      "Juridisk speciallitteratur och forskning som innehåller teoretiska resonemang om juridiska samband kallas ___.",
+      "Ett sätt att ingå avtal som länge varit etablerat i en viss bransch, utan att det står i lag, kan räknas som ___.",
+      "När Stina och Kalle skiljer sig måste deras gemensamma hus, sommarstuga och bilar fördelas mellan dem, en process som kallas ___.",
+      "Eftersom Stina och Kalle har barn under 16 år måste de vänta i normalt sex månader innan tingsrätten kan besluta om äktenskapsskillnad, en period som kallas ___.",
+      "Sista steget i juridisk metod, då juristen tar ställning och bestämmer en juridiskt hållbar lösning, kallas ___.",
+      "Att tolka en lagtext med hjälp av olika tolkningsmetoder, till exempel bokstavstolkning eller teleologisk tolkning, kallas ___.",
+      "Att läsa lagtexten noggrant, ord för ord, och fråga sig exakt vad som står kallas ___.",
+      "Att fråga sig vad syftet med lagen är, antingen utifrån lagstiftarens ursprungliga avsikt eller lagens funktion idag, kallas ___.",
+      "Att av regeln 'personer under 20 år får inte köpa alkohol på Systembolaget' dra slutsatsen att personer över 20 år får göra det kallas ___."
+    ];
+
+    const lucktextItems = concepts.map((c, i) => ({
+      term: c.term,
+      sentence: lucktextSentences[i],
+      explanation: c.definition,
+      answers: [c.term]
+    }));
+
+    function normalizeAnswer(str) {
+      return str.trim().toLowerCase().replace(/\s+/g, ' ');
+    }
+
+    function isCorrectAnswer(input, item) {
+      const norm = normalizeAnswer(input);
+      return item.answers.some(a => normalizeAnswer(a) === norm);
+    }
+
+    const scenarioData = [
+      { id: 1, term: "Norm", scenario: "De flesta människor förväntas ställa sig i kö och vänta på sin tur, en oskriven regel som styr hur vi beter oss mot varandra fastän den inte står i någon lag.", definition: "Oskrivna regler och ideal som styr hur vi beter oss mot varandra." },
+      { id: 2, term: "Sociala regler", scenario: "Det anses hövligt att tacka värden för maten efter en middagsbjudning, även om ingen skulle straffas för att glömma det.", definition: "Vad som är brukligt i sociala sammanhang." },
+      { id: 3, term: "Moralregler", scenario: "Nästan alla tycker att man inte ska vara otrogen mot sin partner eller ljuga för sina nära, oavsett vad lagen säger.", definition: "Handlar om hur vi ska agera i livet." },
+      { id: 4, term: "Etik", scenario: "En person funderar över varför det egentligen är fel att en förälder slår sitt barn, det vill säga vilka argument som ligger bakom uppfattningen.", definition: "Beskriver våra argument för vår moral, det vill säga hur vi tänker och resonerar angående de moraliska dilemman som vi möter i livet." },
+      { id: 5, term: "Yrkesetik", scenario: "En advokatbyrå har tagit fram skriftliga vägledande regler för hur medarbetarna bör uppträda gentemot sina klienter i arbetet.", definition: "Handlingsregler med argument för de förhållningssätt som ska prägla arbetet." },
+      { id: 6, term: "Rättsordningen", scenario: "Sverige har ett samlat system av alla de rättsregler som gäller inom landets gränser.", definition: "De olika rättsreglerna som gäller i ett land, tillsammans." },
+      { id: 7, term: "Sambolagen", scenario: "Ett ogift par som bott ihop i flera år separerar, och det visar sig att den ena har betydligt sämre ekonomi — en lag från 1988 ska skydda den svagare parten.", definition: "Lag som är ett ekonomiskt skyddsnät för den ekonomiskt svagare parten i ett samboförhållande, stiftad 1988." },
+      { id: 8, term: "1734 års lag", scenario: "Innan Sverige fick en gemensam, nedskriven lagbok styrdes landet av flera olika landskapslagar.", definition: "Den första gemensamma, nedtecknade lagen för Sverige som helhet." },
+      { id: 9, term: "Analogisk tillämpning", scenario: "En regel om att korv och hamburgare inte får tas med på bussen tolkas av juristen som att liknande matvaror, som kebab, inte heller får tas med.", definition: "Innebär att juristen studerar liknande lagar och vad som står att finna där." },
+      { id: 10, term: "Rättsmedvetande", scenario: "Ett rökförbud på restauranger möter visst motstånd från rökare, men eftersom de flesta icke-rökare tycker att det är rimligt anses lagen ändå vara legitim i samhället.", definition: "Den allmänna synen i samhället på vad som är rätt och fel." },
+      { id: 11, term: "Det rättspositiva tänkandet", scenario: "En domare dömer enbart utifrån vad som faktiskt står i gällande lag, oavsett vad hen personligen tycker är moraliskt rätt.", definition: "Domar kan endast baseras på aktuell lagstiftning." },
+      { id: 12, term: "Rättspositivism", scenario: "En lag anses juridiskt gällande även om många tycker att den är orättvis, eftersom juridiken hålls helt skild från moraliska bedömningar.", definition: "Juridisk gällande rätt är helt skild från moraliska omdömen." },
+      { id: 13, term: "Bolagsjurist", scenario: "En person är anställd av ett företag och hjälper till internt med avtal och bolagsrättsliga frågor.", definition: "En jurist som är anställd av ett företag och som framförallt arbetar med bolagsrätt." },
+      { id: 14, term: "Advokat", scenario: "En person erbjuder juridiska tjänster till privatpersoner och företräder sina klienter i rättegångar.", definition: "En jurist som tillhandahåller juridiska tjänster eller som är rättegångsombud." },
+      { id: 15, term: "Juridisk metod", scenario: "En jurist använder ett fastställt arbetssätt i flera steg för att komma fram till den mest sannolika och juridiskt riktiga lösningen på ett problem.", definition: "En arbetsmetod vars syfte är att försöka uppnå den mest sannolika och riktiga lösningen på en juridisk fråga eller ett juridiskt problem." },
+      { id: 16, term: "Rättskällor", scenario: "En jurist vänder sig till lagtext, förarbeten, tidigare domar, forskning och branschpraxis för att lösa en juridisk fråga.", definition: "Är lagar, förordningar, förarbeten, domstolspraxis och sedvänja. Hit kan juristen vända sig för att få hjälp med att lösa en juridisk fråga." },
+      { id: 17, term: "Rättsfrågorna", scenario: "Efter att ha lyssnat på Stinas och Kalles berättelse bestämmer juristen vilka juridiska problem situationen egentligen handlar om.", definition: "De juridiska frågor som en beskriven situation handlar om, steg två i den juridiska metoden." },
+      { id: 18, term: "Rekvisit", scenario: "För att en paragraf om misshandel ska kunna tillämpas måste vissa villkor, som att gärningen skett med uppsåt, vara uppfyllda.", definition: "Är villkor eller kriterier för att en paragraf ska vara tillämplig, exempelvis att en gärningsperson handlar med uppsåt." },
+      { id: 19, term: "Förarbeten", scenario: "Innan riksdagen stiftar en ny lag tas en mängd dokument fram som utreder behovet av lagen och hur den är tänkt att fungera.", definition: "Är olika dokument som är skrivna inför att en ny lag ska stiftas." },
+      { id: 20, term: "Domstolspraxis", scenario: "En jurist läser en samling tidigare avgöranden från domstolar för att förstå hur en viss rättsregel brukar tolkas i praktiken.", definition: "Är tidigare domstolsavgöranden som visar hur domstolen tolkat en viss rättsregel i en viss situation." },
+      { id: 21, term: "Prejudikat", scenario: "En enskild, särskilt vägledande dom från Högsta domstolen används som mall när ett liknande fall ska avgöras i framtiden.", definition: "En dom i ett tidigare fall som används som vägledning i senare bedömningar av mål eller ärenden." },
+      { id: 22, term: "Juridisk doktrin", scenario: "En jurist läser en forskares bok med teoretiska resonemang om hur en viss lagregel bör förstås.", definition: "Är juridisk speciallitteratur eller juridisk forskning." },
+      { id: 23, term: "Sedvänja", scenario: "Inom en viss bransch har parterna länge avtalat på ett visst sätt utan att det står nedskrivet någonstans, och detta bruk kan ändå ha juridisk betydelse.", definition: "En affärstradition anses vara en sedvänja om den är etablerad och har funnits länge." },
+      { id: 24, term: "Bodelning", scenario: "När ett gift par skiljer sig ska deras gemensamma hus, sommarstuga och bilar fördelas mellan dem.", definition: "Hur egendom ska fördelas mellan två makar vid en äktenskapsskillnad." },
+      { id: 25, term: "Betänketid", scenario: "Ett par med gemensamma barn under 16 år måste vänta i normalt sex månader innan tingsrätten kan besluta om deras skilsmässa.", definition: "Den tid, normalt sex månader, som föräldrar med gemensamma barn under 16 år måste ha innan tingsrätten kan besluta om äktenskapsskillnad." },
+      { id: 26, term: "Slutsatsen", scenario: "Efter att ha gått igenom alla steg i den juridiska metoden bestämmer juristen till slut vilken lösning som är juridiskt hållbar.", definition: "Steg fem i juridisk metod: att ta ställning och bestämma en juridiskt hållbar lösning." },
+      { id: 27, term: "Lagtolkning", scenario: "En jurist använder olika metoder, till exempel att läsa texten ordagrant eller fråga sig vad syftet är, för att förstå vad en paragraf egentligen betyder.", definition: "Tolkning av lagtext som kan ske med olika tolkningsmetoder." },
+      { id: 28, term: "Bokstavstolkning", scenario: "En jurist läser lagtexten ord för ord och frågar sig enbart exakt vad som står, utan att fundera över syftet bakom regeln.", definition: "Innebär att lagen tolkas ordagrant." },
+      { id: 29, term: "Teleologisk tolkning", scenario: "En jurist funderar över varför lagstiftaren en gång införde regeln och vad lagen är tänkt att uppnå i dagens samhälle.", definition: "Innebär att juristen ställer sig frågan vad syftet med lagen är." },
+      { id: 30, term: "E contrario-slut", scenario: "Av regeln att personer under 20 år inte får köpa alkohol på Systembolaget drar juristen slutsatsen att personer över 20 år får göra det.", definition: "Om det som står i lagtexten är förbjudet så borde det som inte står i texten därmed vara tillåtet." }
+    ];
+
+    function makeOptions(currentItem, allData) {
+      const distractors = shuffleArray(allData.filter(d => d.id !== currentItem.id));
+      return shuffleArray([currentItem, ...distractors.slice(0, 3)]);
+    }
+
+    const nonExampleData = [
+      { id: 1, term: "Norm", correctSide: "A", correct: "Det förväntas att man håller upp dörren för den som kommer efter en, en oskriven regel om hur vi bör bete oss mot varandra.", trap: "En förare bötfälls för att ha kört mot rött ljus, enligt en regel nedskriven i trafikförordningen.", explanation: "Norm är en oskriven regel för beteende, utan bestämd sanktion. Att bötfällas enligt en nedskriven lag rör istället en rättsregel." },
+      { id: 2, term: "Sociala regler", correctSide: "B", correct: "Det anses passande att bära mörka kläder på en begravning, ett bruk som ingen straffas för att bryta mot.", trap: "De flesta tycker att man inte ska ljuga för sina närmaste, eftersom det påverkar hur andra ser på ens karaktär.", explanation: "Sociala regler handlar om vad som är brukligt i sociala sammanhang, som klädsel. Att inte ljuga rör istället en moralregel om hur vi ska agera i livet." },
+      { id: 3, term: "Moralregler", correctSide: "A", correct: "De flesta tycker att man inte ska vara otrogen mot sin partner, oavsett vad lagen säger.", trap: "Det är brukligt att skaka hand när man hälsar på någon i ett formellt sammanhang.", explanation: "Moralregler handlar om hur vi ska agera i livet, som trohet. Handskakning vid hälsning är istället en social regel om vad som är brukligt." },
+      { id: 4, term: "Etik", correctSide: "B", correct: "En person resonerar kring varför det är fel att bedra sin partner, det vill säga vilka argument som ligger bakom moraluppfattningen.", trap: "En advokatbyrå skriver ner konkreta handlingsregler för hur de anställda ska bete sig mot klienter.", explanation: "Etik handlar om argumenten bakom moralen i allmänhet. Konkreta handlingsregler kopplade till ett specifikt yrke är istället yrkesetik." },
+      { id: 5, term: "Yrkesetik", correctSide: "A", correct: "En advokatbyrå tar fram skriftliga handlingsregler för hur medarbetarna bör bete sig gentemot sina klienter.", trap: "En person funderar över varför det är fel att ljuga för sina vänner.", explanation: "Yrkesetik är handlingsregler kopplade till ett specifikt arbete. Allmänna resonemang kring moral i livet i stort är istället etik." },
+      { id: 6, term: "Rättsordningen", correctSide: "B", correct: "Alla de lagar och rättsregler som gäller i Sverige utgör tillsammans landets rättsordning.", trap: "En grupp vänner kommer överens om oskrivna regler för hur de ska bete sig mot varandra.", explanation: "Rättsordningen är statens nedskrivna rättsregler samlade. Oskrivna regler inom en mindre grupp är istället en norm, inte en del av rättsordningen." },
+      { id: 7, term: "Sambolagen", correctSide: "A", correct: "Ett ogift par som bott ihop länge separerar, och lagen från 1988 ska skydda den ekonomiskt svagare parten.", trap: "Ett gift par skiljer sig och deras gemensamma egendom ska fördelas enligt reglerna i äktenskapsbalken.", explanation: "Sambolagen gäller ogifta par som separerar. Fördelning av egendom mellan gifta makar regleras istället av äktenskapsbalkens regler om bodelning." },
+      { id: 8, term: "1734 års lag", correctSide: "B", correct: "Sverige fick sin första gemensamma, nedtecknade lag för hela riket på 1700-talet.", trap: "Sverige började samarbeta inom EU och påverkas därför av europeisk rätt.", explanation: "1734 års lag var den första nedtecknade, gemensamma lagen för Sverige. Påverkan från EU-rätten är en betydligt senare och separat utveckling." },
+      { id: 9, term: "Analogisk tillämpning", correctSide: "A", correct: "En regel om att korv och hamburgare inte får tas med på bussen tolkas som att liknande matvaror, som kebab, inte heller får tas med.", trap: "En regel om att alkohol inte får säljas till personer under 20 år tolkas som att den får säljas till alla som är 20 år eller äldre.", explanation: "Analogisk tillämpning innebär att en liknande regel tillämpas på en näraliggande situation. Att dra slutsatsen om motsatsen till vad som är förbjudet är istället ett e contrario-slut." },
+      { id: 10, term: "Rättsmedvetande", correctSide: "B", correct: "Ett rökförbud på restauranger anses legitimt eftersom de flesta icke-rökare tycker att det är rimligt, trots att rökarna motsätter sig det.", trap: "En domare dömer enbart utifrån vad som står i lagtexten, oavsett sin egen uppfattning om vad som är rätt.", explanation: "Rättsmedvetande handlar om den allmänna uppfattningen i samhället om rätt och fel. Att en domare enbart följer lagtexten är istället det rättspositiva tänkandet." },
+      { id: 11, term: "Det rättspositiva tänkandet", correctSide: "A", correct: "En domare dömer enbart utifrån gällande lagstiftning, oavsett sina egna uppfattningar om vad som är moraliskt rätt.", trap: "En lag ändras eftersom den allmänna uppfattningen i samhället om vad som är rätt och fel har förändrats över tid.", explanation: "Det rättspositiva tänkandet handlar om att domar enbart baseras på gällande lag. Att lagar förändras i takt med samhällets uppfattning rör istället rättsmedvetandet." },
+      { id: 12, term: "Rättspositivism", correctSide: "B", correct: "En lag betraktas som juridiskt gällande även om många tycker att den är orättvis, eftersom juridik hålls skild från moral.", trap: "En domstol vägrar döma enligt en lag eftersom domaren personligen anser att lagen är omoralisk.", explanation: "Rättspositivism innebär att en lag gäller oavsett moralisk bedömning. Att en domare struntar i lagen för att den anses omoralisk strider mot rättspositivismens grundtanke." },
+      { id: 13, term: "Bolagsjurist", correctSide: "A", correct: "En person är anställd på ett företag och arbetar internt med avtal och bolagsrättsliga frågor.", trap: "En person driver egen verksamhet och företräder olika klienter i domstol mot betalning.", explanation: "En bolagsjurist är anställd av och arbetar för ett specifikt företag. Att företräda olika klienter mot betalning kännetecknar istället en advokat." },
+      { id: 14, term: "Advokat", correctSide: "B", correct: "En person erbjuder juridiska tjänster till allmänheten och företräder klienter som rättegångsombud.", trap: "En person är anställd av ett bolag och arbetar enbart med det företagets bolagsrättsliga frågor.", explanation: "En advokat tillhandahåller juridiska tjänster till olika klienter. Att enbart arbeta för ett och samma företag kännetecknar istället en bolagsjurist." },
+      { id: 15, term: "Juridisk metod", correctSide: "A", correct: "En jurist går igenom flera fasta steg, från att läsa situationen till att fastställa en lösning, för att lösa ett juridiskt problem.", trap: "En jurist läser statistik och undersökningar om vad allmänheten tycker i en viss fråga.", explanation: "Juridisk metod är arbetssättet för att lösa juridiska problem steg för steg. Att undersöka allmänhetens åsikter hör istället samman med rättsmedvetandet." },
+      { id: 16, term: "Rättskällor", correctSide: "B", correct: "En jurist vänder sig till lagtext, förarbeten, tidigare domar, forskning och branschpraxis för att lösa en juridisk fråga.", trap: "En jurist går igenom de fem stegen i juridisk metod för att komma fram till en lösning.", explanation: "Rättskällorna är de källor juristen hämtar information från, som lagar och förarbeten. Att gå igenom arbetsmetodens steg är istället den juridiska metoden i sig." },
+      { id: 17, term: "Rättsfrågorna", correctSide: "A", correct: "Efter att ha lyssnat på ett par som ska skiljas bestämmer juristen vilka juridiska problem situationen egentligen handlar om.", trap: "Juristen bestämmer till slut vilken lösning som är juridiskt hållbar för paret som ska skiljas.", explanation: "Rättsfrågorna handlar om att identifiera vilka juridiska frågor situationen innehåller, steg två i metoden. Att bestämma den slutgiltiga lösningen är istället slutsatsen, steg fem." },
+      { id: 18, term: "Rekvisit", correctSide: "B", correct: "För att en paragraf om misshandel ska kunna tillämpas måste villkoret att gärningen skett med uppsåt vara uppfyllt.", trap: "En jurist läser tidigare domar från Högsta domstolen för att förstå hur en paragraf brukar tolkas.", explanation: "Rekvisit är de villkor som måste vara uppfyllda för att en paragraf ska gälla. Att läsa tidigare domar för vägledning är istället att använda domstolspraxis." },
+      { id: 19, term: "Förarbeten", correctSide: "A", correct: "Innan riksdagen stiftar en ny lag tas dokument fram som utreder behovet av lagen och hur den är tänkt att fungera.", trap: "En domstol dömer i ett mål med hjälp av hur liknande mål avgjorts av Högsta domstolen tidigare.", explanation: "Förarbeten är dokument som tas fram innan en lag stiftas. Att döma utifrån tidigare avgöranden är istället att använda domstolspraxis." },
+      { id: 20, term: "Domstolspraxis", correctSide: "B", correct: "En jurist läser en samling tidigare domstolsavgöranden för att förstå hur en viss rättsregel brukar tolkas.", trap: "En jurist läser de dokument som togs fram innan en lag stiftades för att förstå lagens syfte.", explanation: "Domstolspraxis är samlingen av tidigare avgöranden som visar hur en regel tolkats. Dokument som tas fram innan en lag stiftas är istället förarbeten." },
+      { id: 21, term: "Prejudikat", correctSide: "A", correct: "En särskild, vägledande dom från Högsta domstolen används som mall när liknande fall ska avgöras i framtiden.", trap: "En jurist läser en forskares bok med teoretiska resonemang om en viss lagregel.", explanation: "Ett prejudikat är en enskild vägledande dom som styr senare bedömningar. En forskares teoretiska resonemang är istället juridisk doktrin." },
+      { id: 22, term: "Juridisk doktrin", correctSide: "B", correct: "En jurist läser en forskares bok med teoretiska resonemang om hur en viss lagregel bör förstås.", trap: "En jurist läser en tidigare dom från Högsta domstolen som blivit vägledande för hur en regel ska tolkas.", explanation: "Juridisk doktrin är forskning och speciallitteratur. En vägledande dom är istället ett prejudikat." },
+      { id: 23, term: "Sedvänja", correctSide: "A", correct: "Inom en viss bransch har parterna länge avtalat på ett visst sätt utan att det står nedskrivet, och detta bruk kan ändå ha juridisk betydelse.", trap: "En domstol dömer i enlighet med de dokument som togs fram innan lagen stiftades.", explanation: "Sedvänja är ett etablerat, ej nedskrivet bruk inom till exempel en bransch. Att döma utifrån dokument som föregick lagen är istället att använda förarbeten." },
+      { id: 24, term: "Bodelning", correctSide: "B", correct: "När ett gift par skiljer sig ska deras gemensamma hus, sommarstuga och bilar fördelas mellan dem.", trap: "Ett gift par med gemensamma barn under 16 år måste vänta i sex månader innan tingsrätten kan besluta om skilsmässan.", explanation: "Bodelning handlar om hur egendomen ska fördelas mellan makarna. Väntetiden för föräldrar med små barn är istället betänketiden." },
+      { id: 25, term: "Betänketid", correctSide: "A", correct: "Ett par med gemensamma barn under 16 år måste vänta i normalt sex månader innan tingsrätten kan besluta om deras skilsmässa.", trap: "Ett skilt par kommer överens om hur deras gemensamma hus och bilar ska fördelas mellan dem.", explanation: "Betänketiden är den väntetid som krävs för föräldrar med små barn innan skilsmässan kan beslutas. Fördelningen av egendom är istället bodelningen." },
+      { id: 26, term: "Slutsatsen", correctSide: "B", correct: "Efter att ha gått igenom alla steg i den juridiska metoden bestämmer juristen till slut vilken lösning som är juridiskt hållbar.", trap: "Juristen bestämmer i det andra steget vilka juridiska frågor en beskriven situation egentligen handlar om.", explanation: "Slutsatsen är det femte och sista steget i juridisk metod. Att bestämma vilka juridiska frågor situationen handlar om sker istället i steg två, rättsfrågorna." },
+      { id: 27, term: "Lagtolkning", correctSide: "A", correct: "En jurist använder olika metoder, som att läsa texten ordagrant eller fråga sig vad syftet är, för att förstå vad en paragraf betyder.", trap: "En jurist samlar in alla fakta och omständigheter kring ett fall innan hen påbörjar sin analys.", explanation: "Lagtolkning handlar om att tolka själva lagtexten med olika metoder. Att samla in fakta om fallet sker istället i ett tidigare steg av den juridiska metoden." },
+      { id: 28, term: "Bokstavstolkning", correctSide: "B", correct: "En jurist läser lagtexten ord för ord och frågar sig enbart exakt vad som står, utan att fundera över syftet.", trap: "En jurist funderar över vad lagstiftaren egentligen ville uppnå när lagen en gång stiftades.", explanation: "Bokstavstolkning innebär att läsa texten exakt som den står. Att fundera över lagstiftarens syfte är istället teleologisk tolkning." },
+      { id: 29, term: "Teleologisk tolkning", correctSide: "A", correct: "En jurist funderar över vad lagstiftaren egentligen ville uppnå med lagen, eller vilken funktion den fyller i dagens samhälle.", trap: "En jurist läser lagtexten ord för ord och bryr sig enbart om exakt vad som står skrivet.", explanation: "Teleologisk tolkning handlar om att undersöka lagens syfte. Att bara läsa texten exakt som den står är istället bokstavstolkning." },
+      { id: 30, term: "E contrario-slut", correctSide: "B", correct: "Av regeln att personer under 20 år inte får köpa alkohol på Systembolaget drar juristen slutsatsen att personer över 20 år får göra det.", trap: "En regel om att korv inte får tas med på bussen tolkas som att liknande matvaror, som kebab, heller inte får tas med.", explanation: "E contrario-slut innebär en motsatstolkning: det som inte är förbjudet är tillåtet. Att överföra en regel till liknande produkter är istället analogisk tillämpning." }
+    ].map(d => ({
+      ...d,
+      optionA: d.correctSide === "A" ? d.correct : d.trap,
+      optionB: d.correctSide === "B" ? d.correct : d.trap
+    }));
+
     function ListView() {
       const [query, setQuery] = useState('');
       const q = query.trim().toLowerCase();
@@ -251,6 +375,390 @@
       );
     }
 
+    function LucktextView() {
+      const [answers, setAnswers] = useState(() =>
+        lucktextItems.map(() => ({ value: '', status: 'unanswered', attempts: 0 }))
+      );
+
+      const correctCount = answers.filter(a => a.status === 'correct').length;
+      const doneCount = answers.filter(a => a.status === 'correct' || a.status === 'revealed').length;
+      const allDone = doneCount === lucktextItems.length;
+
+      const updateAnswer = (idx, patch) => {
+        setAnswers(prev => {
+          const next = [...prev];
+          next[idx] = { ...next[idx], ...patch };
+          return next;
+        });
+      };
+
+      const checkAnswer = (idx) => {
+        const item = lucktextItems[idx];
+        const state = answers[idx];
+        if (state.status === 'correct' || state.status === 'revealed') return;
+        if (isCorrectAnswer(state.value, item)) {
+          updateAnswer(idx, { status: 'correct' });
+        } else {
+          const attempts = state.attempts + 1;
+          updateAnswer(idx, { attempts, status: attempts >= 2 ? 'wrong' : 'warn' });
+        }
+      };
+
+      const rattaAlla = () => {
+        setAnswers(prev =>
+          prev.map((a, i) =>
+            a.status === 'correct' ? a : { ...a, status: 'revealed', value: lucktextItems[i].term }
+          )
+        );
+      };
+
+      const restart = () => {
+        setAnswers(lucktextItems.map(() => ({ value: '', status: 'unanswered', attempts: 0 })));
+      };
+
+      const gradeFeedback = (score, total) => {
+        const pct = score / total;
+        if (pct >= 0.9) return 'Utmärkt! Du är redo för provet! 🎉';
+        if (pct >= 0.7) return 'Bra jobbat! Nästan i mål.';
+        if (pct >= 0.5) return 'Godkänt, men öva gärna lite till.';
+        return 'Öva lite till på begreppen innan provet.';
+      };
+
+      return (
+        <div>
+          <p className="text-sm text-slate-500 mb-4 text-center">
+            Fyll i rätt begrepp i luckan och tryck Enter för att kolla ditt svar. Begrepp du klarat stryks över nedan.
+          </p>
+
+          <div className="bg-white rounded-2xl shadow-sm p-4 mb-8 border border-slate-200">
+            <p className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">Begreppsbank</p>
+            <div className="flex flex-wrap gap-2">
+              {lucktextItems.map((item, i) => {
+                const st = answers[i].status;
+                const done = st === 'correct' || st === 'revealed';
+                return (
+                  <span
+                    key={item.term}
+                    className={
+                      'px-3 py-1 rounded-full text-xs font-semibold border ' +
+                      (done
+                        ? st === 'correct'
+                          ? 'line-through text-green-600 bg-green-50 border-green-200'
+                          : 'line-through text-slate-400 bg-slate-100 border-slate-200'
+                        : 'text-slate-600 bg-slate-50 border-slate-200')
+                    }
+                  >
+                    {item.term}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+
+          {allDone && (
+            <div className="bg-white border-2 rounded-3xl p-8 text-center mb-8 shadow-sm" style={{ borderColor: P }}>
+              <p className="text-2xl font-bold text-slate-800 mb-2">{correctCount} / {lucktextItems.length} rätt</p>
+              <p className="text-slate-500 mb-6">{gradeFeedback(correctCount, lucktextItems.length)}</p>
+              <button onClick={restart} className="text-white px-8 py-3 rounded-2xl font-bold transition-colors" style={{ background: P }}>
+                Börja om
+              </button>
+            </div>
+          )}
+
+          {!allDone && (
+            <div className="flex justify-end mb-4">
+              <button onClick={rattaAlla} className="text-sm font-semibold text-slate-500 hover:text-slate-700 underline">
+                Rätta alla
+              </button>
+            </div>
+          )}
+
+          <div className="flex flex-col gap-4">
+            {lucktextItems.map((item, i) => {
+              const state = answers[i];
+              const [before, after] = item.sentence.split('___');
+              const locked = state.status === 'correct' || state.status === 'revealed';
+              const borderColor =
+                state.status === 'correct' ? '#16a34a'
+                : (state.status === 'revealed' || state.status === 'wrong') ? '#dc2626'
+                : '#e2e8f0';
+              const bg =
+                state.status === 'correct' ? '#dcfce7'
+                : (state.status === 'revealed' || state.status === 'wrong') ? '#fee2e2'
+                : '#ffffff';
+
+              return (
+                <div key={item.term} className="rounded-2xl p-5 shadow-sm border-2 transition-colors" style={{ borderColor, background: bg }}>
+                  <p className="text-slate-800 leading-relaxed mb-2">
+                    <span className="text-xs text-slate-400 font-bold mr-2">{i + 1}.</span>
+                    {before}
+                    <input
+                      type="text"
+                      value={state.value}
+                      disabled={locked}
+                      onChange={e => updateAnswer(i, { value: e.target.value })}
+                      onKeyDown={e => e.key === 'Enter' && checkAnswer(i)}
+                      className="inline-block mx-1 px-2 py-1 border-b-2 border-slate-300 focus:outline-none focus:border-slate-600 bg-transparent font-semibold text-slate-800 disabled:text-slate-600"
+                      style={{ borderColor: locked ? borderColor : undefined, minWidth: '140px' }}
+                      placeholder="skriv begrepp..."
+                    />
+                    {after}
+                  </p>
+
+                  {state.status === 'warn' && (
+                    <p className="text-orange-500 text-sm font-semibold mt-1">Är du säker att du stavat rätt? Försök igen.</p>
+                  )}
+                  {state.status === 'wrong' && (
+                    <p className="text-red-600 text-sm font-semibold mt-1">Fel svar. Försök igen eller tryck på "Rätta alla".</p>
+                  )}
+                  {locked && (
+                    <div className="mt-2 text-sm">
+                      <p className={state.status === 'correct' ? 'text-green-700 font-bold' : 'text-red-700 font-bold'}>
+                        {state.status === 'correct' ? 'Rätt: ' : 'Rätt svar: '}{item.term}
+                      </p>
+                      <p className="text-slate-600 mt-1">{item.explanation}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    function ScenarioView() {
+      const total = scenarioData.length;
+      const [items, setItems] = useState(() => shuffleArray([...scenarioData]));
+      const [idx, setIdx] = useState(0);
+      const [options, setOptions] = useState(() => makeOptions(items[0], scenarioData));
+      const [selected, setSelected] = useState(null);
+      const [score, setScore] = useState(0);
+      const [phase, setPhase] = useState('playing');
+
+      const current = items[idx];
+      const isAnswered = selected !== null;
+
+      const handleSelect = (opt) => {
+        if (isAnswered) return;
+        setSelected(opt);
+        if (opt.id === current.id) setScore(s => s + 1);
+      };
+
+      const handleNext = () => {
+        const nextIdx = idx + 1;
+        if (nextIdx >= total) {
+          setPhase('done');
+        } else {
+          setOptions(makeOptions(items[nextIdx], scenarioData));
+          setIdx(nextIdx);
+          setSelected(null);
+        }
+      };
+
+      const restart = () => {
+        const newItems = shuffleArray([...scenarioData]);
+        setItems(newItems);
+        setIdx(0);
+        setOptions(makeOptions(newItems[0], scenarioData));
+        setSelected(null);
+        setScore(0);
+        setPhase('playing');
+      };
+
+      if (phase === 'done') return (
+        <div className="flex flex-col items-center gap-6">
+          <div className="rounded-3xl p-8 text-center w-full max-w-sm" style={{ background: PLIGHT, border: `2px solid ${P}` }}>
+            <div className="text-5xl mb-4">🎯</div>
+            <p className="text-2xl font-bold mb-1" style={{ color: PDARK }}>{score} / {total} rätt</p>
+            <p className="text-slate-500 text-sm mb-6">
+              {score === total
+                ? 'Perfekt! Du kopplar ihop alla situationer rätt.'
+                : score >= Math.round(total * 0.8)
+                ? 'Bra jobbat! Öva lite till på de du missat.'
+                : 'Fortsätt öva – du lär dig!'}
+            </p>
+            <button onClick={restart} className="text-white font-bold px-8 py-3 rounded-2xl" style={{ background: P }}>
+              Börja om
+            </button>
+          </div>
+        </div>
+      );
+
+      return (
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-slate-400 font-medium">{idx + 1} av {total}</span>
+            <span className="text-xs font-bold px-3 py-1 rounded-full" style={{ background: PLIGHT, color: PDARK }}>
+              {score} rätt
+            </span>
+          </div>
+          <div className="w-full bg-slate-200 rounded-full h-1.5 mb-1">
+            <div className="h-1.5 rounded-full transition-all" style={{ width: `${(idx / total) * 100}%`, background: P }} />
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-sm p-5 border-l-4" style={{ borderLeftColor: P }}>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Vilket begrepp beskrivs?</p>
+            <p className="text-slate-800 text-base leading-relaxed">{current.scenario}</p>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            {options.map(opt => {
+              const isCorrect = opt.id === current.id;
+              const isSelected = selected && selected.id === opt.id;
+              let bg = '#ffffff', border = '#e2e8f0', textColor = '#1e293b';
+              if (isAnswered) {
+                if (isCorrect) { bg = '#dcfce7'; border = '#16a34a'; textColor = '#15803d'; }
+                else if (isSelected) { bg = '#fee2e2'; border = '#dc2626'; textColor = '#dc2626'; }
+              }
+              return (
+                <button
+                  key={opt.id}
+                  onClick={() => handleSelect(opt)}
+                  disabled={isAnswered}
+                  className="w-full text-left px-4 py-3 rounded-xl font-semibold text-sm transition-all border-2"
+                  style={{ background: bg, borderColor: border, color: textColor }}
+                >
+                  {opt.term}
+                </button>
+              );
+            })}
+          </div>
+
+          {isAnswered && (
+            <div
+              className="rounded-xl p-4 text-sm leading-relaxed"
+              style={selected.id === current.id ? { background: '#dcfce7', color: '#15803d' } : { background: '#fee2e2', color: '#dc2626' }}
+            >
+              {selected.id === current.id ? '✓ Rätt! ' : `✗ Rätt svar: ${current.term}. `}
+              {current.definition}
+            </div>
+          )}
+
+          {isAnswered && (
+            <button onClick={handleNext} className="w-full text-white font-bold py-3 rounded-2xl text-sm" style={{ background: P }}>
+              {idx + 1 >= total ? 'Se resultat' : 'Nästa →'}
+            </button>
+          )}
+        </div>
+      );
+    }
+
+    function NonExampleView() {
+      const total = nonExampleData.length;
+      const [items, setItems] = useState(() => shuffleArray([...nonExampleData]));
+      const [idx, setIdx] = useState(0);
+      const [selectedSide, setSelectedSide] = useState(null);
+      const [score, setScore] = useState(0);
+      const [phase, setPhase] = useState('playing');
+
+      const current = items[idx];
+      const isAnswered = selectedSide !== null;
+
+      const handleSelect = (side) => {
+        if (isAnswered) return;
+        setSelectedSide(side);
+        if (side === current.correctSide) setScore(s => s + 1);
+      };
+
+      const handleNext = () => {
+        const nextIdx = idx + 1;
+        if (nextIdx >= total) {
+          setPhase('done');
+        } else {
+          setIdx(nextIdx);
+          setSelectedSide(null);
+        }
+      };
+
+      const restart = () => {
+        setItems(shuffleArray([...nonExampleData]));
+        setIdx(0);
+        setSelectedSide(null);
+        setScore(0);
+        setPhase('playing');
+      };
+
+      if (phase === 'done') return (
+        <div className="flex flex-col items-center gap-6">
+          <div className="rounded-3xl p-8 text-center w-full max-w-sm" style={{ background: PLIGHT, border: `2px solid ${P}` }}>
+            <div className="text-5xl mb-4">🔍</div>
+            <p className="text-2xl font-bold mb-1" style={{ color: PDARK }}>{score} / {total} rätt</p>
+            <p className="text-slate-500 text-sm mb-6">
+              {score === total
+                ? 'Perfekt! Du ser skillnaden mellan rätt tillämpning och fällan varje gång.'
+                : score >= Math.round(total * 0.8)
+                ? 'Bra jobbat! Öva lite till på de begrepp du blandade ihop.'
+                : 'Fortsätt öva – vanliga missuppfattningar tar tid att lära sig se igenom.'}
+            </p>
+            <button onClick={restart} className="text-white font-bold px-8 py-3 rounded-2xl" style={{ background: P }}>
+              Börja om
+            </button>
+          </div>
+        </div>
+      );
+
+      return (
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-slate-400 font-medium">{idx + 1} av {total}</span>
+            <span className="text-xs font-bold px-3 py-1 rounded-full" style={{ background: PLIGHT, color: PDARK }}>
+              {score} rätt
+            </span>
+          </div>
+          <div className="w-full bg-slate-200 rounded-full h-1.5 mb-1">
+            <div className="h-1.5 rounded-full transition-all" style={{ width: `${(idx / total) * 100}%`, background: P }} />
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-sm p-5 border-l-4" style={{ borderLeftColor: P }}>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Vilket exempel visar rätt tillämpning av</p>
+            <p className="text-slate-800 text-xl font-bold">{current.term}?</p>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            {['A', 'B'].map(side => {
+              const text = side === 'A' ? current.optionA : current.optionB;
+              const isCorrect = side === current.correctSide;
+              const isSelected = selectedSide === side;
+              let bg = '#ffffff', border = '#e2e8f0', textColor = '#1e293b';
+              if (isAnswered) {
+                if (isCorrect) { bg = '#dcfce7'; border = '#16a34a'; textColor = '#15803d'; }
+                else if (isSelected) { bg = '#fee2e2'; border = '#dc2626'; textColor = '#dc2626'; }
+              }
+              return (
+                <button
+                  key={side}
+                  onClick={() => handleSelect(side)}
+                  disabled={isAnswered}
+                  className="w-full text-left px-4 py-3 rounded-xl font-medium text-sm transition-all border-2 flex gap-3"
+                  style={{ background: bg, borderColor: border, color: textColor }}
+                >
+                  <span className="font-bold flex-shrink-0">{side}.</span>
+                  <span>{text}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {isAnswered && (
+            <div
+              className="rounded-xl p-4 text-sm leading-relaxed"
+              style={selectedSide === current.correctSide ? { background: '#dcfce7', color: '#15803d' } : { background: '#fee2e2', color: '#dc2626' }}
+            >
+              {selectedSide === current.correctSide ? '✓ Rätt! ' : `✗ Fel — rätt svar var alternativ ${current.correctSide}. `}
+              {current.explanation}
+            </div>
+          )}
+
+          {isAnswered && (
+            <button onClick={handleNext} className="w-full text-white font-bold py-3 rounded-2xl text-sm" style={{ background: P }}>
+              {idx + 1 >= total ? 'Se resultat' : 'Nästa →'}
+            </button>
+          )}
+        </div>
+      );
+    }
+
     function App() {
       const [view, setView] = useState('list');
 
@@ -261,9 +769,9 @@
       const tabs = [
         ['list', 'Lista', true],
         ['flashcards', 'Flashcards', true],
-        ['lucktext', 'Lucktext', false],
-        ['scenario', 'Scenario', false],
-        ['icke', 'Icke-ex.', false]
+        ['lucktext', 'Lucktext', true],
+        ['scenario', 'Scenario', true],
+        ['icke', 'Icke-ex.', true]
       ];
 
       return (
@@ -294,6 +802,9 @@
           <main className="max-w-2xl mx-auto">
             {view === 'list' && <ListView />}
             {view === 'flashcards' && <FlashcardView />}
+            {view === 'lucktext' && <LucktextView />}
+            {view === 'scenario' && <ScenarioView />}
+            {view === 'icke' && <NonExampleView />}
           </main>
 
           <footer className="mt-12 text-center text-slate-400 text-sm italic pb-8">Källa: Rättsfilosofi och juridisk metod – begreppslista</footer>
