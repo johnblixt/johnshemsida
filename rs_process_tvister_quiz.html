@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Processrätt vid tvister – Quiz | Rätten och samhället</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0d9488;
+      --primary-light: #ccfbf1;
+      --primary-dark: #0f766e;
+      --correct-bg: #dcfce7;
+      --correct-border: #16a34a;
+      --correct-text: #16a34a;
+      --wrong-bg: #fee2e2;
+      --wrong-border: #dc2626;
+      --wrong-text: #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'EB Garamond', Georgia, serif; background: #fff1f2; min-height: 100vh; color: #000; }
+
+    a.back-btn {
+      display: inline-block; padding: 8px 16px; color: var(--primary);
+      text-decoration: none; font-size: 0.95rem; position: fixed;
+      top: 14px; left: 14px; z-index: 200; border-radius: 8px; transition: background 0.2s;
+    }
+    a.back-btn:hover { background: var(--primary-light); }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Start screen ── */
+    #screen-start { max-width: 560px; margin: 0 auto; padding: 90px 24px 40px; text-align: center; }
+    .badge {
+      display: inline-block; background: var(--primary-light); color: var(--primary-dark);
+      padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;
+      letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 20px;
+    }
+    #screen-start h1 {
+      font-size: 2.4rem; font-weight: 600; font-style: italic;
+      color: #000; margin-bottom: 8px;
+    }
+    #screen-start .subtitle { font-size: 1.05rem; color: #000; opacity: 0.65; margin-bottom: 32px; }
+    .info-cards { display: flex; gap: 12px; justify-content: center; margin-bottom: 36px; flex-wrap: wrap; }
+    .info-card {
+      background: white; border: 1px solid #fecdd3; border-radius: 12px;
+      padding: 16px 20px; text-align: center; flex: 1; min-width: 100px; max-width: 140px;
+    }
+    .info-card .num { font-size: 1.7rem; font-weight: 600; color: var(--primary); }
+    .info-card .lbl { font-size: 0.78rem; color: #000; opacity: 0.55; margin-top: 2px; }
+
+    /* ── Quiz screen ── */
+    #screen-quiz { max-width: 700px; margin: 0 auto; padding: 70px 20px 60px; }
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .timer {
+      background: white; border: 1px solid #fecdd3; border-radius: 20px;
+      padding: 5px 14px; font-size: 0.92rem; color: #000; font-variant-numeric: tabular-nums;
+    }
+    .score-pill {
+      background: var(--primary-light); color: var(--primary-dark);
+      border-radius: 20px; padding: 5px 14px; font-size: 0.92rem; font-weight: 600;
+    }
+    .progress-wrap { background: #fecdd3; border-radius: 4px; height: 6px; overflow: hidden; margin-bottom: 6px; }
+    .progress-bar { background: var(--primary); height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+    .q-counter { font-size: 0.82rem; color: #000; opacity: 0.55; text-align: right; margin-bottom: 22px; }
+    .type-badge {
+      display: inline-block; font-size: 0.72rem; text-transform: uppercase;
+      letter-spacing: 0.08em; padding: 2px 10px; border-radius: 20px; margin-bottom: 10px;
+    }
+    .type-badge.concept { background: #ede9fe; color: #6d28d9; }
+    .type-badge.scenario { background: #fef9c3; color: #854d0e; }
+    .q-text { font-size: 1.2rem; font-weight: 600; line-height: 1.55; color: #000; margin-bottom: 22px; white-space: pre-line; }
+    .opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+    .opt-btn {
+      background: white; border: 2px solid #fecdd3; border-radius: 12px;
+      padding: 13px 18px; text-align: left; font-size: 1rem; font-family: inherit;
+      color: #000; cursor: pointer; transition: border-color 0.15s, background 0.15s; line-height: 1.45;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--primary); background: var(--primary-light); }
+    .opt-btn:disabled { cursor: default; }
+    .opt-btn.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); font-weight: 600; }
+    .opt-btn.wrong   { background: var(--wrong-bg);   border-color: var(--wrong-border);   color: var(--wrong-text); }
+    .opt-btn.dimmed  { opacity: 0.4; }
+    .nav-row { display: flex; gap: 12px; align-items: center; }
+    .btn-back {
+      background: white; border: 2px solid #fecdd3; border-radius: 10px;
+      padding: 10px 20px; font-family: inherit; font-size: 0.9rem; color: #000; opacity: 0.7; cursor: pointer;
+    }
+    .btn-back:hover { border-color: var(--primary); opacity: 1; }
+    .btn-next {
+      background: var(--primary); border: none; border-radius: 10px;
+      padding: 10px 28px; font-family: inherit; font-size: 0.9rem; font-weight: 600;
+      color: white; cursor: pointer; margin-left: auto; transition: background 0.15s;
+    }
+    .btn-next:hover { background: var(--primary-dark); }
+
+    /* ── Modal ── */
+    #modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 500; padding: 20px;
+    }
+    #modal-overlay.hidden { display: none; }
+    .modal-box {
+      background: white; border-radius: 20px; padding: 32px;
+      max-width: 520px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .modal-icon  { font-size: 2.6rem; margin-bottom: 10px; }
+    .modal-verdict { font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; }
+    .modal-verdict.c { color: var(--correct-text); }
+    .modal-verdict.w { color: var(--wrong-text); }
+    .modal-expl { font-size: 0.98rem; color: #000; opacity: 0.8; line-height: 1.7; margin-bottom: 24px; }
+
+    /* ── Result screen ── */
+    #screen-result { max-width: 700px; margin: 0 auto; padding: 80px 20px 80px; }
+    .res-header { text-align: center; margin-bottom: 30px; }
+    .score-ring {
+      width: 120px; height: 120px; border-radius: 50%;
+      border: 5px solid var(--primary); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; margin: 0 auto 18px;
+    }
+    .score-ring .rnum { font-size: 2rem; font-weight: 600; color: var(--primary); line-height: 1; }
+    .score-ring .rlbl { font-size: 0.72rem; color: #000; opacity: 0.55; }
+    .res-title  { font-size: 1.8rem; font-weight: 600; font-style: italic; margin-bottom: 6px; color: #000; }
+    .res-msg    { font-size: 1rem; color: #000; opacity: 0.7; margin-bottom: 4px; }
+    .res-time   { font-size: 0.85rem; color: #000; opacity: 0.5; margin-bottom: 28px; }
+    .stats-row  { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+    .stat-box {
+      flex: 1; min-width: 80px; background: white; border: 1px solid #fecdd3;
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .stat-box .snum { font-size: 1.6rem; font-weight: 600; }
+    .stat-box .slbl { font-size: 0.75rem; color: #000; opacity: 0.55; margin-top: 2px; }
+    .stat-box.cs .snum { color: var(--correct-text); }
+    .stat-box.ws .snum { color: var(--wrong-text); }
+    .section-hd {
+      font-size: 1.05rem; font-weight: 600; color: #000;
+      margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #fecdd3;
+    }
+    .missed-section { margin-bottom: 32px; }
+    .missed-item {
+      background: var(--wrong-bg); border-left: 4px solid var(--wrong-border);
+      border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-size: 0.92rem;
+    }
+    .facit-item {
+      background: white; border: 1px solid #fecdd3; border-radius: 12px;
+      padding: 14px 16px; margin-bottom: 10px;
+    }
+    .facit-item.fc { border-left: 4px solid var(--correct-border); }
+    .facit-item.fw { border-left: 4px solid var(--wrong-border); }
+    .fi-num { font-size: 0.72rem; color: #000; opacity: 0.5; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .fi-q   { font-size: 0.93rem; font-weight: 600; color: #000; margin-bottom: 8px; line-height: 1.4; white-space: pre-line; }
+    .fi-row { font-size: 0.88rem; padding: 2px 0; }
+    .fi-row .lbl { color: #000; opacity: 0.55; }
+    .fi-row.ya-ok  { color: var(--correct-text); }
+    .fi-row.ya-bad { color: var(--wrong-text); }
+    .fi-row.ra     { color: var(--correct-text); font-weight: 600; margin-top: 2px; }
+
+    .btn-primary {
+      display: inline-block; background: var(--primary); color: white; border: none;
+      border-radius: 12px; padding: 13px 36px; font-size: 1.05rem; font-family: inherit;
+      font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s;
+    }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+    .btn-primary:active { transform: none; }
+
+    @media (max-width: 500px) {
+      #screen-start h1 { font-size: 1.85rem; }
+      .q-text { font-size: 1.05rem; }
+    }
+  </style>
+</head>
+<body>
+
+<a href="rs_process.html" class="back-btn" onclick="smartBack(event)">← Tillbaka till startsidan</a>
+
+<!-- ═══════════ START ═══════════ -->
+<div id="screen-start" class="screen active">
+  <div class="badge">Rätten och samhället · Processrätt vid tvister (del 2)</div>
+  <h1>Processrätt vid tvister</h1>
+  <p class="subtitle">Quiz med flervalsfrågor om tvistemålsprocessen, skiljeförfarande, Kronofogdemyndigheten och förvaltningsprocesser</p>
+  <div class="info-cards">
+    <div class="info-card"><div class="num">30</div><div class="lbl">Frågor</div></div>
+    <div class="info-card"><div class="num">24</div><div class="lbl">Begrepp</div></div>
+    <div class="info-card"><div class="num">6</div><div class="lbl">Scenario</div></div>
+  </div>
+  <button class="btn-primary" onclick="startQuiz()">Starta Quiz →</button>
+</div>
+
+<!-- ═══════════ QUIZ ═══════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-header">
+    <div class="timer" id="timer">⏱ 0:00</div>
+    <div class="score-pill" id="score-pill">Poäng: 0</div>
+  </div>
+  <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+  <div class="q-counter" id="q-counter">Fråga 1 av 30</div>
+  <div id="type-badge-wrap"></div>
+  <div class="q-text" id="q-text"></div>
+  <div class="opts" id="opts"></div>
+  <div class="nav-row">
+    <button class="btn-back" id="btn-back" onclick="goBack()" style="display:none">← Bakåt</button>
+    <button class="btn-next" id="btn-next" onclick="goNext()" style="display:none">Nästa →</button>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL ═══════════ -->
+<div id="modal-overlay" class="hidden">
+  <div class="modal-box">
+    <div class="modal-icon"  id="modal-icon"></div>
+    <div class="modal-verdict" id="modal-verdict"></div>
+    <div class="modal-expl"   id="modal-expl"></div>
+    <button class="btn-primary" onclick="closeModal()">Nästa fråga →</button>
+  </div>
+</div>
+
+<!-- ═══════════ RESULT ═══════════ -->
+<div id="screen-result" class="screen">
+  <div class="res-header">
+    <div class="score-ring">
+      <div class="rnum" id="r-score"></div>
+      <div class="rlbl">poäng</div>
+    </div>
+    <div class="res-title"  id="r-title"></div>
+    <div class="res-msg"    id="r-msg"></div>
+    <div class="res-time"   id="r-time"></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-box cs"><div class="snum" id="s-correct">0</div><div class="slbl">Rätt</div></div>
+    <div class="stat-box ws"><div class="snum" id="s-wrong">0</div><div class="slbl">Fel</div></div>
+    <div class="stat-box"><div class="snum" id="s-pct">0%</div><div class="slbl">Andel rätt</div></div>
+  </div>
+  <div class="missed-section" id="missed-section"></div>
+  <div class="section-hd">Fullständigt facit</div>
+  <div id="facit-list"></div>
+  <div style="text-align:center;margin-top:32px">
+    <button class="btn-primary" onclick="restartQuiz()">↺ Gör om quizet</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// TILLBAKA-NAVIGERING
+// ════════════════════════════════════════════════════════════
+function smartBack(e) {
+  if (e) e.preventDefault();
+  var ref = document.referrer;
+  if (ref) {
+    try {
+      if (new URL(ref).origin === window.location.origin) {
+        history.back();
+        return;
+      }
+    } catch (err) {}
+  }
+  window.location.href = 'rs_process.html';
+}
+
+// ════════════════════════════════════════════════════════════
+// QUESTION DATA  (23 begreppsfrågor + 7 scenariofrågor = 30)
+// Källor: processratt_vid_tvister_uppgifter.md
+// ("Kan du detta?" frågorna 1–23) och
+// processratt_vid_tvister_material.md
+// ════════════════════════════════════════════════════════════
+const QUESTIONS = [
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilka typer av tvistlösningsprocesser beskrivs i kapitlet?',
+    opts: [
+      'Civilprocesser (tvistemål) i allmän domstol, specialprocesser som skiljeförfarande utanför domstol, samt förvaltningsprocesser där en myndighet är motpart',
+      'Enbart civilprocesser i allmän domstol, eftersom skiljeförfarande och förvaltningsprocesser räknas som undergrupper till brottmålsprocessen',
+      'Brottmålsprocesser i tingsrätten enligt rättegångsbalken samt specialprocesser som enbart rör familjerättsliga tvister mellan makar',
+      'Förvaltningsprocesser hos myndigheter samt medling mellan privatpersoner, medan skiljeförfarande räknas som en form av förvaltningsprocess'
+    ],
+    correct: 0,
+    expl: 'Kapitlet beskriver civilprocesser (tvistemål) i allmän domstol, specialprocesser (till exempel skiljeförfarande) som framförallt företag använder utanför domstol, samt förvaltningsprocesser där en myndighet är motpart till en enskild eller ett företag.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad är ett "tvistemål"?',
+    opts: [
+      'Ett civilmål mellan enskilda parter i allmän domstol, till exempel om en betalning, där ena parten lämnat in en stämningsansökan mot den andra',
+      'Ett mål mellan staten och en privatperson som handläggs i en förvaltningsdomstol, till exempel efter att ett myndighetsbeslut om skatt eller bidrag överklagats',
+      'Ett ärende hos Kronofogdemyndigheten där sökanden begär betalningsföreläggande mot en privatperson som inte betalat en skuld i tid',
+      'Ett brottmål i tingsrätten där åklagaren väckt åtal mot en person som är misstänkt för att ha begått ett brott'
+    ],
+    correct: 0,
+    expl: 'Civilprocesser eller tvistemål är tvistlösning i domstol när två eller flera enskilda parter inte kan komma överens, exempelvis om en betalning. Ena parten lämnar in en stämningsansökan till tingsrätten, och den andra parten blir stämd.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Var i lagstiftningen finns bestämmelserna om handläggning av tvistemål i tingsrätten?',
+    opts: [
+      'I rättegångsbalken, där kapitel 10–18 handlar om rättegången i tvistemål och kapitel 42–44 och 50 om överklagande',
+      'I förvaltningsprocesslagen, som reglerar hur tvistemål ska handläggas vid landets tingsrätter och hovrätter',
+      'I lagen om skiljeförfarande, som anger hur tingsrätten ska handlägga civilrättsliga tvister mellan företag',
+      'I medlingslagen, som styr hur tvistemål ska förberedas innan en eventuell huvudförhandling hålls'
+    ],
+    correct: 0,
+    expl: 'I rättegångsbalken finns alla bestämmelser för rättegångar i tvistemål och brottmål. Kapitel 10–18 handlar om rättegången i tvistemål, och av kapitel 42–44 och 50 framgår att en tingsrättsdom i ett tvistemål kan överklagas till hovrätten.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilka områden ingår i familjerätten respektive förmögenhetsrätten?',
+    opts: [
+      'Familjerätten rör äktenskap, faderskap, vårdnad och arv, medan förmögenhetsrätten rör köp, avtal, fullmakter, lån, skuldebrev och pantsättning',
+      'Familjerätten rör enbart arv och testamente, medan förmögenhetsrätten rör vårdnad om barn samt äktenskapsskillnad mellan makar',
+      'Familjerätten rör köp och avtal mellan företag, medan förmögenhetsrätten rör äktenskap, faderskap och umgänge med barn',
+      'Familjerätten och förmögenhetsrätten rör båda enbart skattemål och tvister mellan enskilda och myndigheter i förvaltningsrätten'
+    ],
+    correct: 0,
+    expl: 'Förmögenhetsrätten reglerar ekonomiska rättigheter och skyldigheter om privat egendom, som köp, avtal, fullmakter, lån, skuldebrev och pantsättning. Familjerätten behandlar rättsförhållanden mellan personer med familjerelation, som äktenskap, faderskap, vårdnad och umgänge, samt arvsrätten.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad skiljer ett "mål" från ett "ärende" hos domstolen?',
+    opts: [
+      'Ett mål är vanligen en tvist mellan parter, medan ett ärende inte alltid är en tvist, till exempel en adoption eller ett konkursärende',
+      'Ett mål handläggs enbart av förvaltningsdomstolen, medan ett ärende enbart handläggs av allmän domstol i ett dispositivt tvistemål',
+      'Ett mål avser alltid ett brott som prövas i tingsrätten, medan ett ärende avser en civilrättslig tvist mellan två privatpersoner om pengar',
+      'Ett mål handlar alltid om skiljeförfarande utanför domstol, medan ett ärende i stället alltid avgörs genom en summarisk process'
+    ],
+    correct: 0,
+    expl: 'Domstolar delar in processerna i mål och ärenden. Ett mål är vanligen en tvist mellan två eller flera parter, förmögenhetsrättslig eller familjerättslig. Ett ärende behöver inte vara en tvist, utan kan handla om till exempel en adoption eller ett konkursärende.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad krävs för att ett tvistemål ska räknas som ett "förenklat tvistemål"?',
+    opts: [
+      'Att värdet av det som yrkas inte överstiger ett halvt prisbasbelopp, vilket innebär att endast en domare avgör målet',
+      'Att båda parter är privatpersoner och att tvisten rör en familjerättslig fråga som vårdnad eller umgänge med barn',
+      'Att parterna kommit överens om en skiljeklausul i sitt avtal och därför vill undvika en vanlig domstolsprocess',
+      'Att svaranden uteblir från huvudförhandlingen, vilket gör att tvisten avgörs genom en så kallad tredskodom'
+    ],
+    correct: 0,
+    expl: 'Om värdet av det som yrkas inte överstiger halva prisbasbeloppet ska endast en domare avgöra målet, i ett så kallat förenklat tvistemål, vilket tidigare kallades "småmål". Avgiften för en sådan stämning är 900 kronor.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad innebär officialprincipen?',
+    opts: [
+      'Att domstolarna inte får fatta beslut utan att först utreda ärendet, och att varje ärende som kommer in måste utredas',
+      'Att parterna själva ansvarar för att utreda ärendet, och att domstolen enbart dömer utifrån det parterna lagt fram',
+      'Att en dom vinner laga kraft automatiskt så snart tre veckor har gått utan att någon part överklagat',
+      'Att en förlikning alltid ska godkännas av domstolen innan parterna kan anses ha löst sin tvist'
+    ],
+    correct: 0,
+    expl: 'Officialprincipen innebär att domstolarna inte får fatta beslut utan att först utreda ärendet, och att varje ärende som kommer in måste utredas. Principen gäller särskilt i indispositiva mål, som vårdnadstvister, där barnets bästa ska vägleda beslutet.'
+  },
+  {
+    type: 'mc', subtype: 'scenario',
+    q: 'Ekberg Bygg AB har stämt en leverantör för avtalsbrott. Vilka steg ingår i en dispositiv tvistemålsprocess av det här slaget, i rätt ordning?',
+    opts: [
+      'Inledande åtgärder med stämningsansökan, förberedelse, eventuell huvudförhandling, dom och eventuellt överklagande',
+      'Förberedelse, stämningsansökan, förundersökning, huvudförhandling hos Kronofogdemyndigheten och slutligen dom i hovrätten',
+      'Anmälan till JO, utredning hos länsstyrelsen, huvudförhandling i förvaltningsrätten och slutligen ett bindande beslut',
+      'Skiljeklausul, utseende av skiljemän, skiljedom och slutligen stadfästelse av domstolen i en vanlig dom'
+    ],
+    correct: 0,
+    expl: 'Tvistemålsprocessen i dispositiva mål delas in i: inledande åtgärder (ansökan om stämning), förberedelse, huvudförhandling om parterna inte förlikat sig, domen samt eventuellt överklagande. Ekberg Bygg och leverantören valde dock att förlikas under förberedelsen.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad innebär begreppen "kärande" och "svarande" i ett tvistemål?',
+    opts: [
+      'Käranden är den som har ett krav på den andre, medan svaranden är den som krävs på något i tvistemålet',
+      'Käranden är den som lett en förundersökning, medan svaranden är den som blivit häktad i väntan på rättegång',
+      'Käranden är rättens ordförande i tingsrätten, medan svaranden är den advokat som företräder den tilltalade i målet',
+      'Käranden är den som avgör tvisten som skiljeman, medan svaranden är den som betalar skiljenämndens kostnader'
+    ],
+    correct: 0,
+    expl: 'I ett tvistemål kallas parterna för kärande och svarande. Käranden är den som har ett krav på den andre, det vill säga svaranden, och detta krav kallas käromål.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad betyder "käromål" respektive "svaromål"?',
+    opts: [
+      'Käromålet är kärandens krav i ett tvistemål, medan svaromålet är svarandens skriftliga bemötande av det kravet',
+      'Käromålet är svarandens sakinvändningar mot kravet, medan svaromålet är kärandens ursprungliga yrkande i stämningen',
+      'Käromålet är domstolens slutliga dom i tvistemålet, medan svaromålet är den grund som stödjer kärandens yrkande',
+      'Käromålet är ett beslut från Kronofogdemyndigheten, medan svaromålet är svarandens överklagande till hovrätten'
+    ],
+    correct: 0,
+    expl: 'Kärandens krav kallas käromål och lämnas in skriftligen till tingsrätten som en stämningsansökan. Efter att domstolen fått in svarandens skriftliga bemötande, svaromålet, skickas det till käranden som får bemöta det.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad är ett "yrkande" i en stämningsansökan?',
+    opts: [
+      'Det som käranden vill att stämningsansökan ska leda till i domstolen, till exempel att svaranden ska betala ett belopp',
+      'De omständigheter som stödjer kärandens krav, och som i stämningsansökan brukar kallas för rättsfakta och grund för yrkandet',
+      'Svarandens argument mot kärandens krav, formulerade som sakinvändningar och inlämnade till tingsrätten i ett separat svaromål',
+      'Domstolens sammanfattning av parternas inställning, som upprättas efter att den muntliga förberedelsen i målet har hållits'
+    ],
+    correct: 0,
+    expl: 'Yrkandet är vad käranden vill att den inlämnade stämningsansökan ska leda till i domstolen, som exempelvis att den svarande ska betala ett visst belopp till käranden.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad innebär "grund för yrkandet"?',
+    opts: [
+      'De omständigheter som stödjer yrkandet i ett tvistemål, och som kallas rättsfakta',
+      'Det belopp som svaranden till slut döms att betala enligt tingsrättens dom i målet',
+      'Den lag som domstolen tillämpar när den avgör ett tvistemål mellan kärande och svarande',
+      'Svarandens sakinvändningar mot kärandens krav, som läggs fram under huvudförhandlingen'
+    ],
+    correct: 0,
+    expl: 'Grunden för yrkandet är de omständigheter som stödjer yrkandet, och dessa omständigheter kallas för rättsfakta.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad är "rättsfakta"?',
+    opts: [
+      'De omständigheter som stödjer yrkandet i ett tvistemål, det vill säga grunden för kärandens krav',
+      'De juridiska fakta som en åklagare presenterar under sakframställningen i ett brottmål',
+      'De belopp som fastställs i en förlikning mellan käranden och svaranden i ett tvistemål',
+      'De regler i rättegångsbalken som styr hur en huvudförhandling i tvistemål ska genomföras'
+    ],
+    correct: 0,
+    expl: 'De omständigheter som stödjer yrkandet, det vill säga grunden för kravet, kallas för rättsfakta.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad är en "stämningsansökan"?',
+    opts: [
+      'Ett skriftligt käromål som lämnas in till tingsrätten och som består av ett yrkande och en grund för yrkandet',
+      'Ett muntligt krav som käranden i stället framför direkt vid huvudförhandlingen inför rättens ordförande och nämndemännen',
+      'Ett beslut som Kronofogdemyndigheten fattar efter en summarisk process mot en betalningsskyldig svarande i målet',
+      'Ett avtal mellan parterna om att i stället låta en skiljenämnd, och inte domstolen, avgöra deras tvist'
+    ],
+    correct: 0,
+    expl: 'En stämningsansökan är ett skriftligt käromål som lämnas in till tingsrätten. Den består av ett yrkande och en grund för yrkandet, och görs på en blankett (DV 161) från Sveriges Domstolar.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad innebär begreppet "tredskodom"?',
+    opts: [
+      'Att tvisten avgörs helt enligt kärandens yrkanden, till exempel för att svaranden inte infunnit sig till förhandlingen',
+      'Att tvisten avgörs helt enligt svarandens inställning, eftersom käranden återkallat sin talan innan huvudförhandlingen',
+      'Att domstolen avskriver målet eftersom båda parterna uteblivit från ett sammanträde under förberedelsen',
+      'Att parterna kommit överens om en förlikning som domstolen därefter stadfäster i en vanlig dom'
+    ],
+    correct: 0,
+    expl: 'Tredskodom innebär att tvisten avgörs helt enligt kärandens yrkanden. Det blir en tredskodom om svaranden, efter att ha blivit kallad, inte infinner sig till förhandlingen eller inte lämnar något svaromål.'
+  },
+  {
+    type: 'mc', subtype: 'scenario',
+    q: 'Vad händer om både kärande och svarande uteblir från ett sammanträde under förberedelsen i ett tvistemål?',
+    opts: [
+      'Målet avskrivs, eftersom ingen av parterna infunnit sig till det sammanträde som domstolen kallat till',
+      'Domstolen meddelar automatiskt en tredskodom till kärandens fördel, trots att käranden också uteblivit',
+      'Tvisten går i stället vidare som en summarisk process hos Kronofogdemyndigheten mellan parterna',
+      'Domstolen kallar in en skiljenämnd som i stället får avgöra tvisten mellan kärande och svarande'
+    ],
+    correct: 0,
+    expl: 'Om båda parter uteblir från ett sammanträde under förberedelsen avskrivs målet. Tredskodom är i stället aktuellt när enbart svaranden uteblir eller inte lämnar något svaromål.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad innebär "förlikning" i ett dispositivt tvistemål?',
+    opts: [
+      'Att parterna själva kommer överens om hur tvisten ska lösas, utan att en domare dömer i saken',
+      'Att domstolen utan parternas medgivande avgör tvisten enligt officialprincipen och meddelar en tredskodom',
+      'Att en skiljenämnd i stället för tingsrätten avgör tvisten mellan de två parterna i målet',
+      'Att käranden återkallar sin stämningsansökan och att målet därför avskrivs av tingsrätten'
+    ],
+    correct: 0,
+    expl: 'Förlikning innebär att parterna själva kommer överens utan att en domare dömer i saken. Förlikning är tillåten i dispositiva mål, som handlar om pengar och avtal, men inte i indispositiva mål.'
+  },
+  {
+    type: 'mc', subtype: 'scenario',
+    q: 'En biltillverkare och dess leverantör av växellådor har i avtalet kommit överens om att en eventuell tvist ska avgöras genom skiljemän. Vad innebär detta skiljeförfarande?',
+    opts: [
+      'En specialprocess utanför domstol där tvisten avgörs snabbt av skiljemän och där resultatet, till skillnad från en dom, inte är offentligt',
+      'En process i tingsrätten där domstolen själv utser skiljemän som ett tillägg till rättens ordförande under huvudförhandlingen',
+      'En förvaltningsprocess där staten, genom Kronofogdemyndigheten, i stället avgör tvisten mellan de två avtalsslutande företagen direkt',
+      'En medlingsprocess där en fristående tredje part hjälper de två företagen komma överens, utan att någon dom meddelas'
+    ],
+    correct: 0,
+    expl: 'Skiljeförfarande är en specialprocess som används när parterna vill slippa en vanlig domstolsprocess. En skiljedom går ofta fort att genomföra och resultatet är, till skillnad från en vanlig dom, inte offentligt.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad gör Kronofogdemyndigheten?',
+    opts: [
+      'Ser till att den som har rätt att få betalt också får det, bland annat genom summariska processer, och hanterar skuldsanering',
+      'Avgör civilrättsliga tvister mellan konsumenter och företag genom rekommendationer som säljaren normalt följer frivilligt, utan tvång',
+      'Prövar överklagade myndighetsbeslut, till exempel skattemål eller mål om tillstånd, som första instans i förvaltningsdomstolstrappan, alltså före kammarrätten',
+      'Utser skiljemän och en skiljenämndsordförande när två företag har en tvist enligt en inskriven skiljeklausul i avtalet'
+    ],
+    correct: 0,
+    expl: 'Kronofogdemyndigheten är en statlig myndighet som ser till att den som har rätt att få betalt också får det, till exempel genom en summarisk process. Myndigheten hanterar även ansökningar och beslut om skuldsanering.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilka processer berör i huvudsak myndighetsbeslut?',
+    opts: [
+      'Förvaltningsprocesser, som avgörs i förvaltningsdomstolar och kan gälla exempelvis skattemål eller mål om tillstånd',
+      'Civilprocesser, som avgörs i tingsrätten och kan gälla exempelvis en tvist om ett köpeavtal mellan privatpersoner',
+      'Specialprocesser, som avgörs av en skiljenämnd i stället för av en domstol enligt en skiljeklausul',
+      'Summariska processer, som avgörs av Kronofogdemyndigheten genom betalningsföreläggande eller handräckning'
+    ],
+    correct: 0,
+    expl: 'Förvaltningsprocesser behandlar i huvudsak tvister mellan enskilda personer eller företag och myndigheter, till exempel om att överklaga ett myndighetsbeslut om skatt eller ett bidrag.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilka slags mål handläggs i allmänna domstolar respektive i förvaltningsdomstolar?',
+    opts: [
+      'Allmänna domstolar handlägger tvistemål och brottmål, medan förvaltningsdomstolar handlägger tvister mellan staten och enskilda eller företag',
+      'Allmänna domstolar handlägger enbart brottmål, medan förvaltningsdomstolar handlägger både tvistemål och skattemål',
+      'Allmänna domstolar handlägger tvister mellan staten och enskilda, medan förvaltningsdomstolar handlägger tvistemål och brottmål',
+      'Allmänna domstolar och förvaltningsdomstolar handlägger båda enbart tvister mellan två privatpersoner eller företag'
+    ],
+    correct: 0,
+    expl: 'De allmänna domstolarna handlägger dels civilmål mellan enskilda ("tvistemål"), dels mål om brott och straff ("brottmål"). Förvaltningsdomstolarna handlägger mål med staten på ena sidan och en enskild person eller ett företag på den andra.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilken lag styr i huvudsak förvaltningsprocesser?',
+    opts: [
+      'Förvaltningsprocesslagen (1971:291)',
+      'Rättegångsbalken (1942:740)',
+      'Lagen om skiljeförfarande (1999:116)',
+      'Medlingslagen (2011:860)'
+    ],
+    correct: 0,
+    expl: 'Förvaltningsprocesser styrs av förvaltningsprocesslagen (1971:291), medan rättegångsbalken i stället styr tvistemål och brottmål i de allmänna domstolarna.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Hur är de allmänna förvaltningsdomstolarna uppbyggda, från första till sista instans?',
+    opts: [
+      'Förvaltningsrätt, kammarrätt och Högsta förvaltningsdomstolen',
+      'Tingsrätt, förvaltningsrätt och Högsta domstolen',
+      'Kammarrätt, förvaltningsrätt och Högsta förvaltningsdomstolen',
+      'Förvaltningsrätt, hovrätt och Högsta förvaltningsdomstolen'
+    ],
+    correct: 0,
+    expl: 'De allmänna förvaltningsdomstolarna är förvaltningsrätt (första instans), kammarrätt (andra och oftast sista instans) och Högsta förvaltningsdomstolen (tredje och sista instans, som framförallt skapar prejudikat).'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad gör Allmänna reklamationsnämnden (ARN)?',
+    opts: [
+      'Avgör tvister mellan konsumenter och företag snabbt och enkelt utanför domstol, genom rekommendationer som inte är tvingande',
+      'Avgör tvister mellan två företag genom en bindande skiljedom som inte går att överklaga till domstol',
+      'Prövar överklagade beslut från Skatteverket och andra myndigheter i första instans i stället för förvaltningsrätten',
+      'Utreder klagomål mot myndigheter på uppdrag av riksdagen och kan kritisera en myndighet i ett beslut'
+    ],
+    correct: 0,
+    expl: 'ARN är en myndighet som avgör tvister mellan konsumenter och företag snabbt och enkelt utanför domstol. Besluten är rekommendationer och inte tvingande, men de flesta företag följer dem ändå. Om företaget vägrar kan konsumenten gå vidare till domstol.'
+  },
+  {
+    type: 'mc', subtype: 'scenario',
+    q: 'I ett anställningsavtal finns en skiljenämndsklausul tillsammans med en konkurrensklausul. Vad innebär skiljenämndsklausulen?',
+    opts: [
+      'Att en eventuell tvist enligt avtalet ska lösas av en skiljenämnd i stället för av en allmän domstol',
+      'Att den anställde inte får ta anställning hos en konkurrent till den nuvarande arbetsgivaren',
+      'Att arbetsgivaren måste vända sig till Arbetsdomstolen om en tvist uppstår mellan parterna',
+      'Att tvisten i stället ska prövas av Allmänna reklamationsnämnden innan den går vidare till domstol'
+    ],
+    correct: 0,
+    expl: 'En skiljenämndsklausul anger att en tvist ska lösas av en skiljenämnd. Konkurrensklausulen, som ofta finns i samma avtal, innebär i stället att den anställde inte får ta anställning hos en konkurrent eller själv bedriva konkurrerande verksamhet.'
+  },
+  {
+    type: 'mc', subtype: 'scenario',
+    q: 'En man vars grilldispens aldrig besvarades av länsstyrelsen väljer att anmäla myndigheten till Justitieombudsmannen. Vad kan en JO-anmälan handla om?',
+    opts: [
+      'Att en privatperson är missnöjd med hur en myndighet hanterat ett ärende, till exempel genom bristande service eller långsam handläggning',
+      'Att en privatperson vill överklaga ett skattebeslut från Skatteverket till en högre instans inom Skatteverket',
+      'Att ett företag vill få en offentlig upphandling omprövad av den kommun som fattat upphandlingsbeslutet',
+      'Att en konsument vill ha ersättning av ett företag som sålt en vara som inte höll utlovad kvalitet'
+    ],
+    correct: 0,
+    expl: 'En JO-anmälan kan göras om en privatperson är missnöjd med hur en myndighet hanterat ett ärende, som i fallet med grillentusiasten vars dispensansökan varken besvarades eller hittades av länsstyrelsen.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad är skillnaden mellan dispositiva och indispositiva tvistemål?',
+    opts: [
+      'Dispositiva mål handlar om pengar och avtal där förlikning är tillåten, medan indispositiva mål handlar om familjerättsliga tvister där förlikning inte är tillåten',
+      'Dispositiva mål handlar om familjerättsliga tvister där förlikning inte är tillåten, medan indispositiva mål handlar om pengar och avtal där förlikning är tillåten',
+      'Dispositiva mål avgörs alltid av en skiljenämnd, medan indispositiva mål alltid avgörs av allmän domstol enligt rättegångsbalken',
+      'Dispositiva mål rör tvister med en myndighet som motpart, medan indispositiva mål rör tvister mellan två privatpersoner'
+    ],
+    correct: 0,
+    expl: 'Dispositiva mål handlar om pengar och avtal, och där är förlikning tillåten. Indispositiva mål handlar om familjerättsliga tvister, som vårdnad om barn, och där är förlikning inte tillåten — i stället styrs handläggningen av officialprincipen.'
+  },
+  {
+    type: 'mc', subtype: 'scenario',
+    q: 'Hyresvärden till Sara, som är uppsagd men inte flyttar ut, vänder sig till Kronofogdemyndigheten för att få hjälp. Vilka typer av summariska processer finns hos myndigheten?',
+    opts: [
+      'Betalningsföreläggande för penningfordringar, vanlig handräckning för annat än betalning samt särskild handräckning vid egendom som tagits utan lov',
+      'Stämningsansökan, svaromål samt tredskodom, som är de tre stegen i en summarisk process hos Kronofogdemyndigheten',
+      'Förlikning, medling och skiljedom, som Kronofogdemyndigheten kan besluta om i stället för en vanlig domstolsprocess',
+      'Anmälan, utredning och beslut, vilket är de tre stegen som gäller när en myndighet överklagar ett annat myndighetsbeslut'
+    ],
+    correct: 0,
+    expl: 'En summarisk process kan vara ett betalningsföreläggande (den sökande vill ha betalt), en vanlig handräckning (som avhysning av en hyresgäst) eller en särskild handräckning (vid egendom som någon tagit utan lov, till exempel efter en skilsmässa).'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilka typer av mål är typiska för förvaltningsrätten?',
+    opts: [
+      'Bland annat skattemål, socialförsäkringsmål, LVU-mål och laglighetsprövning enligt kommunallagen',
+      'Bland annat tvistemål om avtalsbrott, familjerättsliga vårdnadstvister och mål om skiljeförfarande',
+      'Bland annat brottmål om grov brottslighet samt mål om häktning och anhållande av misstänkta',
+      'Bland annat mål om varumärkesintrång, patent och vilseledande marknadsföring mellan två företag'
+    ],
+    correct: 0,
+    expl: 'Typiska mål i förvaltningsrätten är bland annat skattemål (beslut från Skatteverket), socialförsäkringsmål (tvister med Försäkringskassan), LVU-mål (tvångsvård av unga) och laglighetsprövning enligt kommunallagen, av kommunala eller regionala beslut.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilka specialdomstolar finns utöver de allmänna domstolarna och förvaltningsdomstolarna?',
+    opts: [
+      'Bland annat Patent- och marknadsdomstolarna, Arbetsdomstolen, Mark- och miljödomstolarna samt Migrationsdomstolarna',
+      'Bland annat förvaltningsrätten, kammarrätten och Högsta förvaltningsdomstolen, som prövar mål mot myndigheter',
+      'Bland annat tingsrätten, hovrätten och Högsta domstolen, som prövar civilmål och brottmål i tre instanser',
+      'Bland annat Kronofogdemyndigheten och Allmänna reklamationsnämnden, som avgör tvister utanför domstol'
+    ],
+    correct: 0,
+    expl: 'Utöver de allmänna domstolarna och förvaltningsdomstolarna finns specialdomstolar som Patent- och marknadsdomstolarna, Arbetsdomstolen (tvister mellan arbetsgivare och arbetstagare), Hyres- och arrendenämnden, Mark- och miljödomstolarna samt Migrationsdomstolarna.'
+  }
+];
+
+// ════════════════════════════════════════════════════════════
+// FISHER-YATES SHUFFLE
+// ════════════════════════════════════════════════════════════
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// ════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════
+let qs = [];        // shuffled questions with per-question state
+let cur = 0;        // current question index
+let score = 0;
+let elapsed = 0;
+let timerID = null;
+
+function buildState() {
+  const shuffled = shuffleArray([...QUESTIONS]);
+  qs = shuffled.map(q => {
+    const indices = q.opts.map((_, i) => i);
+    return {
+      ...q,
+      shuffledIdx: shuffleArray(indices),  // original option indices in display order
+      selectedDisplay: null,               // which display position was clicked
+      answered: false
+    };
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// SCREENS
+// ════════════════════════════════════════════════════════════
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ════════════════════════════════════════════════════════════
+// TIMER
+// ════════════════════════════════════════════════════════════
+function fmt(s) {
+  const m = Math.floor(s / 60);
+  const ss = String(s % 60).padStart(2, '0');
+  return `⏱ ${m}:${ss}`;
+}
+function startTimer() {
+  elapsed = 0;
+  timerID = setInterval(() => {
+    elapsed++;
+    document.getElementById('timer').textContent = fmt(elapsed);
+  }, 1000);
+}
+function stopTimer() {
+  clearInterval(timerID);
+}
+
+// ════════════════════════════════════════════════════════════
+// START
+// ════════════════════════════════════════════════════════════
+function startQuiz() {
+  buildState();
+  cur = 0;
+  score = 0;
+  show('screen-quiz');
+  startTimer();
+  render();
+}
+
+// ════════════════════════════════════════════════════════════
+// RENDER QUESTION
+// ════════════════════════════════════════════════════════════
+function render() {
+  const q = qs[cur];
+  const total = qs.length;
+
+  // Progress
+  document.getElementById('progress-bar').style.width = (cur / total * 100) + '%';
+  document.getElementById('q-counter').textContent = `Fråga ${cur + 1} av ${total}`;
+  document.getElementById('score-pill').textContent = `Poäng: ${score}`;
+
+  // Type badge
+  const badgeWrap = document.getElementById('type-badge-wrap');
+  badgeWrap.innerHTML = q.subtype === 'concept'
+    ? '<span class="type-badge concept">Begreppsfråga</span>'
+    : '<span class="type-badge scenario">Fördjupning</span>';
+
+  // Question text
+  document.getElementById('q-text').textContent = q.q;
+
+  // Options
+  const optsEl = document.getElementById('opts');
+  optsEl.innerHTML = '';
+  optsEl.className = 'opts';
+
+  q.shuffledIdx.forEach((origIdx, displayPos) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = q.opts[origIdx];
+    btn.disabled = q.answered;
+
+    if (q.answered) {
+      const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+      if (displayPos === correctDisplay) {
+        btn.classList.add('correct');
+      } else if (displayPos === q.selectedDisplay) {
+        btn.classList.add('wrong');
+      } else {
+        btn.classList.add('dimmed');
+      }
+    } else {
+      btn.addEventListener('click', () => handleAnswer(displayPos));
+    }
+
+    optsEl.appendChild(btn);
+  });
+
+  // Nav buttons
+  document.getElementById('btn-back').style.display = cur > 0 ? 'inline-block' : 'none';
+  document.getElementById('btn-next').style.display = q.answered ? 'inline-block' : 'none';
+  document.getElementById('btn-next').textContent =
+    cur === total - 1 ? 'Se resultat →' : 'Nästa →';
+}
+
+// ════════════════════════════════════════════════════════════
+// HANDLE ANSWER
+// ════════════════════════════════════════════════════════════
+function handleAnswer(displayPos) {
+  const q = qs[cur];
+  if (q.answered) return;
+
+  q.answered = true;
+  q.selectedDisplay = displayPos;
+
+  const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+  const isCorrect = displayPos === correctDisplay;
+  if (isCorrect) score++;
+
+  // Lock options immediately
+  const btns = document.querySelectorAll('.opt-btn');
+  btns.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === correctDisplay) btn.classList.add('correct');
+    else if (i === displayPos) btn.classList.add('wrong');
+    else btn.classList.add('dimmed');
+  });
+
+  // Show next button
+  document.getElementById('btn-next').style.display = 'inline-block';
+  document.getElementById('btn-next').textContent =
+    cur === qs.length - 1 ? 'Se resultat →' : 'Nästa →';
+  document.getElementById('score-pill').textContent = `Poäng: ${score}`;
+
+  // Modal after 600 ms
+  setTimeout(() => showModal(isCorrect, q.expl), 600);
+}
+
+// ════════════════════════════════════════════════════════════
+// MODAL
+// ════════════════════════════════════════════════════════════
+function showModal(isCorrect, expl) {
+  document.getElementById('modal-icon').textContent    = isCorrect ? '✅' : '❌';
+  document.getElementById('modal-verdict').textContent = isCorrect ? 'Rätt svar!' : 'Fel svar';
+  document.getElementById('modal-verdict').className   = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
+  document.getElementById('modal-expl').textContent    = expl;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  goNext();
+}
+
+// ════════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════════
+function goBack() {
+  if (cur > 0) { cur--; render(); }
+}
+
+function goNext() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  if (cur < qs.length - 1) {
+    cur++;
+    render();
+  } else {
+    showResults();
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// RESULTS
+// ════════════════════════════════════════════════════════════
+function showResults() {
+  stopTimer();
+  show('screen-result');
+
+  const total = qs.length;
+  const wrong = total - score;
+  const pct   = Math.round(score / total * 100);
+
+  document.getElementById('r-score').textContent = `${score}/${total}`;
+  document.getElementById('s-correct').textContent = score;
+  document.getElementById('s-wrong').textContent   = wrong;
+  document.getElementById('s-pct').textContent     = pct + '%';
+
+  const m = Math.floor(elapsed / 60);
+  const s = String(elapsed % 60).padStart(2, '0');
+  document.getElementById('r-time').textContent = `Tid: ${m}:${s}`;
+
+  let title, msg;
+  if (pct >= 90)      { title = '🏆 Utmärkt!';             msg = 'Du behärskar processrätten vid tvister på hög nivå.'; }
+  else if (pct >= 75) { title = '✅ Redo för provet!';      msg = 'Bra resultat – du har koll på det centrala.'; }
+  else if (pct >= 55) { title = '📖 Öva lite till';        msg = 'Du är på rätt spår men behöver repetera en del.'; }
+  else                { title = '💡 Fortsätt repetera';    msg = 'Gå igenom materialet och försök igen.'; }
+
+  document.getElementById('r-title').textContent = title;
+  document.getElementById('r-msg').textContent   = msg;
+
+  // Missed questions
+  const missedEl = document.getElementById('missed-section');
+  const missed = qs.filter(q => q.answered && q.shuffledIdx.indexOf(q.correct) !== q.selectedDisplay);
+  if (missed.length > 0) {
+    missedEl.innerHTML = `<div class="section-hd">Missade frågor (${missed.length})</div>`;
+    missed.forEach(q => {
+      const div = document.createElement('div');
+      div.className = 'missed-item';
+      div.textContent = q.q;
+      missedEl.appendChild(div);
+    });
+  } else {
+    missedEl.innerHTML = '';
+  }
+
+  // Full facit
+  const facitEl = document.getElementById('facit-list');
+  facitEl.innerHTML = '';
+  qs.forEach((q, i) => {
+    const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+    const isCorrect = q.answered && q.selectedDisplay === correctDisplay;
+    const notAnswered = !q.answered;
+
+    const div = document.createElement('div');
+    div.className = 'facit-item ' + (notAnswered ? '' : isCorrect ? 'fc' : 'fw');
+
+    const correctOptText = q.opts[q.correct];
+    const selectedOptText = q.answered
+      ? q.opts[q.shuffledIdx[q.selectedDisplay]]
+      : null;
+
+    let inner = `<div class="fi-num">Fråga ${i + 1}</div>`;
+    inner += `<div class="fi-q">${q.q}</div>`;
+
+    if (notAnswered) {
+      inner += `<div class="fi-row"><span class="lbl">Ditt svar: </span>— (inte besvarad)</div>`;
+      inner += `<div class="fi-row ra"><span class="lbl">Rätt svar: </span>${correctOptText}</div>`;
+    } else if (isCorrect) {
+      inner += `<div class="fi-row ya-ok">✓ <span class="lbl">Ditt svar: </span>${selectedOptText}</div>`;
+    } else {
+      inner += `<div class="fi-row ya-bad">✗ <span class="lbl">Ditt svar: </span>${selectedOptText}</div>`;
+      inner += `<div class="fi-row ra"><span class="lbl">Rätt svar: </span>${correctOptText}</div>`;
+    }
+
+    div.innerHTML = inner;
+    facitEl.appendChild(div);
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// RESTART
+// ════════════════════════════════════════════════════════════
+function restartQuiz() {
+  stopTimer();
+  show('screen-start');
+}
+</script>
+</body>
+</html>
