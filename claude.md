@@ -91,6 +91,25 @@ När du skapar eller modifierar ett quiz, följ dessa regler utan undantag:
 - Ska inte vara uppenbart fel (inga absurda alternativ)
 - Ska representera vanliga **missförstånd** inom ämnet
 
+### Regler för svarsalternativ i quiz
+
+- Alla fyra alternativ i en flervalsfråga ska vara ungefär lika långa
+  (räknat i antal ord/tecken). Om det korrekta svaret naturligt blir
+  längre än distraktorerna, förläng distraktorerna med jämförbar
+  detaljnivå istället för att korta ner det rätta svaret.
+- Det korrekta alternativet får INTE vara systematiskt längre, mer
+  detaljerat, eller mer "komplett" formulerat än de tre felaktiga.
+  Distraktorerna ska vara lika specifika och använda samma typ av
+  terminologi som det rätta svaret.
+- Variera vilken position (A/B/C/D) det rätta svaret hamnar på — inte
+  bara genom Fisher-Yates-shuffle av ordningen, utan säkerställ även
+  vid genereringen att inget annat mönster (längd, meningsbyggnad,
+  användning av fackterm) läcker vilket alternativ som är rätt.
+- Efter att frågorna genererats: gör en självgranskning där du jämför
+  ordlängden på rätt svar mot de tre distraktorerna för varje fråga.
+  Om skillnaden är påtaglig (t.ex. rätt svar är dubbelt så långt),
+  skriv om de korta distraktorerna innan filen sparas.
+
 ### Blandning – förhindra mekanisk inlärning
 - **Frågorna** ska blandas i slumpmässig ordning varje gång
 - **Svarsalternativen** ska blandas i slumpmässig ordning varje gång
