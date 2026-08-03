@@ -61,6 +61,112 @@ const concepts = [
   { term: "Högsta förvaltningsdomstolen", definition: "Är den tredje och sista instansen i förvaltningsdomstolstrappan." }
 ];
 
+const lucktextData = [
+  { pre: "Tvister mellan framförallt företag som hanteras utanför den vanliga domstolsprocessen kallas ", post: ".", answers: ["specialprocesser"] },
+  { pre: "Den specialprocess som används när parterna vill slippa en vanlig domstolsprocess kallas ett ", post: ".", answers: ["skiljeförfarande"] },
+  { pre: "Den process som behandlar tvister mellan enskilda personer eller företag och myndigheter kallas en ", post: ".", answers: ["förvaltningsprocess"] },
+  { pre: "Det rättsområde som reglerar ekonomiska rättigheter och skyldigheter om privat egendom mellan två eller flera personer eller företag kallas ", post: ".", answers: ["förmögenhetsrätten"] },
+  { pre: "Det rättsområde som behandlar rättsförhållanden mellan personer som har en familjerelation kallas ", post: ".", answers: ["familjerätt", "familjerätten"] },
+  { pre: "Den del av familjerätten som reglerar arv och testamente kallas ", post: ".", answers: ["arvsrätten"] },
+  { pre: "En tvist mellan två eller flera parter som prövas i domstol kallas ett ", post: ".", answers: ["mål"] },
+  { pre: "Ett domstolsärende som inte behöver vara en tvist, utan till exempel kan röra förvaltarskap eller bouppteckning, kallas ett ", post: ".", answers: ["ärende"] },
+  { pre: "Mål som handlar om pengar och avtal, där parterna får förlikas, kallas ", post: ".", answers: ["dispositiva mål"] },
+  { pre: "När parterna i en tvist själva kommer överens utan att en domare dömer i saken kallas det en ", post: ".", answers: ["förlikning"] },
+  { pre: "Mål som handlar om familjerättsliga tvister, och där förlikning inte är tillåten, kallas ", post: ".", answers: ["indispositiva mål"] },
+  { pre: "Principen som innebär att domstolen alltid måste utreda ett ärende innan den fattar sitt beslut kallas ", post: ".", answers: ["officialprincipen"] },
+  { pre: "Den part som har ett krav på motparten i ett tvistemål kallas ", post: ".", answers: ["kärande", "käranden"] },
+  { pre: "Den part som krävs på något i ett tvistemål kallas ", post: ".", answers: ["svarande", "svaranden"] },
+  { pre: "Kärandens krav i ett tvistemål kallas ett ", post: ".", answers: ["käromål"] },
+  { pre: "Det skriftliga käromål som lämnas in till tingsrätten för att inleda ett tvistemål kallas en ", post: ".", answers: ["stämningsansökan"] },
+  { pre: "Det som käranden vill att den inlämnade stämningsansökan ska leda till kallas ett ", post: ".", answers: ["yrkande"] },
+  { pre: "De omständigheter som stödjer och förklarar varför käranden har rätt till det hen begär kallas ", post: ".", answers: ["grund för yrkandet"] },
+  { pre: "När tvisten avgörs helt enligt kärandens yrkanden, till exempel för att svaranden inte svarat i tid, kallas avgörandet en ", post: ".", answers: ["tredskodom"] },
+  { pre: "Ett tvistemål där värdet av det som yrkas inte överstiger ett halvt prisbasbelopp kallas ett ", post: ".", answers: ["förenklat tvistemål"] },
+  { pre: "När en tvist avgörs i en skiljenämnd i stället för i en allmän domstol kallas avgörandet en ", post: ".", answers: ["skiljedom"] },
+  { pre: "Den person, oftast en advokat, som dömer i ett skiljeförfarande kallas en ", post: ".", answers: ["skiljeman"] },
+  { pre: "En tvistlösningsprocess där två eller flera parter frivilligt försöker lösa en tvist med hjälp av en utomstående person kallas ", post: ".", answers: ["medling"] },
+  { pre: "Den statliga myndighet som ser till att den som har rätt att få betalt också får det, och som även hanterar skuldsanering, heter ", post: ".", answers: ["kronofogdemyndigheten", "kronofogden"] },
+  { pre: "Ett förenklat förfarande hos Kronofogdemyndigheten, där beslutet är lika mycket värt som en dom från domstol, kallas en ", post: ".", answers: ["summarisk process"] },
+  { pre: "När den sökande hos Kronofogdemyndigheten vill ha betalt för en penningfordran kallas ansökan ett ", post: ".", answers: ["betalningsföreläggande"] },
+  { pre: "När den sökande hos Kronofogdemyndigheten önskar något annat än betalning kallas ansökan ", post: ".", answers: ["vanlig handräckning"] },
+  { pre: "Den domstol som dömer i mål som främst rör tvister mellan enskilda och myndigheter, och som är första instans i förvaltningsdomstolstrappan, heter ", post: ".", answers: ["förvaltningsrätten"] },
+  { pre: "Den andra, och vanligtvis sista, instansen i förvaltningsdomstolstrappan heter ", post: ".", answers: ["kammarrätten"] },
+  { pre: "Den tredje och sista instansen i förvaltningsdomstolstrappan heter ", post: ".", answers: ["högsta förvaltningsdomstolen", "hfd"] }
+];
+
+const scenarioData = [
+  { scenario: "En lärare berättar om en hel kategori av tvistlösningsmetoder som framförallt företag använder i stället för att vända sig till en vanlig domstol.", distractors: ["Skiljeförfarande", "Medling", "Förvaltningsprocess"] },
+  { scenario: "Två företag som har en tvist kommer överens om att låta en privat nämnd avgöra saken i stället för att gå till tingsrätten.", distractors: ["Specialprocesser", "Medling", "Skiljedom"] },
+  { scenario: "En person överklagar ett beslut som en myndighet fattat om hens sjukersättning.", distractors: ["Förmögenhetsrätten", "Dispositiva mål", "Officialprincipen"] },
+  { scenario: "En lärare beskriver det rättsområde som styr vem som äger en viss egendom och vilka ekonomiska skyldigheter parter i ett avtal har mot varandra.", distractors: ["Familjerätt", "Arvsrätten", "Förvaltningsprocess"] },
+  { scenario: "En jurist arbetar med regler som styr förhållandet mellan makar och mellan föräldrar och barn.", distractors: ["Förmögenhetsrätten", "Arvsrätten", "Indispositiva mål"] },
+  { scenario: "En familj tvistar om hur en avliden anhörigs sista vilja ska tolkas och hur kvarlåtenskapen ska fördelas.", distractors: ["Familjerätt", "Förmögenhetsrätten", "Indispositiva mål"] },
+  { scenario: "Domstolen sammanträder för att avgöra en tvist mellan två parter som inte kommit överens.", distractors: ["Ärende", "Käromål", "Dispositiva mål"] },
+  { scenario: "Tingsrätten hanterar en fråga om vem som ska utses till förvaltare för en person, utan att det finns någon motpart som tvistar.", distractors: ["Mål", "Käromål", "Indispositiva mål"] },
+  { scenario: "En domare konstaterar att det aktuella målet handlar om pengar och avtal, vilket gör att parterna får lov att komma överens på egen hand om de vill.", distractors: ["Indispositiva mål", "Förlikning", "Ärende"] },
+  { scenario: "Parterna i en tvist om ett avtalsbrott kommer själva överens om en lösning, utan att någon domare behöver döma i saken.", distractors: ["Dispositiva mål", "Medling", "Tredskodom"] },
+  { scenario: "En domstol prövar en tvist om vårdnaden av ett barn, ett mål där parterna inte får lov att komma överens på egen hand.", distractors: ["Dispositiva mål", "Familjerätt", "Ärende"] },
+  { scenario: "En domstol kan inte fatta beslut i ett ärende förrän den själv sett till att ärendet blivit ordentligt utrett.", distractors: ["Förvaltningsprocess", "Ärende", "Förlikning"] },
+  { scenario: "I ett tvistemål är det denna part som anser sig ha ett krav på motparten och som inlett processen.", distractors: ["Svarande", "Käromål", "Stämningsansökan"] },
+  { scenario: "I ett tvistemål är det denna part som blir krävd på något av motparten.", distractors: ["Kärande", "Käromål", "Tredskodom"] },
+  { scenario: "Det samlade krav som riktas mot motparten i tvistemålet, bestående av både vad som begärs och varför, kallas detta.", distractors: ["Kärande", "Yrkande", "Stämningsansökan"] },
+  { scenario: "En part lämnar in en skriftlig handling till tingsrätten för att formellt inleda ett tvistemål.", distractors: ["Käromål", "Yrkande", "Tredskodom"] },
+  { scenario: "I den inlämnade handlingen skriver käranden konkret vad hen vill att domstolen ska besluta, till exempel att svaranden ska betala 50 000 kronor.", distractors: ["Käromål", "Grund för yrkandet", "Kärande"] },
+  { scenario: "Käranden förklarar i sin handling varför hen har rätt till det hen begär, till exempel att svaranden inte betalat en faktura i tid.", distractors: ["Yrkande", "Käromål", "Officialprincipen"] },
+  { scenario: "Svaranden dyker inte upp till förhandlingen eller svarar inte i tid, och domstolen avgör därför tvisten helt enligt kärandens krav.", distractors: ["Skiljedom", "Förenklat tvistemål", "Förlikning"] },
+  { scenario: "En tvist där det som begärs inte är värt mer än ett halvt prisbasbelopp handläggs enligt särskilda, enklare regler i tingsrätten.", distractors: ["Summarisk process", "Dispositiva mål", "Vanlig handräckning"] },
+  { scenario: "En privat nämnd, i stället för en allmän domstol, meddelar sitt avgörande i tvisten mellan två företag.", distractors: ["Tredskodom", "Skiljeförfarande", "Förlikning"] },
+  { scenario: "Den person, ofta med bakgrund som advokat, som avgör tvisten inom ramen för en privat nämndprocess.", distractors: ["Skiljedom", "Skiljeförfarande", "Kärande"] },
+  { scenario: "Parterna i en tvist försöker frivilligt lösa sin konflikt med hjälp av en utomstående person som hjälper dem hitta en lösning, utan att själv döma i saken.", distractors: ["Förlikning", "Skiljeförfarande", "Officialprincipen"] },
+  { scenario: "En statlig myndighet hjälper till att driva in skulder åt den som har rätt att få betalt, och hanterar även skuldsanering.", distractors: ["Summarisk process", "Betalningsföreläggande", "Förvaltningsrätten"] },
+  { scenario: "Ett förenklat förfarande hos en myndighet leder fram till ett beslut som är lika mycket värt som en dom från domstol.", distractors: ["Betalningsföreläggande", "Vanlig handräckning", "Förenklat tvistemål"] },
+  { scenario: "Ett företag som inte fått betalt för en faktura ansöker hos en myndighet om hjälp att driva in pengarna.", distractors: ["Vanlig handräckning", "Summarisk process", "Tredskodom"] },
+  { scenario: "En hyresvärd ansöker hos en myndighet om hjälp att få en person utan rätt att bo kvar att flytta ut, utan att det handlar om pengar.", distractors: ["Betalningsföreläggande", "Summarisk process", "Förenklat tvistemål"] },
+  { scenario: "En person som fått avslag på sin ansökan om sjukersättning vänder sig till den domstol som är första instans för den typen av tvister mellan enskilda och myndigheter.", distractors: ["Kammarrätten", "Högsta förvaltningsdomstolen", "Förvaltningsprocess"] },
+  { scenario: "Ett beslut från en lägre förvaltningsdomstol överklagas till den domstol som är andra instans, och som oftast är den sista instansen i den typen av mål.", distractors: ["Förvaltningsrätten", "Högsta förvaltningsdomstolen", "Förvaltningsprocess"] },
+  { scenario: "Ett mål tas upp till prövning i den tredje och sista instansen bland förvaltningsdomstolarna, ofta för att avgörandet ska ge vägledning för liknande fall.", distractors: ["Kammarrätten", "Förvaltningsrätten", "Skiljedom"] }
+];
+
+const ickeData = [
+  { optionA: "En kategori av tvistlösningsmetoder, exempelvis skiljeförfarande, som framförallt företag använder för att lösa tvister utanför domstol.", optionB: "Den ordinarie process som sker i tingsrätten när ett vanligt tvistemål avgörs genom dom.", correct: 'A', explanation: "Specialprocesser är samlingsnamnet för tvistlösning utanför den vanliga domstolsprocessen. Alternativ B beskriver istället den vanliga domstolsprocessen." },
+  { optionA: "Två parter i en tvist bestämmer sig för att lösa sin tvist i domstol enligt de vanliga reglerna i rättegångsbalken.", optionB: "Två företag som har en tvist kommer överens om att låta en privat nämnd, i stället för en allmän domstol, avgöra tvisten.", correct: 'B', explanation: "Skiljeförfarande innebär att tvisten avgörs av en privat skiljenämnd i stället för allmän domstol. Alternativ A beskriver istället en vanlig domstolsprocess." },
+  { optionA: "En tvist mellan två privatpersoner om vem som äger en viss bil.", optionB: "En tvist mellan en enskild person och en myndighet om ett beslut myndigheten fattat.", correct: 'B', explanation: "Förvaltningsprocessen gäller tvister mellan enskilda och myndigheter. Alternativ A beskriver istället en tvist mellan två privatpersoner, som hör till de allmänna domstolarna." },
+  { optionA: "Det rättsområde som reglerar vem som äger viss egendom och vilka ekonomiska skyldigheter parter i ett avtal har mot varandra.", optionB: "Det rättsområde som reglerar rättsförhållanden mellan makar och mellan föräldrar och barn.", correct: 'A', explanation: "Förmögenhetsrätten handlar om ekonomiska rättigheter och egendom. Alternativ B beskriver istället familjerätten." },
+  { optionA: "Regler om ekonomiska rättigheter och skyldigheter kring privat egendom mellan företag.", optionB: "Regler som styr rättsförhållanden mellan personer som har en familjerelation, till exempel makar.", correct: 'B', explanation: "Familjerätten gäller relationer inom familjen. Alternativ A beskriver istället förmögenhetsrätten." },
+  { optionA: "Den del av familjerätten som reglerar hur arv och testamente ska hanteras efter ett dödsfall.", optionB: "Den del av förmögenhetsrätten som reglerar avtal mellan företag.", correct: 'A', explanation: "Arvsrätten är en del av familjerätten och rör arv och testamente. Alternativ B beskriver istället ett förmögenhetsrättsligt förhållande." },
+  { optionA: "Ett domstolsärende som vanligen handlar om en tvist mellan två eller flera parter.", optionB: "Ett domstolsärende som inte innebär någon tvist, till exempel en fråga om förvaltarskap.", correct: 'A', explanation: "Ett mål är vanligen en tvist mellan parter. Alternativ B beskriver istället ett ärende." },
+  { optionA: "En fråga hos tingsrätten som handlar om en tvist mellan två parter som inte kommit överens.", optionB: "En fråga hos tingsrätten som inte behöver vara en tvist, till exempel om förvaltarskap eller bouppteckning.", correct: 'B', explanation: "Ett ärende behöver inte innehålla någon tvist. Alternativ A beskriver istället ett mål." },
+  { optionA: "Ett mål om pengar och avtal, där parterna får förlikas om de vill.", optionB: "Ett mål om vårdnaden av ett barn, där parterna inte får förlikas.", correct: 'A', explanation: "Dispositiva mål tillåter förlikning och handlar ofta om pengar och avtal. Alternativ B beskriver istället ett indispositivt mål." },
+  { optionA: "En privat nämnd avgör tvisten i stället för att den prövas i allmän domstol.", optionB: "Parterna i en tvist kommer själva överens om en lösning, utan att domstolen dömer i saken.", correct: 'B', explanation: "Förlikning innebär att parterna själva kommer överens. Alternativ A beskriver istället ett skiljeförfarande." },
+  { optionA: "Ett mål om ett obetalt lån mellan två företag, där parterna får komma överens sinsemellan.", optionB: "Ett mål om vårdnaden av ett barn, där förlikning inte är tillåten.", correct: 'B', explanation: "Indispositiva mål, som familjerättsliga tvister, tillåter inte förlikning. Alternativ A beskriver istället ett dispositivt mål." },
+  { optionA: "Domstolen måste själv se till att ett ärende blir ordentligt utrett innan den fattar sitt beslut.", optionB: "Parterna i en tvist får själva komma överens om en lösning utan inblandning av domstolen.", correct: 'A', explanation: "Officialprincipen innebär att domstolen ansvarar för att ärendet utreds. Alternativ B beskriver istället förlikning." },
+  { optionA: "Den part i ett tvistemål som anser sig ha ett krav på motparten och som inlett processen.", optionB: "Den part i ett tvistemål som blir krävd på något av motparten.", correct: 'A', explanation: "Käranden är den som riktar ett krav mot motparten. Alternativ B beskriver istället svaranden." },
+  { optionA: "Den part i ett tvistemål som riktar ett krav mot motparten.", optionB: "Den part i ett tvistemål som krävs på något av motparten.", correct: 'B', explanation: "Svaranden är den som krävs på något. Alternativ A beskriver istället käranden." },
+  { optionA: "Kärandens samlade krav mot svaranden i ett tvistemål – både vad som begärs och varför.", optionB: "Den skriftliga handling som lämnas in till tingsrätten för att formellt inleda tvistemålet.", correct: 'A', explanation: "Käromålet är själva innehållet i kravet. Alternativ B beskriver istället stämningsansökan, den handling käromålet framförs i." },
+  { optionA: "Kärandens krav mot svaranden, alltså vad käranden vill uppnå och varför.", optionB: "Den skriftliga handling som käranden lämnar in till tingsrätten för att formellt inleda tvistemålet.", correct: 'B', explanation: "Stämningsansökan är den skriftliga handlingen som inleder målet. Alternativ A beskriver istället käromålet, som är innehållet i handlingen." },
+  { optionA: "Det konkreta som käranden vill att domstolen ska besluta, till exempel att svaranden ska betala ett visst belopp.", optionB: "De omständigheter som förklarar varför käranden har rätt till det hen begär.", correct: 'A', explanation: "Yrkandet är vad käranden vill uppnå. Alternativ B beskriver istället grunden för yrkandet." },
+  { optionA: "Det käranden konkret vill att domstolen ska besluta, till exempel ett visst belopp.", optionB: "De omständigheter som förklarar varför käranden har rätt till det hen begär.", correct: 'B', explanation: "Grunden är förklaringen bakom kravet. Alternativ A beskriver istället yrkandet." },
+  { optionA: "Domstolen avgör tvisten helt enligt kärandens yrkanden, till exempel för att svaranden inte svarat i tid.", optionB: "En privat skiljenämnd avgör tvisten mellan två parter i stället för en allmän domstol.", correct: 'A', explanation: "Tredskodom innebär att målet avgörs enligt kärandens yrkanden när svaranden uteblir. Alternativ B beskriver istället en skiljedom." },
+  { optionA: "Ett tvistemål som handläggs enligt vanliga regler oavsett hur högt värdet på det som yrkas är.", optionB: "Ett tvistemål som handläggs enligt särskilda, enklare regler eftersom värdet av det som yrkas inte överstiger ett halvt prisbasbelopp.", correct: 'B', explanation: "Förenklat tvistemål gäller vid lägre värden och enklare handläggning. Alternativ A beskriver istället ett vanligt tvistemål utan den begränsningen." },
+  { optionA: "Det avgörande en skiljenämnd meddelar i en tvist, i stället för att tvisten prövas i allmän domstol.", optionB: "Den process där parterna väljer att låta en privat nämnd pröva sin tvist, i stället för att gå till allmän domstol.", correct: 'A', explanation: "Skiljedomen är själva avgörandet från nämnden. Alternativ B beskriver istället skiljeförfarandet, processen som leder fram till avgörandet." },
+  { optionA: "Det avgörande en skiljenämnd meddelar i en tvist mellan två parter.", optionB: "Den person, oftast med bakgrund som advokat, som avgör tvisten i ett skiljeförfarande.", correct: 'B', explanation: "Skiljemannen är personen som dömer. Alternativ A beskriver istället skiljedomen, avgörandet i sig." },
+  { optionA: "Parterna i en tvist försöker frivilligt lösa konflikten med hjälp av en utomstående medlare, utan att medlaren själv dömer i saken.", optionB: "Parterna i en tvist kommer helt på egen hand överens om en lösning, utan inblandning av någon utomstående person.", correct: 'A', explanation: "Medling innebär hjälp av en utomstående medlare. Alternativ B beskriver istället förlikning, som sker helt mellan parterna själva." },
+  { optionA: "Den statliga myndighet som ser till att den som har rätt att få betalt också får det, och som även hanterar skuldsanering.", optionB: "Den domstol som är första instans för tvister mellan enskilda personer och myndigheter.", correct: 'A', explanation: "Kronofogdemyndigheten driver in skulder och hanterar skuldsanering. Alternativ B beskriver istället förvaltningsrätten." },
+  { optionA: "Ett tvistemål i tingsrätten som handläggs enligt särskilda, enklare regler eftersom värdet är lågt.", optionB: "Ett förenklat förfarande hos Kronofogdemyndigheten där beslutet är lika mycket värt som en dom från domstol.", correct: 'B', explanation: "Summarisk process sker hos Kronofogdemyndigheten. Alternativ A beskriver istället ett förenklat tvistemål i tingsrätten." },
+  { optionA: "En ansökan hos Kronofogdemyndigheten där den sökande vill ha betalt för en penningfordran.", optionB: "En ansökan hos Kronofogdemyndigheten där den sökande önskar något annat än betalning.", correct: 'A', explanation: "Betalningsföreläggande handlar om att kräva betalning. Alternativ B beskriver istället vanlig handräckning." },
+  { optionA: "En ansökan hos Kronofogdemyndigheten där den sökande vill ha betalt för en penningfordran.", optionB: "En ansökan hos Kronofogdemyndigheten där den sökande önskar något annat än betalning, till exempel att någon ska flytta.", correct: 'B', explanation: "Vanlig handräckning gäller andra krav än betalning. Alternativ A beskriver istället betalningsföreläggande." },
+  { optionA: "Den domstol som är andra, och vanligtvis sista, instansen i förvaltningsdomstolstrappan.", optionB: "Den domstol som dömer i mål mellan enskilda och myndigheter, och som är första instans i förvaltningsdomstolstrappan.", correct: 'B', explanation: "Förvaltningsrätten är första instans. Alternativ A beskriver istället kammarrätten." },
+  { optionA: "Den domstol som är andra, och vanligtvis sista, instansen i förvaltningsdomstolstrappan.", optionB: "Den domstol som är tredje och sista instansen i förvaltningsdomstolstrappan.", correct: 'A', explanation: "Kammarrätten är andra instans och oftast sista. Alternativ B beskriver istället Högsta förvaltningsdomstolen." },
+  { optionA: "Den domstol som är andra, och vanligtvis sista, instansen i förvaltningsdomstolstrappan.", optionB: "Den domstol som är tredje och sista instansen i förvaltningsdomstolstrappan.", correct: 'B', explanation: "Högsta förvaltningsdomstolen är sista instans. Alternativ A beskriver istället kammarrätten." }
+];
+
+function gradeText(pct) {
+  if (pct >= 90) return "Utmärkt! Redo för provet!";
+  if (pct >= 70) return "Bra jobbat! Nästan redo.";
+  if (pct >= 50) return "På god väg, men öva lite till.";
+  return "Öva mer på begreppen innan provet.";
+}
+
 function shuffleArray(array) {
   const arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -94,9 +200,9 @@ function ViewToggle({ view, setView }) {
   const views = [
     { key: "lista", label: "Lista", active: true },
     { key: "flashcards", label: "Flashcards", active: true },
-    { key: "lucktext", label: "Lucktext", active: false },
-    { key: "scenario", label: "Scenario", active: false },
-    { key: "ickeex", label: "Icke-ex.", active: false }
+    { key: "lucktext", label: "Lucktext", active: true },
+    { key: "scenario", label: "Scenario", active: true },
+    { key: "ickeex", label: "Icke-ex.", active: true }
   ];
   return (
     <div className="flex justify-center flex-wrap gap-2 my-6">
@@ -346,6 +452,323 @@ function FlashcardView() {
   );
 }
 
+function LucktextView() {
+  const initial = () => concepts.map(() => ({ value: "", status: "idle", attempts: 0 }));
+  const [items, setItems] = useState(initial);
+
+  const setValue = (i, value) => {
+    setItems((prev) => {
+      const next = [...prev];
+      next[i] = { ...next[i], value };
+      return next;
+    });
+  };
+
+  const submit = (i) => {
+    setItems((prev) => {
+      const item = prev[i];
+      if (item.status === "correct" || item.status === "revealed") return prev;
+      const norm = item.value.trim().toLowerCase();
+      const ok = lucktextData[i].answers.includes(norm);
+      const next = [...prev];
+      if (ok) {
+        next[i] = { ...item, status: "correct" };
+      } else {
+        const attempts = item.attempts + 1;
+        next[i] = { ...item, attempts, status: attempts >= 2 ? "wrong2" : "wrong1" };
+      }
+      return next;
+    });
+  };
+
+  const correctAll = () => {
+    setItems((prev) => prev.map((item) => (item.status === "correct" ? item : { ...item, status: "revealed" })));
+  };
+
+  const restart = () => setItems(initial());
+
+  const score = items.filter((it) => it.status === "correct").length;
+  const total = concepts.length;
+  const allDone = items.every((it) => it.status === "correct" || it.status === "revealed");
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 pb-16">
+      <div className="bg-white rounded-2xl border-2 border-slate-200 p-4 mb-6">
+        <p className="text-sm font-bold text-slate-500 uppercase tracking-wide mb-3">Begreppsbank</p>
+        <div className="flex flex-wrap gap-2">
+          {concepts.map((c, i) => {
+            const done = items[i].status === "correct" || items[i].status === "revealed";
+            return (
+              <span
+                key={i}
+                className={
+                  "text-xs px-3 py-1 rounded-full border " +
+                  (done ? "line-through text-slate-300 border-slate-200 bg-slate-50" : "text-slate-700 border-slate-300 bg-white")
+                }
+              >
+                {c.term}
+              </span>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-sm font-bold text-slate-500">{score} / {total} rätt</p>
+        <div className="flex gap-2">
+          <button onClick={correctAll} className="text-xs font-bold px-4 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-colors">
+            Rätta alla
+          </button>
+          <button onClick={restart} className="text-xs font-bold px-4 py-2 rounded-xl border-2 border-slate-300 text-slate-600 hover:bg-slate-100 transition-colors">
+            Börja om
+          </button>
+        </div>
+      </div>
+
+      {allDone && (
+        <div className="bg-white border-2 rounded-3xl p-6 text-center mb-6" style={{ borderColor: PRIMARY }}>
+          <p className="text-2xl font-bold mb-1" style={{ color: "#115e59" }}>{score} / {total} rätt</p>
+          <p className="text-slate-600">{gradeText((score / total) * 100)}</p>
+        </div>
+      )}
+
+      <div className="grid gap-4">
+        {lucktextData.map((data, i) => {
+          const item = items[i];
+          const locked = item.status === "correct" || item.status === "revealed";
+          const borderClass =
+            item.status === "correct" ? "border-green-500" :
+            item.status === "revealed" ? "border-red-400" :
+            item.status === "wrong2" ? "border-red-300" :
+            item.status === "wrong1" ? "border-orange-300" :
+            "border-slate-200";
+          return (
+            <div key={i} className={`bg-white p-5 rounded-2xl border-2 ${borderClass}`}>
+              <p className="leading-relaxed">
+                <span className="text-slate-400 font-bold mr-1">{i + 1}.</span>
+                {data.pre}
+                <input
+                  type="text"
+                  value={item.value}
+                  disabled={locked}
+                  onChange={(e) => setValue(i, e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") submit(i); }}
+                  className={`inline-block mx-1 px-2 py-1 border-b-2 focus:outline-none w-40 text-center ${locked ? "bg-slate-50" : "bg-white"}`}
+                  style={{ borderColor: item.status === "correct" ? "#16a34a" : item.status === "revealed" ? "#dc2626" : PRIMARY }}
+                />
+                {data.post}
+              </p>
+              {item.status === "wrong1" && <p className="text-orange-500 text-sm font-bold mt-2">Är du säker att du stavat rätt?</p>}
+              {item.status === "wrong2" && <p className="text-red-600 text-sm font-bold mt-2">Fel. Kontrollera stavningen och försök igen.</p>}
+              {item.status === "correct" && <p className="text-green-700 text-sm mt-2">✓ Rätt! {concepts[i].definition}</p>}
+              {item.status === "revealed" && <p className="text-red-600 text-sm mt-2">Rätt svar: <strong>{concepts[i].term}</strong>. {concepts[i].definition}</p>}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function ScenarioView() {
+  const total = scenarioData.length;
+  const buildOrder = () => shuffleArray(scenarioData.map((_, i) => i));
+  const [order, setOrder] = useState(buildOrder);
+  const [qIdx, setQIdx] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [phase, setPhase] = useState("playing");
+
+  const dataIdx = order[qIdx];
+  const q = scenarioData[dataIdx];
+  const concept = concepts[dataIdx];
+  const options = useMemo(() => shuffleArray([concept.term, ...q.distractors]), [dataIdx]);
+
+  const choose = (opt) => {
+    if (selected !== null) return;
+    setSelected(opt);
+    if (opt === concept.term) setScore((s) => s + 1);
+  };
+
+  const next = () => {
+    if (qIdx + 1 >= total) {
+      setPhase("done");
+    } else {
+      setQIdx(qIdx + 1);
+      setSelected(null);
+    }
+  };
+
+  const restart = () => {
+    setOrder(buildOrder());
+    setQIdx(0);
+    setSelected(null);
+    setScore(0);
+    setPhase("playing");
+  };
+
+  if (phase === "done") {
+    const pct = (score / total) * 100;
+    return (
+      <div className="max-w-2xl mx-auto px-4 pb-16">
+        <div className="bg-white border-2 rounded-3xl p-8 text-center" style={{ borderColor: PRIMARY }}>
+          <p className="text-3xl font-bold mb-2" style={{ color: "#115e59" }}>{score} / {total} rätt</p>
+          <p className="text-slate-600 mb-6">{gradeText(pct)}</p>
+          <button onClick={restart} style={{ background: PRIMARY }} className="text-white px-8 py-3 rounded-2xl font-bold">
+            Gör om
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 pb-16">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-sm font-bold text-slate-500">Fråga {qIdx + 1} av {total}</p>
+        <p className="text-sm font-bold text-slate-500">Poäng: {score}</p>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+        <div className="h-2 rounded-full transition-all" style={{ width: `${(qIdx / total) * 100}%`, background: PRIMARY }}></div>
+      </div>
+
+      <div className="bg-white p-6 rounded-2xl border-2 border-slate-200 mb-5">
+        <p className="text-lg leading-relaxed">{q.scenario}</p>
+      </div>
+
+      <div className="grid gap-3">
+        {options.map((opt, i) => {
+          const isCorrect = opt === concept.term;
+          const isSelected = selected === opt;
+          let cls = "bg-white border-2 border-slate-200 hover:border-slate-300";
+          if (selected !== null) {
+            if (isCorrect) cls = "bg-green-50 border-2 border-green-500 text-green-800";
+            else if (isSelected) cls = "bg-red-50 border-2 border-red-500 text-red-800";
+            else cls = "bg-white border-2 border-slate-100 text-slate-400";
+          }
+          return (
+            <button key={i} onClick={() => choose(opt)} disabled={selected !== null} className={`text-left px-5 py-3 rounded-2xl font-medium transition-colors ${cls}`}>
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+
+      {selected !== null && (
+        <div className="mt-5 bg-slate-50 border-2 border-slate-200 rounded-2xl p-4">
+          <p className="text-slate-700">{concept.definition}</p>
+          <button onClick={next} style={{ background: PRIMARY }} className="mt-4 text-white px-6 py-2 rounded-xl font-bold">
+            {qIdx + 1 >= total ? "Se resultat" : "Nästa →"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function IckeExView() {
+  const total = ickeData.length;
+  const buildOrder = () => shuffleArray(ickeData.map((_, i) => i));
+  const [order, setOrder] = useState(buildOrder);
+  const [qIdx, setQIdx] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [phase, setPhase] = useState("playing");
+
+  const dataIdx = order[qIdx];
+  const q = ickeData[dataIdx];
+  const concept = concepts[dataIdx];
+
+  const choose = (letter) => {
+    if (selected !== null) return;
+    setSelected(letter);
+    if (letter === q.correct) setScore((s) => s + 1);
+  };
+
+  const next = () => {
+    if (qIdx + 1 >= total) {
+      setPhase("done");
+    } else {
+      setQIdx(qIdx + 1);
+      setSelected(null);
+    }
+  };
+
+  const restart = () => {
+    setOrder(buildOrder());
+    setQIdx(0);
+    setSelected(null);
+    setScore(0);
+    setPhase("playing");
+  };
+
+  if (phase === "done") {
+    const pct = (score / total) * 100;
+    return (
+      <div className="max-w-2xl mx-auto px-4 pb-16">
+        <div className="bg-white border-2 rounded-3xl p-8 text-center" style={{ borderColor: PRIMARY }}>
+          <p className="text-3xl font-bold mb-2" style={{ color: "#115e59" }}>{score} / {total} rätt</p>
+          <p className="text-slate-600 mb-6">{gradeText(pct)}</p>
+          <button onClick={restart} style={{ background: PRIMARY }} className="text-white px-8 py-3 rounded-2xl font-bold">
+            Börja om
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const options = [
+    { letter: "A", text: q.optionA },
+    { letter: "B", text: q.optionB }
+  ];
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 pb-16">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-sm font-bold text-slate-500">Fråga {qIdx + 1} av {total}</p>
+        <p className="text-sm font-bold text-slate-500">Poäng: {score}</p>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+        <div className="h-2 rounded-full transition-all" style={{ width: `${(qIdx / total) * 100}%`, background: PRIMARY }}></div>
+      </div>
+
+      <div className="bg-white p-5 rounded-2xl border-l-8 mb-5 shadow-sm" style={{ borderColor: PRIMARY }}>
+        <p className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Begrepp</p>
+        <h3 className="text-xl font-bold">{concept.term}</h3>
+      </div>
+
+      <p className="text-sm text-slate-500 mb-3 font-medium">Vilket alternativ är ett korrekt exempel på begreppet?</p>
+
+      <div className="grid gap-3">
+        {options.map((opt) => {
+          const isCorrect = opt.letter === q.correct;
+          const isSelected = selected === opt.letter;
+          let cls = "bg-white border-2 border-slate-200 hover:border-slate-300";
+          if (selected !== null) {
+            if (isCorrect) cls = "bg-green-50 border-2 border-green-500 text-green-800";
+            else if (isSelected) cls = "bg-red-50 border-2 border-red-500 text-red-800";
+            else cls = "bg-white border-2 border-slate-100 text-slate-400";
+          }
+          return (
+            <button key={opt.letter} onClick={() => choose(opt.letter)} disabled={selected !== null} className={`text-left px-5 py-4 rounded-2xl font-medium transition-colors ${cls}`}>
+              <span className="font-bold mr-2">{opt.letter}.</span>{opt.text}
+            </button>
+          );
+        })}
+      </div>
+
+      {selected !== null && (
+        <div className="mt-5 bg-slate-50 border-2 border-slate-200 rounded-2xl p-4">
+          <p className="text-slate-700">{q.explanation}</p>
+          <button onClick={next} style={{ background: PRIMARY }} className="mt-4 text-white px-6 py-2 rounded-xl font-bold">
+            {qIdx + 1 >= total ? "Se resultat" : "Nästa →"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function App() {
   const [view, setView] = useState("lista");
 
@@ -355,6 +778,9 @@ function App() {
       <ViewToggle view={view} setView={setView} />
       {view === "lista" && <ListView />}
       {view === "flashcards" && <FlashcardView key="flashcards" />}
+      {view === "lucktext" && <LucktextView />}
+      {view === "scenario" && <ScenarioView key="scenario" />}
+      {view === "ickeex" && <IckeExView key="ickeex" />}
       <footer className="text-center text-slate-400 italic text-sm mt-10">
         Källa: Processrätt vid tvister begreppslista
       </footer>
