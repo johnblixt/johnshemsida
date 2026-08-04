@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mänskliga rättigheter och migration – Quiz | Rätten och samhället</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0d9488;
+      --primary-light: #ccfbf1;
+      --primary-dark: #0f766e;
+      --correct-bg: #dcfce7;
+      --correct-border: #16a34a;
+      --correct-text: #16a34a;
+      --wrong-bg: #fee2e2;
+      --wrong-border: #dc2626;
+      --wrong-text: #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'EB Garamond', Georgia, serif; background: #fff1f2; min-height: 100vh; color: #000; }
+
+    a.back-btn {
+      display: inline-block; padding: 8px 16px; color: var(--primary);
+      text-decoration: none; font-size: 0.95rem; position: fixed;
+      top: 14px; left: 14px; z-index: 200; border-radius: 8px; transition: background 0.2s;
+    }
+    a.back-btn:hover { background: var(--primary-light); }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Start screen ── */
+    #screen-start { max-width: 560px; margin: 0 auto; padding: 90px 24px 40px; text-align: center; }
+    .badge {
+      display: inline-block; background: var(--primary-light); color: var(--primary-dark);
+      padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;
+      letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 20px;
+    }
+    #screen-start h1 {
+      font-size: 2.4rem; font-weight: 600; font-style: italic;
+      color: #000; margin-bottom: 8px;
+    }
+    #screen-start .subtitle { font-size: 1.05rem; color: #000; opacity: 0.65; margin-bottom: 32px; }
+    .info-cards { display: flex; gap: 12px; justify-content: center; margin-bottom: 36px; flex-wrap: wrap; }
+    .info-card {
+      background: white; border: 1px solid #fecdd3; border-radius: 12px;
+      padding: 16px 20px; text-align: center; flex: 1; min-width: 100px; max-width: 140px;
+    }
+    .info-card .num { font-size: 1.7rem; font-weight: 600; color: var(--primary); }
+    .info-card .lbl { font-size: 0.78rem; color: #000; opacity: 0.55; margin-top: 2px; }
+
+    /* ── Quiz screen ── */
+    #screen-quiz { max-width: 700px; margin: 0 auto; padding: 70px 20px 60px; }
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .timer {
+      background: white; border: 1px solid #fecdd3; border-radius: 20px;
+      padding: 5px 14px; font-size: 0.92rem; color: #000; font-variant-numeric: tabular-nums;
+    }
+    .score-pill {
+      background: var(--primary-light); color: var(--primary-dark);
+      border-radius: 20px; padding: 5px 14px; font-size: 0.92rem; font-weight: 600;
+    }
+    .progress-wrap { background: #fecdd3; border-radius: 4px; height: 6px; overflow: hidden; margin-bottom: 6px; }
+    .progress-bar { background: var(--primary); height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+    .q-counter { font-size: 0.82rem; color: #000; opacity: 0.55; text-align: right; margin-bottom: 22px; }
+    .type-badge {
+      display: inline-block; font-size: 0.72rem; text-transform: uppercase;
+      letter-spacing: 0.08em; padding: 2px 10px; border-radius: 20px; margin-bottom: 10px;
+    }
+    .type-badge.concept { background: #ede9fe; color: #6d28d9; }
+    .type-badge.scenario { background: #fef9c3; color: #854d0e; }
+    .q-text { font-size: 1.2rem; font-weight: 600; line-height: 1.55; color: #000; margin-bottom: 22px; white-space: pre-line; }
+    .opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+    .opt-btn {
+      background: white; border: 2px solid #fecdd3; border-radius: 12px;
+      padding: 13px 18px; text-align: left; font-size: 1rem; font-family: inherit;
+      color: #000; cursor: pointer; transition: border-color 0.15s, background 0.15s; line-height: 1.45;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--primary); background: var(--primary-light); }
+    .opt-btn:disabled { cursor: default; }
+    .opt-btn.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); font-weight: 600; }
+    .opt-btn.wrong   { background: var(--wrong-bg);   border-color: var(--wrong-border);   color: var(--wrong-text); }
+    .opt-btn.dimmed  { opacity: 0.4; }
+    .nav-row { display: flex; gap: 12px; align-items: center; }
+    .btn-back {
+      background: white; border: 2px solid #fecdd3; border-radius: 10px;
+      padding: 10px 20px; font-family: inherit; font-size: 0.9rem; color: #000; opacity: 0.7; cursor: pointer;
+    }
+    .btn-back:hover { border-color: var(--primary); opacity: 1; }
+    .btn-next {
+      background: var(--primary); border: none; border-radius: 10px;
+      padding: 10px 28px; font-family: inherit; font-size: 0.9rem; font-weight: 600;
+      color: white; cursor: pointer; margin-left: auto; transition: background 0.15s;
+    }
+    .btn-next:hover { background: var(--primary-dark); }
+
+    /* ── Modal ── */
+    #modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 500; padding: 20px;
+    }
+    #modal-overlay.hidden { display: none; }
+    .modal-box {
+      background: white; border-radius: 20px; padding: 32px;
+      max-width: 520px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .modal-icon  { font-size: 2.6rem; margin-bottom: 10px; }
+    .modal-verdict { font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; }
+    .modal-verdict.c { color: var(--correct-text); }
+    .modal-verdict.w { color: var(--wrong-text); }
+    .modal-expl { font-size: 0.98rem; color: #000; opacity: 0.8; line-height: 1.7; margin-bottom: 24px; }
+
+    /* ── Result screen ── */
+    #screen-result { max-width: 700px; margin: 0 auto; padding: 80px 20px 80px; }
+    .res-header { text-align: center; margin-bottom: 30px; }
+    .score-ring {
+      width: 120px; height: 120px; border-radius: 50%;
+      border: 5px solid var(--primary); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; margin: 0 auto 18px;
+    }
+    .score-ring .rnum { font-size: 2rem; font-weight: 600; color: var(--primary); line-height: 1; }
+    .score-ring .rlbl { font-size: 0.72rem; color: #000; opacity: 0.55; }
+    .res-title  { font-size: 1.8rem; font-weight: 600; font-style: italic; margin-bottom: 6px; color: #000; }
+    .res-msg    { font-size: 1rem; color: #000; opacity: 0.7; margin-bottom: 4px; }
+    .res-time   { font-size: 0.85rem; color: #000; opacity: 0.5; margin-bottom: 28px; }
+    .stats-row  { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+    .stat-box {
+      flex: 1; min-width: 80px; background: white; border: 1px solid #fecdd3;
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .stat-box .snum { font-size: 1.6rem; font-weight: 600; }
+    .stat-box .slbl { font-size: 0.75rem; color: #000; opacity: 0.55; margin-top: 2px; }
+    .stat-box.cs .snum { color: var(--correct-text); }
+    .stat-box.ws .snum { color: var(--wrong-text); }
+    .section-hd {
+      font-size: 1.05rem; font-weight: 600; color: #000;
+      margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #fecdd3;
+    }
+    .missed-section { margin-bottom: 32px; }
+    .missed-item {
+      background: var(--wrong-bg); border-left: 4px solid var(--wrong-border);
+      border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-size: 0.92rem;
+    }
+    .facit-item {
+      background: white; border: 1px solid #fecdd3; border-radius: 12px;
+      padding: 14px 16px; margin-bottom: 10px;
+    }
+    .facit-item.fc { border-left: 4px solid var(--correct-border); }
+    .facit-item.fw { border-left: 4px solid var(--wrong-border); }
+    .fi-num { font-size: 0.72rem; color: #000; opacity: 0.5; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .fi-q   { font-size: 0.93rem; font-weight: 600; color: #000; margin-bottom: 8px; line-height: 1.4; white-space: pre-line; }
+    .fi-row { font-size: 0.88rem; padding: 2px 0; }
+    .fi-row .lbl { color: #000; opacity: 0.55; }
+    .fi-row.ya-ok  { color: var(--correct-text); }
+    .fi-row.ya-bad { color: var(--wrong-text); }
+    .fi-row.ra     { color: var(--correct-text); font-weight: 600; margin-top: 2px; }
+
+    .btn-primary {
+      display: inline-block; background: var(--primary); color: white; border: none;
+      border-radius: 12px; padding: 13px 36px; font-size: 1.05rem; font-family: inherit;
+      font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s;
+    }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+    .btn-primary:active { transform: none; }
+
+    @media (max-width: 500px) {
+      #screen-start h1 { font-size: 1.85rem; }
+      .q-text { font-size: 1.05rem; }
+    }
+  </style>
+</head>
+<body>
+
+<a href="rs_internationell.html" class="back-btn" onclick="smartBack(event)">← Tillbaka till startsidan</a>
+
+<!-- ═══════════ START ═══════════ -->
+<div id="screen-start" class="screen active">
+  <div class="badge">Rätten och samhället · Mänskliga rättigheter och migration</div>
+  <h1>Mänskliga rättigheter och migration</h1>
+  <p class="subtitle">Quiz med flervalsfrågor om FN:s deklaration om de mänskliga rättigheterna, flyktingkonventionen, barnkonventionen och den svenska migrationsrätten</p>
+  <div class="info-cards">
+    <div class="info-card"><div class="num">30</div><div class="lbl">Frågor</div></div>
+    <div class="info-card"><div class="num">1948</div><div class="lbl">UDHR antogs</div></div>
+    <div class="info-card"><div class="num">4</div><div class="lbl">Principer i barnkonventionen</div></div>
+  </div>
+  <button class="btn-primary" onclick="startQuiz()">Starta Quiz →</button>
+</div>
+
+<!-- ═══════════ QUIZ ═══════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-header">
+    <div class="timer" id="timer">⏱ 0:00</div>
+    <div class="score-pill" id="score-pill">Poäng: 0</div>
+  </div>
+  <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+  <div class="q-counter" id="q-counter">Fråga 1 av 30</div>
+  <div id="type-badge-wrap"></div>
+  <div class="q-text" id="q-text"></div>
+  <div class="opts" id="opts"></div>
+  <div class="nav-row">
+    <button class="btn-back" id="btn-back" onclick="goBack()" style="display:none">← Bakåt</button>
+    <button class="btn-next" id="btn-next" onclick="goNext()" style="display:none">Nästa →</button>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL ═══════════ -->
+<div id="modal-overlay" class="hidden">
+  <div class="modal-box">
+    <div class="modal-icon"  id="modal-icon"></div>
+    <div class="modal-verdict" id="modal-verdict"></div>
+    <div class="modal-expl"   id="modal-expl"></div>
+    <button class="btn-primary" onclick="closeModal()">Nästa fråga →</button>
+  </div>
+</div>
+
+<!-- ═══════════ RESULT ═══════════ -->
+<div id="screen-result" class="screen">
+  <div class="res-header">
+    <div class="score-ring">
+      <div class="rnum" id="r-score"></div>
+      <div class="rlbl">poäng</div>
+    </div>
+    <div class="res-title"  id="r-title"></div>
+    <div class="res-msg"    id="r-msg"></div>
+    <div class="res-time"   id="r-time"></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-box cs"><div class="snum" id="s-correct">0</div><div class="slbl">Rätt</div></div>
+    <div class="stat-box ws"><div class="snum" id="s-wrong">0</div><div class="slbl">Fel</div></div>
+    <div class="stat-box"><div class="snum" id="s-pct">0%</div><div class="slbl">Andel rätt</div></div>
+  </div>
+  <div class="missed-section" id="missed-section"></div>
+  <div class="section-hd">Fullständigt facit</div>
+  <div id="facit-list"></div>
+  <div style="text-align:center;margin-top:32px">
+    <button class="btn-primary" onclick="restartQuiz()">↺ Gör om quizet</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// TILLBAKA-NAVIGERING
+// ════════════════════════════════════════════════════════════
+function smartBack(e) {
+  if (e) e.preventDefault();
+  var ref = document.referrer;
+  if (ref) {
+    try {
+      if (new URL(ref).origin === window.location.origin) {
+        history.back();
+        return;
+      }
+    } catch (err) {}
+  }
+  window.location.href = 'rs_internationell.html';
+}
+
+// ════════════════════════════════════════════════════════════
+// QUESTION DATA  (30 frågor)
+// Källor: manskliga_rattigheter_och_migration_uppgifter.md
+// ("Kan du detta?" frågorna 1–12 samt uppgifterna 3–9) och
+// manskliga_rattigheter_och_migration_material.md
+// ════════════════════════════════════════════════════════════
+const QUESTIONS = [
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad var bakgrunden till att FN antog sin deklaration om de mänskliga rättigheterna (UDHR) 1948?',
+    opts: [
+      'Den byggde vidare på tidigare rättighetsförklaringar från England på 1600-talet, Nordamerika på 1700-talet och Frankrike under franska revolutionen',
+      'Den skapades som en direkt reaktion på Jugoslavienkrigen på Balkan och skulle förhindra etnisk rensning i Europa',
+      'Den utformades efter förebild från Dublinförordningen och skulle harmonisera flyktingmottagandet mellan Europas stater',
+      'Den togs fram av Europarådet för att komplettera Europakonventionens artiklar om rättvis rättegång och yttrandefrihet'
+    ],
+    correct: 0,
+    expl: 'Ursprunget till FN:s deklaration om de mänskliga rättigheterna var bland annat olika rättighetsförklaringar som antogs i England på 1600-talet, i Nordamerika på 1700-talet och i Frankrike under den franska revolutionen. Deklarationen antogs sedan av FN 1948.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilka tre av följande räknas till reglerna i FN:s deklaration om de mänskliga rättigheterna?',
+    opts: [
+      'Rätt till liv, förbud mot tortyr och förbud mot slaveri och tvångsarbete',
+      'Rätt till kvotflyktingskap, förbud mot anhöriginvandring och förbud mot arbetskraftsinvandring',
+      'Rätt till permanent uppehållstillstånd, förbud mot visum och förbud mot karenstid',
+      'Rätt till vidarebosättning, förbud mot transitländer och förbud mot irreguljär migration'
+    ],
+    correct: 0,
+    expl: 'Bland de 30 artiklarna i FN:s deklaration om de mänskliga rättigheterna finns bland annat rätt till liv, förbud mot tortyr samt förbud mot slaveri och tvångsarbete. De övriga alternativen är i stället begrepp från den svenska migrationsrätten.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilka tre av följande regleras i FN:s flyktingkonvention?',
+    opts: [
+      'Vem som är flykting, att flyktingar inte ska tvingas återvända till ett land de flyr, och att länder ska dela på flyktingansvaret',
+      'Vem som får svenskt medborgarskap, hur länge ett arbetstillstånd gäller, och vilken lön som krävs för arbetskraftsinvandring',
+      'Vilka krav som ställs för anhöriginvandring, hur stor bostad som krävs, och vilken ålder parterna måste ha',
+      'Vilket land som ska pröva en asylansökan inom EU, hur länge en screening får ta, och vilka länder som räknas som transitländer'
+    ],
+    correct: 0,
+    expl: 'Flyktingkonventionen reglerar bland annat vem som är flykting, att flyktingar inte ska tvingas återvända till ett land där de riskerar förföljelse, och att länder ska dela på bördan av flyktingproblemet. De andra alternativen hör i stället till svensk medborgarskapslagstiftning, anhöriginvandring respektive EU:s asylpolitik.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad heter den konvention som reglerar barns rättigheter?',
+    opts: [
+      'FN:s konvention om barnets rättigheter, som i dagligt tal kallas barnkonventionen',
+      'FN:s deklaration om de mänskliga rättigheterna, som i dagligt tal kallas UDHR-konventionen',
+      'FN:s flyktingkonvention, som i dagligt tal kallas Genèvekonventionen om flyktingars rättigheter',
+      'Europeiska konventionen om skydd för de mänskliga rättigheterna, som i dagligt tal kallas Europakonventionen'
+    ],
+    correct: 0,
+    expl: 'FN:s konvention om barnets rättigheter kallas i dagligt tal barnkonventionen. Den trädde i kraft 1990 och slår fast att barn är individer med egna rättigheter.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilka är UNHCR:s två huvuduppgifter, enligt materialet?',
+    opts: [
+      'Att skydda flyktingar och att söka varaktiga lösningar på deras problem',
+      'Att bevilja medborgarskap och att utfärda pass åt personer som fått uppehållstillstånd',
+      'Att pröva asylansökningar och att besluta om avvisning och utvisning av personer',
+      'Att övervaka Dublinförordningen och att fördela flyktingar mellan EU:s medlemsstater efter kvot'
+    ],
+    correct: 0,
+    expl: 'UNHCR har två uppgifter: dels att skydda flyktingar, dels att söka varaktiga lösningar på deras problem. En stor del av arbetet sker i flyktingläger, men UNHCR hjälper också till med återintegrering efter en konflikt.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad är en "kvotflykting"?',
+    opts: [
+      'En särskilt skyddsbehövande person som UNHCR valt ut för vidarebosättning i ett annat land',
+      'En person som fått avslag på sin asylansökan men ändå tillåts stanna kvar tillfälligt',
+      'En person som söker uppehållstillstånd på grund av anknytning till en person i landet',
+      'En person som flyr internt inom sitt eget land utan att korsa någon landsgräns'
+    ],
+    correct: 0,
+    expl: 'Kvotflyktingar är särskilt skyddsbehövande personer som UNHCR väljer ut för att flytta till ett annat land. Denna fördelning kallas vidarebosättning och administreras av UNHCR.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilken lag reglerar den svenska invandringen?',
+    opts: [
+      'Utlänningslagen, som bland annat innehåller regler om uppehållstillstånd, visering och avvisning',
+      'Migrationsförordningen, som bland annat innehåller regler om uppehållstillstånd, visering och avvisning',
+      'Medborgarskapslagen, som bland annat innehåller regler om uppehållstillstånd, visering och avvisning',
+      'Dublinförordningen, som bland annat innehåller regler om uppehållstillstånd, visering och avvisning'
+    ],
+    correct: 0,
+    expl: 'Den viktigaste lagen för migrationen till Sverige är utlänningslagen. Den innehåller bland annat regler om villkor för inresa och vistelse, visering, uppehållstillstånd samt avvisning och utvisning.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Behöver en EU-medborgare uppehållstillstånd för att bo och arbeta i Sverige?',
+    opts: [
+      'Nej, EU-medborgare har i stället en uppehållsrätt och behöver därför inte söka uppehållstillstånd',
+      'Ja, men EU-medborgare slipper betala ansökningsavgiften som andra sökande måste betala till Migrationsverket',
+      'Ja, men EU-medborgare får sitt uppehållstillstånd automatiskt beviljat utan någon prövning hos Migrationsverket',
+      'Nej, men EU-medborgare måste trots det inneha ett giltigt turistvisum för att få vistas i Sverige'
+    ],
+    correct: 0,
+    expl: 'En EU-medborgare har rätt att resa till Sverige och arbeta, studera och bo i landet utan uppehållstillstånd. De har i stället en uppehållsrätt som ger samma rättigheter som svenska medborgare.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilka tre krav måste vara uppfyllda för att en person ska få arbetskraftsinvandra till Sverige?',
+    opts: [
+      'Ett erbjudet arbete, en lön på minst 26 500 kronor i månaden och ett giltigt pass',
+      'En bostad av tillräcklig storlek, en försörjningsförmåga och att personen är över 18 år',
+      'Ett medborgarskap i ett nordiskt land, fem års hemvist i Sverige och ett ostraffat register',
+      'En anställning hos staten, en lön på minst 45 000 kronor och ett EU-blåkort'
+    ],
+    correct: 0,
+    expl: 'Kraven för arbetstillstånd är bland annat att personen blivit erbjuden ett arbete som annonserats i Sverige och EU, att lönen uppgår till minst 26 500 kronor per månad och att personen har ett giltigt pass. De andra alternativen är i stället krav för anhöriginvandring respektive medborgarskap.'
+  },
+  {
+    type: 'mc', subtype: 'scenario',
+    q: 'Kan en person ansöka om uppehållstillstånd som anhöriginvandrare medan personen redan befinner sig i Sverige, utan att först resa till sitt hemland?',
+    opts: [
+      'Nej, ansökan måste ske från hemlandet, och tillståndet ska vara klart innan flytten till Sverige',
+      'Ja, men bara om personen kan visa att den bott i Sverige minst tre år utan avbrott',
+      'Ja, men bara om personen redan har ett giltigt turistvisum som fortfarande gäller vid ansökningstillfället',
+      'Nej, men personen kan istället ansöka om ett tillfälligt arbetstillstånd i väntan på beslutet'
+    ],
+    correct: 0,
+    expl: 'Det är inte tillåtet att flytta ihop i Sverige och sedan söka uppehållstillstånd. Ansökan måste ske från det land där den anhörige bor för tillfället, och uppehållstillståndet ska vara klart före flytten till Sverige.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad är Migrationsverkets uppgift?',
+    opts: [
+      'Att tillämpa utlänningslagen och hantera ansökningar om uppehållstillstånd och medborgarskap',
+      'Att döma i mål om avslag på uppehållstillstånd och besluta om avvisning och utvisning',
+      'Att stifta ny lagstiftning om migration och besluta om Sveriges migrationspolitiska riktlinjer',
+      'Att representera Sverige i EU:s förhandlingar om Dublinförordningen och unionens asylpolitik'
+    ],
+    correct: 0,
+    expl: 'Migrationsverket är den myndighet som tillämpar utlänningslagen och hanterar ansökningar om uppehållstillstånd och medborgarskap. Beslut om avslag kan sedan överklagas till en migrationsdomstol.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Kan alla avslag i migrationsärenden överklagas ända till Migrationsöverdomstolen?',
+    opts: [
+      'Nej, Migrationsöverdomstolen är sista instans och tar bara upp mål som beviljas prövningstillstånd',
+      'Ja, alla avslag som en migrationsdomstol meddelat kan automatiskt överklagas vidare utan något krav',
+      'Nej, avslag kan bara överklagas en gång och då direkt till Migrationsverkets egen internrevision',
+      'Ja, men bara om personen först fått ett tillfälligt uppehållstillstånd beviljat av Migrationsverket'
+    ],
+    correct: 0,
+    expl: 'Migrationsöverdomstolen är sista instans. För att den ska ta upp ett fall krävs det, precis som hos Högsta domstolen, att den beviljar prövningstillstånd.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilket samband finns mellan Europakonventionen och FN:s deklaration om de mänskliga rättigheterna (UDHR), enligt materialet?',
+    opts: [
+      'Flera artiklar i de båda dokumenten har liknande innehåll, även om Europakonventionen bara gäller inom Europa',
+      'Europakonventionen ersatte UDHR helt när den antogs, och UDHR gäller därför inte längre i Europa',
+      'UDHR bygger direkt på Europakonventionens artiklar och antogs av FN först efter att Europakonventionen skrivits',
+      'De två dokumenten reglerar helt olika rättigheter och saknar enligt materialet någon gemensam beröringspunkt'
+    ],
+    correct: 0,
+    expl: 'Jämförs punkterna i UDHR med Europakonventionen har flera av artiklarna liknande innehåll. Skillnaden är att UDHR gäller i alla världens stater, medan Europakonventionen är en överenskommelse mellan europeiska stater.'
+  },
+  {
+    type: 'mc', subtype: 'scenario',
+    q: 'Vad skiljer Europakonventionen från UDHR när det gäller möjligheten att pröva om en stat brutit mot rättigheterna?',
+    opts: [
+      'Europakonventionen har en egen domstol, Europadomstolen, medan UDHR saknar koppling till en domstol på samma sätt',
+      'UDHR har en egen domstol i Haag, medan Europakonventionen saknar koppling till någon domstol',
+      'Båda dokumenten har varsin egen domstol som kan döma stater som bryter mot rättigheterna',
+      'Ingetdera dokumentet är kopplat till någon domstol, utan brott mot dem hanteras enbart politiskt'
+    ],
+    correct: 0,
+    expl: 'Europakonventionen har en egen domstol, Europadomstolen, som kan ta upp fall där enskilda stater bryter mot konventionen. UDHR gäller i alla världens stater men har ingen koppling till en domstol på samma sätt.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vem räknas som flykting enligt FN:s flyktingkonvention?',
+    opts: [
+      'En person som flytt sitt land av välgrundad fruktan för förföljelse och som inte kan eller vill återvända',
+      'En person som flyttat till ett annat land för att arbeta och tjäna mer pengar',
+      'En person som flyr inom sitt eget land undan krig utan att korsa någon gräns',
+      'En person som ansökt om och beviljats visum för ett tillfälligt besök i ett annat land'
+    ],
+    correct: 0,
+    expl: 'Flykting är enligt konventionen en person som flytt sitt land i välgrundad fruktan för förföljelse på grund av ras, religion, samhällsgrupp eller politisk uppfattning, och som inte kan eller vill återvända. Internflyktingar, som flyr inom det egna landet, omfattas inte av definitionen.'
+  },
+  {
+    type: 'mc', subtype: 'scenario',
+    q: 'Får ett land, som anser att det inte klarar av att ta emot fler flyktingar, skicka tillbaka en flykting till hemlandet?',
+    opts: [
+      'Nej, enligt internationell sedvanerätt är det inte tillåtet att skicka tillbaka någon till ett land där personen riskerar förföljelse',
+      'Ja, om landet först meddelar UNHCR och får ett formellt godkännande att avvisa personen',
+      'Ja, om personen inte hunnit få sin asylansökan prövad av en migrationsdomstol i landet',
+      'Nej, men bara om personen redan hunnit vistas i landet i mer än fem år'
+    ],
+    correct: 0,
+    expl: 'Enligt den internationella sedvanerätten, som är bindande för alla stater, är det inte tillåtet att skicka tillbaka någon till landet där denne riskerar förföljelse, oavsett hur ansträngt läget är i mottagarlandet.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Är en flykting skyldig att följa lagarna i det land som tagit emot den?',
+    opts: [
+      'Ja, flyktingar ska enligt flyktingkonventionen respektera asyllandets lagar och förordningar',
+      'Nej, flyktingar omfattas inte av asyllandets lagstiftning förrän de beviljats permanent uppehållstillstånd',
+      'Ja, men bara de lagar som gäller specifikt för utländska medborgare i landet',
+      'Nej, flyktingkonventionen reglerar inte alls flyktingars skyldigheter gentemot det mottagande landet'
+    ],
+    correct: 0,
+    expl: 'En av punkterna i flyktingkonventionen är att flyktingar ska respektera asyllandets lagar och förordningar, samtidigt som regeringen i asyllandet är ansvarig för flyktingarnas skydd.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad är "Global Compact for Safe, Orderly and Regular Migration", som FN tog fram 2018?',
+    opts: [
+      'Ett icke-bindande ramverk som Sverige skrivit under och som syftar till att bekämpa orsakerna till irreguljär migration',
+      'En bindande konvention som samtliga FN:s 193 medlemsstater tvingas följa oavsett om de skrivit under den',
+      'En ny flyktingkonvention som 2018 ersatte 1951 års flyktingkonvention i sin helhet för alla stater',
+      'Ett EU-direktiv som reglerar hur EU:s medlemsstater ska fördela asylsökande sinsemellan enligt bestämda kvoter'
+    ],
+    correct: 0,
+    expl: 'Ramverket, som Sverige skrivit under, handlar om all slags migration och är en målsättning snarare än ett bindande avtal. Syftet är bland annat att bekämpa orsakerna till irreguljär migration och förbättra reguljära migrationsvägar.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vem eller vilka bestämmer om en person eller familj är kvotflykting?',
+    opts: [
+      'UNHCR väljer ut och beslutar vilka personer som är särskilt skyddsbehövande och blir kvotflyktingar',
+      'Migrationsverket väljer ut och beslutar vilka personer som är särskilt skyddsbehövande och blir kvotflyktingar',
+      'Migrationsöverdomstolen väljer ut och beslutar vilka personer som är särskilt skyddsbehövande och blir kvotflyktingar',
+      'Europeiska kommissionen väljer ut och beslutar vilka personer som är särskilt skyddsbehövande och blir kvotflyktingar'
+    ],
+    correct: 0,
+    expl: 'UNHCR har möjlighet att välja ut särskilt skyddsbehövande som ska flytta till ett annat land. Fördelningen av dessa kvotflyktingar administreras av UNHCR.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Gör det mottagande landet en ny asylprövning för kvotflyktingar?',
+    opts: [
+      'Nej, kvotflyktingar som vidarebosätts behöver ingen ny asylprövning i det mottagande landet',
+      'Ja, alla kvotflyktingar genomgår samma fullständiga asylprövning som andra asylsökande i mottagarlandet',
+      'Nej, men kvotflyktingar måste ändå vänta minst tre år innan de får uppehållstillstånd',
+      'Ja, men prövningen sker enbart genom en skriftlig intervju utan personlig närvaro'
+    ],
+    correct: 0,
+    expl: 'Fördelningen av kvotflyktingar kallas vidarebosättning, och dessa människor behöver ingen ny asylprövning i mottagarlandet eftersom UNHCR redan gjort urvalet.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilka fyra artiklar ska enligt barnkonventionen alltid beaktas i frågor som rör barn?',
+    opts: [
+      'Att alla barn har lika värde, att barnets bästa beaktas, rätt till liv och utveckling samt rätt att få sin mening respekterad',
+      'Att barn får uppehållstillstånd automatiskt, att familjeåterförening alltid beviljas, rätt till skolgång samt rätt till ekonomiskt bistånd',
+      'Att barn aldrig kan nekas asyl, att karenstid inte gäller för barn, rätt till medborgarskap samt rätt att välja bosättningsort',
+      'Att barn ska vidarebosättas som kvotflyktingar, att Dublinförordningen alltid gäller för barn, rätt till tolk samt rätt till eget boende'
+    ],
+    correct: 0,
+    expl: 'De fyra principerna i barnkonventionen är artikel 2 (alla barn har samma rättigheter och lika värde), artikel 3 (barnets bästa ska beaktas), artikel 6 (rätt till liv och utveckling) och artikel 12 (rätt att uttrycka sin mening och få den respekterad).'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Har Sverige ratificerat barnkonventionen?',
+    opts: [
+      'Ja, Sverige har både ratificerat och sedan år 2020 gjort barnkonventionen till svensk lag',
+      'Nej, Sverige har skrivit under barnkonventionen men riksdagen har aldrig röstat för att ratificera den',
+      'Ja, men Sverige valde att inte göra barnkonventionen till svensk lag utan bara att ratificera den',
+      'Nej, Sverige avvaktar fortfarande med att ratificera barnkonventionen tills en statlig utredning är klar'
+    ],
+    correct: 0,
+    expl: 'Sverige är en av de stater som skrivit på barnkonventionen och tillämpat den sedan den trädde i kraft. Först från och med 1 januari 2020 blev texterna i konventionen dessutom svensk lag.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Hur har Sverige infört barnkonventionen i svensk lag?',
+    opts: [
+      'Genom att göra konventionens text till svensk lag från och med den 1 januari 2020',
+      'Genom att ändra befintliga lagar i sak, utan att konventionens text i sig blev lag',
+      'Genom en folkomröstning där svenska folket röstade för att göra konventionen till svensk lag',
+      'Genom ett beslut i Europadomstolen som tvingade Sverige att göra konventionen till svensk lag'
+    ],
+    correct: 0,
+    expl: 'Från och med 1 januari 2020 blev texterna i barnkonventionen svensk lag. I samband med detta ändrade Sverige också de lagar som påverkades så att konventionens bestämmelser uppfylldes.'
+  },
+  {
+    type: 'mc', subtype: 'scenario',
+    q: 'Ge ett exempel på hur handläggningen av asylsökande barn påverkas av det extra starka skydd som barn har.',
+    opts: [
+      'Ensamkommande barn undantas från Dublinförordningen, och deras ansökan prövas alltid i landet där de befinner sig',
+      'Ensamkommande barn måste enligt reglerna alltid skickas till det första EU-land de rest in i',
+      'Ensamkommande barn får enligt reglerna alltid permanent uppehållstillstånd utan någon prövning av asylansökan',
+      'Ensamkommande barn omfattas enligt reglerna inte av utlänningslagens regler om uppehållstillstånd alls'
+    ],
+    correct: 0,
+    expl: 'Ett exempel på det extra skydd barn har är att ensamkommande barn är undantagna från Dublinförordningen, vilket innebär att deras ansökan alltid ska behandlas i det land där de befinner sig, till skillnad från Dublinreglernas princip om första asylland.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad berodde det på att så många svenskar emigrerade åren före och efter 1900?',
+    opts: [
+      'Sverige var då ett relativt fattigt land, och många hoppades på ett bättre liv, framförallt i USA',
+      'Sverige hade då förlorat ett krig, och många tvingades fly undan politisk förföljelse till USA',
+      'Sverige drabbades då av en flyktingvåg utifrån, och många valde att fly vidare till USA',
+      'Sverige hade då infört en repressiv lagstiftning, och många utvandrade i protest till USA'
+    ],
+    correct: 0,
+    expl: 'Sverige var en gång ett relativt fattigt land där medborgarna emigrerade i hopp om att få ett bättre liv. Runt 1,5 miljoner människor, nästan 20–25 procent av befolkningen, emigrerade under denna period, framförallt till USA.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilka är, enligt Migrationsverkets statistik för 2022, de vanligaste orsakerna till att personer beviljas uppehållstillstånd i Sverige?',
+    opts: [
+      'Asyl, arbetstagare, anknytning, studier och EU/EES, där asyl och arbetsmarknad stod för de största andelarna',
+      'Studier, medborgarskap, karenstid, visum och transitländer, där studier och medborgarskap stod för de största andelarna',
+      'Vidarebosättning, återintegrering, screening, sanktioner och tribunaler, där vidarebosättning och screening stod för de största andelarna',
+      'Turistvisum, uppehållsrätt, prövningstillstånd, karenstid och deportation, där turistvisum och uppehållsrätt stod för de största andelarna'
+    ],
+    correct: 0,
+    expl: 'De vanligaste orsakerna till uppehållstillstånd är anknytning, arbetstagare, asyl, studier, EU/EES och kvotflykting. År 2022 var asyl (cirka 40 %) och arbetsmarknad (cirka 29 %) de största andelarna, mycket på grund av flyktingar från Ukraina.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Ge tre exempel på frågor som regleras i utlänningslagen.',
+    opts: [
+      'Villkor för inresa och vistelse, uppehållstillstånd samt avvisning och utvisning',
+      'Krav för svenskt medborgarskap, karenstid vid brott samt regler om folkbokföring',
+      'Fördelning av kvotflyktingar, UNHCR:s mandat samt Dublinförordningens tillämpning inom EU',
+      'Lön vid arbetskraftsinvandring, EU-blåkortets villkor samt Migrationsöverdomstolens sammansättning'
+    ],
+    correct: 0,
+    expl: 'Utlänningslagen innehåller bland annat regler om villkor för inresa, vistelse och arbete i Sverige, uppehållstillstånd samt avvisning och utvisning. Medborgarskap regleras i en egen lag, och UNHCR och Dublinförordningen styrs av internationella respektive EU-rättsliga regler.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Behöver alla utlänningar uppehållstillstånd för att vistas i Sverige?',
+    opts: [
+      'Nej, medborgare i EU, EES och Schweiz behöver inte uppehållstillstånd utan har i stället en uppehållsrätt',
+      'Ja, samtliga utländska medborgare måste alltid ha ett giltigt uppehållstillstånd för att få vistas i Sverige',
+      'Nej, ingen utländsk medborgare behöver något tillstånd alls för att vistas i Sverige under kortare besök',
+      'Ja, men medborgare i nordiska länder är undantagna eftersom de klassas som svenska medborgare automatiskt'
+    ],
+    correct: 0,
+    expl: 'Medborgare i EU, EES och Schweiz reser fritt över landsgränserna och behöver inte något uppehållstillstånd. De har i stället en uppehållsrätt, om än något inskränkt för EES- och schweiziska medborgare.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilken förordning kompletterar utlänningslagen och reglerar bland annat resehandlingar, visering och uppehållsrätt?',
+    opts: [
+      'Utlänningsförordningen, som också reglerar kontroll- och tvångsåtgärder utöver det som står i utlänningslagen',
+      'Dublinförordningen, som också reglerar kontroll- och tvångsåtgärder utöver det som står i utlänningslagen',
+      'Medborgarskapslagen, som också reglerar kontroll- och tvångsåtgärder utöver det som står i utlänningslagen',
+      'Romstadgan, som också reglerar kontroll- och tvångsåtgärder utöver det som står i utlänningslagen'
+    ],
+    correct: 0,
+    expl: 'Utlänningslagen är grunden i migrationsrätten och kompletteras av en utlänningsförordning som reglerar resehandlingar, visering, uppehållsrätt samt regler kring kontroll och tvångsåtgärder.'
+  },
+  {
+    type: 'mc', subtype: 'scenario',
+    q: 'Om en person haft ett arbets- och uppehållstillstånd i en och samma anställning i fyra år, kan personen då söka ett permanent tillstånd för arbete?',
+    opts: [
+      'Ja, efter fyra år i samma anställning kan personen ansöka om permanent tillstånd för arbete',
+      'Nej, arbetstillstånd kan aldrig omvandlas till ett permanent tillstånd oavsett hur länge anställningen varat',
+      'Ja, men först efter att personen även blivit svensk medborgare genom naturalisation',
+      'Nej, men personen kan i stället ansöka om ett EU-blåkort istället för fortsatt arbetstillstånd'
+    ],
+    correct: 0,
+    expl: 'Ett arbetstillstånd gäller under tiden anställningen varar, men högst två år i taget. Efter fyra år kan personen sedan söka permanent tillstånd för arbete.'
+  }
+];
+
+// ════════════════════════════════════════════════════════════
+// FISHER-YATES SHUFFLE
+// ════════════════════════════════════════════════════════════
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// ════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════
+let qs = [];        // shuffled questions with per-question state
+let cur = 0;        // current question index
+let score = 0;
+let elapsed = 0;
+let timerID = null;
+
+function buildState() {
+  const shuffled = shuffleArray([...QUESTIONS]);
+  qs = shuffled.map(q => {
+    const indices = q.opts.map((_, i) => i);
+    return {
+      ...q,
+      shuffledIdx: shuffleArray(indices),  // original option indices in display order
+      selectedDisplay: null,               // which display position was clicked
+      answered: false
+    };
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// SCREENS
+// ════════════════════════════════════════════════════════════
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ════════════════════════════════════════════════════════════
+// TIMER
+// ════════════════════════════════════════════════════════════
+function fmt(s) {
+  const m = Math.floor(s / 60);
+  const ss = String(s % 60).padStart(2, '0');
+  return `⏱ ${m}:${ss}`;
+}
+function startTimer() {
+  elapsed = 0;
+  timerID = setInterval(() => {
+    elapsed++;
+    document.getElementById('timer').textContent = fmt(elapsed);
+  }, 1000);
+}
+function stopTimer() {
+  clearInterval(timerID);
+}
+
+// ════════════════════════════════════════════════════════════
+// START
+// ════════════════════════════════════════════════════════════
+function startQuiz() {
+  buildState();
+  cur = 0;
+  score = 0;
+  show('screen-quiz');
+  startTimer();
+  render();
+}
+
+// ════════════════════════════════════════════════════════════
+// RENDER QUESTION
+// ════════════════════════════════════════════════════════════
+function render() {
+  const q = qs[cur];
+  const total = qs.length;
+
+  // Progress
+  document.getElementById('progress-bar').style.width = (cur / total * 100) + '%';
+  document.getElementById('q-counter').textContent = `Fråga ${cur + 1} av ${total}`;
+  document.getElementById('score-pill').textContent = `Poäng: ${score}`;
+
+  // Type badge
+  const badgeWrap = document.getElementById('type-badge-wrap');
+  badgeWrap.innerHTML = q.subtype === 'concept'
+    ? '<span class="type-badge concept">Begreppsfråga</span>'
+    : '<span class="type-badge scenario">Fördjupning</span>';
+
+  // Question text
+  document.getElementById('q-text').textContent = q.q;
+
+  // Options
+  const optsEl = document.getElementById('opts');
+  optsEl.innerHTML = '';
+  optsEl.className = 'opts';
+
+  q.shuffledIdx.forEach((origIdx, displayPos) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = q.opts[origIdx];
+    btn.disabled = q.answered;
+
+    if (q.answered) {
+      const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+      if (displayPos === correctDisplay) {
+        btn.classList.add('correct');
+      } else if (displayPos === q.selectedDisplay) {
+        btn.classList.add('wrong');
+      } else {
+        btn.classList.add('dimmed');
+      }
+    } else {
+      btn.addEventListener('click', () => handleAnswer(displayPos));
+    }
+
+    optsEl.appendChild(btn);
+  });
+
+  // Nav buttons
+  document.getElementById('btn-back').style.display = cur > 0 ? 'inline-block' : 'none';
+  document.getElementById('btn-next').style.display = q.answered ? 'inline-block' : 'none';
+  document.getElementById('btn-next').textContent =
+    cur === total - 1 ? 'Se resultat →' : 'Nästa →';
+}
+
+// ════════════════════════════════════════════════════════════
+// HANDLE ANSWER
+// ════════════════════════════════════════════════════════════
+function handleAnswer(displayPos) {
+  const q = qs[cur];
+  if (q.answered) return;
+
+  q.answered = true;
+  q.selectedDisplay = displayPos;
+
+  const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+  const isCorrect = displayPos === correctDisplay;
+  if (isCorrect) score++;
+
+  // Lock options immediately
+  const btns = document.querySelectorAll('.opt-btn');
+  btns.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === correctDisplay) btn.classList.add('correct');
+    else if (i === displayPos) btn.classList.add('wrong');
+    else btn.classList.add('dimmed');
+  });
+
+  // Show next button
+  document.getElementById('btn-next').style.display = 'inline-block';
+  document.getElementById('btn-next').textContent =
+    cur === qs.length - 1 ? 'Se resultat →' : 'Nästa →';
+  document.getElementById('score-pill').textContent = `Poäng: ${score}`;
+
+  // Modal after 600 ms
+  setTimeout(() => showModal(isCorrect, q.expl), 600);
+}
+
+// ════════════════════════════════════════════════════════════
+// MODAL
+// ════════════════════════════════════════════════════════════
+function showModal(isCorrect, expl) {
+  document.getElementById('modal-icon').textContent    = isCorrect ? '✅' : '❌';
+  document.getElementById('modal-verdict').textContent = isCorrect ? 'Rätt svar!' : 'Fel svar';
+  document.getElementById('modal-verdict').className   = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
+  document.getElementById('modal-expl').textContent    = expl;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  goNext();
+}
+
+// ════════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════════
+function goBack() {
+  if (cur > 0) { cur--; render(); }
+}
+
+function goNext() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  if (cur < qs.length - 1) {
+    cur++;
+    render();
+  } else {
+    showResults();
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// RESULTS
+// ════════════════════════════════════════════════════════════
+function showResults() {
+  stopTimer();
+  show('screen-result');
+
+  const total = qs.length;
+  const wrong = total - score;
+  const pct   = Math.round(score / total * 100);
+
+  document.getElementById('r-score').textContent = `${score}/${total}`;
+  document.getElementById('s-correct').textContent = score;
+  document.getElementById('s-wrong').textContent   = wrong;
+  document.getElementById('s-pct').textContent     = pct + '%';
+
+  const m = Math.floor(elapsed / 60);
+  const s = String(elapsed % 60).padStart(2, '0');
+  document.getElementById('r-time').textContent = `Tid: ${m}:${s}`;
+
+  let title, msg;
+  if (pct >= 90)      { title = '🏆 Utmärkt!';             msg = 'Du behärskar mänskliga rättigheter och migration på hög nivå.'; }
+  else if (pct >= 75) { title = '✅ Redo för provet!';      msg = 'Bra resultat – du har koll på det centrala.'; }
+  else if (pct >= 55) { title = '📖 Öva lite till';        msg = 'Du är på rätt spår men behöver repetera en del.'; }
+  else                { title = '💡 Fortsätt repetera';    msg = 'Gå igenom materialet och försök igen.'; }
+
+  document.getElementById('r-title').textContent = title;
+  document.getElementById('r-msg').textContent   = msg;
+
+  // Missed questions
+  const missedEl = document.getElementById('missed-section');
+  const missed = qs.filter(q => q.answered && q.shuffledIdx.indexOf(q.correct) !== q.selectedDisplay);
+  if (missed.length > 0) {
+    missedEl.innerHTML = `<div class="section-hd">Missade frågor (${missed.length})</div>`;
+    missed.forEach(q => {
+      const div = document.createElement('div');
+      div.className = 'missed-item';
+      div.textContent = q.q;
+      missedEl.appendChild(div);
+    });
+  } else {
+    missedEl.innerHTML = '';
+  }
+
+  // Full facit
+  const facitEl = document.getElementById('facit-list');
+  facitEl.innerHTML = '';
+  qs.forEach((q, i) => {
+    const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+    const isCorrect = q.answered && q.selectedDisplay === correctDisplay;
+    const notAnswered = !q.answered;
+
+    const div = document.createElement('div');
+    div.className = 'facit-item ' + (notAnswered ? '' : isCorrect ? 'fc' : 'fw');
+
+    const correctOptText = q.opts[q.correct];
+    const selectedOptText = q.answered
+      ? q.opts[q.shuffledIdx[q.selectedDisplay]]
+      : null;
+
+    let inner = `<div class="fi-num">Fråga ${i + 1}</div>`;
+    inner += `<div class="fi-q">${q.q}</div>`;
+
+    if (notAnswered) {
+      inner += `<div class="fi-row"><span class="lbl">Ditt svar: </span>— (inte besvarad)</div>`;
+      inner += `<div class="fi-row ra"><span class="lbl">Rätt svar: </span>${correctOptText}</div>`;
+    } else if (isCorrect) {
+      inner += `<div class="fi-row ya-ok">✓ <span class="lbl">Ditt svar: </span>${selectedOptText}</div>`;
+    } else {
+      inner += `<div class="fi-row ya-bad">✗ <span class="lbl">Ditt svar: </span>${selectedOptText}</div>`;
+      inner += `<div class="fi-row ra"><span class="lbl">Rätt svar: </span>${correctOptText}</div>`;
+    }
+
+    div.innerHTML = inner;
+    facitEl.appendChild(div);
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// RESTART
+// ════════════════════════════════════════════════════════════
+function restartQuiz() {
+  stopTimer();
+  show('screen-start');
+}
+</script>
+</body>
+</html>
