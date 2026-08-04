@@ -61,6 +61,112 @@ const concepts = [
   { term: "Vitbok", definition: "Är det lagförslag som har sin grund i en grönbok." }
 ];
 
+const lucktextData = [
+  { pre: "Det EU-samarbete där det ska råda fri rörlighet för varor, tjänster, kapital och människor kallas ", post: ".", answers: ["inre marknaden"] },
+  { pre: "Principen som gör att varor, människor, tjänster och kapital kan förflyttas fritt mellan EU:s medlemsländer kallas ", post: ".", answers: ["fri rörlighet"] },
+  { pre: "Tack vare ", post: " behöver EU-medborgare inte visa pass när de reser mellan länderna som ingår i samarbetet.", answers: ["schengenavtalet"] },
+  { pre: "Sverige har valt att stå utanför ", post: ", EU:s valutasamarbete med den gemensamma valutan euron.", answers: ["emu"] },
+  { pre: "EU:s ", post: " fungerar ungefär som Sveriges grundlagar och utgör grunden för hela samarbetet.", answers: ["fördrag"] },
+  { pre: "I ", post: " möts medlemsländernas statschefer för att besluta om riktlinjer för EU:s framtida arbete.", answers: ["europeiska rådet"] },
+  { pre: "", post: " föreslår ny lagstiftning och har en kommissionär från varje medlemsland.", answers: ["eu-kommissionen", "kommissionen"] },
+  { pre: "", post: " består av en minister med rätt ansvarsområde från varje land och beslutar om nya lagar tillsammans med Europaparlamentet.", answers: ["ministerrådet"] },
+  { pre: "", post: " består av folkvalda representanter som medborgarna i medlemsländerna röstat fram.", answers: ["europaparlamentet"] },
+  { pre: "När det uppstår tvister om hur EU:s lagar ska tolkas är det ", post: " som avgör frågan.", answers: ["eu-domstolen"] },
+  { pre: "", post: " är en av EU:s sju institutioner.", answers: ["europeiska centralbanken"] },
+  { pre: "", post: " är också en av EU:s sju institutioner.", answers: ["revisionsrätten"] },
+  { pre: "De tre kriterier som ett land måste uppfylla för att bli medlem i EU – politiskt, ekonomiskt och administrativt – kallas gemensamt ", post: ".", answers: ["köpenhamnskriterierna"] },
+  { pre: "", post: " innebär att landet som vill bli medlem i EU måste vara en stabil demokratisk rättsstat.", answers: ["det politiska kriteriet", "politiska kriteriet"] },
+  { pre: "", post: " innebär att landet måste ha en fungerande marknadsekonomi för att bli medlem i EU.", answers: ["det ekonomiska kriteriet", "ekonomiska kriteriet"] },
+  { pre: "", post: " innebär att landet ska kunna hantera EU:s lagar och regler i praktiken.", answers: ["det administrativa kriteriet", "administrativa kriteriet"] },
+  { pre: "Ett land som förhandlar om medlemskap i EU kallas ett ", post: ".", answers: ["kandidatland"] },
+  { pre: "Ett land som inte är medlem i EU kan ha ett ", post: " som innehåller ekonomiskt samarbete och frihandel med unionen.", answers: ["associeringsavtal"] },
+  { pre: "Genom ", post: " får Island, Liechtenstein och Norge ta del av EU:s inre marknad utan att vara medlemmar.", answers: ["ees-avtalet", "ees avtalet"] },
+  { pre: "", post: " innebär att varje land självständigt bestämmer om och hur en överenskommelse ska tillämpas.", answers: ["suveränitetsprincipen"] },
+  { pre: "När Sverige gick med i EU skedde en ", post: ", vilket innebär att EU tog över beslutsrätten i flera frågor.", answers: ["överlåtelse av beslutsrätten"] },
+  { pre: "När medlemsstaterna helt lämnat över beslutsrätten till EU och besluten fattas överstatligt talar man om ", post: ".", answers: ["exklusiv befogenhet"] },
+  { pre: "När EU och medlemsstaterna delar på beslutsrätten inom ett område talar man om ", post: ".", answers: ["delad befogenhet"] },
+  { pre: "", post: " innebär att beslut ska fattas så nära medborgarna som möjligt.", answers: ["subsidiaritetsprincipen"] },
+  { pre: "", post: " gäller som lag direkt i samtliga EU-länder utan att behöva omvandlas till nationell lag.", answers: ["förordningar", "förordning"] },
+  { pre: "Ett ", post: " sätter upp ett mål inom ett visst rättsområde som medlemsländerna själva ska genomföra i sin lagstiftning.", answers: ["direktiv"] },
+  { pre: "Ett ", post: " från EU riktar sig till en eller flera bestämda personer, företag eller organisationer.", answers: ["beslut"] },
+  { pre: "", post: " är förslag till förändringar som kommer från en EU-institution men som inte är bindande.", answers: ["rekommendationer", "rekommendation"] },
+  { pre: "Ett ", post: " innebär att en EU-institution uttrycker en åsikt om en viss situation.", answers: ["yttrande"] },
+  { pre: "En ", post: " är det lagförslag som har sin grund i en tidigare grönbok.", answers: ["vitbok"] }
+];
+
+const scenarioData = [
+  { scenario: "En lärare beskriver EU:s mest kända samarbetsprojekt, där varor, tjänster, kapital och människor ska kunna röra sig fritt mellan medlemsländerna.", distractors: ["Fri rörlighet", "EMU", "Schengenavtalet"] },
+  { scenario: "En elev förklarar den princip som gör att varor, människor, tjänster och kapital kan förflyttas utan hinder mellan EU:s medlemsländer.", distractors: ["Inre marknaden", "Schengenavtalet", "EES-avtalet"] },
+  { scenario: "En turist reser med tåg mellan Frankrike och Tyskland utan att någonsin behöva visa sitt pass vid gränsen.", distractors: ["Fri rörlighet", "EES-avtalet", "Inre marknaden"] },
+  { scenario: "Ett antal EU-länder har gått samman om en gemensam valuta och för en gemensam penningpolitik.", distractors: ["Inre marknaden", "Europeiska centralbanken", "Suveränitetsprincipen"] },
+  { scenario: "Ett dokument fungerar som EU:s grundlag, och alla medlemsländer har skrivit under och är bundna av det.", distractors: ["Direktiv", "Förordningar", "Beslut"] },
+  { scenario: "Medlemsländernas statschefer samlas för att komma överens om de stora, övergripande riktlinjerna för EU:s framtida arbete.", distractors: ["Ministerrådet", "EU-kommissionen", "Europaparlamentet"] },
+  { scenario: "En institution med en representant från varje medlemsland lägger fram ett förslag till en ny EU-lag.", distractors: ["Ministerrådet", "Europeiska rådet", "EU-domstolen"] },
+  { scenario: "Miljöministrarna från alla medlemsländer samlas för att tillsammans med Europaparlamentet besluta om en ny lag på miljöområdet.", distractors: ["Europeiska rådet", "EU-kommissionen", "Europaparlamentet"] },
+  { scenario: "Medborgarna i EU:s medlemsländer röstar fram sina representanter, som sedan är med och stiftar nya lagar.", distractors: ["Ministerrådet", "Europeiska rådet", "EU-kommissionen"] },
+  { scenario: "Två medlemsländer är oense om hur en viss EU-lag ska tolkas, och frågan avgörs slutgiltigt av denna institution.", distractors: ["EU-kommissionen", "Revisionsrätten", "Ministerrådet"] },
+  { scenario: "En av EU:s sju institutioner ansvarar för euron och penningpolitiken inom euroområdet.", distractors: ["Revisionsrätten", "EMU", "Ministerrådet"] },
+  { scenario: "En av EU:s sju institutioner granskar hur EU:s pengar har använts och redovisats.", distractors: ["Europeiska centralbanken", "EU-domstolen", "EU-kommissionen"] },
+  { scenario: "Läraren radar upp de tre villkor – demokrati, marknadsekonomi och förmåga att hantera EU:s regelverk – som ett land måste uppfylla för att bli medlem i EU.", distractors: ["Det politiska kriteriet", "Associeringsavtal", "Suveränitetsprincipen"] },
+  { scenario: "Ett av tre villkor för EU-medlemskap kräver att landet är en stabil demokrati som respekterar mänskliga rättigheter och rättsstatens principer.", distractors: ["Det ekonomiska kriteriet", "Det administrativa kriteriet", "Köpenhamnskriterierna"] },
+  { scenario: "Ett av tre villkor för EU-medlemskap kräver att landets ekonomi bygger på fri marknad och klarar konkurrensen inom EU.", distractors: ["Det politiska kriteriet", "Det administrativa kriteriet", "Köpenhamnskriterierna"] },
+  { scenario: "Ett av tre villkor för EU-medlemskap kräver att landets myndigheter praktiskt klarar av att införa och tillämpa EU:s regelverk.", distractors: ["Det politiska kriteriet", "Det ekonomiska kriteriet", "Köpenhamnskriterierna"] },
+  { scenario: "Ett land som ansökt om medlemskap i EU och just nu förhandlar med unionen om villkoren.", distractors: ["Associeringsavtal", "EES-avtalet", "Köpenhamnskriterierna"] },
+  { scenario: "Ett land utanför EU tecknar ett avtal med unionen som ger ekonomiskt samarbete och frihandel, utan att landet blir medlem.", distractors: ["EES-avtalet", "Kandidatland", "Suveränitetsprincipen"] },
+  { scenario: "Norge får handla fritt på EU:s inre marknad trots att landet valt att inte gå med i EU.", distractors: ["Associeringsavtal", "Schengenavtalet", "Suveränitetsprincipen"] },
+  { scenario: "Ett land bestämmer helt själv om det vill ingå ett internationellt avtal och hur avtalet i så fall ska genomföras i den egna lagstiftningen.", distractors: ["Subsidiaritetsprincipen", "Överlåtelse av beslutsrätten", "Exklusiv befogenhet"] },
+  { scenario: "När Sverige blev medlem i EU fick unionen rätt att fatta beslut i flera frågor som tidigare låg hos riksdagen.", distractors: ["Suveränitetsprincipen", "Subsidiaritetsprincipen", "Delad befogenhet"] },
+  { scenario: "Inom ett visst område fattas alla nya lagar av EU, och medlemsländerna har helt lämnat ifrån sig sin egen beslutsrätt.", distractors: ["Delad befogenhet", "Subsidiaritetsprincipen", "Överlåtelse av beslutsrätten"] },
+  { scenario: "Inom ett visst område kan både EU och det enskilda medlemslandet stifta lagar, så länge de inte strider mot varandra.", distractors: ["Exklusiv befogenhet", "Subsidiaritetsprincipen", "Suveränitetsprincipen"] },
+  { scenario: "EU avstår från att lagstifta i en fråga eftersom den kan lösas lika bra av medlemsländerna själva, närmare medborgarna.", distractors: ["Suveränitetsprincipen", "Delad befogenhet", "Exklusiv befogenhet"] },
+  { scenario: "En ny EU-regel börjar gälla som lag i alla medlemsländer samma dag, utan att något land behöver stifta en egen lag om saken.", distractors: ["Direktiv", "Beslut", "Rekommendationer"] },
+  { scenario: "EU sätter upp ett gemensamt mål på ett rättsområde, men varje medlemsland får själv bestämma hur målet ska nås i sin nationella lagstiftning.", distractors: ["Förordningar", "Beslut", "Yttrande"] },
+  { scenario: "EU riktar en bindande åtgärd mot ett enskilt företag som brutit mot konkurrensreglerna.", distractors: ["Förordningar", "Direktiv", "Rekommendationer"] },
+  { scenario: "En EU-institution föreslår en förändring till medlemsländerna, men förslaget är inte juridiskt bindande.", distractors: ["Beslut", "Yttrande", "Direktiv"] },
+  { scenario: "En EU-institution uttrycker sin åsikt om en fråga utan att det leder till några rättsliga skyldigheter för någon.", distractors: ["Rekommendationer", "Beslut", "Vitbok"] },
+  { scenario: "Kommissionen lägger fram ett konkret lagförslag som byggts vidare på utifrån en tidigare diskussionsrapport i frågan.", distractors: ["Yttrande", "Rekommendationer", "Fördrag"] }
+];
+
+const ickeData = [
+  { optionA: "EU:s mest kända samarbete, där det ska råda fri rörlighet för varor, tjänster, kapital och människor mellan medlemsländerna.", optionB: "Ett avtal som gör att EU-medborgare slipper visa pass när de reser mellan medlemsländerna.", correct: "A", explanation: "Inre marknaden är EU:s mest kända samarbetsprojekt med fri rörlighet. Alternativ B beskriver istället Schengenavtalet." },
+  { optionA: "Ett avtal som gör att EU-medborgare slipper visa pass vid gränserna mellan medlemsländerna.", optionB: "Principen som gör att varor, människor, tjänster och kapital fritt kan förflyttas mellan EU:s medlemsländer.", correct: "B", explanation: "Fri rörlighet är själva principen bakom den fria förflyttningen. Alternativ A beskriver istället Schengenavtalet." },
+  { optionA: "Avtalet som gör att EU-medborgare slipper visa pass när de reser mellan de länder som ingår i samarbetet.", optionB: "EU:s valutasamarbete som ger flera medlemsländer en gemensam valuta.", correct: "A", explanation: "Schengenavtalet handlar om passfrihet vid resor. Alternativ B beskriver istället EMU." },
+  { optionA: "EU:s valutasamarbete, som innebär att flera medlemsländer delar en gemensam valuta, euron.", optionB: "Avtalet som gör att EU-medborgare kan resa mellan medlemsländerna utan passkontroll.", correct: "A", explanation: "EMU är valutasamarbetet med euron. Alternativ B beskriver istället Schengenavtalet." },
+  { optionA: "Bindande regler som riktar sig till en eller flera bestämda medlemsstater eller företag.", optionB: "Avtal mellan medlemsländerna som fungerar ungefär som Sveriges grundlagar och utgör grunden för hela EU-samarbetet.", correct: "B", explanation: "Fördragen är EU:s grundläggande avtal, jämförbara med grundlagar. Alternativ A beskriver istället ett beslut." },
+  { optionA: "Medlemsländernas statschefer möts för att besluta om de övergripande riktlinjerna för EU:s framtida arbete.", optionB: "En minister med rätt ansvarsområde från varje medlemsland möts för att besluta om nya lagar tillsammans med Europaparlamentet.", correct: "A", explanation: "Europeiska rådet består av statscheferna och sätter de stora riktlinjerna. Alternativ B beskriver istället Ministerrådet." },
+  { optionA: "En minister med rätt ansvarsområde från varje land beslutar tillsammans med Europaparlamentet om nya lagar.", optionB: "En kommissionär från varje medlemsland tar fram och föreslår ny lagstiftning för EU.", correct: "B", explanation: "EU-kommissionen föreslår ny lagstiftning. Alternativ A beskriver istället Ministerrådet." },
+  { optionA: "En minister med rätt ansvarsområde från varje medlemsland beslutar tillsammans med Europaparlamentet om nya lagar.", optionB: "En kommissionär från varje medlemsland lägger fram förslag till ny lagstiftning.", correct: "A", explanation: "Ministerrådet beslutar om lagar tillsammans med parlamentet. Alternativ B beskriver istället EU-kommissionen." },
+  { optionA: "Institutionen består av en kommissionär från varje medlemsland och föreslår ny lagstiftning.", optionB: "Institutionen består av folkvalda representanter som medborgarna i medlemsländerna röstat fram.", correct: "B", explanation: "Europaparlamentet består av folkvalda ledamöter. Alternativ A beskriver istället EU-kommissionen." },
+  { optionA: "Institutionen tolkar EU:s lagstiftning och löser tvister mellan medlemsländer eller institutioner.", optionB: "Institutionen granskar hur EU:s pengar har använts och redovisats.", correct: "A", explanation: "EU-domstolen tolkar lagar och avgör tvister. Alternativ B beskriver istället Revisionsrätten." },
+  { optionA: "En av EU:s sju institutioner som granskar hur EU:s pengar har använts.", optionB: "En av EU:s sju institutioner som ansvarar för euron och penningpolitiken.", correct: "B", explanation: "Europeiska centralbanken ansvarar för euron och penningpolitiken. Alternativ A beskriver istället Revisionsrätten." },
+  { optionA: "En av EU:s sju institutioner som granskar hur EU:s pengar har använts och redovisats.", optionB: "En av EU:s sju institutioner som ansvarar för euron och penningpolitiken inom euroområdet.", correct: "A", explanation: "Revisionsrätten granskar EU:s ekonomi. Alternativ B beskriver istället Europeiska centralbanken." },
+  { optionA: "De tre villkor – politiskt, ekonomiskt och administrativt – som ett land måste uppfylla för att bli medlem i EU.", optionB: "Ett avtal mellan EU och ett land utanför unionen som ger ekonomiskt samarbete och frihandel.", correct: "A", explanation: "Köpenhamnskriterierna är de tre medlemskapsvillkoren. Alternativ B beskriver istället ett associeringsavtal." },
+  { optionA: "Kravet att landet ska ha en fungerande marknadsekonomi som klarar konkurrensen inom EU.", optionB: "Kravet att landet ska vara en stabil demokratisk rättsstat som respekterar mänskliga rättigheter.", correct: "B", explanation: "Det politiska kriteriet handlar om demokrati och rättsstat. Alternativ A beskriver istället det ekonomiska kriteriet." },
+  { optionA: "Kravet att landet ska ha en fungerande marknadsekonomi som klarar konkurrensen inom EU.", optionB: "Kravet att landets myndigheter praktiskt ska klara av att tillämpa EU:s lagar och regler.", correct: "A", explanation: "Det ekonomiska kriteriet handlar om marknadsekonomi. Alternativ B beskriver istället det administrativa kriteriet." },
+  { optionA: "Kravet att landet ska vara en stabil demokratisk rättsstat.", optionB: "Kravet att landets myndigheter praktiskt ska klara av att hantera och tillämpa EU:s lagar och regler.", correct: "B", explanation: "Det administrativa kriteriet handlar om att kunna hantera EU:s regelverk i praktiken. Alternativ A beskriver istället det politiska kriteriet." },
+  { optionA: "Benämningen på ett land som förhandlar med EU om ett fullt medlemskap.", optionB: "Benämningen på ett land som tecknat ett handelsavtal med EU utan att vilja bli medlem.", correct: "A", explanation: "Ett kandidatland förhandlar om medlemskap. Alternativ B beskriver istället ett land med associeringsavtal." },
+  { optionA: "Ett avtal som gör att ett land som inte är EU-medlem ändå får ta del av EU:s inre marknad fullt ut.", optionB: "Ett avtal mellan EU och ett land utanför unionen som kan innehålla ekonomiskt samarbete och frihandel.", correct: "B", explanation: "Associeringsavtal handlar om samarbete och frihandel utan medlemskap. Alternativ A beskriver istället EES-avtalet, som ger full tillgång till inre marknaden." },
+  { optionA: "Avtalet som ger Island, Liechtenstein och Norge tillgång till EU:s inre marknad utan att de är medlemmar.", optionB: "Avtalet som gör att medborgare i EU:s medlemsländer slipper visa pass vid resor mellan länderna.", correct: "A", explanation: "EES-avtalet ger tillgång till inre marknaden. Alternativ B beskriver istället Schengenavtalet." },
+  { optionA: "Principen att beslut inom EU ska fattas så nära medborgarna som möjligt.", optionB: "Principen att varje land självständigt bestämmer om och hur en internationell överenskommelse ska tillämpas.", correct: "B", explanation: "Suveränitetsprincipen handlar om ländernas självbestämmande. Alternativ A beskriver istället subsidiaritetsprincipen." },
+  { optionA: "När ett land går med i EU och EU därmed tar över beslutsrätten i flera frågor som tidigare låg hos landets riksdag.", optionB: "När EU och medlemsstaterna delar på beslutsrätten inom ett visst område.", correct: "A", explanation: "Överlåtelse av beslutsrätten sker vid medlemskap, då beslutsrätt flyttas till EU. Alternativ B beskriver istället delad befogenhet." },
+  { optionA: "EU och medlemsländerna delar på rätten att lagstifta inom området, så länge ländernas lagar inte strider mot EU:s.", optionB: "Endast EU får lagstifta inom området eftersom medlemsstaterna helt lämnat över beslutsrätten dit.", correct: "B", explanation: "Exklusiv befogenhet innebär att bara EU beslutar. Alternativ A beskriver istället delad befogenhet." },
+  { optionA: "Både EU och det enskilda medlemslandet kan lagstifta inom området, så länge landets lagar inte strider mot EU:s.", optionB: "Endast EU får lagstifta inom området eftersom medlemsstaterna helt lämnat över beslutsrätten.", correct: "A", explanation: "Delad befogenhet innebär att båda nivåerna kan lagstifta. Alternativ B beskriver istället exklusiv befogenhet." },
+  { optionA: "Principen att beslut ska fattas så nära medborgarna som möjligt, och att EU bara agerar när det ger ett mervärde.", optionB: "Principen att varje land självständigt avgör om och hur en överenskommelse ska tillämpas.", correct: "A", explanation: "Subsidiaritetsprincipen handlar om närhet till medborgarna. Alternativ B beskriver istället suveränitetsprincipen." },
+  { optionA: "Rättsakter som sätter upp ett mål som medlemsländerna själva ska genomföra i sin nationella lagstiftning.", optionB: "Rättsakter som gäller som lag direkt i samtliga EU-länder, utan att behöva omvandlas till nationell lag.", correct: "B", explanation: "Förordningar gäller direkt som lag i alla länder. Alternativ A beskriver istället direktiv." },
+  { optionA: "En rättsakt som sätter upp ett mål inom ett rättsområde, som medlemsländerna själva genomför i sin lagstiftning.", optionB: "En rättsakt som gäller som lag direkt i alla EU-länder utan någon nationell anpassning.", correct: "A", explanation: "Direktiv sätter mål som länderna själva genomför. Alternativ B beskriver istället en förordning." },
+  { optionA: "En rättsakt som riktar sig till alla EU:s medlemsländer på samma gång och blir lag i samtliga.", optionB: "En rättsakt som riktar sig till en eller flera bestämda personer, företag eller organisationer.", correct: "B", explanation: "Ett beslut riktas mot specifika mottagare. Alternativ A beskriver istället en förordning." },
+  { optionA: "Icke-bindande förslag till förändringar som kommer från en EU-institution.", optionB: "En bindande åtgärd som riktar sig mot en bestämd person, ett företag eller en organisation.", correct: "A", explanation: "Rekommendationer är just förslag utan bindande kraft. Alternativ B beskriver istället ett beslut." },
+  { optionA: "En icke-bindande åsikt som en EU-institution uttrycker om en viss situation.", optionB: "Ett icke-bindande förslag till förändring som en EU-institution riktar till medlemsländerna.", correct: "A", explanation: "Ett yttrande är en åsikt om en situation. Alternativ B beskriver istället en rekommendation, som är ett förslag till förändring." },
+  { optionA: "Ett lagförslag som har sin grund i en tidigare diskussionsrapport, en grönbok.", optionB: "En åsikt som en EU-institution uttrycker om en viss situation, utan att något förslag läggs fram.", correct: "A", explanation: "Vitboken är själva lagförslaget som bygger vidare på en grönbok. Alternativ B beskriver istället ett yttrande." }
+];
+
+function gradeText(pct) {
+  if (pct >= 90) return "Utmärkt! Redo för provet!";
+  if (pct >= 70) return "Bra jobbat! Nästan redo.";
+  if (pct >= 50) return "På god väg, men öva lite till.";
+  return "Öva mer på begreppen innan provet.";
+}
+
 function shuffleArray(array) {
   const arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -94,9 +200,9 @@ function ViewToggle({ view, setView }) {
   const views = [
     { key: "lista", label: "Lista", active: true },
     { key: "flashcards", label: "Flashcards", active: true },
-    { key: "lucktext", label: "Lucktext", active: false },
-    { key: "scenario", label: "Scenario", active: false },
-    { key: "ickeex", label: "Icke-ex.", active: false }
+    { key: "lucktext", label: "Lucktext", active: true },
+    { key: "scenario", label: "Scenario", active: true },
+    { key: "ickeex", label: "Icke-ex.", active: true }
   ];
   return (
     <div className="flex justify-center flex-wrap gap-2 my-6">
@@ -346,6 +452,323 @@ function FlashcardView() {
   );
 }
 
+function LucktextView() {
+  const initial = () => concepts.map(() => ({ value: "", status: "idle", attempts: 0 }));
+  const [items, setItems] = useState(initial);
+
+  const setValue = (i, value) => {
+    setItems((prev) => {
+      const next = [...prev];
+      next[i] = { ...next[i], value };
+      return next;
+    });
+  };
+
+  const submit = (i) => {
+    setItems((prev) => {
+      const item = prev[i];
+      if (item.status === "correct" || item.status === "revealed") return prev;
+      const norm = item.value.trim().toLowerCase();
+      const ok = lucktextData[i].answers.includes(norm);
+      const next = [...prev];
+      if (ok) {
+        next[i] = { ...item, status: "correct" };
+      } else {
+        const attempts = item.attempts + 1;
+        next[i] = { ...item, attempts, status: attempts >= 2 ? "wrong2" : "wrong1" };
+      }
+      return next;
+    });
+  };
+
+  const correctAll = () => {
+    setItems((prev) => prev.map((item) => (item.status === "correct" ? item : { ...item, status: "revealed" })));
+  };
+
+  const restart = () => setItems(initial());
+
+  const score = items.filter((it) => it.status === "correct").length;
+  const total = concepts.length;
+  const allDone = items.every((it) => it.status === "correct" || it.status === "revealed");
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 pb-16">
+      <div className="bg-white rounded-2xl border-2 border-slate-200 p-4 mb-6">
+        <p className="text-sm font-bold text-slate-500 uppercase tracking-wide mb-3">Begreppsbank</p>
+        <div className="flex flex-wrap gap-2">
+          {concepts.map((c, i) => {
+            const done = items[i].status === "correct" || items[i].status === "revealed";
+            return (
+              <span
+                key={i}
+                className={
+                  "text-xs px-3 py-1 rounded-full border " +
+                  (done ? "line-through text-slate-300 border-slate-200 bg-slate-50" : "text-slate-700 border-slate-300 bg-white")
+                }
+              >
+                {c.term}
+              </span>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-sm font-bold text-slate-500">{score} / {total} rätt</p>
+        <div className="flex gap-2">
+          <button onClick={correctAll} className="text-xs font-bold px-4 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-colors">
+            Rätta alla
+          </button>
+          <button onClick={restart} className="text-xs font-bold px-4 py-2 rounded-xl border-2 border-slate-300 text-slate-600 hover:bg-slate-100 transition-colors">
+            Börja om
+          </button>
+        </div>
+      </div>
+
+      {allDone && (
+        <div className="bg-white border-2 rounded-3xl p-6 text-center mb-6" style={{ borderColor: PRIMARY }}>
+          <p className="text-2xl font-bold mb-1" style={{ color: "#115e59" }}>{score} / {total} rätt</p>
+          <p className="text-slate-600">{gradeText((score / total) * 100)}</p>
+        </div>
+      )}
+
+      <div className="grid gap-4">
+        {lucktextData.map((data, i) => {
+          const item = items[i];
+          const locked = item.status === "correct" || item.status === "revealed";
+          const borderClass =
+            item.status === "correct" ? "border-green-500" :
+            item.status === "revealed" ? "border-red-400" :
+            item.status === "wrong2" ? "border-red-300" :
+            item.status === "wrong1" ? "border-orange-300" :
+            "border-slate-200";
+          return (
+            <div key={i} className={`bg-white p-5 rounded-2xl border-2 ${borderClass}`}>
+              <p className="leading-relaxed">
+                <span className="text-slate-400 font-bold mr-1">{i + 1}.</span>
+                {data.pre}
+                <input
+                  type="text"
+                  value={item.value}
+                  disabled={locked}
+                  onChange={(e) => setValue(i, e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") submit(i); }}
+                  className={`inline-block mx-1 px-2 py-1 border-b-2 focus:outline-none w-40 text-center ${locked ? "bg-slate-50" : "bg-white"}`}
+                  style={{ borderColor: item.status === "correct" ? "#16a34a" : item.status === "revealed" ? "#dc2626" : PRIMARY }}
+                />
+                {data.post}
+              </p>
+              {item.status === "wrong1" && <p className="text-orange-500 text-sm font-bold mt-2">Är du säker att du stavat rätt?</p>}
+              {item.status === "wrong2" && <p className="text-red-600 text-sm font-bold mt-2">Fel. Kontrollera stavningen och försök igen.</p>}
+              {item.status === "correct" && <p className="text-green-700 text-sm mt-2">✓ Rätt! {concepts[i].definition}</p>}
+              {item.status === "revealed" && <p className="text-red-600 text-sm mt-2">Rätt svar: <strong>{concepts[i].term}</strong>. {concepts[i].definition}</p>}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function ScenarioView() {
+  const total = scenarioData.length;
+  const buildOrder = () => shuffleArray(scenarioData.map((_, i) => i));
+  const [order, setOrder] = useState(buildOrder);
+  const [qIdx, setQIdx] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [phase, setPhase] = useState("playing");
+
+  const dataIdx = order[qIdx];
+  const q = scenarioData[dataIdx];
+  const concept = concepts[dataIdx];
+  const options = useMemo(() => shuffleArray([concept.term, ...q.distractors]), [dataIdx]);
+
+  const choose = (opt) => {
+    if (selected !== null) return;
+    setSelected(opt);
+    if (opt === concept.term) setScore((s) => s + 1);
+  };
+
+  const next = () => {
+    if (qIdx + 1 >= total) {
+      setPhase("done");
+    } else {
+      setQIdx(qIdx + 1);
+      setSelected(null);
+    }
+  };
+
+  const restart = () => {
+    setOrder(buildOrder());
+    setQIdx(0);
+    setSelected(null);
+    setScore(0);
+    setPhase("playing");
+  };
+
+  if (phase === "done") {
+    const pct = (score / total) * 100;
+    return (
+      <div className="max-w-2xl mx-auto px-4 pb-16">
+        <div className="bg-white border-2 rounded-3xl p-8 text-center" style={{ borderColor: PRIMARY }}>
+          <p className="text-3xl font-bold mb-2" style={{ color: "#115e59" }}>{score} / {total} rätt</p>
+          <p className="text-slate-600 mb-6">{gradeText(pct)}</p>
+          <button onClick={restart} style={{ background: PRIMARY }} className="text-white px-8 py-3 rounded-2xl font-bold">
+            Gör om
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 pb-16">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-sm font-bold text-slate-500">Fråga {qIdx + 1} av {total}</p>
+        <p className="text-sm font-bold text-slate-500">Poäng: {score}</p>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+        <div className="h-2 rounded-full transition-all" style={{ width: `${(qIdx / total) * 100}%`, background: PRIMARY }}></div>
+      </div>
+
+      <div className="bg-white p-6 rounded-2xl border-2 border-slate-200 mb-5">
+        <p className="text-lg leading-relaxed">{q.scenario}</p>
+      </div>
+
+      <div className="grid gap-3">
+        {options.map((opt, i) => {
+          const isCorrect = opt === concept.term;
+          const isSelected = selected === opt;
+          let cls = "bg-white border-2 border-slate-200 hover:border-slate-300";
+          if (selected !== null) {
+            if (isCorrect) cls = "bg-green-50 border-2 border-green-500 text-green-800";
+            else if (isSelected) cls = "bg-red-50 border-2 border-red-500 text-red-800";
+            else cls = "bg-white border-2 border-slate-100 text-slate-400";
+          }
+          return (
+            <button key={i} onClick={() => choose(opt)} disabled={selected !== null} className={`text-left px-5 py-3 rounded-2xl font-medium transition-colors ${cls}`}>
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+
+      {selected !== null && (
+        <div className="mt-5 bg-slate-50 border-2 border-slate-200 rounded-2xl p-4">
+          <p className="text-slate-700">{concept.definition}</p>
+          <button onClick={next} style={{ background: PRIMARY }} className="mt-4 text-white px-6 py-2 rounded-xl font-bold">
+            {qIdx + 1 >= total ? "Se resultat" : "Nästa →"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function IckeExView() {
+  const total = ickeData.length;
+  const buildOrder = () => shuffleArray(ickeData.map((_, i) => i));
+  const [order, setOrder] = useState(buildOrder);
+  const [qIdx, setQIdx] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [phase, setPhase] = useState("playing");
+
+  const dataIdx = order[qIdx];
+  const q = ickeData[dataIdx];
+  const concept = concepts[dataIdx];
+
+  const choose = (letter) => {
+    if (selected !== null) return;
+    setSelected(letter);
+    if (letter === q.correct) setScore((s) => s + 1);
+  };
+
+  const next = () => {
+    if (qIdx + 1 >= total) {
+      setPhase("done");
+    } else {
+      setQIdx(qIdx + 1);
+      setSelected(null);
+    }
+  };
+
+  const restart = () => {
+    setOrder(buildOrder());
+    setQIdx(0);
+    setSelected(null);
+    setScore(0);
+    setPhase("playing");
+  };
+
+  if (phase === "done") {
+    const pct = (score / total) * 100;
+    return (
+      <div className="max-w-2xl mx-auto px-4 pb-16">
+        <div className="bg-white border-2 rounded-3xl p-8 text-center" style={{ borderColor: PRIMARY }}>
+          <p className="text-3xl font-bold mb-2" style={{ color: "#115e59" }}>{score} / {total} rätt</p>
+          <p className="text-slate-600 mb-6">{gradeText(pct)}</p>
+          <button onClick={restart} style={{ background: PRIMARY }} className="text-white px-8 py-3 rounded-2xl font-bold">
+            Börja om
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const options = [
+    { letter: "A", text: q.optionA },
+    { letter: "B", text: q.optionB }
+  ];
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 pb-16">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-sm font-bold text-slate-500">Fråga {qIdx + 1} av {total}</p>
+        <p className="text-sm font-bold text-slate-500">Poäng: {score}</p>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+        <div className="h-2 rounded-full transition-all" style={{ width: `${(qIdx / total) * 100}%`, background: PRIMARY }}></div>
+      </div>
+
+      <div className="bg-white p-5 rounded-2xl border-l-8 mb-5 shadow-sm" style={{ borderColor: PRIMARY }}>
+        <p className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Begrepp</p>
+        <h3 className="text-xl font-bold">{concept.term}</h3>
+      </div>
+
+      <p className="text-sm text-slate-500 mb-3 font-medium">Vilket alternativ är ett korrekt exempel på begreppet?</p>
+
+      <div className="grid gap-3">
+        {options.map((opt) => {
+          const isCorrect = opt.letter === q.correct;
+          const isSelected = selected === opt.letter;
+          let cls = "bg-white border-2 border-slate-200 hover:border-slate-300";
+          if (selected !== null) {
+            if (isCorrect) cls = "bg-green-50 border-2 border-green-500 text-green-800";
+            else if (isSelected) cls = "bg-red-50 border-2 border-red-500 text-red-800";
+            else cls = "bg-white border-2 border-slate-100 text-slate-400";
+          }
+          return (
+            <button key={opt.letter} onClick={() => choose(opt.letter)} disabled={selected !== null} className={`text-left px-5 py-4 rounded-2xl font-medium transition-colors ${cls}`}>
+              <span className="font-bold mr-2">{opt.letter}.</span>{opt.text}
+            </button>
+          );
+        })}
+      </div>
+
+      {selected !== null && (
+        <div className="mt-5 bg-slate-50 border-2 border-slate-200 rounded-2xl p-4">
+          <p className="text-slate-700">{q.explanation}</p>
+          <button onClick={next} style={{ background: PRIMARY }} className="mt-4 text-white px-6 py-2 rounded-xl font-bold">
+            {qIdx + 1 >= total ? "Se resultat" : "Nästa →"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function App() {
   const [view, setView] = useState("lista");
 
@@ -355,6 +778,9 @@ function App() {
       <ViewToggle view={view} setView={setView} />
       {view === "lista" && <ListView />}
       {view === "flashcards" && <FlashcardView key="flashcards" />}
+      {view === "lucktext" && <LucktextView />}
+      {view === "scenario" && <ScenarioView key="scenario" />}
+      {view === "ickeex" && <IckeExView key="ickeex" />}
       <footer className="text-center text-slate-400 italic text-sm mt-10">
         Källa: EU-lag och svensk lag begreppslista
       </footer>
