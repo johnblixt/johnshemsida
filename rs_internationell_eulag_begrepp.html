@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EU-lag och svensk lag – Begrepp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  body { font-family: 'EB Garamond', serif; background: #f4faf9; }
+
+  .flip-card { perspective: 1000px; height: 350px; width: 100%; max-width: 400px; cursor: pointer; }
+  .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+  .flipped-classes { transform: rotateY(180deg); }
+  .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+  .flip-card-back { transform: rotateY(180deg); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+const { useState, useMemo } = React;
+
+const PRIMARY = "#0d9488";
+
+const concepts = [
+  { term: "Inre marknaden", definition: "Är det mest kända EU-samarbetet, och där ska det råda fri rörlighet." },
+  { term: "Fri rörlighet", definition: "Innebär att varor, människor, tjänster och kapital ska kunna förflyttas fritt inom EU." },
+  { term: "Schengenavtalet", definition: "Ett avtal som gör att EU-medborgare som reser inom EU inte behöver uppvisa pass mellan länderna." },
+  { term: "EMU", definition: "EU:s valutasamarbete, som innebär en gemensam valuta, euron." },
+  { term: "Fördrag", definition: "Är avtal som kan jämföras med Sveriges grundlagar." },
+  { term: "Europeiska rådet", definition: "Består av medlemsländernas statschefer och beslutar om riktlinjer för det framtida arbetet." },
+  { term: "EU-kommissionen", definition: "Föreslår ny lagstiftning och består av en EU-kommissionär från varje medlemsland." },
+  { term: "Ministerrådet", definition: "Består av en minister med lämpligt ansvarsområde från varje medlemsland och fattar beslut om nya lagar tillsammans med Europaparlamentet." },
+  { term: "Europaparlamentet", definition: "Består av folkvalda representanter från medlemsländerna." },
+  { term: "EU-domstolen", definition: "Tolkar EU:s lagstiftning och löser tvister." },
+  { term: "Europeiska centralbanken", definition: "En av EU:s sju institutioner." },
+  { term: "Revisionsrätten", definition: "En av EU:s sju institutioner." },
+  { term: "Köpenhamnskriterierna", definition: "Det politiska kriteriet, det ekonomiska kriteriet och det administrativa kriteriet." },
+  { term: "Det politiska kriteriet", definition: "Innebär att landet ska vara en stabil demokratisk rättsstat." },
+  { term: "Det ekonomiska kriteriet", definition: "Innebär att landet måste ha en fungerande marknadsekonomi." },
+  { term: "Det administrativa kriteriet", definition: "Innebär att landet ska kunna hantera EU:s lagar och regler." },
+  { term: "Kandidatland", definition: "Benämningen på ett land som förhandlar om medlemskap i EU." },
+  { term: "Associeringsavtal", definition: "Är ett avtal som kan innehålla ekonomiskt samarbete och frihandel som de länder som inte är medlemmar kan ha med EU." },
+  { term: "EES-avtalet", definition: "Ett avtal som Island, Liechtenstein och Norge har med EU som gör att de får ta del av den inre marknaden." },
+  { term: "Suveränitetsprincipen", definition: "Varje land är självständigt och bestämmer själv om och hur en överenskommelse ska tillämpas." },
+  { term: "Överlåtelse av beslutsrätten", definition: "Innebär att EU tar över beslutsrätten i flera frågor." },
+  { term: "Exklusiv befogenhet", definition: "Innebär överstatliga beslut om ny lagstiftning där medlemsstaterna överlåter beslutsrätten till en organisation." },
+  { term: "Delad befogenhet", definition: "Innebär att organisationen och medlemsstaterna delar på beslutsrätten." },
+  { term: "Subsidiaritetsprincipen", definition: "Innebär att beslut ska fattas så nära medborgarna som möjligt." },
+  { term: "Förordningar", definition: "Gäller som lag i samtliga EU-länder och ska tillämpas direkt." },
+  { term: "Direktiv", definition: "Är en lag som sätter ett mål inom ett visst rättsområde." },
+  { term: "Beslut", definition: "Riktar sig till en eller flera personer, företag eller organisationer." },
+  { term: "Rekommendationer", definition: "Innebär förändringar som föreslås från en EU-institution." },
+  { term: "Yttrande", definition: "Innebär att en EU-institution har en åsikt om en viss situation." },
+  { term: "Vitbok", definition: "Är det lagförslag som har sin grund i en grönbok." }
+];
+
+function shuffleArray(array) {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function Header() {
+  return (
+    <header className="flex items-center justify-between max-w-4xl mx-auto px-4 pt-6 pb-2">
+      <a
+        href="index.html"
+        className="text-sm font-semibold transition-colors"
+        style={{ color: PRIMARY }}
+        onMouseOver={(e) => (e.currentTarget.style.opacity = 0.7)}
+        onMouseOut={(e) => (e.currentTarget.style.opacity = 1)}
+      >
+        ← Tillbaka till startsidan
+      </a>
+      <h1 className="text-2xl md:text-3xl font-bold italic uppercase tracking-wide text-center" style={{ color: PRIMARY }}>
+        EU-lag och svensk lag
+      </h1>
+      <div className="w-32"></div>
+    </header>
+  );
+}
+
+function ViewToggle({ view, setView }) {
+  const views = [
+    { key: "lista", label: "Lista", active: true },
+    { key: "flashcards", label: "Flashcards", active: true },
+    { key: "lucktext", label: "Lucktext", active: false },
+    { key: "scenario", label: "Scenario", active: false },
+    { key: "ickeex", label: "Icke-ex.", active: false }
+  ];
+  return (
+    <div className="flex justify-center flex-wrap gap-2 my-6">
+      {views.map((v) => {
+        const isActive = view === v.key;
+        return (
+          <button
+            key={v.key}
+            disabled={!v.active}
+            title={!v.active ? "Kommer snart" : undefined}
+            onClick={() => v.active && setView(v.key)}
+            className={
+              "px-5 py-2 rounded-full font-semibold text-sm transition-all " +
+              (!v.active
+                ? "text-slate-300 cursor-not-allowed bg-white border border-slate-100"
+                : isActive
+                ? "text-white shadow"
+                : "text-slate-500 bg-white border border-slate-200 hover:text-slate-700")
+            }
+            style={isActive && v.active ? { background: PRIMARY } : undefined}
+          >
+            {v.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function ListView() {
+  const [query, setQuery] = useState("");
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return concepts;
+    return concepts.filter(
+      (c) => c.term.toLowerCase().includes(q) || c.definition.toLowerCase().includes(q)
+    );
+  }, [query]);
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 pb-16">
+      <input
+        type="text"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Sök begrepp..."
+        className="w-full mb-6 px-4 py-3 rounded-2xl border-2 border-slate-200 focus:outline-none focus:border-teal-600 text-lg"
+      />
+      <div className="flex flex-col gap-3">
+        {filtered.map((c) => {
+          const idx = concepts.indexOf(c) + 1;
+          return (
+            <div
+              key={c.term}
+              className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow p-5 border-l-8"
+              style={{ borderColor: PRIMARY }}
+            >
+              <div className="flex items-start gap-3">
+                <span
+                  className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
+                  style={{ background: "#ccfbf1", color: "#115e59" }}
+                >
+                  {idx}
+                </span>
+                <div>
+                  <p className="font-bold text-lg text-slate-800">{c.term}</p>
+                  <p className="text-slate-500 mt-1">{c.definition}</p>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        {filtered.length === 0 && (
+          <p className="text-center text-slate-400 py-10">Inga begrepp matchade sökningen.</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function FlashcardView() {
+  const total = concepts.length;
+  const [deck, setDeck] = useState(() => shuffleArray(concepts));
+  const [deckIdx, setDeckIdx] = useState(0);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [kudeInte, setKudeInte] = useState([]);
+  const [kunde, setKunde] = useState([]);
+  const [phase, setPhase] = useState("playing");
+
+  const restartAll = () => {
+    setDeck(shuffleArray(concepts));
+    setDeckIdx(0);
+    setIsFlipped(false);
+    setKudeInte([]);
+    setKunde([]);
+    setPhase("playing");
+  };
+
+  const sort = (pile) => {
+    const card = deck[deckIdx];
+    const newKudeInte = pile === "kudeInte" ? [...kudeInte, card] : kudeInte;
+    const newKunde = pile === "kunde" ? [...kunde, card] : kunde;
+    const nextIdx = deckIdx + 1;
+    setKudeInte(newKudeInte);
+    setKunde(newKunde);
+    setIsFlipped(false);
+    if (nextIdx >= deck.length) {
+      setDeckIdx(nextIdx);
+      setPhase(newKudeInte.length === 0 ? "allDone" : "roundEnd");
+    } else {
+      setDeckIdx(nextIdx);
+    }
+  };
+
+  const nextRound = () => {
+    setDeck(shuffleArray(kudeInte));
+    setDeckIdx(0);
+    setIsFlipped(false);
+    setKudeInte([]);
+    setPhase("playing");
+  };
+
+  if (phase === "allDone") {
+    return (
+      <div className="flex flex-col items-center gap-6 px-4 pb-16">
+        <div className="bg-green-50 border-2 border-green-400 rounded-3xl p-8 text-center w-full max-w-sm">
+          <div className="text-5xl mb-4">🎉</div>
+          <p className="text-2xl font-bold text-green-700 mb-2">Alla kort klarade!</p>
+          <p className="text-slate-600 mb-6">
+            Du behärskar <span className="font-bold text-green-700">{kunde.length} av {total}</span> begrepp.
+          </p>
+          <button
+            onClick={restartAll}
+            className="w-full text-white px-8 py-3 rounded-2xl font-bold transition-colors"
+            style={{ background: PRIMARY }}
+          >
+            Börja om med alla
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (phase === "roundEnd") {
+    return (
+      <div className="flex flex-col items-center gap-6 px-4 pb-16">
+        <div className="bg-white border-2 border-slate-200 rounded-3xl p-8 text-center w-full max-w-sm shadow-sm">
+          <p className="text-lg font-bold text-slate-700 mb-4">Runda klar!</p>
+          <div className="flex justify-center gap-8 mb-6">
+            <div className="text-center">
+              <p className="text-3xl font-bold text-green-600">{kunde.length}</p>
+              <p className="text-xs text-slate-400 uppercase tracking-wide mt-1">Kunde</p>
+            </div>
+            <div className="text-center">
+              <p className="text-3xl font-bold text-red-500">{kudeInte.length}</p>
+              <p className="text-xs text-slate-400 uppercase tracking-wide mt-1">Kunde inte</p>
+            </div>
+          </div>
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={nextRound}
+              className="w-full bg-slate-900 text-white px-8 py-3 rounded-2xl font-bold hover:bg-slate-800 transition-colors"
+            >
+              Öva på Kunde inte ({kudeInte.length} kort) →
+            </button>
+            <button
+              onClick={restartAll}
+              className="w-full text-white px-8 py-3 rounded-2xl font-bold transition-colors"
+              style={{ background: PRIMARY }}
+            >
+              Börja om med alla
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const card = deck[deckIdx];
+  const remaining = deck.length - deckIdx;
+
+  return (
+    <div className="flex flex-col items-center px-4 pb-16">
+      <div className="flex gap-3 mb-5 w-full max-w-sm">
+        <div className="flex-1 bg-red-50 border border-red-200 rounded-xl p-2 text-center">
+          <p className="text-xl font-bold text-red-500">{kudeInte.length}</p>
+          <p className="text-[10px] text-red-400 uppercase tracking-wide font-bold">Kunde inte</p>
+        </div>
+        <div className="flex-1 bg-slate-100 border border-slate-200 rounded-xl p-2 text-center">
+          <p className="text-xl font-bold text-slate-400">{remaining}</p>
+          <p className="text-[10px] text-slate-400 uppercase tracking-wide font-bold">Kvar</p>
+        </div>
+        <div className="flex-1 bg-green-50 border border-green-200 rounded-xl p-2 text-center">
+          <p className="text-xl font-bold text-green-500">{kunde.length}</p>
+          <p className="text-[10px] text-green-400 uppercase tracking-wide font-bold">Kunde</p>
+        </div>
+      </div>
+
+      <div className="flip-card mb-5" onClick={() => setIsFlipped(!isFlipped)}>
+        <div className={`flip-card-inner ${isFlipped ? "flipped-classes" : ""}`}>
+          <div className="flip-card-front" style={{ background: PRIMARY }}>
+            <h2 className="text-3xl font-bold text-white text-center px-4">{card.term}</h2>
+            <div className="absolute bottom-6 animate-pulse">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-white font-bold opacity-70">
+                Klicka för svar
+              </span>
+            </div>
+          </div>
+          <div className="flip-card-back bg-white border-2" style={{ borderColor: PRIMARY }}>
+            <p className="text-xl leading-relaxed text-slate-800 font-medium px-4">{card.definition}</p>
+            <div className="absolute bottom-6">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">
+                Klicka för att vända
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {isFlipped && (
+        <div className="flex gap-3 w-full max-w-sm mb-4">
+          <button
+            onClick={() => sort("kudeInte")}
+            className="flex-1 bg-red-100 text-red-700 border-2 border-red-300 font-bold py-3 rounded-2xl hover:bg-red-200 active:scale-95 transition-all"
+          >
+            ✗ Kunde inte
+          </button>
+          <button
+            onClick={() => sort("kunde")}
+            className="flex-1 bg-green-100 text-green-700 border-2 border-green-300 font-bold py-3 rounded-2xl hover:bg-green-200 active:scale-95 transition-all"
+          >
+            ✓ Kunde
+          </button>
+        </div>
+      )}
+
+      <div className="flex flex-col items-center gap-2 mt-1">
+        <p className="text-slate-500 font-medium bg-slate-200 px-4 py-1 rounded-full text-xs">
+          {deckIdx + 1} av {deck.length}
+        </p>
+        <button onClick={restartAll} className="text-slate-400 text-xs hover:text-slate-600 transition-colors underline">
+          ↺ Börja om med alla
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [view, setView] = useState("lista");
+
+  return (
+    <div className="min-h-screen pb-10">
+      <Header />
+      <ViewToggle view={view} setView={setView} />
+      {view === "lista" && <ListView />}
+      {view === "flashcards" && <FlashcardView key="flashcards" />}
+      <footer className="text-center text-slate-400 italic text-sm mt-10">
+        Källa: EU-lag och svensk lag begreppslista
+      </footer>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
