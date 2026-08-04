@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Internationell rätt och folkrätt – Quiz | Rätten och samhället</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0d9488;
+      --primary-light: #ccfbf1;
+      --primary-dark: #0f766e;
+      --correct-bg: #dcfce7;
+      --correct-border: #16a34a;
+      --correct-text: #16a34a;
+      --wrong-bg: #fee2e2;
+      --wrong-border: #dc2626;
+      --wrong-text: #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'EB Garamond', Georgia, serif; background: #fff1f2; min-height: 100vh; color: #000; }
+
+    a.back-btn {
+      display: inline-block; padding: 8px 16px; color: var(--primary);
+      text-decoration: none; font-size: 0.95rem; position: fixed;
+      top: 14px; left: 14px; z-index: 200; border-radius: 8px; transition: background 0.2s;
+    }
+    a.back-btn:hover { background: var(--primary-light); }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Start screen ── */
+    #screen-start { max-width: 560px; margin: 0 auto; padding: 90px 24px 40px; text-align: center; }
+    .badge {
+      display: inline-block; background: var(--primary-light); color: var(--primary-dark);
+      padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;
+      letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 20px;
+    }
+    #screen-start h1 {
+      font-size: 2.4rem; font-weight: 600; font-style: italic;
+      color: #000; margin-bottom: 8px;
+    }
+    #screen-start .subtitle { font-size: 1.05rem; color: #000; opacity: 0.65; margin-bottom: 32px; }
+    .info-cards { display: flex; gap: 12px; justify-content: center; margin-bottom: 36px; flex-wrap: wrap; }
+    .info-card {
+      background: white; border: 1px solid #fecdd3; border-radius: 12px;
+      padding: 16px 20px; text-align: center; flex: 1; min-width: 100px; max-width: 140px;
+    }
+    .info-card .num { font-size: 1.7rem; font-weight: 600; color: var(--primary); }
+    .info-card .lbl { font-size: 0.78rem; color: #000; opacity: 0.55; margin-top: 2px; }
+
+    /* ── Quiz screen ── */
+    #screen-quiz { max-width: 700px; margin: 0 auto; padding: 70px 20px 60px; }
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .timer {
+      background: white; border: 1px solid #fecdd3; border-radius: 20px;
+      padding: 5px 14px; font-size: 0.92rem; color: #000; font-variant-numeric: tabular-nums;
+    }
+    .score-pill {
+      background: var(--primary-light); color: var(--primary-dark);
+      border-radius: 20px; padding: 5px 14px; font-size: 0.92rem; font-weight: 600;
+    }
+    .progress-wrap { background: #fecdd3; border-radius: 4px; height: 6px; overflow: hidden; margin-bottom: 6px; }
+    .progress-bar { background: var(--primary); height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+    .q-counter { font-size: 0.82rem; color: #000; opacity: 0.55; text-align: right; margin-bottom: 22px; }
+    .type-badge {
+      display: inline-block; font-size: 0.72rem; text-transform: uppercase;
+      letter-spacing: 0.08em; padding: 2px 10px; border-radius: 20px; margin-bottom: 10px;
+    }
+    .type-badge.concept { background: #ede9fe; color: #6d28d9; }
+    .type-badge.scenario { background: #fef9c3; color: #854d0e; }
+    .q-text { font-size: 1.2rem; font-weight: 600; line-height: 1.55; color: #000; margin-bottom: 22px; white-space: pre-line; }
+    .opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+    .opt-btn {
+      background: white; border: 2px solid #fecdd3; border-radius: 12px;
+      padding: 13px 18px; text-align: left; font-size: 1rem; font-family: inherit;
+      color: #000; cursor: pointer; transition: border-color 0.15s, background 0.15s; line-height: 1.45;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--primary); background: var(--primary-light); }
+    .opt-btn:disabled { cursor: default; }
+    .opt-btn.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); font-weight: 600; }
+    .opt-btn.wrong   { background: var(--wrong-bg);   border-color: var(--wrong-border);   color: var(--wrong-text); }
+    .opt-btn.dimmed  { opacity: 0.4; }
+    .nav-row { display: flex; gap: 12px; align-items: center; }
+    .btn-back {
+      background: white; border: 2px solid #fecdd3; border-radius: 10px;
+      padding: 10px 20px; font-family: inherit; font-size: 0.9rem; color: #000; opacity: 0.7; cursor: pointer;
+    }
+    .btn-back:hover { border-color: var(--primary); opacity: 1; }
+    .btn-next {
+      background: var(--primary); border: none; border-radius: 10px;
+      padding: 10px 28px; font-family: inherit; font-size: 0.9rem; font-weight: 600;
+      color: white; cursor: pointer; margin-left: auto; transition: background 0.15s;
+    }
+    .btn-next:hover { background: var(--primary-dark); }
+
+    /* ── Modal ── */
+    #modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 500; padding: 20px;
+    }
+    #modal-overlay.hidden { display: none; }
+    .modal-box {
+      background: white; border-radius: 20px; padding: 32px;
+      max-width: 520px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .modal-icon  { font-size: 2.6rem; margin-bottom: 10px; }
+    .modal-verdict { font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; }
+    .modal-verdict.c { color: var(--correct-text); }
+    .modal-verdict.w { color: var(--wrong-text); }
+    .modal-expl { font-size: 0.98rem; color: #000; opacity: 0.8; line-height: 1.7; margin-bottom: 24px; }
+
+    /* ── Result screen ── */
+    #screen-result { max-width: 700px; margin: 0 auto; padding: 80px 20px 80px; }
+    .res-header { text-align: center; margin-bottom: 30px; }
+    .score-ring {
+      width: 120px; height: 120px; border-radius: 50%;
+      border: 5px solid var(--primary); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; margin: 0 auto 18px;
+    }
+    .score-ring .rnum { font-size: 2rem; font-weight: 600; color: var(--primary); line-height: 1; }
+    .score-ring .rlbl { font-size: 0.72rem; color: #000; opacity: 0.55; }
+    .res-title  { font-size: 1.8rem; font-weight: 600; font-style: italic; margin-bottom: 6px; color: #000; }
+    .res-msg    { font-size: 1rem; color: #000; opacity: 0.7; margin-bottom: 4px; }
+    .res-time   { font-size: 0.85rem; color: #000; opacity: 0.5; margin-bottom: 28px; }
+    .stats-row  { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+    .stat-box {
+      flex: 1; min-width: 80px; background: white; border: 1px solid #fecdd3;
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .stat-box .snum { font-size: 1.6rem; font-weight: 600; }
+    .stat-box .slbl { font-size: 0.75rem; color: #000; opacity: 0.55; margin-top: 2px; }
+    .stat-box.cs .snum { color: var(--correct-text); }
+    .stat-box.ws .snum { color: var(--wrong-text); }
+    .section-hd {
+      font-size: 1.05rem; font-weight: 600; color: #000;
+      margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #fecdd3;
+    }
+    .missed-section { margin-bottom: 32px; }
+    .missed-item {
+      background: var(--wrong-bg); border-left: 4px solid var(--wrong-border);
+      border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-size: 0.92rem;
+    }
+    .facit-item {
+      background: white; border: 1px solid #fecdd3; border-radius: 12px;
+      padding: 14px 16px; margin-bottom: 10px;
+    }
+    .facit-item.fc { border-left: 4px solid var(--correct-border); }
+    .facit-item.fw { border-left: 4px solid var(--wrong-border); }
+    .fi-num { font-size: 0.72rem; color: #000; opacity: 0.5; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .fi-q   { font-size: 0.93rem; font-weight: 600; color: #000; margin-bottom: 8px; line-height: 1.4; white-space: pre-line; }
+    .fi-row { font-size: 0.88rem; padding: 2px 0; }
+    .fi-row .lbl { color: #000; opacity: 0.55; }
+    .fi-row.ya-ok  { color: var(--correct-text); }
+    .fi-row.ya-bad { color: var(--wrong-text); }
+    .fi-row.ra     { color: var(--correct-text); font-weight: 600; margin-top: 2px; }
+
+    .btn-primary {
+      display: inline-block; background: var(--primary); color: white; border: none;
+      border-radius: 12px; padding: 13px 36px; font-size: 1.05rem; font-family: inherit;
+      font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s;
+    }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+    .btn-primary:active { transform: none; }
+
+    @media (max-width: 500px) {
+      #screen-start h1 { font-size: 1.85rem; }
+      .q-text { font-size: 1.05rem; }
+    }
+  </style>
+</head>
+<body>
+
+<a href="rs_internationell.html" class="back-btn" onclick="smartBack(event)">← Tillbaka till startsidan</a>
+
+<!-- ═══════════ START ═══════════ -->
+<div id="screen-start" class="screen active">
+  <div class="badge">Rätten och samhället · Internationell rätt</div>
+  <h1>Internationell rätt och folkrätt</h1>
+  <p class="subtitle">Quiz med flervalsfrågor om FN, folkrätten, Internationella domstolen, Internationella brottmålsdomstolen och Europarådet</p>
+  <div class="info-cards">
+    <div class="info-card"><div class="num">30</div><div class="lbl">Frågor</div></div>
+    <div class="info-card"><div class="num">193</div><div class="lbl">FN-länder</div></div>
+    <div class="info-card"><div class="num">46</div><div class="lbl">Europarådsländer</div></div>
+  </div>
+  <button class="btn-primary" onclick="startQuiz()">Starta Quiz →</button>
+</div>
+
+<!-- ═══════════ QUIZ ═══════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-header">
+    <div class="timer" id="timer">⏱ 0:00</div>
+    <div class="score-pill" id="score-pill">Poäng: 0</div>
+  </div>
+  <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+  <div class="q-counter" id="q-counter">Fråga 1 av 30</div>
+  <div id="type-badge-wrap"></div>
+  <div class="q-text" id="q-text"></div>
+  <div class="opts" id="opts"></div>
+  <div class="nav-row">
+    <button class="btn-back" id="btn-back" onclick="goBack()" style="display:none">← Bakåt</button>
+    <button class="btn-next" id="btn-next" onclick="goNext()" style="display:none">Nästa →</button>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL ═══════════ -->
+<div id="modal-overlay" class="hidden">
+  <div class="modal-box">
+    <div class="modal-icon"  id="modal-icon"></div>
+    <div class="modal-verdict" id="modal-verdict"></div>
+    <div class="modal-expl"   id="modal-expl"></div>
+    <button class="btn-primary" onclick="closeModal()">Nästa fråga →</button>
+  </div>
+</div>
+
+<!-- ═══════════ RESULT ═══════════ -->
+<div id="screen-result" class="screen">
+  <div class="res-header">
+    <div class="score-ring">
+      <div class="rnum" id="r-score"></div>
+      <div class="rlbl">poäng</div>
+    </div>
+    <div class="res-title"  id="r-title"></div>
+    <div class="res-msg"    id="r-msg"></div>
+    <div class="res-time"   id="r-time"></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-box cs"><div class="snum" id="s-correct">0</div><div class="slbl">Rätt</div></div>
+    <div class="stat-box ws"><div class="snum" id="s-wrong">0</div><div class="slbl">Fel</div></div>
+    <div class="stat-box"><div class="snum" id="s-pct">0%</div><div class="slbl">Andel rätt</div></div>
+  </div>
+  <div class="missed-section" id="missed-section"></div>
+  <div class="section-hd">Fullständigt facit</div>
+  <div id="facit-list"></div>
+  <div style="text-align:center;margin-top:32px">
+    <button class="btn-primary" onclick="restartQuiz()">↺ Gör om quizet</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// TILLBAKA-NAVIGERING
+// ════════════════════════════════════════════════════════════
+function smartBack(e) {
+  if (e) e.preventDefault();
+  var ref = document.referrer;
+  if (ref) {
+    try {
+      if (new URL(ref).origin === window.location.origin) {
+        history.back();
+        return;
+      }
+    } catch (err) {}
+  }
+  window.location.href = 'rs_internationell.html';
+}
+
+// ════════════════════════════════════════════════════════════
+// QUESTION DATA  (30 frågor)
+// Källor: internationell_ratt_och_folkratt_uppgifter.md
+// ("Kan du detta?" frågorna 1–15) och
+// internationell_ratt_och_folkratt_material.md
+// ════════════════════════════════════════════════════════════
+const QUESTIONS = [
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Hur många medlemsstater har FN idag, enligt materialet?',
+    opts: [
+      '193 medlemsstater, vilket innebär att FN representerar i stort sett samtliga av världens stater',
+      '197 medlemsstater, vilket innebär att FN representerar samtliga stater som skrivit under Parisavtalet',
+      '46 medlemsstater, vilket innebär att FN representerar ungefär samma länder som ingår i Europarådet',
+      '150 medlemsstater, vilket innebär att FN representerar drygt tre fjärdedelar av världens stater'
+    ],
+    correct: 0,
+    expl: 'FN är ett globalt forum med 193 medlemsstater och representerar därför i stort sett samtliga världens stater.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad innebär suveränitetsprincipen, som är grundprincipen vid internationella samarbeten?',
+    opts: [
+      'Att varje stat är självständig och själv fattar beslut om sina inre angelägenheter, vilket gör att internationellt samarbete måste bygga på frivillighet',
+      'Att varje stat måste följa FN:s beslut direkt som lag, vilket gör att internationellt samarbete inte kräver någon ratificering alls',
+      'Att större stater har mer inflytande än mindre stater, vilket gör att internationellt samarbete oftast styrs av de mäktigaste länderna',
+      'Att endast demokratiska stater får delta i internationellt samarbete, vilket gör att andra styrelseskick utesluts helt från FN'
+    ],
+    correct: 0,
+    expl: 'Suveränitetsprincipen innebär att varje stat är självständig och själv fattar beslut om sina inre angelägenheter. Därför måste internationellt samarbete bygga på frivillighet för att vara väl så effektivt.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad heter FN:s mest grundläggande dokument?',
+    opts: [
+      'FN-stadgan, som bland annat innehåller organisationens fyra mål och medlemsstaternas rättigheter och skyldigheter',
+      'Romstadgan, som bland annat innehåller reglerna för Internationella brottmålsdomstolens verksamhet och behörighet',
+      'Europakonventionen, som bland annat innehåller skyddet för de mänskliga rättigheterna och grundläggande friheterna',
+      'Parisavtalet, som bland annat innehåller målen för att minska utsläppen av växthusgaser i världen'
+    ],
+    correct: 0,
+    expl: 'Reglerna för hur FN ska arbeta finns i FN-stadgan. I den nämns medlemsstaternas rättigheter och skyldigheter, samt organisationens fyra mål.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilka två av följande hör till FN-stadgans fyra mål för organisationen?',
+    opts: [
+      'Att upprätthålla internationell fred och säkerhet samt att utveckla vänskapliga förbindelser mellan länder',
+      'Att bevara rättsstatens principer samt att utveckla ett gemensamt rättssystem för samtliga medlemsstater',
+      'Att skapa en gemensam valuta samt att avskaffa tullar och andra handelshinder mellan medlemsstaterna',
+      'Att inrätta en världsregering samt att upplösa samtliga staters nationella arméer och försvarsmakter'
+    ],
+    correct: 0,
+    expl: 'I FN-stadgan finns fyra mål: att upprätthålla internationell fred och säkerhet, att utveckla vänskapliga förbindelser mellan länder, att åstadkomma internationell samverkan samt att utgöra en medelpunkt för länders samverkan.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad heter det centrala, beslutande organet i FN där alla medlemsstater har en röst var?',
+    opts: [
+      'Generalförsamlingen, där alla medlemsstater har en plats och en röst var i frågor inom alla områden',
+      'Säkerhetsrådet, där alla medlemsstater har en plats och en röst var i frågor inom alla områden',
+      'Sekretariatet, där alla medlemsstater har en plats och en röst var i frågor inom alla områden',
+      'Förvaltarskapsrådet, där alla medlemsstater har en plats och en röst var i frågor inom alla områden'
+    ],
+    correct: 0,
+    expl: 'Generalförsamlingen är det centrala organet som ansvarar för frågor inom alla områden. Alla medlemsstater har plats i Generalförsamlingen och har en röst var.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilka två uppgifter har FN:s säkerhetsråd vid en internationell konflikt?',
+    opts: [
+      'Att besluta om sanktioner mot en stat samt att besluta om kollektiva militära insatser vid en konflikt',
+      'Att besluta om nya medlemsstater samt att besluta om FN:s årliga budget för kommande verksamhetsår',
+      'Att utse FN:s generalsekreterare samt att besluta om ändringar i FN-stadgans grundläggande utformning',
+      'Att döma krigsförbrytare i enskilda mål samt att utreda brott mot mänskligheten som begåtts av stater'
+    ],
+    correct: 0,
+    expl: 'Säkerhetsrådet kan besluta om sanktioner, det vill säga bestraffningsåtgärder mot en stat. Ett annat sätt att agera vid en konflikt är att Säkerhetsrådet beslutar om kollektiva militära insatser.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilka två av följande FN-organ arbetar med bistånd inom flykting- respektive hälsofrågor?',
+    opts: [
+      'UNHCR, som arbetar med flyktingfrågor, och WHO, som arbetar med det internationella hälsoläget',
+      'Europarådet, som arbetar med flyktingfrågor, och EU-domstolen, som arbetar med det internationella hälsoläget',
+      'ICC, som arbetar med flyktingfrågor, och ICJ, som arbetar med det internationella hälsoläget',
+      'PACE, som arbetar med flyktingfrågor, och Ministerkommittén, som arbetar med det internationella hälsoläget'
+    ],
+    correct: 0,
+    expl: 'UNHCR är FN:s flyktingkommissariat och arbetar med flyktingfrågor, medan Världshälsoorganisationen (WHO) arbetar med bland annat det internationella hälsoläget.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad är ICJ, Internationella domstolen?',
+    opts: [
+      'Internationella domstolen, som hanterar konflikter mellan FN:s medlemsstater, exempelvis gränstvister',
+      'Internationella brottmålsdomstolen, som åtalar enskilda personer för folkmord och krigsförbrytelser',
+      'Europadomstolen för de mänskliga rättigheterna, som prövar klagomål från enskilda medborgare i Europa',
+      'Jugoslavientribunalen, som var en tillfällig brottmålsdomstol inrättad av FN:s säkerhetsråd'
+    ],
+    correct: 0,
+    expl: 'Internationella domstolen ("International Court of Justice") är en domstol som ska lösa konflikter mellan FN:s medlemsstater, till exempel har den avgjort gränser mellan länder.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad är ICC, Internationella brottmålsdomstolen?',
+    opts: [
+      'Internationella brottmålsdomstolen, som åtalar personer som begått folkmord, brott mot mänskligheten och krigsförbrytelser',
+      'Internationella domstolen, som hanterar konflikter mellan FN:s medlemsstater, exempelvis gränstvister',
+      'Europeiska domstolen för de mänskliga rättigheterna, som prövar klagomål mot stater från enskilda medborgare',
+      'FN:s säkerhetsråd, som kan besluta om sanktioner och kollektiva militära insatser vid en konflikt'
+    ],
+    correct: 0,
+    expl: 'Internationella brottmålsdomstolen (ICC) bildades 2002 för att kunna åtala personer som begått folkmord, brott mot mänskligheten och andra krigsförbrytelser. Den har sitt säte i Haag.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad handlar Parisavtalet om?',
+    opts: [
+      'Ett avtal om att minska utsläppen av växthusgaser och hålla den globala uppvärmningen under två grader',
+      'Ett avtal om att avskaffa tullar mellan industrialiserade länder och utvecklingsländer i hela världen',
+      'Ett avtal om att inrätta Internationella brottmålsdomstolen för att åtala miljöbrott mellan stater',
+      'Ett avtal om att skydda mänskliga rättigheter och grundläggande friheter för Europarådets medlemsstater'
+    ],
+    correct: 0,
+    expl: 'Kärnan i Parisavtalet är att minska utsläppen av växthusgaser samt att hålla den globala uppvärmningen under två grader, men helst under 1,5 grader, och att stödja de som drabbas av klimatförändringarna.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Hur många medlemsstater har Europarådet, enligt materialet?',
+    opts: [
+      '46 medlemsstater, där Ryssland och Belarus är de enda europeiska stater som inte ingår i organisationen',
+      '27 medlemsstater, där samtliga också är medlemmar i EU och därmed bundna av EU:s lagstiftning',
+      '193 medlemsstater, där i stort sett samtliga av världens stater ingår i organisationens samarbete',
+      '10 medlemsstater, där enbart de ursprungliga grundarländerna fortfarande räknas som medlemmar'
+    ],
+    correct: 0,
+    expl: 'Europarådet har i dag 46 medlemsstater. De enda europeiska staterna som inte är med är Ryssland, som lämnade 2022, och Belarus, som aldrig sökt medlemskap.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad handlar Europakonventionen kortfattat om?',
+    opts: [
+      'Skyddet för de mänskliga rättigheterna och de grundläggande friheterna, uppdelat i tre avdelningar med tilläggsprotokoll',
+      'Reglerna för hur FN:s säkerhetsråd ska besluta om sanktioner och kollektiva militära insatser vid konflikter',
+      'Villkoren för att ett land ska kunna ratificera Romstadgan och bli bundet av Internationella brottmålsdomstolen',
+      'Målen för att minska växthusgasutsläppen och hålla den globala uppvärmningen under två grader'
+    ],
+    correct: 0,
+    expl: 'Europakonventionen beskriver skyddet för de mänskliga rättigheterna och de grundläggande friheterna. Den består av tre avdelningar samt ytterligare ett antal tilläggsprotokoll.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Hur har Sverige genomfört Europakonventionen i sin lagstiftning?',
+    opts: [
+      'Genom inkorporering 1994, då konventionstexten i sig blev svensk lag genom lag (1994:1219)',
+      'Genom transformering 1994, då svensk lag ändrades i sak för att uppfylla konventionens krav',
+      'Genom en folkomröstning 1994, där svenska folket röstade för att ansluta sig till konventionen',
+      'Genom ett riksdagsbeslut om ratificering 1994, utan att konventionen någonsin blev svensk lag'
+    ],
+    correct: 0,
+    expl: 'Europakonventionen infördes i den svenska lagstiftningen 1994 genom lag (1994:1219), det vill säga inkorporering, där konventionstexten i sig blev svensk lag.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilka är Europadomstolens huvuduppgifter?',
+    opts: [
+      'Att övervaka att medlemsstaterna följer Europakonventionen samt att avgöra ärenden som anmäls av enskilda',
+      'Att besluta om sanktioner mot medlemsstater samt att utse domare till Internationella brottmålsdomstolen',
+      'Att föreslå ny lagstiftning inom mänskliga rättigheter samt att godkänna medlemsstaternas årliga budgetar',
+      'Att åtala enskilda personer för folkmord samt att döma krigsförbrytare till fängelsestraff i Haag'
+    ],
+    correct: 0,
+    expl: 'Europadomstolen följer upp medlemsstaternas tillämpning av Europakonventionen och övervakar att de följer reglerna. En annan uppgift är att avgöra ärenden som anmäls av enskilda medborgare, organisationer eller grupper.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilka slags ärenden kan tas upp i Europadomstolen för de mänskliga rättigheterna?',
+    opts: [
+      'Ärenden om att en stat kränkt en persons rättigheter enligt konventionen, efter att nationella instanser först prövat fallet',
+      'Ärenden om tvister mellan två privatpersoner eller företag i olika länder, oavsett om nationella domstolar prövat dem',
+      'Ärenden om att en stat brutit mot Romstadgan, efter att Internationella brottmålsdomstolen först prövat fallet',
+      'Ärenden om handelstvister mellan EU:s medlemsstater, oavsett om nationella myndigheter prövat frågan'
+    ],
+    correct: 0,
+    expl: 'Om en enskild medborgare upplever att staten kränkt dennes rättigheter är första steget att en svensk domstol eller myndighet prövar fallet. Hjälper inte det kan kränkningen anmälas till Europadomstolen i Strasbourg.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Hur delas den internationella rätten in i två delar?',
+    opts: [
+      'Internationell privaträtt, som berör enskilda personer och företag, samt folkrätt, som berör förhållandet mellan stater',
+      'Nationell rätt, som berör enskilda personer och företag, samt internationell rätt, som berör förhållandet mellan stater',
+      'Offentlig rätt, som berör förhållandet mellan stater, samt straffrätt, som berör brott mellan enskilda personer',
+      'Folkrätt, som berör enskilda personer och företag, samt civilrätt, som berör förhållandet mellan stater'
+    ],
+    correct: 0,
+    expl: 'Den internationella rätten kan delas in i internationell privaträtt, som berör enskilda personer och företag, samt folkrätt, som behandlar hur stater ska agera gentemot varandra.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad kallas en överenskommelse mellan flera stater om hur de ska agera och vilka regler som ska gälla?',
+    opts: [
+      'En konvention eller ett fördrag, som endast omfattar de stater som skrivit under den',
+      'Ett bindande beslut som FN:s säkerhetsråd fattar och som gäller omedelbart för samtliga medlemsstater',
+      'En dom som Internationella domstolen meddelar i en tvist mellan två eller flera medlemsstater',
+      'En lag som automatiskt gäller i ett land så snart landets riksdag röstat för att ratificera den'
+    ],
+    correct: 0,
+    expl: 'När stater kommer överens om hur de ska agera ingår de en konvention eller ett fördrag. Endast de stater som skrivit under omfattas av överenskommelsen.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad innebär det att en stat ratificerar en konvention?',
+    opts: [
+      'Att en stat förpliktigar sig att följa en konvention, vilket för Sveriges del sker efter ett riksdagsbeslut',
+      'Att en stat skriver in konventionstexten ordagrant i sin egen lagstiftning utan att ändra något i texten',
+      'Att flera stater tillsammans undertecknar en konvention innan den ens har börjat förhandlas fram',
+      'Att en stat ändrar sina befintliga lagar för att de ska stämma överens med en konventions krav'
+    ],
+    correct: 0,
+    expl: 'Att ratificera en konvention innebär att staten förpliktigar sig att följa den och därmed förändra sin lagstiftning. För Sveriges del sker det efter att riksdagen beslutat om att ratificera konventionen.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad är skillnaden mellan transformering och inkorporering av en konvention?',
+    opts: [
+      'Transformering innebär att svensk lag ändras för att uppfylla konventionen, medan inkorporering innebär att konventionstexten i sig blir lag',
+      'Transformering innebär att konventionstexten i sig blir lag, medan inkorporering innebär att svensk lag ändras för att uppfylla konventionen',
+      'Transformering innebär att staten ratificerar konventionen, medan inkorporering innebär att staten enbart undertecknar den',
+      'Transformering innebär att en tribunal inrättas för konventionen, medan inkorporering innebär att en domstol upplöses'
+    ],
+    correct: 0,
+    expl: 'Transformering innebär att svensk lag ändras, antas eller upphävs för att uppfylla konventionens regler. Inkorporering innebär i stället att konventionstexten i sig blir svensk lag, som skedde med Europakonventionen 1994.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vem beslutar om att Sverige ska ratificera en konvention?',
+    opts: [
+      'Riksdagen, som beslutar om ratificering innan konventionen sedan kan transformeras eller inkorporeras i svensk lag',
+      'Regeringsrätten, som beslutar om ratificering innan konventionen sedan kan transformeras eller inkorporeras i svensk lag',
+      'Europadomstolen, som beslutar om ratificering innan konventionen sedan kan transformeras eller inkorporeras i svensk lag',
+      'FN:s generalsekreterare, som beslutar om ratificering innan konventionen sedan kan transformeras eller inkorporeras i svensk lag'
+    ],
+    correct: 0,
+    expl: 'De enskilda staterna ratificerar en konvention, vilket för Sveriges del sker efter att riksdagen beslutat om det. Därefter krävs transformering eller inkorporering för att konventionen ska gälla som svensk lag.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad bygger Internationella brottmålsdomstolens (ICC) verksamhet på?',
+    opts: [
+      'Romstadgan, som är det internationella regelverk som Internationella brottmålsdomstolens verksamhet bygger på',
+      'Romstadgan, som är det internationella regelverk som Internationella domstolens verksamhet bygger på',
+      'Romstadgan, som är det internationella regelverk som FN:s säkerhetsråd använder vid beslut om sanktioner',
+      'Romstadgan, som är det internationella regelverk som Europadomstolen använder vid prövning av klagomål'
+    ],
+    correct: 0,
+    expl: 'ICC:s verksamhet bygger på Romstadgan för Internationella brottmålsdomstolen, som är ett internationellt regelverk. Endast stater som ratificerat Romstadgan är bundna av detta.'
+  },
+  {
+    type: 'mc', subtype: 'scenario',
+    q: 'Vilka stater nämns i materialet som exempel på stater som inte har ratificerat Romstadgan, vilket begränsar vilka ICC kan åtala?',
+    opts: [
+      'USA, Ryssland och Kina, vilket innebär att ICC bara kan döma deras medborgare om brottet begåtts i ett anslutet land',
+      'Sverige, Norge och Danmark, vilket innebär att ICC bara kan döma deras medborgare om brottet begåtts i ett anslutet land',
+      'Frankrike, Storbritannien och Tyskland, vilket innebär att ICC bara kan döma deras medborgare om brottet begåtts i ett anslutet land',
+      'Belarus, Syrien och Iran, vilket innebär att ICC bara kan döma deras medborgare om brottet begåtts i ett anslutet land'
+    ],
+    correct: 0,
+    expl: 'Några stater som inte ratificerat Romstadgan är USA, Ryssland och Kina. Det krävs att den skyldige är medborgare i, eller att brottet begåtts i, ett land som ratificerat stadgan för att ICC ska kunna åtala.'
+  },
+  {
+    type: 'mc', subtype: 'scenario',
+    q: 'Vad är tribunaler, som Jugoslavientribunalen och Rwandatribunalen är exempel på?',
+    opts: [
+      'Tillfälliga brottmålsdomstolar som FN:s säkerhetsråd inrättat för att åtala krigsförbrytare, exempelvis i forna Jugoslavien och Rwanda',
+      'Permanenta brottmålsdomstolar som Europarådet inrättat för att åtala krigsförbrytare, exempelvis i forna Jugoslavien och Rwanda',
+      'Tillfälliga skiljenämnder som Internationella domstolen inrättat för att lösa gränstvister, exempelvis i forna Jugoslavien och Rwanda',
+      'Permanenta biståndsorgan som FN:s generalförsamling inrättat för att stödja krigsdrabbade, exempelvis i forna Jugoslavien och Rwanda'
+    ],
+    correct: 0,
+    expl: 'FN:s säkerhetsråd har beslutat om att inrätta flera tribunaler, som är tillfälliga brottmålsdomstolar, för att åtala krigsförbrytare. Där kan medborgare från stater som inte ratificerat Romstadgan ställas inför rätta.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad är Agenda 2030, som nämns i materialet?',
+    opts: [
+      'En överenskommelse om en strävan mot ett hållbart samhälle, med målet att detta ska vara uppnått år 2030',
+      'En konvention om att minska utsläppen av växthusgaser, med målet att detta ska vara uppnått år 2030',
+      'Ett fördrag om att avskaffa fattigdom i Centralamerika, med målet att detta ska vara uppnått år 2030',
+      'Ett regelverk för Internationella brottmålsdomstolens verksamhet, med målet att detta ska vara uppnått år 2030'
+    ],
+    correct: 0,
+    expl: 'Agenda 2030 är en överenskommelse om en strävan mot ett hållbart samhälle, där målet är att detta ska vara uppnått 2030.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilka tre dimensioner av hållbarhet innefattar arbetet med Agenda 2030?',
+    opts: [
+      'Social, ekonomisk och ekologisk hållbarhet, vilka tillsammans utgör de tre dimensionerna i arbetet mot 2030',
+      'Politisk, kulturell och religiös hållbarhet, vilka tillsammans utgör de tre dimensionerna i arbetet mot 2030',
+      'Militär, diplomatisk och juridisk hållbarhet, vilka tillsammans utgör de tre dimensionerna i arbetet mot 2030',
+      'Nationell, regional och global hållbarhet, vilka tillsammans utgör de tre dimensionerna i arbetet mot 2030'
+    ],
+    correct: 0,
+    expl: 'Arbetet med Agenda 2030 innefattar tre dimensioner av hållbarhet: social, ekonomisk och miljömässig, det vill säga ekologisk, hållbarhet.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilka tre kärnvärden är Europarådets huvuduppgift att bevara och främja?',
+    opts: [
+      'Mänskliga rättigheter, demokrati och rättsstatens principer, det vill säga den så kallade Rule of Law',
+      'Fred, säkerhet och nedrustning, det vill säga de principer som styr FN:s säkerhetsråd',
+      'Frihandel, fri rörlighet och gemensam valuta, det vill säga de principer som styr EU:s inre marknad',
+      'Ratificering, transformering och inkorporering, det vill säga de principer som styr internationell lagstiftning'
+    ],
+    correct: 0,
+    expl: 'Europarådets huvuduppgift är att bevara och främja tre kärnvärden: mänskliga rättigheter, demokrati och rättsstatens principer, den så kallade "Rule of Law".'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vad gör Ministerkommittén i Europarådets organisation?',
+    opts: [
+      'Ministerkommittén, som består av medlemsstaternas utrikesministrar och beslutar om riktlinjer, handlingsprogram och budgetar',
+      'Ministerkommittén, som består av 306 folkvalda parlamentsledamöter och beslutar om riktlinjer, handlingsprogram och budgetar',
+      'Ministerkommittén, som består av Europadomstolens domare och beslutar om riktlinjer, handlingsprogram och budgetar',
+      'Ministerkommittén, som består av representanter för civilsamhället och beslutar om riktlinjer, handlingsprogram och budgetar'
+    ],
+    correct: 0,
+    expl: 'Ministerkommittén består av medlemsstaternas utrikesministrar. Den beslutar om riktlinjer och handlingsprogram samt godkänner budgetar och handlingsprogram.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilket organ i Europarådet väljer bland annat generalsekreterare och domare i Europadomstolen?',
+    opts: [
+      'Den parlamentariska församlingen (PACE), som bland annat väljer Europarådets generalsekreterare och domarna i Europadomstolen',
+      'Ministerkommittén, som bland annat väljer Europarådets generalsekreterare och domarna i Europadomstolen',
+      'Kongressen för lokala och regionala myndigheter, som bland annat väljer Europarådets generalsekreterare och domarna i Europadomstolen',
+      'Kommissarien för de mänskliga rättigheterna, som bland annat väljer Europarådets generalsekreterare och domarna i Europadomstolen'
+    ],
+    correct: 0,
+    expl: 'Den parlamentariska församlingen (PACE) består av 306 ordinarie parlamentsledamöter. Den väljer bland annat generalsekreterare, kommissarie för de mänskliga rättigheterna och domare i Europadomstolen.'
+  },
+  {
+    type: 'mc', subtype: 'concept',
+    q: 'Vilka stater i Säkerhetsrådet har vetorätt, det vill säga makten att på egen hand stoppa ett beslut?',
+    opts: [
+      'Säkerhetsrådets fem permanenta medlemmar: USA, Ryssland, Kina, Frankrike och Storbritannien, som kan stoppa ett beslut på egen hand',
+      'Samtliga av FN:s 193 medlemsstater, som var och en kan stoppa ett beslut i Generalförsamlingen på egen hand',
+      'Europarådets 46 medlemsstater, som var och en kan stoppa ett beslut i Ministerkommittén på egen hand',
+      'Internationella domstolens 15 domare, som var och en kan stoppa ett beslut i en pågående rättegång'
+    ],
+    correct: 0,
+    expl: 'Säkerhetsrådets fem permanenta medlemmar, USA, Ryssland, Kina, Frankrike och Storbritannien, har vetorätt, det vill säga makten att på egen hand stoppa ett beslut.'
+  },
+  {
+    type: 'mc', subtype: 'scenario',
+    q: 'En 14-årig flicka upptäckte att hon smygfilmats av sin styvpappa när hon duschade. Hovrätten friade honom, och fallet drevs till slut till Europadomstolens stora kammare. Vad blev utfallet?',
+    opts: [
+      'Sverige bröt mot artikel 8 om skydd för privat- och familjeliv, och införde efteråt brottet "kränkande fotografering" i lag',
+      'Sverige bröt mot artikel 3 om förbud mot tortyr, och införde efteråt brottet "kränkande fotografering" i lag',
+      'Sverige bröt mot artikel 6 om rätt till en rättvis rättegång, och införde efteråt brottet "kränkande fotografering" i lag',
+      'Sverige bröt mot artikel 10 om yttrandefrihet, och införde efteråt brottet "kränkande fotografering" i lag'
+    ],
+    correct: 0,
+    expl: 'Europadomstolen beslutade att Sverige brutit mot artikel 8 i Europakonventionen, rätten till skydd för privat- och familjeliv, och flickan tilldömdes 10 000 euro i skadestånd. Sverige införde därefter brottet "kränkande fotografering" i lagstiftningen.'
+  }
+];
+
+// ════════════════════════════════════════════════════════════
+// FISHER-YATES SHUFFLE
+// ════════════════════════════════════════════════════════════
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// ════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════
+let qs = [];        // shuffled questions with per-question state
+let cur = 0;        // current question index
+let score = 0;
+let elapsed = 0;
+let timerID = null;
+
+function buildState() {
+  const shuffled = shuffleArray([...QUESTIONS]);
+  qs = shuffled.map(q => {
+    const indices = q.opts.map((_, i) => i);
+    return {
+      ...q,
+      shuffledIdx: shuffleArray(indices),  // original option indices in display order
+      selectedDisplay: null,               // which display position was clicked
+      answered: false
+    };
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// SCREENS
+// ════════════════════════════════════════════════════════════
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ════════════════════════════════════════════════════════════
+// TIMER
+// ════════════════════════════════════════════════════════════
+function fmt(s) {
+  const m = Math.floor(s / 60);
+  const ss = String(s % 60).padStart(2, '0');
+  return `⏱ ${m}:${ss}`;
+}
+function startTimer() {
+  elapsed = 0;
+  timerID = setInterval(() => {
+    elapsed++;
+    document.getElementById('timer').textContent = fmt(elapsed);
+  }, 1000);
+}
+function stopTimer() {
+  clearInterval(timerID);
+}
+
+// ════════════════════════════════════════════════════════════
+// START
+// ════════════════════════════════════════════════════════════
+function startQuiz() {
+  buildState();
+  cur = 0;
+  score = 0;
+  show('screen-quiz');
+  startTimer();
+  render();
+}
+
+// ════════════════════════════════════════════════════════════
+// RENDER QUESTION
+// ════════════════════════════════════════════════════════════
+function render() {
+  const q = qs[cur];
+  const total = qs.length;
+
+  // Progress
+  document.getElementById('progress-bar').style.width = (cur / total * 100) + '%';
+  document.getElementById('q-counter').textContent = `Fråga ${cur + 1} av ${total}`;
+  document.getElementById('score-pill').textContent = `Poäng: ${score}`;
+
+  // Type badge
+  const badgeWrap = document.getElementById('type-badge-wrap');
+  badgeWrap.innerHTML = q.subtype === 'concept'
+    ? '<span class="type-badge concept">Begreppsfråga</span>'
+    : '<span class="type-badge scenario">Fördjupning</span>';
+
+  // Question text
+  document.getElementById('q-text').textContent = q.q;
+
+  // Options
+  const optsEl = document.getElementById('opts');
+  optsEl.innerHTML = '';
+  optsEl.className = 'opts';
+
+  q.shuffledIdx.forEach((origIdx, displayPos) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = q.opts[origIdx];
+    btn.disabled = q.answered;
+
+    if (q.answered) {
+      const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+      if (displayPos === correctDisplay) {
+        btn.classList.add('correct');
+      } else if (displayPos === q.selectedDisplay) {
+        btn.classList.add('wrong');
+      } else {
+        btn.classList.add('dimmed');
+      }
+    } else {
+      btn.addEventListener('click', () => handleAnswer(displayPos));
+    }
+
+    optsEl.appendChild(btn);
+  });
+
+  // Nav buttons
+  document.getElementById('btn-back').style.display = cur > 0 ? 'inline-block' : 'none';
+  document.getElementById('btn-next').style.display = q.answered ? 'inline-block' : 'none';
+  document.getElementById('btn-next').textContent =
+    cur === total - 1 ? 'Se resultat →' : 'Nästa →';
+}
+
+// ════════════════════════════════════════════════════════════
+// HANDLE ANSWER
+// ════════════════════════════════════════════════════════════
+function handleAnswer(displayPos) {
+  const q = qs[cur];
+  if (q.answered) return;
+
+  q.answered = true;
+  q.selectedDisplay = displayPos;
+
+  const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+  const isCorrect = displayPos === correctDisplay;
+  if (isCorrect) score++;
+
+  // Lock options immediately
+  const btns = document.querySelectorAll('.opt-btn');
+  btns.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === correctDisplay) btn.classList.add('correct');
+    else if (i === displayPos) btn.classList.add('wrong');
+    else btn.classList.add('dimmed');
+  });
+
+  // Show next button
+  document.getElementById('btn-next').style.display = 'inline-block';
+  document.getElementById('btn-next').textContent =
+    cur === qs.length - 1 ? 'Se resultat →' : 'Nästa →';
+  document.getElementById('score-pill').textContent = `Poäng: ${score}`;
+
+  // Modal after 600 ms
+  setTimeout(() => showModal(isCorrect, q.expl), 600);
+}
+
+// ════════════════════════════════════════════════════════════
+// MODAL
+// ════════════════════════════════════════════════════════════
+function showModal(isCorrect, expl) {
+  document.getElementById('modal-icon').textContent    = isCorrect ? '✅' : '❌';
+  document.getElementById('modal-verdict').textContent = isCorrect ? 'Rätt svar!' : 'Fel svar';
+  document.getElementById('modal-verdict').className   = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
+  document.getElementById('modal-expl').textContent    = expl;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  goNext();
+}
+
+// ════════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════════
+function goBack() {
+  if (cur > 0) { cur--; render(); }
+}
+
+function goNext() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  if (cur < qs.length - 1) {
+    cur++;
+    render();
+  } else {
+    showResults();
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// RESULTS
+// ════════════════════════════════════════════════════════════
+function showResults() {
+  stopTimer();
+  show('screen-result');
+
+  const total = qs.length;
+  const wrong = total - score;
+  const pct   = Math.round(score / total * 100);
+
+  document.getElementById('r-score').textContent = `${score}/${total}`;
+  document.getElementById('s-correct').textContent = score;
+  document.getElementById('s-wrong').textContent   = wrong;
+  document.getElementById('s-pct').textContent     = pct + '%';
+
+  const m = Math.floor(elapsed / 60);
+  const s = String(elapsed % 60).padStart(2, '0');
+  document.getElementById('r-time').textContent = `Tid: ${m}:${s}`;
+
+  let title, msg;
+  if (pct >= 90)      { title = '🏆 Utmärkt!';             msg = 'Du behärskar internationell rätt och folkrätt på hög nivå.'; }
+  else if (pct >= 75) { title = '✅ Redo för provet!';      msg = 'Bra resultat – du har koll på det centrala.'; }
+  else if (pct >= 55) { title = '📖 Öva lite till';        msg = 'Du är på rätt spår men behöver repetera en del.'; }
+  else                { title = '💡 Fortsätt repetera';    msg = 'Gå igenom materialet och försök igen.'; }
+
+  document.getElementById('r-title').textContent = title;
+  document.getElementById('r-msg').textContent   = msg;
+
+  // Missed questions
+  const missedEl = document.getElementById('missed-section');
+  const missed = qs.filter(q => q.answered && q.shuffledIdx.indexOf(q.correct) !== q.selectedDisplay);
+  if (missed.length > 0) {
+    missedEl.innerHTML = `<div class="section-hd">Missade frågor (${missed.length})</div>`;
+    missed.forEach(q => {
+      const div = document.createElement('div');
+      div.className = 'missed-item';
+      div.textContent = q.q;
+      missedEl.appendChild(div);
+    });
+  } else {
+    missedEl.innerHTML = '';
+  }
+
+  // Full facit
+  const facitEl = document.getElementById('facit-list');
+  facitEl.innerHTML = '';
+  qs.forEach((q, i) => {
+    const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+    const isCorrect = q.answered && q.selectedDisplay === correctDisplay;
+    const notAnswered = !q.answered;
+
+    const div = document.createElement('div');
+    div.className = 'facit-item ' + (notAnswered ? '' : isCorrect ? 'fc' : 'fw');
+
+    const correctOptText = q.opts[q.correct];
+    const selectedOptText = q.answered
+      ? q.opts[q.shuffledIdx[q.selectedDisplay]]
+      : null;
+
+    let inner = `<div class="fi-num">Fråga ${i + 1}</div>`;
+    inner += `<div class="fi-q">${q.q}</div>`;
+
+    if (notAnswered) {
+      inner += `<div class="fi-row"><span class="lbl">Ditt svar: </span>— (inte besvarad)</div>`;
+      inner += `<div class="fi-row ra"><span class="lbl">Rätt svar: </span>${correctOptText}</div>`;
+    } else if (isCorrect) {
+      inner += `<div class="fi-row ya-ok">✓ <span class="lbl">Ditt svar: </span>${selectedOptText}</div>`;
+    } else {
+      inner += `<div class="fi-row ya-bad">✗ <span class="lbl">Ditt svar: </span>${selectedOptText}</div>`;
+      inner += `<div class="fi-row ra"><span class="lbl">Rätt svar: </span>${correctOptText}</div>`;
+    }
+
+    div.innerHTML = inner;
+    facitEl.appendChild(div);
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// RESTART
+// ════════════════════════════════════════════════════════════
+function restartQuiz() {
+  stopTimer();
+  show('screen-start');
+}
+</script>
+</body>
+</html>
