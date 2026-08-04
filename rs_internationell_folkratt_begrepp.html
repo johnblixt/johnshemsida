@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Internationell rätt och folkrätt — Begrepp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  body { font-family: 'EB Garamond', serif; background: #f0fdfa; }
+  .flip-card { perspective: 1000px; height: 350px; width: 100%; max-width: 400px; cursor: pointer; }
+  .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+  .flipped-classes { transform: rotateY(180deg); }
+  .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+  .flip-card-back { transform: rotateY(180deg); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+const PRIMARY = '#0d9488';
+const LIGHT = '#ccfbf1';
+const TEXT_ON_LIGHT = '#134e4a';
+
+const concepts = [
+  { term: 'FN (Förenta Nationerna)', definition: 'ett internationellt samarbete mellan världens länder med syftet att skapa fred samt att arbeta för ekonomiska och sociala framsteg.' },
+  { term: 'Europarådet', definition: 'en organisation vars uppgift är att bevara de tre kärnvärdena demokrati, mänskliga rättigheter och rättsstatens principer.' },
+  { term: 'Internationell privaträtt', definition: 'den del av internationell rätt som berör enskilda personer och företag.' },
+  { term: 'Folkrätt', definition: 'den del av internationell rätt som berör den offentliga rätten.' },
+  { term: 'Konventioner (fördrag)', definition: 'en överenskommelse mellan flera olika stater om hur de ska agera och vilka regler som ska gälla.' },
+  { term: 'Suveränitetsprincipen', definition: 'innebär att varje stat är självständig och själv fattar beslut om sina inre angelägenheter. Därför måste internationellt samarbete bygga på frivillighet.' },
+  { term: 'Ratificera', definition: 'att förpliktiga sig (lova) att följa en konvention.' },
+  { term: 'Transformering', definition: 'innebär att en stats lagstiftning förändras så att den anpassas till konventionen.' },
+  { term: 'Inkorporering', definition: 'innebär att hela konventionen blir en lag.' },
+  { term: 'FN-stadgan', definition: 'det mest grundläggande dokumentet för hur FN ska arbeta. Där nämns medlemsstaternas rättigheter och skyldigheter, och de fyra målen för organisationen.' },
+  { term: 'Generalförsamlingen', definition: 'är det centrala organet i FN som ansvarar för frågor inom alla områden. Alla medlemsstater har plats där och har en röst var.' },
+  { term: 'Enkel majoritet', definition: 'innebär att ett beslut fattas med mer än hälften av de röstande som stödjer beslutet.' },
+  { term: 'Resolutioner', definition: 'är rekommendationer och överenskommelser om hur medlemsstaterna i FN ska agera.' },
+  { term: 'FN:s generalsekreterare', definition: 'ska bland annat uppmärksamma Säkerhetsrådet om sådana ärenden som kan hota internationell fred och säkerhet.' },
+  { term: 'Säkerhetsrådet', definition: 'är FN:s mäktigaste organ.' },
+  { term: 'Vetorätt', definition: 'makten att på egen hand stoppa ett beslut. Denna makt har Säkerhetsrådets fem permanenta medlemmar.' },
+  { term: 'Sanktioner', definition: 'bestraffningsåtgärder som Säkerhetsrådet kan vidta, vilket innebär att andra stater uppmanas att avbryta ett eventuellt utbyte med staten ifråga.' },
+  { term: 'Internationella domstolen (ICJ)', definition: 'en domstol ("International Court of Justice") som ska lösa konflikter mellan FN:s medlemsstater.' },
+  { term: 'Internationella brottmålsdomstolen (ICC)', definition: 'är belägen i nederländska Haag och består av 18 domare och en åklagare. Kan åtala personer som begått folkmord, brott mot mänskligheten och andra krigsförbrytelser.' },
+  { term: 'Romstadgan', definition: 'det internationella regelverk som ICC:s verksamhet bygger på.' },
+  { term: 'Agenda 2030', definition: 'en överenskommelse om en strävan mot ett hållbart samhälle, där målet är att detta ska vara uppnått 2030.' },
+  { term: 'Parisavtalet', definition: 'trädde i kraft den 4 november 2016. Kärnan i avtalet är att minska utsläppen av växthusgaser samt att stödja de som drabbas av klimatförändringarnas effekter.' },
+  { term: 'Social, ekologisk och ekonomisk hållbarhet', definition: 'innebär att varje enskild stat ska sträva efter att inte tära på naturens resurser, att sträva mot ett samhälle där medborgarnas mänskliga behov tillgodoses samt att ekonomisk tillväxt inte sker på bekostnad av vare sig naturen eller människorna.' },
+  { term: 'Europarådets tre kärnvärden', definition: 'mänskliga rättigheter, demokrati och rättsstatens principer ("Rule of Law").' },
+  { term: 'Europakonventionen', definition: 'Europarådets första och viktigaste konvention. Beskriver skyddet för de mänskliga rättigheterna och de grundläggande friheterna.' },
+  { term: 'Europeiska domstolen för de mänskliga rättigheterna', definition: 'ska inte förväxlas med EU-domstolen. Är ett juridiskt organ som ska se till att alla européer har de rättigheter som garanteras i Europakonventionen.' },
+  { term: 'Ministerkommittén', definition: 'består av medlemsstaternas utrikesministrar. Beslutar om riktlinjer och handlingsprogram, godkänner budgetar.' },
+  { term: 'Den parlamentariska församlingen (PACE)', definition: 'består av 306 ordinarie parlamentsledamöter från medlemsstaterna. Ett demokratiskt debattforum som övervakar val i medlemsstaterna.' },
+  { term: 'Kongressen för lokala och regionala myndigheter', definition: 'ansvarar för att stärka lokal och regional demokrati i de 46 medlemsstaterna.' },
+  { term: 'Kommissarien för de mänskliga rättigheterna', definition: 'en oberoende institution som arbetar med att granska brott mot mänskliga rättigheter.' },
+];
+
+function shuffleArray(array) {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function smartBack(e) {
+  e.preventDefault();
+  if (document.referrer && document.referrer.indexOf(window.location.host) !== -1) {
+    history.back();
+  } else {
+    window.location.href = 'index.html';
+  }
+}
+
+function Header() {
+  return (
+    <div className="flex items-center justify-between max-w-3xl mx-auto px-4 pt-6 pb-2">
+      <a href="index.html" onClick={smartBack} className="text-sm font-semibold transition-colors" style={{ color: PRIMARY }}
+         onMouseOver={e => e.target.style.textDecoration = 'underline'}
+         onMouseOut={e => e.target.style.textDecoration = 'none'}>
+        ← Tillbaka till startsidan
+      </a>
+      <h1 className="text-xl sm:text-2xl font-bold italic uppercase tracking-wide text-center" style={{ color: '#0f766e' }}>
+        Internationell rätt och folkrätt
+      </h1>
+      <div className="w-32"></div>
+    </div>
+  );
+}
+
+function ToggleBar({ view, setView }) {
+  const tabs = [
+    { key: 'lista', label: 'Lista', active: true },
+    { key: 'flashcards', label: 'Flashcards', active: true },
+    { key: 'lucktext', label: 'Lucktext', active: false },
+    { key: 'scenario', label: 'Scenario', active: false },
+    { key: 'ickeex', label: 'Icke-ex.', active: false },
+  ];
+  return (
+    <div className="flex justify-center px-4 mb-8">
+      <div className="flex flex-wrap justify-center gap-1 bg-white rounded-full shadow-sm border border-teal-100 p-1">
+        {tabs.map(tab => (
+          <button
+            key={tab.key}
+            disabled={!tab.active}
+            onClick={() => tab.active && setView(tab.key)}
+            className={`px-4 py-2 rounded-full text-sm font-bold transition-colors ${
+              !tab.active ? 'text-slate-300 cursor-not-allowed' :
+              view === tab.key ? 'text-white' : 'text-slate-500 hover:text-teal-700'
+            }`}
+            style={view === tab.key && tab.active ? { background: PRIMARY } : {}}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ListView() {
+  const [query, setQuery] = useState('');
+  const filtered = concepts.filter(c =>
+    c.term.toLowerCase().includes(query.toLowerCase()) ||
+    c.definition.toLowerCase().includes(query.toLowerCase())
+  );
+  return (
+    <div className="max-w-2xl mx-auto px-4">
+      <input
+        type="text"
+        value={query}
+        onChange={e => setQuery(e.target.value)}
+        placeholder="🔍 Sök begrepp eller definition..."
+        className="w-full mb-6 px-5 py-3 rounded-2xl border-2 border-teal-100 focus:border-teal-500 focus:outline-none text-lg"
+      />
+      <div className="flex flex-col gap-4 pb-10">
+        {filtered.map((c, i) => {
+          const originalIndex = concepts.indexOf(c);
+          return (
+            <div key={originalIndex} className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow p-5 border-l-8" style={{ borderColor: PRIMARY }}>
+              <div className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style={{ background: LIGHT, color: TEXT_ON_LIGHT }}>
+                  {originalIndex + 1}
+                </span>
+                <div>
+                  <p className="font-bold text-lg text-slate-800">{c.term}</p>
+                  <p className="text-slate-500 mt-1">{c.definition}</p>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        {filtered.length === 0 && (
+          <p className="text-center text-slate-400 italic mt-8">Inga begrepp matchade sökningen.</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function FlashcardView() {
+  const total = concepts.length;
+  const [deck, setDeck] = useState(() => shuffleArray(concepts));
+  const [deckIdx, setDeckIdx] = useState(0);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [kudeInte, setKudeInte] = useState([]);
+  const [kunde, setKunde] = useState([]);
+  const [phase, setPhase] = useState('playing');
+
+  const restartAll = () => {
+    setDeck(shuffleArray(concepts));
+    setDeckIdx(0);
+    setIsFlipped(false);
+    setKudeInte([]);
+    setKunde([]);
+    setPhase('playing');
+  };
+
+  const sort = (pile) => {
+    const card = deck[deckIdx];
+    const newKudeInte = pile === 'kudeInte' ? [...kudeInte, card] : kudeInte;
+    const newKunde = pile === 'kunde' ? [...kunde, card] : kunde;
+    const nextIdx = deckIdx + 1;
+    setKudeInte(newKudeInte);
+    setKunde(newKunde);
+    setIsFlipped(false);
+    if (nextIdx >= deck.length) {
+      setDeckIdx(nextIdx);
+      setPhase(newKudeInte.length === 0 ? 'allDone' : 'roundEnd');
+    } else {
+      setDeckIdx(nextIdx);
+    }
+  };
+
+  const nextRound = () => {
+    setDeck(shuffleArray(kudeInte));
+    setDeckIdx(0);
+    setIsFlipped(false);
+    setKudeInte([]);
+    setPhase('playing');
+  };
+
+  if (phase === 'allDone') return (
+    <div className="flex flex-col items-center gap-6 px-4">
+      <div className="bg-teal-50 border-2 border-teal-400 rounded-3xl p-8 text-center w-full max-w-sm">
+        <div className="text-5xl mb-4">🎉</div>
+        <p className="text-2xl font-bold text-teal-700 mb-2">Alla kort klarade!</p>
+        <p className="text-slate-600 mb-6">Du behärskar <span className="font-bold text-teal-700">{kunde.length} av {total}</span> begrepp.</p>
+        <button onClick={restartAll} className="w-full text-white px-8 py-3 rounded-2xl font-bold transition-colors" style={{ background: PRIMARY }}>Börja om med alla</button>
+      </div>
+    </div>
+  );
+
+  if (phase === 'roundEnd') return (
+    <div className="flex flex-col items-center gap-6 px-4">
+      <div className="bg-white border-2 border-slate-200 rounded-3xl p-8 text-center w-full max-w-sm shadow-sm">
+        <p className="text-lg font-bold text-slate-700 mb-4">Runda klar!</p>
+        <div className="flex justify-center gap-8 mb-6">
+          <div className="text-center">
+            <p className="text-3xl font-bold text-teal-600">{kunde.length}</p>
+            <p className="text-xs text-slate-400 uppercase tracking-wide mt-1">Kunde</p>
+          </div>
+          <div className="text-center">
+            <p className="text-3xl font-bold text-red-500">{kudeInte.length}</p>
+            <p className="text-xs text-slate-400 uppercase tracking-wide mt-1">Kunde inte</p>
+          </div>
+        </div>
+        <div className="flex flex-col gap-3">
+          <button onClick={nextRound} className="w-full bg-slate-900 text-white px-8 py-3 rounded-2xl font-bold hover:bg-slate-800 transition-colors">
+            Öva på Kunde inte ({kudeInte.length} kort) →
+          </button>
+          <button onClick={restartAll} className="w-full text-white px-8 py-3 rounded-2xl font-bold transition-colors" style={{ background: PRIMARY }}>
+            Börja om med alla
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const card = deck[deckIdx];
+  const remaining = deck.length - deckIdx;
+
+  return (
+    <div className="flex flex-col items-center px-4">
+      <div className="flex gap-3 mb-5 w-full max-w-sm">
+        <div className="flex-1 bg-red-50 border border-red-200 rounded-xl p-2 text-center">
+          <p className="text-xl font-bold text-red-500">{kudeInte.length}</p>
+          <p className="text-[10px] text-red-400 uppercase tracking-wide font-bold">Kunde inte</p>
+        </div>
+        <div className="flex-1 bg-slate-100 border border-slate-200 rounded-xl p-2 text-center">
+          <p className="text-xl font-bold text-slate-400">{remaining}</p>
+          <p className="text-[10px] text-slate-400 uppercase tracking-wide font-bold">Kvar</p>
+        </div>
+        <div className="flex-1 bg-teal-50 border border-teal-200 rounded-xl p-2 text-center">
+          <p className="text-xl font-bold text-teal-500">{kunde.length}</p>
+          <p className="text-[10px] text-teal-400 uppercase tracking-wide font-bold">Kunde</p>
+        </div>
+      </div>
+      <div className="flip-card mb-5" onClick={() => setIsFlipped(!isFlipped)}>
+        <div className={`flip-card-inner ${isFlipped ? 'flipped-classes' : ''}`}>
+          <div className="flip-card-front" style={{ background: PRIMARY }}>
+            <h2 className="text-3xl font-bold text-white text-center px-4">{card.term}</h2>
+            <div className="absolute bottom-6 animate-pulse">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-white font-bold opacity-70">Klicka för svar</span>
+            </div>
+          </div>
+          <div className="flip-card-back" style={{ border: `3px solid ${PRIMARY}` }}>
+            <p className="text-xl leading-relaxed text-slate-800 font-medium px-4">{card.definition}</p>
+            <div className="absolute bottom-6">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">Klicka för att vända</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {isFlipped && (
+        <div className="flex gap-3 w-full max-w-sm mb-4">
+          <button onClick={() => sort('kudeInte')} className="flex-1 bg-red-100 text-red-700 border-2 border-red-300 font-bold py-3 rounded-2xl hover:bg-red-200 active:scale-95 transition-all">
+            ✗ Kunde inte
+          </button>
+          <button onClick={() => sort('kunde')} className="flex-1 bg-teal-100 text-teal-700 border-2 border-teal-300 font-bold py-3 rounded-2xl hover:bg-teal-200 active:scale-95 transition-all">
+            ✓ Kunde
+          </button>
+        </div>
+      )}
+      <div className="flex flex-col items-center gap-2 mt-1 pb-10">
+        <p className="text-slate-500 font-medium bg-slate-200 px-4 py-1 rounded-full text-xs">{deckIdx + 1} av {deck.length}</p>
+        <button onClick={restartAll} className="text-slate-400 text-xs hover:text-slate-600 transition-colors underline">↺ Börja om med alla</button>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [view, setView] = useState('lista');
+  return (
+    <div className="min-h-screen pb-10">
+      <Header />
+      <ToggleBar view={view} setView={setView} />
+      {view === 'lista' && <ListView />}
+      {view === 'flashcards' && <FlashcardView />}
+      <footer className="text-center text-slate-400 italic text-sm mt-12">
+        Källa: Internationell rätt och folkrätt begreppslista
+      </footer>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
