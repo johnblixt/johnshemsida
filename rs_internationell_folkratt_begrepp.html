@@ -23,7 +23,7 @@
 <div id="root"></div>
 
 <script type="text/babel">
-const { useState, useEffect, useRef } = React;
+const { useState, useEffect, useRef, useMemo } = React;
 
 const PRIMARY = '#0d9488';
 const LIGHT = '#ccfbf1';
@@ -61,6 +61,112 @@ const concepts = [
   { term: 'Kongressen för lokala och regionala myndigheter', definition: 'ansvarar för att stärka lokal och regional demokrati i de 46 medlemsstaterna.' },
   { term: 'Kommissarien för de mänskliga rättigheterna', definition: 'en oberoende institution som arbetar med att granska brott mot mänskliga rättigheter.' },
 ];
+
+const lucktextData = [
+  { pre: "", post: " arbetar för fred i världen samt för ekonomiska och sociala framsteg mellan medlemsländerna.", answers: ["fn", "förenta nationerna", "fn (förenta nationerna)"] },
+  { pre: "", post: " är en organisation vars uppgift är att bevara demokrati, mänskliga rättigheter och rättsstatens principer.", answers: ["europarådet"] },
+  { pre: "Den del av internationell rätt som handlar om enskilda personers och företags mellanhavanden kallas ", post: ".", answers: ["internationell privaträtt"] },
+  { pre: "Den del av internationell rätt som berör den offentliga rätten mellan stater kallas ", post: ".", answers: ["folkrätt"] },
+  { pre: "En överenskommelse mellan flera stater om hur de ska agera och vilka regler som ska gälla kallas en ", post: ".", answers: ["konvention", "konventioner", "fördrag"] },
+  { pre: "", post: " innebär att varje stat är självständig och själv fattar beslut om sina inre angelägenheter, vilket gör att internationellt samarbete måste bygga på frivillighet.", answers: ["suveränitetsprincipen"] },
+  { pre: "När en stat lovar att följa en konvention den skrivit under säger man att staten ", post: " konventionen.", answers: ["ratificerar", "ratificera"] },
+  { pre: "", post: " innebär att en stats egen lagstiftning ändras och anpassas för att stämma överens med en konvention.", answers: ["transformering"] },
+  { pre: "", post: " innebär att en hel konvention direkt blir svensk lag, utan att lagtexten skrivs om.", answers: ["inkorporering"] },
+  { pre: "", post: " är FN:s mest grundläggande dokument och beskriver medlemsstaternas rättigheter, skyldigheter och organisationens fyra mål.", answers: ["fn-stadgan"] },
+  { pre: "", post: " är FN:s centrala organ där alla medlemsstater har en plats och en röst var, oavsett landets storlek.", answers: ["generalförsamlingen"] },
+  { pre: "När ett beslut fattas med stöd av mer än hälften av de röstande talar man om ", post: ".", answers: ["enkel majoritet"] },
+  { pre: "FN:s rekommendationer och överenskommelser om hur medlemsstaterna bör agera i en fråga kallas ", post: ".", answers: ["resolutioner", "resolution"] },
+  { pre: "", post: " har bland annat till uppgift att uppmärksamma Säkerhetsrådet på ärenden som kan hota internationell fred och säkerhet.", answers: ["fn:s generalsekreterare", "generalsekreteraren", "generalsekreterare"] },
+  { pre: "", post: " är FN:s mäktigaste organ och kan bland annat besluta om sanktioner mot stater.", answers: ["säkerhetsrådet"] },
+  { pre: "Säkerhetsrådets fem permanenta medlemmar har ", post: ", vilket innebär att var och en av dem på egen hand kan stoppa ett beslut.", answers: ["vetorätt"] },
+  { pre: "", post: " är bestraffningsåtgärder som Säkerhetsrådet kan besluta om, där andra stater uppmanas att avbryta utbytet med staten i fråga.", answers: ["sanktioner", "sanktion"] },
+  { pre: "Tvister mellan två av FN:s medlemsstater kan avgöras av ", post: ".", answers: ["internationella domstolen", "icj", "internationella domstolen (icj)"] },
+  { pre: "", post: " ligger i Haag och kan åtala enskilda personer som begått folkmord, brott mot mänskligheten eller andra krigsförbrytelser.", answers: ["internationella brottmålsdomstolen", "icc", "internationella brottmålsdomstolen (icc)"] },
+  { pre: "Det internationella regelverk som ICC:s verksamhet bygger på kallas ", post: ".", answers: ["romstadgan"] },
+  { pre: "", post: " är en global överenskommelse om att uppnå ett hållbart samhälle senast år 2030.", answers: ["agenda 2030"] },
+  { pre: "", post: " trädde i kraft den 4 november 2016 och syftar till att minska utsläppen av växthusgaser samt stödja de som drabbas av klimatförändringarna.", answers: ["parisavtalet"] },
+  { pre: "När en stat strävar efter att inte tära på naturresurserna, tillgodose medborgarnas behov och samtidigt ha en ekonomisk tillväxt som inte sker på naturens eller människornas bekostnad, talar man om ", post: ".", answers: ["social, ekologisk och ekonomisk hållbarhet", "social ekologisk och ekonomisk hållbarhet"] },
+  { pre: "Mänskliga rättigheter, demokrati och rättsstatens principer utgör tillsammans ", post: ".", answers: ["europarådets tre kärnvärden", "de tre kärnvärdena", "tre kärnvärden"] },
+  { pre: "", post: " är Europarådets första och viktigaste konvention och beskriver skyddet för de mänskliga rättigheterna och de grundläggande friheterna.", answers: ["europakonventionen"] },
+  { pre: "", post: " ska inte förväxlas med EU-domstolen, utan är det juridiska organ som ser till att alla européer får de rättigheter som garanteras i Europakonventionen.", answers: ["europeiska domstolen för de mänskliga rättigheterna", "europadomstolen"] },
+  { pre: "", post: " består av medlemsstaternas utrikesministrar och beslutar om riktlinjer, handlingsprogram och godkänner budgetar inom Europarådet.", answers: ["ministerkommittén"] },
+  { pre: "", post: " består av 306 ordinarie ledamöter och är ett demokratiskt debattforum som bland annat övervakar val i medlemsstaterna.", answers: ["den parlamentariska församlingen", "pace", "parlamentariska församlingen"] },
+  { pre: "", post: " ansvarar för att stärka den lokala och regionala demokratin i Europarådets 46 medlemsstater.", answers: ["kongressen för lokala och regionala myndigheter"] },
+  { pre: "", post: " är en oberoende institution inom Europarådet som arbetar med att granska brott mot de mänskliga rättigheterna.", answers: ["kommissarien för de mänskliga rättigheterna"] },
+];
+
+const scenarioData = [
+  { scenario: "Nästan alla världens länder är med i ett samarbete som grundades efter andra världskriget för att förhindra nya krig och hjälpa länder utvecklas ekonomiskt och socialt.", distractors: ["Europarådet", "Agenda 2030", "Säkerhetsrådet"] },
+  { scenario: "En organisation med 46 medlemsländer arbetar för att skydda demokratin, de mänskliga rättigheterna och rättsstatens principer i Europa.", distractors: ["FN (Förenta Nationerna)", "Europeiska domstolen för de mänskliga rättigheterna", "Europakonventionen"] },
+  { scenario: "Ett svenskt företag hamnar i tvist med en tysk leverantör, och frågan handlar om vilket lands regler som gäller för avtalet mellan de två parterna.", distractors: ["Folkrätt", "Konventioner (fördrag)", "Suveränitetsprincipen"] },
+  { scenario: "Två stater tvistar om var gränsen mellan deras territorier egentligen går, en fråga som rör förhållandet mellan staterna själva.", distractors: ["Internationell privaträtt", "Konventioner (fördrag)", "FN-stadgan"] },
+  { scenario: "Ett flertal länder skriver under ett gemensamt dokument där de lovar att följa samma regler i en viss fråga.", distractors: ["Resolutioner", "Sanktioner", "Ratificera"] },
+  { scenario: "Ett land väljer helt själv om det vill gå med i ett internationellt samarbete, eftersom ingen utomstående makt kan tvinga landet att delta.", distractors: ["Vetorätt", "Ratificera", "Transformering"] },
+  { scenario: "Efter att ett lands riksdag röstat ja blir landet formellt bundet att följa en konvention landet skrivit under.", distractors: ["Transformering", "Inkorporering", "Suveränitetsprincipen"] },
+  { scenario: "Ett lands riksdag stiftar nya, egna lagar och ändrar i befintliga paragrafer för att innehållet ska stämma överens med en konvention landet anslutit sig till.", distractors: ["Inkorporering", "Ratificera", "Romstadgan"] },
+  { scenario: "Ett land väljer att göra en hel internationell konvention till svensk lag genom att skriva in konventionens originaltext direkt i lagboken.", distractors: ["Transformering", "Ratificera", "FN-stadgan"] },
+  { scenario: "Ett grunddokument slår fast vilka rättigheter och skyldigheter FN:s medlemsstater har samt organisationens fyra huvudmål.", distractors: ["Romstadgan", "Europakonventionen", "Resolutioner"] },
+  { scenario: "Samtliga av FN:s medlemsländer samlas i ett organ där varje land, stort som litet, har exakt en röst i alla frågor.", distractors: ["Säkerhetsrådet", "Ministerkommittén", "Den parlamentariska församlingen (PACE)"] },
+  { scenario: "I en omröstning räcker det att mer än hälften av de som röstar säger ja för att förslaget ska gå igenom.", distractors: ["Vetorätt", "Resolutioner", "Sanktioner"] },
+  { scenario: "FN antar ett dokument med rekommendationer om hur medlemsländerna bör agera i en viss internationell fråga.", distractors: ["Sanktioner", "Konventioner (fördrag)", "Romstadgan"] },
+  { scenario: "En person uppmärksammar Säkerhetsrådet på en konflikt som riskerar att hota freden i världen.", distractors: ["Säkerhetsrådet", "Generalförsamlingen", "Kommissarien för de mänskliga rättigheterna"] },
+  { scenario: "Ett av FN:s organ har makten att besluta om åtgärder, inklusive militära insatser, mot en stat som hotar internationell fred.", distractors: ["Generalförsamlingen", "Internationella domstolen (ICJ)", "Ministerkommittén"] },
+  { scenario: "Ett av Säkerhetsrådets fem permanenta medlemsländer röstar emot ett förslag, och beslutet stoppas helt trots att alla andra länder röstat ja.", distractors: ["Enkel majoritet", "Sanktioner", "Suveränitetsprincipen"] },
+  { scenario: "Flera länder beslutar att sluta handla med en stat som brutit mot internationella regler, för att på så sätt straffa och pressa staten.", distractors: ["Vetorätt", "Resolutioner", "Romstadgan"] },
+  { scenario: "Två stater som är oense om var en gräns går för sin tvist inför en domstol som är till för att lösa konflikter mellan just länder.", distractors: ["Internationella brottmålsdomstolen (ICC)", "Europeiska domstolen för de mänskliga rättigheterna", "Säkerhetsrådet"] },
+  { scenario: "En enskild militär ledare åtalas personligen i Haag, misstänkt för att ha beordrat folkmord under ett krig.", distractors: ["Internationella domstolen (ICJ)", "Romstadgan", "Säkerhetsrådet"] },
+  { scenario: "Ett regelverk från 1998 utgör den juridiska grunden för att en domstol i Haag ska kunna åtala enskilda personer för allvarliga brott.", distractors: ["FN-stadgan", "Europakonventionen", "Internationella domstolen (ICJ)"] },
+  { scenario: "Världens länder enas om en gemensam plan med mål som ska vara uppnådda inom lite drygt ett decennium, för ett mer hållbart samhälle.", distractors: ["Parisavtalet", "Social, ekologisk och ekonomisk hållbarhet", "FN-stadgan"] },
+  { scenario: "Ett internationellt avtal som började gälla hösten 2016 handlar om att minska utsläppen av växthusgaser och hjälpa de som drabbas hårdast av ett förändrat klimat.", distractors: ["Agenda 2030", "Social, ekologisk och ekonomisk hållbarhet", "Sanktioner"] },
+  { scenario: "Ett land strävar samtidigt efter att inte överutnyttja naturen, se till att alla medborgares grundläggande behov tillgodoses och låta ekonomin växa utan att det sker på människors eller miljöns bekostnad.", distractors: ["Agenda 2030", "Parisavtalet", "Suveränitetsprincipen"] },
+  { scenario: "En organisation bygger hela sitt arbete på tre grundpelare: att skydda de mänskliga rättigheterna, värna demokratin och upprätthålla rättsstatens principer.", distractors: ["Europakonventionen", "Europeiska domstolen för de mänskliga rättigheterna", "Ministerkommittén"] },
+  { scenario: "Ett dokument utgör Europarådets första och mest centrala överenskommelse och beskriver skyddet för mänskliga rättigheter och grundläggande friheter i Europa.", distractors: ["Europarådets tre kärnvärden", "Romstadgan", "FN-stadgan"] },
+  { scenario: "En europé vars rättigheter kränkts av sitt eget land kan vända sig till en domstol som ska se till att alla får de rättigheter som garanteras i Europakonventionen – en domstol som inte ska förväxlas med EU:s egen domstol.", distractors: ["EU-domstolen", "Internationella domstolen (ICJ)", "Internationella brottmålsdomstolen (ICC)"] },
+  { scenario: "Utrikesministrarna från Europarådets medlemsländer möts för att besluta om riktlinjer, handlingsprogram och godkänna organisationens budget.", distractors: ["Den parlamentariska församlingen (PACE)", "Generalförsamlingen", "Säkerhetsrådet"] },
+  { scenario: "Över 300 folkvalda ledamöter från medlemsländerna debatterar tillsammans och övervakar hur val genomförs i Europarådets medlemsstater.", distractors: ["Ministerkommittén", "Generalförsamlingen", "Kongressen för lokala och regionala myndigheter"] },
+  { scenario: "Ett organ inom Europarådet arbetar särskilt med att stärka demokratin på kommun- och regionnivå i de 46 medlemsländerna.", distractors: ["Den parlamentariska församlingen (PACE)", "Ministerkommittén", "Kommissarien för de mänskliga rättigheterna"] },
+  { scenario: "En oberoende person granskar löpande hur väl medlemsländerna lever upp till sina åtaganden om mänskliga rättigheter, utan att vara knuten till någon domstol.", distractors: ["Europeiska domstolen för de mänskliga rättigheterna", "Ministerkommittén", "Kongressen för lokala och regionala myndigheter"] },
+];
+
+const ickeData = [
+  { optionA: "Ett samarbete med nästan alla världens länder som arbetar för fred samt ekonomiska och sociala framsteg.", optionB: "En organisation med 46 europeiska medlemsländer som arbetar för demokrati och mänskliga rättigheter.", correct: "A", explanation: "FN är det globala samarbetet mellan världens länder. Alternativ B beskriver istället Europarådet, som är en europeisk organisation." },
+  { optionA: "En organisation med nästan alla världens länder som arbetar för fred i hela världen.", optionB: "En organisation med 46 medlemsländer som arbetar för att bevara demokrati, mänskliga rättigheter och rättsstatens principer.", correct: "B", explanation: "Europarådet är en europeisk organisation med 46 medlemmar. Alternativ A beskriver istället FN, som är globalt." },
+  { optionA: "Den del av internationell rätt som avgör vilket lands lagar som gäller när enskilda personer eller företag i olika länder hamnar i tvist.", optionB: "Den del av internationell rätt som reglerar förhållandet mellan stater, till exempel krig och fredsavtal.", correct: "A", explanation: "Internationell privaträtt rör enskilda och företag. Alternativ B beskriver istället folkrätt." },
+  { optionA: "Den del av internationell rätt som avgör vilket lands lag som gäller för ett avtal mellan ett svenskt och ett franskt företag.", optionB: "Den del av internationell rätt som reglerar förhållandet mellan stater, exempelvis krigets lagar och gränsdragningar.", correct: "B", explanation: "Folkrätt handlar om förhållandet mellan stater. Alternativ A beskriver istället internationell privaträtt." },
+  { optionA: "En överenskommelse mellan flera stater om vilka regler som ska gälla dem emellan.", optionB: "Ett beslut från FN:s säkerhetsråd om att straffa en stat ekonomiskt.", correct: "A", explanation: "En konvention är en överenskommelse mellan stater. Alternativ B beskriver istället en sanktion." },
+  { optionA: "Principen att varje stat självständigt bestämmer om och hur den vill delta i internationellt samarbete.", optionB: "Principen att fem stater i FN:s säkerhetsråd på egen hand kan stoppa ett beslut.", correct: "A", explanation: "Suveränitetsprincipen handlar om staters självständighet. Alternativ B beskriver istället vetorätt." },
+  { optionA: "Att en stats riksdag formellt lovar att följa en konvention staten skrivit under.", optionB: "Att en stat skriver om sin egen lagstiftning så att den överensstämmer med en konvention.", correct: "A", explanation: "Att ratificera är att förbinda sig till konventionen. Alternativ B beskriver istället transformering." },
+  { optionA: "Att en stat gör en hel konvention till lag genom att föra in konventionens exakta text i lagboken.", optionB: "Att en stat ändrar och anpassar sin egen lagstiftning så att den stämmer överens med innehållet i en konvention.", correct: "B", explanation: "Transformering innebär att lagstiftningen anpassas. Alternativ A beskriver istället inkorporering." },
+  { optionA: "Att en hel konvention blir lag genom att konventionens text skrivs in direkt i den nationella lagstiftningen.", optionB: "Att en stat skriver nya, egna paragrafer som innehållsmässigt motsvarar en konvention.", correct: "A", explanation: "Inkorporering innebär att konventionen i sin helhet blir lag. Alternativ B beskriver istället transformering." },
+  { optionA: "Det grundläggande dokument som beskriver FN:s medlemsstaters rättigheter, skyldigheter och organisationens fyra mål.", optionB: "Det regelverk som ligger till grund för att kunna åtala enskilda personer för folkmord i Haag.", correct: "A", explanation: "FN-stadgan är FN:s grunddokument. Alternativ B beskriver istället Romstadgan." },
+  { optionA: "FN:s organ där alla medlemsstater har en plats och en röst var, oavsett landets storlek.", optionB: "FN:s mäktigaste organ, där fem permanenta medlemmar har rätt att stoppa beslut på egen hand.", correct: "A", explanation: "Generalförsamlingen ger alla länder lika rösträtt. Alternativ B beskriver istället Säkerhetsrådet." },
+  { optionA: "Ett beslut fattas eftersom mer än hälften av de röstande stödjer förslaget.", optionB: "Ett beslut stoppas eftersom en av fem permanenta medlemmar röstat emot.", correct: "A", explanation: "Enkel majoritet innebär mer än hälften av rösterna. Alternativ B beskriver istället vetorätt." },
+  { optionA: "FN:s rekommendationer och överenskommelser om hur medlemsstaterna bör agera i en fråga.", optionB: "Ekonomiska bestraffningsåtgärder som riktas mot en stat som brutit mot internationella regler.", correct: "A", explanation: "Resolutioner är rekommendationer. Alternativ B beskriver istället sanktioner." },
+  { optionA: "En person som uppmärksammar Säkerhetsrådet på ärenden som kan hota internationell fred och säkerhet.", optionB: "Ett organ som består av representanter från alla FN:s medlemsstater med en röst var.", correct: "A", explanation: "Generalsekreteraren är en person med denna uppgift. Alternativ B beskriver istället Generalförsamlingen." },
+  { optionA: "FN:s mäktigaste organ, som bland annat kan besluta om sanktioner och militära insatser.", optionB: "FN:s organ där samtliga medlemsstater har en plats och exakt en röst var.", correct: "A", explanation: "Säkerhetsrådet är FN:s mäktigaste organ. Alternativ B beskriver istället Generalförsamlingen." },
+  { optionA: "Makten som Säkerhetsrådets fem permanenta medlemmar har att på egen hand stoppa ett beslut.", optionB: "Rätten att fatta beslut så snart mer än hälften av de röstande stödjer förslaget.", correct: "A", explanation: "Vetorätt tillhör de fem permanenta medlemmarna. Alternativ B beskriver istället enkel majoritet." },
+  { optionA: "Bestraffningsåtgärder där andra stater uppmanas att avbryta utbytet med en stat som brutit mot internationella regler.", optionB: "Rekommendationer om hur medlemsstaterna bör agera i en internationell fråga.", correct: "A", explanation: "Sanktioner är bestraffningsåtgärder. Alternativ B beskriver istället resolutioner." },
+  { optionA: "En domstol som löser konflikter och tvister mellan FN:s medlemsstater, till exempel om en gränsdragning.", optionB: "En domstol i Haag som åtalar enskilda personer misstänkta för folkmord och krigsförbrytelser.", correct: "A", explanation: "ICJ löser tvister mellan stater. Alternativ B beskriver istället ICC." },
+  { optionA: "En domstol som löser tvister mellan två stater, exempelvis om var en gräns går.", optionB: "En domstol i Haag som kan åtala enskilda personer för folkmord, brott mot mänskligheten och andra krigsförbrytelser.", correct: "B", explanation: "ICC åtalar enskilda personer. Alternativ A beskriver istället ICJ." },
+  { optionA: "Det regelverk från 1998 som ICC:s verksamhet bygger på.", optionB: "Det grundläggande dokument som beskriver FN:s medlemsstaters rättigheter och skyldigheter.", correct: "A", explanation: "Romstadgan ligger till grund för ICC. Alternativ B beskriver istället FN-stadgan." },
+  { optionA: "En global överenskommelse med mål för ett hållbart samhälle som ska vara uppnådda år 2030.", optionB: "Ett avtal som specifikt handlar om att minska utsläppen av växthusgaser och stödja klimatdrabbade.", correct: "A", explanation: "Agenda 2030 är den bredare hållbarhetsöverenskommelsen. Alternativ B beskriver istället Parisavtalet." },
+  { optionA: "En bred, global plan med flera hållbarhetsmål som ska vara uppnådda år 2030.", optionB: "Ett avtal som trädde i kraft 2016 och handlar specifikt om att minska utsläppen av växthusgaser och stödja de som drabbas av klimatförändringar.", correct: "B", explanation: "Parisavtalet fokuserar på klimatutsläpp. Alternativ A beskriver istället Agenda 2030." },
+  { optionA: "Att en stat strävar efter att inte tära på naturresurserna, tillgodose medborgarnas behov och låta ekonomin växa utan att skada natur eller människor.", optionB: "Att flera stater kommit överens om konkreta mål för hållbarhet som ska nås år 2030.", correct: "A", explanation: "Detta beskriver de tre hållbarhetsdimensionerna. Alternativ B beskriver istället Agenda 2030." },
+  { optionA: "De tre grundpelarna demokrati, mänskliga rättigheter och rättsstatens principer som Europarådets arbete vilar på.", optionB: "Det dokument som beskriver skyddet för mänskliga rättigheter och grundläggande friheter i Europa.", correct: "A", explanation: "De tre kärnvärdena är själva grundpelarna. Alternativ B beskriver istället Europakonventionen." },
+  { optionA: "De tre grundpelarna som Europarådets hela verksamhet bygger på.", optionB: "Europarådets första och viktigaste konvention, som beskriver skyddet för mänskliga rättigheter och grundläggande friheter.", correct: "B", explanation: "Europakonventionen är själva dokumentet. Alternativ A beskriver istället Europarådets tre kärnvärden." },
+  { optionA: "Den domstol som tolkar EU:s lagstiftning och löser tvister mellan EU:s medlemsländer.", optionB: "Den domstol som ser till att alla européer får de rättigheter som garanteras i Europakonventionen, och som inte ska förväxlas med EU-domstolen.", correct: "B", explanation: "Detta är Europadomstolen, kopplad till Europakonventionen. Alternativ A beskriver istället EU-domstolen." },
+  { optionA: "Ett organ inom Europarådet som består av medlemsstaternas utrikesministrar och beslutar om riktlinjer och budget.", optionB: "Ett organ inom Europarådet med över 300 folkvalda ledamöter som debatterar och övervakar val.", correct: "A", explanation: "Ministerkommittén består av utrikesministrar. Alternativ B beskriver istället Den parlamentariska församlingen (PACE)." },
+  { optionA: "Ett organ inom Europarådet som består av medlemsstaternas utrikesministrar.", optionB: "Ett demokratiskt debattforum inom Europarådet med 306 folkvalda ledamöter som bland annat övervakar val i medlemsstaterna.", correct: "B", explanation: "PACE består av folkvalda ledamöter. Alternativ A beskriver istället Ministerkommittén." },
+  { optionA: "Ett organ inom Europarådet som arbetar för att stärka demokratin på kommun- och regionnivå i medlemsländerna.", optionB: "En oberoende institution inom Europarådet som granskar brott mot de mänskliga rättigheterna.", correct: "A", explanation: "Kongressen arbetar med lokal och regional demokrati. Alternativ B beskriver istället Kommissarien för de mänskliga rättigheterna." },
+  { optionA: "Ett organ inom Europarådet som arbetar för att stärka demokratin på kommun- och regionnivå.", optionB: "En oberoende institution inom Europarådet som granskar hur medlemsländerna lever upp till de mänskliga rättigheterna.", correct: "B", explanation: "Kommissarien granskar mänskliga rättigheter. Alternativ A beskriver istället Kongressen för lokala och regionala myndigheter." },
+];
+
+function gradeText(pct) {
+  if (pct >= 90) return 'Utmärkt! Redo för provet!';
+  if (pct >= 70) return 'Bra jobbat! Nästan redo.';
+  if (pct >= 50) return 'På god väg, men öva lite till.';
+  return 'Öva mer på begreppen innan provet.';
+}
 
 function shuffleArray(array) {
   const arr = [...array];
@@ -100,9 +206,9 @@ function ToggleBar({ view, setView }) {
   const tabs = [
     { key: 'lista', label: 'Lista', active: true },
     { key: 'flashcards', label: 'Flashcards', active: true },
-    { key: 'lucktext', label: 'Lucktext', active: false },
-    { key: 'scenario', label: 'Scenario', active: false },
-    { key: 'ickeex', label: 'Icke-ex.', active: false },
+    { key: 'lucktext', label: 'Lucktext', active: true },
+    { key: 'scenario', label: 'Scenario', active: true },
+    { key: 'ickeex', label: 'Icke-ex.', active: true },
   ];
   return (
     <div className="flex justify-center px-4 mb-8">
@@ -298,6 +404,323 @@ function FlashcardView() {
   );
 }
 
+function LucktextView() {
+  const initial = () => concepts.map(() => ({ value: '', status: 'idle', attempts: 0 }));
+  const [items, setItems] = useState(initial);
+
+  const setValue = (i, value) => {
+    setItems(prev => {
+      const next = [...prev];
+      next[i] = { ...next[i], value };
+      return next;
+    });
+  };
+
+  const submit = (i) => {
+    setItems(prev => {
+      const item = prev[i];
+      if (item.status === 'correct' || item.status === 'revealed') return prev;
+      const norm = item.value.trim().toLowerCase();
+      const ok = lucktextData[i].answers.includes(norm);
+      const next = [...prev];
+      if (ok) {
+        next[i] = { ...item, status: 'correct' };
+      } else {
+        const attempts = item.attempts + 1;
+        next[i] = { ...item, attempts, status: attempts >= 2 ? 'wrong2' : 'wrong1' };
+      }
+      return next;
+    });
+  };
+
+  const correctAll = () => {
+    setItems(prev => prev.map(item => (item.status === 'correct' ? item : { ...item, status: 'revealed' })));
+  };
+
+  const restart = () => setItems(initial());
+
+  const score = items.filter(it => it.status === 'correct').length;
+  const total = concepts.length;
+  const allDone = items.every(it => it.status === 'correct' || it.status === 'revealed');
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 pb-16">
+      <div className="bg-white rounded-2xl border-2 border-teal-100 p-4 mb-6">
+        <p className="text-sm font-bold text-slate-500 uppercase tracking-wide mb-3">Begreppsbank</p>
+        <div className="flex flex-wrap gap-2">
+          {concepts.map((c, i) => {
+            const done = items[i].status === 'correct' || items[i].status === 'revealed';
+            return (
+              <span
+                key={i}
+                className={
+                  'text-xs px-3 py-1 rounded-full border ' +
+                  (done ? 'line-through text-slate-300 border-slate-200 bg-slate-50' : 'text-slate-700 border-teal-200 bg-white')
+                }
+              >
+                {c.term}
+              </span>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-sm font-bold text-slate-500">{score} / {total} rätt</p>
+        <div className="flex gap-2">
+          <button onClick={correctAll} className="text-xs font-bold px-4 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-colors">
+            Rätta alla
+          </button>
+          <button onClick={restart} className="text-xs font-bold px-4 py-2 rounded-xl border-2 border-slate-300 text-slate-600 hover:bg-slate-100 transition-colors">
+            Börja om
+          </button>
+        </div>
+      </div>
+
+      {allDone && (
+        <div className="bg-white border-2 rounded-3xl p-6 text-center mb-6" style={{ borderColor: PRIMARY }}>
+          <p className="text-2xl font-bold mb-1" style={{ color: TEXT_ON_LIGHT }}>{score} / {total} rätt</p>
+          <p className="text-slate-600">{gradeText((score / total) * 100)}</p>
+        </div>
+      )}
+
+      <div className="grid gap-4">
+        {lucktextData.map((data, i) => {
+          const item = items[i];
+          const locked = item.status === 'correct' || item.status === 'revealed';
+          const borderClass =
+            item.status === 'correct' ? 'border-green-500' :
+            item.status === 'revealed' ? 'border-red-400' :
+            item.status === 'wrong2' ? 'border-red-300' :
+            item.status === 'wrong1' ? 'border-orange-300' :
+            'border-slate-200';
+          return (
+            <div key={i} className={`bg-white p-5 rounded-2xl border-2 ${borderClass}`}>
+              <p className="leading-relaxed">
+                <span className="text-slate-400 font-bold mr-1">{i + 1}.</span>
+                {data.pre}
+                <input
+                  type="text"
+                  value={item.value}
+                  disabled={locked}
+                  onChange={e => setValue(i, e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') submit(i); }}
+                  className={`inline-block mx-1 px-2 py-1 border-b-2 focus:outline-none w-40 text-center ${locked ? 'bg-slate-50' : 'bg-white'}`}
+                  style={{ borderColor: item.status === 'correct' ? '#16a34a' : item.status === 'revealed' ? '#dc2626' : PRIMARY }}
+                />
+                {data.post}
+              </p>
+              {item.status === 'wrong1' && <p className="text-orange-500 text-sm font-bold mt-2">Är du säker att du stavat rätt?</p>}
+              {item.status === 'wrong2' && <p className="text-red-600 text-sm font-bold mt-2">Fel. Kontrollera stavningen och försök igen.</p>}
+              {item.status === 'correct' && <p className="text-green-700 text-sm mt-2">✓ Rätt! {concepts[i].definition}</p>}
+              {item.status === 'revealed' && <p className="text-red-600 text-sm mt-2">Rätt svar: <strong>{concepts[i].term}</strong>. {concepts[i].definition}</p>}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function ScenarioView() {
+  const total = scenarioData.length;
+  const buildOrder = () => shuffleArray(scenarioData.map((_, i) => i));
+  const [order, setOrder] = useState(buildOrder);
+  const [qIdx, setQIdx] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [phase, setPhase] = useState('playing');
+
+  const dataIdx = order[qIdx];
+  const q = scenarioData[dataIdx];
+  const concept = concepts[dataIdx];
+  const options = useMemo(() => shuffleArray([concept.term, ...q.distractors]), [dataIdx]);
+
+  const choose = (opt) => {
+    if (selected !== null) return;
+    setSelected(opt);
+    if (opt === concept.term) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (qIdx + 1 >= total) {
+      setPhase('done');
+    } else {
+      setQIdx(qIdx + 1);
+      setSelected(null);
+    }
+  };
+
+  const restart = () => {
+    setOrder(buildOrder());
+    setQIdx(0);
+    setSelected(null);
+    setScore(0);
+    setPhase('playing');
+  };
+
+  if (phase === 'done') {
+    const pct = (score / total) * 100;
+    return (
+      <div className="max-w-2xl mx-auto px-4 pb-16">
+        <div className="bg-white border-2 rounded-3xl p-8 text-center" style={{ borderColor: PRIMARY }}>
+          <p className="text-3xl font-bold mb-2" style={{ color: TEXT_ON_LIGHT }}>{score} / {total} rätt</p>
+          <p className="text-slate-600 mb-6">{gradeText(pct)}</p>
+          <button onClick={restart} style={{ background: PRIMARY }} className="text-white px-8 py-3 rounded-2xl font-bold">
+            Gör om
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 pb-16">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-sm font-bold text-slate-500">Fråga {qIdx + 1} av {total}</p>
+        <p className="text-sm font-bold text-slate-500">Poäng: {score}</p>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+        <div className="h-2 rounded-full transition-all" style={{ width: `${(qIdx / total) * 100}%`, background: PRIMARY }}></div>
+      </div>
+
+      <div className="bg-white p-6 rounded-2xl border-2 border-slate-200 mb-5">
+        <p className="text-lg leading-relaxed">{q.scenario}</p>
+      </div>
+
+      <div className="grid gap-3">
+        {options.map((opt, i) => {
+          const isCorrect = opt === concept.term;
+          const isSelected = selected === opt;
+          let cls = 'bg-white border-2 border-slate-200 hover:border-slate-300';
+          if (selected !== null) {
+            if (isCorrect) cls = 'bg-green-50 border-2 border-green-500 text-green-800';
+            else if (isSelected) cls = 'bg-red-50 border-2 border-red-500 text-red-800';
+            else cls = 'bg-white border-2 border-slate-100 text-slate-400';
+          }
+          return (
+            <button key={i} onClick={() => choose(opt)} disabled={selected !== null} className={`text-left px-5 py-3 rounded-2xl font-medium transition-colors ${cls}`}>
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+
+      {selected !== null && (
+        <div className="mt-5 bg-slate-50 border-2 border-slate-200 rounded-2xl p-4">
+          <p className="text-slate-700">{concept.definition}</p>
+          <button onClick={next} style={{ background: PRIMARY }} className="mt-4 text-white px-6 py-2 rounded-xl font-bold">
+            {qIdx + 1 >= total ? 'Se resultat' : 'Nästa →'}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function IckeExView() {
+  const total = ickeData.length;
+  const buildOrder = () => shuffleArray(ickeData.map((_, i) => i));
+  const [order, setOrder] = useState(buildOrder);
+  const [qIdx, setQIdx] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [phase, setPhase] = useState('playing');
+
+  const dataIdx = order[qIdx];
+  const q = ickeData[dataIdx];
+  const concept = concepts[dataIdx];
+
+  const choose = (letter) => {
+    if (selected !== null) return;
+    setSelected(letter);
+    if (letter === q.correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (qIdx + 1 >= total) {
+      setPhase('done');
+    } else {
+      setQIdx(qIdx + 1);
+      setSelected(null);
+    }
+  };
+
+  const restart = () => {
+    setOrder(buildOrder());
+    setQIdx(0);
+    setSelected(null);
+    setScore(0);
+    setPhase('playing');
+  };
+
+  if (phase === 'done') {
+    const pct = (score / total) * 100;
+    return (
+      <div className="max-w-2xl mx-auto px-4 pb-16">
+        <div className="bg-white border-2 rounded-3xl p-8 text-center" style={{ borderColor: PRIMARY }}>
+          <p className="text-3xl font-bold mb-2" style={{ color: TEXT_ON_LIGHT }}>{score} / {total} rätt</p>
+          <p className="text-slate-600 mb-6">{gradeText(pct)}</p>
+          <button onClick={restart} style={{ background: PRIMARY }} className="text-white px-8 py-3 rounded-2xl font-bold">
+            Börja om
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const options = [
+    { letter: 'A', text: q.optionA },
+    { letter: 'B', text: q.optionB },
+  ];
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 pb-16">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-sm font-bold text-slate-500">Fråga {qIdx + 1} av {total}</p>
+        <p className="text-sm font-bold text-slate-500">Poäng: {score}</p>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
+        <div className="h-2 rounded-full transition-all" style={{ width: `${(qIdx / total) * 100}%`, background: PRIMARY }}></div>
+      </div>
+
+      <div className="bg-white p-5 rounded-2xl border-l-8 mb-5 shadow-sm" style={{ borderColor: PRIMARY }}>
+        <p className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Begrepp</p>
+        <h3 className="text-xl font-bold">{concept.term}</h3>
+      </div>
+
+      <p className="text-sm text-slate-500 mb-3 font-medium">Vilket alternativ är ett korrekt exempel på begreppet?</p>
+
+      <div className="grid gap-3">
+        {options.map(opt => {
+          const isCorrect = opt.letter === q.correct;
+          const isSelected = selected === opt.letter;
+          let cls = 'bg-white border-2 border-slate-200 hover:border-slate-300';
+          if (selected !== null) {
+            if (isCorrect) cls = 'bg-green-50 border-2 border-green-500 text-green-800';
+            else if (isSelected) cls = 'bg-red-50 border-2 border-red-500 text-red-800';
+            else cls = 'bg-white border-2 border-slate-100 text-slate-400';
+          }
+          return (
+            <button key={opt.letter} onClick={() => choose(opt.letter)} disabled={selected !== null} className={`text-left px-5 py-4 rounded-2xl font-medium transition-colors ${cls}`}>
+              <span className="font-bold mr-2">{opt.letter}.</span>{opt.text}
+            </button>
+          );
+        })}
+      </div>
+
+      {selected !== null && (
+        <div className="mt-5 bg-slate-50 border-2 border-slate-200 rounded-2xl p-4">
+          <p className="text-slate-700">{q.explanation}</p>
+          <button onClick={next} style={{ background: PRIMARY }} className="mt-4 text-white px-6 py-2 rounded-xl font-bold">
+            {qIdx + 1 >= total ? 'Se resultat' : 'Nästa →'}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function App() {
   const [view, setView] = useState('lista');
   return (
@@ -306,6 +729,9 @@ function App() {
       <ToggleBar view={view} setView={setView} />
       {view === 'lista' && <ListView />}
       {view === 'flashcards' && <FlashcardView />}
+      {view === 'lucktext' && <LucktextView />}
+      {view === 'scenario' && <ScenarioView key="scenario" />}
+      {view === 'ickeex' && <IckeExView key="ickeex" />}
       <footer className="text-center text-slate-400 italic text-sm mt-12">
         Källa: Internationell rätt och folkrätt begreppslista
       </footer>
