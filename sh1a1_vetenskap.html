@@ -9,57 +9,64 @@
   <style>
     body { font-family: 'EB Garamond', serif; }
     .area-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-    .area-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(124,58,237,0.12); }
+    .area-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(251,191,36,0.18); }
+    .btn-action { transition: all 0.2s ease; }
+    .btn-action:hover { filter: brightness(1.08); transform: scale(1.02); }
   </style>
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-800">
 
-  <a href="index.html" class="fixed top-4 left-4 z-50 text-sm font-medium text-slate-500 hover:text-violet-700 bg-white/90 px-3 py-2 rounded-xl shadow-sm transition-colors">← Tillbaka till startsidan</a>
+  <a href="index.html" id="backLink" class="fixed top-4 left-4 z-50 text-sm font-medium text-slate-500 hover:text-yellow-700 bg-white/90 px-3 py-2 rounded-xl shadow-sm transition-colors">← Tillbaka till startsidan</a>
 
   <div class="max-w-xl mx-auto px-6 py-20">
 
     <!-- Header -->
     <div class="text-center mb-14">
-      <p class="text-xs font-bold uppercase tracking-[0.2em] text-violet-400 mb-3">Samhällskunskap nivå 1a1</p>
+      <p class="text-xs font-bold uppercase tracking-[0.2em] text-yellow-500 mb-3">Samhällskunskap nivå 1a1</p>
       <h1 class="text-5xl md:text-6xl font-black italic text-slate-900 mb-5">🔬 Vetenskap</h1>
-      <div class="h-1 w-20 bg-violet-400 rounded-full mx-auto"></div>
+      <div class="h-1 w-20 bg-yellow-400 rounded-full mx-auto"></div>
     </div>
 
-    <!-- Aktivitetskort -->
     <div class="flex flex-col gap-5">
 
       <!-- Begrepp -->
-      <div class="area-card bg-white rounded-3xl shadow-sm border-t-8 border-violet-400 p-7">
+      <div class="area-card bg-white rounded-3xl shadow-sm border-t-8 border-yellow-400 p-7">
         <div class="flex items-center gap-4 mb-3">
           <span class="text-4xl">📖</span>
           <h2 class="text-2xl font-bold">Öva på centrala begrepp</h2>
         </div>
-        <p class="text-slate-500 leading-relaxed mb-6">Flashcards, lucktext och begreppsövningar för att befästa kursens nyckelbegrepp.</p>
-        <div class="bg-violet-50 border-2 border-dashed border-violet-200 rounded-2xl py-4 text-center text-violet-400 font-bold text-sm uppercase tracking-wide">Materialet förbereds</div>
-      </div>
-
-      <!-- Pluggmaterial -->
-      <div class="area-card bg-white rounded-3xl shadow-sm border-t-8 border-violet-400 p-7">
-        <div class="flex items-center gap-4 mb-3">
-          <span class="text-4xl">📚</span>
-          <h2 class="text-2xl font-bold">Pluggmaterial</h2>
-        </div>
-        <p class="text-slate-500 leading-relaxed mb-6">Sammanfattningar, dokument och fördjupningsmaterial inför provet.</p>
-        <div class="bg-violet-50 border-2 border-dashed border-violet-200 rounded-2xl py-4 text-center text-violet-400 font-bold text-sm uppercase tracking-wide">Materialet förbereds</div>
+        <p class="text-slate-500 leading-relaxed mb-6">Lista, flashcards, lucktext och begreppstest.</p>
+        <a href="sh1a1_vetenskap_begrepp.html" class="btn-action block w-full bg-yellow-400 text-slate-900 py-3 rounded-xl font-bold text-center uppercase">📖 Öva begrepp</a>
       </div>
 
       <!-- Quiz -->
-      <div class="area-card bg-white rounded-3xl shadow-sm border-t-8 border-violet-400 p-7">
+      <div class="area-card bg-white rounded-3xl shadow-sm border-t-8 border-yellow-400 p-7">
         <div class="flex items-center gap-4 mb-3">
           <span class="text-4xl">🎯</span>
-          <h2 class="text-2xl font-bold">Quiz</h2>
+          <h2 class="text-2xl font-bold">Testa dig med quiz</h2>
         </div>
-        <p class="text-slate-500 leading-relaxed mb-6">Testa dina kunskaper med ett interaktivt quiz med direkt feedback.</p>
-        <div class="bg-violet-50 border-2 border-dashed border-violet-200 rounded-2xl py-4 text-center text-violet-400 font-bold text-sm uppercase tracking-wide">Materialet förbereds</div>
+        <p class="text-slate-500 leading-relaxed mb-6">30 frågor som testar din förståelse av kapitlet.</p>
+        <a href="sh1a1_vetenskap_quiz.html" class="btn-action block w-full bg-yellow-400 text-slate-900 py-3 rounded-xl font-bold text-center uppercase">🎯 Starta Quiz</a>
       </div>
 
     </div>
   </div>
+
+  <script>
+    (function () {
+      var backLink = document.getElementById('backLink');
+      backLink.addEventListener('click', function (e) {
+        e.preventDefault();
+        try {
+          if (document.referrer && new URL(document.referrer).hostname === window.location.hostname) {
+            history.back();
+            return;
+          }
+        } catch (err) {}
+        window.location.href = 'index.html';
+      });
+    })();
+  </script>
 
 </body>
 </html>
