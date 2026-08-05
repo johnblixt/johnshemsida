@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vetenskap – Begrepp | Samhällskunskap 1a1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Fredoka:wght@300..700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: 'EB Garamond', serif; background: #fffbeb; }
+    .font-fredoka { font-family: 'Fredoka', sans-serif; }
+    .flip-card { perspective: 1000px; height: 350px; width: 100%; max-width: 400px; cursor: pointer; }
+    .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+    .flipped-classes { transform: rotateY(180deg); }
+    .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+    .flip-card-back { transform: rotateY(180deg); }
+    @media (max-width: 768px) {
+      .view-tabs { justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body class="bg-amber-50 min-h-screen">
+
+<div id="root"></div>
+
+<script>
+function shuffleArray(array) {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function smartBack(fallbackUrl) {
+  try {
+    if (document.referrer && new URL(document.referrer).hostname === window.location.hostname) {
+      history.back();
+      return;
+    }
+  } catch (e) {}
+  window.location.href = fallbackUrl;
+}
+</script>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+const PRIMARY = '#fbbf24';
+const PRIMARY_LIGHT = '#fef9c3';
+const PRIMARY_TEXT = '#78350f';
+
+// ════════════════════════════════════════════════════════════
+// BEGREPP — hämtade ordagrant från samhallsvetenskap_begrepp.md
+// (Samhällskunskap 1a1, kapitlet Vetenskap, s. 216)
+// ════════════════════════════════════════════════════════════
+const concepts = [
+  { id: 1,  term: 'Vetenskapligt förhållningssätt', definition: 'Att tänka strukturerat, kritiskt och kreativt samt använda logiska resonemang för att basera sina slutsatser på fakta och bevis.' },
+  { id: 2,  term: 'Vetenskaplig metod', definition: 'Att systematiskt undersöka verkligheten genom att formulera frågor, samla in data, testa hypoteser och dra slutsatser för att förstå och förklara världen på ett objektivt sätt.' },
+  { id: 3,  term: 'Fakta', definition: 'Verifierbara uppgifter som kan bekräftas genom observation, mätning eller trovärdiga källor.' },
+  { id: 4,  term: 'Värdering', definition: 'En åsikt eller uppfattning om vad som är viktigt, bra eller dåligt, som bygger på känslor eller samhällsnormer och inte kan bevisas som rätt eller fel.' },
+  { id: 5,  term: 'Peer review', definition: 'En process där forskare granskar och bedömer en annan forskares arbete.' },
+  { id: 6,  term: 'Cherry-picking (russinplockning)', definition: 'Att välja ut enskilda fakta eller exempel som stöder ens egen ståndpunkt och bortse från information som motsäger den.' },
+  { id: 7,  term: 'Begrepp', definition: 'Ett ord som hjälper oss att förstå och prata om något, till exempel "frihet". Det fungerar som en inre bild för att begripa världen omkring oss.' },
+  { id: 8,  term: 'Teori', definition: 'En välgrundad förklaring av hur något fungerar eller hänger ihop, baserad på observationer, forskning och logiskt tänkande.' },
+  { id: 9,  term: 'Generalisering', definition: 'Att utifrån ett enstaka exempel dra slutsatser om vad som gäller i allmänhet (generellt).' },
+  { id: 10, term: 'Modell', definition: 'En förenklad eller renodlad bild av verkligheten (eller en teori) som används för att förstå, förklara eller förutsäga hur något fungerar.' },
+  { id: 11, term: 'Sökmotor', definition: 'Ett digitalt verktyg som hjälper dig hitta information på internet, t.ex. Google eller Bing.' },
+  { id: 12, term: 'Sökoperator', definition: 'Ett specialtecken eller ord som används i en sökmotor för att göra sökningen mer exakt.' },
+  { id: 13, term: 'Stora språkmodeller (LLM)', definition: 'Ett digitalt verktyg som använder AI och som tränats på stora mängder text för att kunna förstå, bearbeta och skapa mänskligt språk.' },
+  { id: 14, term: 'Prompt', definition: 'En instruktion eller fråga för att få ett svar eller en reaktion från ett AI-verktyg, t.ex. en språkmodell.' },
+  { id: 15, term: 'Databas', definition: 'En organiserad samling av information som lagras digitalt.' },
+  { id: 16, term: 'Analys', definition: 'Att undersöka något noggrant (och systematiskt) genom att dela upp det i mindre delar för att förstå hur det hänger ihop eller fungerar.' },
+  { id: 17, term: 'Källkritik', definition: 'Att noggrant granska och bedöma om information är trovärdig, relevant och opartisk.' },
+  { id: 18, term: 'Källtillit', definition: 'Hur mycket förtroende du kan ha för att en källa är trovärdig, sanningsenlig och inte vilseleder.' },
+  { id: 19, term: 'Användbarhet', definition: 'Hur väl informationen passar det specifika syftet, frågan eller ämnet du undersöker.' },
+  { id: 20, term: 'Relevans', definition: 'Hur väl informationen är kopplad till det ämne eller den fråga du undersöker.' },
+  { id: 21, term: 'Trovärdighet', definition: 'Hur korrekt, saklig och allsidig källan och informationen är, baserat på fakta, logik och förtroende.' },
+  { id: 22, term: 'Kausalanalys', definition: 'Att undersöka för att förstå och förklara orsakerna bakom varför något händer och hur olika faktorer påverkar varandra.' },
+  { id: 23, term: 'Fenomen', definition: 'En företeelse eller situation som kan observeras och beskrivas.' },
+  { id: 24, term: 'Korrelation', definition: 'Samvariation mellan två fenomen, att de förändras i samma takt.' },
+  { id: 25, term: 'Variabel', definition: 'Något som kan förändras eller ta olika värden. En oberoende variabel är den faktor som orsakar förändringar, medan en beroende variabel är den faktor som påverkas av den oberoende.' },
+  { id: 26, term: 'Argumentationsanalys', definition: 'Granskning av hur ett argument är uppbyggt, för att se om det är logiskt, trovärdigt och väl underbyggt.' },
+  { id: 27, term: 'Tes', definition: 'Ett tydligt och sammanfattat påstående eller en åsikt som du vill argumentera för eller bevisa.' },
+  { id: 28, term: 'Argument', definition: 'En anledning eller ett skäl som används för att stödja ett påstående, en åsikt eller för att övertyga.' },
+  { id: 29, term: 'Denotation', definition: 'En ren beskrivning utan tolkning eller värdering av t.ex. en bild eller ett uttryck.' },
+  { id: 30, term: 'Konnotation', definition: 'En tolkning av t.ex. värderingar eller symbolik i en bild eller ett uttryck.' },
+];
+
+// ════════════════════════════════════════════════════════════
+// PROGRESS- OCH RANK-SYSTEM (sessionStorage, ingen backend)
+// ════════════════════════════════════════════════════════════
+const VIEWS = ['Lista', 'Flashcards', 'Lucktext', 'Scenario', 'Icke-ex.'];
+const ACTIVE_VIEWS = { 'Lista': true, 'Flashcards': true, 'Lucktext': false, 'Scenario': false, 'Icke-ex.': false };
+const SCORE_VIEWS = ['Lucktext', 'Scenario', 'Icke-ex.'];
+const PROGRESS_KEY = 'sh1a1_vetenskap_progress';
+const RANK_SALT = 'sh1a1vetenskapsakerhet';
+const RANK_ORDER = { D: 1, C: 2, B: 3, A: 4, S: 5 };
+
+function loadProgress() {
+  try {
+    const raw = sessionStorage.getItem(PROGRESS_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return { completed: {}, best: {} };
+}
+
+function saveProgress(progress) {
+  try {
+    sessionStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+  } catch (e) {}
+}
+
+function computeRank(progress) {
+  const completedCount = VIEWS.filter(v => progress.completed[v]).length;
+  if (completedCount === 0) return null;
+  if (completedCount === 5) {
+    const allPerfect = SCORE_VIEWS.every(v => (progress.best[v] || 0) >= 100);
+    return allPerfect ? 'S' : 'A';
+  }
+  if (completedCount === 4) return 'A';
+  if (completedCount === 3) return 'B';
+  if (completedCount === 2) return 'C';
+  return 'D';
+}
+
+function computeVerificationCode(progress, rank) {
+  const d = new Date();
+  const dateStr = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+  const completedViews = VIEWS.filter(v => progress.completed[v]).sort().join(',');
+  const input = dateStr + '|' + completedViews + '|' + (rank || '-') + '|' + RANK_SALT;
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) {
+    hash = (hash + input.charCodeAt(i) * (i + 1)) % 1679616; // 36^4
+  }
+  return 'SH1A1-' + hash.toString(36).toUpperCase().padStart(4, '0');
+}
+
+// ════════════════════════════════════════════════════════════
+// VYER
+// ════════════════════════════════════════════════════════════
+
+function ListView({ onComplete }) {
+  const [query, setQuery] = useState('');
+  const sentinelRef = useRef(null);
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) onComplete();
+    }, { threshold: 1.0 });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [onComplete]);
+
+  const filtered = concepts.filter(c =>
+    c.term.toLowerCase().includes(query.toLowerCase()) ||
+    c.definition.toLowerCase().includes(query.toLowerCase())
+  );
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={query}
+        onChange={e => setQuery(e.target.value)}
+        placeholder="🔍 Sök begrepp eller definition..."
+        className="w-full mb-6 px-5 py-3 rounded-2xl border border-slate-200 shadow-sm focus:outline-none focus:ring-2 text-lg"
+        style={{ '--tw-ring-color': PRIMARY }}
+      />
+      <div className="flex flex-col gap-3">
+        {filtered.map((c) => (
+          <div
+            key={c.id}
+            className="bg-white rounded-2xl shadow-sm p-5 border-l-8 hover:shadow-md transition-shadow"
+            style={{ borderColor: PRIMARY }}
+          >
+            <div className="flex items-start gap-3">
+              <span
+                className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold font-fredoka mt-0.5"
+                style={{ background: PRIMARY_LIGHT, color: PRIMARY_TEXT }}
+              >
+                {c.id}
+              </span>
+              <div>
+                <p className="font-bold text-lg text-slate-800">{c.term}</p>
+                <p className="text-slate-500 mt-1 leading-relaxed">{c.definition}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+        {filtered.length === 0 && (
+          <p className="text-center text-slate-400 mt-8">Inga begrepp matchade sökningen.</p>
+        )}
+      </div>
+      <div ref={sentinelRef} style={{ height: 1 }} />
+    </div>
+  );
+}
+
+function FlashcardView({ onComplete }) {
+  const total = concepts.length;
+  const [deck, setDeck] = useState(() => shuffleArray(concepts));
+  const [deckIdx, setDeckIdx] = useState(0);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [kudeInte, setKudeInte] = useState([]);
+  const [kunde, setKunde] = useState([]);
+  const [phase, setPhase] = useState('playing'); // 'playing' | 'roundEnd' | 'allDone'
+
+  const restartAll = () => {
+    setDeck(shuffleArray(concepts));
+    setDeckIdx(0);
+    setIsFlipped(false);
+    setKudeInte([]);
+    setKunde([]);
+    setPhase('playing');
+  };
+
+  const sort = (pile) => {
+    const card = deck[deckIdx];
+    const newKudeInte = pile === 'kudeInte' ? [...kudeInte, card] : kudeInte;
+    const newKunde    = pile === 'kunde'    ? [...kunde, card]    : kunde;
+    const nextIdx = deckIdx + 1;
+    setKudeInte(newKudeInte);
+    setKunde(newKunde);
+    setIsFlipped(false);
+    if (nextIdx >= deck.length) {
+      setDeckIdx(nextIdx);
+      setPhase(newKudeInte.length === 0 ? 'allDone' : 'roundEnd');
+      onComplete();
+    } else {
+      setDeckIdx(nextIdx);
+    }
+  };
+
+  const nextRound = () => {
+    setDeck(shuffleArray(kudeInte));
+    setDeckIdx(0);
+    setIsFlipped(false);
+    setKudeInte([]);
+    setPhase('playing');
+  };
+
+  if (phase === 'allDone') return (
+    <div className="flex flex-col items-center gap-6">
+      <div className="bg-green-50 border-2 border-green-400 rounded-3xl p-8 text-center w-full max-w-sm">
+        <div className="text-5xl mb-4">🎉</div>
+        <p className="text-2xl font-bold text-green-700 mb-2">Alla kort klarade!</p>
+        <p className="text-slate-600 mb-6">Du behärskar <span className="font-bold text-green-700">{kunde.length} av {total}</span> begrepp.</p>
+        <button onClick={restartAll} className="w-full text-white px-8 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY }}>
+          Börja om med alla
+        </button>
+      </div>
+    </div>
+  );
+
+  if (phase === 'roundEnd') return (
+    <div className="flex flex-col items-center gap-6">
+      <div className="bg-white border-2 border-slate-200 rounded-3xl p-8 text-center w-full max-w-sm shadow-sm">
+        <p className="text-lg font-bold text-slate-700 mb-4">Runda klar!</p>
+        <div className="flex justify-center gap-8 mb-6">
+          <div className="text-center">
+            <p className="text-3xl font-bold text-green-600">{kunde.length}</p>
+            <p className="text-xs text-slate-400 uppercase tracking-wide mt-1 font-fredoka">Kunde</p>
+          </div>
+          <div className="text-center">
+            <p className="text-3xl font-bold text-red-500">{kudeInte.length}</p>
+            <p className="text-xs text-slate-400 uppercase tracking-wide mt-1 font-fredoka">Kunde inte</p>
+          </div>
+        </div>
+        <div className="flex flex-col gap-3">
+          <button onClick={nextRound} className="w-full bg-slate-900 text-white px-8 py-3 rounded-2xl font-bold font-fredoka hover:bg-slate-800 transition-colors">
+            Öva på Kunde inte ({kudeInte.length} kort) →
+          </button>
+          <button onClick={restartAll} className="w-full text-white px-8 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY }}>
+            Börja om med alla
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const card = deck[deckIdx];
+  const remaining = deck.length - deckIdx;
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="flex gap-3 mb-5 w-full max-w-sm">
+        <div className="flex-1 bg-red-50 border border-red-200 rounded-xl p-2 text-center">
+          <p className="text-xl font-bold text-red-500">{kudeInte.length}</p>
+          <p className="text-[10px] text-red-400 uppercase tracking-wide font-bold font-fredoka">Kunde inte</p>
+        </div>
+        <div className="flex-1 bg-slate-100 border border-slate-200 rounded-xl p-2 text-center">
+          <p className="text-xl font-bold text-slate-400">{remaining}</p>
+          <p className="text-[10px] text-slate-400 uppercase tracking-wide font-bold font-fredoka">Kvar</p>
+        </div>
+        <div className="flex-1 bg-green-50 border border-green-200 rounded-xl p-2 text-center">
+          <p className="text-xl font-bold text-green-500">{kunde.length}</p>
+          <p className="text-[10px] text-green-400 uppercase tracking-wide font-bold font-fredoka">Kunde</p>
+        </div>
+      </div>
+      <div className="flip-card mb-5" onClick={() => setIsFlipped(!isFlipped)}>
+        <div className={`flip-card-inner ${isFlipped ? 'flipped-classes' : ''}`}>
+          <div className="flip-card-front" style={{ background: PRIMARY }}>
+            <h2 className="text-2xl font-bold text-white text-center px-4">{card.term}</h2>
+            <div className="absolute bottom-6 animate-pulse">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-white font-bold opacity-70 font-fredoka">Klicka för svar</span>
+            </div>
+          </div>
+          <div className="flip-card-back bg-white" style={{ border: `2px solid ${PRIMARY}` }}>
+            <p className="text-xl leading-relaxed text-slate-800 font-medium px-4">{card.definition}</p>
+            <div className="absolute bottom-6">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold font-fredoka">Klicka för att vända</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {isFlipped && (
+        <div className="flex gap-3 w-full max-w-sm mb-4">
+          <button onClick={() => sort('kudeInte')} className="flex-1 bg-red-100 text-red-700 border-2 border-red-300 font-bold font-fredoka py-3 rounded-2xl hover:bg-red-200 active:scale-95 transition-all">
+            ✗ Kunde inte
+          </button>
+          <button onClick={() => sort('kunde')} className="flex-1 bg-green-100 text-green-700 border-2 border-green-300 font-bold font-fredoka py-3 rounded-2xl hover:bg-green-200 active:scale-95 transition-all">
+            ✓ Kunde
+          </button>
+        </div>
+      )}
+      <div className="flex flex-col items-center gap-2 mt-1">
+        <p className="text-slate-500 font-medium bg-slate-200 px-4 py-1 rounded-full text-xs font-fredoka">{deckIdx + 1} av {deck.length}</p>
+        <button onClick={restartAll} className="text-slate-400 text-xs hover:text-slate-600 transition-colors underline font-fredoka">↺ Börja om med alla</button>
+      </div>
+    </div>
+  );
+}
+
+// Platshållare — byggs ut i nästa steg
+function PlaceholderView({ label }) {
+  return (
+    <div className="bg-white border-2 border-dashed rounded-3xl p-10 text-center" style={{ borderColor: PRIMARY_LIGHT }}>
+      <p className="text-4xl mb-3">🚧</p>
+      <p className="font-bold text-lg text-slate-700 mb-1">{label} kommer snart</p>
+      <p className="text-slate-400 text-sm">Den här vyn byggs ut i nästa steg.</p>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════
+// HEADER + NAVIGERING
+// ════════════════════════════════════════════════════════════
+function Header({ activeView, setActiveView, progress, rank, completedCount, code }) {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-2">
+        <a
+          href="index.html"
+          onClick={(e) => { e.preventDefault(); smartBack('index.html'); }}
+          className="text-sm font-semibold transition-colors"
+          style={{ color: PRIMARY_TEXT }}
+        >
+          ← Tillbaka till startsidan
+        </a>
+        <div className="w-32 hidden sm:block"></div>
+      </div>
+
+      <h1 className="text-3xl md:text-4xl font-bold italic text-center uppercase tracking-wide mb-1" style={{ color: PRIMARY_TEXT }}>
+        Vetenskap
+      </h1>
+      <p className="text-center text-slate-400 text-sm mb-6 font-fredoka">Samhällskunskap 1a1 — Begrepp</p>
+
+      {/* Progress + rank */}
+      <div className="mb-4">
+        <div className="flex items-center justify-between mb-1.5 flex-wrap gap-2">
+          <span className="text-sm font-semibold text-slate-600 font-fredoka">{completedCount}/5 avsnitt klara</span>
+          {rank && (
+            <span
+              className="text-xs font-bold px-2.5 py-1 rounded-full font-fredoka"
+              style={{ background: PRIMARY_LIGHT, color: PRIMARY_TEXT }}
+            >
+              Rank: {rank} · Kod: {code}
+            </span>
+          )}
+        </div>
+        <div className="w-full bg-slate-200 rounded-full h-1.5">
+          <div className="h-1.5 rounded-full transition-all" style={{ width: `${(completedCount / 5) * 100}%`, background: PRIMARY }} />
+        </div>
+      </div>
+
+      {/* Toggle */}
+      <div className="view-tabs flex flex-wrap justify-center gap-1 bg-white rounded-full p-1 shadow-sm border border-slate-200 mb-8 font-fredoka text-sm max-w-full overflow-x-auto">
+        {VIEWS.map((view) => {
+          const active = ACTIVE_VIEWS[view];
+          return (
+            <button
+              key={view}
+              disabled={!active}
+              onClick={() => active && setActiveView(view)}
+              title={!active ? 'Kommer snart' : undefined}
+              className={
+                'px-4 py-2 rounded-full font-bold transition-colors whitespace-nowrap ' +
+                (!active
+                  ? 'text-slate-300 cursor-not-allowed'
+                  : activeView === view
+                    ? 'text-white'
+                    : 'text-slate-500 hover:text-slate-700')
+              }
+              style={activeView === view && active ? { background: PRIMARY } : {}}
+            >
+              {view}
+              {progress.completed[view] && (
+                <span className="ml-1" style={{ color: activeView === view ? '#fff' : '#16a34a' }}>✓</span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════
+// APP
+// ════════════════════════════════════════════════════════════
+function App() {
+  const [activeView, setActiveView] = useState('Lista');
+  const [progress, setProgress] = useState(loadProgress);
+  const [celebrateRank, setCelebrateRank] = useState(null);
+  const prevRankRef = useRef(computeRank(loadProgress()));
+
+  useEffect(() => {
+    saveProgress(progress);
+  }, [progress]);
+
+  const markComplete = useCallback((view, pct) => {
+    setProgress(prev => {
+      const nextCompleted = { ...prev.completed };
+      const nextBest = { ...prev.best };
+      let changed = false;
+
+      if (typeof pct === 'number' && !(nextBest[view] >= pct)) {
+        nextBest[view] = pct;
+        changed = true;
+      }
+
+      const thresholdMet = typeof pct === 'number' ? pct >= 80 : true;
+      if (thresholdMet && !nextCompleted[view]) {
+        nextCompleted[view] = true;
+        changed = true;
+      }
+
+      return changed ? { completed: nextCompleted, best: nextBest } : prev;
+    });
+  }, []);
+
+  const completeLista = useCallback(() => markComplete('Lista'), [markComplete]);
+  const completeFlashcards = useCallback(() => markComplete('Flashcards'), [markComplete]);
+
+  const rank = computeRank(progress);
+  const completedCount = VIEWS.filter(v => progress.completed[v]).length;
+  const code = computeVerificationCode(progress, rank);
+
+  useEffect(() => {
+    const prevOrder = prevRankRef.current ? RANK_ORDER[prevRankRef.current] : 0;
+    const newOrder = rank ? RANK_ORDER[rank] : 0;
+    if (newOrder > prevOrder) {
+      setCelebrateRank(rank);
+      const t = setTimeout(() => setCelebrateRank(null), 2500);
+      prevRankRef.current = rank;
+      return () => clearTimeout(t);
+    }
+    prevRankRef.current = rank;
+  }, [rank]);
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 py-6">
+      <Header
+        activeView={activeView}
+        setActiveView={setActiveView}
+        progress={progress}
+        rank={rank}
+        completedCount={completedCount}
+        code={code}
+      />
+
+      <div className="pb-16">
+        {activeView === 'Lista' && <ListView onComplete={completeLista} />}
+        {activeView === 'Flashcards' && <FlashcardView key="flashcards" onComplete={completeFlashcards} />}
+        {activeView === 'Lucktext' && <PlaceholderView label="Lucktext" />}
+        {activeView === 'Scenario' && <PlaceholderView label="Scenario" />}
+        {activeView === 'Icke-ex.' && <PlaceholderView label="Icke-exempel" />}
+      </div>
+
+      <footer className="text-center text-slate-400 italic text-sm pb-8">
+        Källa: Samhällskunskap 1a1 — Vetenskap, begreppslista
+      </footer>
+
+      {/* Rank celebration overlay */}
+      {celebrateRank && (
+        <div
+          className="fixed inset-0 flex items-center justify-center z-50 px-4"
+          style={{ background: 'rgba(15, 23, 42, 0.55)' }}
+          onClick={() => setCelebrateRank(null)}
+        >
+          <div className="bg-white rounded-3xl px-10 py-8 text-center shadow-2xl">
+            <div className="text-5xl mb-3">{celebrateRank === 'S' ? '🎉🏆🎉' : '🎉'}</div>
+            <p className="text-3xl font-bold" style={{ color: PRIMARY_TEXT }}>{celebrateRank}-RANK!</p>
+            <p className="text-slate-400 text-sm mt-2">Ny rank uppnådd</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
