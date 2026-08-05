@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vetenskap – Quiz | Samhällskunskap 1a1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #d97706;
+      --primary-btn: #fbbf24;
+      --primary-light: #fef9c3;
+      --primary-dark: #92400e;
+      --correct-bg: #dcfce7;
+      --correct-border: #16a34a;
+      --correct-text: #16a34a;
+      --wrong-bg: #fee2e2;
+      --wrong-border: #dc2626;
+      --wrong-text: #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'EB Garamond', Georgia, serif; background: #fffbeb; min-height: 100vh; color: #1e293b; }
+
+    a.back-btn {
+      display: inline-block; padding: 8px 16px; color: var(--primary-dark);
+      text-decoration: none; font-size: 0.95rem; position: fixed;
+      top: 14px; left: 14px; z-index: 200; border-radius: 8px; transition: background 0.2s;
+    }
+    a.back-btn:hover { background: var(--primary-light); }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Start ── */
+    #screen-start { max-width: 560px; margin: 0 auto; padding: 90px 24px 40px; text-align: center; }
+    .badge {
+      display: inline-block; background: var(--primary-light); color: var(--primary-dark);
+      padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;
+      letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 20px;
+    }
+    #screen-start h1 { font-size: 2.4rem; font-weight: 600; font-style: italic; color: #0f172a; margin-bottom: 8px; }
+    #screen-start .subtitle { font-size: 1.05rem; color: #64748b; margin-bottom: 32px; }
+    .info-cards { display: flex; gap: 12px; justify-content: center; margin-bottom: 36px; flex-wrap: wrap; }
+    .info-card {
+      background: white; border: 1px solid #fde68a; border-radius: 12px;
+      padding: 16px 20px; text-align: center; flex: 1; min-width: 100px; max-width: 150px;
+    }
+    .info-card .num { font-size: 1.5rem; font-weight: 600; color: var(--primary-dark); }
+    .info-card .lbl { font-size: 0.78rem; color: #94a3b8; margin-top: 2px; }
+
+    /* ── Quiz ── */
+    #screen-quiz { max-width: 700px; margin: 0 auto; padding: 70px 20px 60px; }
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .timer {
+      background: white; border: 1px solid #fde68a; border-radius: 20px;
+      padding: 5px 14px; font-size: 0.92rem; color: #475569; font-variant-numeric: tabular-nums;
+    }
+    .score-pill { background: var(--primary-light); color: var(--primary-dark); border-radius: 20px; padding: 5px 14px; font-size: 0.92rem; font-weight: 600; }
+    .progress-wrap { background: #fde68a; border-radius: 4px; height: 6px; overflow: hidden; margin-bottom: 6px; }
+    .progress-bar { background: var(--primary-btn); height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+    .q-counter { font-size: 0.82rem; color: #94a3b8; text-align: right; margin-bottom: 22px; }
+    .q-type-tag {
+      display: inline-block; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--primary-dark); background: var(--primary-light);
+      padding: 3px 10px; border-radius: 20px; margin-bottom: 12px;
+    }
+    .q-text { font-size: 1.25rem; font-weight: 600; line-height: 1.55; color: #0f172a; margin-bottom: 22px; }
+    .opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+    .opt-btn {
+      background: white; border: 2px solid #fde68a; border-radius: 12px;
+      padding: 13px 18px; text-align: left; font-size: 1rem; font-family: inherit;
+      cursor: pointer; transition: border-color 0.15s, background 0.15s; line-height: 1.45;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--primary-btn); background: var(--primary-light); }
+    .opt-btn:disabled { cursor: default; }
+    .opt-btn.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); font-weight: 600; }
+    .opt-btn.wrong   { background: var(--wrong-bg);   border-color: var(--wrong-border);   color: var(--wrong-text); }
+    .opt-btn.dimmed  { opacity: 0.4; }
+    .nav-row { display: flex; gap: 12px; align-items: center; }
+    .btn-back { background: white; border: 2px solid #fde68a; border-radius: 10px; padding: 10px 20px; font-family: inherit; font-size: 0.9rem; color: #64748b; cursor: pointer; }
+    .btn-back:hover { border-color: #fbbf24; }
+    .btn-next { background: var(--primary-btn); border: none; border-radius: 10px; padding: 10px 28px; font-family: inherit; font-size: 0.9rem; font-weight: 600; color: #78350f; cursor: pointer; margin-left: auto; transition: background 0.15s; }
+    .btn-next:hover { background: #f59e0b; }
+
+    /* ── Modal ── */
+    #modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 500; padding: 20px; }
+    #modal-overlay.hidden { display: none; }
+    .modal-box { background: white; border-radius: 20px; padding: 32px; max-width: 520px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+    .modal-icon    { font-size: 2.6rem; margin-bottom: 10px; }
+    .modal-verdict { font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; }
+    .modal-verdict.c { color: var(--correct-text); }
+    .modal-verdict.w { color: var(--wrong-text); }
+    .modal-expl { font-size: 0.98rem; color: #475569; line-height: 1.7; margin-bottom: 24px; }
+
+    /* ── Result ── */
+    #screen-result { max-width: 700px; margin: 0 auto; padding: 80px 20px 80px; }
+    .res-header { text-align: center; margin-bottom: 30px; }
+    .score-ring { width: 120px; height: 120px; border-radius: 50%; border: 5px solid var(--primary-btn); display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 18px; }
+    .score-ring .rnum { font-size: 2rem; font-weight: 600; color: var(--primary-dark); line-height: 1; }
+    .score-ring .rlbl { font-size: 0.72rem; color: #94a3b8; }
+    .res-title  { font-size: 1.8rem; font-weight: 600; font-style: italic; margin-bottom: 6px; }
+    .res-msg    { font-size: 1rem; color: #64748b; margin-bottom: 4px; }
+    .res-time   { font-size: 0.85rem; color: #94a3b8; margin-bottom: 28px; }
+    .stats-row  { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+    .stat-box   { flex: 1; min-width: 80px; background: white; border: 1px solid #fde68a; border-radius: 12px; padding: 14px; text-align: center; }
+    .stat-box .snum { font-size: 1.6rem; font-weight: 600; }
+    .stat-box .slbl { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
+    .stat-box.cs .snum { color: var(--correct-text); }
+    .stat-box.ws .snum { color: var(--wrong-text); }
+    .section-hd { font-size: 1.05rem; font-weight: 600; color: #0f172a; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #fde68a; }
+    .missed-section { margin-bottom: 32px; }
+    .missed-item { background: var(--wrong-bg); border-left: 4px solid var(--wrong-border); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-size: 0.92rem; }
+    .facit-item { background: white; border: 1px solid #fde68a; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
+    .facit-item.fc { border-left: 4px solid var(--correct-border); }
+    .facit-item.fw { border-left: 4px solid var(--wrong-border); }
+    .fi-num { font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .fi-q   { font-size: 0.93rem; font-weight: 600; color: #0f172a; margin-bottom: 8px; line-height: 1.4; }
+    .fi-row { font-size: 0.88rem; padding: 2px 0; }
+    .fi-row .lbl { color: #94a3b8; }
+    .fi-row.ya-ok  { color: var(--correct-text); }
+    .fi-row.ya-bad { color: var(--wrong-text); }
+    .fi-row.ra     { color: var(--correct-text); font-weight: 600; margin-top: 2px; }
+
+    .btn-primary { display: inline-block; background: var(--primary-btn); color: #78350f; border: none; border-radius: 12px; padding: 13px 36px; font-size: 1.05rem; font-family: inherit; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+    .btn-primary:hover { background: #f59e0b; transform: translateY(-1px); }
+    .btn-primary:active { transform: none; }
+
+    @media (max-width: 768px) {
+      #screen-quiz { padding-top: 60px; }
+      .quiz-header { flex-wrap: wrap; gap: 8px; }
+      .nav-row { flex-wrap: wrap; }
+      .btn-back, .btn-next { flex: 1; min-width: 120px; text-align: center; margin-left: 0; }
+      .nav-row { justify-content: space-between; }
+    }
+    @media (max-width: 500px) {
+      #screen-start h1 { font-size: 1.85rem; }
+      .q-text { font-size: 1.1rem; }
+      .info-cards { gap: 8px; }
+      .info-card { padding: 12px 10px; min-width: 88px; }
+    }
+  </style>
+</head>
+<body>
+
+<a href="index.html" class="back-btn" id="back-link">← Tillbaka till startsidan</a>
+
+<!-- ═══════════ START ═══════════ -->
+<div id="screen-start" class="screen active">
+  <div class="badge">Samhällskunskap 1a1 · Vetenskap</div>
+  <h1>Quiz</h1>
+  <p class="subtitle">29 frågor om vetenskapligt förhållningssätt, källkritik, kausalanalys, argumentationsanalys och AI/LLM</p>
+  <div class="info-cards">
+    <div class="info-card"><div class="num">29</div><div class="lbl">Frågor</div></div>
+    <div class="info-card"><div class="num">MC + S/F</div><div class="lbl">Frågetyper</div></div>
+    <div class="info-card"><div class="num">F1–F20</div><div class="lbl">Faktafrågor</div></div>
+  </div>
+  <button class="btn-primary" onclick="startQuiz()">Starta Quiz →</button>
+</div>
+
+<!-- ═══════════ QUIZ ═══════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-header">
+    <div class="timer" id="timer">⏱ 0:00</div>
+    <div class="score-pill" id="score-pill">Poäng: 0</div>
+  </div>
+  <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+  <div class="q-counter" id="q-counter">Fråga 1 av 29</div>
+  <div class="q-type-tag" id="q-type-tag"></div>
+  <div class="q-text" id="q-text"></div>
+  <div class="opts" id="opts"></div>
+  <div class="nav-row">
+    <button class="btn-back" id="btn-back" onclick="goBack()" style="display:none">← Bakåt</button>
+    <button class="btn-next" id="btn-next" onclick="goNext()" style="display:none">Nästa →</button>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL ═══════════ -->
+<div id="modal-overlay" class="hidden">
+  <div class="modal-box">
+    <div class="modal-icon"    id="modal-icon"></div>
+    <div class="modal-verdict" id="modal-verdict"></div>
+    <div class="modal-expl"    id="modal-expl"></div>
+    <button class="btn-primary" onclick="closeModal()">Nästa fråga →</button>
+  </div>
+</div>
+
+<!-- ═══════════ RESULT ═══════════ -->
+<div id="screen-result" class="screen">
+  <div class="res-header">
+    <div class="score-ring">
+      <div class="rnum" id="r-score"></div>
+      <div class="rlbl">poäng</div>
+    </div>
+    <div class="res-title" id="r-title"></div>
+    <div class="res-msg"   id="r-msg"></div>
+    <div class="res-time"  id="r-time"></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-box cs"><div class="snum" id="s-correct">0</div><div class="slbl">Rätt</div></div>
+    <div class="stat-box ws"><div class="snum" id="s-wrong">0</div><div class="slbl">Fel</div></div>
+    <div class="stat-box"><div class="snum" id="s-pct">0%</div><div class="slbl">Andel rätt</div></div>
+  </div>
+  <div class="missed-section" id="missed-section"></div>
+  <div class="section-hd">Fullständigt facit</div>
+  <div id="facit-list"></div>
+  <div style="text-align:center;margin-top:32px">
+    <button class="btn-primary" onclick="restartQuiz()">↺ Gör om quizet</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// SMART TILLBAKA-NAVIGERING
+// ════════════════════════════════════════════════════════════
+document.getElementById('back-link').addEventListener('click', function (e) {
+  e.preventDefault();
+  const ref = document.referrer;
+  if (ref && ref.indexOf(location.hostname) !== -1) {
+    history.back();
+  } else {
+    window.location.href = 'index.html';
+  }
+});
+
+// ════════════════════════════════════════════════════════════
+// QUESTION DATA — 29 frågor (mc = flerval 4 alt, tf = sant/falskt)
+// Frågor från samhallsvetenskap_uppgifter.md (Faktafrågor 1–20),
+// svar hämtade ur samhallsvetenskap_material.md
+// ════════════════════════════════════════════════════════════
+const QUESTIONS = [
+
+  {
+    type: 'mc',
+    q: 'Vilka tre saker brukar räknas som hörnstenarna i ett vetenskapligt förhållningssätt?',
+    opts: [
+      'Systematik, kreativitet och kritiskt tänkande – ordning, nytänkande och ifrågasättande av information och källor',
+      'Objektivitet, repeterbarhet och falsifierbarhet – att resultat kan kontrolleras och bevisas felaktiga',
+      'Saklighet, öppenhet och empiri – att bygga slutsatser enbart på mätbara och synliga fakta',
+      'Auktoritet, tradition och intuition – att lita på erfarna experters samlade kunskap och omdöme'
+    ],
+    correct: 0,
+    expl: 'De tre hörnstenarna i vetenskaplighet är systematik (ordning och logiska resonemang), kreativitet (att ställa nya frågor och tänka i nya banor) och kritiskt tänkande (att ifrågasätta information, källor och slutsatser).'
+  },
+  {
+    type: 'mc',
+    q: 'Vad kännetecknar vetenskaplig metod enligt materialet?',
+    opts: [
+      'Vetenskap undersöker verkligheten, bygger på saklighet och präglas av öppenhet där andra forskare får granska resultaten',
+      'Vetenskap bygger på konsensus, kräver statlig finansiering och utförs enbart av professorer vid universitet',
+      'Vetenskap utgår från etablerade auktoriteter, kräver enighet bland forskare och undviker att ifrågasätta tidigare resultat',
+      'Vetenskap grundas på personlig erfarenhet, bygger på intuition och behöver inte kunna kontrolleras av andra'
+    ],
+    correct: 0,
+    expl: 'Vetenskaplig metod kännetecknas av att vetenskap undersöker verkligheten (inte tro), bygger på saklighet (fakta och bevis, inte löst tyckande) och bygger på öppenhet (metoder och resultat delas och granskas av andra forskare).'
+  },
+  {
+    type: 'tf',
+    q: 'Att Olof Palme sköts den 28 februari 1986 är ett exempel på ett faktum, inte en värdering.',
+    correct: true,
+    expl: 'Ett faktum kan vara sant eller falskt, som att Palme sköts 28 februari 1986. Om han var en bra statsminister eller inte är däremot en värderingsfråga, eftersom det uttrycker vad någon tycker.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad är peer review och varför är det viktigt inom vetenskapen?',
+    opts: [
+      'Det är en granskning av andra forskare som ska säkerställa att artiklar håller god kvalitet och är gjorda vetenskapligt',
+      'Det är en process där staten kontrollerar att forskningen inte strider mot gällande lagar och regler',
+      'Det är ett sätt att mäta hur många gånger en artikel har lästs och delats av allmänheten',
+      'Det är en metod för att avgöra vilken tidskrift som ska publicera en forskares kommande artikel'
+    ],
+    correct: 0,
+    expl: 'Peer review innebär att vetenskaplig text som publiceras granskas av andra forskare inom samma område. Det är en säkerhetsåtgärd som gör att man kan skilja granskad vetenskap från fejkade studier eller rena påhitt.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad innebär cherry-picking (russinplockning) och varför är det problematiskt?',
+    opts: [
+      'Att göra ett tydligt urval av fakta utan att säga hela sanningen, för att stödja egna värderingar',
+      'Att medvetet förfalska mätdata i en undersökning för att resultaten ska stämma med hypotesen',
+      'Att undvika peer review genom att publicera forskningsresultat direkt på egna hemsidor och bloggar',
+      'Att blanda ihop fakta och värderingar så att läsaren inte längre kan skilja dem åt'
+    ],
+    correct: 0,
+    expl: 'Cherry-picking innebär att man gör ett urval av fakta utan att redovisa hela bilden. Ett exempel är i klimatdebatten, där man jämför två enstaka år för att "bevisa" att uppvärmningen uteblivit, trots att den långsiktiga trenden visar motsatsen.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilken funktion fyller ett begrepp inom samhällsvetenskapen?',
+    opts: [
+      'Det ger innebörden av ett ord och gör det tydligare att kommunicera, vilket minskar risken för missförstånd',
+      'Det bevisar att en teori stämmer genom att sammanfatta resultat från flera olika vetenskapliga undersökningar',
+      'Det avgör om en källa är trovärdig genom att jämföra avsändarens syfte med informationens innehåll',
+      'Det beskriver orsakssamband mellan olika fenomen och används för att förutsäga framtida samhällsutveckling'
+    ],
+    correct: 0,
+    expl: 'Ett begrepp är innebörden av ett ord, till exempel samhälle, frihet eller demokrati. Eftersom alla inte uppfattar begrepp på samma sätt är det viktigt att definiera dem tydligt, så att kommunikationen underlättas.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad är en vetenskaplig teori och hur kan sådana användas?',
+    opts: [
+      'Att förklara, förstå eller förutsäga händelser i samhället genom fastställda eller tänkbara orsakssamband forskare upptäckt',
+      'Att bevisa att en enskild persons åsikt om ett ämne alltid är den mest korrekta',
+      'Att ersätta behovet av källkritik eftersom teorier redan är granskade och därmed garanterat sanna',
+      'Att fastställa lagar som styr hur myndigheter ska agera i samhällsvetenskapliga frågor och beslut'
+    ],
+    correct: 0,
+    expl: 'En teori är sammansatt av fastställda eller tänkbara orsakssamband som forskare upptäckt i sina studier. Teorier hjälper oss att förklara, förstå eller förutsäga olika händelser eller företeelser i samhället.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad, förutom sökorden, påverkar vilka träffar du får i en sökmotor?',
+    opts: [
+      'Tidigare sökningar som du och dina bekanta gjort, samt hur uppdaterad och länkad en webbplats är',
+      'Enbart hur många gånger sökordet förekommer på webbplatsen, oavsett innehållets ålder eller kvalitet',
+      'Vilket land webbplatsens server är placerad i samt vilket språk webbplatsen är skriven på',
+      'Hur lång webbplatsens text är, eftersom sökmotorer alltid prioriterar längre och mer omfattande artiklar'
+    ],
+    correct: 0,
+    expl: 'Träffarna styrs inte bara av sökorden, utan även av vilka sökningar du och personer du känner gjort tidigare, vilka sidor du besökt, samt hur uppdaterad webbplatsen är och hur många andra sidor som länkar till den.'
+  },
+  {
+    type: 'tf',
+    q: 'Betalda sökträffar, märkta "Annons" eller "Sponsrad", visas längst ner på sökmotorns första sida, efter de vanliga träffarna.',
+    correct: false,
+    expl: 'Betalda sökträffar visas längst upp i trafflistan, före de vanliga träffarna. Företag betalar för att hamna där, och träffarna märks med texten "Annons" eller "Sponsrad".'
+  },
+  {
+    type: 'mc',
+    q: 'Vad är ett AI-verktyg? Ge ett exempel på ett sådant som nämns i materialet.',
+    opts: [
+      'En stor språkmodell, LLM, som är en av de vanligaste typerna av AI-verktyg som finns',
+      'En vetenskaplig databas som enbart innehåller granskade uppsatser från svenska universitet och högskolor',
+      'En sökoperator som används för att begränsa och precisera resultatet av en vanlig sökning',
+      'Ett peer review-system som granskar och godkänner texter innan de publiceras på internet'
+    ],
+    correct: 0,
+    expl: 'Det finns många olika typer av AI-verktyg. Mycket viktiga är så kallade stora språkmodeller, LLM (Large Language Models).'
+  },
+  {
+    type: 'mc',
+    q: 'Vad betyder LLM och vad används det till?',
+    opts: [
+      'En stor språkmodell som förutsäger nästa ord utifrån miljontals texter – bra som hjälp med att skriva och sammanfatta',
+      'En sökmotor som alltid ger helt korrekt information genom att jämföra flera vetenskapliga källor',
+      'En databas med granskade forskningsartiklar som är gratis att använda för alla gymnasieelever',
+      'Ett verktyg som enbart används för att kontrollera stavning och grammatik i skrivna texter'
+    ],
+    correct: 0,
+    expl: 'LLM (Large Language Model) är en stor språkmodell som försöker förutsäga nästa ord utifrån analys av miljontals texter. De är utmärkta som "study buddy" för att skriva, sammanfatta eller förenkla, men sämre på ren information eftersom de kan hallucinera.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilken är fördelen med att kombinera en språkmodell med en sökmotor?',
+    opts: [
+      'Man kan få källtexter, till och med vetenskapliga källor, och själv kontrollera hur de tolkats',
+      'Svaren blir alltid kortare och man slipper läsa långa texter för att hitta information',
+      'Verktyget slutar helt att kunna hallucinera eftersom det bara använder verifierade källor och fakta',
+      'Man behöver inte längre vara källkritisk eftersom verktyget redan har granskat all information'
+    ],
+    correct: 0,
+    expl: 'I ett verktyg som kombinerar språkmodell och sökmotor kan du få källtexterna, och till och med be om vetenskapliga källor. Då kan du själv gå till källorna och kontrollera att språkmodellen tolkat dem rimligt.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad innebär det att "prompta" ett AI-verktyg? Ge ett exempel.',
+    opts: [
+      'Att ställa frågor eller ge instruktioner – ju mer precis prompten är, desto träffsäkrare blir svaret',
+      'Att ladda upp en fil med källor som AI-verktyget sedan automatiskt granskar och sammanfattar',
+      'Att låta AI-verktyget själv välja vilken fråga som är mest relevant att besvara',
+      'Att jämföra svar från flera olika AI-verktyg för att se vilket som är mest korrekt'
+    ],
+    correct: 0,
+    expl: 'Att prompta innebär att ställa frågor eller ge instruktioner till ett AI-verktyg. Ju mer precis frågan är, desto mer träffsäkert blir svaret. Att prompta korrekt kräver övning och ämneskunskap, till exempel: "Sammanfatta huvudargumenten i denna text i punktform."'
+  },
+  {
+    type: 'mc',
+    q: 'Vad är en analys och vilka verktyg används i samhällsvetenskapliga analyser?',
+    opts: [
+      'Källkritisk analys, kausalanalys, argumentationsanalys och bildanalys – fyra vanliga sätt att bearbeta ett material',
+      'Statistisk analys, enkätanalys, intervjuanalys och observationsanalys – fyra metoder för att samla in data',
+      'Peer review, cherry-picking, faktagranskning och källtillit – fyra begrepp som hör ihop med trovärdighet',
+      'Denotation, konnotation, generalisering och paradigmskifte – fyra centrala begrepp inom vetenskaplig teori'
+    ],
+    correct: 0,
+    expl: 'Att analysera innebär att noggrant och systematiskt undersöka alla beståndsdelar av något, ofta med tolkningar. Materialet lyfter fram källkritisk analys, kausalanalys, argumentationsanalys och bildanalys som vanliga analysverktyg.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilka två faktorer är centrala för att avgöra kvaliteten på ett argument?',
+    opts: [
+      'Hållbarhet, det vill säga argumentets styrka, och relevans, det vill säga om det hör till saken',
+      'Längd, det vill säga hur utförligt argumentet är, och källa, det vill säga vem som säger det',
+      'Popularitet, det vill säga hur många som håller med, och tydlighet, det vill säga hur lättförståeligt det är',
+      'Nyhetsvärde, det vill säga hur aktuellt argumentet är, och känsla, det vill säga hur starkt det engagerar'
+    ],
+    correct: 0,
+    expl: 'Argument bedöms utifrån hållbarhet (argumentets styrka eller trovärdighet, om det går att kontrollera att det stämmer) och relevans (om argumentet hör till saken och kan kopplas till tesen).'
+  },
+  {
+    type: 'tf',
+    q: 'Källtillit innebär att man ska lita lika mycket på alla källor, så länge man är källkritisk.',
+    correct: false,
+    expl: 'Källtillit innebär att vi inte bara ska vara allmänt kritiska till alla källor, utan lita mer på vissa källor än andra. Information från myndigheter i en demokratisk stat med låg korruption är generellt mer trovärdig än till exempel en privatpersons blogg.'
+  },
+  {
+    type: 'mc',
+    q: 'a) Vad betyder det att information är "användbar" inom källkritik?',
+    opts: [
+      'Att informationen är relevant, det vill säga att den kan bidra till att besvara de frågor man har',
+      'Att informationen är kort och lättläst, så att man snabbt kan ta till sig innehållet',
+      'Att informationen kommer från en myndighet, eftersom myndigheter alltid räknas som fullt trovärdiga',
+      'Att informationen har granskats genom peer review innan den publicerades på internet eller i tryck'
+    ],
+    correct: 0,
+    expl: 'Ett grundkrav är att avgöra om informationen är användbar, det vill säga relevant – att den kan bidra till att besvara de frågor man har. Trovärdighet är en separat fråga, som handlar om avsändarens och informationens tillförlitlighet.'
+  },
+  {
+    type: 'mc',
+    q: 'b) Ge ett exempel på ett tips för att avgöra en källas trovärdighet.',
+    opts: [
+      'Att skilja på avsändarens trovärdighet och informationens trovärdighet, och undersöka om innehållet är allsidigt',
+      'Att enbart lita på källor som är skrivna av forskare med en doktorsexamen inom ämnet',
+      'Att jämföra hur många som delat källan på sociala medier under den senaste veckan',
+      'Att kontrollera om texten innehåller bilder, eftersom bildbevis alltid gör information mer trovärdig'
+    ],
+    correct: 0,
+    expl: 'Ett bra tips är att skilja på avsändarens trovärdighet och informationens trovärdighet, samt att bedöma om informationen är sann och allsidig eller tendentiös (vinklad). En bra minnesregel är: vem skriver vad till vem och i vilket syfte?'
+  },
+  {
+    type: 'mc',
+    q: 'Vilka är nackdelarna med att använda Wikipedia som källa?',
+    opts: [
+      'Vem som helst kan skriva och redigera artiklar, och artikelförfattarna är oftast anonyma',
+      'Artiklarna är alltid för långa och detaljerade för att vara användbara i skolarbeten',
+      'Wikipedia saknar helt referenser till andra källor i sina artiklar om samhällsfrågor',
+      'Artiklarna uppdateras för sällan för att innehålla aktuell och relevant information om ämnet'
+    ],
+    correct: 0,
+    expl: 'Ett problem med Wikipedia är att vem som helst kan skriva och redigera artiklar, utan att det syns direkt om innehållet är vinklat eller av dålig kvalitet. Att artikelförfattarna är anonyma gör det svårt att veta om de vinklar innehållet.'
+  },
+  {
+    type: 'mc',
+    q: 'Hur kan du kontrollera att informationen i en Wikipedia-artikel är korrekt?',
+    opts: [
+      'Genom att titta på källorna artikeln bygger på samt flikarna "visa historik" och "diskussion"',
+      'Genom att jämföra artikelns längd med liknande artiklar på andra språk i Wikipedia',
+      'Genom att kontrollera hur många bilder och illustrationer som finns med i artikeln',
+      'Genom att se hur högt upp artikeln hamnar bland träffarna i en vanlig sökmotor'
+    ],
+    correct: 0,
+    expl: 'Ett tips är att se vilka källor artikeln bygger på och kontrollera några av dem. Fliken "visa historik" visar vilka redigeringar som gjorts, och fliken "diskussion" visar hur användare diskuterat formuleringar och källor.'
+  },
+  {
+    type: 'mc',
+    q: 'a) Vilka fyra delar består en enkel kausalanalys av?',
+    opts: [
+      'Fenomen, orsaker, konsekvenser och åtgärder, där fenomenet står i mitten och de andra kopplas till det',
+      'Hypotes, undersökning, resultat och slutsats, där varje del testas systematiskt i tur och ordning',
+      'Tes, argument, motargument och slutsats, där tesen ska stödjas av hållbara och relevanta argument',
+      'Avsändare, budskap, mottagare och syfte, där varje del analyseras för att avgöra källans trovärdighet'
+    ],
+    correct: 0,
+    expl: 'Kausalanalysmodellen består av fyra delar: beskrivningen av fenomenet/situationen/företeelsen i mitten, samt orsaker, konsekvenser och åtgärder som kopplas till fenomenet.'
+  },
+  {
+    type: 'tf',
+    q: 'b) Kausalitet och korrelation betyder samma sak – att två saker samvarierar med varandra.',
+    correct: false,
+    expl: 'Kausalitet innebär ett orsakssamband, det vill säga att en variabel faktiskt orsakar förändring i en annan. Korrelation innebär bara att två saker samvarierar, utan att den ena orsakar den andra. Att blanda ihop dem kallas falsk kausalitet.'
+  },
+  {
+    type: 'mc',
+    q: 'I exemplet med farliga glassar följs kurvorna för drunkningsdödsfall och glasskonsumtion åt under sommaren. Vilken slutsats vore felaktig att dra?',
+    opts: [
+      'Att glassätningen orsakar drunkningsolyckorna, trots att det bara handlar om en samvariation mellan de två',
+      'Att fler människor badar under sommaren, vilket ökar risken för drunkningsolyckor jämfört med vintern',
+      'Att både glasskonsumtion och drunkningsolyckor ökar under juni, juli och augusti varje år',
+      'Att undersökningen visar en tydlig samvariation mellan glasskonsumtion och antalet drunkningsolyckor i Sverige'
+    ],
+    correct: 0,
+    expl: 'Att glassätningen skulle orsaka drunkningsolyckorna är en felaktig slutsats – exemplet illustrerar falsk kausalitet. De två saker samvarierar (korrelerar), men det finns inget orsakssamband mellan dem.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad är den troliga bakomliggande (oberoende) variabeln som påverkar både glassätning och drunkningsolyckor?',
+    opts: [
+      'Att det är sommar och varmt, vilket gör att fler människor äter glass och tillbringar tid vid vatten',
+      'Att glasstillverkare medvetet ökar sin produktion under sommaren för att möta en högre efterfrågan',
+      'Att fler badplatser håller öppet under sommaren, vilket lockar fler människor att bada regelbundet',
+      'Att skolorna har sommarlov, vilket gör att fler barn och ungdomar är lediga och utomhus'
+    ],
+    correct: 0,
+    expl: 'Det är betydligt troligare att det finns en bakomliggande oberoende variabel – att det är sommar och varmt och att vi tillbringar mer tid vid vatten – som påverkar både glassätning och drunkningsolyckor, snarare än att den ena orsakar den andra.'
+  },
+  {
+    type: 'tf',
+    q: 'Undersökningen om glass och drunkning i exemplet har hög validitet eftersom sambandet mellan kurvorna är starkt.',
+    correct: false,
+    expl: 'Undersökningen får låg validitet (bevisvärde), eftersom man kopplat ihop två saker som saknar orsakssamband. Ett starkt samband mellan kurvorna bevisar inte kausalitet – det handlar om korrelation.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad är skillnaden mellan denotation och konnotation vid en bildanalys?',
+    opts: [
+      'Denotation beskriver vad som syns på bilden, medan konnotation tolkar vilka värderingar och budskap bilden förmedlar',
+      'Denotation handlar om bildens färger, medan konnotation handlar om bildens komposition och uppbyggnad',
+      'Denotation avser bildens avsändare, medan konnotation avser vilken målgrupp som bilden riktar sig till',
+      'Denotation beskriver bildens känslomässiga budskap, medan konnotation räknar upp de personer som syns på bilden'
+    ],
+    correct: 0,
+    expl: 'Denotation innebär att beskriva bilden utan att tolka eller lägga in värderingar – vad som faktiskt syns. Konnotation handlar om tolkningen: vilket budskap, vilka värderingar och vilken symbolik som förmedlas via bilden.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilken är den övergripande tesen i debatten inför folkomröstningen om trängselavgifter i Stockholm 2006?',
+    opts: [
+      'Rösta ja till trängselavgifter för en bättre livsmiljö, även om flera delteser också fördes fram',
+      'Rösta nej till trängselavgifter eftersom de gynnar enbart biltrafiken i Stockholms innerstad',
+      'Inför trängselavgifter enbart i förorterna för att skydda Stockholms centrala grönområden',
+      'Avskaffa kollektivtrafiken helt och satsa istället på ett effektivare vägnät för biltrafik'
+    ],
+    correct: 0,
+    expl: 'Det finns flera möjliga deltesers i texten, men den övergripande tesen är "rösta ja till trängselavgifter för en bättre livsmiljö". Argumenten handlade om bättre kollektivtrafik, effektivare vägnät, räddade grönområden och färre bilavgasrelaterade sjukdomar.'
+  },
+  {
+    type: 'tf',
+    q: 'Argumentet "Trängselavgifter kommer att göra mig glad varje morgon" är relevant för tesen att trängselavgifter är bra för miljön.',
+    correct: false,
+    expl: 'Argumentet saknar koppling till tesen om miljön och är därför irrelevant, även om det i och för sig kan vara sant. Relevans handlar om att argumentet måste kunna ställas i relation till tesen.'
+  },
+  {
+    type: 'mc',
+    q: 'Hur kan man kontrollera hållbarheten i argumentet "Trängselavgifter gör att människor åker mindre bil"?',
+    opts: [
+      'Genom att studera hur trafiken faktiskt har förändrats i städer där trängselavgifter har införts',
+      'Genom att fråga ett antal bilister om de personligen tycker att argumentet känns rimligt',
+      'Genom att undersöka om argumentet nämns i tidningsartiklar som skrivits om trängselavgifter',
+      'Genom att kontrollera om politikerna som förde fram argumentet vann folkomröstningen 2006'
+    ],
+    correct: 0,
+    expl: 'Hållbarhet handlar om argumentets styrka eller trovärdighet. Detta arguments hållbarhet går att kontrollera genom att studera hur trafiken faktiskt förändrats i storstäder där trängselavgifter införts.'
+  }
+];
+
+// ════════════════════════════════════════════════════════════
+// FISHER-YATES SHUFFLE
+// ════════════════════════════════════════════════════════════
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// ════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════
+let qs = [];
+let cur = 0;
+let score = 0;
+let elapsed = 0;
+let timerID = null;
+
+function normalize(q) {
+  if (q.type === 'tf') {
+    return {
+      type: 'tf',
+      q: q.q,
+      opts: ['Sant', 'Falskt'],
+      correct: q.correct ? 0 : 1,
+      expl: q.expl
+    };
+  }
+  return q;
+}
+
+function buildState() {
+  const shuffled = shuffleArray([...QUESTIONS]).map(normalize);
+  qs = shuffled.map(q => ({
+    ...q,
+    shuffledIdx: shuffleArray(q.opts.map((_, i) => i)),
+    selectedDisplay: null,
+    answered: false
+  }));
+}
+
+// ════════════════════════════════════════════════════════════
+// SCREENS
+// ════════════════════════════════════════════════════════════
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ════════════════════════════════════════════════════════════
+// TIMER
+// ════════════════════════════════════════════════════════════
+function fmt(s) {
+  return '⏱ ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+}
+function startTimer() {
+  elapsed = 0;
+  timerID = setInterval(() => { elapsed++; document.getElementById('timer').textContent = fmt(elapsed); }, 1000);
+}
+function stopTimer() { clearInterval(timerID); }
+
+// ════════════════════════════════════════════════════════════
+// START
+// ════════════════════════════════════════════════════════════
+function startQuiz() {
+  buildState();
+  cur = 0;
+  score = 0;
+  show('screen-quiz');
+  startTimer();
+  render();
+}
+
+// ════════════════════════════════════════════════════════════
+// RENDER
+// ════════════════════════════════════════════════════════════
+function render() {
+  const q = qs[cur];
+  const total = qs.length;
+
+  document.getElementById('progress-bar').style.width = (cur / total * 100) + '%';
+  document.getElementById('q-counter').textContent = 'Fråga ' + (cur + 1) + ' av ' + total;
+  document.getElementById('score-pill').textContent = 'Poäng: ' + score;
+  document.getElementById('q-type-tag').textContent = q.type === 'tf' ? 'Sant eller falskt' : 'Flerval';
+  document.getElementById('q-text').textContent = q.q;
+
+  const optsEl = document.getElementById('opts');
+  optsEl.innerHTML = '';
+
+  q.shuffledIdx.forEach((origIdx, displayPos) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = q.opts[origIdx];
+    btn.disabled = q.answered;
+
+    if (q.answered) {
+      const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+      if (displayPos === correctDisplay)      btn.classList.add('correct');
+      else if (displayPos === q.selectedDisplay) btn.classList.add('wrong');
+      else                                    btn.classList.add('dimmed');
+    } else {
+      btn.addEventListener('click', () => handleAnswer(displayPos));
+    }
+    optsEl.appendChild(btn);
+  });
+
+  document.getElementById('btn-back').style.display = cur > 0 ? 'inline-block' : 'none';
+  document.getElementById('btn-next').style.display = q.answered ? 'inline-block' : 'none';
+  document.getElementById('btn-next').textContent = cur === total - 1 ? 'Se resultat →' : 'Nästa →';
+}
+
+// ════════════════════════════════════════════════════════════
+// ANSWER
+// ════════════════════════════════════════════════════════════
+function handleAnswer(displayPos) {
+  const q = qs[cur];
+  if (q.answered) return;
+
+  q.answered = true;
+  q.selectedDisplay = displayPos;
+
+  const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+  const isCorrect = displayPos === correctDisplay;
+  if (isCorrect) score++;
+
+  document.querySelectorAll('.opt-btn').forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === correctDisplay)          btn.classList.add('correct');
+    else if (i === displayPos)         btn.classList.add('wrong');
+    else                               btn.classList.add('dimmed');
+  });
+
+  document.getElementById('btn-next').style.display = 'inline-block';
+  document.getElementById('btn-next').textContent = cur === qs.length - 1 ? 'Se resultat →' : 'Nästa →';
+  document.getElementById('score-pill').textContent = 'Poäng: ' + score;
+
+  setTimeout(() => showModal(isCorrect, q.expl), 600);
+}
+
+// ════════════════════════════════════════════════════════════
+// MODAL
+// ════════════════════════════════════════════════════════════
+function showModal(isCorrect, expl) {
+  document.getElementById('modal-icon').textContent      = isCorrect ? '✅' : '❌';
+  document.getElementById('modal-verdict').textContent   = isCorrect ? 'Rätt svar!' : 'Fel svar';
+  document.getElementById('modal-verdict').className     = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
+  document.getElementById('modal-expl').textContent      = expl;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  goNext();
+}
+
+// ════════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════════
+function goBack() { if (cur > 0) { cur--; render(); } }
+function goNext() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  if (cur < qs.length - 1) { cur++; render(); }
+  else showResults();
+}
+
+// ════════════════════════════════════════════════════════════
+// RESULTS
+// ════════════════════════════════════════════════════════════
+function showResults() {
+  stopTimer();
+  show('screen-result');
+
+  const total = qs.length;
+  const wrong = total - score;
+  const pct   = Math.round(score / total * 100);
+
+  document.getElementById('r-score').textContent   = score + '/' + total;
+  document.getElementById('s-correct').textContent = score;
+  document.getElementById('s-wrong').textContent   = wrong;
+  document.getElementById('s-pct').textContent     = pct + '%';
+
+  const m = Math.floor(elapsed / 60), s = String(elapsed % 60).padStart(2, '0');
+  document.getElementById('r-time').textContent = 'Tid: ' + m + ':' + s;
+
+  let title, msg;
+  if (pct >= 90)      { title = '🏆 Utmärkt!';          msg = 'Du behärskar kapitlet Vetenskap på hög nivå.'; }
+  else if (pct >= 75) { title = '✅ Redo för provet!';   msg = 'Bra resultat – du har koll på det centrala.'; }
+  else if (pct >= 55) { title = '📖 Öva lite till';      msg = 'Du är på rätt spår men behöver repetera en del.'; }
+  else                { title = '💡 Fortsätt repetera'; msg = 'Gå igenom pluggmaterialet och försök igen.'; }
+
+  document.getElementById('r-title').textContent = title;
+  document.getElementById('r-msg').textContent   = msg;
+
+  // Missed
+  const missedEl = document.getElementById('missed-section');
+  const missed = qs.filter(q => q.answered && q.shuffledIdx.indexOf(q.correct) !== q.selectedDisplay);
+  if (missed.length) {
+    missedEl.innerHTML = '<div class="section-hd">Missade frågor (' + missed.length + ')</div>';
+    missed.forEach(q => {
+      const d = document.createElement('div');
+      d.className = 'missed-item';
+      d.textContent = q.q;
+      missedEl.appendChild(d);
+    });
+  } else {
+    missedEl.innerHTML = '';
+  }
+
+  // Full facit
+  const facitEl = document.getElementById('facit-list');
+  facitEl.innerHTML = '';
+  qs.forEach((q, i) => {
+    const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+    const isCorrect  = q.answered && q.selectedDisplay === correctDisplay;
+    const notAnswered = !q.answered;
+    const correctText  = q.opts[q.correct];
+    const selectedText = q.answered ? q.opts[q.shuffledIdx[q.selectedDisplay]] : null;
+
+    const div = document.createElement('div');
+    div.className = 'facit-item ' + (notAnswered ? '' : isCorrect ? 'fc' : 'fw');
+
+    let html = '<div class="fi-num">Fråga ' + (i + 1) + '</div>';
+    html += '<div class="fi-q">' + q.q + '</div>';
+    if (notAnswered) {
+      html += '<div class="fi-row"><span class="lbl">Ditt svar: </span>— (inte besvarad)</div>';
+      html += '<div class="fi-row ra"><span class="lbl">Rätt svar: </span>' + correctText + '</div>';
+    } else if (isCorrect) {
+      html += '<div class="fi-row ya-ok">✓ <span class="lbl">Ditt svar: </span>' + selectedText + '</div>';
+    } else {
+      html += '<div class="fi-row ya-bad">✗ <span class="lbl">Ditt svar: </span>' + selectedText + '</div>';
+      html += '<div class="fi-row ra"><span class="lbl">Rätt svar: </span>' + correctText + '</div>';
+    }
+    div.innerHTML = html;
+    facitEl.appendChild(div);
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// RESTART
+// ════════════════════════════════════════════════════════════
+function restartQuiz() {
+  stopTimer();
+  show('screen-start');
+}
+</script>
+</body>
+</html>
