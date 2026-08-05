@@ -93,10 +93,132 @@ const concepts = [
 ];
 
 // ════════════════════════════════════════════════════════════
+// LUCKTEXT — en mening per begrepp, byggd på definitionerna och
+// exemplen i samhallsvetenskap_begrepp.md / samhallsvetenskap_material.md
+// ════════════════════════════════════════════════════════════
+const LUCKTEXT_ITEMS = [
+  { id: 1, term: 'Vetenskapligt förhållningssätt', sentence: 'Att tänka strukturerat, kritiskt och kreativt och basera sina slutsatser på fakta i stället för magkänsla kallas ett ___.', answers: ['Vetenskapligt förhållningssätt'], explanation: 'Ett vetenskapligt förhållningssätt innebär att tänka strukturerat, kritiskt och kreativt samt använda logiska resonemang för att basera sina slutsatser på fakta och bevis.' },
+  { id: 2, term: 'Vetenskaplig metod', sentence: 'När forskare systematiskt formulerar frågor, samlar in data, testar hypoteser och drar slutsatser kallas det för ___.', answers: ['Vetenskaplig metod'], explanation: 'Vetenskaplig metod innebär att systematiskt undersöka verkligheten genom att formulera frågor, samla in data, testa hypoteser och dra slutsatser på ett objektivt sätt.' },
+  { id: 3, term: 'Fakta', sentence: 'Att Olof Palme sköts den 28 februari 1986 är ett exempel på ___, eftersom det går att bekräfta genom trovärdiga källor.', answers: ['Fakta'], explanation: 'Fakta är verifierbara uppgifter som kan bekräftas genom observation, mätning eller trovärdiga källor.' },
+  { id: 4, term: 'Värdering', sentence: 'Om Palme var en bra statsminister eller inte är däremot en ___, eftersom frågan bygger på åsikter och inte kan bevisas rätt eller fel.', answers: ['Värdering'], explanation: 'En värdering är en åsikt om vad som är viktigt, bra eller dåligt, som bygger på känslor eller samhällsnormer och inte kan bevisas som rätt eller fel.' },
+  { id: 5, term: 'Peer review', sentence: 'Innan en vetenskaplig artikel publiceras granskas den ofta av andra forskare inom samma område, en process som kallas ___.', answers: ['Peer review'], explanation: 'Peer review är en process där forskare granskar och bedömer en annan forskares arbete.' },
+  { id: 6, term: 'Cherry-picking (russinplockning)', sentence: 'När klimatkritiker jämför bara två enstaka år för att "bevisa" att ingen uppvärmning skett, utan att nämna den långsiktiga trenden, kallas det ___.', answers: ['Cherry-picking', 'Cherry-picking (russinplockning)', 'Russinplockning'], explanation: 'Cherry-picking (russinplockning) innebär att välja ut enskilda fakta eller exempel som stöder ens egen ståndpunkt och bortse från information som motsäger den.' },
+  { id: 7, term: 'Begrepp', sentence: 'Ordet "frihet" är ett exempel på ett ___, det vill säga ett ord som hjälper oss att förstå och prata om något.', answers: ['Begrepp'], explanation: 'Ett begrepp är ett ord som hjälper oss att förstå och prata om något och fungerar som en inre bild för att begripa världen omkring oss.' },
+  { id: 8, term: 'Teori', sentence: 'En välgrundad förklaring av hur något fungerar eller hänger ihop, baserad på forskning och logiskt tänkande, kallas en ___.', answers: ['Teori'], explanation: 'En teori är en välgrundad förklaring av hur något fungerar eller hänger ihop, baserad på observationer, forskning och logiskt tänkande.' },
+  { id: 9, term: 'Generalisering', sentence: 'Att utifrån ett enda exempel dra slutsatser om vad som gäller i allmänhet kallas ___.', answers: ['Generalisering'], explanation: 'Generalisering är att utifrån ett enstaka exempel dra slutsatser om vad som gäller i allmänhet.' },
+  { id: 10, term: 'Modell', sentence: 'En vägkarta är en förenklad bild av verkligheten som hjälper oss förstå vägnätet – ett exempel på en ___.', answers: ['Modell'], explanation: 'En modell är en förenklad eller renodlad bild av verkligheten (eller en teori) som används för att förstå, förklara eller förutsäga hur något fungerar.' },
+  { id: 11, term: 'Sökmotor', sentence: 'Google och Bing är exempel på en ___, ett digitalt verktyg som hjälper dig hitta information på internet.', answers: ['Sökmotor'], explanation: 'En sökmotor är ett digitalt verktyg som hjälper dig hitta information på internet, t.ex. Google eller Bing.' },
+  { id: 12, term: 'Sökoperator', sentence: 'Om du skriver "site:aftonbladet.se" i sökfältet för att bara få träffar från en viss webbplats använder du en ___.', answers: ['Sökoperator'], explanation: 'En sökoperator är ett specialtecken eller ord som används i en sökmotor för att göra sökningen mer exakt.' },
+  { id: 13, term: 'Stora språkmodeller (LLM)', sentence: 'Ett AI-verktyg som tränats på enorma mängder text för att kunna förstå och skapa mänskligt språk kallas en ___.', answers: ['Stora språkmodeller', 'Stora språkmodeller (LLM)', 'LLM'], explanation: 'Stora språkmodeller (LLM) är ett digitalt verktyg som använder AI och som tränats på stora mängder text för att kunna förstå, bearbeta och skapa mänskligt språk.' },
+  { id: 14, term: 'Prompt', sentence: 'Instruktionen eller frågan du skriver till ett AI-verktyg för att få ett svar kallas en ___.', answers: ['Prompt'], explanation: 'En prompt är en instruktion eller fråga för att få ett svar eller en reaktion från ett AI-verktyg, t.ex. en språkmodell.' },
+  { id: 15, term: 'Databas', sentence: 'Diva-portal.org är en organiserad samling av vetenskapliga uppsatser som lagras digitalt, det vill säga en ___.', answers: ['Databas'], explanation: 'En databas är en organiserad samling av information som lagras digitalt.' },
+  { id: 16, term: 'Analys', sentence: 'Att noggrant och systematiskt dela upp något i mindre delar för att förstå hur det hänger ihop kallas ___.', answers: ['Analys'], explanation: 'Analys innebär att undersöka något noggrant och systematiskt genom att dela upp det i mindre delar för att förstå hur det hänger ihop eller fungerar.' },
+  { id: 17, term: 'Källkritik', sentence: 'Att granska och bedöma om en tidningsartikel är trovärdig, relevant och opartisk kallas ___.', answers: ['Källkritik'], explanation: 'Källkritik är att noggrant granska och bedöma om information är trovärdig, relevant och opartisk.' },
+  { id: 18, term: 'Källtillit', sentence: 'Att en myndighet i en demokrati med låg korruption generellt förtjänar mer förtroende än en anonym blogg handlar om ___.', answers: ['Källtillit'], explanation: 'Källtillit är hur mycket förtroende du kan ha för att en källa är trovärdig, sanningsenlig och inte vilseleder.' },
+  { id: 19, term: 'Användbarhet', sentence: 'Om informationen kan hjälpa dig besvara just den fråga du undersöker har den hög ___.', answers: ['Användbarhet'], explanation: 'Användbarhet är hur väl informationen passar det specifika syftet, frågan eller ämnet du undersöker.' },
+  { id: 20, term: 'Relevans', sentence: 'Hur väl informationen är kopplad till det ämne du undersöker avgör dess ___.', answers: ['Relevans'], explanation: 'Relevans är hur väl informationen är kopplad till det ämne eller den fråga du undersöker.' },
+  { id: 21, term: 'Trovärdighet', sentence: 'Hur korrekt, saklig och allsidig en källa är, baserat på fakta och logik, kallas källans ___.', answers: ['Trovärdighet'], explanation: 'Trovärdighet är hur korrekt, saklig och allsidig källan och informationen är, baserat på fakta, logik och förtroende.' },
+  { id: 22, term: 'Kausalanalys', sentence: 'När man undersöker vilka orsaker som ligger bakom gängkriminalitet, och vilka konsekvenser och åtgärder som hör dit, gör man en ___.', answers: ['Kausalanalys'], explanation: 'Kausalanalys innebär att undersöka för att förstå och förklara orsakerna bakom varför något händer och hur olika faktorer påverkar varandra.' },
+  { id: 23, term: 'Fenomen', sentence: 'Gängkriminalitet är ett exempel på ett ___, en företeelse som kan observeras och beskrivas.', answers: ['Fenomen'], explanation: 'Ett fenomen är en företeelse eller situation som kan observeras och beskrivas.' },
+  { id: 24, term: 'Korrelation', sentence: 'Att drunkningsolyckor och glassätning ökar under samma sommarmånader utan att det ena orsakar det andra är ett exempel på ___.', answers: ['Korrelation'], explanation: 'Korrelation är samvariation mellan två fenomen, att de förändras i samma takt – utan att det finns ett orsakssamband.' },
+  { id: 25, term: 'Variabel', sentence: 'I glass-exemplet är det egentligen sommarvärmen som är den oberoende ___ som påverkar både glassätning och drunkningsolyckor.', answers: ['Variabel'], explanation: 'En variabel är något som kan förändras eller ta olika värden. En oberoende variabel orsakar förändringar, medan en beroende variabel påverkas av den oberoende.' },
+  { id: 26, term: 'Argumentationsanalys', sentence: 'Att dela upp en debattartikel i tes, argument och motargument för att se om argumentationen håller kallas ___.', answers: ['Argumentationsanalys'], explanation: 'Argumentationsanalys är en granskning av hur ett argument är uppbyggt, för att se om det är logiskt, trovärdigt och väl underbyggt.' },
+  { id: 27, term: 'Tes', sentence: 'I debatten om trängselavgifter i Stockholm 2006 var den övergripande ___ "rösta Ja till trängselavgifter för en bättre livsmiljö".', answers: ['Tes'], explanation: 'En tes är ett tydligt och sammanfattat påstående eller en åsikt som du vill argumentera för eller bevisa.' },
+  { id: 28, term: 'Argument', sentence: '"Trängselavgifter i storstäder gör att människor åker mindre bil" är ett exempel på ett ___ som stödjer att avgifterna är bra för miljön.', answers: ['Argument'], explanation: 'Ett argument är en anledning eller ett skäl som används för att stödja ett påstående, en åsikt eller för att övertyga.' },
+  { id: 29, term: 'Denotation', sentence: 'Att bara beskriva vilka färger, personer och föremål som syns på en bild, utan att tolka budskapet, kallas ___.', answers: ['Denotation'], explanation: 'Denotation är en ren beskrivning utan tolkning eller värdering av t.ex. en bild eller ett uttryck.' },
+  { id: 30, term: 'Konnotation', sentence: 'Att tolka vilka värderingar och vilken symbolik en bild förmedlar, till exempel vilka känslor den väcker, kallas ___.', answers: ['Konnotation'], explanation: 'Konnotation är en tolkning av t.ex. värderingar eller symbolik i en bild eller ett uttryck.' },
+];
+
+// ════════════════════════════════════════════════════════════
+// SCENARIO — eleven ska identifiera rätt begrepp utifrån en
+// beskriven situation. Fyra alternativ per fråga.
+// ════════════════════════════════════════════════════════════
+const SCENARIO_ITEMS = [
+  { id: 1, term: 'Vetenskapligt förhållningssätt', scenario: 'En elev ifrågasätter ett påstående hen hör, letar efter bevis, tänker logiskt och drar sina slutsatser utifrån det hen kommit fram till.', correct: 'Vetenskapligt förhållningssätt', options: ['Vetenskapligt förhållningssätt', 'Vetenskaplig metod', 'Källkritik', 'Analys'], explanation: 'Att tänka strukturerat, kritiskt och kreativt och basera slutsatser på fakta och bevis kallas ett vetenskapligt förhållningssätt.' },
+  { id: 2, term: 'Vetenskaplig metod', scenario: 'En forskargrupp formulerar en fråga, samlar in data genom mätningar, testar en hypotes och drar sedan en slutsats utifrån resultaten.', correct: 'Vetenskaplig metod', options: ['Vetenskaplig metod', 'Vetenskapligt förhållningssätt', 'Kausalanalys', 'Analys'], explanation: 'Att systematiskt formulera frågor, samla in data, testa hypoteser och dra slutsatser är kännetecknande för vetenskaplig metod.' },
+  { id: 3, term: 'Fakta', scenario: 'Ett datum för en historisk händelse går att bekräfta genom flera oberoende och trovärdiga källor.', correct: 'Fakta', options: ['Fakta', 'Värdering', 'Trovärdighet', 'Teori'], explanation: 'Verifierbara uppgifter som kan bekräftas genom observation, mätning eller trovärdiga källor är fakta.' },
+  { id: 4, term: 'Värdering', scenario: 'Någon säger att en viss politiker var "den bästa statsministern Sverige haft", ett påstående som bygger på personlig uppfattning snarare än bevis.', correct: 'Värdering', options: ['Värdering', 'Fakta', 'Tes', 'Argument'], explanation: 'En åsikt om vad som är bra eller dåligt, som bygger på känslor och inte kan bevisas rätt eller fel, är en värdering.' },
+  { id: 5, term: 'Peer review', scenario: 'Innan en forskares artikel publiceras skickas den till andra experter inom samma fält, som granskar och bedömer kvaliteten på arbetet.', correct: 'Peer review', options: ['Peer review', 'Källkritik', 'Källtillit', 'Analys'], explanation: 'Processen där forskare granskar och bedömer en annan forskares arbete kallas peer review.' },
+  { id: 6, term: 'Cherry-picking (russinplockning)', scenario: 'En debattör lyfter fram bara de siffror som stödjer den egna åsikten och struntar i all statistik som talar emot.', correct: 'Cherry-picking (russinplockning)', options: ['Cherry-picking (russinplockning)', 'Generalisering', 'Argumentationsanalys', 'Källkritik'], explanation: 'Att välja ut enskilda fakta som stöder den egna ståndpunkten och bortse från motsägande information kallas cherry-picking (russinplockning).' },
+  { id: 7, term: 'Begrepp', scenario: 'Ordet "demokrati" behöver definieras tydligt eftersom olika människor lägger olika innebörd i det.', correct: 'Begrepp', options: ['Begrepp', 'Teori', 'Modell', 'Fenomen'], explanation: 'Ett ord som hjälper oss att förstå och prata om något kallas ett begrepp.' },
+  { id: 8, term: 'Teori', scenario: 'Forskare har byggt upp en välgrundad förklaring till hur och varför människor röstar som de gör, baserad på många studier.', correct: 'Teori', options: ['Teori', 'Modell', 'Vetenskaplig metod', 'Fenomen'], explanation: 'En välgrundad förklaring av hur något hänger ihop, baserad på forskning och logik, är en teori.' },
+  { id: 9, term: 'Generalisering', scenario: 'Någon möter en oartig person från ett annat land och drar därefter slutsatsen att alla personer från det landet är oartiga.', correct: 'Generalisering', options: ['Generalisering', 'Cherry-picking (russinplockning)', 'Korrelation', 'Värdering'], explanation: 'Att utifrån ett enstaka exempel dra slutsatser om vad som gäller i allmänhet kallas generalisering.' },
+  { id: 10, term: 'Modell', scenario: 'En vägkarta visar inte hela verkligheten utan bara vägar och orter, förenklat för att vara lätt att förstå.', correct: 'Modell', options: ['Modell', 'Teori', 'Begrepp', 'Fenomen'], explanation: 'En förenklad bild av verkligheten som används för att förstå eller förklara något är en modell.' },
+  { id: 11, term: 'Sökmotor', scenario: 'Du skriver in ett ord i ett fält på internet och får en lista med webbsidor som innehåller ordet.', correct: 'Sökmotor', options: ['Sökmotor', 'Databas', 'Sökoperator', 'Stora språkmodeller (LLM)'], explanation: 'Ett digitalt verktyg som hjälper dig hitta information på internet är en sökmotor.' },
+  { id: 12, term: 'Sökoperator', scenario: 'Du lägger till "NOT" och ett minustecken i din sökning för att slippa få träffar som innehåller ett visst ord.', correct: 'Sökoperator', options: ['Sökoperator', 'Sökmotor', 'Prompt', 'Databas'], explanation: 'Ett specialtecken eller ord som används i en sökmotor för att göra sökningen mer exakt är en sökoperator.' },
+  { id: 13, term: 'Stora språkmodeller (LLM)', scenario: 'Ett AI-verktyg har tränats på enorma mängder text och kan därför skriva sammanfattningar och svara i naturligt språk, men kan ibland "hallucinera" felaktig fakta.', correct: 'Stora språkmodeller (LLM)', options: ['Stora språkmodeller (LLM)', 'Sökmotor', 'Databas', 'Prompt'], explanation: 'Ett AI-verktyg tränat på stora mängder text för att förstå och skapa mänskligt språk är en stor språkmodell (LLM).' },
+  { id: 14, term: 'Prompt', scenario: 'Ju mer precist du formulerar din instruktion till ett AI-verktyg, desto bättre och mer träffsäkert blir svaret du får.', correct: 'Prompt', options: ['Prompt', 'Sökoperator', 'Stora språkmodeller (LLM)', 'Analys'], explanation: 'Instruktionen eller frågan du ger ett AI-verktyg för att få ett svar kallas en prompt.' },
+  { id: 15, term: 'Databas', scenario: 'Diva-portal.org samlar tusentals vetenskapliga uppsatser i en digital, sökbar samling.', correct: 'Databas', options: ['Databas', 'Sökmotor', 'Modell', 'Fenomen'], explanation: 'En organiserad samling av information som lagras digitalt är en databas.' },
+  { id: 16, term: 'Analys', scenario: 'En elev delar upp en lång debattartikel i mindre delar för att lättare kunna undersöka hur den är uppbyggd.', correct: 'Analys', options: ['Analys', 'Vetenskaplig metod', 'Källkritik', 'Generalisering'], explanation: 'Att noggrant och systematiskt dela upp något i mindre delar för att förstå hur det hänger ihop kallas analys.' },
+  { id: 17, term: 'Källkritik', scenario: 'Innan du litar på en tidningsartikel funderar du på om skribenten kan ha ett eget syfte med att vinkla texten på ett visst sätt.', correct: 'Källkritik', options: ['Källkritik', 'Källtillit', 'Trovärdighet', 'Peer review'], explanation: 'Att granska och bedöma om information är trovärdig, relevant och opartisk kallas källkritik.' },
+  { id: 18, term: 'Källtillit', scenario: 'Du väljer att lita mer på information från en svensk myndighet med öppen insyn än på ett anonymt inlägg i sociala medier.', correct: 'Källtillit', options: ['Källtillit', 'Källkritik', 'Trovärdighet', 'Användbarhet'], explanation: 'Hur mycket förtroende du generellt kan ha för att en typ av källa är trovärdig kallas källtillit.' },
+  { id: 19, term: 'Användbarhet', scenario: 'Du hittar en text om klimatförändringar, men den svarar inte alls på den specifika fråga du faktiskt undersöker, så du väljer bort den.', correct: 'Användbarhet', options: ['Användbarhet', 'Relevans', 'Trovärdighet', 'Källkritik'], explanation: 'Hur väl informationen passar det specifika syftet eller frågan du undersöker är dess användbarhet.' },
+  { id: 20, term: 'Relevans', scenario: 'Ett argument måste kunna kopplas till själva tesen för att räknas som hörande till saken – annars är det ointressant för argumentationen.', correct: 'Relevans', options: ['Relevans', 'Användbarhet', 'Trovärdighet', 'Argument'], explanation: 'Hur väl något är kopplat till det ämne eller den fråga som diskuteras kallas relevans.' },
+  { id: 21, term: 'Trovärdighet', scenario: 'Du kontrollerar om en källa är saklig, allsidig och bygger på fakta snarare än vinklade eller värdeladdade ord.', correct: 'Trovärdighet', options: ['Trovärdighet', 'Källtillit', 'Användbarhet', 'Relevans'], explanation: 'Hur korrekt, saklig och allsidig en källa är, baserat på fakta och logik, är dess trovärdighet.' },
+  { id: 22, term: 'Kausalanalys', scenario: 'En elev undersöker vilka orsaker som ligger bakom ökad ungdomsarbetslöshet och vilka konsekvenser och åtgärder som hör ihop med problemet.', correct: 'Kausalanalys', options: ['Kausalanalys', 'Argumentationsanalys', 'Analys', 'Vetenskaplig metod'], explanation: 'Att undersöka orsaker, konsekvenser och åtgärder kring ett samhällsproblem är en kausalanalys.' },
+  { id: 23, term: 'Fenomen', scenario: 'Ökad ungdomsarbetslöshet är något som går att observera och beskriva i samhället.', correct: 'Fenomen', options: ['Fenomen', 'Teori', 'Modell', 'Variabel'], explanation: 'En företeelse eller situation som kan observeras och beskrivas kallas ett fenomen.' },
+  { id: 24, term: 'Korrelation', scenario: 'Två kurvor i ett diagram följer varandra nästan exakt, utan att det går att bevisa att den ena orsakar den andra.', correct: 'Korrelation', options: ['Korrelation', 'Kausalanalys', 'Generalisering', 'Variabel'], explanation: 'Samvariation mellan två fenomen, utan bevisat orsakssamband, kallas korrelation.' },
+  { id: 25, term: 'Variabel', scenario: 'I en undersökning är sommarvärmen den faktor som orsakar förändring, medan glasskonsumtionen är faktorn som påverkas.', correct: 'Variabel', options: ['Variabel', 'Fenomen', 'Korrelation', 'Fakta'], explanation: 'Något som kan förändras eller ta olika värden, som orsakar eller påverkas av något annat, är en variabel.' },
+  { id: 26, term: 'Argumentationsanalys', scenario: 'En elev granskar en debattartikel för att se om argumenten är logiska, trovärdiga och verkligen stödjer det som författaren vill bevisa.', correct: 'Argumentationsanalys', options: ['Argumentationsanalys', 'Kausalanalys', 'Källkritik', 'Analys'], explanation: 'Granskning av hur ett argument är uppbyggt, för att se om det är logiskt och väl underbyggt, kallas argumentationsanalys.' },
+  { id: 27, term: 'Tes', scenario: 'I en debattartikel om trängselavgifter är det centrala påståendet, det som författaren egentligen vill övertyga läsaren om, dolt bland flera delargument.', correct: 'Tes', options: ['Tes', 'Argument', 'Värdering', 'Begrepp'], explanation: 'Ett tydligt och sammanfattat påstående som man vill argumentera för eller bevisa är en tes.' },
+  { id: 28, term: 'Argument', scenario: '"Trängselavgifter gör att människor åker mindre bil" används som ett skäl för att övertyga läsaren om att avgifterna är bra för miljön.', correct: 'Argument', options: ['Argument', 'Tes', 'Värdering', 'Fakta'], explanation: 'En anledning eller ett skäl som används för att stödja ett påstående kallas ett argument.' },
+  { id: 29, term: 'Denotation', scenario: 'I en bildanalys räknar man kort upp vilka färger, personer och föremål som faktiskt syns på bilden, utan att tolka något.', correct: 'Denotation', options: ['Denotation', 'Konnotation', 'Analys', 'Fakta'], explanation: 'En ren beskrivning utan tolkning eller värdering av en bild kallas denotation.' },
+  { id: 30, term: 'Konnotation', scenario: 'I en bildanalys tolkar man vilka känslor och värderingar en reklambild försöker väcka hos betraktaren.', correct: 'Konnotation', options: ['Konnotation', 'Denotation', 'Värdering', 'Analys'], explanation: 'En tolkning av värderingar eller symbolik i en bild kallas konnotation.' },
+];
+
+// ════════════════════════════════════════════════════════════
+// ICKE-EXEMPEL — eleven avgör vilket av två alternativ (A/B) som
+// är ett korrekt exempel på begreppet. Position A/B varierar.
+// ════════════════════════════════════════════════════════════
+const ICKEEX_ITEMS = [
+  { id: 1, term: 'Vetenskapligt förhållningssätt', optionA: 'En elev läser ett påstående i sociala medier, letar upp källor, väger bevisen och drar en genomtänkt slutsats.', optionB: 'En elev accepterar direkt det första inlägget hen ser eftersom det låter övertygande och delar det vidare utan att kolla fakta.', correctLetter: 'A', explanation: 'Ett vetenskapligt förhållningssätt innebär att tänka strukturerat, kritiskt och kreativt och basera slutsatser på fakta och bevis – inte att acceptera information okritiskt.' },
+  { id: 2, term: 'Vetenskaplig metod', optionA: 'En forskare bestämmer sig i förväg för vilket resultat hen vill ha och väljer sedan bara den data som stödjer det.', optionB: 'En forskare formulerar en fråga, samlar in data, testar en hypotes och drar en slutsats utifrån vad resultaten faktiskt visar.', correctLetter: 'B', explanation: 'Vetenskaplig metod innebär att systematiskt undersöka verkligheten och dra slutsatser utifrån resultaten – inte att styra undersökningen mot ett önskat svar.' },
+  { id: 3, term: 'Fakta', optionA: 'Att Sverige blev medlem i EU 1995 går att kontrollera i flera oberoende, trovärdiga källor.', optionB: 'Att EU-medlemskapet har varit bra för Sverige är något de flesta ändå borde hålla med om.', correctLetter: 'A', explanation: 'Fakta är verifierbara uppgifter som kan bekräftas genom trovärdiga källor. Om medlemskapet "varit bra" är en värdering, inte ett faktum.' },
+  { id: 4, term: 'Värdering', optionA: 'Att en viss lag trädde i kraft ett visst årtal går att slå upp och bekräfta i lagtext.', optionB: 'Att en viss lag är orättvis är något som bygger på personlig uppfattning och inte kan bevisas som rätt eller fel.', correctLetter: 'B', explanation: 'En värdering är en åsikt som bygger på känslor eller normer och inte kan bevisas rätt eller fel – till skillnad från ett faktum som ikraftträdandedatumet.' },
+  { id: 5, term: 'Peer review', optionA: 'En forskares studie skickas till andra forskare inom samma område, som granskar metod och resultat innan publicering.', optionB: 'En forskare publicerar sina resultat direkt på sin egen hemsida utan att någon annan expert har läst igenom dem.', correctLetter: 'A', explanation: 'Peer review är just processen där andra forskare granskar och bedömer arbetet innan det publiceras.' },
+  { id: 6, term: 'Cherry-picking (russinplockning)', optionA: 'En debattör redovisar all tillgänglig statistik, även den som talar emot den egna ståndpunkten.', optionB: 'En debattör lyfter fram två enstaka år som stödjer den egna åsikten och nämner inget om den långsiktiga trenden.', correctLetter: 'B', explanation: 'Cherry-picking innebär att välja ut det som stöder den egna ståndpunkten och bortse från information som motsäger den, som i klimatexemplet med enstaka år.' },
+  { id: 7, term: 'Begrepp', optionA: 'Ordet "jämlikhet" används för att kunna förstå och prata om en viss idé, även om alla inte uppfattar det exakt likadant.', optionB: 'En förenklad karta över Sveriges kommuner som visar var gränserna går.', correctLetter: 'A', explanation: 'Ett begrepp är ett ord som hjälper oss förstå och prata om något. Kartan i det andra alternativet är i stället en modell.' },
+  { id: 8, term: 'Teori', optionA: 'En enskild persons gissning om varför just hen själv inte röstade i senaste valet.', optionB: 'En förklaring till varför valdeltagandet skiljer sig mellan olika grupper, byggd på många studier och logiska resonemang.', correctLetter: 'B', explanation: 'En teori är en välgrundad förklaring baserad på forskning och logiskt tänkande – inte en enskild persons gissning.' },
+  { id: 9, term: 'Generalisering', optionA: 'Efter att ha läst en enda undersökning om tonåringar i en stad drar man slutsatsen att alla svenska tonåringar tycker likadant.', optionB: 'Efter att ha läst hundratals undersökningar från hela landet drar forskare en försiktig slutsats om en trend bland tonåringar.', correctLetter: 'A', explanation: 'Generalisering är att utifrån ett enstaka exempel dra slutsatser om vad som gäller i allmänhet – vilket är riskabelt jämfört med slutsatser byggda på ett brett underlag.' },
+  { id: 10, term: 'Modell', optionA: 'En fullständig och exakt kopia av verkligheten i skala 1:1.', optionB: 'En tvådimensionell vägkarta som visar vägnät och orter men utelämnar det mesta annat.', correctLetter: 'B', explanation: 'En modell är en förenklad bild av verkligheten – en exakt kopia i skala 1:1 vore inte förenklad och alltså ingen modell.' },
+  { id: 11, term: 'Sökmotor', optionA: 'Ett verktyg som Google där du skriver in sökord och får en lista med webbsidor.', optionB: 'Ett verktyg där du skriver en instruktion och får ett skrivet svar tillbaka som är skapat av AI.', correctLetter: 'A', explanation: 'En sökmotor ger dig länkar till webbsidor utifrån sökord. Det andra alternativet beskriver i stället en stor språkmodell.' },
+  { id: 12, term: 'Sökoperator', optionA: 'Att skriva flera olika sökord efter varandra i valfri ordning i sökfältet.', optionB: 'Att skriva "site:aftonbladet.se" för att bara få träffar från just den webbplatsen.', correctLetter: 'B', explanation: 'En sökoperator är ett specialtecken eller ord, som "site:", som används för att göra sökningen mer exakt.' },
+  { id: 13, term: 'Stora språkmodeller (LLM)', optionA: 'Ett AI-verktyg tränat på enorma mängder text som kan skriva, sammanfatta och svara i naturligt språk.', optionB: 'En digital katalog med vetenskapliga artiklar sorterade efter ämne.', correctLetter: 'A', explanation: 'En stor språkmodell (LLM) är ett AI-verktyg tränat på text för att förstå och skapa språk. Katalogen i det andra alternativet är i stället en databas.' },
+  { id: 14, term: 'Prompt', optionA: 'Sökordet du skriver i Google för att hitta relevanta webbsidor.', optionB: 'Instruktionen du skriver till ett AI-verktyg för att få ett visst svar, t.ex. "sammanfatta texten i tre punkter".', correctLetter: 'B', explanation: 'En prompt är en instruktion eller fråga till ett AI-verktyg – inte ett sökord i en sökmotor.' },
+  { id: 15, term: 'Databas', optionA: 'Diva-portal.org, en digital och sökbar samling av vetenskapliga uppsatser.', optionB: 'Ett AI-verktyg som skapar nya texter utifrån en instruktion.', correctLetter: 'A', explanation: 'En databas är en organiserad samling av information som lagras digitalt, som diva-portal.org.' },
+  { id: 16, term: 'Analys', optionA: 'Att snabbt skumma igenom en text för att bilda sig ett första intryck.', optionB: 'Att dela upp en debattartikel i mindre delar för att systematiskt undersöka hur den hänger ihop.', correctLetter: 'B', explanation: 'Analys innebär att noggrant och systematiskt dela upp något i mindre delar, inte att bara skumma igenom en text.' },
+  { id: 17, term: 'Källkritik', optionA: 'Att granska om en artikelförfattare kan ha egna motiv som gör innehållet vinklat.', optionB: 'Att alltid lita mer på en myndighets information än på en privatpersons blogg, oavsett innehåll.', correctLetter: 'A', explanation: 'Källkritik är att granska om en specifik källa är trovärdig, relevant och opartisk – inte en generell regel om vem man ska lita på.' },
+  { id: 18, term: 'Källtillit', optionA: 'Att noggrant granska en enskild artikel för att se om just den innehåller vinklade eller värdeladdade ord.', optionB: 'Att generellt lita mer på information från en öppen, lågkorrupt myndighet än på en anonym blogg.', correctLetter: 'B', explanation: 'Källtillit handlar om det generella förtroendet för en typ av källa, till skillnad från källkritik som granskar en enskild artikel.' },
+  { id: 19, term: 'Användbarhet', optionA: 'En text som direkt hjälper dig besvara den fråga du faktiskt undersöker.', optionB: 'En text som är skriven av en erkänd expert inom ämnet, oavsett vad den handlar om.', correctLetter: 'A', explanation: 'Användbarhet handlar om hur väl informationen passar syftet eller frågan du undersöker, inte om vem som skrivit den.' },
+  { id: 20, term: 'Relevans', optionA: 'Ett argument som går att bevisa vara sant genom oberoende studier.', optionB: 'Ett argument som verkligen hör till saken och går att koppla till tesen som diskuteras.', correctLetter: 'B', explanation: 'Relevans handlar om att ett argument hör till saken och kan kopplas till tesen. Att argumentet går att bevisa handlar i stället om dess hållbarhet.' },
+  { id: 21, term: 'Trovärdighet', optionA: 'En källa som är saklig, allsidig och bygger på fakta och logik snarare än känsloladdade formuleringar.', optionB: 'En källa som exakt svarar på den fråga du håller på att undersöka.', correctLetter: 'A', explanation: 'Trovärdighet handlar om hur korrekt, saklig och allsidig källan är. Att den svarar på din fråga handlar i stället om användbarhet.' },
+  { id: 22, term: 'Kausalanalys', optionA: 'En granskning av om argumenten i en debattartikel håller ihop logiskt.', optionB: 'En undersökning av orsaker, konsekvenser och åtgärder kring ett samhällsproblem som gängkriminalitet.', correctLetter: 'B', explanation: 'Kausalanalys handlar om att förstå orsaker och konsekvenser bakom ett fenomen. Att granska argumentens logik är i stället argumentationsanalys.' },
+  { id: 23, term: 'Fenomen', optionA: 'Ökad ungdomsarbetslöshet, något som går att observera och beskriva i samhället.', optionB: 'En förklaring till varför ungdomsarbetslösheten ökar, byggd på forskning.', correctLetter: 'A', explanation: 'Ett fenomen är en företeelse som kan observeras och beskrivas. Förklaringen till varför den uppstår är i stället en teori.' },
+  { id: 24, term: 'Korrelation', optionA: 'Att sommarvärmen bevisligen orsakar både ökad glasskonsumtion och fler drunkningsolyckor.', optionB: 'Att glasskonsumtion och drunkningsolyckor ökar under samma sommarmånader, utan att det ena orsakar det andra.', correctLetter: 'B', explanation: 'Korrelation är samvariation mellan två fenomen utan bevisat orsakssamband – att påstå att det ena "bevisligen orsakar" det andra är i stället ett kausalt påstående.' },
+  { id: 25, term: 'Variabel', optionA: 'Sommarvärmen, som är den faktor som orsakar förändringar i både glassätning och antalet drunkningsolyckor.', optionB: 'Själva sambandet mellan glassätning och drunkningsolyckor i diagrammet.', correctLetter: 'A', explanation: 'En variabel är en faktor som kan förändras eller orsaka förändring, som sommarvärmen. Sambandet mellan dem beskrivs i stället med korrelation.' },
+  { id: 26, term: 'Argumentationsanalys', optionA: 'Att undersöka vilka orsaker och konsekvenser ett samhällsproblem har.', optionB: 'Att dela upp en debattartikel i tes, argument och motargument för att se om argumentationen håller.', correctLetter: 'B', explanation: 'Argumentationsanalys granskar hur ett argument är uppbyggt. Att undersöka orsaker och konsekvenser är i stället kausalanalys.' },
+  { id: 27, term: 'Tes', optionA: '"Rösta Ja till trängselavgifter för en bättre livsmiljö" – det centrala påståendet i en debattartikel.', optionB: '"Trängselavgifter gör att människor åker mindre bil" – ett av flera skäl som stödjer ett påstående.', correctLetter: 'A', explanation: 'Tesen är det centrala, sammanfattade påståendet i en argumentation. Skälet som stödjer tesen är i stället ett argument.' },
+  { id: 28, term: 'Argument', optionA: '"Rösta Ja till trängselavgifter för en bättre livsmiljö", det övergripande påståendet i debatten.', optionB: '"Trängselavgifter i storstäder gör att människor åker mindre bil", ett skäl som stödjer att avgifterna är bra för miljön.', correctLetter: 'B', explanation: 'Ett argument är ett skäl som stödjer ett påstående. Det övergripande påståendet självt är i stället tesen.' },
+  { id: 29, term: 'Denotation', optionA: 'Att kort beskriva att bilden visar en kvinna i röd klänning som står framför en bil.', optionB: 'Att tolka att den röda klänningen symboliserar passion och lyx.', correctLetter: 'A', explanation: 'Denotation är en ren beskrivning utan tolkning. Att tolka symboliken i klänningens färg är i stället konnotation.' },
+  { id: 30, term: 'Konnotation', optionA: 'Att beskriva vilka personer, färger och föremål som syns på bilden.', optionB: 'Att tolka vilka känslor och värderingar reklambilden försöker väcka hos betraktaren.', correctLetter: 'B', explanation: 'Konnotation är tolkningen av värderingar och symbolik i en bild. Den rena beskrivningen är i stället denotation.' },
+];
+
+function normalizeAnswer(s) {
+  return (s || '').trim().toLowerCase().replace(/\s+/g, ' ').replace(/[.,!?]/g, '');
+}
+
+function gradeFeedback(pct) {
+  if (pct >= 90) return { emoji: '🏆', text: 'Utmärkt! Redo för provet!' };
+  if (pct >= 80) return { emoji: '🎉', text: 'Bra jobbat! Nästan i mål.' };
+  if (pct >= 50) return { emoji: '💪', text: 'På god väg – öva lite till.' };
+  return { emoji: '📚', text: 'Öva mer på begreppen.' };
+}
+
+// ════════════════════════════════════════════════════════════
 // PROGRESS- OCH RANK-SYSTEM (sessionStorage, ingen backend)
 // ════════════════════════════════════════════════════════════
 const VIEWS = ['Lista', 'Flashcards', 'Lucktext', 'Scenario', 'Icke-ex.'];
-const ACTIVE_VIEWS = { 'Lista': true, 'Flashcards': true, 'Lucktext': false, 'Scenario': false, 'Icke-ex.': false };
+const ACTIVE_VIEWS = { 'Lista': true, 'Flashcards': true, 'Lucktext': true, 'Scenario': true, 'Icke-ex.': true };
 const SCORE_VIEWS = ['Lucktext', 'Scenario', 'Icke-ex.'];
 const PROGRESS_KEY = 'sh1a1_vetenskap_progress';
 const RANK_SALT = 'sh1a1vetenskapsakerhet';
@@ -339,13 +461,349 @@ function FlashcardView({ onComplete }) {
   );
 }
 
-// Platshållare — byggs ut i nästa steg
-function PlaceholderView({ label }) {
+function ResultCard({ correct, total, onRestart }) {
+  const pct = Math.round((correct / total) * 100);
+  const g = gradeFeedback(pct);
   return (
-    <div className="bg-white border-2 border-dashed rounded-3xl p-10 text-center" style={{ borderColor: PRIMARY_LIGHT }}>
-      <p className="text-4xl mb-3">🚧</p>
-      <p className="font-bold text-lg text-slate-700 mb-1">{label} kommer snart</p>
-      <p className="text-slate-400 text-sm">Den här vyn byggs ut i nästa steg.</p>
+    <div className="flex flex-col items-center gap-6">
+      <div className="bg-white border-2 rounded-3xl p-8 text-center w-full max-w-sm shadow-sm" style={{ borderColor: PRIMARY }}>
+        <div className="text-5xl mb-3">{g.emoji}</div>
+        <p className="text-2xl font-bold mb-1" style={{ color: PRIMARY_TEXT }}>{correct} / {total} rätt</p>
+        <p className="text-slate-400 text-sm mb-1">({pct}%)</p>
+        <p className="text-slate-600 mb-6 font-fredoka">{g.text}</p>
+        <button onClick={onRestart} className="w-full text-white px-8 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY }}>
+          Börja om
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function LucktextView({ onComplete }) {
+  const makeInitialState = () => {
+    const s = {};
+    LUCKTEXT_ITEMS.forEach(it => { s[it.id] = { value: '', status: 'unanswered' }; });
+    return s;
+  };
+
+  const [order, setOrder] = useState(() => shuffleArray(LUCKTEXT_ITEMS));
+  const [state, setState] = useState(makeInitialState);
+  const [finished, setFinished] = useState(false);
+
+  const correctCount = order.filter(it => state[it.id].status === 'correct').length;
+  const resolvedCount = order.filter(it => state[it.id].status === 'correct' || state[it.id].status === 'revealed').length;
+  const allResolved = resolvedCount === order.length;
+
+  useEffect(() => {
+    if (allResolved && !finished) {
+      setFinished(true);
+      onComplete(Math.round((correctCount / order.length) * 100));
+    }
+  }, [allResolved]);
+
+  const handleChange = (id, value) => {
+    setState(prev => ({ ...prev, [id]: { ...prev[id], value } }));
+  };
+
+  const handleSubmit = (id) => {
+    const item = LUCKTEXT_ITEMS.find(o => o.id === id);
+    setState(prev => {
+      const cur = prev[id];
+      if (cur.status === 'correct' || cur.status === 'revealed') return prev;
+      const norm = normalizeAnswer(cur.value);
+      const isCorrect = item.answers.some(a => normalizeAnswer(a) === norm);
+      if (isCorrect) {
+        return { ...prev, [id]: { ...cur, status: 'correct' } };
+      }
+      return { ...prev, [id]: { ...cur, status: cur.status === 'wrong1' || cur.status === 'wrong2' ? 'wrong2' : 'wrong1' } };
+    });
+  };
+
+  const revealAll = () => {
+    setState(prev => {
+      const next = { ...prev };
+      order.forEach(it => {
+        if (next[it.id].status !== 'correct') {
+          next[it.id] = { ...next[it.id], status: 'revealed' };
+        }
+      });
+      return next;
+    });
+  };
+
+  const restart = () => {
+    setOrder(shuffleArray(LUCKTEXT_ITEMS));
+    setState(makeInitialState());
+    setFinished(false);
+  };
+
+  if (finished) {
+    return <ResultCard correct={correctCount} total={order.length} onRestart={restart} />;
+  }
+
+  return (
+    <div>
+      <div className="bg-white rounded-2xl shadow-sm p-4 mb-6 border" style={{ borderColor: PRIMARY_LIGHT }}>
+        <p className="text-xs uppercase tracking-wide text-slate-400 font-fredoka font-bold mb-2">Begreppsbank</p>
+        <div className="flex flex-wrap gap-2">
+          {concepts.map(c => {
+            const st = state[c.id];
+            const done = st.status === 'correct';
+            const revealed = st.status === 'revealed';
+            return (
+              <span
+                key={c.id}
+                className={
+                  'text-xs px-2.5 py-1 rounded-full font-fredoka border ' +
+                  (done
+                    ? 'line-through text-green-600 border-green-300 bg-green-50'
+                    : revealed
+                      ? 'line-through text-slate-400 border-slate-200 bg-slate-50'
+                      : 'text-slate-600 border-slate-200')
+                }
+              >
+                {c.term}
+              </span>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-2 sticky top-0 bg-amber-50 py-2 z-10">
+        <span className="text-sm font-semibold text-slate-600 font-fredoka">{correctCount} / {order.length} rätta hittills</span>
+        <button onClick={revealAll} className="text-sm font-bold font-fredoka px-4 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-colors">
+          Rätta alla
+        </button>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        {order.map(item => {
+          const st = state[item.id];
+          const locked = st.status === 'correct' || st.status === 'revealed';
+          const [before, after] = item.sentence.split('___');
+          const boxClass =
+            st.status === 'correct' ? 'border-green-400 bg-green-50' :
+            st.status === 'revealed' ? 'border-red-300 bg-red-50' :
+            st.status === 'wrong2' ? 'border-red-200' :
+            st.status === 'wrong1' ? 'border-amber-300' : 'border-slate-100';
+          return (
+            <div key={item.id} className={'bg-white rounded-2xl shadow-sm p-4 border-2 transition-colors ' + boxClass}>
+              <p className="text-slate-700 leading-relaxed">
+                {before}
+                <input
+                  type="text"
+                  value={st.value}
+                  disabled={locked}
+                  onChange={e => handleChange(item.id, e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') handleSubmit(item.id); }}
+                  placeholder="skriv begrepp..."
+                  className={
+                    'inline-block mx-1 px-2 py-1 rounded-lg border-b-2 text-center font-semibold focus:outline-none bg-transparent ' +
+                    (locked ? 'border-slate-300' : 'border-slate-300 focus:border-amber-400')
+                  }
+                  style={{ minWidth: '160px' }}
+                />
+                {after}
+              </p>
+              {st.status === 'wrong1' && (
+                <p className="text-amber-600 text-sm font-semibold font-fredoka mt-1">Är du säker att du stavat rätt? Försök igen.</p>
+              )}
+              {st.status === 'wrong2' && (
+                <p className="text-red-500 text-sm font-semibold font-fredoka mt-1">Fel svar. Försök igen eller tryck "Rätta alla".</p>
+              )}
+              {st.status === 'correct' && (
+                <div className="mt-1">
+                  <p className="text-green-700 font-bold font-fredoka text-sm">✓ {item.term}</p>
+                  <p className="text-slate-500 text-sm mt-0.5">{item.explanation}</p>
+                </div>
+              )}
+              {st.status === 'revealed' && (
+                <div className="mt-1">
+                  <p className="text-red-600 font-bold font-fredoka text-sm">Rätt svar: {item.term}</p>
+                  <p className="text-slate-500 text-sm mt-0.5">{item.explanation}</p>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function ScenarioView({ onComplete }) {
+  const buildItems = () => shuffleArray(SCENARIO_ITEMS).map(it => ({ ...it, options: shuffleArray(it.options) }));
+
+  const [items, setItems] = useState(buildItems);
+  const [idx, setIdx] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  const total = items.length;
+  const item = items[idx];
+
+  const choose = (opt) => {
+    if (selected) return;
+    setSelected(opt);
+    if (opt === item.correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (idx + 1 >= total) {
+      setFinished(true);
+      onComplete(Math.round((score / total) * 100));
+    } else {
+      setIdx(i => i + 1);
+      setSelected(null);
+    }
+  };
+
+  const restart = () => {
+    setItems(buildItems());
+    setIdx(0);
+    setSelected(null);
+    setScore(0);
+    setFinished(false);
+  };
+
+  if (finished) {
+    return <ResultCard correct={score} total={total} onRestart={restart} />;
+  }
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="w-full max-w-lg mb-4">
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-sm font-semibold text-slate-600 font-fredoka">Fråga {idx + 1} av {total}</span>
+          <span className="text-sm font-semibold text-slate-400 font-fredoka">{score} rätt hittills</span>
+        </div>
+        <div className="w-full bg-slate-200 rounded-full h-1.5">
+          <div className="h-1.5 rounded-full transition-all" style={{ width: `${(idx / total) * 100}%`, background: PRIMARY }} />
+        </div>
+      </div>
+
+      <div className="bg-white rounded-3xl shadow-sm p-6 w-full max-w-lg border" style={{ borderColor: PRIMARY_LIGHT }}>
+        <p className="text-lg text-slate-800 leading-relaxed mb-5">{item.scenario}</p>
+        <div className="flex flex-col gap-3">
+          {item.options.map(opt => {
+            let cls = 'border-slate-200 hover:border-slate-300 text-slate-700';
+            if (selected) {
+              if (opt === item.correct) cls = 'border-green-400 bg-green-50 text-green-700';
+              else if (opt === selected) cls = 'border-red-400 bg-red-50 text-red-600';
+              else cls = 'border-slate-100 text-slate-400';
+            }
+            return (
+              <button
+                key={opt}
+                disabled={!!selected}
+                onClick={() => choose(opt)}
+                className={'text-left px-4 py-3 rounded-2xl border-2 font-medium font-fredoka transition-colors ' + cls}
+              >
+                {opt}
+              </button>
+            );
+          })}
+        </div>
+        {selected && (
+          <div className="mt-5 p-4 rounded-2xl bg-slate-50">
+            <p className="text-slate-600 text-sm leading-relaxed">{item.explanation}</p>
+          </div>
+        )}
+      </div>
+
+      {selected && (
+        <button onClick={next} className="mt-5 text-white px-8 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY }}>
+          {idx + 1 >= total ? 'Se resultat' : 'Nästa fråga →'}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function IckeExView({ onComplete }) {
+  const [items, setItems] = useState(() => shuffleArray(ICKEEX_ITEMS));
+  const [idx, setIdx] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  const total = items.length;
+  const item = items[idx];
+
+  const choose = (letter) => {
+    if (selected) return;
+    setSelected(letter);
+    if (letter === item.correctLetter) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (idx + 1 >= total) {
+      setFinished(true);
+      onComplete(Math.round((score / total) * 100));
+    } else {
+      setIdx(i => i + 1);
+      setSelected(null);
+    }
+  };
+
+  const restart = () => {
+    setItems(shuffleArray(ICKEEX_ITEMS));
+    setIdx(0);
+    setSelected(null);
+    setScore(0);
+    setFinished(false);
+  };
+
+  if (finished) {
+    return <ResultCard correct={score} total={total} onRestart={restart} />;
+  }
+
+  const optionClass = (letter) => {
+    if (!selected) return 'border-slate-200 hover:border-slate-300 text-slate-700';
+    if (letter === item.correctLetter) return 'border-green-400 bg-green-50 text-green-700';
+    if (letter === selected) return 'border-red-400 bg-red-50 text-red-600';
+    return 'border-slate-100 text-slate-400';
+  };
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="w-full max-w-lg mb-4">
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-sm font-semibold text-slate-600 font-fredoka">Fråga {idx + 1} av {total}</span>
+          <span className="text-sm font-semibold text-slate-400 font-fredoka">{score} rätt hittills</span>
+        </div>
+        <div className="w-full bg-slate-200 rounded-full h-1.5">
+          <div className="h-1.5 rounded-full transition-all" style={{ width: `${(idx / total) * 100}%`, background: PRIMARY }} />
+        </div>
+      </div>
+
+      <div className="bg-white rounded-3xl shadow-sm p-6 w-full max-w-lg border" style={{ borderColor: PRIMARY_LIGHT }}>
+        <p className="text-xs uppercase tracking-wide text-slate-400 font-fredoka font-bold mb-1">Vilket exempel stämmer på begreppet?</p>
+        <p className="text-xl font-bold mb-5" style={{ color: PRIMARY_TEXT }}>{item.term}</p>
+        <div className="flex flex-col gap-3">
+          <button disabled={!!selected} onClick={() => choose('A')} className={'text-left px-4 py-3 rounded-2xl border-2 font-medium transition-colors ' + optionClass('A')}>
+            <span className="font-fredoka font-bold mr-2">A</span>{item.optionA}
+          </button>
+          <button disabled={!!selected} onClick={() => choose('B')} className={'text-left px-4 py-3 rounded-2xl border-2 font-medium transition-colors ' + optionClass('B')}>
+            <span className="font-fredoka font-bold mr-2">B</span>{item.optionB}
+          </button>
+        </div>
+        {selected && (
+          <div className="mt-5 p-4 rounded-2xl bg-slate-50">
+            <p className={'font-bold font-fredoka text-sm mb-1 ' + (selected === item.correctLetter ? 'text-green-700' : 'text-red-600')}>
+              {selected === item.correctLetter ? '✓ Rätt!' : `✗ Fel — rätt svar är ${item.correctLetter}`}
+            </p>
+            <p className="text-slate-600 text-sm leading-relaxed">{item.explanation}</p>
+          </div>
+        )}
+      </div>
+
+      {selected && (
+        <button onClick={next} className="mt-5 text-white px-8 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY }}>
+          {idx + 1 >= total ? 'Se resultat' : 'Nästa fråga →'}
+        </button>
+      )}
     </div>
   );
 }
@@ -459,6 +917,9 @@ function App() {
 
   const completeLista = useCallback(() => markComplete('Lista'), [markComplete]);
   const completeFlashcards = useCallback(() => markComplete('Flashcards'), [markComplete]);
+  const completeLucktext = useCallback((pct) => markComplete('Lucktext', pct), [markComplete]);
+  const completeScenario = useCallback((pct) => markComplete('Scenario', pct), [markComplete]);
+  const completeIckeEx = useCallback((pct) => markComplete('Icke-ex.', pct), [markComplete]);
 
   const rank = computeRank(progress);
   const completedCount = VIEWS.filter(v => progress.completed[v]).length;
@@ -490,9 +951,9 @@ function App() {
       <div className="pb-16">
         {activeView === 'Lista' && <ListView onComplete={completeLista} />}
         {activeView === 'Flashcards' && <FlashcardView key="flashcards" onComplete={completeFlashcards} />}
-        {activeView === 'Lucktext' && <PlaceholderView label="Lucktext" />}
-        {activeView === 'Scenario' && <PlaceholderView label="Scenario" />}
-        {activeView === 'Icke-ex.' && <PlaceholderView label="Icke-exempel" />}
+        {activeView === 'Lucktext' && <LucktextView key="lucktext" onComplete={completeLucktext} />}
+        {activeView === 'Scenario' && <ScenarioView key="scenario" onComplete={completeScenario} />}
+        {activeView === 'Icke-ex.' && <IckeExView key="ickeex" onComplete={completeIckeEx} />}
       </div>
 
       <footer className="text-center text-slate-400 italic text-sm pb-8">
