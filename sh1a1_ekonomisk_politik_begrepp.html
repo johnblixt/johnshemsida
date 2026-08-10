@@ -58,32 +58,90 @@ const PRIMARY_TEXT = '#14532d';
 // ════════════════════════════════════════════════════════════
 // BEGREPP — hämtade ordagrant från Ekonomisk_politik_begrepp.md
 // (Samhällskunskap 1a1, Ekonomisk politik)
-// I denna omgång byggs endast Lista och Flashcards, så fälten
-// nedan innehåller bara id/term/definition. Fält för Lucktext,
-// Scenario och Icke-ex. (sentence/scenario/ickeExempel/answers)
-// läggs till nästa gång dessa vyer byggs ut.
+// sentence/scenario/ickeExempel/answers bygger direkt på definitionerna
+// ovan samt exemplen i Ekonomisk_politik_material.md
 // ════════════════════════════════════════════════════════════
 const concepts = [
-  { id: 1, term: 'Ekonomisk tillväxt', definition: 'En ökning av värdet på de varor och tjänster som produceras i ett land under en viss tidsperiod. Mäts som ökningen av BNP i procent.' },
-  { id: 2, term: 'Konjunktur', definition: 'Beskriver hur ekonomin i ett land varierar mellan perioder av högre tillväxt (högkonjunktur) och med lägre tillväxt eller nedgång (lågkonjunktur).' },
-  { id: 3, term: 'Produktivitet', definition: 'Ett mått på hur effektivt man använder resurser för att producera varor eller tjänster, det vill säga hur mycket som produceras per insats, till exempel arbetstimmar.' },
-  { id: 4, term: 'Hållbar utveckling (hållbarhet)', definition: 'Handlar om att balansera ekonomiska, sociala och miljömässiga intressen för att skapa en långsiktigt hållbar framtid.' },
-  { id: 5, term: 'Offentliga sektorn', definition: 'Den del av samhällsekonomin som sköter de gemensamma uppgifterna, t.ex. skola, sjukvård och polis, och finansieras av skatter. Består av staten, regionerna och kommunerna.' },
-  { id: 6, term: 'Skatter och avgifter', definition: 'Pengar som betalas in till offentliga sektorn för att finansiera dess verksamhet. Medan skatterna ramlar rakt ner i offentliga sektorns kassakista, är avgifter det vi betalar för att utnyttja offentliga tjänster, exempelvis åka buss eller besöka en läkare.' },
-  { id: 7, term: 'Skattekvot (skattetryck)', definition: 'Andelen av ett lands totala inkomster som betalas i skatt, uttryckt som en procentandel av landets BNP.' },
-  { id: 8, term: 'Budgetproposition', definition: 'Regeringens förslag till riksdagen om hur statens inkomster och utgifter (statsbudgeten) förväntas bli under nästkommande år.' },
-  { id: 9, term: 'Statsskulden', definition: 'Den skuld staten har genom de lån som tagits för att täcka underskott i statsbudgeten.' },
-  { id: 10, term: 'Riksgälden', definition: 'Den myndighet som sköter statens upplåning och förvaltar statsskulden.' },
-  { id: 11, term: 'Finanssektorn', definition: 'Den del av samhällsekonomin som tillhandahåller pengar.' },
-  { id: 12, term: 'Kreditmarknaden', definition: 'Den del av samhällsekonomin som samlar in samhällets kapitalöverskott (sparmedel) och sedan lånar ut dessa pengar i form av krediter (lån).' },
-  { id: 13, term: 'Ränta', definition: 'Priset på pengar. Inlåningsränta är den ersättning sparare får och utlåningsränta är det pris som låntagarna betalar.' },
-  { id: 14, term: 'Riksbanken (Sveriges riksbank)', definition: 'Sveriges centralbank, ger ut pengar och ser till att betalningssystemet fungerar. Riksbanken ansvarar också för penningpolitiken. Riksbanken agerar självständigt, men lyder formellt under riksdagen.' },
-  { id: 15, term: 'Samhällsekonomiska mål', definition: 'De tre övergripande målen: hållbar tillväxt, samhällsekonomisk balans och rättvis inkomstfördelning.' },
-  { id: 16, term: 'Ekonomisk politik', definition: 'De insatser som staten gör för att få samhällsekonomin att fungera väl. Består av tre delar: tillväxtpolitik, stabiliseringspolitik och fördelningspolitik.' },
-  { id: 17, term: 'Stabiliseringspolitik', definition: 'De insatser staten gör för att dämpa konjunktursvängningar och därmed stabilisera samhällsekonomin. Stabiliseringspolitiken försöker vara kontracyklisk, det vill säga gå emot (kontra) konjunktursvängningarna. Målet är prisstabilitet (låg inflation) och hög sysselsättning (låg arbetslöshet).' },
-  { id: 18, term: 'Penningpolitik (räntepolitik)', definition: 'Är den politik som påverkar räntenivån, tillgången på pengar och inflationstakten i samhällsekonomin. Det är Riksbanken som ansvarar för penningpolitiken.' },
-  { id: 19, term: 'Finanspolitik (budgetpolitik)', definition: 'Är den politik som använder statens finanser (statsbudgeten) för att stabilisera ekonomin. Det är regeringen (främst finansministern) som sköter finanspolitiken.' },
-  { id: 20, term: 'Inflationsmål', definition: 'Det mål en centralbank sätter för hur hög inflationen bör vara för att hålla ekonomin stabil. Genom att ändra sin styrränta kan centralbanken påverka inflationstakten i ekonomin.' },
+  { id: 1, term: 'Ekonomisk tillväxt', definition: 'En ökning av värdet på de varor och tjänster som produceras i ett land under en viss tidsperiod. Mäts som ökningen av BNP i procent.', answers: ['ekonomisk tillväxt'],
+    sentence: 'När värdet av de varor och tjänster som produceras i ett land ökar under en tidsperiod kallas det _____.',
+    scenario: 'Ett lands BNP är fem procent högre i år jämfört med förra året, vilket visar att produktionen av varor och tjänster har ökat.',
+    ickeExempel: { korrekt: 'Att BNP ökar med fem procent jämfört med föregående år, vilket visar att produktionen av varor och tjänster i landet vuxit, är ett exempel på ekonomisk tillväxt.', icke: 'Att BNP är oförändrat från ett år till nästa, utan någon ökning i produktionen, är ett exempel på ekonomisk tillväxt.', forklaring: 'Ekonomisk tillväxt innebär just en ökning av produktionens värde – om BNP är oförändrat har ingen tillväxt skett.' } },
+  { id: 2, term: 'Konjunktur', definition: 'Beskriver hur ekonomin i ett land varierar mellan perioder av högre tillväxt (högkonjunktur) och med lägre tillväxt eller nedgång (lågkonjunktur).', answers: ['konjunktur'],
+    sentence: 'De perioder då ekonomin växlar mellan högre och lägre tillväxt kallas för _____.',
+    scenario: 'Under en period växer ekonomin kraftigt med hög efterfrågan, medan den några år senare går in i en fas med lägre tillväxt och minskad efterfrågan.',
+    ickeExempel: { korrekt: 'Att ekonomin växlar mellan perioder av högre tillväxt och perioder av lägre tillväxt eller nedgång är ett exempel på konjunktur.', icke: 'Att ekonomin varje år växer med exakt samma procentsats utan några svängningar alls är ett exempel på konjunktur.', forklaring: 'Konjunktur handlar just om svängningarna mellan hög- och lågkonjunktur – en ekonomi som växer helt jämnt utan svängningar beskriver ingen konjunktur.' } },
+  { id: 3, term: 'Produktivitet', definition: 'Ett mått på hur effektivt man använder resurser för att producera varor eller tjänster, det vill säga hur mycket som produceras per insats, till exempel arbetstimmar.', answers: ['produktivitet'],
+    sentence: 'Hur mycket som produceras per arbetstimme eller annan insats är ett mått på _____.',
+    scenario: 'En fabrik börjar tillverka fler bilar per arbetstimme än tidigare, utan att antalet anställda eller maskiner ökar.',
+    ickeExempel: { korrekt: 'Att en fabrik tillverkar fler bilar per arbetstimme utan att öka antalet anställda eller maskiner är ett exempel på ökad produktivitet.', icke: 'Att en fabrik tillverkar fler bilar genom att anställa fler arbetare och köpa fler maskiner är ett exempel på ökad produktivitet.', forklaring: 'Produktivitet handlar om att få fram mer med samma insats av resurser – att bara öka mängden arbetskraft och maskiner är i stället en ökning av insatserna, inte av effektiviteten.' } },
+  { id: 4, term: 'Hållbar utveckling (hållbarhet)', definition: 'Handlar om att balansera ekonomiska, sociala och miljömässiga intressen för att skapa en långsiktigt hållbar framtid.', answers: ['hållbar utveckling', 'hållbarhet', 'hållbar utveckling (hållbarhet)'],
+    sentence: 'Att balansera ekonomiska, sociala och miljömässiga intressen för en långsiktigt hållbar framtid kallas _____.',
+    scenario: 'En kommun planerar nya bostäder genom att samtidigt väga in miljöpåverkan, invånarnas livsvillkor och den lokala ekonomin.',
+    ickeExempel: { korrekt: 'Att en kommun väger in miljö, sociala förhållanden och ekonomi tillsammans när nya bostäder planeras är ett exempel på hållbar utveckling.', icke: 'Att en kommun endast tar hänsyn till vad som är mest ekonomiskt lönsamt när nya bostäder planeras är ett exempel på hållbar utveckling.', forklaring: 'Hållbar utveckling kräver att ekonomiska, sociala och miljömässiga intressen balanseras tillsammans – att bara se till det mest ekonomiskt lönsamma tar inte hänsyn till de andra dimensionerna.' } },
+  { id: 5, term: 'Offentliga sektorn', definition: 'Den del av samhällsekonomin som sköter de gemensamma uppgifterna, t.ex. skola, sjukvård och polis, och finansieras av skatter. Består av staten, regionerna och kommunerna.', answers: ['offentliga sektorn'],
+    sentence: 'Skola, sjukvård och polis är verksamheter som sköts av _____, som finansieras av skatter.',
+    scenario: 'Staten, regionerna och kommunerna ansvarar tillsammans för att skola, sjukvård och polis finansieras med skattepengar och når hela befolkningen.',
+    ickeExempel: { korrekt: 'Att staten, regionerna och kommunerna tillsammans finansierar och sköter skola, sjukvård och polis med skattepengar är ett exempel på offentliga sektorn.', icke: 'Att ett privat vårdbolag säljer sina tjänster på en öppen marknad utan skattefinansiering är ett exempel på offentliga sektorn.', forklaring: 'Offentliga sektorn består av staten, regionerna och kommunerna och finansieras av skatter – ett privat bolag som säljer sina tjänster på en marknad utan skattefinansiering hör i stället till näringslivet.' } },
+  { id: 6, term: 'Skatter och avgifter', definition: 'Pengar som betalas in till offentliga sektorn för att finansiera dess verksamhet. Medan skatterna ramlar rakt ner i offentliga sektorns kassakista, är avgifter det vi betalar för att utnyttja offentliga tjänster, exempelvis åka buss eller besöka en läkare.', answers: ['skatter och avgifter'],
+    sentence: 'Pengar som betalas in för att finansiera offentliga sektorn kallas _____.',
+    scenario: 'En person betalar in en del av sin lön i skatt varje månad, och betalar dessutom en mindre summa varje gång hen åker buss eller besöker en läkare.',
+    ickeExempel: { korrekt: 'Att en del av lönen betalas in som skatt, och att en mindre summa betalas varje gång man åker buss eller besöker en läkare, är exempel på skatter och avgifter.', icke: 'Att skatter och avgifter alltid är exakt samma sak, eftersom båda betalas in till offentliga sektorn, är ett exempel på skatter och avgifter.', forklaring: 'Skatter ramlar rakt ner i offentliga sektorns kassakista oavsett om man utnyttjar en tjänst eller inte, medan avgifter är det man betalar specifikt för att utnyttja en tjänst, som bussresan eller läkarbesöket – de är alltså inte samma sak.' } },
+  { id: 7, term: 'Skattekvot (skattetryck)', definition: 'Andelen av ett lands totala inkomster som betalas i skatt, uttryckt som en procentandel av landets BNP.', answers: ['skattekvot', 'skattetryck', 'skattekvot (skattetryck)'],
+    sentence: 'Andelen av ett lands totala inkomster som betalas i skatt, uttryckt som andel av BNP, kallas _____.',
+    scenario: 'Ett land jämför hur stor del av sin totala produktion (BNP) som varje år betalas in i skatt, för att kunna jämföra sig med andra länder.',
+    ickeExempel: { korrekt: 'Måttet som visar hur stor andel av ett lands BNP som betalas in i skatt kallas skattekvot.', icke: 'Skattekvoten är det belopp i kronor som en enskild person betalar in i skatt under ett år.', forklaring: 'Ett enskilt belopp i kronor som en person betalar beskriver inte skattekvoten – skattekvoten är ett lands totala skatteinkomster uttryckta som andel av landets BNP.' } },
+  { id: 8, term: 'Budgetproposition', definition: 'Regeringens förslag till riksdagen om hur statens inkomster och utgifter (statsbudgeten) förväntas bli under nästkommande år.', answers: ['budgetproposition'],
+    sentence: 'Regeringens förslag till riksdagen om statens inkomster och utgifter nästa år kallas en _____.',
+    scenario: 'Finansministern lämnar varje höst över ett förslag till riksdagen om hur statens inkomster och utgifter ska se ut under det kommande året.',
+    ickeExempel: { korrekt: 'Regeringens förslag till riksdagen om statens inkomster och utgifter för nästa år är en budgetproposition.', icke: 'Riksdagens slutgiltiga beslut om statsbudgeten, efter att förslaget granskats och debatterats, är en budgetproposition.', forklaring: 'Riksdagens beslut efter granskning och debatt blir i stället statsbudgeten – budgetpropositionen är regeringens förslag innan riksdagen fattat sitt beslut.' } },
+  { id: 9, term: 'Statsskulden', definition: 'Den skuld staten har genom de lån som tagits för att täcka underskott i statsbudgeten.', answers: ['statsskulden'],
+    sentence: 'Den skuld staten har genom lån som täckt underskott i statsbudgeten kallas _____.',
+    scenario: 'Staten har under flera år haft större utgifter än inkomster och har därför lånat pengar för att täcka underskotten.',
+    ickeExempel: { korrekt: 'Summan av alla lån som staten tagit för att täcka underskott i statsbudgeten utgör statsskulden.', icke: 'Det överskott som uppstår när statens inkomster är större än dess utgifter under ett år utgör statsskulden.', forklaring: 'Ett överskott när inkomsterna är större än utgifterna är motsatsen till skuld – statsskulden byggs i stället upp av de lån staten tar för att täcka underskott.' } },
+  { id: 10, term: 'Riksgälden', definition: 'Den myndighet som sköter statens upplåning och förvaltar statsskulden.', answers: ['riksgälden'],
+    sentence: 'Myndigheten som sköter statens upplåning och förvaltar statsskulden heter _____.',
+    scenario: 'En myndighet ger ut statsobligationer för att låna pengar åt staten och håller samtidigt reda på hur stor statsskulden är.',
+    ickeExempel: { korrekt: 'Myndigheten som sköter statens upplåning och förvaltar statsskulden är Riksgälden.', icke: 'Myndigheten som ansvarar för penningpolitiken och ger ut svenska sedlar och mynt är Riksgälden.', forklaring: 'Det är Riksbanken, inte Riksgälden, som ansvarar för penningpolitiken och ger ut pengar – Riksgälden sköter i stället statens upplåning och statsskulden.' } },
+  { id: 11, term: 'Finanssektorn', definition: 'Den del av samhällsekonomin som tillhandahåller pengar.', answers: ['finanssektorn'],
+    sentence: 'Den del av samhällsekonomin som tillhandahåller pengar kallas _____.',
+    scenario: 'Banker och andra finansinstitut samlar in sparande i samhället och omvandlar det till lån som kan användas av hushåll och företag.',
+    ickeExempel: { korrekt: 'Banker och andra finansinstitut som tillhandahåller pengar i samhällsekonomin tillhör finanssektorn.', icke: 'Skolor, sjukhus och polisen, som finansieras med skattepengar, tillhör finanssektorn.', forklaring: 'Skolor, sjukhus och polisen tillhör i stället den offentliga sektorn – finanssektorn är den del av samhällsekonomin som tillhandahåller pengar, till exempel via banker.' } },
+  { id: 12, term: 'Kreditmarknaden', definition: 'Den del av samhällsekonomin som samlar in samhällets kapitalöverskott (sparmedel) och sedan lånar ut dessa pengar i form av krediter (lån).', answers: ['kreditmarknaden'],
+    sentence: 'Den marknad där samhällets sparmedel samlas in och lånas ut som krediter kallas _____.',
+    scenario: 'Bankerna tar emot sparpengar från hushåll och lånar sedan ut dessa pengar till andra hushåll och företag som vill investera eller konsumera.',
+    ickeExempel: { korrekt: 'Att banker samlar in sparpengar och lånar ut dem till hushåll och företag sker på kreditmarknaden.', icke: 'Att köpare och säljare möts för att byta varor och tjänster med varandra sker på kreditmarknaden.', forklaring: 'Ett allmänt utbyte av varor och tjänster mellan köpare och säljare sker på en vanlig marknad – kreditmarknaden handlar specifikt om att samla in sparmedel och låna ut dem som krediter.' } },
+  { id: 13, term: 'Ränta', definition: 'Priset på pengar. Inlåningsränta är den ersättning sparare får och utlåningsränta är det pris som låntagarna betalar.', answers: ['ränta'],
+    sentence: 'Priset på pengar, som sparare får betalt för och låntagare betalar för, kallas _____.',
+    scenario: 'En person som sparar pengar på ett bankkonto får en liten ersättning varje år, medan en annan person som lånar pengar av banken måste betala en avgift för lånet.',
+    ickeExempel: { korrekt: 'Den ersättning en sparare får på sitt sparkonto och den avgift en låntagare betalar för sitt lån är exempel på ränta.', icke: 'Den moms som läggs på priset när en vara köps i en butik är ett exempel på ränta.', forklaring: 'Moms är en konsumtionsskatt som läggs på priset vid köp av varor – ränta är i stället priset på pengar, det vill säga ersättningen för att spara eller kostnaden för att låna.' } },
+  { id: 14, term: 'Riksbanken (Sveriges riksbank)', definition: 'Sveriges centralbank, ger ut pengar och ser till att betalningssystemet fungerar. Riksbanken ansvarar också för penningpolitiken. Riksbanken agerar självständigt, men lyder formellt under riksdagen.', answers: ['riksbanken', 'sveriges riksbank', 'riksbanken (sveriges riksbank)'],
+    sentence: 'Sveriges centralbank, som ger ut pengar och ansvarar för penningpolitiken, heter _____.',
+    scenario: 'En myndighet ger ut svenska sedlar och mynt, ser till att betalningssystemet fungerar och bestämmer om räntan ska höjas eller sänkas – men lyder formellt under riksdagen.',
+    ickeExempel: { korrekt: 'Myndigheten som ger ut svenska pengar, ansvarar för betalningssystemet och bestämmer om räntan ska höjas eller sänkas är Riksbanken.', icke: 'Myndigheten som sköter statens upplåning och förvaltar statsskulden genom att ge ut obligationer är Riksbanken.', forklaring: 'Det är Riksgälden, inte Riksbanken, som sköter statens upplåning och förvaltar statsskulden – Riksbanken ansvarar i stället för penningpolitiken och betalningssystemet.' } },
+  { id: 15, term: 'Samhällsekonomiska mål', definition: 'De tre övergripande målen: hållbar tillväxt, samhällsekonomisk balans och rättvis inkomstfördelning.', answers: ['samhällsekonomiska mål'],
+    sentence: 'Hållbar tillväxt, samhällsekonomisk balans och rättvis inkomstfördelning utgör tillsammans de tre _____.',
+    scenario: 'Politiker formulerar tre övergripande mål för samhällsekonomin: att ekonomin ska växa hållbart, att den ska vara i balans och att inkomsterna ska fördelas rättvist.',
+    ickeExempel: { korrekt: 'Hållbar tillväxt, samhällsekonomisk balans och rättvis inkomstfördelning är tillsammans exempel på samhällsekonomiska mål.', icke: 'Att sänka priset på en enskild vara på en marknad är ett exempel på ett samhällsekonomiskt mål.', forklaring: 'Att sänka priset på en enskild vara är en fråga om prisbildning på en marknad, inte ett övergripande samhällsekonomiskt mål – de samhällsekonomiska målen handlar om hela samhällsekonomins utveckling.' } },
+  { id: 16, term: 'Ekonomisk politik', definition: 'De insatser som staten gör för att få samhällsekonomin att fungera väl. Består av tre delar: tillväxtpolitik, stabiliseringspolitik och fördelningspolitik.', answers: ['ekonomisk politik'],
+    sentence: 'De insatser staten gör för att få samhällsekonomin att fungera väl, uppdelat i tillväxt-, stabiliserings- och fördelningspolitik, kallas _____.',
+    scenario: 'Regeringen och riksdagen vidtar åtgärder som rör tillväxt, konjunktursvängningar och inkomstfördelning för att samhällsekonomin ska fungera väl.',
+    ickeExempel: { korrekt: 'Statens samlade insatser inom tillväxtpolitik, stabiliseringspolitik och fördelningspolitik för att samhällsekonomin ska fungera väl utgör den ekonomiska politiken.', icke: 'Ett enskilt företags beslut om hur mycket det ska producera och till vilket pris är ett exempel på ekonomisk politik.', forklaring: 'Ett enskilt företags produktions- och prisbeslut är en fråga om företagsekonomi och marknadens prismekanism – ekonomisk politik handlar i stället om statens insatser för hela samhällsekonomin.' } },
+  { id: 17, term: 'Stabiliseringspolitik', definition: 'De insatser staten gör för att dämpa konjunktursvängningar och därmed stabilisera samhällsekonomin. Stabiliseringspolitiken försöker vara kontracyklisk, det vill säga gå emot (kontra) konjunktursvängningarna. Målet är prisstabilitet (låg inflation) och hög sysselsättning (låg arbetslöshet).', answers: ['stabiliseringspolitik'],
+    sentence: 'De kontracykliska insatser staten gör för att dämpa konjunktursvängningar kallas _____.',
+    scenario: 'Under en högkonjunktur försöker staten kyla av ekonomin, och under en lågkonjunktur försöker staten istället stimulera den, för att jämna ut svängningarna.',
+    ickeExempel: { korrekt: 'Att staten försöker dämpa en högkonjunktur och stimulera en lågkonjunktur för att jämna ut konjunktursvängningarna är ett exempel på stabiliseringspolitik.', icke: 'Att staten satsar på forskning om miljövänlig produktion med ett långt tidsperspektiv för att öka den framtida tillväxten är ett exempel på stabiliseringspolitik.', forklaring: 'Satsningar på forskning med ett långt tidsperspektiv hör i stället till tillväxtpolitiken – stabiliseringspolitik har ett kortare tidsperspektiv och syftar till att dämpa konjunktursvängningarna här och nu.' } },
+  { id: 18, term: 'Penningpolitik (räntepolitik)', definition: 'Är den politik som påverkar räntenivån, tillgången på pengar och inflationstakten i samhällsekonomin. Det är Riksbanken som ansvarar för penningpolitiken.', answers: ['penningpolitik', 'räntepolitik', 'penningpolitik (räntepolitik)'],
+    sentence: 'Den politik som påverkar räntenivån och inflationstakten, och som sköts av Riksbanken, kallas _____.',
+    scenario: 'Riksbanken höjer räntan för att dämpa efterfrågan och kyla av en ekonomi som är på väg att bli överhettad.',
+    ickeExempel: { korrekt: 'Att Riksbanken höjer räntan för att dämpa efterfrågan och kyla av en överhettad ekonomi är ett exempel på penningpolitik.', icke: 'Att regeringen sänker skatterna och ökar sina utgifter för att stimulera efterfrågan under en lågkonjunktur är ett exempel på penningpolitik.', forklaring: 'Att regeringen använder skatter och utgifter för att stimulera ekonomin är i stället finanspolitik – penningpolitik handlar om att styra räntenivån, vilket är Riksbankens ansvar.' } },
+  { id: 19, term: 'Finanspolitik (budgetpolitik)', definition: 'Är den politik som använder statens finanser (statsbudgeten) för att stabilisera ekonomin. Det är regeringen (främst finansministern) som sköter finanspolitiken.', answers: ['finanspolitik', 'budgetpolitik', 'finanspolitik (budgetpolitik)'],
+    sentence: 'Den politik som använder statens budget för att stabilisera ekonomin, och som sköts av regeringen, kallas _____.',
+    scenario: 'Regeringen väljer att höja bidragen och sänka skatterna under en lågkonjunktur för att öka hushållens köpkraft och stimulera efterfrågan.',
+    ickeExempel: { korrekt: 'Att regeringen höjer bidragen och sänker skatterna under en lågkonjunktur för att stimulera efterfrågan är ett exempel på finanspolitik.', icke: 'Att Riksbanken sänker styrräntan för att göra det billigare att låna pengar är ett exempel på finanspolitik.', forklaring: 'Att Riksbanken sänker styrräntan är i stället penningpolitik – finanspolitik handlar om att regeringen använder statens inkomster och utgifter (statsbudgeten) för att stabilisera ekonomin.' } },
+  { id: 20, term: 'Inflationsmål', definition: 'Det mål en centralbank sätter för hur hög inflationen bör vara för att hålla ekonomin stabil. Genom att ändra sin styrränta kan centralbanken påverka inflationstakten i ekonomin.', answers: ['inflationsmål'],
+    sentence: 'Det mål en centralbank sätter för hur hög inflationen bör vara kallas _____.',
+    scenario: 'Riksbanken siktar på att inflationen ska ligga på omkring två procent per år, och justerar styrräntan för att nå dit.',
+    ickeExempel: { korrekt: 'Att Riksbanken siktar på att hålla inflationen på omkring två procent per år genom att justera styrräntan är ett exempel på ett inflationsmål.', icke: 'Att staten bestämmer hur stor andel av BNP som ska betalas i skatt är ett exempel på ett inflationsmål.', forklaring: 'Andelen av BNP som betalas i skatt beskriver i stället skattekvoten – ett inflationsmål handlar om vilken nivå centralbanken siktar på för prisökningarna i ekonomin.' } },
 ];
 
 function getFeedback(score, total) {
@@ -98,7 +156,7 @@ function getFeedback(score, total) {
 // PROGRESS- OCH RANK-SYSTEM (sessionStorage, ingen backend)
 // ════════════════════════════════════════════════════════════
 const VIEWS = ['Lista', 'Flashcards', 'Lucktext', 'Scenario', 'Icke-ex.'];
-const ACTIVE_VIEWS = { 'Lista': true, 'Flashcards': true, 'Lucktext': false, 'Scenario': false, 'Icke-ex.': false };
+const ACTIVE_VIEWS = { 'Lista': true, 'Flashcards': true, 'Lucktext': true, 'Scenario': true, 'Icke-ex.': true };
 const SCORE_VIEWS = ['Lucktext', 'Scenario', 'Icke-ex.'];
 const PROGRESS_KEY = 'sh1a1_ekonomisk_politik_progress';
 const RANK_SALT = 'sh1a1ekonomiskpolitiksakerhet';
@@ -341,29 +399,332 @@ function FlashcardView({ onComplete }) {
   );
 }
 
-// ════════════════════════════════════════════════════════════
-// PLATSHÅLLARE — Lucktext, Scenario och Icke-ex. byggs ut i
-// nästa omgång. Vytabbarna för dessa är inaktiverade
-// (ACTIVE_VIEWS) tills dess.
-// ════════════════════════════════════════════════════════════
-function ComingSoonView({ label }) {
+function LucktextView({ onComplete }) {
+  const total = concepts.length;
+  const [inputs, setInputs] = useState(() => concepts.map(() => ''));
+  const [attempts, setAttempts] = useState(() => concepts.map(() => 0));
+  const [statuses, setStatuses] = useState(() => concepts.map(() => null));
+  const normalize = s => s.trim().toLowerCase();
+
+  const submit = (i) => {
+    if (statuses[i] === 'correct' || statuses[i] === 'wrong-final') return;
+    const val = normalize(inputs[i]);
+    if (!val) return;
+    if (concepts[i].answers.includes(val)) {
+      const next = [...statuses]; next[i] = 'correct'; setStatuses(next);
+    } else {
+      const a = [...attempts]; a[i] += 1; setAttempts(a);
+      const next = [...statuses]; next[i] = a[i] >= 2 ? 'wrong-final' : 'wrong-once'; setStatuses(next);
+    }
+  };
+
+  const rattaAlla = () => {
+    setStatuses(prev => prev.map(s => (s === 'correct' ? 'correct' : 'wrong-final')));
+  };
+
+  const borjaOm = () => {
+    setInputs(concepts.map(() => ''));
+    setAttempts(concepts.map(() => 0));
+    setStatuses(concepts.map(() => null));
+  };
+
+  const correctCount = statuses.filter(s => s === 'correct').length;
+  const allDone = statuses.every(s => s === 'correct' || s === 'wrong-final');
+
+  useEffect(() => {
+    if (allDone) onComplete(Math.round((correctCount / total) * 100));
+  }, [allDone]);
+
   return (
-    <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-10 text-center">
-      <p className="text-slate-400 font-fredoka">{label} kommer i en senare uppdatering.</p>
+    <div>
+      <div className="bg-white rounded-2xl shadow-sm p-4 mb-6 border border-slate-200">
+        <p className="text-xs uppercase tracking-wide text-slate-400 font-fredoka font-bold mb-2">Begreppsbank</p>
+        <div className="flex flex-wrap gap-2">
+          {concepts.map((c, i) => (
+            <span
+              key={c.id}
+              className={`px-3 py-1 rounded-full text-sm border border-slate-200 bg-slate-50 ${statuses[i] === 'correct' ? 'line-through text-slate-300' : 'text-slate-600'}`}
+            >
+              {c.term}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        {concepts.map((c, i) => {
+          const [before, after] = c.sentence.split('_____');
+          const status = statuses[i];
+          const boxStyle =
+            status === 'correct'
+              ? { background: '#dcfce7', borderColor: '#16a34a' }
+              : status === 'wrong-final'
+                ? { background: '#fee2e2', borderColor: '#dc2626' }
+                : { borderColor: '#e2e8f0' };
+          return (
+            <div key={c.id} className="rounded-2xl p-4 border-2 bg-white transition-colors" style={boxStyle}>
+              <p className="text-slate-700 leading-relaxed mb-1">
+                <span className="font-bold font-fredoka text-slate-400 mr-1">{i + 1}.</span>
+                {before}
+                <input
+                  type="text"
+                  value={inputs[i]}
+                  disabled={status === 'correct' || status === 'wrong-final'}
+                  onChange={e => {
+                    const val = e.target.value;
+                    const next = [...inputs]; next[i] = val; setInputs(next);
+                  }}
+                  onKeyDown={e => { if (e.key === 'Enter') submit(i); }}
+                  className="inline-block mx-1 px-2 py-1 w-40 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 text-slate-800 disabled:bg-transparent disabled:border-transparent align-middle"
+                  style={{ '--tw-ring-color': PRIMARY }}
+                />
+                {after}
+              </p>
+              {status === 'wrong-once' && (
+                <p className="text-orange-500 text-sm font-fredoka">Är du säker att du stavat rätt?</p>
+              )}
+              {status === 'correct' && (
+                <p className="text-sm mt-1" style={{ color: '#16a34a' }}>✓ Rätt! {c.definition}</p>
+              )}
+              {status === 'wrong-final' && (
+                <p className="text-sm mt-1" style={{ color: '#dc2626' }}>Rätt svar: <span className="font-bold">{c.term}</span> — {c.definition}</p>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="flex flex-col items-center gap-4 mt-6">
+        {!allDone && (
+          <button onClick={rattaAlla} className="bg-slate-900 text-white px-8 py-3 rounded-2xl font-bold font-fredoka hover:bg-slate-800 transition-colors">
+            Rätta alla
+          </button>
+        )}
+        {allDone && (
+          <div className="bg-white border-2 rounded-3xl p-6 text-center w-full max-w-sm shadow-sm" style={{ borderColor: PRIMARY }}>
+            <p className="text-2xl font-bold" style={{ color: PRIMARY_TEXT }}>{correctCount} / {total} rätt</p>
+            <p className="text-slate-500 mt-2 font-fredoka">{getFeedback(correctCount, total)}</p>
+          </div>
+        )}
+        <button onClick={borjaOm} className="text-slate-400 text-xs hover:text-slate-600 transition-colors underline font-fredoka">↺ Börja om</button>
+      </div>
     </div>
   );
 }
 
-function LucktextView({ onComplete }) {
-  return <ComingSoonView label="Lucktext" />;
-}
-
 function ScenarioView({ onComplete }) {
-  return <ComingSoonView label="Scenario" />;
+  const total = concepts.length;
+
+  const buildOptions = (correctIdx) => {
+    const others = concepts.map((_, i) => i).filter(i => i !== correctIdx);
+    const distractors = shuffleArray(others).slice(0, 3);
+    return shuffleArray([correctIdx, ...distractors]);
+  };
+
+  const makeRound = () => {
+    const order = shuffleArray(concepts.map((_, i) => i));
+    return { order, options: buildOptions(order[0]) };
+  };
+
+  const [round, setRound] = useState(makeRound);
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [answered, setAnswered] = useState(false);
+  const [score, setScore] = useState(0);
+  const [done, setDone] = useState(false);
+
+  const conceptIdx = round.order[current];
+  const concept = concepts[conceptIdx];
+
+  const handleSelect = (optIdx) => {
+    if (answered) return;
+    setSelected(optIdx);
+    setAnswered(true);
+    if (optIdx === conceptIdx) setScore(sc => sc + 1);
+  };
+
+  const next = () => {
+    const nextI = current + 1;
+    if (nextI >= round.order.length) {
+      setDone(true);
+      return;
+    }
+    setRound(prev => ({ ...prev, options: buildOptions(prev.order[nextI]) }));
+    setCurrent(nextI);
+    setSelected(null);
+    setAnswered(false);
+  };
+
+  const restart = () => {
+    setRound(makeRound());
+    setCurrent(0);
+    setSelected(null);
+    setAnswered(false);
+    setScore(0);
+    setDone(false);
+  };
+
+  useEffect(() => {
+    if (done) onComplete(Math.round((score / total) * 100));
+  }, [done]);
+
+  if (done) return (
+    <div className="flex flex-col items-center gap-4">
+      <div className="bg-white border-2 rounded-3xl p-8 text-center w-full max-w-sm shadow-sm" style={{ borderColor: PRIMARY }}>
+        <p className="text-2xl font-bold" style={{ color: PRIMARY_TEXT }}>{score} / {total} rätt</p>
+        <p className="text-slate-500 mt-2 font-fredoka">{getFeedback(score, total)}</p>
+        <button onClick={restart} className="w-full mt-6 text-white px-8 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY }}>
+          Börja om
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="w-full max-w-lg mb-4">
+        <div className="flex justify-between text-xs text-slate-400 font-fredoka mb-1">
+          <span>Fråga {current + 1} av {total}</span>
+          <span>Poäng: {score}</span>
+        </div>
+        <div className="w-full bg-slate-200 rounded-full h-1.5">
+          <div className="h-1.5 rounded-full transition-all" style={{ width: `${(current / total) * 100}%`, background: PRIMARY }} />
+        </div>
+      </div>
+
+      <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 w-full max-w-lg">
+        <p className="text-slate-800 text-lg leading-relaxed mb-5">{concept.scenario}</p>
+        <p className="text-xs uppercase tracking-wide text-slate-400 font-fredoka font-bold mb-3">Vilket begrepp beskrivs?</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {round.options.map((optIdx) => {
+            const isCorrect = optIdx === conceptIdx;
+            const isSelected = optIdx === selected;
+            let optStyle = { borderColor: '#e2e8f0' };
+            if (answered && isCorrect) optStyle = { background: '#dcfce7', borderColor: '#16a34a' };
+            else if (answered && isSelected && !isCorrect) optStyle = { background: '#fee2e2', borderColor: '#dc2626' };
+            return (
+              <button
+                key={optIdx}
+                onClick={() => handleSelect(optIdx)}
+                disabled={answered}
+                className="text-left px-4 py-3 rounded-2xl border-2 font-medium text-slate-700 transition-colors"
+                style={optStyle}
+              >
+                {concepts[optIdx].term}
+              </button>
+            );
+          })}
+        </div>
+        {answered && (
+          <div className="mt-5 p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <p className="text-sm text-slate-600 leading-relaxed">
+              <span className="font-bold" style={{ color: PRIMARY_TEXT }}>{concept.term}:</span> {concept.definition}
+            </p>
+            <button onClick={next} className="w-full mt-4 text-white px-6 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY }}>
+              Nästa →
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 function IckeExempelView({ onComplete }) {
-  return <ComingSoonView label="Icke-exempel" />;
+  const total = concepts.length;
+
+  const makeOpts = (c) => {
+    const flip = Math.random() > 0.5;
+    return flip
+      ? [{ text: c.ickeExempel.korrekt, isCorrect: true }, { text: c.ickeExempel.icke, isCorrect: false }]
+      : [{ text: c.ickeExempel.icke, isCorrect: false }, { text: c.ickeExempel.korrekt, isCorrect: true }];
+  };
+
+  const freshState = () => {
+    const order = shuffleArray(concepts.map((_, i) => i));
+    return { order, cur: 0, opts: makeOpts(concepts[order[0]]), answered: false, selIdx: null, score: 0, done: false };
+  };
+
+  const [s, setS] = useState(freshState);
+
+  const handleSelect = (idx) => {
+    if (s.answered) return;
+    const correct = s.opts[idx].isCorrect;
+    setS(prev => ({ ...prev, answered: true, selIdx: idx, score: correct ? prev.score + 1 : prev.score }));
+  };
+
+  const next = () => {
+    setS(prev => {
+      const nextCur = prev.cur + 1;
+      if (nextCur >= prev.order.length) return { ...prev, done: true };
+      return { ...prev, cur: nextCur, opts: makeOpts(concepts[prev.order[nextCur]]), answered: false, selIdx: null };
+    });
+  };
+
+  const restart = () => setS(freshState());
+
+  useEffect(() => {
+    if (s.done) onComplete(Math.round((s.score / total) * 100));
+  }, [s.done]);
+
+  if (s.done) return (
+    <div className="flex flex-col items-center gap-4">
+      <div className="bg-white border-2 rounded-3xl p-8 text-center w-full max-w-sm shadow-sm" style={{ borderColor: PRIMARY }}>
+        <p className="text-2xl font-bold" style={{ color: PRIMARY_TEXT }}>{s.score} / {total} rätt</p>
+        <p className="text-slate-500 mt-2 font-fredoka">{getFeedback(s.score, total)}</p>
+        <button onClick={restart} className="w-full mt-6 text-white px-8 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY }}>
+          Börja om
+        </button>
+      </div>
+    </div>
+  );
+
+  const concept = concepts[s.order[s.cur]];
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="w-full max-w-lg mb-4">
+        <div className="flex justify-between text-xs text-slate-400 font-fredoka mb-1">
+          <span>Begrepp {s.cur + 1} av {total}</span>
+          <span>Poäng: {s.score}</span>
+        </div>
+        <div className="w-full bg-slate-200 rounded-full h-1.5">
+          <div className="h-1.5 rounded-full transition-all" style={{ width: `${(s.cur / total) * 100}%`, background: PRIMARY }} />
+        </div>
+      </div>
+
+      <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 w-full max-w-lg">
+        <p className="text-xs uppercase tracking-wide text-slate-400 font-fredoka font-bold mb-2">Vilket exempel stämmer på begreppet?</p>
+        <p className="text-2xl font-bold mb-5" style={{ color: PRIMARY_TEXT }}>{concept.term}</p>
+        <div className="flex flex-col gap-3">
+          {s.opts.map((opt, idx) => {
+            let optStyle = { borderColor: '#e2e8f0' };
+            if (s.answered && opt.isCorrect) optStyle = { background: '#dcfce7', borderColor: '#16a34a' };
+            else if (s.answered && idx === s.selIdx && !opt.isCorrect) optStyle = { background: '#fee2e2', borderColor: '#dc2626' };
+            return (
+              <button
+                key={idx}
+                onClick={() => handleSelect(idx)}
+                disabled={s.answered}
+                className="text-left px-4 py-3 rounded-2xl border-2 text-slate-700 leading-relaxed transition-colors"
+                style={optStyle}
+              >
+                <span className="font-bold font-fredoka mr-2">{idx === 0 ? 'A' : 'B'}</span>{opt.text}
+              </button>
+            );
+          })}
+        </div>
+        {s.answered && (
+          <div className="mt-5 p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <p className="text-sm text-slate-600 leading-relaxed">{concept.ickeExempel.forklaring}</p>
+            <button onClick={next} className="w-full mt-4 text-white px-6 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY }}>
+              Nästa →
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 // ════════════════════════════════════════════════════════════
