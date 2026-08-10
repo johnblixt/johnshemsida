@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privatekonomi – Quiz | Samhällskunskap 1a1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #047857;
+      --primary-btn: #10b981;
+      --primary-light: #d1fae5;
+      --primary-dark: #065f46;
+      --correct-bg: #dcfce7;
+      --correct-border: #16a34a;
+      --correct-text: #16a34a;
+      --wrong-bg: #fee2e2;
+      --wrong-border: #dc2626;
+      --wrong-text: #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'EB Garamond', Georgia, serif; background: #f0fdf4; min-height: 100vh; color: #1e293b; }
+
+    a.back-btn {
+      display: inline-block; padding: 8px 16px; color: var(--primary-dark);
+      text-decoration: none; font-size: 0.95rem; position: fixed;
+      top: 14px; left: 14px; z-index: 200; border-radius: 8px; transition: background 0.2s;
+    }
+    a.back-btn:hover { background: var(--primary-light); }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Start ── */
+    #screen-start { max-width: 560px; margin: 0 auto; padding: 90px 24px 40px; text-align: center; }
+    .badge {
+      display: inline-block; background: var(--primary-light); color: var(--primary-dark);
+      padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;
+      letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 20px;
+    }
+    #screen-start h1 { font-size: 2.4rem; font-weight: 600; font-style: italic; color: #0f172a; margin-bottom: 8px; }
+    #screen-start .subtitle { font-size: 1.05rem; color: #64748b; margin-bottom: 32px; }
+    .info-cards { display: flex; gap: 12px; justify-content: center; margin-bottom: 36px; flex-wrap: wrap; }
+    .info-card {
+      background: white; border: 1px solid #a7f3d0; border-radius: 12px;
+      padding: 16px 20px; text-align: center; flex: 1; min-width: 100px; max-width: 150px;
+    }
+    .info-card .num { font-size: 1.5rem; font-weight: 600; color: var(--primary-dark); }
+    .info-card .lbl { font-size: 0.78rem; color: #94a3b8; margin-top: 2px; }
+
+    /* ── Quiz ── */
+    #screen-quiz { max-width: 700px; margin: 0 auto; padding: 70px 20px 60px; }
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .timer {
+      background: white; border: 1px solid #a7f3d0; border-radius: 20px;
+      padding: 5px 14px; font-size: 0.92rem; color: #475569; font-variant-numeric: tabular-nums;
+    }
+    .score-pill { background: var(--primary-light); color: var(--primary-dark); border-radius: 20px; padding: 5px 14px; font-size: 0.92rem; font-weight: 600; }
+    .progress-wrap { background: #a7f3d0; border-radius: 4px; height: 6px; overflow: hidden; margin-bottom: 6px; }
+    .progress-bar { background: var(--primary-btn); height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+    .q-counter { font-size: 0.82rem; color: #94a3b8; text-align: right; margin-bottom: 22px; }
+    .q-type-tag {
+      display: inline-block; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--primary-dark); background: var(--primary-light);
+      padding: 3px 10px; border-radius: 20px; margin-bottom: 12px;
+    }
+    .q-text { font-size: 1.25rem; font-weight: 600; line-height: 1.55; color: #0f172a; margin-bottom: 22px; }
+    .opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+    .opt-btn {
+      background: white; border: 2px solid #a7f3d0; border-radius: 12px;
+      padding: 13px 18px; text-align: left; font-size: 1rem; font-family: inherit;
+      cursor: pointer; transition: border-color 0.15s, background 0.15s; line-height: 1.45;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--primary-btn); background: var(--primary-light); }
+    .opt-btn:disabled { cursor: default; }
+    .opt-btn.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); font-weight: 600; }
+    .opt-btn.wrong   { background: var(--wrong-bg);   border-color: var(--wrong-border);   color: var(--wrong-text); }
+    .opt-btn.dimmed  { opacity: 0.4; }
+    .nav-row { display: flex; gap: 12px; align-items: center; }
+    .btn-back { background: white; border: 2px solid #a7f3d0; border-radius: 10px; padding: 10px 20px; font-family: inherit; font-size: 0.9rem; color: #64748b; cursor: pointer; }
+    .btn-back:hover { border-color: #10b981; }
+    .btn-next { background: var(--primary-btn); border: none; border-radius: 10px; padding: 10px 28px; font-family: inherit; font-size: 0.9rem; font-weight: 600; color: white; cursor: pointer; margin-left: auto; transition: background 0.15s; }
+    .btn-next:hover { background: #059669; }
+
+    /* ── Modal ── */
+    #modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 500; padding: 20px; }
+    #modal-overlay.hidden { display: none; }
+    .modal-box { background: white; border-radius: 20px; padding: 32px; max-width: 520px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+    .modal-icon    { font-size: 2.6rem; margin-bottom: 10px; }
+    .modal-verdict { font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; }
+    .modal-verdict.c { color: var(--correct-text); }
+    .modal-verdict.w { color: var(--wrong-text); }
+    .modal-expl { font-size: 0.98rem; color: #475569; line-height: 1.7; margin-bottom: 24px; }
+
+    /* ── Result ── */
+    #screen-result { max-width: 700px; margin: 0 auto; padding: 80px 20px 80px; }
+    .res-header { text-align: center; margin-bottom: 30px; }
+    .score-ring { width: 120px; height: 120px; border-radius: 50%; border: 5px solid var(--primary-btn); display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 18px; }
+    .score-ring .rnum { font-size: 2rem; font-weight: 600; color: var(--primary-dark); line-height: 1; }
+    .score-ring .rlbl { font-size: 0.72rem; color: #94a3b8; }
+    .res-title  { font-size: 1.8rem; font-weight: 600; font-style: italic; margin-bottom: 6px; }
+    .res-msg    { font-size: 1rem; color: #64748b; margin-bottom: 4px; }
+    .res-time   { font-size: 0.85rem; color: #94a3b8; margin-bottom: 28px; }
+    .stats-row  { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+    .stat-box   { flex: 1; min-width: 80px; background: white; border: 1px solid #a7f3d0; border-radius: 12px; padding: 14px; text-align: center; }
+    .stat-box .snum { font-size: 1.6rem; font-weight: 600; }
+    .stat-box .slbl { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
+    .stat-box.cs .snum { color: var(--correct-text); }
+    .stat-box.ws .snum { color: var(--wrong-text); }
+    .section-hd { font-size: 1.05rem; font-weight: 600; color: #0f172a; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #a7f3d0; }
+    .missed-section { margin-bottom: 32px; }
+    .missed-item { background: var(--wrong-bg); border-left: 4px solid var(--wrong-border); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-size: 0.92rem; }
+    .facit-item { background: white; border: 1px solid #a7f3d0; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
+    .facit-item.fc { border-left: 4px solid var(--correct-border); }
+    .facit-item.fw { border-left: 4px solid var(--wrong-border); }
+    .fi-num { font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .fi-q   { font-size: 0.93rem; font-weight: 600; color: #0f172a; margin-bottom: 8px; line-height: 1.4; }
+    .fi-row { font-size: 0.88rem; padding: 2px 0; }
+    .fi-row .lbl { color: #94a3b8; }
+    .fi-row.ya-ok  { color: var(--correct-text); }
+    .fi-row.ya-bad { color: var(--wrong-text); }
+    .fi-row.ra     { color: var(--correct-text); font-weight: 600; margin-top: 2px; }
+
+    .btn-primary { display: inline-block; background: var(--primary-btn); color: white; border: none; border-radius: 12px; padding: 13px 36px; font-size: 1.05rem; font-family: inherit; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+    .btn-primary:hover { background: #059669; transform: translateY(-1px); }
+    .btn-primary:active { transform: none; }
+
+    @media (max-width: 768px) {
+      #screen-quiz { padding-top: 60px; }
+      .quiz-header { flex-wrap: wrap; gap: 8px; }
+      .nav-row { flex-wrap: wrap; }
+      .btn-back, .btn-next { flex: 1; min-width: 120px; text-align: center; margin-left: 0; }
+      .nav-row { justify-content: space-between; }
+    }
+    @media (max-width: 500px) {
+      #screen-start h1 { font-size: 1.85rem; }
+      .q-text { font-size: 1.1rem; }
+      .info-cards { gap: 8px; }
+      .info-card { padding: 12px 10px; min-width: 88px; }
+    }
+  </style>
+</head>
+<body>
+
+<a href="index.html" class="back-btn" id="back-link">← Tillbaka till startsidan</a>
+
+<!-- ═══════════ START ═══════════ -->
+<div id="screen-start" class="screen active">
+  <div class="badge">Samhällskunskap 1a1 · Privatekonomi</div>
+  <h1>Quiz</h1>
+  <p class="subtitle">30 frågor om inkomster och skatter, sparande, lån, konsumenträtt, försäkringar, boende, hushållsbudget samt studier och arbete</p>
+  <div class="info-cards">
+    <div class="info-card"><div class="num">30</div><div class="lbl">Frågor</div></div>
+    <div class="info-card"><div class="num">MC + S/F</div><div class="lbl">Frågetyper</div></div>
+    <div class="info-card"><div class="num">F1–F19</div><div class="lbl">Faktafrågor</div></div>
+  </div>
+  <button class="btn-primary" onclick="startQuiz()">Starta Quiz →</button>
+</div>
+
+<!-- ═══════════ QUIZ ═══════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-header">
+    <div class="timer" id="timer">⏱ 0:00</div>
+    <div class="score-pill" id="score-pill">Poäng: 0</div>
+  </div>
+  <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+  <div class="q-counter" id="q-counter">Fråga 1 av 30</div>
+  <div class="q-type-tag" id="q-type-tag"></div>
+  <div class="q-text" id="q-text"></div>
+  <div class="opts" id="opts"></div>
+  <div class="nav-row">
+    <button class="btn-back" id="btn-back" onclick="goBack()" style="display:none">← Bakåt</button>
+    <button class="btn-next" id="btn-next" onclick="goNext()" style="display:none">Nästa →</button>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL ═══════════ -->
+<div id="modal-overlay" class="hidden">
+  <div class="modal-box">
+    <div class="modal-icon"    id="modal-icon"></div>
+    <div class="modal-verdict" id="modal-verdict"></div>
+    <div class="modal-expl"    id="modal-expl"></div>
+    <button class="btn-primary" onclick="closeModal()">Nästa fråga →</button>
+  </div>
+</div>
+
+<!-- ═══════════ RESULT ═══════════ -->
+<div id="screen-result" class="screen">
+  <div class="res-header">
+    <div class="score-ring">
+      <div class="rnum" id="r-score"></div>
+      <div class="rlbl">poäng</div>
+    </div>
+    <div class="res-title" id="r-title"></div>
+    <div class="res-msg"   id="r-msg"></div>
+    <div class="res-time"  id="r-time"></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-box cs"><div class="snum" id="s-correct">0</div><div class="slbl">Rätt</div></div>
+    <div class="stat-box ws"><div class="snum" id="s-wrong">0</div><div class="slbl">Fel</div></div>
+    <div class="stat-box"><div class="snum" id="s-pct">0%</div><div class="slbl">Andel rätt</div></div>
+  </div>
+  <div class="missed-section" id="missed-section"></div>
+  <div class="section-hd">Fullständigt facit</div>
+  <div id="facit-list"></div>
+  <div style="text-align:center;margin-top:32px">
+    <button class="btn-primary" onclick="restartQuiz()">↺ Gör om quizet</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// SMART TILLBAKA-NAVIGERING
+// ════════════════════════════════════════════════════════════
+document.getElementById('back-link').addEventListener('click', function (e) {
+  e.preventDefault();
+  const ref = document.referrer;
+  if (ref && ref.indexOf(location.hostname) !== -1) {
+    history.back();
+  } else {
+    window.location.href = 'index.html';
+  }
+});
+
+// ════════════════════════════════════════════════════════════
+// QUESTION DATA — 30 frågor (mc = flerval 4 alt, tf = sant/falskt)
+// Frågor från privatekonomi_uppgifter.md (Faktafrågor 1–19),
+// svar hämtade ur privatekonomi_material.md
+// ════════════════════════════════════════════════════════════
+const QUESTIONS = [
+
+  {
+    type: 'mc',
+    q: 'Vad är skillnaden mellan bruttolön och nettolön?',
+    opts: [
+      'Bruttolön är lönen innan skatt är dragen, medan nettolön är lönen som betalas ut efter att skatten är dragen.',
+      'Bruttolön är lönen efter skatt är dragen, medan nettolön är lönen innan skatten har dragits av från summan.',
+      'Bruttolön är den lön man får efter avdrag för fackavgift, medan nettolön är lönen innan denna avgift är dragen.',
+      'Bruttolön är lönen plus eventuella bidrag som bostadsbidrag, medan nettolön är lönen utan sådana tillägg inräknade.'
+    ],
+    correct: 0,
+    expl: 'Bruttolön är lönen innan skatten är dragen, och nettolön är lönen som betalas ut efter att skatten är dragen. Disponibel inkomst är nettolön plus eventuella bidrag.'
+  },
+  {
+    type: 'tf',
+    q: 'Nettolön är lönen innan skatten är dragen.',
+    correct: false,
+    expl: 'Det är tvärtom: bruttolön är lönen innan skatt är dragen, medan nettolön är lönen som betalas ut efter att skatten dragits av.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad innebär begreppet disponibel inkomst?',
+    opts: [
+      'Nettolön plus eventuella bidrag, till exempel bostadsbidrag och studiebidrag, som personen har rätt till.',
+      'Bruttolön minus eventuella skulder, till exempel studielån och andra lån, som personen är skyldig att betala.',
+      'Nettolön minus fasta utgifter, till exempel hyra och försäkringar, som personen måste betala varje månad.',
+      'Bruttolön plus eventuell aktieutdelning, till exempel avkastning från sparande i fonder och aktier under året.'
+    ],
+    correct: 0,
+    expl: 'Disponibel inkomst är nettolön plus eventuella bidrag, till exempel bostadsbidrag och studiebidrag.'
+  },
+  {
+    type: 'mc',
+    q: 'Hur fördelas kommunalskatten mellan kommunen och regionen?',
+    opts: [
+      'Cirka två tredjedelar går till kommunen och cirka en tredjedel går till regionen.',
+      'Cirka hälften går till kommunen och cirka hälften går till regionen, alltså en jämn fördelning.',
+      'Cirka en tredjedel går till kommunen och cirka två tredjedelar går till regionen istället.',
+      'Hela kommunalskatten går till kommunen, medan regionen finansieras enbart genom den statliga skatten.'
+    ],
+    correct: 0,
+    expl: 'Av kommunalskatten går cirka två tredjedelar till kommunen och cirka en tredjedel till regionen.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad innebär begreppet marginalskatt?',
+    opts: [
+      'Hur mycket skatt man betalar på den sist intjänade hundralappen av sin inkomst.',
+      'Hur mycket skatt man sammanlagt betalar under ett helt år, oavsett inkomstens storlek.',
+      'Hur stor andel av kommunalskatten som går till regionen istället för till kommunen.',
+      'Hur mycket skatt man slipper betala tack vare avdrag för fackavgift och pension.'
+    ],
+    correct: 0,
+    expl: 'Marginalskatt beskriver hur mycket skatt man ska betala på den sist intjänade 100-lappen. Den som tjänar över brytpunkten (cirka 643 100 kr/år) får en marginalskatt på 52 procent, eftersom statlig skatt på 20 procent tillkommer utöver kommunalskatten.'
+  },
+  {
+    type: 'mc',
+    q: 'Enligt 1-2-3-principen för sparande, vilken sparform passar bäst för pengar du kan behöva snabbt vid oförutsedda utgifter?',
+    opts: [
+      'Ett transaktionskonto, till exempel ett lönekonto, eftersom pengarna då är lättillgängliga även om räntan är låg.',
+      'Ett investeringssparkonto med aktiefonder, eftersom pengarna där ger hög avkastning trots att risken är låg.',
+      'Ett sparkonto med lång bindningstid, eftersom pengarna där låses in men ger betydligt högre ränta.',
+      'En obligationsfond hos banken, eftersom obligationer alltid går att sälja direkt utan förlust av kapital.'
+    ],
+    correct: 0,
+    expl: 'Kortsiktigt sparande, till pengar du snabbt kan behöva, bör enligt 1-2-3-principen ligga på ett transaktionskonto (lönekonto) där du enkelt kommer åt pengarna, även om räntan där är låg.'
+  },
+  {
+    type: 'tf',
+    q: 'Ett lönekonto ger vanligtvis hög ränta och är därför en bra sparform.',
+    correct: false,
+    expl: 'Ett lönekonto är praktiskt för vardagsbetalningar, men avkastningen (räntan) är ofta ganska låg eller obefintlig, vilket gör det till en dålig sparform.'
+  },
+  {
+    type: 'mc',
+    q: 'Hur kan man i regel få en högre ränta på ett sparkonto?',
+    opts: [
+      'Genom att vara beredd att låsa in pengarna under en längre tid istället för att ha dem tillgängliga.',
+      'Genom att flytta över alla sparpengar till lönekontot istället för att ha dem på ett sparkonto.',
+      'Genom att göra många små insättningar varje månad istället för en enda stor insättning per år.',
+      'Genom att välja en bank med filialer på många orter istället för en renodlad internetbank.'
+    ],
+    correct: 0,
+    expl: 'Bäst ränta på ett sparkonto får man om man är beredd att låsa sina pengar under en längre tid.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad innebär fondsparande och vilken risk är förknippad med det?',
+    opts: [
+      'Man köper andelar i fonder som förvaltare placerar i aktier och obligationer, och värdet kan både stiga och sjunka.',
+      'Man lånar ut pengar direkt till staten mot ränta, och värdet förändras aldrig oavsett börsläget.',
+      'Man sätter in pengar på ett bankkonto med fast ränta, utan någon risk för värdeminskning alls.',
+      'Man köper en enskild aktie i ett företag, och värdet styrs enbart av företagets utdelning.'
+    ],
+    correct: 0,
+    expl: 'Fondsparande innebär köp av andelar i fonder som bankerna förvaltar. Fondförvaltaren placerar pengarna i aktier och/eller obligationer, och fondandelarnas värde varierar beroende på hur dessa förändras i värde – därför är fondsparande ett risktagande.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilken sparform har enligt materialets översikt högst risk men också störst möjlighet till hög avkastning?',
+    opts: [
+      'Aktier, där värdet kan både stiga och sjunka kraftigt beroende på hur det går för företaget.',
+      'Lönekonto, där pengarna alltid är tillgängliga men avkastningen samtidigt kan variera kraftigt från månad till månad.',
+      'Sparkonto, där insättningsgarantin gör att risken är hög men avkastningen samtidigt är låg och stabil.',
+      'Obligationer, där staten garanterar att värdet aldrig kan sjunka oavsett hur räntan förändras över tid.'
+    ],
+    correct: 0,
+    expl: 'Enligt översikten över sparformer har aktier hög risk och hög möjlig avkastning, medan lönekonto har låg risk och låg avkastning, och sparkonto har låg risk och medel avkastning.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilken sparform rekommenderas enligt 1-2-3-principen för långsiktigt sparande, till exempel till pensionen?',
+    opts: [
+      'Ett investeringssparkonto (ISK) med placeringar i fonder, aktier eller obligationer, trots att riskerna där kan vara större.',
+      'Ett vanligt lönekonto utan bindningstid, eftersom pengarna där ger säkrast avkastning över mycket lång tid.',
+      'Ett sparkonto med kort bindningstid, eftersom kortsiktiga placeringar alltid ger högst avkastning på längre sikt.',
+      'Ett konto hos Kronofogden med statlig garanti, eftersom sådana konton alltid ger högst möjliga avkastning.'
+    ],
+    correct: 0,
+    expl: 'Långsiktigt sparande, till exempelvis pension eller ett framtida bostadsköp, bör enligt 1-2-3-principen placeras i ett investeringssparkonto (ISK) med fonder, aktier eller obligationer. På längre sikt kan dessa sparformer ge högre avkastning, även om riskerna kan vara större.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad är aktieutdelning och vad avgör hur stor den blir?',
+    opts: [
+      'Avkastning på satsade pengar i aktier, där storleken beror på hur bra det går för företaget.',
+      'Avkastning på pengar i en fond, där storleken beror på hur många andelar som säljs.',
+      'Ersättning från staten till aktieägare, där storleken beror på hur mycket skatt företaget betalat in.',
+      'Ränta på pengar som lånats ut via obligationer, där storleken beror på statens räntenivå.'
+    ],
+    correct: 0,
+    expl: 'Aktieutdelning är avkastning på satsade pengar i aktier. Utdelningens storlek beror på hur bra det går för företaget man äger aktier i.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad innebär det att ta ett lån med säkerhet, och hur påverkar det räntan?',
+    opts: [
+      'Man lämnar en pant, till exempel ett hus eller en bil, vilket vanligtvis ger en lägre ränta än blancolån.',
+      'Man skriver på ett anställningsavtal hos banken, vilket vanligtvis ger en högre ränta än blancolån.',
+      'Man betalar hela lånebeloppet i förskott, vilket vanligtvis gör att räntan helt försvinner från lånet.',
+      'Man går med i en fackförening, vilket vanligtvis sänker räntan mer än att lämna en pant.'
+    ],
+    correct: 0,
+    expl: 'Ett lån med säkerhet innebär att man lämnar en pant, till exempel en bil eller ett hus, som banken kan ta och sälja om man inte kan betala. Lån med säkerhet har generellt lägre ränta än lån utan säkerhet (blancolån).'
+  },
+  {
+    type: 'mc',
+    q: 'Vad kännetecknar ett snabblån eller sms-lån, och varför kan det bli mycket dyrt?',
+    opts: [
+      'Det är ofta ett litet lån som beviljas snabbt via sms, med en effektiv årsränta på flera hundra procent.',
+      'Det är ofta ett stort lån som beviljas via banken, med en effektiv årsränta på några enstaka procent.',
+      'Det är ofta ett lån utan återbetalningskrav, med en effektiv årsränta som alltid ligger nära noll procent.',
+      'Det är ofta ett lån som kräver fast anställning, med en effektiv årsränta som sällan överstiger tio procent.'
+    ],
+    correct: 0,
+    expl: 'Ett snabblån eller sms-lån är ofta ett lån på några tusenlappar som beviljas via sms och ska betalas tillbaka på kort tid. Det kan vara oerhört dyrt, med en effektiv årsränta på flera hundra procent.'
+  },
+  {
+    type: 'tf',
+    q: 'Blancolån, det vill säga lån utan säkerhet, har generellt lägre ränta än lån med säkerhet.',
+    correct: false,
+    expl: 'Det är tvärtom: lån med säkerhet (till exempel pant) har generellt lägre ränta än blancolån, eftersom banken tar mindre risk när det finns en säkerhet.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad är en betalningsanmärkning och hur länge påverkar den framtida möjligheter?',
+    opts: [
+      'Man får den om man inte betalar räkningar i tid, och den ligger kvar i upp till tre år.',
+      'Man får den om man byter bank för ofta, och den ligger kvar i upp till ett år.',
+      'Man får den om man tar ett lån med säkerhet, och den ligger kvar under hela låneperioden.',
+      'Man får den om man ansöker om studiemedel, och den ligger kvar tills studierna är avslutade.'
+    ],
+    correct: 0,
+    expl: 'Betalningsanmärkning får man om man inte betalar sina räkningar i tid. Anmärkningen ligger kvar i upp till tre år och gör det svårt att i framtiden få lån, hyreskontrakt, telefonabonnemang och kreditkort.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad betyder begreppen amortering och pant?',
+    opts: [
+      'Amortering är att betala av delar av lånebeloppet, och pant är en säkerhet som banken kan sälja vid utebliven betalning.',
+      'Amortering är att betala av all ränta på en gång, och pant är ett annat ord för avbetalningsplan.',
+      'Amortering är att förlänga ett lån, och pant är ett bevis på att man saknar betalningsanmärkning.',
+      'Amortering är att teckna en försäkring för lånet, och pant är ett annat ord för borgensåtagande.'
+    ],
+    correct: 0,
+    expl: 'Amortering innebär att man betalar av delar av lånebeloppet varje månad. Pant, till exempel en bil eller ett hus, är en säkerhet som banken kan ta och sälja om låntagaren inte kan betala lånet.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad innebär det att gå i borgen för någon annans lån?',
+    opts: [
+      'Man lovar att själv betala tillbaka lånet om den som lånat pengarna inte kan göra det.',
+      'Man lovar att hjälpa till att välja bank åt den som ska ta ett lån.',
+      'Man lovar att aldrig själv ta lån så länge den andra personens lån inte är betalt.',
+      'Man lovar att betala räntan, men aldrig själva lånebeloppet, om personen inte kan betala.'
+    ],
+    correct: 0,
+    expl: 'Att gå i borgen innebär att man lovar att betala tillbaka någon annans lån om personen själv inte kan göra det. Man bör vara mycket försiktig med borgensåtaganden.'
+  },
+  {
+    type: 'tf',
+    q: 'Om en skuld inte betalas i tid kan ärendet skickas till inkasso, vilket ökar skulden ytterligare.',
+    correct: true,
+    expl: 'Om man inte betalar sina räkningar och skulder i tid läggs ofta en påminnelseavgift på beloppet, och om skulden ändå inte betalas kan ärendet skickas till inkasso, vilket ytterligare ökar skulden.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad innebär reklamationsrätt och hur länge gäller den?',
+    opts: [
+      'Att meddela säljaren att man inte godtar en felaktig vara, och rätten gäller i upp till tre år.',
+      'Att ångra ett köp utan anledning inom fjorton dagar, och rätten gäller vid alla typer av köp.',
+      'Att byta en vara mot en annan i samma butik, och rätten gäller i upp till ett år.',
+      'Att få tillbaka pengarna direkt vid missnöje, och rätten gäller i upp till sex månader.'
+    ],
+    correct: 0,
+    expl: 'Reklamationsrätt innebär att man meddelar säljaren att man inte godtar varan eller tjänsten, och talar om varför man anser den felaktig, inom skälig tid (vanligen två månader efter att felet upptäckts). Reklamationsrätten gäller i upp till tre år.'
+  },
+  {
+    type: 'tf',
+    q: 'Man har alltid en lagstadgad ångerrätt när man handlar i en vanlig butik.',
+    correct: false,
+    expl: 'Vid köp i butik finns ingen lagstadgad ångerrätt – det är butikens egna regler för bytesrätt eller öppet köp som gäller. Ångerrätt i 14 dagar gäller istället vid köp via webben eller telefon.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad gör Allmänna reklamationsnämnden (ARN)?',
+    opts: [
+      'Ger rekommendationer i tvister mellan köpare och säljare, som de flesta företag ändå brukar följa.',
+      'Dömer i tvister mellan köpare och säljare, med beslut som alltid är juridiskt bindande.',
+      'Utreder brott mot konsumentlagstiftningen och kan bötfälla företag som inte följer reglerna direkt.',
+      'Ger lån till konsumenter som fått en betalningsanmärkning på grund av en obetald skuld.'
+    ],
+    correct: 0,
+    expl: 'ARN ger rekommendationer i tvister mellan köpare och säljare. Trots att nämnden inte kan tvinga någon att följa rekommendationerna brukar företag ändå göra det.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilka delar brukar ingå i en hemförsäkring?',
+    opts: [
+      'Egendomsförsäkring, ansvarsförsäkring, rättsskydd, överfallsskydd och reseskydd, som tillsammans ger skydd i olika situationer.',
+      'Trafikförsäkring, olycksfallsförsäkring, sjukförsäkring, pensionsförsäkring och reseskydd, som tillsammans ger skydd vid alla typer av skador.',
+      'Egendomsförsäkring, arbetslöshetsförsäkring, borgensskydd, kreditskydd och skadeståndsskydd, som tillsammans ersätter förlorad inkomst vid arbetslöshet.',
+      'Ansvarsförsäkring, garantipension, aktivitetsstöd, handikappersättning och arbetsskadeförsäkring, som tillsammans utgör den svenska socialförsäkringen.'
+    ],
+    correct: 0,
+    expl: 'En hemförsäkring brukar innehålla egendomsförsäkring (skydd för ägodelar), ansvarsförsäkring (skydd mot skadestånd), rättsskydd (ombuds- och rättegångskostnader), överfallsskydd (vid misshandel) och reseskydd (vid olycksfall och stöld på resa).'
+  },
+  {
+    type: 'mc',
+    q: 'Varför är det viktigt att ha en trafikförsäkring om man äger ett motorfordon?',
+    opts: [
+      'Den ger skydd mot skadeståndskrav om man vid en olycka vållar skada på annans egendom eller person.',
+      'Den ger skydd mot stöld av fordonet, men täcker aldrig skador som drabbar andra personer eller egendom.',
+      'Den är frivillig men sänker fordonsskatten kraftigt, vilket gör den ekonomiskt lönsam för de flesta bilägare.',
+      'Den ersätter enbart reparationskostnader på det egna fordonet vid olyckor som föraren själv orsakat.'
+    ],
+    correct: 0,
+    expl: 'Alla ägare till motorfordon måste ha en trafikförsäkring. Den ger skydd mot skadeståndskrav om man vid en olycka vållar skada på annans egendom eller person. Saknar man försäkring får man istället betala en hög trafikförsäkringsavgift.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilka är de tre vanligaste upplåtelseformerna för bostäder i Sverige?',
+    opts: [
+      'Äganderätt, bostadsrätt och hyresrätt, som skiljer sig åt i hur stor egen insats och möjlighet att påverka man har.',
+      'Andrahandskontrakt, förstahandskontrakt och ägarlägenhet, som skiljer sig åt i hur lång uppsägningstiden vanligen brukar vara enligt hyreslagen.',
+      'Besittningsrätt, nyttjanderätt och arrenderätt, som skiljer sig åt i vilken typ av mark eller lokal som hyrs ut.',
+      'Fastighetsrätt, brukningsrätt och lägenhetsrätt, som skiljer sig åt i vem som formellt ansvarar för bostadens löpande underhåll.'
+    ],
+    correct: 0,
+    expl: 'De tre vanligaste upplåtelseformerna är äganderätt (störst egen insats och möjlighet att påverka), bostadsrätt (mittemellan) och hyresrätt (minst egen insats och möjlighet att påverka).'
+  },
+  {
+    type: 'tf',
+    q: 'Hyresrätt kräver störst egen insats men ger också störst möjlighet att påverka bostaden, jämfört med äganderätt och bostadsrätt.',
+    correct: false,
+    expl: 'Det är tvärtom: äganderätt kräver störst egen insats men ger också störst möjlighet att påverka, medan hyresrätt kräver minst egen insats men ger minst möjlighet att påverka. Bostadsrätt ligger däremellan.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad innebär det att ha besittningsrätt som hyresgäst?',
+    opts: [
+      'Man får ett rättsligt skydd gentemot bostadens ägare genom det hyresavtal man skrivit under.',
+      'Man får rätt att köpa bostaden till marknadspris närhelst man själv önskar det.',
+      'Man får rätt att hyra ut bostaden i andra hand utan ägarens godkännande alls.',
+      'Man får rätt att slippa betala hyra under de första tre månaderna av kontraktet.'
+    ],
+    correct: 0,
+    expl: 'Ett hyresavtal ger besittningsrätt, vilket innebär att hyresgästen får ett rättsligt skydd gentemot bostadens ägare.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad är exempel på fasta respektive rörliga utgifter i en hushållsbudget?',
+    opts: [
+      'Fasta utgifter är till exempel hyra och försäkringar, medan rörliga utgifter är till exempel elförbrukning och kläder.',
+      'Fasta utgifter är till exempel kläder och nöjen, medan rörliga utgifter är till exempel hyra och försäkringar.',
+      'Fasta utgifter är till exempel mat och resor, medan rörliga utgifter är alla typer av sparande och lån.',
+      'Fasta utgifter är sådant man betalar en gång per år, medan rörliga utgifter betalas en gång i veckan.'
+    ],
+    correct: 0,
+    expl: 'Fasta utgifter är sådana som inte kan förändras direkt, till exempel hyra, försäkringar och abonnemangsavgifter. Rörliga utgifter varierar med användandet, till exempel elförbrukning, kontantkort, klädinköp och nöjen.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad bör en affärsplan innehålla när man ska starta eget företag?',
+    opts: [
+      'Bland annat vad företaget ska sälja, hur marknaden ser ut, konkurrenter och en resultat- och finansieringsplan.',
+      'Bland annat en lista över anställdas löner, semesterdagar, sjukfrånvaro och planerad föräldraledighet under året.',
+      'Bland annat en sammanställning av personliga meriter, tidigare anställningar, utbildningar och referenser från arbetsgivare.',
+      'Bland annat en ansökan om studiemedel, betyg från gymnasiet och intyg om godkänd yrkesutbildning.'
+    ],
+    correct: 0,
+    expl: 'En affärsplan bör bland annat innehålla vad företaget ska sälja och till vilka, hur marknaden och konkurrenterna ser ut, hur produkterna ska marknadsföras, samt en resultatbudget och finansieringsplan.'
+  },
+  {
+    type: 'tf',
+    q: 'För att få inkomstrelaterad ersättning (a-kasseersättning) krävs att man varit medlem i en arbetslöshetskassa i minst tolv månader.',
+    correct: true,
+    expl: 'Inkomstrelaterad ersättning (a-kasseersättning) utgör 70–80 procent av tidigare inkomst upp till ett maxbelopp, men kräver att man varit medlem i en arbetslöshetskassa i minst tolv månader och uppfyllt ett arbetsvillkor eller särskilt studerandevillkor.'
+  }
+];
+
+// ════════════════════════════════════════════════════════════
+// FISHER-YATES SHUFFLE
+// ════════════════════════════════════════════════════════════
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// ════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════
+let qs = [];
+let cur = 0;
+let score = 0;
+let elapsed = 0;
+let timerID = null;
+
+function normalize(q) {
+  if (q.type === 'tf') {
+    return {
+      type: 'tf',
+      q: q.q,
+      opts: ['Sant', 'Falskt'],
+      correct: q.correct ? 0 : 1,
+      expl: q.expl
+    };
+  }
+  return q;
+}
+
+function buildState() {
+  const shuffled = shuffleArray([...QUESTIONS]).map(normalize);
+  qs = shuffled.map(q => ({
+    ...q,
+    shuffledIdx: shuffleArray(q.opts.map((_, i) => i)),
+    selectedDisplay: null,
+    answered: false
+  }));
+}
+
+// ════════════════════════════════════════════════════════════
+// SCREENS
+// ════════════════════════════════════════════════════════════
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ════════════════════════════════════════════════════════════
+// TIMER
+// ════════════════════════════════════════════════════════════
+function fmt(s) {
+  return '⏱ ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+}
+function startTimer() {
+  elapsed = 0;
+  timerID = setInterval(() => { elapsed++; document.getElementById('timer').textContent = fmt(elapsed); }, 1000);
+}
+function stopTimer() { clearInterval(timerID); }
+
+// ════════════════════════════════════════════════════════════
+// START
+// ════════════════════════════════════════════════════════════
+function startQuiz() {
+  buildState();
+  cur = 0;
+  score = 0;
+  show('screen-quiz');
+  startTimer();
+  render();
+}
+
+// ════════════════════════════════════════════════════════════
+// RENDER
+// ════════════════════════════════════════════════════════════
+function render() {
+  const q = qs[cur];
+  const total = qs.length;
+
+  document.getElementById('progress-bar').style.width = (cur / total * 100) + '%';
+  document.getElementById('q-counter').textContent = 'Fråga ' + (cur + 1) + ' av ' + total;
+  document.getElementById('score-pill').textContent = 'Poäng: ' + score;
+  document.getElementById('q-type-tag').textContent = q.type === 'tf' ? 'Sant eller falskt' : 'Flerval';
+  document.getElementById('q-text').textContent = q.q;
+
+  const optsEl = document.getElementById('opts');
+  optsEl.innerHTML = '';
+
+  q.shuffledIdx.forEach((origIdx, displayPos) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = q.opts[origIdx];
+    btn.disabled = q.answered;
+
+    if (q.answered) {
+      const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+      if (displayPos === correctDisplay)      btn.classList.add('correct');
+      else if (displayPos === q.selectedDisplay) btn.classList.add('wrong');
+      else                                    btn.classList.add('dimmed');
+    } else {
+      btn.addEventListener('click', () => handleAnswer(displayPos));
+    }
+    optsEl.appendChild(btn);
+  });
+
+  document.getElementById('btn-back').style.display = cur > 0 ? 'inline-block' : 'none';
+  document.getElementById('btn-next').style.display = q.answered ? 'inline-block' : 'none';
+  document.getElementById('btn-next').textContent = cur === total - 1 ? 'Se resultat →' : 'Nästa →';
+}
+
+// ════════════════════════════════════════════════════════════
+// ANSWER
+// ════════════════════════════════════════════════════════════
+function handleAnswer(displayPos) {
+  const q = qs[cur];
+  if (q.answered) return;
+
+  q.answered = true;
+  q.selectedDisplay = displayPos;
+
+  const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+  const isCorrect = displayPos === correctDisplay;
+  if (isCorrect) score++;
+
+  document.querySelectorAll('.opt-btn').forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === correctDisplay)          btn.classList.add('correct');
+    else if (i === displayPos)         btn.classList.add('wrong');
+    else                               btn.classList.add('dimmed');
+  });
+
+  document.getElementById('btn-next').style.display = 'inline-block';
+  document.getElementById('btn-next').textContent = cur === qs.length - 1 ? 'Se resultat →' : 'Nästa →';
+  document.getElementById('score-pill').textContent = 'Poäng: ' + score;
+
+  setTimeout(() => showModal(isCorrect, q.expl), 600);
+}
+
+// ════════════════════════════════════════════════════════════
+// MODAL
+// ════════════════════════════════════════════════════════════
+function showModal(isCorrect, expl) {
+  document.getElementById('modal-icon').textContent      = isCorrect ? '✅' : '❌';
+  document.getElementById('modal-verdict').textContent   = isCorrect ? 'Rätt svar!' : 'Fel svar';
+  document.getElementById('modal-verdict').className     = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
+  document.getElementById('modal-expl').textContent      = expl;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  goNext();
+}
+
+// ════════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════════
+function goBack() { if (cur > 0) { cur--; render(); } }
+function goNext() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  if (cur < qs.length - 1) { cur++; render(); }
+  else showResults();
+}
+
+// ════════════════════════════════════════════════════════════
+// RESULTS
+// ════════════════════════════════════════════════════════════
+function showResults() {
+  stopTimer();
+  show('screen-result');
+
+  const total = qs.length;
+  const wrong = total - score;
+  const pct   = Math.round(score / total * 100);
+
+  document.getElementById('r-score').textContent   = score + '/' + total;
+  document.getElementById('s-correct').textContent = score;
+  document.getElementById('s-wrong').textContent   = wrong;
+  document.getElementById('s-pct').textContent     = pct + '%';
+
+  const m = Math.floor(elapsed / 60), s = String(elapsed % 60).padStart(2, '0');
+  document.getElementById('r-time').textContent = 'Tid: ' + m + ':' + s;
+
+  let title, msg;
+  if (pct >= 90)      { title = '🏆 Utmärkt!';          msg = 'Du behärskar kapitlet Privatekonomi på hög nivå.'; }
+  else if (pct >= 75) { title = '✅ Redo för provet!';   msg = 'Bra resultat – du har koll på det centrala.'; }
+  else if (pct >= 55) { title = '📖 Öva lite till';      msg = 'Du är på rätt spår men behöver repetera en del.'; }
+  else                { title = '💡 Fortsätt repetera'; msg = 'Gå igenom pluggmaterialet och försök igen.'; }
+
+  document.getElementById('r-title').textContent = title;
+  document.getElementById('r-msg').textContent   = msg;
+
+  // Missed
+  const missedEl = document.getElementById('missed-section');
+  const missed = qs.filter(q => q.answered && q.shuffledIdx.indexOf(q.correct) !== q.selectedDisplay);
+  if (missed.length) {
+    missedEl.innerHTML = '<div class="section-hd">Missade frågor (' + missed.length + ')</div>';
+    missed.forEach(q => {
+      const d = document.createElement('div');
+      d.className = 'missed-item';
+      d.textContent = q.q;
+      missedEl.appendChild(d);
+    });
+  } else {
+    missedEl.innerHTML = '';
+  }
+
+  // Full facit
+  const facitEl = document.getElementById('facit-list');
+  facitEl.innerHTML = '';
+  qs.forEach((q, i) => {
+    const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+    const isCorrect  = q.answered && q.selectedDisplay === correctDisplay;
+    const notAnswered = !q.answered;
+    const correctText  = q.opts[q.correct];
+    const selectedText = q.answered ? q.opts[q.shuffledIdx[q.selectedDisplay]] : null;
+
+    const div = document.createElement('div');
+    div.className = 'facit-item ' + (notAnswered ? '' : isCorrect ? 'fc' : 'fw');
+
+    let html = '<div class="fi-num">Fråga ' + (i + 1) + '</div>';
+    html += '<div class="fi-q">' + q.q + '</div>';
+    if (notAnswered) {
+      html += '<div class="fi-row"><span class="lbl">Ditt svar: </span>— (inte besvarad)</div>';
+      html += '<div class="fi-row ra"><span class="lbl">Rätt svar: </span>' + correctText + '</div>';
+    } else if (isCorrect) {
+      html += '<div class="fi-row ya-ok">✓ <span class="lbl">Ditt svar: </span>' + selectedText + '</div>';
+    } else {
+      html += '<div class="fi-row ya-bad">✗ <span class="lbl">Ditt svar: </span>' + selectedText + '</div>';
+      html += '<div class="fi-row ra"><span class="lbl">Rätt svar: </span>' + correctText + '</div>';
+    }
+    div.innerHTML = html;
+    facitEl.appendChild(div);
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// RESTART
+// ════════════════════════════════════════════════════════════
+function restartQuiz() {
+  stopTimer();
+  show('screen-start');
+}
+</script>
+</body>
+</html>
