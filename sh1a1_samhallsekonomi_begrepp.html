@@ -58,66 +58,221 @@ const PRIMARY_TEXT = '#14532d';
 // ════════════════════════════════════════════════════════════
 // BEGREPP — hämtade ordagrant från samhallsekonomins_grunder_begrepp.md
 // (Samhällskunskap 1a1, Ekonomi kapitel 1, s. 121–122)
+// sentence/scenario/ickeExempel/answers bygger direkt på definitionerna
+// ovan samt exemplen i samhallsekonomins_grunder_material.md
 // ════════════════════════════════════════════════════════════
 const concepts = [
-  { id: 1,  term: 'Ekonomi', definition: 'Att hushålla med begränsade tillgångar i syfte att tillgodose olika mänskliga behov och önskemål.' },
-  { id: 2,  term: 'Behov', definition: 'En känsla eller ett tillstånd där något saknas. Det kan vara något grundläggande som mat, vatten eller skydd, men också trygghet, kärlek och gemenskap.' },
-  { id: 3,  term: 'Resurser', definition: 'Sådant som kan tillgodose behov, t.ex. livsmedel, information eller tid. Kallas också tillgångar.' },
-  { id: 4,  term: 'Försörjning', definition: 'Att förse sig själv eller någon annan med livets nödvändigheter, t.ex. mat, kläder och bostad.' },
-  { id: 5,  term: 'Hushåll', definition: 'En eller flera personer som bor tillsammans och har en gemensam ekonomi. Det kan vara en ensam person, en familj eller andra personer som delar bostad och kostnader.' },
-  { id: 6,  term: 'Företag', definition: 'En verksamhet som producerar varor eller tjänster. Det kan drivas av en eller flera personer och kan vara allt från en liten enskild firma till ett stort internationellt bolag.' },
-  { id: 7,  term: 'Marknad', definition: 'Mötesplats i samhällsekonomin där köpare och säljare kan utbyta produkter med varandra.' },
-  { id: 8,  term: 'Efterfrågan', definition: 'Den mängd produkter som hushållen önskar köpa på en marknad.' },
-  { id: 9,  term: 'Utbud', definition: 'Den mängd produkter som företagen är villiga att sälja på en marknad.' },
-  { id: 10, term: 'Produktionsfaktorer', definition: 'De resurser som krävs för att framställa varor och tjänster. Dessa består av naturresurser, arbete och realkapital.' },
-  { id: 11, term: 'Naturresurser', definition: 'Råvaror från naturen som används vid produktion av varor och tjänster, till exempel jord, mineraler och skog, men också energiresurser (kol, olja) samt olika halvfabrikat (stål, plast).' },
-  { id: 12, term: 'Halvfabrikat', definition: 'Produkter som har genomgått en del av en tillverkningsprocess, men inte är helt färdiga.' },
-  { id: 13, term: 'Arbete (arbetskraft)', definition: 'Människors fysiska och intellektuella insatser (humankapital) i produktionen av varor och tjänster.' },
-  { id: 14, term: 'Humankapital', definition: 'Människans bidrag med kunskaper, färdigheter och erfarenheter i produktionen.' },
-  { id: 15, term: 'Realkapital', definition: 'Fysiska hjälpmedel som behövs i produktionen som t.ex. maskiner, datorer och fabriksanläggningar.' },
-  { id: 16, term: 'Produkter', definition: 'Samlingsbegrepp för varor och tjänster.' },
-  { id: 17, term: 'Konsumtion', definition: 'Förbrukning.' },
-  { id: 18, term: 'Investering', definition: 'Satsningar som görs för att underhålla, modernisera eller utöka realkapitalet i ett företag.' },
-  { id: 19, term: 'Cirkulär ekonomi (kretsloppsekonomi)', definition: 'Ekonomiskt system där resurser återanvänds och återvinns för att minska avfall och maximera hållbarheten.' },
-  { id: 20, term: 'Bruttonationalprodukten (BNP)', definition: 'Värdet av alla färdiga varor och tjänster som producerats i ett land under ett år.' },
-  { id: 21, term: 'Näringslivet', definition: 'Samtliga företag och organisationer som producerar varor och tjänster i samhällsekonomin. I Sverige delas det in i privata näringslivet, kooperationen samt statliga och kommunala bolag.' },
-  { id: 22, term: 'Export', definition: 'Varor och tjänster som tillverkats i Sverige och sålts till utlandet.' },
-  { id: 23, term: 'Import', definition: 'Varor och tjänster som köps in från utlandet.' },
-  { id: 24, term: 'Plattformsekonomi', definition: 'En verksamhet där digitala plattformar, som till exempel Uber eller Airbnb, förmedlar kontakt mellan köpare och säljare, ofta utan att själva äga varor eller tjänster.' },
-  { id: 25, term: 'Gigekonomi', definition: 'En verksamhet där människor tar tillfälliga uppdrag eller jobb, ofta via digitala plattformar, i stället för att ha en fast anställning.' },
-  { id: 26, term: 'Delningsekonomi', definition: 'En verksamhet som innebär att människor delar, lånar eller hyr ut saker till varandra – ofta via digitala plattformar. Det kan handla om allt från att hyra ut sin bil till att erbjuda boende eller verktyg.' },
-  { id: 27, term: 'Grön teknik', definition: 'Tekniska lösningar som minskar negativ påverkan på miljön och klimatet, till exempel solenergi, elbilar eller teknik som sparar energi och resurser.' },
-  { id: 28, term: 'Arbetsmarknad', definition: 'Mötesplats där företagen (arbetsgivarna) efterfrågar arbetskraft och hushållen (löntagarna) bjuder ut arbete.' },
-  { id: 29, term: 'Fackförbund', definition: 'Organisation som representerar arbetstagare inom en viss bransch eller yrkesgrupp och arbetar för att förbättra deras löner och arbetsvillkor. T.ex. Kommunal och IF Metall.' },
-  { id: 30, term: 'Arbetsgivarförbund', definition: 'Organisation som representerar arbetsgivare inom en viss bransch eller sektor och förhandlar om löner och arbetsvillkor med fackförbund på deras vägnar. T.ex. Teknikföretagen och Almega.' },
-  { id: 31, term: 'Arbetsmarknadslag', definition: 'Lag som reglerar förhållandena mellan arbetsgivare och arbetstagare, såsom rätten till anställning, arbetsvillkor och inflytande. Ett exempel är lagen om anställningsskydd (LAS).' },
-  { id: 32, term: 'Kollektivavtal', definition: 'Avtal mellan arbetsgivar- och löntagarorganisationer som reglerar löner och arbetsvillkor för arbetstagare. Löper vanligtvis 1–3 år.' },
-  { id: 33, term: 'Fredsplikt', definition: 'Innebär att arbetsgivare och arbetstagare förbinder sig att inte vidta stridsåtgärder, som strejk eller lockout, under den tid ett kollektivavtal gäller.' },
-  { id: 34, term: 'Fackförening', definition: 'Lokal eller regional organisation av arbetstagare inom ett visst yrke eller företag, som är ansluten till ett större fackförbund och huvudorganisation, och arbetar för att förbättra sina medlemmars löner och arbetsvillkor.' },
-  { id: 35, term: 'Svartjobb', definition: 'Ett jobb där arbetsgivaren eller arbetstagaren inte betalar skatter och avgifter enligt lagen och därmed inte står under arbetsrättsligt skydd.' },
-  { id: 36, term: 'Jämlikhet', definition: 'Alla människors lika rättigheter och möjligheter oavsett kön, etnicitet, ålder, klass eller annan bakgrund.' },
-  { id: 37, term: 'Jämställdhet', definition: 'Då lika rättigheter och möjligheter råder mellan kvinnor och män.' },
-  { id: 38, term: 'Pengar', definition: 'Föremål (t.ex. sedlar) eller tillgodohavanden på olika konton. Dess uppgift är att mäta och bevara ekonomiska värden samt fungera som betalningsmedel i samhällsekonomin.' },
-  { id: 39, term: 'Prismekanismen', definition: 'Samspelet mellan utbud och efterfrågan som avgör priset på varor och tjänster på en marknad.' },
-  { id: 40, term: 'Prisbildning', definition: 'Den process där priset på en produkt bestäms på en marknad genom samspelet mellan utbud och efterfrågan. Illustreras grafiskt med prisbildningsmodellen.' },
-  { id: 41, term: 'Utbuds- och efterfrågemodellen (prisbildningsmodellen)', definition: 'En teoretisk modell som beskriver hur priser bestäms på en marknad genom samspelet mellan utbud och efterfrågan.' },
-  { id: 42, term: 'Efterfrågekurvan', definition: 'Visar grafiskt den mängd av en produkt som efterfrågas vid olika priser.' },
-  { id: 43, term: 'Utbudskurvan', definition: 'Visar grafiskt den mängd av en produkt som bjuds ut vid olika priser.' },
-  { id: 44, term: 'Jämviktspris (marknadspris)', definition: 'Det pris där efterfrågan och utbudet är lika på en marknad, dvs. att det då varken är brist eller överskott på en viss produkt.' },
-  { id: 45, term: 'Laissez-faire', definition: 'Ett uttryck för uppfattningen att staten och politikerna i så stor utsträckning som möjligt bör lämna marknadsekonomin i fred (laissez faire = låt vara).' },
-  { id: 46, term: 'Inflation', definition: 'En allmän prisökning i samhällsekonomin. Motsats: deflation.' },
-  { id: 47, term: 'Konsumentprisindex (KPI)', definition: 'Ett mått på den genomsnittliga prisutvecklingen för varor och tjänster som hushållen konsumerar. Statistiska Centralbyrån mäter KPI genom att regelbundet samla in priser på ett urval av varor och tjänster som hushåll konsumerar och sedan jämföra förändringarna över tid.' },
-  { id: 48, term: 'Reallön', definition: 'Är skillnaden mellan din nominella lön (lönen i kronor) och inflationen. Anger hur mycket varor och tjänster du kan köpa för din lön, dvs. vilken köpkraft pengarna har.' },
-  { id: 49, term: 'Deflation', definition: 'En allmän sänkning av priserna i samhällsekonomin. Motsats: inflation.' },
+  { id: 1, term: 'Ekonomi', definition: 'Att hushålla med begränsade tillgångar i syfte att tillgodose olika mänskliga behov och önskemål.', answers: ['ekonomi'],
+    sentence: '_____ handlar om att hushålla med begränsade tillgångar för att tillgodose människors behov och önskemål.',
+    scenario: 'En familj måste varje månad väga sina begränsade inkomster mot allt de skulle vilja köpa och göra medvetna val om vad som prioriteras.',
+    ickeExempel: { korrekt: 'Att hushålla med begränsade resurser för att tillgodose behov och önskemål, exempelvis genom att prioritera mellan olika utgifter, är ett exempel på ekonomi.', icke: 'Att ha obegränsat med resurser så att man aldrig behöver välja mellan olika behov är ett exempel på ekonomi.', forklaring: 'Ekonomi förutsätter att resurserna är begränsade och att man måste göra val – om resurserna vore obegränsade skulle det inte finnas något ekonomiskt problem att hantera.' } },
+  { id: 2, term: 'Behov', definition: 'En känsla eller ett tillstånd där något saknas. Det kan vara något grundläggande som mat, vatten eller skydd, men också trygghet, kärlek och gemenskap.', answers: ['behov'],
+    sentence: 'Att känna hunger eller längta efter trygghet är exempel på ett _____ som människor har.',
+    scenario: 'En person känner sig ensam och saknar någon att prata med, samtidigt som magen kurrar av hunger.',
+    ickeExempel: { korrekt: 'Både hunger och en längtan efter gemenskap är exempel på behov, eftersom båda innebär att något grundläggande saknas.', icke: 'Endast kroppsliga saker som mat och vatten räknas som behov, medan känslor som trygghet och kärlek inte gör det.', forklaring: 'Behov omfattar både grundläggande kroppsliga saker som mat och vatten, men också psykologiska behov som trygghet, kärlek och gemenskap.' } },
+  { id: 3, term: 'Resurser', definition: 'Sådant som kan tillgodose behov, t.ex. livsmedel, information eller tid. Kallas också tillgångar.', answers: ['resurser'],
+    sentence: 'Livsmedel, information och tid är alla exempel på _____ som kan tillgodose våra behov.',
+    scenario: 'En elev har tillgång till böcker, internet och några timmar på kvällen som kan användas för att lösa ett skolproblem.',
+    ickeExempel: { korrekt: 'Livsmedel, information och tid räknas som resurser eftersom de kan användas för att tillgodose behov.', icke: 'Endast pengar och material som går att ta på räknas som resurser, medan sådant som tid och information inte gör det.', forklaring: 'Resurser är ett bredare begrepp som även omfattar sådant som tid och information, inte bara fysiska eller ekonomiska tillgångar.' } },
+  { id: 4, term: 'Försörjning', definition: 'Att förse sig själv eller någon annan med livets nödvändigheter, t.ex. mat, kläder och bostad.', answers: ['försörjning'],
+    sentence: 'Att arbeta ihop till mat, kläder och en bostad handlar om att klara sin _____.',
+    scenario: 'En förälder går till jobbet varje dag för att kunna betala för familjens mat, kläder och hyra.',
+    ickeExempel: { korrekt: 'Att arbeta för att kunna betala mat, kläder och boende åt sig och sin familj är ett exempel på försörjning.', icke: 'Att spara pengar till en semesterresa räknas som försörjning eftersom det handlar om pengar.', forklaring: 'Försörjning handlar specifikt om att täcka livets nödvändigheter som mat, kläder och bostad – en semesterresa är inte en nödvändighet på samma sätt.' } },
+  { id: 5, term: 'Hushåll', definition: 'En eller flera personer som bor tillsammans och har en gemensam ekonomi. Det kan vara en ensam person, en familj eller andra personer som delar bostad och kostnader.', answers: ['hushåll'],
+    sentence: 'En familj som bor tillsammans och delar på inkomster och utgifter utgör ett _____.',
+    scenario: 'Tre kompisar delar lägenhet, lägger pengarna i en gemensam kassa och betalar räkningarna tillsammans.',
+    ickeExempel: { korrekt: 'Tre personer som bor tillsammans och har en gemensam ekonomi räknas som ett hushåll.', icke: 'Ett hushåll måste alltid bestå av en familj med föräldrar och barn för att räknas som hushåll.', forklaring: 'Ett hushåll kan vara en ensam person, en familj eller andra personer som delar bostad och kostnader – det krävs inte en traditionell familjekonstellation.' } },
+  { id: 6, term: 'Företag', definition: 'En verksamhet som producerar varor eller tjänster. Det kan drivas av en eller flera personer och kan vara allt från en liten enskild firma till ett stort internationellt bolag.', answers: ['företag'],
+    sentence: 'En verksamhet som producerar varor eller tjänster, oavsett om den är liten eller stor, kallas ett _____.',
+    scenario: 'En person startar en enskild firma som säljer hemmagjorda smycken, medan ett annat bolag tillverkar bilar med tusentals anställda världen över.',
+    ickeExempel: { korrekt: 'Både den lilla smyckesfirman och det stora bilbolaget räknas som företag, eftersom båda producerar varor eller tjänster.', icke: 'Bara stora internationella bolag med många anställda räknas som företag, medan enskilda firmor inte gör det.', forklaring: 'Ett företag kan drivas av en eller flera personer och vara allt från en liten enskild firma till ett stort internationellt bolag.' } },
+  { id: 7, term: 'Marknad', definition: 'Mötesplats i samhällsekonomin där köpare och säljare kan utbyta produkter med varandra.', answers: ['marknad'],
+    sentence: 'Torget där bönder säljer sina grönsaker till kunder är ett exempel på en _____.',
+    scenario: 'Köpare och säljare möts, förhandlar om pris och kommer överens om ett köp av en vara eller tjänst.',
+    ickeExempel: { korrekt: 'En plats eller ett sammanhang där köpare och säljare möts och byter produkter med varandra är en marknad.', icke: 'En marknad är en byggnad som ägs av staten där bara statliga företag får sälja sina varor.', forklaring: 'En marknad behöver inte vara en statligt ägd plats – det är själva mötet mellan köpare och säljare som utgör marknaden, och den kan även vara digital.' } },
+  { id: 8, term: 'Efterfrågan', definition: 'Den mängd produkter som hushållen önskar köpa på en marknad.', answers: ['efterfrågan'],
+    sentence: 'Den mängd jordgubbar som alla kunder vill köpa vid ett visst pris kallas _____.',
+    scenario: 'När sommaren kommer vill allt fler hushåll köpa jordgubbar, och den totala mängden de vill handla ökar.',
+    ickeExempel: { korrekt: 'Den mängd som hushållen är villiga att köpa av en produkt kallas efterfrågan.', icke: 'Den mängd som företagen är villiga att sälja av en produkt kallas efterfrågan.', forklaring: 'Det är utbud, inte efterfrågan, som beskriver hur mycket företagen vill sälja – efterfrågan handlar om hushållens vilja att köpa.' } },
+  { id: 9, term: 'Utbud', definition: 'Den mängd produkter som företagen är villiga att sälja på en marknad.', answers: ['utbud'],
+    sentence: 'Den mängd jordgubbar som odlarna är villiga att sälja vid ett visst pris kallas _____.',
+    scenario: 'En odlare bestämmer sig för att skörda och erbjuda 500 lådor jordgubbar till försäljning på torget denna vecka.',
+    ickeExempel: { korrekt: 'Den mängd som företagen är villiga att sälja av en produkt kallas utbud.', icke: 'Den mängd som hushållen vill köpa av en produkt kallas utbud.', forklaring: 'Det är efterfrågan, inte utbud, som handlar om hur mycket hushållen vill köpa – utbud beskriver vad företagen vill sälja.' } },
+  { id: 10, term: 'Produktionsfaktorer', definition: 'De resurser som krävs för att framställa varor och tjänster. Dessa består av naturresurser, arbete och realkapital.', answers: ['produktionsfaktorer'],
+    sentence: 'Naturresurser, arbete och realkapital tillsammans kallas _____.',
+    scenario: 'För att bygga ett bord behövs virke, en snickares kunskap och en såg – tre olika typer av resurser som tillsammans gör produktionen möjlig.',
+    ickeExempel: { korrekt: 'Naturresurser, arbete och realkapital räknas tillsammans som produktionsfaktorer eftersom de krävs för att framställa varor och tjänster.', icke: 'Endast pengar och maskiner räknas som produktionsfaktorer, inte människors arbetsinsats.', forklaring: 'Produktionsfaktorer består av tre typer: naturresurser, arbete och realkapital – människors arbetsinsats är alltså en lika viktig produktionsfaktor som maskiner.' } },
+  { id: 11, term: 'Naturresurser', definition: 'Råvaror från naturen som används vid produktion av varor och tjänster, till exempel jord, mineraler och skog, men också energiresurser (kol, olja) samt olika halvfabrikat (stål, plast).', answers: ['naturresurser'],
+    sentence: 'Jord, mineraler, skog och olja är exempel på _____ som används i produktionen.',
+    scenario: 'En fabrik hämtar järnmalm ur en gruva och trä från en skog för att kunna tillverka sina produkter.',
+    ickeExempel: { korrekt: 'Järnmalm från en gruva och trä från en skog är exempel på naturresurser som används i produktionen.', icke: 'En fabriksbyggnad och maskinerna inuti den räknas som naturresurser eftersom de behövs i produktionen.', forklaring: 'Fabriksbyggnader och maskiner räknas som realkapital, inte naturresurser – naturresurser är råvaror som hämtas direkt från naturen.' } },
+  { id: 12, term: 'Halvfabrikat', definition: 'Produkter som har genomgått en del av en tillverkningsprocess, men inte är helt färdiga.', answers: ['halvfabrikat'],
+    sentence: 'Stål och plast som ska bearbetas vidare innan de blir en färdig produkt kallas _____.',
+    scenario: 'En fabrik köper in ark av stål som redan smälts och formats en gång, men som ännu måste bearbetas ytterligare innan de blir en färdig bildel.',
+    ickeExempel: { korrekt: 'Stålplåtar som redan bearbetats en gång men som måste formas vidare innan de blir en bildel är ett exempel på halvfabrikat.', icke: 'En helt färdig bil som står redo att säljas till en kund är ett exempel på halvfabrikat.', forklaring: 'En färdig bil är en färdig produkt, inte ett halvfabrikat – halvfabrikat har bara genomgått en del av tillverkningsprocessen och är inte helt färdiga.' } },
+  { id: 13, term: 'Arbete (arbetskraft)', definition: 'Människors fysiska och intellektuella insatser (humankapital) i produktionen av varor och tjänster.', answers: ['arbete', 'arbetskraft', 'arbete (arbetskraft)'],
+    sentence: 'En snickares fysiska och intellektuella insats när hen bygger ett bord är ett exempel på _____.',
+    scenario: 'En målare använder sina kunskaper och sin fysiska förmåga för att stryka en vägg med färg.',
+    ickeExempel: { korrekt: 'En snickares fysiska och intellektuella insats när hen bygger möbler är ett exempel på arbete som produktionsfaktor.', icke: 'Enbart kroppslig styrka räknas som arbete i produktionen, medan kunskaper och färdigheter inte gör det.', forklaring: 'Arbete omfattar både fysiska och intellektuella insatser – människans kunskaper och färdigheter (humankapital) är en lika viktig del av arbetet som kroppslig styrka.' } },
+  { id: 14, term: 'Humankapital', definition: 'Människans bidrag med kunskaper, färdigheter och erfarenheter i produktionen.', answers: ['humankapital'],
+    sentence: 'En läkares kunskaper, färdigheter och erfarenhet räknas som en del av hens _____.',
+    scenario: 'En erfaren ingenjör har genom åren byggt upp kunskaper och färdigheter som gör hen extra värdefull för sin arbetsgivare.',
+    ickeExempel: { korrekt: 'En ingenjörs samlade kunskaper och erfarenheter är ett exempel på humankapital.', icke: 'De maskiner och datorer som en ingenjör använder på jobbet räknas som ingenjörens humankapital.', forklaring: 'Maskiner och datorer räknas som realkapital – humankapital handlar specifikt om människans egna kunskaper, färdigheter och erfarenheter.' } },
+  { id: 15, term: 'Realkapital', definition: 'Fysiska hjälpmedel som behövs i produktionen som t.ex. maskiner, datorer och fabriksanläggningar.', answers: ['realkapital'],
+    sentence: 'Maskiner, datorer och fabriksbyggnader som används i produktionen kallas _____.',
+    scenario: 'Ett bageri investerar i en ny bakugn och en dator för att sköta beställningarna.',
+    ickeExempel: { korrekt: 'En bakugn och en dator som ett bageri använder i sin verksamhet är exempel på realkapital.', icke: 'Bagarens kunskap om hur man bakar bröd räknas som realkapital.', forklaring: 'Bagarens kunskap räknas som humankapital, inte realkapital – realkapital är fysiska hjälpmedel som maskiner och byggnader.' } },
+  { id: 16, term: 'Produkter', definition: 'Samlingsbegrepp för varor och tjänster.', answers: ['produkter'],
+    sentence: 'Varor och tjänster tillsammans kallas för _____.',
+    scenario: 'En affär säljer både kläder som kunderna kan ta med sig hem och en syservice som ändrar plaggen på plats.',
+    ickeExempel: { korrekt: 'Varor som kläder och tjänster som syservice räknas tillsammans som produkter.', icke: 'Endast fysiska varor som kläder räknas som produkter, medan tjänster inte gör det.', forklaring: 'Produkter är ett samlingsbegrepp som omfattar både varor och tjänster, inte bara fysiska ting.' } },
+  { id: 17, term: 'Konsumtion', definition: 'Förbrukning.', answers: ['konsumtion'],
+    sentence: 'Att äta upp maten man just köpt är ett exempel på _____.',
+    scenario: 'En person köper en smoothie på macken och dricker upp den direkt på vägen till skolan.',
+    ickeExempel: { korrekt: 'Att direkt förbruka något man just köpt, som att dricka upp en smoothie, är ett exempel på konsumtion.', icke: 'Att spara pengar från lönen till nästa år räknas som konsumtion.', forklaring: 'Att spara eller avstå från att förbruka räknas som investering, inte konsumtion – konsumtion är just att förbruka något här och nu.' } },
+  { id: 18, term: 'Investering', definition: 'Satsningar som görs för att underhålla, modernisera eller utöka realkapitalet i ett företag.', answers: ['investering'],
+    sentence: 'Att en potatisodlare sparar en del av skörden som sättpotatis för nästa år är ett exempel på en _____.',
+    scenario: 'Ett företag köper in en ny maskin för att kunna öka sin framtida produktion, i stället för att dela ut hela vinsten direkt.',
+    ickeExempel: { korrekt: 'Att ett företag köper en ny maskin för att öka sin framtida produktion är ett exempel på en investering.', icke: 'Att ett hushåll handlar mat för veckans middagar räknas som en investering.', forklaring: 'Att köpa mat som ska ätas upp är konsumtion – en investering handlar om att avstå från konsumtion i dag för att öka eller säkra framtida produktion eller konsumtion.' } },
+  { id: 19, term: 'Cirkulär ekonomi (kretsloppsekonomi)', definition: 'Ekonomiskt system där resurser återanvänds och återvinns för att minska avfall och maximera hållbarheten.', answers: ['cirkulär ekonomi', 'kretsloppsekonomi', 'cirkulär ekonomi (kretsloppsekonomi)'],
+    sentence: 'Ett ekonomiskt system där resurser återanvänds och återvinns för att minska avfall kallas _____.',
+    scenario: 'En second hand-butik säljer vidare kläder som annars skulle ha slängts, så att de kan användas av en ny ägare.',
+    ickeExempel: { korrekt: 'Att kläder säljs vidare på second hand i stället för att slängas, så att de kan användas igen, är ett exempel på cirkulär ekonomi.', icke: 'Att en fabrik tillverkar en produkt, säljer den och kunden sedan slänger den efter användning är ett exempel på cirkulär ekonomi.', forklaring: 'Att producera, konsumera och sedan slänga är i stället ett exempel på den linjära ekonomin – cirkulär ekonomi bygger på att resurser återanvänds och återvinns i stället för att bli avfall.' } },
+  { id: 20, term: 'Bruttonationalprodukten (BNP)', definition: 'Värdet av alla färdiga varor och tjänster som producerats i ett land under ett år.', answers: ['bruttonationalprodukten', 'bnp', 'bruttonationalprodukten (bnp)'],
+    sentence: 'Värdet av allt som ett land producerar under ett år mäts med måttet _____.',
+    scenario: 'Ett statistikinstitut räknar samman värdet av alla färdiga varor och tjänster som producerats i landet under det senaste året, för att se hur produktionen utvecklats.',
+    ickeExempel: { korrekt: 'Ett mått på värdet av alla färdiga varor och tjänster som producerats i ett land under ett år är BNP.', icke: 'Ett mått på hur mycket pengar som finns på svenska folkets bankkonton är BNP.', forklaring: 'BNP mäter värdet av landets samlade produktion under ett år, inte hur mycket pengar hushållen har sparat på sina konton.' } },
+  { id: 21, term: 'Näringslivet', definition: 'Samtliga företag och organisationer som producerar varor och tjänster i samhällsekonomin. I Sverige delas det in i privata näringslivet, kooperationen samt statliga och kommunala bolag.', answers: ['näringslivet'],
+    sentence: 'Alla företag och organisationer i ett land som producerar varor och tjänster kallas tillsammans _____.',
+    scenario: 'I ett land finns allt från privatägda firmor och kooperativa föreningar till statliga bolag, och alla dessa räknas till samma helhet av producerande verksamheter.',
+    ickeExempel: { korrekt: 'Privata företag, kooperationen samt statliga och kommunala bolag räknas tillsammans till näringslivet.', icke: 'Endast privatägda aktiebolag räknas till näringslivet, medan statliga bolag och kooperativa föreningar inte gör det.', forklaring: 'Näringslivet delas i Sverige in i det privata näringslivet, kooperationen samt statliga och kommunala bolag – alla tre räknas dit.' } },
+  { id: 22, term: 'Export', definition: 'Varor och tjänster som tillverkats i Sverige och sålts till utlandet.', answers: ['export'],
+    sentence: 'Att tillverka bilar i Sverige och sälja dem till kunder i andra länder är ett exempel på _____.',
+    scenario: 'Ett svenskt stålföretag skickar en stor leverans specialstål till kunder i Tyskland.',
+    ickeExempel: { korrekt: 'Ett svenskt företag som säljer varor tillverkade i Sverige till kunder i andra länder ägnar sig åt export.', icke: 'Ett svenskt företag som köper in råvaror från andra länder för sin produktion ägnar sig åt export.', forklaring: 'Att köpa in varor från utlandet kallas import, inte export – export handlar om att sälja svensktillverkade varor och tjänster till utlandet.' } },
+  { id: 23, term: 'Import', definition: 'Varor och tjänster som köps in från utlandet.', answers: ['import'],
+    sentence: 'En svensk butik som köper in kläder tillverkade i ett annat land ägnar sig åt _____.',
+    scenario: 'Ett svenskt företag beställer elektronikkomponenter från fabriker i Asien för att kunna tillverka sina produkter.',
+    ickeExempel: { korrekt: 'Ett svenskt företag som köper in elektronikkomponenter från utlandet ägnar sig åt import.', icke: 'Ett svenskt företag som säljer sina varor till kunder i andra länder ägnar sig åt import.', forklaring: 'Att sälja varor till andra länder kallas export, inte import – import handlar om att köpa in varor och tjänster från utlandet.' } },
+  { id: 24, term: 'Plattformsekonomi', definition: 'En verksamhet där digitala plattformar, som till exempel Uber eller Airbnb, förmedlar kontakt mellan köpare och säljare, ofta utan att själva äga varor eller tjänster.', answers: ['plattformsekonomi'],
+    sentence: 'En app som förmedlar kontakt mellan köpare och säljare utan att själv äga det som säljs är ett exempel på _____.',
+    scenario: 'En digital tjänst kopplar samman personer som vill åka bil med förare som kör privat, utan att själva äga en enda bil.',
+    ickeExempel: { korrekt: 'En app som förmedlar kontakt mellan förare och passagerare utan att själv äga några bilar är ett exempel på plattformsekonomi.', icke: 'Ett taxibolag som äger sina egna bilar och anställer sina egna förare är ett exempel på plattformsekonomi.', forklaring: 'Ett taxibolag som äger sina bilar och anställer sina förare driver traditionell verksamhet – plattformsekonomi kännetecknas av att plattformen förmedlar kontakt utan att själv äga varorna eller tjänsterna.' } },
+  { id: 25, term: 'Gigekonomi', definition: 'En verksamhet där människor tar tillfälliga uppdrag eller jobb, ofta via digitala plattformar, i stället för att ha en fast anställning.', answers: ['gigekonomi'],
+    sentence: 'Att ta tillfälliga uppdrag via en app i stället för att ha en fast anställning kallas _____.',
+    scenario: 'En person loggar in på en app varje kväll för att ta enstaka matleveransuppdrag när det passar, utan någon fast anställning hos företaget.',
+    ickeExempel: { korrekt: 'En person som tar enstaka leveransuppdrag via en app, utan fast anställning, deltar i gigekonomin.', icke: 'En person som är fast anställd på heltid hos ett matleveransföretag med fast månadslön deltar i gigekonomin.', forklaring: 'En fast anställning med fast månadslön är motsatsen till gigekonomi – gigekonomi kännetecknas av tillfälliga uppdrag i stället för fast anställning.' } },
+  { id: 26, term: 'Delningsekonomi', definition: 'En verksamhet som innebär att människor delar, lånar eller hyr ut saker till varandra – ofta via digitala plattformar. Det kan handla om allt från att hyra ut sin bil till att erbjuda boende eller verktyg.', answers: ['delningsekonomi'],
+    sentence: 'Att hyra ut sin bil eller sitt boende till andra via en app är ett exempel på _____.',
+    scenario: 'En person hyr ut sin lediga lägenhet till resenärer via en digital tjänst när hen själv är bortrest.',
+    ickeExempel: { korrekt: 'En person som hyr ut sin lägenhet till resenärer via en app deltar i delningsekonomin.', icke: 'Ett hotellföretag som äger och driver flera stora hotellbyggnader deltar i delningsekonomin.', forklaring: 'Ett hotellföretag som äger sina egna byggnader bedriver traditionell verksamhet – delningsekonomi handlar om att privatpersoner delar, lånar eller hyr ut sina egna tillgångar till varandra.' } },
+  { id: 27, term: 'Grön teknik', definition: 'Tekniska lösningar som minskar negativ påverkan på miljön och klimatet, till exempel solenergi, elbilar eller teknik som sparar energi och resurser.', answers: ['grön teknik'],
+    sentence: 'Solpaneler och elbilar är exempel på _____ som minskar negativ påverkan på klimatet.',
+    scenario: 'Ett stålföretag byter ut kol mot vätgas i sin tillverkning så att vatten bildas i stället för koldioxid.',
+    ickeExempel: { korrekt: 'Att ett stålföretag byter ut kol mot vätgas för att minska koldioxidutsläppen är ett exempel på grön teknik.', icke: 'Att ett företag fortsätter använda kol i sin produktion eftersom det är billigast är ett exempel på grön teknik.', forklaring: 'Att fortsätta med den mest förorenande metoden för att den är billigast är motsatsen till grön teknik – grön teknik handlar om lösningar som minskar negativ miljö- och klimatpåverkan.' } },
+  { id: 28, term: 'Arbetsmarknad', definition: 'Mötesplats där företagen (arbetsgivarna) efterfrågar arbetskraft och hushållen (löntagarna) bjuder ut arbete.', answers: ['arbetsmarknad'],
+    sentence: 'Platsen där arbetsgivare efterfrågar arbetskraft och löntagare bjuder ut sitt arbete kallas _____.',
+    scenario: 'Ett företag lägger ut en jobbannons och flera personer söker tjänsten, tills en av dem anställs.',
+    ickeExempel: { korrekt: 'Mötet mellan arbetsgivare som söker personal och löntagare som söker jobb sker på arbetsmarknaden.', icke: 'Arbetsmarknaden är den plats där hushåll köper varor och tjänster av företag.', forklaring: 'Platsen där hushåll köper varor och tjänster av företag är en vanlig marknad – arbetsmarknaden handlar specifikt om mötet mellan arbetsgivare och arbetstagare.' } },
+  { id: 29, term: 'Fackförbund', definition: 'Organisation som representerar arbetstagare inom en viss bransch eller yrkesgrupp och arbetar för att förbättra deras löner och arbetsvillkor. T.ex. Kommunal och IF Metall.', answers: ['fackförbund'],
+    sentence: 'En organisation som representerar arbetstagare inom en viss bransch och arbetar för bättre löner kallas ett _____.',
+    scenario: 'Metallarbetare inom industrin är anslutna till en rikstäckande organisation som förhandlar om deras löner och arbetsvillkor på nationell nivå.',
+    ickeExempel: { korrekt: 'En rikstäckande organisation som representerar arbetstagare inom en bransch och förhandlar om deras löner är ett fackförbund.', icke: 'En organisation som representerar arbetsgivare och förhandlar om löner på deras vägnar är ett fackförbund.', forklaring: 'En organisation som representerar arbetsgivare kallas i stället arbetsgivarförbund – fackförbund representerar arbetstagarna.' } },
+  { id: 30, term: 'Arbetsgivarförbund', definition: 'Organisation som representerar arbetsgivare inom en viss bransch eller sektor och förhandlar om löner och arbetsvillkor med fackförbund på deras vägnar. T.ex. Teknikföretagen och Almega.', answers: ['arbetsgivarförbund'],
+    sentence: 'En organisation som representerar arbetsgivare och förhandlar med facken om löner kallas ett _____.',
+    scenario: 'Flera teknikföretag är anslutna till en gemensam organisation som förhandlar fram avtal med de anställdas fackförbund.',
+    ickeExempel: { korrekt: 'En organisation som representerar flera företag och förhandlar med fackförbunden om löner och villkor är ett arbetsgivarförbund.', icke: 'En organisation som representerar de anställda och förhandlar med företagen om löner är ett arbetsgivarförbund.', forklaring: 'En organisation som representerar de anställda kallas fackförbund – arbetsgivarförbund representerar i stället arbetsgivarna.' } },
+  { id: 31, term: 'Arbetsmarknadslag', definition: 'Lag som reglerar förhållandena mellan arbetsgivare och arbetstagare, såsom rätten till anställning, arbetsvillkor och inflytande. Ett exempel är lagen om anställningsskydd (LAS).', answers: ['arbetsmarknadslag'],
+    sentence: 'En lag som reglerar rätten till anställning och arbetsvillkor, till exempel LAS, kallas en _____.',
+    scenario: 'Riksdagen stiftar en lag som reglerar hur en anställning får avslutas och vilka rättigheter en anställd har vid uppsägning.',
+    ickeExempel: { korrekt: 'En lag som riksdagen stiftar för att reglera rätten till anställning och arbetsvillkor, till exempel LAS, är en arbetsmarknadslag.', icke: 'Ett avtal som ett fackförbund och ett arbetsgivarförbund förhandlar fram sinsemellan är en arbetsmarknadslag.', forklaring: 'Ett avtal mellan fackförbund och arbetsgivarförbund kallas kollektivavtal, inte arbetsmarknadslag – en arbetsmarknadslag stiftas av riksdagen och gäller alla.' } },
+  { id: 32, term: 'Kollektivavtal', definition: 'Avtal mellan arbetsgivar- och löntagarorganisationer som reglerar löner och arbetsvillkor för arbetstagare. Löper vanligtvis 1–3 år.', answers: ['kollektivavtal'],
+    sentence: 'Ett avtal mellan fack- och arbetsgivarorganisationer som reglerar löner och löper 1–3 år kallas ett _____.',
+    scenario: 'Ett fackförbund och ett arbetsgivarförbund förhandlar fram ett gemensamt avtal om löner och arbetsvillkor som ska gälla i två år framåt.',
+    ickeExempel: { korrekt: 'Ett avtal som fackförbund och arbetsgivarförbund förhandlar fram tillsammans om löner och villkor är ett kollektivavtal.', icke: 'En lag som riksdagen stiftar för att reglera anställningsskyddet är ett kollektivavtal.', forklaring: 'En lag som riksdagen stiftar kallas arbetsmarknadslag, inte kollektivavtal – kollektivavtal förhandlas i stället fram mellan fack- och arbetsgivarorganisationer.' } },
+  { id: 33, term: 'Fredsplikt', definition: 'Innebär att arbetsgivare och arbetstagare förbinder sig att inte vidta stridsåtgärder, som strejk eller lockout, under den tid ett kollektivavtal gäller.', answers: ['fredsplikt'],
+    sentence: 'Att varken arbetsgivare eller arbetstagare får strejka eller lockouta under ett kollektivavtals löptid kallas _____.',
+    scenario: 'Trots missnöje med lönen väljer de anställda att inte strejka, eftersom deras kollektivavtal fortfarande gäller.',
+    ickeExempel: { korrekt: 'Att de anställda avstår från att strejka så länge deras kollektivavtal gäller är ett exempel på fredsplikt.', icke: 'Att arbetsgivaren och facket kommer överens om nya löner för de kommande åren är ett exempel på fredsplikt.', forklaring: 'Att komma överens om nya löner beskriver i stället förhandlingen bakom ett kollektivavtal – fredsplikt handlar specifikt om att avstå från stridsåtgärder under avtalets giltighetstid.' } },
+  { id: 34, term: 'Fackförening', definition: 'Lokal eller regional organisation av arbetstagare inom ett visst yrke eller företag, som är ansluten till ett större fackförbund och huvudorganisation, och arbetar för att förbättra sina medlemmars löner och arbetsvillkor.', answers: ['fackförening'],
+    sentence: 'Den lokala organisationen på en arbetsplats som är ansluten till ett större fackförbund kallas en _____.',
+    scenario: 'På en skola går flera lärare med i den lokala klubben som är ansluten till deras rikstäckande fackförbund, för att få stöd på just sin arbetsplats.',
+    ickeExempel: { korrekt: 'Den lokala klubben på en arbetsplats, ansluten till ett rikstäckande fackförbund, är en fackförening.', icke: 'Den rikstäckande organisationen som samlar alla lokala klubbar inom en bransch är en fackförening.', forklaring: 'Den rikstäckande organisationen kallas fackförbund – en fackförening är i stället den lokala eller regionala organisationen som är ansluten till förbundet.' } },
+  { id: 35, term: 'Svartjobb', definition: 'Ett jobb där arbetsgivaren eller arbetstagaren inte betalar skatter och avgifter enligt lagen och därmed inte står under arbetsrättsligt skydd.', answers: ['svartjobb'],
+    sentence: 'Ett jobb där varken arbetsgivaren eller arbetstagaren betalar skatt kallas _____.',
+    scenario: 'En hantverkare utför ett jobb mot kontant betalning, utan kvitto och utan att någon skatt eller avgift redovisas till staten.',
+    ickeExempel: { korrekt: 'Ett jobb där arbetsgivaren betalar kontant utan att redovisa skatt eller avgifter till staten är ett svartjobb.', icke: 'Ett jobb med ett vanligt anställningsavtal där arbetsgivaren betalar in skatt varje månad är ett svartjobb.', forklaring: 'Ett vanligt jobb med anställningsavtal och redovisad skatt är inte ett svartjobb – svartjobb kännetecknas just av att skatter och avgifter inte betalas och att arbetstagaren saknar arbetsrättsligt skydd.' } },
+  { id: 36, term: 'Jämlikhet', definition: 'Alla människors lika rättigheter och möjligheter oavsett kön, etnicitet, ålder, klass eller annan bakgrund.', answers: ['jämlikhet'],
+    sentence: 'Att alla människor har samma rättigheter och möjligheter oavsett bakgrund kallas _____.',
+    scenario: 'På en arbetsplats får alla anställda, oavsett ålder, etnicitet eller bakgrund, samma möjlighet att söka en befordran.',
+    ickeExempel: { korrekt: 'Att alla anställda, oavsett bakgrund, ålder eller etnicitet, har samma möjlighet att söka en befordran är ett exempel på jämlikhet.', icke: 'Jämlikhet handlar enbart om att kvinnor och män ska ha samma rättigheter, inte om andra bakgrundsfaktorer.', forklaring: 'Det som enbart handlar om kvinnor och män kallas jämställdhet – jämlikhet är ett bredare begrepp som omfattar lika rättigheter oavsett kön, etnicitet, ålder, klass eller annan bakgrund.' } },
+  { id: 37, term: 'Jämställdhet', definition: 'Då lika rättigheter och möjligheter råder mellan kvinnor och män.', answers: ['jämställdhet'],
+    sentence: 'Att kvinnor och män har samma rättigheter och möjligheter kallas _____.',
+    scenario: 'En kvinna och en man med samma erfarenhet och utbildning får exakt samma lön för samma arbete på sin arbetsplats.',
+    ickeExempel: { korrekt: 'Att en kvinna och en man med samma erfarenhet får exakt samma lön för samma arbete är ett exempel på jämställdhet.', icke: 'Jämställdhet handlar om att alla, oavsett kön, etnicitet eller ålder, ska ha samma rättigheter.', forklaring: 'Det bredare begreppet som omfattar alla bakgrundsfaktorer kallas jämlikhet – jämställdhet handlar specifikt om lika rättigheter mellan kvinnor och män.' } },
+  { id: 38, term: 'Pengar', definition: 'Föremål (t.ex. sedlar) eller tillgodohavanden på olika konton. Dess uppgift är att mäta och bevara ekonomiska värden samt fungera som betalningsmedel i samhällsekonomin.', answers: ['pengar'],
+    sentence: 'Sedlar och tillgodohavanden på bankkonton som fungerar som betalningsmedel kallas _____.',
+    scenario: 'En person betalar för sin lunch genom att swisha pengar direkt från sitt bankkonto till restaurangens konto.',
+    ickeExempel: { korrekt: 'Tillgodohavanden på ett bankkonto som används för att betala för en lunch är ett exempel på pengar.', icke: 'Endast fysiska sedlar och mynt räknas som pengar, medan digitala tillgodohavanden på bankkonton inte gör det.', forklaring: 'I dag är nästan alla pengar digitala tillgodohavanden på bankkonton – pengar är alltså inte bara sedlar och mynt utan även digitala värden.' } },
+  { id: 39, term: 'Prismekanismen', definition: 'Samspelet mellan utbud och efterfrågan som avgör priset på varor och tjänster på en marknad.', answers: ['prismekanismen'],
+    sentence: 'Samspelet mellan utbud och efterfrågan som avgör priset på en vara kallas _____.',
+    scenario: 'När fler blir vegetarianer sjunker efterfrågan på kött och priset pressas ner, medan priset på grönsaker stiger när fler vill köpa dem – hela systemet styr sig självt mot en balans.',
+    ickeExempel: { korrekt: 'Att priser automatiskt anpassas när utbud och efterfrågan förändras, som när köttpriset sjunker och grönsakspriset stiger, är ett exempel på prismekanismen.', icke: 'Prismekanismen är den grafiska modell som ritas som ett diagram med två kurvor för att visa hur priser bestäms.', forklaring: 'Den grafiska modellen med två kurvor kallas utbuds- och efterfrågemodellen – prismekanismen är själva samspelet mellan utbud och efterfrågan som styr priset i verkligheten.' } },
+  { id: 40, term: 'Prisbildning', definition: 'Den process där priset på en produkt bestäms på en marknad genom samspelet mellan utbud och efterfrågan. Illustreras grafiskt med prisbildningsmodellen.', answers: ['prisbildning'],
+    sentence: 'Den process där priset på en produkt bestäms genom samspelet mellan utbud och efterfrågan kallas _____.',
+    scenario: 'Nationalekonomer studerar hur priset på jordgubbar successivt landar på en viss nivå utifrån hur mycket odlarna vill sälja och hur mycket kunderna vill köpa.',
+    ickeExempel: { korrekt: 'Den process genom vilken priset på jordgubbar bestäms utifrån utbud och efterfrågan kallas prisbildning.', icke: 'Prisbildning är det pris som uppstår när utbudet och efterfrågan exakt är lika stora.', forklaring: 'Det specifika pris där utbud och efterfrågan är exakt lika stora kallas jämviktspris – prisbildning är hela den process genom vilken priset bestäms.' } },
+  { id: 41, term: 'Utbuds- och efterfrågemodellen (prisbildningsmodellen)', definition: 'En teoretisk modell som beskriver hur priser bestäms på en marknad genom samspelet mellan utbud och efterfrågan.', answers: ['utbuds- och efterfrågemodellen', 'prisbildningsmodellen', 'utbuds- och efterfrågemodellen (prisbildningsmodellen)'],
+    sentence: 'Den teoretiska modell med två kurvor som beskriver hur priser bestäms kallas _____.',
+    scenario: 'En lärare ritar upp ett diagram med en nedåtlutande och en uppåtlutande kurva för att visa eleverna hur priset på en vara bestäms av köpare och säljare.',
+    ickeExempel: { korrekt: 'Diagrammet med en nedåtlutande och en uppåtlutande kurva som beskriver hur priser bestäms är utbuds- och efterfrågemodellen.', icke: 'Utbuds- och efterfrågemodellen är det verkliga samspel mellan köpare och säljare som sker på riktiga marknader varje dag.', forklaring: 'Det verkliga samspelet som sker på marknader kallas prismekanismen – utbuds- och efterfrågemodellen är i stället den teoretiska, förenklade modell som används för att förklara det samspelet.' } },
+  { id: 42, term: 'Efterfrågekurvan', definition: 'Visar grafiskt den mängd av en produkt som efterfrågas vid olika priser.', answers: ['efterfrågekurvan'],
+    sentence: 'Kurvan som visar hur mycket konsumenterna vill köpa vid olika priser kallas _____.',
+    scenario: 'I ett diagram lutar en av linjerna nedåt, från högt pris och liten mängd till lågt pris och stor mängd, och visar hur mycket kunderna vill handla vid varje prisnivå.',
+    ickeExempel: { korrekt: 'Den nedåtlutande linjen i diagrammet, som visar att kunderna vill köpa mer ju lägre priset är, kallas efterfrågekurvan.', icke: 'Den uppåtlutande linjen i diagrammet, som visar att säljarna vill sälja mer ju högre priset är, kallas efterfrågekurvan.', forklaring: 'Den uppåtlutande linjen kallas utbudskurvan – efterfrågekurvan lutar i stället nedåt, eftersom kunderna vill köpa mer när priset är lågt.' } },
+  { id: 43, term: 'Utbudskurvan', definition: 'Visar grafiskt den mängd av en produkt som bjuds ut vid olika priser.', answers: ['utbudskurvan'],
+    sentence: 'Kurvan som visar hur mycket företagen vill sälja vid olika priser kallas _____.',
+    scenario: 'I samma diagram lutar den andra linjen uppåt, från lågt pris och liten mängd till högt pris och stor mängd, och visar hur mycket odlarna vill sälja vid varje prisnivå.',
+    ickeExempel: { korrekt: 'Den uppåtlutande linjen i diagrammet, som visar att odlarna vill sälja mer ju högre priset är, kallas utbudskurvan.', icke: 'Den nedåtlutande linjen i diagrammet, som visar att kunderna vill köpa mer ju lägre priset är, kallas utbudskurvan.', forklaring: 'Den nedåtlutande linjen kallas efterfrågekurvan – utbudskurvan lutar i stället uppåt, eftersom säljarna vill sälja mer när priset är högt.' } },
+  { id: 44, term: 'Jämviktspris (marknadspris)', definition: 'Det pris där efterfrågan och utbudet är lika på en marknad, dvs. att det då varken är brist eller överskott på en viss produkt.', answers: ['jämviktspris', 'marknadspris', 'jämviktspris (marknadspris)'],
+    sentence: 'Priset där efterfrågan och utbudet är precis lika stora, utan vare sig brist eller överskott, kallas _____.',
+    scenario: 'Vid en viss prisnivå blir alla jordgubbar sålda samtidigt som ingen kund lämnas utan – utbudet och efterfrågan möts exakt i skärningspunkten mellan de två kurvorna.',
+    ickeExempel: { korrekt: 'Det pris där utbud och efterfrågan möts exakt, så att alla jordgubbar blir sålda utan vare sig brist eller överskott, kallas jämviktspris.', icke: 'Jämviktspris är det pris som staten bestämmer för att skydda konsumenterna från för höga priser.', forklaring: 'Ett pris som staten bestämmer är en form av prisreglering – jämviktspriset uppstår i stället naturligt genom samspelet mellan utbud och efterfrågan på en fri marknad.' } },
+  { id: 45, term: 'Laissez-faire', definition: 'Ett uttryck för uppfattningen att staten och politikerna i så stor utsträckning som möjligt bör lämna marknadsekonomin i fred (laissez faire = låt vara).', answers: ['laissez-faire'],
+    sentence: 'Uppfattningen att staten och politikerna så mycket som möjligt bör lämna marknaden i fred kallas _____.',
+    scenario: 'En debattör argumenterar för att politikerna ska undvika att lägga sig i priser och företagens beslut, och i stället låta marknaden sköta sig själv.',
+    ickeExempel: { korrekt: 'Att argumentera för att staten så lite som möjligt ska blanda sig i marknadens priser och beslut är ett uttryck för laissez-faire.', icke: 'Att argumentera för att staten aktivt bör styra priser och produktion för att skydda konsumenterna är ett uttryck för laissez-faire.', forklaring: 'Att staten aktivt styr priser och produktion är motsatsen till laissez-faire – laissez-faire innebär i stället att staten ska lämna marknadsekonomin så fri som möjligt.' } },
+  { id: 46, term: 'Inflation', definition: 'En allmän prisökning i samhällsekonomin. Motsats: deflation.', answers: ['inflation'],
+    sentence: 'En allmän ökning av priserna i samhällsekonomin kallas _____.',
+    scenario: 'Priset på en matkasse stiger stadigt från år till år, samtidigt som priserna på det mesta annat i samhället också blir dyrare.',
+    ickeExempel: { korrekt: 'En allmän och stadig ökning av priserna på varor och tjänster i samhället är ett exempel på inflation.', icke: 'En allmän och stadig sänkning av priserna på varor och tjänster i samhället är ett exempel på inflation.', forklaring: 'En allmän sänkning av priserna kallas deflation, inte inflation – inflation innebär tvärtom att priserna stiger.' } },
+  { id: 47, term: 'Konsumentprisindex (KPI)', definition: 'Ett mått på den genomsnittliga prisutvecklingen för varor och tjänster som hushållen konsumerar. Statistiska Centralbyrån mäter KPI genom att regelbundet samla in priser på ett urval av varor och tjänster som hushåll konsumerar och sedan jämföra förändringarna över tid.', answers: ['konsumentprisindex', 'kpi', 'konsumentprisindex (kpi)'],
+    sentence: 'Måttet som visar hur priserna på en korg av varor och tjänster förändras över tid kallas _____.',
+    scenario: 'En myndighet samlar varje månad in priser på ett urval varor och tjänster som hushållen brukar köpa, för att jämföra hur priserna förändrats jämfört med samma tid förra året.',
+    ickeExempel: { korrekt: 'Det mått som Statistiska centralbyrån räknar fram genom att jämföra priset på en korg av vanliga varor över tid är konsumentprisindex.', icke: 'Konsumentprisindex är det mått som visar hur mycket pengar ett hushåll har kvar att spendera efter att räkningarna är betalda.', forklaring: 'Det som visar hur mycket ett hushåll har kvar att spendera är snarare disponibel inkomst – konsumentprisindex mäter i stället hur priserna på varor och tjänster förändras över tid.' } },
+  { id: 48, term: 'Reallön', definition: 'Är skillnaden mellan din nominella lön (lönen i kronor) och inflationen. Anger hur mycket varor och tjänster du kan köpa för din lön, dvs. vilken köpkraft pengarna har.', answers: ['reallön'],
+    sentence: 'Det som avgör hur mycket varor och tjänster du faktiskt kan köpa för din lön, med hänsyn till inflationen, kallas din _____.',
+    scenario: 'En anställd får 3 procent högre lön ett år, men eftersom priserna samtidigt stiger med 5 procent kan hen ändå köpa mindre för sin lön än året innan.',
+    ickeExempel: { korrekt: 'Det mått som visar att en löneökning på 3 procent ändå kan innebära minskad köpkraft om inflationen är högre är reallönen.', icke: 'Reallönen är den summa pengar i kronor som står angiven på lönebeskedet innan man tar hänsyn till prisökningar.', forklaring: 'Beloppet i kronor på lönebeskedet är den nominella lönen – reallönen tar i stället hänsyn till inflationen och visar den verkliga köpkraften.' } },
+  { id: 49, term: 'Deflation', definition: 'En allmän sänkning av priserna i samhällsekonomin. Motsats: inflation.', answers: ['deflation'],
+    sentence: 'En allmän sänkning av priserna i samhällsekonomin kallas _____.',
+    scenario: 'Priserna i butikerna sjunker stadigt år efter år, vilket gör att många väljer att vänta med sina köp eftersom varorna kan bli ännu billigare i morgon.',
+    ickeExempel: { korrekt: 'En allmän och stadig sänkning av priserna, som gör att många väljer att vänta med sina köp, är ett exempel på deflation.', icke: 'En allmän och stadig ökning av priserna, som gör att pengarna blir mindre värda över tid, är ett exempel på deflation.', forklaring: 'En allmän ökning av priserna kallas inflation, inte deflation – deflation innebär tvärtom att priserna sjunker.' } },
 ];
+
+function getFeedback(score, total) {
+  const p = score / total;
+  if (p >= 0.9) return 'Redo för provet! Fantastiskt bra!';
+  if (p >= 0.7) return 'Bra jobbat! Öva lite till på de du missade.';
+  if (p >= 0.5) return 'Halvvägs! Fortsätt träna.';
+  return 'Öva lite till – du är på rätt väg!';
+}
 
 // ════════════════════════════════════════════════════════════
 // PROGRESS- OCH RANK-SYSTEM (sessionStorage, ingen backend)
-// Lucktext, Scenario och Icke-ex. byggs ut i nästa steg — tills
-// dess är de inaktiva platshållare i vynavigeringen.
 // ════════════════════════════════════════════════════════════
 const VIEWS = ['Lista', 'Flashcards', 'Lucktext', 'Scenario', 'Icke-ex.'];
-const ACTIVE_VIEWS = { 'Lista': true, 'Flashcards': true, 'Lucktext': false, 'Scenario': false, 'Icke-ex.': false };
+const ACTIVE_VIEWS = { 'Lista': true, 'Flashcards': true, 'Lucktext': true, 'Scenario': true, 'Icke-ex.': true };
 const SCORE_VIEWS = ['Lucktext', 'Scenario', 'Icke-ex.'];
 const PROGRESS_KEY = 'sh1a1_samhallsekonomi_progress';
 const RANK_SALT = 'sh1a1samhallsekonomisakerhet';
@@ -360,12 +515,330 @@ function FlashcardView({ onComplete }) {
   );
 }
 
-function PlaceholderView({ label }) {
+function LucktextView({ onComplete }) {
+  const total = concepts.length;
+  const [inputs, setInputs] = useState(() => concepts.map(() => ''));
+  const [attempts, setAttempts] = useState(() => concepts.map(() => 0));
+  const [statuses, setStatuses] = useState(() => concepts.map(() => null));
+  const normalize = s => s.trim().toLowerCase();
+
+  const submit = (i) => {
+    if (statuses[i] === 'correct' || statuses[i] === 'wrong-final') return;
+    const val = normalize(inputs[i]);
+    if (!val) return;
+    if (concepts[i].answers.includes(val)) {
+      const next = [...statuses]; next[i] = 'correct'; setStatuses(next);
+    } else {
+      const a = [...attempts]; a[i] += 1; setAttempts(a);
+      const next = [...statuses]; next[i] = a[i] >= 2 ? 'wrong-final' : 'wrong-once'; setStatuses(next);
+    }
+  };
+
+  const rattaAlla = () => {
+    setStatuses(prev => prev.map(s => (s === 'correct' ? 'correct' : 'wrong-final')));
+  };
+
+  const borjaOm = () => {
+    setInputs(concepts.map(() => ''));
+    setAttempts(concepts.map(() => 0));
+    setStatuses(concepts.map(() => null));
+  };
+
+  const correctCount = statuses.filter(s => s === 'correct').length;
+  const allDone = statuses.every(s => s === 'correct' || s === 'wrong-final');
+
+  useEffect(() => {
+    if (allDone) onComplete(Math.round((correctCount / total) * 100));
+  }, [allDone]);
+
   return (
-    <div className="flex flex-col items-center justify-center text-center py-16">
-      <div className="text-4xl mb-4">🚧</div>
-      <p className="text-lg font-bold text-slate-500 font-fredoka">{label} kommer snart</p>
-      <p className="text-slate-400 text-sm mt-1">Den här vyn byggs ut i nästa steg.</p>
+    <div>
+      <div className="bg-white rounded-2xl shadow-sm p-4 mb-6 border border-slate-200">
+        <p className="text-xs uppercase tracking-wide text-slate-400 font-fredoka font-bold mb-2">Begreppsbank</p>
+        <div className="flex flex-wrap gap-2">
+          {concepts.map((c, i) => (
+            <span
+              key={c.id}
+              className={`px-3 py-1 rounded-full text-sm border border-slate-200 bg-slate-50 ${statuses[i] === 'correct' ? 'line-through text-slate-300' : 'text-slate-600'}`}
+            >
+              {c.term}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        {concepts.map((c, i) => {
+          const [before, after] = c.sentence.split('_____');
+          const status = statuses[i];
+          const boxStyle =
+            status === 'correct'
+              ? { background: '#dcfce7', borderColor: '#16a34a' }
+              : status === 'wrong-final'
+                ? { background: '#fee2e2', borderColor: '#dc2626' }
+                : { borderColor: '#e2e8f0' };
+          return (
+            <div key={c.id} className="rounded-2xl p-4 border-2 bg-white transition-colors" style={boxStyle}>
+              <p className="text-slate-700 leading-relaxed mb-1">
+                <span className="font-bold font-fredoka text-slate-400 mr-1">{i + 1}.</span>
+                {before}
+                <input
+                  type="text"
+                  value={inputs[i]}
+                  disabled={status === 'correct' || status === 'wrong-final'}
+                  onChange={e => {
+                    const val = e.target.value;
+                    const next = [...inputs]; next[i] = val; setInputs(next);
+                  }}
+                  onKeyDown={e => { if (e.key === 'Enter') submit(i); }}
+                  className="inline-block mx-1 px-2 py-1 w-40 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 text-slate-800 disabled:bg-transparent disabled:border-transparent align-middle"
+                  style={{ '--tw-ring-color': PRIMARY }}
+                />
+                {after}
+              </p>
+              {status === 'wrong-once' && (
+                <p className="text-orange-500 text-sm font-fredoka">Är du säker att du stavat rätt?</p>
+              )}
+              {status === 'correct' && (
+                <p className="text-sm mt-1" style={{ color: '#16a34a' }}>✓ Rätt! {c.definition}</p>
+              )}
+              {status === 'wrong-final' && (
+                <p className="text-sm mt-1" style={{ color: '#dc2626' }}>Rätt svar: <span className="font-bold">{c.term}</span> — {c.definition}</p>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="flex flex-col items-center gap-4 mt-6">
+        {!allDone && (
+          <button onClick={rattaAlla} className="bg-slate-900 text-white px-8 py-3 rounded-2xl font-bold font-fredoka hover:bg-slate-800 transition-colors">
+            Rätta alla
+          </button>
+        )}
+        {allDone && (
+          <div className="bg-white border-2 rounded-3xl p-6 text-center w-full max-w-sm shadow-sm" style={{ borderColor: PRIMARY }}>
+            <p className="text-2xl font-bold" style={{ color: PRIMARY_TEXT }}>{correctCount} / {total} rätt</p>
+            <p className="text-slate-500 mt-2 font-fredoka">{getFeedback(correctCount, total)}</p>
+          </div>
+        )}
+        <button onClick={borjaOm} className="text-slate-400 text-xs hover:text-slate-600 transition-colors underline font-fredoka">↺ Börja om</button>
+      </div>
+    </div>
+  );
+}
+
+function ScenarioView({ onComplete }) {
+  const total = concepts.length;
+
+  const buildOptions = (correctIdx) => {
+    const others = concepts.map((_, i) => i).filter(i => i !== correctIdx);
+    const distractors = shuffleArray(others).slice(0, 3);
+    return shuffleArray([correctIdx, ...distractors]);
+  };
+
+  const makeRound = () => {
+    const order = shuffleArray(concepts.map((_, i) => i));
+    return { order, options: buildOptions(order[0]) };
+  };
+
+  const [round, setRound] = useState(makeRound);
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [answered, setAnswered] = useState(false);
+  const [score, setScore] = useState(0);
+  const [done, setDone] = useState(false);
+
+  const conceptIdx = round.order[current];
+  const concept = concepts[conceptIdx];
+
+  const handleSelect = (optIdx) => {
+    if (answered) return;
+    setSelected(optIdx);
+    setAnswered(true);
+    if (optIdx === conceptIdx) setScore(sc => sc + 1);
+  };
+
+  const next = () => {
+    const nextI = current + 1;
+    if (nextI >= round.order.length) {
+      setDone(true);
+      return;
+    }
+    setRound(prev => ({ ...prev, options: buildOptions(prev.order[nextI]) }));
+    setCurrent(nextI);
+    setSelected(null);
+    setAnswered(false);
+  };
+
+  const restart = () => {
+    setRound(makeRound());
+    setCurrent(0);
+    setSelected(null);
+    setAnswered(false);
+    setScore(0);
+    setDone(false);
+  };
+
+  useEffect(() => {
+    if (done) onComplete(Math.round((score / total) * 100));
+  }, [done]);
+
+  if (done) return (
+    <div className="flex flex-col items-center gap-4">
+      <div className="bg-white border-2 rounded-3xl p-8 text-center w-full max-w-sm shadow-sm" style={{ borderColor: PRIMARY }}>
+        <p className="text-2xl font-bold" style={{ color: PRIMARY_TEXT }}>{score} / {total} rätt</p>
+        <p className="text-slate-500 mt-2 font-fredoka">{getFeedback(score, total)}</p>
+        <button onClick={restart} className="w-full mt-6 text-white px-8 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY }}>
+          Börja om
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="w-full max-w-lg mb-4">
+        <div className="flex justify-between text-xs text-slate-400 font-fredoka mb-1">
+          <span>Fråga {current + 1} av {total}</span>
+          <span>Poäng: {score}</span>
+        </div>
+        <div className="w-full bg-slate-200 rounded-full h-1.5">
+          <div className="h-1.5 rounded-full transition-all" style={{ width: `${(current / total) * 100}%`, background: PRIMARY }} />
+        </div>
+      </div>
+
+      <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 w-full max-w-lg">
+        <p className="text-slate-800 text-lg leading-relaxed mb-5">{concept.scenario}</p>
+        <p className="text-xs uppercase tracking-wide text-slate-400 font-fredoka font-bold mb-3">Vilket begrepp beskrivs?</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {round.options.map((optIdx) => {
+            const isCorrect = optIdx === conceptIdx;
+            const isSelected = optIdx === selected;
+            let optStyle = { borderColor: '#e2e8f0' };
+            if (answered && isCorrect) optStyle = { background: '#dcfce7', borderColor: '#16a34a' };
+            else if (answered && isSelected && !isCorrect) optStyle = { background: '#fee2e2', borderColor: '#dc2626' };
+            return (
+              <button
+                key={optIdx}
+                onClick={() => handleSelect(optIdx)}
+                disabled={answered}
+                className="text-left px-4 py-3 rounded-2xl border-2 font-medium text-slate-700 transition-colors"
+                style={optStyle}
+              >
+                {concepts[optIdx].term}
+              </button>
+            );
+          })}
+        </div>
+        {answered && (
+          <div className="mt-5 p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <p className="text-sm text-slate-600 leading-relaxed">
+              <span className="font-bold" style={{ color: PRIMARY_TEXT }}>{concept.term}:</span> {concept.definition}
+            </p>
+            <button onClick={next} className="w-full mt-4 text-white px-6 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY }}>
+              Nästa →
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function IckeExempelView({ onComplete }) {
+  const total = concepts.length;
+
+  const makeOpts = (c) => {
+    const flip = Math.random() > 0.5;
+    return flip
+      ? [{ text: c.ickeExempel.korrekt, isCorrect: true }, { text: c.ickeExempel.icke, isCorrect: false }]
+      : [{ text: c.ickeExempel.icke, isCorrect: false }, { text: c.ickeExempel.korrekt, isCorrect: true }];
+  };
+
+  const freshState = () => {
+    const order = shuffleArray(concepts.map((_, i) => i));
+    return { order, cur: 0, opts: makeOpts(concepts[order[0]]), answered: false, selIdx: null, score: 0, done: false };
+  };
+
+  const [s, setS] = useState(freshState);
+
+  const handleSelect = (idx) => {
+    if (s.answered) return;
+    const correct = s.opts[idx].isCorrect;
+    setS(prev => ({ ...prev, answered: true, selIdx: idx, score: correct ? prev.score + 1 : prev.score }));
+  };
+
+  const next = () => {
+    setS(prev => {
+      const nextCur = prev.cur + 1;
+      if (nextCur >= prev.order.length) return { ...prev, done: true };
+      return { ...prev, cur: nextCur, opts: makeOpts(concepts[prev.order[nextCur]]), answered: false, selIdx: null };
+    });
+  };
+
+  const restart = () => setS(freshState());
+
+  useEffect(() => {
+    if (s.done) onComplete(Math.round((s.score / total) * 100));
+  }, [s.done]);
+
+  if (s.done) return (
+    <div className="flex flex-col items-center gap-4">
+      <div className="bg-white border-2 rounded-3xl p-8 text-center w-full max-w-sm shadow-sm" style={{ borderColor: PRIMARY }}>
+        <p className="text-2xl font-bold" style={{ color: PRIMARY_TEXT }}>{s.score} / {total} rätt</p>
+        <p className="text-slate-500 mt-2 font-fredoka">{getFeedback(s.score, total)}</p>
+        <button onClick={restart} className="w-full mt-6 text-white px-8 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY }}>
+          Börja om
+        </button>
+      </div>
+    </div>
+  );
+
+  const concept = concepts[s.order[s.cur]];
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="w-full max-w-lg mb-4">
+        <div className="flex justify-between text-xs text-slate-400 font-fredoka mb-1">
+          <span>Begrepp {s.cur + 1} av {total}</span>
+          <span>Poäng: {s.score}</span>
+        </div>
+        <div className="w-full bg-slate-200 rounded-full h-1.5">
+          <div className="h-1.5 rounded-full transition-all" style={{ width: `${(s.cur / total) * 100}%`, background: PRIMARY }} />
+        </div>
+      </div>
+
+      <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 w-full max-w-lg">
+        <p className="text-xs uppercase tracking-wide text-slate-400 font-fredoka font-bold mb-2">Vilket exempel stämmer på begreppet?</p>
+        <p className="text-2xl font-bold mb-5" style={{ color: PRIMARY_TEXT }}>{concept.term}</p>
+        <div className="flex flex-col gap-3">
+          {s.opts.map((opt, idx) => {
+            let optStyle = { borderColor: '#e2e8f0' };
+            if (s.answered && opt.isCorrect) optStyle = { background: '#dcfce7', borderColor: '#16a34a' };
+            else if (s.answered && idx === s.selIdx && !opt.isCorrect) optStyle = { background: '#fee2e2', borderColor: '#dc2626' };
+            return (
+              <button
+                key={idx}
+                onClick={() => handleSelect(idx)}
+                disabled={s.answered}
+                className="text-left px-4 py-3 rounded-2xl border-2 text-slate-700 leading-relaxed transition-colors"
+                style={optStyle}
+              >
+                <span className="font-bold font-fredoka mr-2">{idx === 0 ? 'A' : 'B'}</span>{opt.text}
+              </button>
+            );
+          })}
+        </div>
+        {s.answered && (
+          <div className="mt-5 p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <p className="text-sm text-slate-600 leading-relaxed">{concept.ickeExempel.forklaring}</p>
+            <button onClick={next} className="w-full mt-4 text-white px-6 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY }}>
+              Nästa →
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -479,6 +952,9 @@ function App() {
 
   const completeLista = useCallback(() => markComplete('Lista'), [markComplete]);
   const completeFlashcards = useCallback(() => markComplete('Flashcards'), [markComplete]);
+  const completeLucktext = useCallback((pct) => markComplete('Lucktext', pct), [markComplete]);
+  const completeScenario = useCallback((pct) => markComplete('Scenario', pct), [markComplete]);
+  const completeIckeEx = useCallback((pct) => markComplete('Icke-ex.', pct), [markComplete]);
 
   const rank = computeRank(progress);
   const completedCount = VIEWS.filter(v => progress.completed[v]).length;
@@ -510,9 +986,9 @@ function App() {
       <div className="pb-16">
         {activeView === 'Lista' && <ListView onComplete={completeLista} />}
         {activeView === 'Flashcards' && <FlashcardView key="flashcards" onComplete={completeFlashcards} />}
-        {activeView === 'Lucktext' && <PlaceholderView label="Lucktext" />}
-        {activeView === 'Scenario' && <PlaceholderView label="Scenario" />}
-        {activeView === 'Icke-ex.' && <PlaceholderView label="Icke-exempel" />}
+        {activeView === 'Lucktext' && <LucktextView onComplete={completeLucktext} />}
+        {activeView === 'Scenario' && <ScenarioView onComplete={completeScenario} />}
+        {activeView === 'Icke-ex.' && <IckeExempelView onComplete={completeIckeEx} />}
       </div>
 
       <footer className="text-center text-slate-400 italic text-sm pb-8">
