@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Samhällsekonomins grunder – Quiz | Samhällskunskap 1a1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #047857;
+      --primary-btn: #10b981;
+      --primary-light: #d1fae5;
+      --primary-dark: #065f46;
+      --correct-bg: #dcfce7;
+      --correct-border: #16a34a;
+      --correct-text: #16a34a;
+      --wrong-bg: #fee2e2;
+      --wrong-border: #dc2626;
+      --wrong-text: #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'EB Garamond', Georgia, serif; background: #f0fdf4; min-height: 100vh; color: #1e293b; }
+
+    a.back-btn {
+      display: inline-block; padding: 8px 16px; color: var(--primary-dark);
+      text-decoration: none; font-size: 0.95rem; position: fixed;
+      top: 14px; left: 14px; z-index: 200; border-radius: 8px; transition: background 0.2s;
+    }
+    a.back-btn:hover { background: var(--primary-light); }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Start ── */
+    #screen-start { max-width: 560px; margin: 0 auto; padding: 90px 24px 40px; text-align: center; }
+    .badge {
+      display: inline-block; background: var(--primary-light); color: var(--primary-dark);
+      padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;
+      letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 20px;
+    }
+    #screen-start h1 { font-size: 2.4rem; font-weight: 600; font-style: italic; color: #0f172a; margin-bottom: 8px; }
+    #screen-start .subtitle { font-size: 1.05rem; color: #64748b; margin-bottom: 32px; }
+    .info-cards { display: flex; gap: 12px; justify-content: center; margin-bottom: 36px; flex-wrap: wrap; }
+    .info-card {
+      background: white; border: 1px solid #a7f3d0; border-radius: 12px;
+      padding: 16px 20px; text-align: center; flex: 1; min-width: 100px; max-width: 150px;
+    }
+    .info-card .num { font-size: 1.5rem; font-weight: 600; color: var(--primary-dark); }
+    .info-card .lbl { font-size: 0.78rem; color: #94a3b8; margin-top: 2px; }
+
+    /* ── Quiz ── */
+    #screen-quiz { max-width: 700px; margin: 0 auto; padding: 70px 20px 60px; }
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .timer {
+      background: white; border: 1px solid #a7f3d0; border-radius: 20px;
+      padding: 5px 14px; font-size: 0.92rem; color: #475569; font-variant-numeric: tabular-nums;
+    }
+    .score-pill { background: var(--primary-light); color: var(--primary-dark); border-radius: 20px; padding: 5px 14px; font-size: 0.92rem; font-weight: 600; }
+    .progress-wrap { background: #a7f3d0; border-radius: 4px; height: 6px; overflow: hidden; margin-bottom: 6px; }
+    .progress-bar { background: var(--primary-btn); height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+    .q-counter { font-size: 0.82rem; color: #94a3b8; text-align: right; margin-bottom: 22px; }
+    .q-type-tag {
+      display: inline-block; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--primary-dark); background: var(--primary-light);
+      padding: 3px 10px; border-radius: 20px; margin-bottom: 12px;
+    }
+    .q-text { font-size: 1.25rem; font-weight: 600; line-height: 1.55; color: #0f172a; margin-bottom: 22px; }
+    .opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+    .opt-btn {
+      background: white; border: 2px solid #a7f3d0; border-radius: 12px;
+      padding: 13px 18px; text-align: left; font-size: 1rem; font-family: inherit;
+      cursor: pointer; transition: border-color 0.15s, background 0.15s; line-height: 1.45;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--primary-btn); background: var(--primary-light); }
+    .opt-btn:disabled { cursor: default; }
+    .opt-btn.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); font-weight: 600; }
+    .opt-btn.wrong   { background: var(--wrong-bg);   border-color: var(--wrong-border);   color: var(--wrong-text); }
+    .opt-btn.dimmed  { opacity: 0.4; }
+    .nav-row { display: flex; gap: 12px; align-items: center; }
+    .btn-back { background: white; border: 2px solid #a7f3d0; border-radius: 10px; padding: 10px 20px; font-family: inherit; font-size: 0.9rem; color: #64748b; cursor: pointer; }
+    .btn-back:hover { border-color: #10b981; }
+    .btn-next { background: var(--primary-btn); border: none; border-radius: 10px; padding: 10px 28px; font-family: inherit; font-size: 0.9rem; font-weight: 600; color: white; cursor: pointer; margin-left: auto; transition: background 0.15s; }
+    .btn-next:hover { background: #059669; }
+
+    /* ── Modal ── */
+    #modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 500; padding: 20px; }
+    #modal-overlay.hidden { display: none; }
+    .modal-box { background: white; border-radius: 20px; padding: 32px; max-width: 520px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+    .modal-icon    { font-size: 2.6rem; margin-bottom: 10px; }
+    .modal-verdict { font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; }
+    .modal-verdict.c { color: var(--correct-text); }
+    .modal-verdict.w { color: var(--wrong-text); }
+    .modal-expl { font-size: 0.98rem; color: #475569; line-height: 1.7; margin-bottom: 24px; }
+
+    /* ── Result ── */
+    #screen-result { max-width: 700px; margin: 0 auto; padding: 80px 20px 80px; }
+    .res-header { text-align: center; margin-bottom: 30px; }
+    .score-ring { width: 120px; height: 120px; border-radius: 50%; border: 5px solid var(--primary-btn); display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 18px; }
+    .score-ring .rnum { font-size: 2rem; font-weight: 600; color: var(--primary-dark); line-height: 1; }
+    .score-ring .rlbl { font-size: 0.72rem; color: #94a3b8; }
+    .res-title  { font-size: 1.8rem; font-weight: 600; font-style: italic; margin-bottom: 6px; }
+    .res-msg    { font-size: 1rem; color: #64748b; margin-bottom: 4px; }
+    .res-time   { font-size: 0.85rem; color: #94a3b8; margin-bottom: 28px; }
+    .stats-row  { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+    .stat-box   { flex: 1; min-width: 80px; background: white; border: 1px solid #a7f3d0; border-radius: 12px; padding: 14px; text-align: center; }
+    .stat-box .snum { font-size: 1.6rem; font-weight: 600; }
+    .stat-box .slbl { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
+    .stat-box.cs .snum { color: var(--correct-text); }
+    .stat-box.ws .snum { color: var(--wrong-text); }
+    .section-hd { font-size: 1.05rem; font-weight: 600; color: #0f172a; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #a7f3d0; }
+    .missed-section { margin-bottom: 32px; }
+    .missed-item { background: var(--wrong-bg); border-left: 4px solid var(--wrong-border); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-size: 0.92rem; }
+    .facit-item { background: white; border: 1px solid #a7f3d0; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
+    .facit-item.fc { border-left: 4px solid var(--correct-border); }
+    .facit-item.fw { border-left: 4px solid var(--wrong-border); }
+    .fi-num { font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .fi-q   { font-size: 0.93rem; font-weight: 600; color: #0f172a; margin-bottom: 8px; line-height: 1.4; }
+    .fi-row { font-size: 0.88rem; padding: 2px 0; }
+    .fi-row .lbl { color: #94a3b8; }
+    .fi-row.ya-ok  { color: var(--correct-text); }
+    .fi-row.ya-bad { color: var(--wrong-text); }
+    .fi-row.ra     { color: var(--correct-text); font-weight: 600; margin-top: 2px; }
+
+    .btn-primary { display: inline-block; background: var(--primary-btn); color: white; border: none; border-radius: 12px; padding: 13px 36px; font-size: 1.05rem; font-family: inherit; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+    .btn-primary:hover { background: #059669; transform: translateY(-1px); }
+    .btn-primary:active { transform: none; }
+
+    @media (max-width: 768px) {
+      #screen-quiz { padding-top: 60px; }
+      .quiz-header { flex-wrap: wrap; gap: 8px; }
+      .nav-row { flex-wrap: wrap; }
+      .btn-back, .btn-next { flex: 1; min-width: 120px; text-align: center; margin-left: 0; }
+      .nav-row { justify-content: space-between; }
+    }
+    @media (max-width: 500px) {
+      #screen-start h1 { font-size: 1.85rem; }
+      .q-text { font-size: 1.1rem; }
+      .info-cards { gap: 8px; }
+      .info-card { padding: 12px 10px; min-width: 88px; }
+    }
+  </style>
+</head>
+<body>
+
+<a href="index.html" class="back-btn" id="back-link">← Tillbaka till startsidan</a>
+
+<!-- ═══════════ START ═══════════ -->
+<div id="screen-start" class="screen active">
+  <div class="badge">Samhällskunskap 1a1 · Samhällsekonomins grunder</div>
+  <h1>Quiz</h1>
+  <p class="subtitle">30 frågor om hushåll/företag/marknad, produktionsfaktorer, BNP, näringslivet, utrikeshandel, plattforms- och delningsekonomi, arbetsmarknad och kollektivavtal, jämlikhet/jämställdhet i arbetslivet, pengar, prisbildning samt inflation/deflation</p>
+  <div class="info-cards">
+    <div class="info-card"><div class="num">30</div><div class="lbl">Frågor</div></div>
+    <div class="info-card"><div class="num">MC + S/F</div><div class="lbl">Frågetyper</div></div>
+    <div class="info-card"><div class="num">F1–F16</div><div class="lbl">Faktafrågor</div></div>
+  </div>
+  <button class="btn-primary" onclick="startQuiz()">Starta Quiz →</button>
+</div>
+
+<!-- ═══════════ QUIZ ═══════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-header">
+    <div class="timer" id="timer">⏱ 0:00</div>
+    <div class="score-pill" id="score-pill">Poäng: 0</div>
+  </div>
+  <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+  <div class="q-counter" id="q-counter">Fråga 1 av 30</div>
+  <div class="q-type-tag" id="q-type-tag"></div>
+  <div class="q-text" id="q-text"></div>
+  <div class="opts" id="opts"></div>
+  <div class="nav-row">
+    <button class="btn-back" id="btn-back" onclick="goBack()" style="display:none">← Bakåt</button>
+    <button class="btn-next" id="btn-next" onclick="goNext()" style="display:none">Nästa →</button>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL ═══════════ -->
+<div id="modal-overlay" class="hidden">
+  <div class="modal-box">
+    <div class="modal-icon"    id="modal-icon"></div>
+    <div class="modal-verdict" id="modal-verdict"></div>
+    <div class="modal-expl"    id="modal-expl"></div>
+    <button class="btn-primary" onclick="closeModal()">Nästa fråga →</button>
+  </div>
+</div>
+
+<!-- ═══════════ RESULT ═══════════ -->
+<div id="screen-result" class="screen">
+  <div class="res-header">
+    <div class="score-ring">
+      <div class="rnum" id="r-score"></div>
+      <div class="rlbl">poäng</div>
+    </div>
+    <div class="res-title" id="r-title"></div>
+    <div class="res-msg"   id="r-msg"></div>
+    <div class="res-time"  id="r-time"></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-box cs"><div class="snum" id="s-correct">0</div><div class="slbl">Rätt</div></div>
+    <div class="stat-box ws"><div class="snum" id="s-wrong">0</div><div class="slbl">Fel</div></div>
+    <div class="stat-box"><div class="snum" id="s-pct">0%</div><div class="slbl">Andel rätt</div></div>
+  </div>
+  <div class="missed-section" id="missed-section"></div>
+  <div class="section-hd">Fullständigt facit</div>
+  <div id="facit-list"></div>
+  <div style="text-align:center;margin-top:32px">
+    <button class="btn-primary" onclick="restartQuiz()">↺ Gör om quizet</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// SMART TILLBAKA-NAVIGERING
+// ════════════════════════════════════════════════════════════
+document.getElementById('back-link').addEventListener('click', function (e) {
+  e.preventDefault();
+  const ref = document.referrer;
+  if (ref && ref.indexOf(location.hostname) !== -1) {
+    history.back();
+  } else {
+    window.location.href = 'index.html';
+  }
+});
+
+// ════════════════════════════════════════════════════════════
+// QUESTION DATA — 30 frågor (mc = flerval 4 alt, tf = sant/falskt)
+// Frågor från samhallsekonomins_grunder_uppgifter.md (Faktafrågor 1–16),
+// svar hämtade ur samhallsekonomins_grunder_material.md
+// ════════════════════════════════════════════════════════════
+const QUESTIONS = [
+
+  {
+    type: 'mc',
+    q: 'Vilka är de tre produktionsfaktorer som enligt materialet krävs för att tillverka något?',
+    opts: [
+      'Naturresurser, arbete och realkapital, som tillsammans utgör de medel som används för att framställa produkter.',
+      'Naturresurser, kapitalvaror och konsumtionsvaror, som tillsammans utgör de medel som används för att framställa produkter.',
+      'Arbete, realkapital och humankapital, som tillsammans utgör de medel som används för att framställa produkter.',
+      'Naturresurser, arbete och finanskapital, som tillsammans utgör de medel som används för att framställa produkter.'
+    ],
+    correct: 0,
+    expl: 'Produktionsfaktorerna är naturresurser (råvaror som jord, skog och mineraler), arbete (människors kunskaper och färdigheter) och realkapital (maskiner och redskap som används i produktionen).'
+  },
+  {
+    type: 'mc',
+    q: 'Vad är realkapital enligt materialets beskrivning av produktionsfaktorerna?',
+    opts: [
+      'De maskiner och redskap, till exempel stegar, industrirobotar och fabriksbyggnader, som används i produktionen.',
+      'De råvaror och naturtillgångar, till exempel jord, skog och mineraler, som förädlas till färdiga produkter.',
+      'De kunskaper och färdigheter, till exempel kroppsstyrka och hjärnkraft, som människor bidrar med i arbetet.',
+      'De pengar och aktier, till exempel sparkonton och fonder, som företag investerar i sin produktion.'
+    ],
+    correct: 0,
+    expl: 'Realkapital är de maskiner och redskap som används i produktionen, allt från enkla redskap som stege och spade till industrirobotar, datorsystem, fabriksbyggnader och transportsystem.'
+  },
+  {
+    type: 'tf',
+    q: 'Människans intellektuella och sociala förmågor räknas som en särskild ekonomisk tillgång som kallas humankapital.',
+    correct: true,
+    expl: 'Stämmer. Med maskinkraftens intåg har människans inre förmågor, den så kallade hjärnkraften, fått allt större betydelse, och detta räknas som en särskild ekonomisk tillgång: humankapital.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad vill gungbrädan i materialet illustrera?',
+    opts: [
+      'Att våra behov väger tungt på ena sidan, medan samhällets begränsade resurser finns på den andra sidan.',
+      'Att hushållens efterfrågan väger tungt på ena sidan, medan företagens utbud finns på den andra sidan.',
+      'Att konsumtion väger tungt på ena sidan, medan investeringar finns uppvägda på den andra sidan.',
+      'Att naturresurserna väger tungt på ena sidan, medan arbetskraften finns uppvägd på den andra sidan.'
+    ],
+    correct: 0,
+    expl: 'Gungbrädan illustrerar att våra behov väger tungt på ena sidan, medan samhällets samlade och begränsade resurser finns på den andra sidan – vi måste hushålla med de knappa resurserna.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad illustrerar potatisodlarexemplet i materialet om skillnaden mellan konsumtion och investering?',
+    opts: [
+      'Att en del av skörden äts upp direkt (konsumtion) medan en del sparas som sättpotatis för framtida skörd (investering).',
+      'Att en del av skörden säljs på marknaden (konsumtion) medan resten skänks bort som gåva (investering).',
+      'Att hela skörden alltid äts upp direkt (konsumtion) eftersom investering enligt exemplet inte är möjlig alls.',
+      'Att en del av skörden bränns som bränsle (konsumtion) medan resten exporteras till andra länder (investering).'
+    ],
+    correct: 0,
+    expl: 'Potatisodlaren kan lägga undan en del av skörden som sättpotatis för nästa års skörd (investering) och använda resten som matpotatis (konsumtion). Investering innebär att avstå från konsumtion i dag för att säkra eller öka konsumtionen i morgon.'
+  },
+  {
+    type: 'tf',
+    q: 'Linjär ekonomi bygger på principen att återvinna och återanvända produkter, medan cirkulär ekonomi följer mönstret producera–konsumera–släng.',
+    correct: false,
+    expl: 'Det är tvärtom: cirkulär ekonomi (kretsloppsekonomi) bygger på återvinning och återbruk, medan den linjära ekonomin följer principen producera–konsumera–släng.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad står förkortningen BNP för och vad mäter den?',
+    opts: [
+      'Bruttonationalprodukten, som anger värdet av alla färdiga varor och tjänster som produceras i ett land under ett år.',
+      'Bruttonationalprodukten, som anger antalet anställda inom näringslivets tre olika produktionssektorer under ett kalenderår.',
+      'Balanserad nationalproduktion, som anger värdet av de varor och tjänster som exporteras till andra länder.',
+      'Bruttonationalprodukten, som anger den genomsnittliga inkomsten per hushåll i landet under ett kalenderår.'
+    ],
+    correct: 0,
+    expl: 'BNP står för bruttonationalprodukten och anger värdet av alla färdiga varor och tjänster som produceras i ett land under ett år.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilka tre delar består det svenska näringslivet av enligt materialet?',
+    opts: [
+      'Privat näringsliv, kooperation samt statliga och kommunala bolag – det är hur materialet delar in näringslivet.',
+      'Naturbruk, industri samt tjänstesektorn – det är hur materialet delar in näringslivet i produktionssektorer.',
+      'Jordbrukssektorn, industrisektorn samt den offentliga sektorn – det är hur materialet delar in näringslivet.',
+      'Handel, transport samt bank- och försäkringsväsende – det är hur materialet delar in näringslivet.'
+    ],
+    correct: 0,
+    expl: 'Det svenska näringslivet delas i materialet in i tre delar: privat näringsliv, kooperation (t.ex. LRF och KF) samt statliga och kommunala bolag (t.ex. LKAB, Vattenfall, Systembolaget).'
+  },
+  {
+    type: 'tf',
+    q: 'Sveriges export utgör i dag över hälften av Sveriges BNP.',
+    correct: true,
+    expl: 'Stämmer. Sedan andra världskriget har Sveriges export ökat markant och utgör i dag över hälften av Sveriges BNP – Sverige är en liten, öppen ekonomi som är beroende av export.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad kännetecknar gigekonomin och vilka risker lyfter materialet fram med den?',
+    opts: [
+      'Kortvariga, frilansbaserade uppdrag förmedlade via digitala plattformar, med risker som otrygga anställningar och bristfällig arbetsmiljö.',
+      'Långvariga, fast anställda uppdrag förmedlade via fackförbund, med risker som höga kollektivavtalade löner och pensioner.',
+      'Kortvariga, frilansbaserade uppdrag förmedlade via arbetsförmedlingen, med risker som för höga skatter och långa handläggningstider.',
+      'Långvariga, tillsvidareanställda uppdrag förmedlade via digitala plattformar, med risker som övertidsarbete och bristande semesterrätt.'
+    ],
+    correct: 0,
+    expl: 'Gigekonomin (av "gig" = engångsuppdrag) innebär kortvariga, tillfälliga och ofta frilansbaserade arbetsuppgifter som förmedlas via digitala plattformar, t.ex. Uber och Foodora. Riskerna är bland annat otrygga anställningsförhållanden, bristfälliga arbetsmiljöer och skattefusk.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad innebär delningsekonomin och vilka exempel ger materialet?',
+    opts: [
+      'Att dela med sig av sina tillgångar via digitala plattformar, till exempel att hyra ut boende (Airbnb) eller verktyg (Hygglo).',
+      'Att dela med sig av sin arbetstid via fackförbund, till exempel genom att arbeta deltid (Unionen) eller timanställning (LO).',
+      'Att dela med sig av sina besparingar via banker, till exempel genom gemensamt sparkonto (Swedbank) eller fondandelar (Avanza).',
+      'Att dela med sig av sina kunskaper via utbildningsföretag, till exempel genom föreläsningar (Folkuniversitetet) eller kurser (Komvux).'
+    ],
+    correct: 0,
+    expl: 'Delningsekonomin innebär att människor via digitala plattformar delar med sig av sina tillgångar genom att hyra ut, låna ut eller dela saker, till exempel boende via Airbnb eller redskap via Hygglo.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilka arbetsvillkor brukar kollektivavtal reglera enligt materialet?',
+    opts: [
+      'Bland annat lön, semester, arbetstid, övertidsersättning, tjänstepension, arbetsmiljö och kompetensutveckling.',
+      'Bland annat skatter, bostadsbidrag, barnbidrag, studiemedel, pensionsålder och sjukvårdsavgifter.',
+      'Bland annat bolagsskatt, moms, tullavgifter, exportstöd, importkvoter och företagsstöd.',
+      'Bland annat räntor, bolån, amorteringskrav, kreditvärdighet, bankavgifter och valutakurser.'
+    ],
+    correct: 0,
+    expl: 'Kollektivavtalen reglerar viktiga arbetsvillkor som lön, semester, arbetstid, övertidsersättning, tjänstepension, arbetsmiljö och kompetensutveckling, och kompletterar lagstiftningen.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad syftar MBL (medbestämmandelagen) till enligt materialet?',
+    opts: [
+      'Att stärka löntagarnas inflytande genom att arbetsgivaren måste informera och förhandla med facken om viktiga förändringar.',
+      'Att reglera vilka anställningsformer som finns, till exempel tillsvidareanställning och tidsbegränsad anställning på arbetsplatsen.',
+      'Att garantera en god fysisk och psykisk arbetsmiljö genom att utse skyddsombud på varje arbetsplats.',
+      'Att förbjuda diskriminering på grund av kön, etnicitet, religion, funktionsnedsättning, sexuell läggning eller ålder.'
+    ],
+    correct: 0,
+    expl: 'MBL syftar till att stärka löntagarnas inflytande på arbetsplatsen. Bland annat måste arbetsgivaren informera facken om företagets ekonomiska situation och förhandla om viktiga förändringar som omorganisationer.'
+  },
+  {
+    type: 'mc',
+    q: 'Hur många anställningsformer finns det enligt LAS, och vilka är de?',
+    opts: [
+      'Två anställningsformer – tillsvidareanställning och tidsbegränsad anställning (visstidsanställning) – vilket är det enda lagen anger.',
+      'Tre anställningsformer – tillsvidareanställning, tidsbegränsad anställning och timanställning – vilket är det lagen anger totalt.',
+      'Fyra anställningsformer – provanställning, vikariat, säsongsanställning och tillsvidareanställning – vilket är det lagen anger totalt.',
+      'Två anställningsformer – fast anställning och bemanningsanställning via ett bemanningsföretag – vilket är det lagen anger.'
+    ],
+    correct: 0,
+    expl: 'Enligt LAS finns det bara två anställningsformer: tillsvidareanställning (det som i vardagligt tal kallas "fast jobb") och tidsbegränsad anställning. Vikariat, säsongsanställning och provanställning är exempel på tidsbegränsade anställningar, inte egna anställningsformer.'
+  },
+  {
+    type: 'tf',
+    q: 'MBL reglerar vilka anställningsformer som finns på arbetsmarknaden, till exempel tillsvidareanställning och tidsbegränsad anställning.',
+    correct: false,
+    expl: 'Det är LAS (lagen om anställningsskydd) som reglerar anställningsformerna. MBL handlar i stället om löntagarnas medbestämmande, till exempel arbetsgivarens informations- och förhandlingsskyldighet gentemot facken.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilka två sakliga grunder för uppsägning anger LAS?',
+    opts: [
+      'Personliga förhållanden, det vill säga att den anställde inte sköter jobbet, samt arbetsbrist, det vill säga att arbetsuppgifter saknas.',
+      'Sjukfrånvaro, det vill säga att den anställde är långtidssjukskriven, samt föräldraledighet, det vill säga att den anställde är hemma med barn.',
+      'Facklig tillhörighet, det vill säga att den anställde bytt fackförbund, samt löneanspråk, det vill säga att den anställde begärt högre lön.',
+      'Bristande betyg, det vill säga att den anställde saknar rätt utbildning, samt ålder, det vill säga att den anställde blivit för gammal.'
+    ],
+    correct: 0,
+    expl: 'Enligt LAS måste uppsägningar ha saklig grund. De två grunderna är personliga förhållanden (den anställde sköter inte jobbet) och arbetsbrist (arbetsgivaren saknar arbetsuppgifter åt den anställde).'
+  },
+  {
+    type: 'mc',
+    q: 'Hur definieras jämlikhet i materialet?',
+    opts: [
+      'Att alla har samma rättigheter och möjligheter, oberoende av kön, ålder, religion, funktionsvariation eller annan bakgrund.',
+      'Att kvinnor och män har samma lön för samma arbete och samma möjlighet att göra karriär.',
+      'Att alla anställda omfattas av samma kollektivavtal oavsett vilket fackförbund de valt att gå med i.',
+      'Att alla har rätt till samma föräldraledighet, oavsett kön, inkomst eller anställningsform på arbetsplatsen.'
+    ],
+    correct: 0,
+    expl: 'Jämlikhet innebär att alla har samma rättigheter och möjligheter, oberoende av kön, ålder, religion, funktionsvariation eller annan bakgrund. Jämställdhet är en viktig jämlikhetsfråga men fokuserar specifikt på kvinnor och män.'
+  },
+  {
+    type: 'mc',
+    q: 'Hur definieras jämställdhet i materialet?',
+    opts: [
+      'Att kvinnor och män ska ha samma rättigheter och möjligheter inom livets alla områden, till exempel lön och karriär.',
+      'Att alla, oavsett kön, ålder eller bakgrund, ska ha samma rättigheter och möjligheter att lyckas i livet.',
+      'Att alla fackförbund ska ha lika stort inflytande i förhandlingar med arbetsgivarnas organisationer på arbetsmarknaden.',
+      'Att alla anställningsformer, oavsett om de är fasta eller tidsbegränsade, ska ge samma lön och förmåner.'
+    ],
+    correct: 0,
+    expl: 'Jämställdhet fokuserar på män och kvinnor och att de ska ha samma rättigheter och möjligheter inom livets alla områden – till exempel lika lön för samma arbete och samma möjlighet att göra karriär.'
+  },
+  {
+    type: 'tf',
+    q: 'Jämställdhet handlar specifikt om att kvinnor och män ska ha samma rättigheter, medan jämlikhet är ett bredare begrepp som gäller oavsett kön, ålder eller bakgrund.',
+    correct: true,
+    expl: 'Stämmer. Jämlikhet handlar om alla människors lika rättigheter oavsett bakgrund, medan jämställdhet specifikt handlar om lika rättigheter mellan kvinnor och män.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad syftar uttrycket "glastak" på enligt materialet?',
+    opts: [
+      'De osynliga hinder (maktstrukturer) som kvinnor möter när de strävar efter högre positioner i arbetslivet.',
+      'De formella regler som förbjuder kvinnor att inneha vissa chefspositioner inom det privata näringslivet.',
+      'De osynliga hinder som äldre möter när de nekas nya arbetsuppgifter på grund av sin ålder.',
+      'De formella krav på utbildning som gör det svårare för kvinnor att bli chefer i Sverige.'
+    ],
+    correct: 0,
+    expl: '"Glastak" beskriver de osynliga hinder (maktstrukturer) som kvinnor möter när de strävar efter högre positioner i arbetslivet, trots att det formellt sett inte finns några regler som stoppar dem.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad innebär den norska lag om könskvotering som infördes 2006, enligt materialet?',
+    opts: [
+      'Att kvinnor garanterades minst 40 procent av styrelseposterna i norska bolag, vilket snabbt gav effekt.',
+      'Att kvinnor garanterades minst 40 procent av chefsposterna inom hela den norska offentliga sektorn.',
+      'Att kvinnor och män garanterades exakt samma lön i alla norska börsnoterade bolag från och med 2006.',
+      'Att kvinnor garanterades minst hälften av alla nyanställningar inom det norska näringslivet från 2006.'
+    ],
+    correct: 0,
+    expl: 'Norge antog 2006 en lag som garanterade kvinnor minst 40 procent av styrelseposterna, vilket snabbt gav effekt. Det råder dock delade meningar om de långsiktiga effekterna av kvoteringslagar.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad innebär det att pengar fungerar som en "värdebevarare"?',
+    opts: [
+      'Att pengar gör det möjligt att bevara ekonomiska värden över tid, till exempel genom sparande, eftersom pengar inte surnar.',
+      'Att pengar gör det möjligt att jämföra priser på olika varor, till exempel genom att sätta pris i kronor.',
+      'Att pengar gör det möjligt att betala för varor och tjänster direkt, till exempel vid köp i en affär.',
+      'Att pengar gör det möjligt att låna ut kapital till andra, till exempel genom banker och obligationer.'
+    ],
+    correct: 0,
+    expl: 'Värdebevarare innebär att pengar gör det möjligt att bevara de värden som skapas i ekonomin, eftersom pengar inte surnar – du kan spara din köpkraft tills du vill använda den.'
+  },
+  {
+    type: 'mc',
+    q: 'Hur lutar efterfrågekurvan i utbuds- och efterfrågemodellen, och varför?',
+    opts: [
+      'Nedåt, eftersom konsumenterna efterfrågar mer ju lägre priset på varan är.',
+      'Uppåt, eftersom konsumenterna efterfrågar mer ju högre priset på varan är.',
+      'Nedåt, eftersom producenterna vill sälja mer ju lägre priset på varan är.',
+      'Uppåt, eftersom producenterna vill sälja mer ju högre priset på varan är.'
+    ],
+    correct: 0,
+    expl: 'Efterfrågekurvan lutar nedåt: ju lägre pris, desto större efterfrågan bland konsumenterna – till exempel efterfrågas fler jordgubbar när priset sjunker under säsongen.'
+  },
+  {
+    type: 'mc',
+    q: 'Hur lutar utbudskurvan i utbuds- och efterfrågemodellen, och varför?',
+    opts: [
+      'Uppåt, eftersom producenterna vill sälja mer ju högre priset på varan är.',
+      'Nedåt, eftersom producenterna vill sälja mer ju lägre priset på varan är.',
+      'Uppåt, eftersom konsumenterna vill köpa mer ju högre priset på varan är.',
+      'Nedåt, eftersom konsumenterna vill köpa mer ju lägre priset på varan är.'
+    ],
+    correct: 0,
+    expl: 'Utbudskurvan lutar uppåt: ju högre pris, desto större mängd är producenterna villiga att sälja – till exempel odlar jordgubbsodlarna mer om marknadspriset är högt.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad kallas det pris där utbuds- och efterfrågekurvorna skär varandra, och vad innebär det?',
+    opts: [
+      'Jämviktspris (marknadspris) – det pris där utbud och efterfrågan är i balans och alla varor blir sålda.',
+      'Startpris (grundpris) – det pris som säljaren först sätter innan förhandling med köparen påbörjas.',
+      'Överskottspris (maxpris) – det högsta pris som staten tillåter att en vara säljs för på marknaden.',
+      'Bristpris (minipris) – det lägsta pris som en producent kan sälja en vara för utan förlust.'
+    ],
+    correct: 0,
+    expl: 'Skärningspunkten mellan utbuds- och efterfrågekurvan kallas jämviktspris eller marknadspris. Vid detta pris är utbud och efterfrågan i balans, och alla varor på marknaden blir sålda.'
+  },
+  {
+    type: 'tf',
+    q: 'Om priset på en vara sätts för högt uppstår ett överskott, eftersom många vill sälja men få vill köpa.',
+    correct: true,
+    expl: 'Stämmer. Om priset sätts för högt vill många sälja men få köpa, vilket ger ett överskott som riskerar att bli osålt om inte priset sänks.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad innebär "laissez-faire" som en förutsättning för en väl fungerande marknadsekonomi?',
+    opts: [
+      'Att staten och politikerna så mycket som möjligt bör låta marknaden vara i fred utan inblandning.',
+      'Att staten aktivt ska reglera priserna på marknaden för att skydda konsumenterna mot höga priser.',
+      'Att staten ska äga alla större företag för att garantera rättvis konkurrens mellan aktörerna.',
+      'Att staten ska sätta ett tak för hur många företag som får finnas inom varje bransch.'
+    ],
+    correct: 0,
+    expl: 'Laissez-faire ("låt vara") betyder att staten och politikerna så mycket som möjligt bör lämna marknaden i fred, eftersom för mycket statlig inblandning rubbar marknadsmekanismen.'
+  },
+  {
+    type: 'mc',
+    q: 'Hur mäts inflationen i Sverige enligt materialet, och vad kallas måttet?',
+    opts: [
+      'Genom att SCB varje månad jämför priset på en varukorg med samma korgs pris året innan, vilket kallas KPI.',
+      'Genom att Riksbanken varje år jämför räntan på bolån med samma räntas nivå året innan, vilket kallas KPI.',
+      'Genom att SCB varje månad jämför medellönen i landet med medellönen samma månad året innan, vilket kallas KPI.',
+      'Genom att Riksbanken varje månad jämför penningmängden i landet med penningmängden året innan, vilket kallas KPI.'
+    ],
+    correct: 0,
+    expl: 'SCB "köper" varje månad en korg med varor och tjänster och jämför priset med vad samma korg kostade året innan. Prisförändringen i procent kallas konsumentprisindex (KPI).'
+  },
+  {
+    type: 'tf',
+    q: 'Deflation innebär att den allmänna prisnivån i samhällsekonomin stiger kraftigt.',
+    correct: false,
+    expl: 'Det är tvärtom: deflation innebär en allmän sänkning av priserna, vilket kan leda till minskad efterfrågan, minskad produktion och ökad arbetslöshet.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad är reallön och varför är den viktig?',
+    opts: [
+      'Skillnaden mellan den nominella lönen och inflationen, vilket avgör hur mycket varor och tjänster vi faktiskt kan köpa.',
+      'Skillnaden mellan bruttolönen och skatten, vilket avgör hur mycket pengar som betalas ut varje månad.',
+      'Summan av lön och bidrag, vilket avgör hur mycket pengar ett hushåll totalt har att röra sig med.',
+      'Skillnaden mellan lönen i olika branscher, vilket avgör hur attraktivt ett yrke är på arbetsmarknaden.'
+    ],
+    correct: 0,
+    expl: 'Reallön är skillnaden mellan den nominella lönen (lönen i kronor) och inflationen. Det är reallönen som i praktiken avgör vår köpkraft, det vill säga hur mycket vi faktiskt kan köpa för våra pengar.'
+  }
+];
+
+// ════════════════════════════════════════════════════════════
+// FISHER-YATES SHUFFLE
+// ════════════════════════════════════════════════════════════
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// ════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════
+let qs = [];
+let cur = 0;
+let score = 0;
+let elapsed = 0;
+let timerID = null;
+
+function normalize(q) {
+  if (q.type === 'tf') {
+    return {
+      type: 'tf',
+      q: q.q,
+      opts: ['Sant', 'Falskt'],
+      correct: q.correct ? 0 : 1,
+      expl: q.expl
+    };
+  }
+  return q;
+}
+
+function buildState() {
+  const shuffled = shuffleArray([...QUESTIONS]).map(normalize);
+  qs = shuffled.map(q => ({
+    ...q,
+    shuffledIdx: shuffleArray(q.opts.map((_, i) => i)),
+    selectedDisplay: null,
+    answered: false
+  }));
+}
+
+// ════════════════════════════════════════════════════════════
+// SCREENS
+// ════════════════════════════════════════════════════════════
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ════════════════════════════════════════════════════════════
+// TIMER
+// ════════════════════════════════════════════════════════════
+function fmt(s) {
+  return '⏱ ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+}
+function startTimer() {
+  elapsed = 0;
+  timerID = setInterval(() => { elapsed++; document.getElementById('timer').textContent = fmt(elapsed); }, 1000);
+}
+function stopTimer() { clearInterval(timerID); }
+
+// ════════════════════════════════════════════════════════════
+// START
+// ════════════════════════════════════════════════════════════
+function startQuiz() {
+  buildState();
+  cur = 0;
+  score = 0;
+  show('screen-quiz');
+  startTimer();
+  render();
+}
+
+// ════════════════════════════════════════════════════════════
+// RENDER
+// ════════════════════════════════════════════════════════════
+function render() {
+  const q = qs[cur];
+  const total = qs.length;
+
+  document.getElementById('progress-bar').style.width = (cur / total * 100) + '%';
+  document.getElementById('q-counter').textContent = 'Fråga ' + (cur + 1) + ' av ' + total;
+  document.getElementById('score-pill').textContent = 'Poäng: ' + score;
+  document.getElementById('q-type-tag').textContent = q.type === 'tf' ? 'Sant eller falskt' : 'Flerval';
+  document.getElementById('q-text').textContent = q.q;
+
+  const optsEl = document.getElementById('opts');
+  optsEl.innerHTML = '';
+
+  q.shuffledIdx.forEach((origIdx, displayPos) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = q.opts[origIdx];
+    btn.disabled = q.answered;
+
+    if (q.answered) {
+      const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+      if (displayPos === correctDisplay)      btn.classList.add('correct');
+      else if (displayPos === q.selectedDisplay) btn.classList.add('wrong');
+      else                                    btn.classList.add('dimmed');
+    } else {
+      btn.addEventListener('click', () => handleAnswer(displayPos));
+    }
+    optsEl.appendChild(btn);
+  });
+
+  document.getElementById('btn-back').style.display = cur > 0 ? 'inline-block' : 'none';
+  document.getElementById('btn-next').style.display = q.answered ? 'inline-block' : 'none';
+  document.getElementById('btn-next').textContent = cur === total - 1 ? 'Se resultat →' : 'Nästa →';
+}
+
+// ════════════════════════════════════════════════════════════
+// ANSWER
+// ════════════════════════════════════════════════════════════
+function handleAnswer(displayPos) {
+  const q = qs[cur];
+  if (q.answered) return;
+
+  q.answered = true;
+  q.selectedDisplay = displayPos;
+
+  const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+  const isCorrect = displayPos === correctDisplay;
+  if (isCorrect) score++;
+
+  document.querySelectorAll('.opt-btn').forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === correctDisplay)          btn.classList.add('correct');
+    else if (i === displayPos)         btn.classList.add('wrong');
+    else                               btn.classList.add('dimmed');
+  });
+
+  document.getElementById('btn-next').style.display = 'inline-block';
+  document.getElementById('btn-next').textContent = cur === qs.length - 1 ? 'Se resultat →' : 'Nästa →';
+  document.getElementById('score-pill').textContent = 'Poäng: ' + score;
+
+  setTimeout(() => showModal(isCorrect, q.expl), 600);
+}
+
+// ════════════════════════════════════════════════════════════
+// MODAL
+// ════════════════════════════════════════════════════════════
+function showModal(isCorrect, expl) {
+  document.getElementById('modal-icon').textContent      = isCorrect ? '✅' : '❌';
+  document.getElementById('modal-verdict').textContent   = isCorrect ? 'Rätt svar!' : 'Fel svar';
+  document.getElementById('modal-verdict').className     = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
+  document.getElementById('modal-expl').textContent      = expl;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  goNext();
+}
+
+// ════════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════════
+function goBack() { if (cur > 0) { cur--; render(); } }
+function goNext() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  if (cur < qs.length - 1) { cur++; render(); }
+  else showResults();
+}
+
+// ════════════════════════════════════════════════════════════
+// RESULTS
+// ════════════════════════════════════════════════════════════
+function showResults() {
+  stopTimer();
+  show('screen-result');
+
+  const total = qs.length;
+  const wrong = total - score;
+  const pct   = Math.round(score / total * 100);
+
+  document.getElementById('r-score').textContent   = score + '/' + total;
+  document.getElementById('s-correct').textContent = score;
+  document.getElementById('s-wrong').textContent   = wrong;
+  document.getElementById('s-pct').textContent     = pct + '%';
+
+  const m = Math.floor(elapsed / 60), s = String(elapsed % 60).padStart(2, '0');
+  document.getElementById('r-time').textContent = 'Tid: ' + m + ':' + s;
+
+  let title, msg;
+  if (pct >= 90)      { title = '🏆 Utmärkt!';          msg = 'Du behärskar kapitlet Samhällsekonomins grunder på hög nivå.'; }
+  else if (pct >= 75) { title = '✅ Redo för provet!';   msg = 'Bra resultat – du har koll på det centrala.'; }
+  else if (pct >= 55) { title = '📖 Öva lite till';      msg = 'Du är på rätt spår men behöver repetera en del.'; }
+  else                { title = '💡 Fortsätt repetera'; msg = 'Gå igenom pluggmaterialet och försök igen.'; }
+
+  document.getElementById('r-title').textContent = title;
+  document.getElementById('r-msg').textContent   = msg;
+
+  // Missed
+  const missedEl = document.getElementById('missed-section');
+  const missed = qs.filter(q => q.answered && q.shuffledIdx.indexOf(q.correct) !== q.selectedDisplay);
+  if (missed.length) {
+    missedEl.innerHTML = '<div class="section-hd">Missade frågor (' + missed.length + ')</div>';
+    missed.forEach(q => {
+      const d = document.createElement('div');
+      d.className = 'missed-item';
+      d.textContent = q.q;
+      missedEl.appendChild(d);
+    });
+  } else {
+    missedEl.innerHTML = '';
+  }
+
+  // Full facit
+  const facitEl = document.getElementById('facit-list');
+  facitEl.innerHTML = '';
+  qs.forEach((q, i) => {
+    const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+    const isCorrect  = q.answered && q.selectedDisplay === correctDisplay;
+    const notAnswered = !q.answered;
+    const correctText  = q.opts[q.correct];
+    const selectedText = q.answered ? q.opts[q.shuffledIdx[q.selectedDisplay]] : null;
+
+    const div = document.createElement('div');
+    div.className = 'facit-item ' + (notAnswered ? '' : isCorrect ? 'fc' : 'fw');
+
+    let html = '<div class="fi-num">Fråga ' + (i + 1) + '</div>';
+    html += '<div class="fi-q">' + q.q + '</div>';
+    if (notAnswered) {
+      html += '<div class="fi-row"><span class="lbl">Ditt svar: </span>— (inte besvarad)</div>';
+      html += '<div class="fi-row ra"><span class="lbl">Rätt svar: </span>' + correctText + '</div>';
+    } else if (isCorrect) {
+      html += '<div class="fi-row ya-ok">✓ <span class="lbl">Ditt svar: </span>' + selectedText + '</div>';
+    } else {
+      html += '<div class="fi-row ya-bad">✗ <span class="lbl">Ditt svar: </span>' + selectedText + '</div>';
+      html += '<div class="fi-row ra"><span class="lbl">Rätt svar: </span>' + correctText + '</div>';
+    }
+    div.innerHTML = html;
+    facitEl.appendChild(div);
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// RESTART
+// ════════════════════════════════════════════════════════════
+function restartQuiz() {
+  stopTimer();
+  show('screen-start');
+}
+</script>
+</body>
+</html>
