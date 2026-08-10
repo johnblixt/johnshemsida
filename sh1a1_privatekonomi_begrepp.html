@@ -98,6 +98,139 @@ const concepts = [
   { id: 36, term: 'A-kasseersättning', definition: 'Ersättning från arbetslöshetskassa, ger en högre ersättning än grundbeloppet om du uppfyller vissa villkor.' },
 ];
 
+// ════════════════════════════════════════════════════════════
+// LUCKTEXT — en mening per begrepp, byggd på definitionerna och
+// exemplen i privatekonomi_begrepp.md / privatekonomi_material.md
+// ════════════════════════════════════════════════════════════
+const LUCKTEXT_ITEMS = [
+  { id: 1, term: 'Bruttolön', sentence: 'Lönen du får innan skatten är dragen kallas din ___.', answers: ['Bruttolön'], explanation: 'Bruttolön är lön innan skatten är dragen.' },
+  { id: 2, term: 'Nettolön', sentence: 'Det belopp som faktiskt sätts in på ditt konto efter att skatten är dragen kallas din ___.', answers: ['Nettolön'], explanation: 'Nettolön är lön efter att skatten är dragen.' },
+  { id: 3, term: 'Disponibel inkomst', sentence: 'Om du lägger till till exempel bostadsbidrag till din nettolön får du fram din ___.', answers: ['Disponibel inkomst'], explanation: 'Disponibel inkomst är nettolön plus eventuella bidrag.' },
+  { id: 4, term: 'Inkomstskatt', sentence: 'Den skatt du betalar på din inkomst, som består av en kommunal och en statlig del, kallas ___.', answers: ['Inkomstskatt'], explanation: 'Inkomstskatt är den skatt man betalar på sin inkomst.' },
+  { id: 5, term: 'Kommunalskatt', sentence: 'Skatten du betalar till kommunen du bor i, som i genomsnitt ligger på cirka 32 procent, kallas ___.', answers: ['Kommunalskatt'], explanation: 'Kommunalskatt är den skatt man betalar i den kommun man bor – ca 32 procent i genomsnitt.' },
+  { id: 6, term: 'Statlig inkomstskatt', sentence: 'Den som har en bruttolön över brytpunkten på cirka 640 000 kronor om året får utöver kommunalskatten även betala ___.', answers: ['Statlig inkomstskatt', 'Statlig skatt'], explanation: 'Statlig inkomstskatt betalas till staten av den som har en bruttolön över ett visst fastställt belopp (brytpunkten).' },
+  { id: 7, term: 'Marginalskatt', sentence: 'Hur mycket skatt du betalar på den senast intjänade hundralappen kallas din ___.', answers: ['Marginalskatt'], explanation: 'Marginalskatt är skatten på den senast intjänade hundralappen.' },
+  { id: 8, term: 'Avkastning', sentence: 'Räntan du får på ett sparkonto eller aktieutdelningen du får på aktier är exempel på ___.', answers: ['Avkastning'], explanation: 'Avkastning är det man tjänar på att t.ex. låna ut pengar (ränta), investera i aktier (aktieutdelning) eller liknande.' },
+  { id: 9, term: 'Aktie', sentence: 'När du köper en andel, ett ägarbevis, i ett börsnoterat företag har du köpt en ___.', answers: ['Aktie'], explanation: 'En aktie är en andel (ägarbevis) i ett företag.' },
+  { id: 10, term: 'Obligationer', sentence: 'Skuldebrev som innebär att du lånar ut pengar till staten eller ett företag mot ränta kallas ___.', answers: ['Obligationer'], explanation: 'Obligationer är skuldebrev som innebär att man lånar ut pengar till den som ger ut obligationen.' },
+  { id: 11, term: 'Betalningsanmärkning', sentence: 'Om du inte betalar dina räkningar i tid riskerar du att få en ___ hos Kronofogden.', answers: ['Betalningsanmärkning'], explanation: 'En betalningsanmärkning är en notering hos Kronofogden som man får om man inte betalar sina räkningar.' },
+  { id: 12, term: 'Amortering', sentence: 'Den del av din månatliga lånebetalning som gör att själva skulden minskar kallas ___.', answers: ['Amortering'], explanation: 'Amortering är den del av din lånebetalning som gör att din skuld minskar.' },
+  { id: 13, term: 'Pant', sentence: 'En bil eller ett hus som banken kan sälja om du inte kan betala tillbaka lånet fungerar som en ___.', answers: ['Pant'], explanation: 'Pant är en säkerhet som du kan vara tvungen att ställa om du vill låna pengar till t.ex. ett hus eller en bil.' },
+  { id: 14, term: 'Borgen', sentence: 'Om en förälder lovar att betala barnets lån ifall barnet inte kan betala det själv har föräldern gått i ___.', answers: ['Borgen'], explanation: 'Att gå i borgen innebär att ta på sig att betala skulden i stället för den person man har gått i borgen för, om den inte betalar sin skuld.' },
+  { id: 15, term: 'Inkasso', sentence: 'Om en räkning inte betalas i tid kan skulden skickas vidare till ett företag som försöker driva in pengarna, en åtgärd som kallas ___.', answers: ['Inkasso'], explanation: 'Inkasso är en åtgärd där en obetald skuld skickas till ett inkassoföretag som försöker driva in skulden från den som inte har betalat i tid.' },
+  { id: 16, term: 'Kronofogden', sentence: 'Den statliga myndighet som bland annat driver in obetalda skulder åt fordringsägare heter ___.', answers: ['Kronofogden'], explanation: 'Kronofogden är en statlig myndighet med uppgift att bland annat driva in skulder från dem som inte betalat till fordringsägarna.' },
+  { id: 17, term: 'Reklamation', sentence: 'Att meddela säljaren att du inte godtar en felaktig vara eller tjänst kallas att göra en ___.', answers: ['Reklamation'], explanation: 'Reklamation innebär att meddela säljaren att man inte godtar varan eller tjänsten.' },
+  { id: 18, term: 'Ångerrätt', sentence: 'Möjligheten för köparen att ångra ett köp, till exempel vid handel på nätet, kallas ___.', answers: ['Ångerrätt'], explanation: 'Ångerrätt är möjlighet för köparen att ångra ett köp.' },
+  { id: 19, term: 'Socialförsäkringar', sentence: 'Det gemensamma ekonomiska skyddsnät som bland annat innefattar sjukförsäkring och föräldrapenning och som omfattar alla som bor i Sverige kallas ___.', answers: ['Socialförsäkringar'], explanation: 'Socialförsäkringar är det allmänna ekonomiska skyddsnät som omfattar alla som bor i Sverige.' },
+  { id: 20, term: 'Privat försäkring', sentence: 'En försäkring som en enskild person själv tecknar för att få extra ekonomiskt skydd vid till exempel sjukdom kallas en ___.', answers: ['Privat försäkring'], explanation: 'Privat försäkring är försäkring som tecknas av en individ för att få ekonomiskt skydd vid till exempel sjukdom, olycka eller skada.' },
+  { id: 21, term: 'Premie', sentence: 'Den återkommande avgift du betalar för att ha ett försäkringsskydd kallas en ___.', answers: ['Premie'], explanation: 'Premie är den avgift man betalar för att få ett försäkringsskydd.' },
+  { id: 22, term: 'Självrisk', sentence: 'Den del av kostnaden vid en skada som du själv får betala innan försäkringen täcker resten kallas ___.', answers: ['Självrisk'], explanation: 'Självrisk är den kostnad man själv får stå för vid skada.' },
+  { id: 23, term: 'Hemförsäkring', sentence: 'En försäkring som ger ett grundskydd för dina saker och dig själv i bostaden kallas ___.', answers: ['Hemförsäkring'], explanation: 'Hemförsäkring är ett grundskydd som försäkrar dina saker och dig själv i viss utsträckning.' },
+  { id: 24, term: 'Trafikförsäkring', sentence: 'Alla som äger ett motorfordon måste enligt lag ha en ___.', answers: ['Trafikförsäkring'], explanation: 'Trafikförsäkring är en obligatorisk försäkring för den som äger ett motorfordon.' },
+  { id: 25, term: 'Fastighet', sentence: 'Ett stycke mark som finns upptaget i fastighetsregistret, och som kan vara bebyggt med hus, kallas en ___.', answers: ['Fastighet'], explanation: 'Fastighet är ett stycke mark som finns upptaget i fastighetsregistret. Kan vara bebyggd med hus.' },
+  { id: 26, term: 'Besittningsrätt', sentence: 'Ett hyresavtal ger hyresgästen ett rättsligt skydd att bo kvar i sin lägenhet, en så kallad ___.', answers: ['Besittningsrätt'], explanation: 'Besittningsrätt är en laglig rätt att utnyttja något, exempelvis en bostad.' },
+  { id: 27, term: 'Budget', sentence: 'En beräkning av vilka inkomster och utgifter du räknar med att ha under en period kallas en ___.', answers: ['Budget'], explanation: 'Budget är en beräkning av kommande inkomster och utgifter.' },
+  { id: 28, term: 'Fasta utgifter', sentence: 'Kostnader som hyra och abonnemangsavgifter, som inte påverkas av hur mycket du använder varan eller tjänsten, kallas ___.', answers: ['Fasta utgifter'], explanation: 'Fasta utgifter är utgifter som inte påverkas av hur mycket man använder varan/tjänsten.' },
+  { id: 29, term: 'Rörliga utgifter', sentence: 'Kostnader som elförbrukning och klädinköp, som varierar beroende på hur mycket du använder varan eller tjänsten, kallas ___.', answers: ['Rörliga utgifter'], explanation: 'Rörliga utgifter är utgifter som varierar beroende på hur mycket du använder varan/tjänsten.' },
+  { id: 30, term: 'Lönearbete eller förvärvsarbete', sentence: 'Arbete som du utför och får betalt för, till skillnad från till exempel hushållsarbete, kallas ___.', answers: ['Lönearbete', 'Förvärvsarbete', 'Lönearbete eller förvärvsarbete'], explanation: 'Lönearbete eller förvärvsarbete är arbete som man utför mot betalning/lön.' },
+  { id: 31, term: 'Bokföring', sentence: 'Att systematiskt hålla reda på ett företags ekonomi och verksamhet genom att registrera varje intäkt och kostnad kallas ___.', answers: ['Bokföring'], explanation: 'Bokföring är ett systematiskt sätt att hålla reda på företagets ekonomi och verksamhet.' },
+  { id: 32, term: 'Affärsplan', sentence: 'Innan man startar ett företag bör man göra en översikt över viktiga saker att hålla reda på, till exempel marknad och finansiering, en så kallad ___.', answers: ['Affärsplan'], explanation: 'Affärsplan är en översikt över viktiga saker att hålla reda på när man ska starta eller driva ett företag.' },
+  { id: 33, term: 'Meriter', sentence: 'Utbildningar, tidigare anställningar och andra erfarenheter som kan intressera en arbetsgivare kallas dina ___.', answers: ['Meriter'], explanation: 'Meriter är sådant som en person kan eller har gjort som kan vara intressant för en arbetsgivare.' },
+  { id: 34, term: 'CV (curriculum vitae)', sentence: 'En utvidgad och mer beskrivande sammanställning av dina meriter kallas ett ___.', answers: ['CV', 'Curriculum vitae', 'CV (curriculum vitae)'], explanation: 'CV (curriculum vitae) är en utvidgad och mer beskrivande meritförteckning.' },
+  { id: 35, term: 'Arbetslöshetsförsäkring', sentence: 'Skyddet som ska göra det möjligt för den som blivit arbetslös att söka en ny anställning kallas ___.', answers: ['Arbetslöshetsförsäkring'], explanation: 'Arbetslöshetsförsäkring är ett skydd som hjälper den som blir arbetslös.' },
+  { id: 36, term: 'A-kasseersättning', sentence: 'Om du varit medlem i en arbetslöshetskassa i minst tolv månader och uppfyller arbetsvillkoret kan du få en högre ersättning som kallas ___.', answers: ['A-kasseersättning'], explanation: 'A-kasseersättning är ersättning från arbetslöshetskassa som ger en högre ersättning än grundbeloppet om du uppfyller vissa villkor.' },
+];
+
+// ════════════════════════════════════════════════════════════
+// SCENARIO — eleven ska identifiera rätt begrepp utifrån en
+// beskriven situation. Fyra alternativ per fråga.
+// ════════════════════════════════════════════════════════════
+const SCENARIO_ITEMS = [
+  { id: 1, term: 'Bruttolön', scenario: 'Ditt anställningsavtal anger att du tjänar 25 000 kronor i månaden – men det är beloppet innan arbetsgivaren gör skatteavdrag.', correct: 'Bruttolön', options: ['Bruttolön', 'Nettolön', 'Disponibel inkomst', 'Marginalskatt'], explanation: 'Bruttolön är lön innan skatten är dragen.' },
+  { id: 2, term: 'Nettolön', scenario: 'Efter att arbetsgivaren dragit av skatt från din lön sätts 19 000 kronor in på ditt konto.', correct: 'Nettolön', options: ['Nettolön', 'Bruttolön', 'Disponibel inkomst', 'Avkastning'], explanation: 'Nettolön är lön efter att skatten är dragen.' },
+  { id: 3, term: 'Disponibel inkomst', scenario: 'Utöver din lön efter skatt får du också ett bostadsbidrag varje månad, vilket ökar summan pengar du faktiskt har att röra dig med.', correct: 'Disponibel inkomst', options: ['Disponibel inkomst', 'Nettolön', 'Bruttolön', 'Budget'], explanation: 'Disponibel inkomst är nettolön plus eventuella bidrag.' },
+  { id: 4, term: 'Inkomstskatt', scenario: 'En del av din lön går varje månad till staten och kommunen, som betalning för den inkomst du tjänat.', correct: 'Inkomstskatt', options: ['Inkomstskatt', 'Kommunalskatt', 'Marginalskatt', 'Statlig inkomstskatt'], explanation: 'Inkomstskatt är den skatt man betalar på sin inkomst.' },
+  { id: 5, term: 'Kommunalskatt', scenario: 'Två elever som bor i olika kommuner jämför sina lönebesked och upptäcker att de betalar olika procent i skatt till just den kommun de bor i.', correct: 'Kommunalskatt', options: ['Kommunalskatt', 'Statlig inkomstskatt', 'Inkomstskatt', 'Marginalskatt'], explanation: 'Kommunalskatt är den skatt man betalar i den kommun man bor – ca 32 procent i genomsnitt.' },
+  { id: 6, term: 'Statlig inkomstskatt', scenario: 'En person med en årslön på 700 000 kronor, som ligger över brytpunkten, får utöver den vanliga skatten betala ytterligare 20 procent på den del som överstiger gränsen.', correct: 'Statlig inkomstskatt', options: ['Statlig inkomstskatt', 'Kommunalskatt', 'Marginalskatt', 'Inkomstskatt'], explanation: 'Statlig inkomstskatt betalas till staten av den som har en bruttolön över ett visst fastställt belopp (brytpunkten).' },
+  { id: 7, term: 'Marginalskatt', scenario: 'En person räknar ut hur många kronor av de sista hundra kronorna hen tjänade som faktiskt försvinner i skatt.', correct: 'Marginalskatt', options: ['Marginalskatt', 'Kommunalskatt', 'Statlig inkomstskatt', 'Avkastning'], explanation: 'Marginalskatt är skatten på den senast intjänade hundralappen.' },
+  { id: 8, term: 'Avkastning', scenario: 'Pengarna på sparkontot växer lite varje år tack vare räntan banken betalar ut.', correct: 'Avkastning', options: ['Avkastning', 'Premie', 'Amortering', 'Disponibel inkomst'], explanation: 'Avkastning är det man tjänar på att t.ex. låna ut pengar (ränta), investera i aktier (aktieutdelning) eller liknande.' },
+  { id: 9, term: 'Aktie', scenario: 'Genom att köpa en liten andel i ett börsnoterat företag blir du delägare och kan få utdelning om det går bra för bolaget.', correct: 'Aktie', options: ['Aktie', 'Obligationer', 'Avkastning', 'Fastighet'], explanation: 'En aktie är en andel (ägarbevis) i ett företag.' },
+  { id: 10, term: 'Obligationer', scenario: 'En investerare lånar ut pengar till staten och får ränta tillbaka i utbyte mot ett skuldebrev.', correct: 'Obligationer', options: ['Obligationer', 'Aktie', 'Avkastning', 'Pant'], explanation: 'Obligationer är skuldebrev som innebär att man lånar ut pengar till den som ger ut obligationen.' },
+  { id: 11, term: 'Betalningsanmärkning', scenario: 'Efter att flera räkningar inte betalats i tid får en person en notering hos Kronofogden som gör det svårt att i framtiden få hyreskontrakt eller lån.', correct: 'Betalningsanmärkning', options: ['Betalningsanmärkning', 'Inkasso', 'Kronofogden', 'Självrisk'], explanation: 'Betalningsanmärkning är en notering hos Kronofogden som man får om man inte betalar sina räkningar.' },
+  { id: 12, term: 'Amortering', scenario: 'Varje månad betalar en låntagare av en del av det ursprungliga lånebeloppet, så att skulden gradvis blir mindre.', correct: 'Amortering', options: ['Amortering', 'Pant', 'Borgen', 'Avkastning'], explanation: 'Amortering är den del av din lånebetalning som gör att din skuld minskar.' },
+  { id: 13, term: 'Pant', scenario: 'När en familj tar ett bolån går banken med på lägre ränta eftersom huset fungerar som säkerhet om lånet inte betalas.', correct: 'Pant', options: ['Pant', 'Borgen', 'Amortering', 'Betalningsanmärkning'], explanation: 'Pant är en säkerhet som du kan vara tvungen att ställa om du vill låna pengar till t.ex. ett hus eller en bil.' },
+  { id: 14, term: 'Borgen', scenario: 'En förälder skriver under på att ta över skulden om barnets lån inte betalas tillbaka i tid.', correct: 'Borgen', options: ['Borgen', 'Pant', 'Inkasso', 'Premie'], explanation: 'Att gå i borgen innebär att ta på sig att betala skulden i stället för den person man har gått i borgen för, om den inte betalar sin skuld.' },
+  { id: 15, term: 'Inkasso', scenario: 'En obetald räkning skickas vidare till ett företag som specialiserar sig på att driva in skulder åt andra företag.', correct: 'Inkasso', options: ['Inkasso', 'Kronofogden', 'Betalningsanmärkning', 'Reklamation'], explanation: 'Inkasso är en åtgärd där en obetald skuld skickas till ett inkassoföretag som försöker driva in skulden från den som inte har betalat i tid.' },
+  { id: 16, term: 'Kronofogden', scenario: 'En statlig myndighet hjälper fordringsägare att driva in skulder från personer som inte betalat i tid.', correct: 'Kronofogden', options: ['Kronofogden', 'Inkasso', 'Betalningsanmärkning', 'Socialförsäkringar'], explanation: 'Kronofogden är en statlig myndighet med uppgift att bland annat driva in skulder från dem som inte betalat till fordringsägarna.' },
+  { id: 17, term: 'Reklamation', scenario: 'En kund kontaktar butiken och förklarar varför hen anser att den köpta varan är trasig och inte vill godta den.', correct: 'Reklamation', options: ['Reklamation', 'Ångerrätt', 'Självrisk', 'Premie'], explanation: 'Reklamation innebär att meddela säljaren att man inte godtar varan eller tjänsten.' },
+  { id: 18, term: 'Ångerrätt', scenario: 'En person som handlat en tröja på nätet ändrar sig efter tre dagar och skickar tillbaka den utan att behöva ange något skäl.', correct: 'Ångerrätt', options: ['Ångerrätt', 'Reklamation', 'Besittningsrätt', 'Betalningsanmärkning'], explanation: 'Ångerrätt är möjlighet för köparen att ångra ett köp.' },
+  { id: 19, term: 'Socialförsäkringar', scenario: 'Alla som bor i Sverige omfattas av ett gemensamt skydd som bland annat innefattar sjukförsäkring och föräldrapenning.', correct: 'Socialförsäkringar', options: ['Socialförsäkringar', 'Privat försäkring', 'Arbetslöshetsförsäkring', 'Hemförsäkring'], explanation: 'Socialförsäkringar är det allmänna ekonomiska skyddsnät som omfattar alla som bor i Sverige.' },
+  { id: 20, term: 'Privat försäkring', scenario: 'Utöver det allmänna skyddet väljer en person att själv teckna ett extra försäkringsskydd mot till exempel olycksfall.', correct: 'Privat försäkring', options: ['Privat försäkring', 'Socialförsäkringar', 'Hemförsäkring', 'Trafikförsäkring'], explanation: 'Privat försäkring är försäkring som tecknas av en individ för att få ekonomiskt skydd vid till exempel sjukdom, olycka eller skada.' },
+  { id: 21, term: 'Premie', scenario: 'Varje månad betalar en försäkringstagare en fast avgift till försäkringsbolaget för att behålla sitt skydd.', correct: 'Premie', options: ['Premie', 'Självrisk', 'Avkastning', 'Amortering'], explanation: 'Premie är den avgift man betalar för att få ett försäkringsskydd.' },
+  { id: 22, term: 'Självrisk', scenario: 'När en cykel blir stulen och försäkringen betalar ut ersättning får ägaren ändå själv stå för de första 1 500 kronorna.', correct: 'Självrisk', options: ['Självrisk', 'Premie', 'Avkastning', 'Reklamation'], explanation: 'Självrisk är den kostnad man själv får stå för vid skada.' },
+  { id: 23, term: 'Hemförsäkring', scenario: 'En försäkring skyddar både möbler och personen själv om något går sönder eller blir stulet i lägenheten.', correct: 'Hemförsäkring', options: ['Hemförsäkring', 'Trafikförsäkring', 'Privat försäkring', 'Socialförsäkringar'], explanation: 'Hemförsäkring är ett grundskydd som försäkrar dina saker och dig själv i viss utsträckning.' },
+  { id: 24, term: 'Trafikförsäkring', scenario: 'Alla som äger en bil måste enligt lag teckna ett försäkringsskydd som täcker skador på andras egendom vid en olycka.', correct: 'Trafikförsäkring', options: ['Trafikförsäkring', 'Hemförsäkring', 'Privat försäkring', 'Pant'], explanation: 'Trafikförsäkring är en obligatorisk försäkring för den som äger ett motorfordon.' },
+  { id: 25, term: 'Fastighet', scenario: 'En tomt med ett hus på är upptagen i ett offentligt register över mark och räknas juridiskt som en viss typ av egendom.', correct: 'Fastighet', options: ['Fastighet', 'Besittningsrätt', 'Pant', 'Budget'], explanation: 'Fastighet är ett stycke mark som finns upptaget i fastighetsregistret. Kan vara bebyggd med hus.' },
+  { id: 26, term: 'Besittningsrätt', scenario: 'Tack vare hyresavtalet har hyresgästen ett rättsligt skydd att få bo kvar i lägenheten.', correct: 'Besittningsrätt', options: ['Besittningsrätt', 'Fastighet', 'Ångerrätt', 'Reklamation'], explanation: 'Besittningsrätt är en laglig rätt att utnyttja något, exempelvis en bostad.' },
+  { id: 27, term: 'Budget', scenario: 'Innan månaden börjar skriver en person ner alla inkomster och utgifter hen räknar med att ha, för att få koll på ekonomin.', correct: 'Budget', options: ['Budget', 'Disponibel inkomst', 'Fasta utgifter', 'Bokföring'], explanation: 'Budget är en beräkning av kommande inkomster och utgifter.' },
+  { id: 28, term: 'Fasta utgifter', scenario: 'Hyran och försäkringspremien kostar exakt lika mycket varje månad, oavsett hur mycket lägenheten eller skyddet faktiskt används.', correct: 'Fasta utgifter', options: ['Fasta utgifter', 'Rörliga utgifter', 'Budget', 'Premie'], explanation: 'Fasta utgifter är utgifter som inte påverkas av hur mycket man använder varan/tjänsten.' },
+  { id: 29, term: 'Rörliga utgifter', scenario: 'Elräkningen och pengarna som går till kläder och nöjen varierar från månad till månad beroende på hur mycket som förbrukas och köps.', correct: 'Rörliga utgifter', options: ['Rörliga utgifter', 'Fasta utgifter', 'Budget', 'Avkastning'], explanation: 'Rörliga utgifter är utgifter som varierar beroende på hur mycket du använder varan/tjänsten.' },
+  { id: 30, term: 'Lönearbete eller förvärvsarbete', scenario: 'Att jobba i ett café och få lön för de timmar man arbetar är ett exempel på betalt arbete, till skillnad från till exempel hushållsarbete.', correct: 'Lönearbete eller förvärvsarbete', options: ['Lönearbete eller förvärvsarbete', 'Bokföring', 'Affärsplan', 'Meriter'], explanation: 'Lönearbete eller förvärvsarbete är arbete som man utför mot betalning/lön.' },
+  { id: 31, term: 'Bokföring', scenario: 'En företagare håller noggrant reda på alla intäkter och kostnader i verksamheten genom att systematiskt registrera varje transaktion.', correct: 'Bokföring', options: ['Bokföring', 'Affärsplan', 'Budget', 'Meriter'], explanation: 'Bokföring är ett systematiskt sätt att hålla reda på företagets ekonomi och verksamhet.' },
+  { id: 32, term: 'Affärsplan', scenario: 'Innan en person startar sitt företag skriver hen ner vad företaget ska sälja, vilka konkurrenterna är och hur verksamheten ska finansieras.', correct: 'Affärsplan', options: ['Affärsplan', 'Bokföring', 'Budget', 'CV (curriculum vitae)'], explanation: 'Affärsplan är en översikt över viktiga saker att hålla reda på när man ska starta eller driva ett företag.' },
+  { id: 33, term: 'Meriter', scenario: 'En arbetssökande radar upp sina tidigare anställningar, utbildningar och praktikperioder som kan intressera en arbetsgivare.', correct: 'Meriter', options: ['Meriter', 'CV (curriculum vitae)', 'Affärsplan', 'Bokföring'], explanation: 'Meriter är sådant som en person kan eller har gjort som kan vara intressant för en arbetsgivare.' },
+  { id: 34, term: 'CV (curriculum vitae)', scenario: 'En arbetssökande sammanställer sina meriter i ett strukturerat dokument som skickas tillsammans med en jobbansökan.', correct: 'CV (curriculum vitae)', options: ['CV (curriculum vitae)', 'Meriter', 'Affärsplan', 'Bokföring'], explanation: 'CV (curriculum vitae) är en utvidgad och mer beskrivande meritförteckning.' },
+  { id: 35, term: 'Arbetslöshetsförsäkring', scenario: 'En person som precis blivit av med sitt jobb får ekonomiskt stöd medan hen söker en ny anställning, tack vare ett skydd för arbetslösa.', correct: 'Arbetslöshetsförsäkring', options: ['Arbetslöshetsförsäkring', 'A-kasseersättning', 'Socialförsäkringar', 'Privat försäkring'], explanation: 'Arbetslöshetsförsäkring är ett skydd som hjälper den som blir arbetslös.' },
+  { id: 36, term: 'A-kasseersättning', scenario: 'Efter tolv månaders medlemskap i en arbetslöshetskassa och uppfyllt arbetsvillkor får en arbetslös person 70–80 procent av sin tidigare inkomst i ersättning.', correct: 'A-kasseersättning', options: ['A-kasseersättning', 'Arbetslöshetsförsäkring', 'Socialförsäkringar', 'Disponibel inkomst'], explanation: 'A-kasseersättning är ersättning från arbetslöshetskassa som ger en högre ersättning än grundbeloppet om du uppfyller vissa villkor.' },
+];
+
+// ════════════════════════════════════════════════════════════
+// ICKE-EXEMPEL — eleven avgör vilket av två alternativ (A/B) som
+// är ett korrekt exempel på begreppet. Position A/B varierar.
+// ════════════════════════════════════════════════════════════
+const ICKEEX_ITEMS = [
+  { id: 1, term: 'Bruttolön', optionA: 'Ditt anställningsavtal anger 25 000 kr i månaden, innan arbetsgivaren gjort några skatteavdrag.', optionB: 'Beloppet på 19 000 kr som sätts in på ditt konto efter att skatten dragits.', correctLetter: 'A', explanation: 'Bruttolön är lön innan skatten är dragen. Beloppet efter skatteavdrag är i stället nettolönen.' },
+  { id: 2, term: 'Nettolön', optionA: 'Lönen innan skatten är dragen, alltså det belopp som står i anställningsavtalet.', optionB: 'Beloppet som faktiskt sätts in på ditt konto efter att skatten är dragen.', correctLetter: 'B', explanation: 'Nettolön är lön efter att skatten är dragen. Beloppet innan skatt är i stället bruttolönen.' },
+  { id: 3, term: 'Disponibel inkomst', optionA: 'Nettolönen plus ett bostadsbidrag som du också får varje månad.', optionB: 'Lönen innan skatt och bidrag har räknats in.', correctLetter: 'A', explanation: 'Disponibel inkomst är nettolön plus eventuella bidrag. Lönen innan skatt är i stället bruttolönen.' },
+  { id: 4, term: 'Inkomstskatt', optionA: 'Den skatt som dras på din lön och som består av en kommunal och en statlig del.', optionB: 'Avgiften du betalar för att få ett försäkringsskydd.', correctLetter: 'A', explanation: 'Inkomstskatt är den skatt man betalar på sin inkomst. Avgiften för ett försäkringsskydd kallas i stället premie.' },
+  { id: 5, term: 'Kommunalskatt', optionA: 'Den del av skatten som bara betalas av den vars inkomst ligger över brytpunkten.', optionB: 'Den del av skatten du betalar till kommunen du bor i, oavsett hur mycket du tjänar.', correctLetter: 'B', explanation: 'Kommunalskatt är den skatt man betalar i den kommun man bor. Skatten som bara gäller över brytpunkten är i stället statlig inkomstskatt.' },
+  { id: 6, term: 'Statlig inkomstskatt', optionA: 'En extra skatt på 20 procent som bara betalas av den vars bruttolön ligger över brytpunkten.', optionB: 'Skatten alla löntagare betalar till kommunen, oavsett inkomst.', correctLetter: 'A', explanation: 'Statlig inkomstskatt betalas till staten av den som har en bruttolön över brytpunkten. Skatten alla betalar oavsett inkomst är i stället kommunalskatt.' },
+  { id: 7, term: 'Marginalskatt', optionA: 'Hur mycket skatt du betalar totalt sett under ett helt år.', optionB: 'Hur mycket skatt du betalar på den senast intjänade hundralappen.', correctLetter: 'B', explanation: 'Marginalskatt är skatten på den senast intjänade hundralappen, inte den totala skatten under ett år.' },
+  { id: 8, term: 'Avkastning', optionA: 'Räntan du får för att ha pengar på ett sparkonto.', optionB: 'Avgiften banken tar för att förvalta ditt konto.', correctLetter: 'A', explanation: 'Avkastning är det man tjänar på till exempel ränta eller aktieutdelning, inte en avgift man betalar.' },
+  { id: 9, term: 'Aktie', optionA: 'Ett skuldebrev där du lånar ut pengar till ett företag mot ränta.', optionB: 'En andel, ett ägarbevis, i ett företag som du kan få utdelning på.', correctLetter: 'B', explanation: 'En aktie är en andel (ägarbevis) i ett företag. Skuldebrevet i det andra alternativet beskriver i stället en obligation.' },
+  { id: 10, term: 'Obligationer', optionA: 'Ett skuldebrev som innebär att du lånar ut pengar till den som ger ut obligationen.', optionB: 'En andel i ett företag som du äger och kan sälja på börsen.', correctLetter: 'A', explanation: 'Obligationer är skuldebrev där man lånar ut pengar mot ränta. Andelen i ett företag är i stället en aktie.' },
+  { id: 11, term: 'Betalningsanmärkning', optionA: 'En notering hos Kronofogden som du får om du inte betalar dina räkningar i tid.', optionB: 'Det företag som en obetald skuld först skickas till för indrivning.', correctLetter: 'A', explanation: 'Betalningsanmärkning är en notering hos Kronofogden. Företaget som en skuld först skickas till kallas i stället inkasso.' },
+  { id: 12, term: 'Amortering', optionA: 'Den ränta du betalar för själva lånet.', optionB: 'Den del av lånebetalningen som gör att skulden faktiskt minskar.', correctLetter: 'B', explanation: 'Amortering är den del av lånebetalningen som gör att skulden minskar, inte räntan man betalar för lånet.' },
+  { id: 13, term: 'Pant', optionA: 'En person som lovar att betala skulden om låntagaren inte kan göra det själv.', optionB: 'En bil eller ett hus som banken kan ta och sälja om lånet inte betalas.', correctLetter: 'B', explanation: 'Pant är en säkerhet i form av till exempel ett hus eller en bil. Personen som lovar betala åt någon annan går i stället i borgen.' },
+  { id: 14, term: 'Borgen', optionA: 'Att ta på sig att betala någon annans skuld om den personen inte betalar den själv.', optionB: 'En säkerhet i form av en bil eller ett hus som banken kan sälja.', correctLetter: 'A', explanation: 'Att gå i borgen innebär att ta på sig att betala skulden i stället för den man gått i borgen för. Säkerheten i form av egendom kallas i stället pant.' },
+  { id: 15, term: 'Inkasso', optionA: 'En statlig myndighet som driver in skulder åt fordringsägare.', optionB: 'Ett företag som en obetald skuld skickas till för att försöka driva in pengarna.', correctLetter: 'B', explanation: 'Inkasso är ett företag som obetalda skulder skickas till. Den statliga myndigheten är i stället Kronofogden.' },
+  { id: 16, term: 'Kronofogden', optionA: 'Den statliga myndighet som bland annat driver in skulder från dem som inte betalat.', optionB: 'Ett privat företag som anlitas av fordringsägare för att skicka påminnelser.', correctLetter: 'A', explanation: 'Kronofogden är en statlig myndighet. Det privata företaget som anlitas för indrivning är i stället ett inkassoföretag.' },
+  { id: 17, term: 'Reklamation', optionA: 'Att meddela säljaren att du inte godtar en vara eller tjänst och förklara varför.', optionB: 'Att ångra ett köp inom 14 dagar utan att behöva ange någon anledning.', correctLetter: 'A', explanation: 'Reklamation innebär att meddela säljaren att man inte godtar varan eller tjänsten. Att ångra ett köp utan anledning är i stället ångerrätt.' },
+  { id: 18, term: 'Ångerrätt', optionA: 'Att lämna tillbaka en trasig vara och förklara varför den är felaktig.', optionB: 'Möjligheten för köparen att ångra ett köp, till exempel vid handel på nätet.', correctLetter: 'B', explanation: 'Ångerrätt är möjligheten att ångra ett köp. Att lämna tillbaka en trasig vara och förklara varför är i stället en reklamation.' },
+  { id: 19, term: 'Socialförsäkringar', optionA: 'Det allmänna ekonomiska skyddsnätet som omfattar alla som bor i Sverige.', optionB: 'En försäkring som varje person själv väljer att teckna hos ett privat bolag.', correctLetter: 'A', explanation: 'Socialförsäkringar är det allmänna skyddsnätet som omfattar alla i Sverige. Den försäkring man själv väljer att teckna kallas i stället privat försäkring.' },
+  { id: 20, term: 'Privat försäkring', optionA: 'Det skydd som automatiskt gäller för alla som bor i Sverige, till exempel sjukförsäkring.', optionB: 'En försäkring som en person själv tecknar för extra ekonomiskt skydd.', correctLetter: 'B', explanation: 'Privat försäkring tecknas av en individ för extra skydd. Det skydd som automatiskt gäller alla i Sverige är i stället socialförsäkringar.' },
+  { id: 21, term: 'Premie', optionA: 'Den återkommande avgift du betalar för att ha ett försäkringsskydd.', optionB: 'Den kostnad du själv får stå för när en skada inträffar.', correctLetter: 'A', explanation: 'Premie är avgiften man betalar för försäkringsskyddet. Kostnaden man själv står för vid en skada kallas i stället självrisk.' },
+  { id: 22, term: 'Självrisk', optionA: 'Den avgift du betalar varje månad för att behålla försäkringen.', optionB: 'Den del av kostnaden vid en skada som du själv får betala innan försäkringen täcker resten.', correctLetter: 'B', explanation: 'Självrisk är kostnaden man själv får stå för vid en skada. Den återkommande avgiften kallas i stället premie.' },
+  { id: 23, term: 'Hemförsäkring', optionA: 'Ett grundskydd som försäkrar dina saker och dig själv i bostaden.', optionB: 'En obligatorisk försäkring för alla som äger ett motorfordon.', correctLetter: 'A', explanation: 'Hemförsäkring är ett grundskydd för saker och person i bostaden. Försäkringen för motorfordon är i stället trafikförsäkring.' },
+  { id: 24, term: 'Trafikförsäkring', optionA: 'En frivillig försäkring som ger extra skydd för resor utomlands.', optionB: 'En obligatorisk försäkring för den som äger ett motorfordon.', correctLetter: 'B', explanation: 'Trafikförsäkring är obligatorisk för den som äger ett motorfordon, inte en frivillig reseförsäkring.' },
+  { id: 25, term: 'Fastighet', optionA: 'Ett stycke mark som finns upptaget i fastighetsregistret och som kan vara bebyggt med hus.', optionB: 'Den rättsliga rätten att bo kvar i en hyrd lägenhet.', correctLetter: 'A', explanation: 'Fastighet är ett stycke mark som finns upptaget i fastighetsregistret. Rätten att bo kvar i en hyrd bostad kallas i stället besittningsrätt.' },
+  { id: 26, term: 'Besittningsrätt', optionA: 'Ett stycke mark som ägs och finns upptaget i fastighetsregistret.', optionB: 'En laglig rätt att utnyttja något, till exempel en hyrd bostad.', correctLetter: 'B', explanation: 'Besittningsrätt är en laglig rätt att utnyttja till exempel en hyrd bostad. Marken i fastighetsregistret är i stället en fastighet.' },
+  { id: 27, term: 'Budget', optionA: 'En beräkning av kommande inkomster och utgifter under en period.', optionB: 'Ett systematiskt sätt att registrera ett företags alla transaktioner.', correctLetter: 'A', explanation: 'Budget är en beräkning av kommande inkomster och utgifter. Att systematiskt registrera ett företags transaktioner kallas i stället bokföring.' },
+  { id: 28, term: 'Fasta utgifter', optionA: 'Kostnader som varierar beroende på hur mycket du använder varan eller tjänsten.', optionB: 'Kostnader som hyra och abonnemang, som inte förändras utifrån hur mycket du använder dem.', correctLetter: 'B', explanation: 'Fasta utgifter påverkas inte av hur mycket varan eller tjänsten används. Kostnader som varierar med användningen är i stället rörliga utgifter.' },
+  { id: 29, term: 'Rörliga utgifter', optionA: 'Kostnader som elförbrukning och klädinköp, som varierar med hur mycket som används eller köps.', optionB: 'Kostnader som hyra, som ligger fast oavsett användning.', correctLetter: 'A', explanation: 'Rörliga utgifter varierar beroende på hur mycket varan eller tjänsten används. Kostnader som ligger fast är i stället fasta utgifter.' },
+  { id: 30, term: 'Lönearbete eller förvärvsarbete', optionA: 'Arbete du utför och får betalt för, till exempel ett sommarjobb.', optionB: 'Obetalt arbete i hemmet, som städning och matlagning.', correctLetter: 'A', explanation: 'Lönearbete eller förvärvsarbete är arbete man utför mot betalning, till skillnad från obetalt hushållsarbete.' },
+  { id: 31, term: 'Bokföring', optionA: 'En plan för hur ett nystartat företag ska sälja sina produkter och nå kunder.', optionB: 'Ett systematiskt sätt att hålla reda på ett företags ekonomi och verksamhet.', correctLetter: 'B', explanation: 'Bokföring är ett systematiskt sätt att hålla reda på företagets ekonomi. Planen för hur företaget ska sälja är i stället en del av affärsplanen.' },
+  { id: 32, term: 'Affärsplan', optionA: 'En översikt över viktiga saker att hålla reda på när man startar eller driver ett företag.', optionB: 'Den dagliga registreringen av ett företags intäkter och kostnader.', correctLetter: 'A', explanation: 'Affärsplan är en översikt över viktiga saker att hålla reda på när man startar eller driver ett företag. Den dagliga registreringen kallas i stället bokföring.' },
+  { id: 33, term: 'Meriter', optionA: 'Ett strukturerat dokument som sammanställer allt en person kan och gjort.', optionB: 'Sådant en person kan eller har gjort som kan intressera en arbetsgivare, till exempel utbildningar och jobb.', correctLetter: 'B', explanation: 'Meriter är sådant en person kan eller har gjort. Det strukturerade dokumentet som sammanställer meriterna är i stället ett CV.' },
+  { id: 34, term: 'CV (curriculum vitae)', optionA: 'En utvidgad och mer beskrivande sammanställning av en persons meriter.', optionB: 'En muntlig intervju där arbetsgivaren ställer frågor om dina erfarenheter.', correctLetter: 'A', explanation: 'CV (curriculum vitae) är en utvidgad och mer beskrivande meritförteckning, inte en muntlig intervju.' },
+  { id: 35, term: 'Arbetslöshetsförsäkring', optionA: 'Ett skydd som hjälper den som blir arbetslös att klara sig ekonomiskt medan hen söker nytt jobb.', optionB: 'Den ersättning som bara betalas ut till den som varit medlem i en a-kassa i minst tolv månader.', correctLetter: 'A', explanation: 'Arbetslöshetsförsäkring är ett skydd som hjälper den som blir arbetslös. Ersättningen som kräver tolv månaders medlemskap är i stället a-kasseersättning.' },
+  { id: 36, term: 'A-kasseersättning', optionA: 'Grundskyddet alla arbetslösa får, oavsett om de varit medlemmar i en a-kassa eller inte.', optionB: 'En högre ersättning, 70–80 procent av tidigare inkomst, som kräver minst tolv månaders medlemskap i en a-kassa.', correctLetter: 'B', explanation: 'A-kasseersättning ger en högre ersättning än grundbeloppet om man uppfyller vissa villkor, bland annat tolv månaders medlemskap.' },
+];
+
+function normalizeAnswer(s) {
+  return (s || '').trim().toLowerCase().replace(/\s+/g, ' ').replace(/[.,!?]/g, '');
+}
+
 function gradeFeedback(pct) {
   if (pct >= 90) return { emoji: '🏆', text: 'Utmärkt! Redo för provet!' };
   if (pct >= 80) return { emoji: '🎉', text: 'Bra jobbat! Nästan i mål.' };
@@ -109,7 +242,7 @@ function gradeFeedback(pct) {
 // PROGRESS- OCH RANK-SYSTEM (sessionStorage, ingen backend)
 // ════════════════════════════════════════════════════════════
 const VIEWS = ['Lista', 'Flashcards', 'Lucktext', 'Scenario', 'Icke-ex.'];
-const ACTIVE_VIEWS = { 'Lista': true, 'Flashcards': true, 'Lucktext': false, 'Scenario': false, 'Icke-ex.': false };
+const ACTIVE_VIEWS = { 'Lista': true, 'Flashcards': true, 'Lucktext': true, 'Scenario': true, 'Icke-ex.': true };
 const SCORE_VIEWS = ['Lucktext', 'Scenario', 'Icke-ex.'];
 const PROGRESS_KEY = 'sh1a1_privatekonomi_progress';
 const RANK_SALT = 'sh1a1privatekonomisakerhet';
@@ -352,22 +485,352 @@ function FlashcardView({ onComplete }) {
   );
 }
 
-// ════════════════════════════════════════════════════════════
-// PLATSHÅLLARE — fylls i nästa omgång (Lucktext, Scenario, Icke-ex.)
-// ════════════════════════════════════════════════════════════
-function ComingSoonView({ label }) {
+function ResultCard({ correct, total, onRestart }) {
+  const pct = Math.round((correct / total) * 100);
+  const g = gradeFeedback(pct);
   return (
-    <div className="bg-white rounded-3xl shadow-sm p-10 text-center border-2 border-dashed" style={{ borderColor: PRIMARY_LIGHT }}>
-      <p className="text-4xl mb-3">🚧</p>
-      <p className="text-lg font-bold text-slate-600 font-fredoka">{label} kommer snart</p>
-      <p className="text-slate-400 text-sm mt-1">Den här vyn byggs ut i nästa uppdatering.</p>
+    <div className="flex flex-col items-center gap-6">
+      <div className="bg-white border-2 rounded-3xl p-8 text-center w-full max-w-sm shadow-sm" style={{ borderColor: PRIMARY }}>
+        <div className="text-5xl mb-3">{g.emoji}</div>
+        <p className="text-2xl font-bold mb-1" style={{ color: PRIMARY_TEXT }}>{correct} / {total} rätt</p>
+        <p className="text-slate-400 text-sm mb-1">({pct}%)</p>
+        <p className="text-slate-600 mb-6 font-fredoka">{g.text}</p>
+        <button onClick={onRestart} className="w-full text-white px-8 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY }}>
+          Börja om
+        </button>
+      </div>
     </div>
   );
 }
 
-function LucktextView() { return <ComingSoonView label="Lucktext" />; }
-function ScenarioView() { return <ComingSoonView label="Scenario" />; }
-function IckeExView() { return <ComingSoonView label="Icke-exempel" />; }
+function LucktextView({ onComplete }) {
+  const makeInitialState = () => {
+    const s = {};
+    LUCKTEXT_ITEMS.forEach(it => { s[it.id] = { value: '', status: 'unanswered' }; });
+    return s;
+  };
+
+  const [order, setOrder] = useState(() => shuffleArray(LUCKTEXT_ITEMS));
+  const [state, setState] = useState(makeInitialState);
+  const [finished, setFinished] = useState(false);
+
+  const correctCount = order.filter(it => state[it.id].status === 'correct').length;
+  const resolvedCount = order.filter(it => state[it.id].status === 'correct' || state[it.id].status === 'revealed').length;
+  const allResolved = resolvedCount === order.length;
+
+  useEffect(() => {
+    if (allResolved && !finished) {
+      setFinished(true);
+      onComplete(Math.round((correctCount / order.length) * 100));
+    }
+  }, [allResolved]);
+
+  const handleChange = (id, value) => {
+    setState(prev => ({ ...prev, [id]: { ...prev[id], value } }));
+  };
+
+  const handleSubmit = (id) => {
+    const item = LUCKTEXT_ITEMS.find(o => o.id === id);
+    setState(prev => {
+      const cur = prev[id];
+      if (cur.status === 'correct' || cur.status === 'revealed') return prev;
+      const norm = normalizeAnswer(cur.value);
+      const isCorrect = item.answers.some(a => normalizeAnswer(a) === norm);
+      if (isCorrect) {
+        return { ...prev, [id]: { ...cur, status: 'correct' } };
+      }
+      return { ...prev, [id]: { ...cur, status: cur.status === 'wrong1' || cur.status === 'wrong2' ? 'wrong2' : 'wrong1' } };
+    });
+  };
+
+  const revealAll = () => {
+    setState(prev => {
+      const next = { ...prev };
+      order.forEach(it => {
+        if (next[it.id].status !== 'correct') {
+          next[it.id] = { ...next[it.id], status: 'revealed' };
+        }
+      });
+      return next;
+    });
+  };
+
+  const restart = () => {
+    setOrder(shuffleArray(LUCKTEXT_ITEMS));
+    setState(makeInitialState());
+    setFinished(false);
+  };
+
+  if (finished) {
+    return <ResultCard correct={correctCount} total={order.length} onRestart={restart} />;
+  }
+
+  return (
+    <div>
+      <div className="bg-white rounded-2xl shadow-sm p-4 mb-6 border" style={{ borderColor: PRIMARY_LIGHT }}>
+        <p className="text-xs uppercase tracking-wide text-slate-400 font-fredoka font-bold mb-2">Begreppsbank</p>
+        <div className="flex flex-wrap gap-2">
+          {concepts.map(c => {
+            const st = state[c.id];
+            const done = st.status === 'correct';
+            const revealed = st.status === 'revealed';
+            return (
+              <span
+                key={c.id}
+                className={
+                  'text-xs px-2.5 py-1 rounded-full font-fredoka border ' +
+                  (done
+                    ? 'line-through text-green-600 border-green-300 bg-green-50'
+                    : revealed
+                      ? 'line-through text-slate-400 border-slate-200 bg-slate-50'
+                      : 'text-slate-600 border-slate-200')
+                }
+              >
+                {c.term}
+              </span>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-2 sticky top-0 bg-green-50 py-2 z-10">
+        <span className="text-sm font-semibold text-slate-600 font-fredoka">{correctCount} / {order.length} rätta hittills</span>
+        <button onClick={revealAll} className="text-sm font-bold font-fredoka px-4 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-colors">
+          Rätta alla
+        </button>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        {order.map(item => {
+          const st = state[item.id];
+          const locked = st.status === 'correct' || st.status === 'revealed';
+          const [before, after] = item.sentence.split('___');
+          const boxClass =
+            st.status === 'correct' ? 'border-green-400 bg-green-50' :
+            st.status === 'revealed' ? 'border-red-300 bg-red-50' :
+            st.status === 'wrong2' ? 'border-red-200' :
+            st.status === 'wrong1' ? 'border-amber-300' : 'border-slate-100';
+          return (
+            <div key={item.id} className={'bg-white rounded-2xl shadow-sm p-4 border-2 transition-colors ' + boxClass}>
+              <p className="text-slate-700 leading-relaxed">
+                {before}
+                <input
+                  type="text"
+                  value={st.value}
+                  disabled={locked}
+                  onChange={e => handleChange(item.id, e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') handleSubmit(item.id); }}
+                  placeholder="skriv begrepp..."
+                  className={
+                    'inline-block mx-1 px-2 py-1 rounded-lg border-b-2 text-center font-semibold focus:outline-none bg-transparent ' +
+                    (locked ? 'border-slate-300' : 'border-slate-300 focus:border-green-400')
+                  }
+                  style={{ minWidth: '160px' }}
+                />
+                {after}
+              </p>
+              {st.status === 'wrong1' && (
+                <p className="text-amber-600 text-sm font-semibold font-fredoka mt-1">Är du säker att du stavat rätt? Försök igen.</p>
+              )}
+              {st.status === 'wrong2' && (
+                <p className="text-red-500 text-sm font-semibold font-fredoka mt-1">Fel svar. Försök igen eller tryck "Rätta alla".</p>
+              )}
+              {st.status === 'correct' && (
+                <div className="mt-1">
+                  <p className="text-green-700 font-bold font-fredoka text-sm">✓ {item.term}</p>
+                  <p className="text-slate-500 text-sm mt-0.5">{item.explanation}</p>
+                </div>
+              )}
+              {st.status === 'revealed' && (
+                <div className="mt-1">
+                  <p className="text-red-600 font-bold font-fredoka text-sm">Rätt svar: {item.term}</p>
+                  <p className="text-slate-500 text-sm mt-0.5">{item.explanation}</p>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function ScenarioView({ onComplete }) {
+  const buildItems = () => shuffleArray(SCENARIO_ITEMS).map(it => ({ ...it, options: shuffleArray(it.options) }));
+
+  const [items, setItems] = useState(buildItems);
+  const [idx, setIdx] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  const total = items.length;
+  const item = items[idx];
+
+  const choose = (opt) => {
+    if (selected) return;
+    setSelected(opt);
+    if (opt === item.correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (idx + 1 >= total) {
+      setFinished(true);
+      onComplete(Math.round((score / total) * 100));
+    } else {
+      setIdx(i => i + 1);
+      setSelected(null);
+    }
+  };
+
+  const restart = () => {
+    setItems(buildItems());
+    setIdx(0);
+    setSelected(null);
+    setScore(0);
+    setFinished(false);
+  };
+
+  if (finished) {
+    return <ResultCard correct={score} total={total} onRestart={restart} />;
+  }
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="w-full max-w-lg mb-4">
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-sm font-semibold text-slate-600 font-fredoka">Fråga {idx + 1} av {total}</span>
+          <span className="text-sm font-semibold text-slate-400 font-fredoka">{score} rätt hittills</span>
+        </div>
+        <div className="w-full bg-slate-200 rounded-full h-1.5">
+          <div className="h-1.5 rounded-full transition-all" style={{ width: `${(idx / total) * 100}%`, background: PRIMARY }} />
+        </div>
+      </div>
+
+      <div className="bg-white rounded-3xl shadow-sm p-6 w-full max-w-lg border" style={{ borderColor: PRIMARY_LIGHT }}>
+        <p className="text-lg text-slate-800 leading-relaxed mb-5">{item.scenario}</p>
+        <div className="flex flex-col gap-3">
+          {item.options.map(opt => {
+            let cls = 'border-slate-200 hover:border-slate-300 text-slate-700';
+            if (selected) {
+              if (opt === item.correct) cls = 'border-green-400 bg-green-50 text-green-700';
+              else if (opt === selected) cls = 'border-red-400 bg-red-50 text-red-600';
+              else cls = 'border-slate-100 text-slate-400';
+            }
+            return (
+              <button
+                key={opt}
+                disabled={!!selected}
+                onClick={() => choose(opt)}
+                className={'text-left px-4 py-3 rounded-2xl border-2 font-medium font-fredoka transition-colors ' + cls}
+              >
+                {opt}
+              </button>
+            );
+          })}
+        </div>
+        {selected && (
+          <div className="mt-5 p-4 rounded-2xl bg-slate-50">
+            <p className="text-slate-600 text-sm leading-relaxed">{item.explanation}</p>
+          </div>
+        )}
+      </div>
+
+      {selected && (
+        <button onClick={next} className="mt-5 text-white px-8 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY }}>
+          {idx + 1 >= total ? 'Se resultat' : 'Nästa fråga →'}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function IckeExView({ onComplete }) {
+  const [items, setItems] = useState(() => shuffleArray(ICKEEX_ITEMS));
+  const [idx, setIdx] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  const total = items.length;
+  const item = items[idx];
+
+  const choose = (letter) => {
+    if (selected) return;
+    setSelected(letter);
+    if (letter === item.correctLetter) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (idx + 1 >= total) {
+      setFinished(true);
+      onComplete(Math.round((score / total) * 100));
+    } else {
+      setIdx(i => i + 1);
+      setSelected(null);
+    }
+  };
+
+  const restart = () => {
+    setItems(shuffleArray(ICKEEX_ITEMS));
+    setIdx(0);
+    setSelected(null);
+    setScore(0);
+    setFinished(false);
+  };
+
+  if (finished) {
+    return <ResultCard correct={score} total={total} onRestart={restart} />;
+  }
+
+  const optionClass = (letter) => {
+    if (!selected) return 'border-slate-200 hover:border-slate-300 text-slate-700';
+    if (letter === item.correctLetter) return 'border-green-400 bg-green-50 text-green-700';
+    if (letter === selected) return 'border-red-400 bg-red-50 text-red-600';
+    return 'border-slate-100 text-slate-400';
+  };
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="w-full max-w-lg mb-4">
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-sm font-semibold text-slate-600 font-fredoka">Fråga {idx + 1} av {total}</span>
+          <span className="text-sm font-semibold text-slate-400 font-fredoka">{score} rätt hittills</span>
+        </div>
+        <div className="w-full bg-slate-200 rounded-full h-1.5">
+          <div className="h-1.5 rounded-full transition-all" style={{ width: `${(idx / total) * 100}%`, background: PRIMARY }} />
+        </div>
+      </div>
+
+      <div className="bg-white rounded-3xl shadow-sm p-6 w-full max-w-lg border" style={{ borderColor: PRIMARY_LIGHT }}>
+        <p className="text-xs uppercase tracking-wide text-slate-400 font-fredoka font-bold mb-1">Vilket exempel stämmer på begreppet?</p>
+        <p className="text-xl font-bold mb-5" style={{ color: PRIMARY_TEXT }}>{item.term}</p>
+        <div className="flex flex-col gap-3">
+          <button disabled={!!selected} onClick={() => choose('A')} className={'text-left px-4 py-3 rounded-2xl border-2 font-medium transition-colors ' + optionClass('A')}>
+            <span className="font-fredoka font-bold mr-2">A</span>{item.optionA}
+          </button>
+          <button disabled={!!selected} onClick={() => choose('B')} className={'text-left px-4 py-3 rounded-2xl border-2 font-medium transition-colors ' + optionClass('B')}>
+            <span className="font-fredoka font-bold mr-2">B</span>{item.optionB}
+          </button>
+        </div>
+        {selected && (
+          <div className="mt-5 p-4 rounded-2xl bg-slate-50">
+            <p className={'font-bold font-fredoka text-sm mb-1 ' + (selected === item.correctLetter ? 'text-green-700' : 'text-red-600')}>
+              {selected === item.correctLetter ? '✓ Rätt!' : `✗ Fel — rätt svar är ${item.correctLetter}`}
+            </p>
+            <p className="text-slate-600 text-sm leading-relaxed">{item.explanation}</p>
+          </div>
+        )}
+      </div>
+
+      {selected && (
+        <button onClick={next} className="mt-5 text-white px-8 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY }}>
+          {idx + 1 >= total ? 'Se resultat' : 'Nästa fråga →'}
+        </button>
+      )}
+    </div>
+  );
+}
 
 // ════════════════════════════════════════════════════════════
 // HEADER + NAVIGERING
@@ -478,6 +941,9 @@ function App() {
 
   const completeLista = useCallback(() => markComplete('Lista'), [markComplete]);
   const completeFlashcards = useCallback(() => markComplete('Flashcards'), [markComplete]);
+  const completeLucktext = useCallback((pct) => markComplete('Lucktext', pct), [markComplete]);
+  const completeScenario = useCallback((pct) => markComplete('Scenario', pct), [markComplete]);
+  const completeIckeEx = useCallback((pct) => markComplete('Icke-ex.', pct), [markComplete]);
 
   const rank = computeRank(progress);
   const completedCount = VIEWS.filter(v => progress.completed[v]).length;
@@ -509,9 +975,9 @@ function App() {
       <div className="pb-16">
         {activeView === 'Lista' && <ListView onComplete={completeLista} />}
         {activeView === 'Flashcards' && <FlashcardView key="flashcards" onComplete={completeFlashcards} />}
-        {activeView === 'Lucktext' && <LucktextView />}
-        {activeView === 'Scenario' && <ScenarioView />}
-        {activeView === 'Icke-ex.' && <IckeExView />}
+        {activeView === 'Lucktext' && <LucktextView key="lucktext" onComplete={completeLucktext} />}
+        {activeView === 'Scenario' && <ScenarioView key="scenario" onComplete={completeScenario} />}
+        {activeView === 'Icke-ex.' && <IckeExView key="ickeex" onComplete={completeIckeEx} />}
       </div>
 
       <footer className="text-center text-slate-400 italic text-sm pb-8">
