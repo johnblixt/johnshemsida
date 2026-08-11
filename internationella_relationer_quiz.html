@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Internationella relationer – Quiz | Samhällskunskap 1a1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #d97706;
+      --primary-btn: #f97316;
+      --primary-light: #fef3c7;
+      --primary-dark: #b45309;
+      --correct-bg: #dcfce7;
+      --correct-border: #16a34a;
+      --correct-text: #16a34a;
+      --wrong-bg: #fee2e2;
+      --wrong-border: #dc2626;
+      --wrong-text: #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'EB Garamond', Georgia, serif; background: #fffbeb; min-height: 100vh; color: #1e293b; }
+
+    a.back-btn {
+      display: inline-block; padding: 8px 16px; color: var(--primary-dark);
+      text-decoration: none; font-size: 0.95rem; position: fixed;
+      top: 14px; left: 14px; z-index: 200; border-radius: 8px; transition: background 0.2s;
+    }
+    a.back-btn:hover { background: var(--primary-light); }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Start ── */
+    #screen-start { max-width: 560px; margin: 0 auto; padding: 90px 24px 40px; text-align: center; }
+    .badge {
+      display: inline-block; background: var(--primary-light); color: var(--primary-dark);
+      padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;
+      letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 20px;
+    }
+    #screen-start h1 { font-size: 2.4rem; font-weight: 600; font-style: italic; color: #0f172a; margin-bottom: 8px; }
+    #screen-start .subtitle { font-size: 1.05rem; color: #64748b; margin-bottom: 32px; }
+    .info-cards { display: flex; gap: 12px; justify-content: center; margin-bottom: 36px; flex-wrap: wrap; }
+    .info-card {
+      background: white; border: 1px solid #fde68a; border-radius: 12px;
+      padding: 16px 20px; text-align: center; flex: 1; min-width: 100px; max-width: 150px;
+    }
+    .info-card .num { font-size: 1.5rem; font-weight: 600; color: var(--primary-dark); }
+    .info-card .lbl { font-size: 0.78rem; color: #94a3b8; margin-top: 2px; }
+
+    /* ── Quiz ── */
+    #screen-quiz { max-width: 700px; margin: 0 auto; padding: 70px 20px 60px; }
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .timer {
+      background: white; border: 1px solid #fde68a; border-radius: 20px;
+      padding: 5px 14px; font-size: 0.92rem; color: #475569; font-variant-numeric: tabular-nums;
+    }
+    .score-pill { background: var(--primary-light); color: var(--primary-dark); border-radius: 20px; padding: 5px 14px; font-size: 0.92rem; font-weight: 600; }
+    .progress-wrap { background: #fde68a; border-radius: 4px; height: 6px; overflow: hidden; margin-bottom: 6px; }
+    .progress-bar { background: var(--primary-btn); height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+    .q-counter { font-size: 0.82rem; color: #94a3b8; text-align: right; margin-bottom: 22px; }
+    .q-type-tag {
+      display: inline-block; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--primary-dark); background: var(--primary-light);
+      padding: 3px 10px; border-radius: 20px; margin-bottom: 12px;
+    }
+    .q-text { font-size: 1.25rem; font-weight: 600; line-height: 1.55; color: #0f172a; margin-bottom: 22px; }
+    .opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+    .opt-btn {
+      background: white; border: 2px solid #fde68a; border-radius: 12px;
+      padding: 13px 18px; text-align: left; font-size: 1rem; font-family: inherit;
+      cursor: pointer; transition: border-color 0.15s, background 0.15s; line-height: 1.45;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--primary-btn); background: var(--primary-light); }
+    .opt-btn:disabled { cursor: default; }
+    .opt-btn.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); font-weight: 600; }
+    .opt-btn.wrong   { background: var(--wrong-bg);   border-color: var(--wrong-border);   color: var(--wrong-text); }
+    .opt-btn.dimmed  { opacity: 0.4; }
+    .nav-row { display: flex; gap: 12px; align-items: center; }
+    .btn-back { background: white; border: 2px solid #fde68a; border-radius: 10px; padding: 10px 20px; font-family: inherit; font-size: 0.9rem; color: #64748b; cursor: pointer; }
+    .btn-back:hover { border-color: #f97316; }
+    .btn-next { background: var(--primary-btn); border: none; border-radius: 10px; padding: 10px 28px; font-family: inherit; font-size: 0.9rem; font-weight: 600; color: white; cursor: pointer; margin-left: auto; transition: background 0.15s; }
+    .btn-next:hover { background: #ea580c; }
+
+    /* ── Modal ── */
+    #modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 500; padding: 20px; }
+    #modal-overlay.hidden { display: none; }
+    .modal-box { background: white; border-radius: 20px; padding: 32px; max-width: 520px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+    .modal-icon    { font-size: 2.6rem; margin-bottom: 10px; }
+    .modal-verdict { font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; }
+    .modal-verdict.c { color: var(--correct-text); }
+    .modal-verdict.w { color: var(--wrong-text); }
+    .modal-expl { font-size: 0.98rem; color: #475569; line-height: 1.7; margin-bottom: 24px; }
+
+    /* ── Result ── */
+    #screen-result { max-width: 700px; margin: 0 auto; padding: 80px 20px 80px; }
+    .res-header { text-align: center; margin-bottom: 30px; }
+    .score-ring { width: 120px; height: 120px; border-radius: 50%; border: 5px solid var(--primary-btn); display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 18px; }
+    .score-ring .rnum { font-size: 2rem; font-weight: 600; color: var(--primary-dark); line-height: 1; }
+    .score-ring .rlbl { font-size: 0.72rem; color: #94a3b8; }
+    .res-title  { font-size: 1.8rem; font-weight: 600; font-style: italic; margin-bottom: 6px; }
+    .res-msg    { font-size: 1rem; color: #64748b; margin-bottom: 4px; }
+    .res-time   { font-size: 0.85rem; color: #94a3b8; margin-bottom: 28px; }
+    .stats-row  { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+    .stat-box   { flex: 1; min-width: 80px; background: white; border: 1px solid #fde68a; border-radius: 12px; padding: 14px; text-align: center; }
+    .stat-box .snum { font-size: 1.6rem; font-weight: 600; }
+    .stat-box .slbl { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
+    .stat-box.cs .snum { color: var(--correct-text); }
+    .stat-box.ws .snum { color: var(--wrong-text); }
+    .section-hd { font-size: 1.05rem; font-weight: 600; color: #0f172a; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #fde68a; }
+    .missed-section { margin-bottom: 32px; }
+    .missed-item { background: var(--wrong-bg); border-left: 4px solid var(--wrong-border); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-size: 0.92rem; }
+    .facit-item { background: white; border: 1px solid #fde68a; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
+    .facit-item.fc { border-left: 4px solid var(--correct-border); }
+    .facit-item.fw { border-left: 4px solid var(--wrong-border); }
+    .fi-num { font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .fi-q   { font-size: 0.93rem; font-weight: 600; color: #0f172a; margin-bottom: 8px; line-height: 1.4; }
+    .fi-row { font-size: 0.88rem; padding: 2px 0; }
+    .fi-row .lbl { color: #94a3b8; }
+    .fi-row.ya-ok  { color: var(--correct-text); }
+    .fi-row.ya-bad { color: var(--wrong-text); }
+    .fi-row.ra     { color: var(--correct-text); font-weight: 600; margin-top: 2px; }
+
+    .btn-primary { display: inline-block; background: var(--primary-btn); color: white; border: none; border-radius: 12px; padding: 13px 36px; font-size: 1.05rem; font-family: inherit; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+    .btn-primary:hover { background: #ea580c; transform: translateY(-1px); }
+    .btn-primary:active { transform: none; }
+
+    @media (max-width: 768px) {
+      #screen-quiz { padding-top: 60px; }
+      .quiz-header { flex-wrap: wrap; gap: 8px; }
+      .nav-row { flex-wrap: wrap; }
+      .btn-back, .btn-next { flex: 1; min-width: 120px; text-align: center; margin-left: 0; }
+      .nav-row { justify-content: space-between; }
+    }
+    @media (max-width: 500px) {
+      #screen-start h1 { font-size: 1.85rem; }
+      .q-text { font-size: 1.1rem; }
+      .info-cards { gap: 8px; }
+      .info-card { padding: 12px 10px; min-width: 88px; }
+    }
+  </style>
+</head>
+<body>
+
+<a href="index.html" class="back-btn" id="back-link">← Tillbaka till startsidan</a>
+
+<!-- ═══════════ START ═══════════ -->
+<div id="screen-start" class="screen active">
+  <div class="badge">Samhällskunskap 1a1 · Internationella relationer</div>
+  <h1>Quiz</h1>
+  <p class="subtitle">28 frågor om Europeiska unionen och dess institutioner, EU:s beslutsprocess, svensk utrikes- och säkerhetspolitik, totalförsvaret, Nato och folkrätten</p>
+  <div class="info-cards">
+    <div class="info-card"><div class="num">28</div><div class="lbl">Frågor</div></div>
+    <div class="info-card"><div class="num">MC + S/F</div><div class="lbl">Frågetyper</div></div>
+    <div class="info-card"><div class="num">F1–F13</div><div class="lbl">Faktafrågor</div></div>
+  </div>
+  <button class="btn-primary" onclick="startQuiz()">Starta Quiz →</button>
+</div>
+
+<!-- ═══════════ QUIZ ═══════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-header">
+    <div class="timer" id="timer">⏱ 0:00</div>
+    <div class="score-pill" id="score-pill">Poäng: 0</div>
+  </div>
+  <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+  <div class="q-counter" id="q-counter">Fråga 1 av 28</div>
+  <div class="q-type-tag" id="q-type-tag"></div>
+  <div class="q-text" id="q-text"></div>
+  <div class="opts" id="opts"></div>
+  <div class="nav-row">
+    <button class="btn-back" id="btn-back" onclick="goBack()" style="display:none">← Bakåt</button>
+    <button class="btn-next" id="btn-next" onclick="goNext()" style="display:none">Nästa →</button>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL ═══════════ -->
+<div id="modal-overlay" class="hidden">
+  <div class="modal-box">
+    <div class="modal-icon"    id="modal-icon"></div>
+    <div class="modal-verdict" id="modal-verdict"></div>
+    <div class="modal-expl"    id="modal-expl"></div>
+    <button class="btn-primary" onclick="closeModal()">Nästa fråga →</button>
+  </div>
+</div>
+
+<!-- ═══════════ RESULT ═══════════ -->
+<div id="screen-result" class="screen">
+  <div class="res-header">
+    <div class="score-ring">
+      <div class="rnum" id="r-score"></div>
+      <div class="rlbl">poäng</div>
+    </div>
+    <div class="res-title" id="r-title"></div>
+    <div class="res-msg"   id="r-msg"></div>
+    <div class="res-time"  id="r-time"></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-box cs"><div class="snum" id="s-correct">0</div><div class="slbl">Rätt</div></div>
+    <div class="stat-box ws"><div class="snum" id="s-wrong">0</div><div class="slbl">Fel</div></div>
+    <div class="stat-box"><div class="snum" id="s-pct">0%</div><div class="slbl">Andel rätt</div></div>
+  </div>
+  <div class="missed-section" id="missed-section"></div>
+  <div class="section-hd">Fullständigt facit</div>
+  <div id="facit-list"></div>
+  <div style="text-align:center;margin-top:32px">
+    <button class="btn-primary" onclick="restartQuiz()">↺ Gör om quizet</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// SMART TILLBAKA-NAVIGERING
+// ════════════════════════════════════════════════════════════
+document.getElementById('back-link').addEventListener('click', function (e) {
+  e.preventDefault();
+  const ref = document.referrer;
+  if (ref && ref.indexOf(location.hostname) !== -1) {
+    history.back();
+  } else {
+    window.location.href = 'index.html';
+  }
+});
+
+// ════════════════════════════════════════════════════════════
+// QUESTION DATA — 28 frågor (mc = flerval 4 alt, tf = sant/falskt)
+// Frågor från Internationella_relationer_uppgifter.md (Faktafrågor 1–13),
+// svar hämtade ur Internationella_relationer_material.md
+// ════════════════════════════════════════════════════════════
+const QUESTIONS = [
+
+  {
+    type: 'mc',
+    q: 'Vilket år blev Sverige medlem i Europeiska unionen (EU)?',
+    opts: ['1995', '1990', '2000', '1986'],
+    correct: 0,
+    expl: 'Sverige har varit medlem i EU sedan 1995. När Sverige gick med bestod EU av 15 medlemsländer.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilket dokument brukar kallas EU:s grundlag, och när trädde det i kraft?',
+    opts: [
+      'Lissabonfördraget, som trädde i kraft 2009 och innehåller EU:s viktigaste regler.',
+      'Maastrichtfördraget, som trädde i kraft 1993 och innehåller EU:s viktigaste regler.',
+      'Amsterdamfördraget, som trädde i kraft 1997 och innehåller EU:s viktigaste regler.',
+      'Nicefördraget, som trädde i kraft 2001 och innehåller EU:s viktigaste regler.'
+    ],
+    correct: 0,
+    expl: 'EU:s viktigaste dokument är Lissabonfördraget, som trädde i kraft 2009 och innehåller regler och EU:s grundlag.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad hände med Storbritannien och EU år 2016 respektive 2020?',
+    opts: [
+      '2016 röstade britterna för utträde (brexit) och år 2020 lämnade landet EU formellt.',
+      '2016 röstade britterna för medlemskap och år 2020 gick landet med i euron formellt.',
+      '2016 röstade britterna för utträde ur Nato och år 2020 lämnade landet alliansen formellt.',
+      '2016 röstade britterna för en ny grundlag och år 2020 antog landet den formellt.'
+    ],
+    correct: 0,
+    expl: 'År 2016 röstade Storbritannien för utträde ur EU (brexit), och år 2020 utträdde landet formellt. Det var första gången EU behövde hantera att en medlemsstat ville lämna unionen.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilken uppgift har Europeiska rådet inom EU?',
+    opts: [
+      'Samlar EU-ländernas stats- och regeringschefer, är EU:s högsta politiska organ och drar upp riktlinjerna för EU:s politik.',
+      'Samlar EU-ländernas fackministrar, föreslår all ny lagstiftning och sköter EU:s dagliga budgetförvaltning.',
+      'Samlar EU-ländernas domare, tolkar EU:s lagstiftning och löser juridiska tvister mellan medlemsländerna.',
+      'Samlar EU-ländernas folkvalda ledamöter, godkänner internationella avtal och delar budgetmakten med rådet.'
+    ],
+    correct: 0,
+    expl: 'Europeiska rådet är EU:s högsta politiska organ, där stats- och regeringschefer samt Kommissionens ordförande möts. De drar upp riktlinjerna för EU:s politik och utser bland annat Kommissionens ordförande.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilken uppgift har Ministerrådet (Rådet) inom EU?',
+    opts: [
+      'Beslutar om ny lagstiftning tillsammans med Europaparlamentet och bestämmer EU:s budget tillsammans med parlamentet.',
+      'Utses av folket vart femte år och godkänner utnämningen av Kommissionens ordförande och ledamöter.',
+      'Utarbetar de flesta förslag till nya EU-regler och kan skicka länder som bryter mot dem till EU-domstolen.',
+      'Tolkar EU:s lagstiftning och avgör juridiska tvister mellan medlemsländerna och EU:s institutioner.'
+    ],
+    correct: 0,
+    expl: 'Ministerrådet beslutar om ny lagstiftning, ofta i samarbete med Europaparlamentet. Rådet bestämmer också EU:s budget tillsammans med parlamentet. Sedan 2014 fattas beslut med dubbel majoritet.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilken uppgift har EU-kommissionen inom EU?',
+    opts: [
+      'Utarbetar de flesta förslag till ny lagstiftning, sköter EU:s budget och kan skicka länder som bryter mot reglerna till EU-domstolen.',
+      'Samlar stats- och regeringscheferna fyra gånger om året och drar upp de övergripande riktlinjerna för EU:s politik.',
+      'Väljs av folket vart femte år och delar budgetmakten med Ministerrådet i lagstiftningsfrågor om den inre marknaden.',
+      'Beslutar om ny lagstiftning med dubbel majoritet och är ordförande i olika rådskonstellationer sex månader i taget.'
+    ],
+    correct: 0,
+    expl: 'Kommissionen utarbetar de flesta förslag till nya EU-regler, sköter EU:s budget och kan skicka länder som inte följer besluten vidare till EU-domstolen. Dess viktigaste uppgift är att ta initiativ till lagstiftning.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilken uppgift har Europaparlamentet inom EU?',
+    opts: [
+      'Är EU:s folkrepresentation, väljs vart femte år, delar lagstiftningsmakt med Ministerrådet och godkänner utnämningen av Kommissionen.',
+      'Samlar stats- och regeringscheferna och utser Kommissionens ordförande samt EU:s höga representant för utrikesfrågor.',
+      'Föreslår ny lagstiftning på eget initiativ och förvaltar EU:s fonder för jordbruks- och regionalstöd i medlemsländerna.',
+      'Tolkar EU:s lagar och löser tvister mellan medlemsländer, med säte i Luxemburg och domare från varje land.'
+    ],
+    correct: 0,
+    expl: 'Europaparlamentet är EU:s folkrepresentation och väljs vart femte år. Det har lika mycket makt som Ministerrådet i flera lagstiftningsfrågor och är den enda institution som kan avsätta Kommissionen.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilken uppgift har EU-domstolen?',
+    opts: [
+      'Tolkar EU:s lagstiftning, ser till att den tillämpas lika i alla medlemsländer och löser juridiska tvister mellan länder och institutioner.',
+      'Föreslår ny lagstiftning till Europaparlamentet och Ministerrådet samt förvaltar EU:s budget och olika stödfonder.',
+      'Väljs vart femte år av folket och delar budgetmakten med Ministerrådet i frågor om den inre marknaden.',
+      'Samlar stats- och regeringscheferna fyra gånger per år och utser ordföranden för Europeiska kommissionen.'
+    ],
+    correct: 0,
+    expl: 'EU-domstolens uppgift är att tolka EU:s lagstiftning och se till att den följs och tillämpas lika i alla medlemsländer och institutioner. Den löser också juridiska tvister mellan medlemsländer och EU-institutioner. Domstolen har sitt säte i Luxemburg.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilka fyra friheter ingår i EU:s inre marknad?',
+    opts: [
+      'Fri rörlighet för varor, tjänster, personer och kapital.',
+      'Fri rörlighet för arbete, skatter, valuta och handel.',
+      'Fri rörlighet för mat, energi, information och miljö.',
+      'Fri rörlighet för lagar, domstolar, gränser och tullar.'
+    ],
+    correct: 0,
+    expl: 'Den inre marknaden innebär fri rörlighet för varor, tjänster, personer och kapital. Detta infördes formellt i och med EU:s bildande för att förenkla det ekonomiska samarbetet.'
+  },
+  {
+    type: 'tf',
+    q: 'EU är en mellanstatlig organisation, men vissa beslutsområden räknas som överstatliga, vilket innebär att medlemsländerna inte kan påverka de besluten.',
+    correct: true,
+    expl: 'Stämmer. EU är i grunden mellanstatligt, men på vissa områden fattas beslut med överstatlighet, vilket innebär att enskilda medlemsländer inte själva kan styra över utfallet.'
+  },
+  {
+    type: 'mc',
+    q: 'Inom vilka områden har EU ensam beslutanderätt, enligt materialet, på grund av den fria rörligheten?',
+    opts: [
+      'Handels- och konkurrenspolitik, där Sverige och andra medlemsländer inte får stifta egna lagar.',
+      'Skola och sjukvård, där Sverige och andra medlemsländer inte får stifta egna lagar.',
+      'Försvar och utrikespolitik, där Sverige och andra medlemsländer inte får stifta egna lagar.',
+      'Skatter och pensioner, där Sverige och andra medlemsländer inte får stifta egna lagar.'
+    ],
+    correct: 0,
+    expl: 'EU har ensam beslutanderätt inom till exempel handels- och konkurrenspolitik, eftersom den fria rörligheten länge varit ett kännetecken för samarbetet. Inom dessa områden får medlemsländerna inte stifta egna lagar.'
+  },
+  {
+    type: 'mc',
+    q: 'Var håller Europaparlamentet sina månatliga fyradagarssammanträden, och var hålls de kortare sammanträdena däremellan?',
+    opts: [
+      'Strasbourg är platsen för de månatliga sammanträdena, medan de kortare sammanträdena hålls i Bryssel.',
+      'Bryssel är platsen för de månatliga sammanträdena, medan de kortare sammanträdena hålls i Strasbourg.',
+      'Luxemburg är platsen för de månatliga sammanträdena, medan de kortare sammanträdena hålls i Haag.',
+      'Haag är platsen för de månatliga sammanträdena, medan de kortare sammanträdena hålls i Luxemburg.'
+    ],
+    correct: 0,
+    expl: 'En gång i månaden samlas Europaparlamentets ledamöter till ett fyradagarssammanträde i Strasbourg. Ett kortare sammanträde hålls däremellan i Bryssel.'
+  },
+  {
+    type: 'mc',
+    q: 'Hur många ledamöter representerar Sverige i Europaparlamentet, av totalt 720?',
+    opts: ['21', '15', '33', '27'],
+    correct: 0,
+    expl: 'Sverige har 21 ledamöter i Europaparlamentet, som har 720 ledamöter totalt. Antalet ledamöter från varje land grundas på ländernas invånarantal.'
+  },
+  {
+    type: 'tf',
+    q: 'En EU-förordning gäller direkt i Sverige, medan ett EU-direktiv anger mål som Sverige själv kan behöva stifta nya lagar för att nå.',
+    correct: true,
+    expl: 'Stämmer. Förordningar gäller direkt i Sverige utan att svenska lagar behöver ändras, medan direktiv innehåller mål som ibland kräver nya svenska lagar eller föreskrifter för att uppnås.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad innebär subsidiaritetsprincipen (närhetsprincipen) inom EU?',
+    opts: [
+      'Att beslut ska fattas så nära medborgarna som möjligt, det vill säga att medlemsländerna själva bestämmer om det som inte påverkar övriga EU.',
+      'Att beslut alltid ska fattas av EU-kommissionen, det vill säga att medlemsländerna aldrig får lagstifta i egna frågor.',
+      'Att beslut ska fattas av den institution som har flest ledamöter, det vill säga att Europaparlamentet alltid går före Ministerrådet.',
+      'Att beslut ska fattas enhälligt av alla medlemsländer, det vill säga att varje land har vetorätt i samtliga frågor.'
+    ],
+    correct: 0,
+    expl: 'Subsidiaritetsprincipen (närhetsprincipen) innebär att besluten ska fattas så nära medborgarna som möjligt. Det betyder att medlemsländerna själva bestämmer om det som inte påverkar resten av EU och dess invånare.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilka områden omfattas enligt materialet av svensk självbestämmanderätt trots EU-medlemskapet?',
+    opts: [
+      'Skola, sjukvård, socialtjänst, pensioner, barnbidrag, allemansrätt, kultur, energikällor och bostäder.',
+      'Handelspolitik, konkurrenspolitik, tullar, valutasamarbete, jordbruksstöd och den inre marknadens regler.',
+      'Utrikespolitik, försvarssamarbete, gränskontroller, migrationspolitik och EU:s gemensamma budget.',
+      'Miljölagstiftning, konsumentskydd, invandringsregler, straffrättsligt samarbete och polissamarbete inom EU.'
+    ],
+    correct: 0,
+    expl: 'Exempel på områden som Sverige själv bestämmer om är skola, sjukvård, socialtjänst, pensioner, barnbidrag, allemansrätt, kultur, energikällor och bostäder – så länge inte alla EU-länder vill göra gemensamma förändringar.'
+  },
+  {
+    type: 'tf',
+    q: 'Om en tredjedel av medlemsländernas parlament anser att ett lagförslag inte borde behandlas på EU-nivå måste EU-kommissionen överväga förslaget på nytt.',
+    correct: true,
+    expl: 'Stämmer. Denna regel ger de nationella parlamenten en möjlighet att påverka om ett lagförslag verkligen bör hanteras på EU-nivå, och tvingar då Kommissionen att ompröva förslaget.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad består det svenska totalförsvaret av?',
+    opts: [
+      'Det militära försvaret, Försvarsmakten, och civilförsvaret, som tillsammans ska försvara Sveriges territorium, frihet och självständighet.',
+      'Polisen och Kustbevakningen, som tillsammans ska upprätthålla lag och ordning vid kriser och katastrofer i landet.',
+      'Riksdagen och regeringen, som tillsammans ska fatta beslut om krigsförklaring och fredsförhandlingar med andra stater.',
+      'MSB och Riksgälden, som tillsammans ska hantera ekonomin och informationen till allmänheten vid kriser i landet.'
+    ],
+    correct: 0,
+    expl: 'Det svenska totalförsvaret består av det militära försvaret – Försvarsmakten – och civilförsvaret. Huvuduppgiften är att försvara Sverige mot angrepp och värna landets territorium, frihet och självständighet.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilken roll har civilförsvaret inom det svenska totalförsvaret?',
+    opts: [
+      'Att skydda och hjälpa civilbefolkningen, se till att viktiga samhällsfunktioner fungerar samt stödja Försvarsmakten med bland annat transporter och sjukvård.',
+      'Att leda Sveriges militära insatser utomlands och samordna Natos övningar tillsammans med andra medlemsländer.',
+      'Att förhandla fram nya försvarsavtal med andra länder och besluta om Sveriges försvarsbudget varje år.',
+      'Att rekrytera och utbilda soldater till Försvarsmakten samt ansvara för Sveriges gränsbevakning mot andra länder.'
+    ],
+    correct: 0,
+    expl: 'Civilförsvaret ska skydda och hjälpa civilbefolkningen samt se till att viktiga samhällsfunktioner fungerar. Det är också ett viktigt stöd för Försvarsmakten, exempelvis genom transporter, sjukvård samt el- och vattenförsörjning.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilka omfattas av totalförsvarsplikt i Sverige?',
+    opts: [
+      'Alla som bor i Sverige i åldern 16–70 år.',
+      'Alla svenska medborgare i åldern 18–65 år.',
+      'Alla som avlagt värnplikt i åldern 20–47 år.',
+      'Alla anställda inom staten i åldern 25–60 år.'
+    ],
+    correct: 0,
+    expl: 'Alla som bor i Sverige i åldern 16–70 år omfattas av totalförsvarsplikt. Den innebär att vem som helst kan kallas in för olika uppgifter vid krigsfara eller krig.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad slås fast i Natos artikel 5, och vad innebär den för Sverige som medlem?',
+    opts: [
+      'Att medlemmarna ska komma till varandras hjälp vid ett angrepp, vilket innebär att Sverige både kan få stöd och måste hjälpa andra medlemmar.',
+      'Att medlemmarna ska hålla gemensamma militärövningar varje år, vilket innebär att Sverige måste delta i samtliga Nato-övningar.',
+      'Att medlemmarna ska avstå från egna försvarsbudgetar, vilket innebär att Sverige måste finansiera sitt försvar enbart via Nato.',
+      'Att medlemmarna ska erkänna varandras gränser, vilket innebär att Sverige måste godkänna alla andra medlemmars territoriella krav.'
+    ],
+    correct: 0,
+    expl: 'I artikel 5 slås fast att medlemmarna ska komma till varandras hjälp om något medlemsland angrips. För Sverige innebär det att landet ska få stöd av övriga Nato-länder vid ett angrepp, men också att Sverige åtagit sig att hjälpa andra medlemmar.'
+  },
+  {
+    type: 'tf',
+    q: 'Sveriges säkerhetspolitik byggde länge på alliansfrihet, men landet övergav principen och blev fullvärdig Natomedlem år 2024.',
+    correct: true,
+    expl: 'Stämmer. Sverige präglades länge av alliansfrihet, men övergav principen med stor majoritet i riksdagen och blev fullvärdig Natomedlem den 7 mars 2024.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad var en starkt bidragande orsak till att Sverige gick med i Nato 2024?',
+    opts: [
+      'Den ryska invasionen av Ukraina 2022, som ökade oron för Sveriges säkerhet.',
+      'Kommunismens fall i Östeuropa 1989, som förändrade Natos roll i Europa.',
+      'Brexit-omröstningen 2016, som ledde till att Storbritannien lämnade EU.',
+      'Finanskrisen 2008, som fick flera länder att öka sina försvarsutgifter kraftigt.'
+    ],
+    correct: 0,
+    expl: 'Den ryska invasionen av Ukraina 2022 var en starkt bidragande orsak till att Sverige anslöt sig till Nato 2024, efter en lång period av ökad oro i omvärlden.'
+  },
+  {
+    type: 'mc',
+    q: 'Vad är folkrätt, och vad reglerar den enligt materialet?',
+    opts: [
+      'Internationella spelregler som stater kommit överens om, vilka tillsammans med mänskliga rättigheter reglerar statens ansvar och relationer mellan stater.',
+      'Nationella lagar som varje land stiftar för att skydda sina egna medborgares grundläggande fri- och rättigheter.',
+      'Regler som EU-domstolen beslutar om för att lösa tvister mellan medlemsländer inom den europeiska unionen.',
+      'Avtal mellan företag och stater som reglerar internationell handel, tullar och investeringar mellan länder.'
+    ],
+    correct: 0,
+    expl: 'Folkrätten utgörs av internationella spelregler som de flesta stater kommit överens om, tillsammans med de mänskliga rättigheterna. Den reglerar statens ansvar gentemot individer samt hur stater ska förhålla sig till varandra.'
+  },
+  {
+    type: 'tf',
+    q: 'Folkrättens ena huvuddel kallas fredens folkrätt och handlar om mänskliga rättigheter och avtal mellan stater, medan den andra delen, krigets lagar, gäller vid konflikter.',
+    correct: true,
+    expl: 'Stämmer. Fredens folkrätt behandlar mänskliga rättigheter och internationella avtal mellan stater, medan krigets lagar (internationell humanitär rätt) gäller när konflikter uppstår eller är på väg att uppstå.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilka är de viktigaste rättsdokumenten inom krigets lagar (internationell humanitär rätt)?',
+    opts: [
+      'De fyra Genèvekonventionerna med tilläggsprotokoll samt de tolv Haagkonventionerna.',
+      'FN:s allmänna förklaring om de mänskliga rättigheterna samt Europakonventionen.',
+      'Romfördraget och Maastrichtfördraget samt de tolv Haagkonventionerna.',
+      'Barnkonventionen och flyktingkonventionen samt de fyra Genèvekonventionerna.'
+    ],
+    correct: 0,
+    expl: 'De viktigaste rättsdokumenten inom internationell humanitär rätt är de fyra Genèvekonventionerna med sina tilläggsprotokoll och de tolv Haagkonventionerna.'
+  },
+  {
+    type: 'mc',
+    q: 'Vilka internationella domstolar finns enligt materialet för att följa upp folkrätten?',
+    opts: [
+      'Krigsförbrytartribunaler, Internationella domstolen i Haag och Internationella brottmålsdomstolen (ICC).',
+      'EU-domstolen, Europadomstolen för de mänskliga rättigheterna och FN:s säkerhetsråd.',
+      'Nationella domstolar, Riksrätten och Högsta domstolen i respektive medlemsland.',
+      'Nürnbergtribunalen, Nato-domstolen och Internationella valutafonden (IMF).'
+    ],
+    correct: 0,
+    expl: 'Det finns krigsförbrytartribunaler (tillfälliga domstolar upprättade av FN), Internationella domstolen i Haag (dömer i tvister mellan stater) och Internationella brottmålsdomstolen ICC (dömer individer för krigsförbrytelser, folkmord och brott mot mänskligheten).'
+  },
+  {
+    type: 'mc',
+    q: 'Vilket ansvar har statsmakten i varje land när det gäller att efterleva den humanitära rätten?',
+    opts: [
+      'Att söka efter misstänkta personer och åtala misstänkta krigsförbrytare i landets egna domstolar.',
+      'Att överlämna alla krigsförbrytarärenden direkt till Internationella brottmålsdomstolen (ICC) utan egen utredning.',
+      'Att avstå från att döma egna medborgare och istället låta FN:s säkerhetsråd besluta om straff.',
+      'Att enbart rapportera misstänkta brott till Europadomstolen för de mänskliga rättigheterna i Strasbourg.'
+    ],
+    correct: 0,
+    expl: 'Statsmakten i varje land ska ansvara för att den humanitära rätten efterlevs, vilket bland annat innebär att söka efter misstänkta personer och åtala misstänkta krigsförbrytare i landets egna domstolar. Det fungerar dock sämre när brotten begås av regimen själv.'
+  }
+];
+
+// ════════════════════════════════════════════════════════════
+// FISHER-YATES SHUFFLE
+// ════════════════════════════════════════════════════════════
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// ════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════
+let qs = [];
+let cur = 0;
+let score = 0;
+let elapsed = 0;
+let timerID = null;
+
+function normalize(q) {
+  if (q.type === 'tf') {
+    return {
+      type: 'tf',
+      q: q.q,
+      opts: ['Sant', 'Falskt'],
+      correct: q.correct ? 0 : 1,
+      expl: q.expl
+    };
+  }
+  return q;
+}
+
+function buildState() {
+  const shuffled = shuffleArray([...QUESTIONS]).map(normalize);
+  qs = shuffled.map(q => ({
+    ...q,
+    shuffledIdx: shuffleArray(q.opts.map((_, i) => i)),
+    selectedDisplay: null,
+    answered: false
+  }));
+}
+
+// ════════════════════════════════════════════════════════════
+// SCREENS
+// ════════════════════════════════════════════════════════════
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ════════════════════════════════════════════════════════════
+// TIMER
+// ════════════════════════════════════════════════════════════
+function fmt(s) {
+  return '⏱ ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+}
+function startTimer() {
+  elapsed = 0;
+  timerID = setInterval(() => { elapsed++; document.getElementById('timer').textContent = fmt(elapsed); }, 1000);
+}
+function stopTimer() { clearInterval(timerID); }
+
+// ════════════════════════════════════════════════════════════
+// START
+// ════════════════════════════════════════════════════════════
+function startQuiz() {
+  buildState();
+  cur = 0;
+  score = 0;
+  show('screen-quiz');
+  startTimer();
+  render();
+}
+
+// ════════════════════════════════════════════════════════════
+// RENDER
+// ════════════════════════════════════════════════════════════
+function render() {
+  const q = qs[cur];
+  const total = qs.length;
+
+  document.getElementById('progress-bar').style.width = (cur / total * 100) + '%';
+  document.getElementById('q-counter').textContent = 'Fråga ' + (cur + 1) + ' av ' + total;
+  document.getElementById('score-pill').textContent = 'Poäng: ' + score;
+  document.getElementById('q-type-tag').textContent = q.type === 'tf' ? 'Sant eller falskt' : 'Flerval';
+  document.getElementById('q-text').textContent = q.q;
+
+  const optsEl = document.getElementById('opts');
+  optsEl.innerHTML = '';
+
+  q.shuffledIdx.forEach((origIdx, displayPos) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = q.opts[origIdx];
+    btn.disabled = q.answered;
+
+    if (q.answered) {
+      const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+      if (displayPos === correctDisplay)      btn.classList.add('correct');
+      else if (displayPos === q.selectedDisplay) btn.classList.add('wrong');
+      else                                    btn.classList.add('dimmed');
+    } else {
+      btn.addEventListener('click', () => handleAnswer(displayPos));
+    }
+    optsEl.appendChild(btn);
+  });
+
+  document.getElementById('btn-back').style.display = cur > 0 ? 'inline-block' : 'none';
+  document.getElementById('btn-next').style.display = q.answered ? 'inline-block' : 'none';
+  document.getElementById('btn-next').textContent = cur === total - 1 ? 'Se resultat →' : 'Nästa →';
+}
+
+// ════════════════════════════════════════════════════════════
+// ANSWER
+// ════════════════════════════════════════════════════════════
+function handleAnswer(displayPos) {
+  const q = qs[cur];
+  if (q.answered) return;
+
+  q.answered = true;
+  q.selectedDisplay = displayPos;
+
+  const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+  const isCorrect = displayPos === correctDisplay;
+  if (isCorrect) score++;
+
+  document.querySelectorAll('.opt-btn').forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === correctDisplay)          btn.classList.add('correct');
+    else if (i === displayPos)         btn.classList.add('wrong');
+    else                               btn.classList.add('dimmed');
+  });
+
+  document.getElementById('btn-next').style.display = 'inline-block';
+  document.getElementById('btn-next').textContent = cur === qs.length - 1 ? 'Se resultat →' : 'Nästa →';
+  document.getElementById('score-pill').textContent = 'Poäng: ' + score;
+
+  setTimeout(() => showModal(isCorrect, q.expl), 600);
+}
+
+// ════════════════════════════════════════════════════════════
+// MODAL
+// ════════════════════════════════════════════════════════════
+function showModal(isCorrect, expl) {
+  document.getElementById('modal-icon').textContent      = isCorrect ? '✅' : '❌';
+  document.getElementById('modal-verdict').textContent   = isCorrect ? 'Rätt svar!' : 'Fel svar';
+  document.getElementById('modal-verdict').className     = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
+  document.getElementById('modal-expl').textContent      = expl;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  goNext();
+}
+
+// ════════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════════
+function goBack() { if (cur > 0) { cur--; render(); } }
+function goNext() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  if (cur < qs.length - 1) { cur++; render(); }
+  else showResults();
+}
+
+// ════════════════════════════════════════════════════════════
+// RESULTS
+// ════════════════════════════════════════════════════════════
+function showResults() {
+  stopTimer();
+  show('screen-result');
+
+  const total = qs.length;
+  const wrong = total - score;
+  const pct   = Math.round(score / total * 100);
+
+  document.getElementById('r-score').textContent   = score + '/' + total;
+  document.getElementById('s-correct').textContent = score;
+  document.getElementById('s-wrong').textContent   = wrong;
+  document.getElementById('s-pct').textContent     = pct + '%';
+
+  const m = Math.floor(elapsed / 60), s = String(elapsed % 60).padStart(2, '0');
+  document.getElementById('r-time').textContent = 'Tid: ' + m + ':' + s;
+
+  let title, msg;
+  if (pct >= 90)      { title = '🏆 Utmärkt!';          msg = 'Du behärskar kapitlet Internationella relationer på hög nivå.'; }
+  else if (pct >= 75) { title = '✅ Redo för provet!';   msg = 'Bra resultat – du har koll på det centrala.'; }
+  else if (pct >= 55) { title = '📖 Öva lite till';      msg = 'Du är på rätt spår men behöver repetera en del.'; }
+  else                { title = '💡 Fortsätt repetera'; msg = 'Gå igenom pluggmaterialet och försök igen.'; }
+
+  document.getElementById('r-title').textContent = title;
+  document.getElementById('r-msg').textContent   = msg;
+
+  // Missed
+  const missedEl = document.getElementById('missed-section');
+  const missed = qs.filter(q => q.answered && q.shuffledIdx.indexOf(q.correct) !== q.selectedDisplay);
+  if (missed.length) {
+    missedEl.innerHTML = '<div class="section-hd">Missade frågor (' + missed.length + ')</div>';
+    missed.forEach(q => {
+      const d = document.createElement('div');
+      d.className = 'missed-item';
+      d.textContent = q.q;
+      missedEl.appendChild(d);
+    });
+  } else {
+    missedEl.innerHTML = '';
+  }
+
+  // Full facit
+  const facitEl = document.getElementById('facit-list');
+  facitEl.innerHTML = '';
+  qs.forEach((q, i) => {
+    const correctDisplay = q.shuffledIdx.indexOf(q.correct);
+    const isCorrect  = q.answered && q.selectedDisplay === correctDisplay;
+    const notAnswered = !q.answered;
+    const correctText  = q.opts[q.correct];
+    const selectedText = q.answered ? q.opts[q.shuffledIdx[q.selectedDisplay]] : null;
+
+    const div = document.createElement('div');
+    div.className = 'facit-item ' + (notAnswered ? '' : isCorrect ? 'fc' : 'fw');
+
+    let html = '<div class="fi-num">Fråga ' + (i + 1) + '</div>';
+    html += '<div class="fi-q">' + q.q + '</div>';
+    if (notAnswered) {
+      html += '<div class="fi-row"><span class="lbl">Ditt svar: </span>— (inte besvarad)</div>';
+      html += '<div class="fi-row ra"><span class="lbl">Rätt svar: </span>' + correctText + '</div>';
+    } else if (isCorrect) {
+      html += '<div class="fi-row ya-ok">✓ <span class="lbl">Ditt svar: </span>' + selectedText + '</div>';
+    } else {
+      html += '<div class="fi-row ya-bad">✗ <span class="lbl">Ditt svar: </span>' + selectedText + '</div>';
+      html += '<div class="fi-row ra"><span class="lbl">Rätt svar: </span>' + correctText + '</div>';
+    }
+    div.innerHTML = html;
+    facitEl.appendChild(div);
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// RESTART
+// ════════════════════════════════════════════════════════════
+function restartQuiz() {
+  stopTimer();
+  show('screen-start');
+}
+</script>
+</body>
+</html>
