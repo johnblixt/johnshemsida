@@ -72,6 +72,7 @@ function makeOptions(currentItem, allData) {
 }
 
 const VIEWS = ['Lista', 'Flashcards', 'Lucktext', 'Scenario', 'Icke-ex.'];
+const VIEW_LABELS = { 'Scenario': 'Test 1', 'Icke-ex.': 'Test 2' };
 const SCORE_VIEWS = ['Lucktext', 'Scenario', 'Icke-ex.'];
 const PROGRESS_KEY = 'jur1_block1_progress';
 const RANK_SALT = 'jur1block1sakerhet';
@@ -612,7 +613,7 @@ function ScenarioView({ onComplete }) {
           className="w-full text-white font-bold py-3 rounded-2xl text-sm"
           style={{ background: PRIMARY }}
         >
-          {idx + 1 < total ? 'Nästa scenario →' : 'Visa resultat'}
+          {idx + 1 < total ? 'Nästa →' : 'Visa resultat'}
         </button>
       )}
     </div>
@@ -1020,7 +1021,7 @@ function App() {
                 : { color: '#94a3b8', background: 'transparent' }
             }
           >
-            {view}
+            {VIEW_LABELS[view] || view}
             {progress.completed[view] && (
               <span className="ml-1" style={{ color: activeView === view ? '#fff' : '#16a34a' }}>✓</span>
             )}
