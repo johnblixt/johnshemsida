@@ -133,8 +133,6 @@
     }
     .easy-pill[aria-pressed="true"] { background: #15803d; outline: 2px solid #86efac; outline-offset: 2px; }
     .easy-pill:hover { background: #15803d; }
-    .easy-line { margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(0,0,0,0.08); font-size: 0.85em; color: #64748b; line-height: 1.5; }
-    .easy-badge { display: inline-block; font-size: 10px; background: rgba(0,0,0,0.06); border-radius: 4px; padding: 1px 5px; margin-right: 4px; }
   </style>
 </head>
 <body>
@@ -559,18 +557,6 @@ function toggleEasyMode() {
   else if (resActive) showResults();
 }
 
-// Skapar en .easy-line-div och lägger den i parentEl
-function addEasyLine(parentEl, text) {
-  const line  = document.createElement('div');
-  line.className = 'easy-line';
-  const badge = document.createElement('span');
-  badge.className = 'easy-badge';
-  badge.textContent = '📖';
-  line.appendChild(badge);
-  line.appendChild(document.createTextNode(' ' + text));
-  parentEl.appendChild(line);
-}
-
 // ════════════════════════════════════════════════════════════
 // QUESTION DATA — 30 frågor (A1×10, A2×10, A3×10)
 // ════════════════════════════════════════════════════════════
@@ -988,8 +974,8 @@ function render() {
   document.getElementById('score-pill').textContent = 'Poäng: ' + score;
 
   const qTextEl = document.getElementById('q-text');
-  qTextEl.textContent = q.q;
-  if (easyMode && EASY_Q[q.origIdx]) addEasyLine(qTextEl, EASY_Q[q.origIdx].q);
+  const eq = EASY_Q[q.origIdx];
+  qTextEl.textContent = (easyMode && eq) ? eq.q : q.q;
 
   const optsEl = document.getElementById('opts');
   optsEl.innerHTML = '';
@@ -999,11 +985,8 @@ function render() {
     btn.className = 'opt-btn';
     // Klickhanteraren skickar alltid displayPos (originalbaserad index),
     // aldrig den visade enkla texten — rättningslogiken påverkas inte.
-    btn.textContent = q.opts[origIdx];
-    if (easyMode) {
-      const easyText = mapOpt('sv_enkel', q, q.opts[origIdx]);
-      if (easyText) addEasyLine(btn, easyText);
-    }
+    const easyOptText = easyMode ? mapOpt('sv_enkel', q, q.opts[origIdx]) : null;
+    btn.textContent = (easyMode && easyOptText) ? easyOptText : q.opts[origIdx];
     btn.disabled = q.answered;
 
     if (q.answered) {
@@ -1058,8 +1041,8 @@ function showModal(isCorrect, expl) {
   document.getElementById('modal-verdict').textContent = isCorrect ? 'Rätt svar!' : 'Fel svar';
   document.getElementById('modal-verdict').className   = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
   const explEl = document.getElementById('modal-expl');
-  explEl.textContent = expl;
-  if (easyMode && EASY_Q[qs[cur].origIdx]) addEasyLine(explEl, EASY_Q[qs[cur].origIdx].expl);
+  const eqModal = EASY_Q[qs[cur].origIdx];
+  explEl.textContent = (easyMode && eqModal) ? eqModal.expl : expl;
   document.getElementById('modal-overlay').classList.remove('hidden');
 }
 function closeModal() {
@@ -1113,7 +1096,8 @@ function showResults() {
     missed.forEach(q => {
       const d = document.createElement('div');
       d.className = 'missed-item';
-      d.textContent = q.q;
+      const eqMissed = EASY_Q[q.origIdx];
+      d.textContent = (easyMode && eqMissed) ? eqMissed.q : q.q;
       missedEl.appendChild(d);
     });
   } else {
@@ -1143,8 +1127,7 @@ function showResults() {
     // Frågetext
     const qEl = document.createElement('div');
     qEl.className = 'fi-q';
-    qEl.textContent = q.q;
-    if (eq) addEasyLine(qEl, eq.q);
+    qEl.textContent = eq ? eq.q : q.q;
     div.appendChild(qEl);
 
     if (notAnswered) {
@@ -1153,25 +1136,23 @@ function showResults() {
       div.appendChild(r1);
       const r2 = document.createElement('div'); r2.className = 'fi-row ra';
       r2.innerHTML = '<span class="lbl">Rätt svar: </span>';
-      r2.appendChild(document.createTextNode(correctText));
-      if (eq) addEasyLine(r2, eq.a);
+      r2.appendChild(document.createTextNode(eq ? eq.a : correctText));
       div.appendChild(r2);
     } else if (isCorrect) {
       const r1 = document.createElement('div'); r1.className = 'fi-row ya-ok';
       r1.innerHTML = '✓ <span class="lbl">Ditt svar: </span>';
-      r1.appendChild(document.createTextNode(selectedText));
-      if (eq) addEasyLine(r1, mapOpt('sv_enkel', q, selectedText));
+      const selEasy = eq ? mapOpt('sv_enkel', q, selectedText) : null;
+      r1.appendChild(document.createTextNode(selEasy || selectedText));
       div.appendChild(r1);
     } else {
       const r1 = document.createElement('div'); r1.className = 'fi-row ya-bad';
       r1.innerHTML = '✗ <span class="lbl">Ditt svar: </span>';
-      r1.appendChild(document.createTextNode(selectedText));
-      if (eq) addEasyLine(r1, mapOpt('sv_enkel', q, selectedText));
+      const selEasy = eq ? mapOpt('sv_enkel', q, selectedText) : null;
+      r1.appendChild(document.createTextNode(selEasy || selectedText));
       div.appendChild(r1);
       const r2 = document.createElement('div'); r2.className = 'fi-row ra';
       r2.innerHTML = '<span class="lbl">Rätt svar: </span>';
-      r2.appendChild(document.createTextNode(correctText));
-      if (eq) addEasyLine(r2, eq.a);
+      r2.appendChild(document.createTextNode(eq ? eq.a : correctText));
       div.appendChild(r2);
     }
     facitEl.appendChild(div);
