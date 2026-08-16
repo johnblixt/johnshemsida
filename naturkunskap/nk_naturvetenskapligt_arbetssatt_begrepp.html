@@ -756,22 +756,19 @@
 
     function ScenarioView({ onComplete }) {
       const total = concepts.length;
-      const [items, setItems] = React.useState(() => shuffleArray([...concepts]));
-      const [idx, setIdx] = React.useState(0);
-      const [options, setOptions] = React.useState(() => {
-        const correct = items[0];
-        const others = shuffleArray(items.filter((_, i) => i !== 0)).slice(0, 3);
-        return shuffleArray([correct, ...others]);
-      });
-      const [selected, setSelected] = React.useState(null);
-      const [score, setScore] = React.useState(0);
-      const [done, setDone] = React.useState(false);
 
       const buildOptions = (currentIdx, currentItems) => {
         const correct = currentItems[currentIdx];
         const others = shuffleArray(currentItems.filter((_, i) => i !== currentIdx)).slice(0, 3);
         return shuffleArray([correct, ...others]);
       };
+
+      const [items, setItems] = React.useState(() => shuffleArray([...concepts]));
+      const [idx, setIdx] = React.useState(0);
+      const [options, setOptions] = React.useState(() => buildOptions(0, items));
+      const [selected, setSelected] = React.useState(null);
+      const [score, setScore] = React.useState(0);
+      const [done, setDone] = React.useState(false);
 
       const handleSelect = (opt) => {
         if (selected !== null) return;
