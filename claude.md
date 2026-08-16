@@ -485,6 +485,18 @@ När begreppslistan skapas, generera matchningspar för varje begrepp med fokus 
 - Om flera begrepp liknar varandra, skapa scenarier som kräver att eleven förstår den exakta skillnaden
 - Exempel: Begrepp 'Statisk elektricitet' → Scenario: 'Du drar av dig en fleecetröja i ett mörkt rum och hör ett knastrande ljud samtidigt som håret ställer sig upp'
 
+### Namngivning av vyerna
+De fem vyerna heter **Lista**, **Flashcards**, **Lucktext**, **Test 1** (tidigare kallad Scenario) och **Test 2** (tidigare kallad Icke-ex.). Använd dessa etiketter i alla nya begreppsfiler.
+
+Interna nycklar (VIEWS-array, ACTIVE_VIEWS, SCORE_VIEWS, sessionStorage, markComplete-anrop) använder fortfarande de ursprungliga strängarna `'Scenario'` och `'Icke-ex.'` — byt dem aldrig utan att uppdatera alla beroenden. Vad eleven ser styr du via en separat `VIEW_LABELS`-konstant:
+```js
+const VIEW_LABELS = { 'Scenario': 'Test 1', 'Icke-ex.': 'Test 2' };
+```
+Rendera `{VIEW_LABELS[key] || key}` i toggle-pillen, inte `{key}` direkt.
+
+### Svarsalternativ i Test 1-vyn (Scenario) — hjälpfunktion
+Svarsalternativ ska alltid byggas via en helper som tar det visade begreppet (eller dess index i den blandade arrayen) som argument. Indexera aldrig mot originalarrayen — blandad och ursprunglig ordning är inte samma sak. Helpern ska anropas från både useState-initialiseraren och nästa-frågan-handlern så att logiken finns på ett enda ställe. Rätt svar läggs in först, distraktorer hämtas från samma blandade array, hela listan shufflas sist.
+
 ### Interaktiv Icke-exempel-vy i begreppslista
 Gäller ENDAST begreppslistor. Lägg till en femte vy i toggle-raden: Lista | Flashcards | Lucktext | Test av begrepp 1 | Test av begrepp 2
 Icke-exempel-vyn är en interaktiv 'Välj rätt tillämpning'-övning där eleven aktivt måste skilja på en korrekt användning och en trovärdig fälla:
