@@ -124,11 +124,23 @@
       #screen-start h1 { font-size: 1.85rem; }
       .q-text { font-size: 1.1rem; }
     }
+    /* ── Enkel svenska ── */
+    .easy-pill {
+      position: fixed; top: 14px; right: 14px; z-index: 200;
+      background: #16a34a; color: white; border: none; border-radius: 20px;
+      padding: 8px 16px; font-size: 0.88rem; font-family: 'EB Garamond', Georgia, serif;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .easy-pill[aria-pressed="true"] { background: #15803d; outline: 2px solid #86efac; outline-offset: 2px; }
+    .easy-pill:hover { background: #15803d; }
+    .easy-line { margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(0,0,0,0.08); font-size: 0.85em; color: #64748b; line-height: 1.5; }
+    .easy-badge { display: inline-block; font-size: 10px; background: rgba(0,0,0,0.06); border-radius: 4px; padding: 1px 5px; margin-right: 4px; }
   </style>
 </head>
 <body>
 
 <a href="nk1a1_naturvetenskap.html" class="back-btn">← Tillbaka till området</a>
+<button id="easy-btn" class="easy-pill" onclick="toggleEasyMode()" aria-pressed="false">📖 Enkel svenska</button>
 
 <!-- ═══════════ START ═══════════ -->
 <div id="screen-start" class="screen active">
@@ -194,6 +206,371 @@
 </div>
 
 <script>
+// ════════════════════════════════════════════════════════════
+// ENKEL SVENSKA — platshållare, samma ordning som QUESTIONS
+// a = rätt svar, i[] = fel svar i opts-ordning (exkl. correct)
+// ════════════════════════════════════════════════════════════
+const EASY_Q = [
+  // A1
+  {
+    q: '[ENKEL: Vad menas med den vetenskapliga revolutionen?]',
+    a: '[ENKEL: Det skifte på 1500-talet då man slutade förlita sig på auktoriteter och istället började testa teorier med experiment och observationer]',
+    i: [
+      '[ENKEL: Den period då Galileo Galilei uppfann teleskopet och möjliggjorde systematiska astronomiska observationer]',
+      '[ENKEL: Det vetenskapliga genombrott som skedde under antiken då grekiska filosofer grundade naturvetenskapen]',
+      '[ENKEL: Den omvandling under 1800-talet då industrialiseringen ledde till nya vetenskapliga metoder och laboratorier]'
+    ],
+    expl: '[ENKEL: Den vetenskapliga revolutionen inleddes i slutet av 1500-talet. Istället för att söka svar i kyrkans lära eller antika skrifter började man använda systematiska undersökningar och experiment – t.ex. Copernicus och Galileo Galilei.]'
+  },
+  {
+    q: '[ENKEL: Vad är en frågeställning i en vetenskaplig undersökning?]',
+    a: '[ENKEL: En specifik och avgränsad fråga som preciserar syftet med undersökningen]',
+    i: [
+      '[ENKEL: En hypotes formulerad som ett påstående om vad man förväntar sig hitta]',
+      '[ENKEL: En sammanfattning av de resultat som uppnåtts efter att experimentet genomförts]',
+      '[ENKEL: En teori om hur världen fungerar som ska bevisas stämma med hjälp av data]'
+    ],
+    expl: '[ENKEL: En frågeställning är en specifik och avgränsad fråga – t.ex. "Vad beror det här på?" Det skiljer sig från hypotesen, som är ett möjligt svar formulerat som ett påstående.]'
+  },
+  {
+    q: '[ENKEL: Vad är en hypotes?]',
+    a: '[ENKEL: Ett testbart påstående som ger ett möjligt svar på frågeställningen – vi vet inte om det är sant eller falskt]',
+    i: [
+      '[ENKEL: En bekräftad slutsats som dragits efter att ett experiment upprepats ett stort antal gånger]',
+      '[ENKEL: En fråga om vad som ska undersökas, formulerad på ett specifikt och avgränsat sätt]',
+      '[ENKEL: En observation som gjorts under ett experiment och som behöver förklaras av forskaren]'
+    ],
+    expl: '[ENKEL: En hypotes är ett påstående – ett möjligt svar på frågeställningen. Den ska vara testbar och falsifierbar. När den formuleras vet vi ännu inte om den är sann.]'
+  },
+  {
+    q: '[ENKEL: Vilka tre krav måste en vetenskaplig undersökning uppfylla?]',
+    a: '[ENKEL: Hypotesen ska vara testbar och falsifierbar, och experimentet ska vara repeterbart]',
+    i: [
+      '[ENKEL: Hypotesen ska baseras på befintlig teori, godkännas av en etikkommitté och ge signifikanta resultat]',
+      '[ENKEL: Hypotesen ska bevisas sann, formuleras av minst två oberoende forskare och publiceras i en tidskrift]',
+      '[ENKEL: Experimentet ska vara enkelt, billigt att genomföra och förståeligt för en bred allmänhet]'
+    ],
+    expl: '[ENKEL: En vetenskaplig undersökning kräver att hypotesen är testbar (kan undersökas experimentellt), falsifierbar (kan motbevisas) och att experimentet är repeterbart (kan upprepas och kontrolleras av andra).]'
+  },
+  {
+    q: '[ENKEL: Vad menas med att en hypotes är falsifierbar?]',
+    a: '[ENKEL: Att det måste vara möjligt att motbevisa hypotesen – t.ex. om experimentets resultat strider mot den]',
+    i: [
+      '[ENKEL: Att hypotesen är formulerad på ett sådant sätt att den aldrig kan motbevisas av experiment]',
+      '[ENKEL: Att hypotesen automatiskt förklaras som falsk om den inte kan testas i ett laboratorium]',
+      '[ENKEL: Att hypotesen måste testas av minst tre oberoende forskargrupper för att godkännas]'
+    ],
+    expl: '[ENKEL: Falsifierbarhet innebär att det måste vara möjligt att visa att hypotesen är fel. Om inga tänkbara resultat kunde motbevisa den är den inte vetenskaplig.]'
+  },
+  {
+    q: '[ENKEL: Vilka är stegen i den hypotetisk-deduktiva metoden i rätt ordning?]',
+    a: '[ENKEL: Frågeställning → Hypotes → Förutsägelse → Undersökning → Slutsats]',
+    i: [
+      '[ENKEL: Hypotes → Frågeställning → Undersökning → Förutsägelse → Slutsats]',
+      '[ENKEL: Observation → Slutsats → Frågeställning → Hypotes → Experiment]',
+      '[ENKEL: Frågeställning → Undersökning → Hypotes → Förutsägelse → Slutsats]'
+    ],
+    expl: '[ENKEL: Den hypotetisk-deduktiva metoden: 1) Frågeställning, 2) Hypotes, 3) Förutsägelse (vad förväntar vi oss?), 4) Undersökning (experiment), 5) Slutsats (stöds eller falsifieras hypotesen?).]'
+  },
+  {
+    q: '[ENKEL: Vad är en vetenskaplig teori?]',
+    a: '[ENKEL: En väl underbyggd förklaringsmodell baserad på data från många noggranna och systematiska experiment]',
+    i: [
+      '[ENKEL: En kvalificerad gissning om hur något fungerar som ännu inte testats i ett experiment]',
+      '[ENKEL: En slutsats som dragits utifrån ett enskilt experiment med entydiga och reproducerbara resultat]',
+      '[ENKEL: En filosofisk tanke om naturens lagar som presenteras av en erkänd auktoritet inom området]'
+    ],
+    expl: '[ENKEL: En vetenskaplig teori är långt mer än en gissning – det är en väl underbyggd förklaringsmodell som stöds av data från många experiment. Teorier är öppna för revidering om nya bevis dyker upp.]'
+  },
+  {
+    q: '[ENKEL: Vad innebär ett paradigmskifte?]',
+    a: '[ENKEL: Att en etablerad vetenskaplig teori ersätts av en ny när tillräckliga bevis visar att den gamla är felaktig]',
+    i: [
+      '[ENKEL: Att ett experiment misslyckas och att nya variabler måste introduceras i undersökningen]',
+      '[ENKEL: Att en forskargrupp byter inriktning och börjar forska inom ett helt nytt ämnesområde]',
+      '[ENKEL: Att en ny teknisk metod gör att gamla experiment kan genomföras snabbare och mer precist]'
+    ],
+    expl: '[ENKEL: Ett paradigmskifte är när en teori ersätts av en annan. Exempel: den geocentriska världsbilden (jorden i centrum) ersattes av den heliocentriska (planeterna kretsar runt solen). Att teorier byts ut är ett tecken på att vetenskapen fungerar.]'
+  },
+  {
+    q: '[ENKEL: Vad räknas som forskningsfusk?]',
+    a: '[ENKEL: Att plagiera, förfalska eller undanhålla resultat från sin forskning]',
+    i: [
+      '[ENKEL: Att använda en otillräckligt testad metod och publicera resultaten utan peer review]',
+      '[ENKEL: Att utföra experiment på ryggradsdjur utan att genomföra en etikprövning i förväg]',
+      '[ENKEL: Att byta hypotes mitt i ett experiment utan att börja om hela undersökningen från grunden]'
+    ],
+    expl: '[ENKEL: Forskningsfusk innebär att plagiera, förfalska data eller undanhålla resultat. Det skadar både forskning och förtroende. Kända fall har lett till allvarliga konsekvenser – t.ex. ett fall på Karolinska där patienter dog.]'
+  },
+  {
+    q: '[ENKEL: Varför kan naturvetenskapen inte svara på frågan "Är klimatförändringar dåliga?"]',
+    a: '[ENKEL: Det är en värderingsfråga – naturvetenskapen kan beskriva och mäta fenomenet men inte avgöra om det är rätt eller fel]',
+    i: [
+      '[ENKEL: Klimatförändringar är ett för komplext fenomen för att kunna undersökas med vetenskapliga metoder]',
+      '[ENKEL: Frågans svar är beroende av politiska beslut och faller därmed utanför naturvetenskapens område]',
+      '[ENKEL: Naturvetenskapen saknar ännu tillräckliga data för att ge ett tillförlitligt svar på frågan]'
+    ],
+    expl: '[ENKEL: Naturvetenskapen är begränsad till det som kan testas. Frågor om vad som är "bra" eller "dåligt" är värderingsfrågor – de faller utanför ämnets räckvidd. Naturvetenskapen kan beskriva klimatförändringarna men inte avgöra om de är moraliskt acceptabla.]'
+  },
+  // A2
+  {
+    q: '[ENKEL: Vad menas med den oberoende variabeln i ett experiment?]',
+    a: '[ENKEL: Den variabel som den som utför experimentet medvetet ändrar för att undersöka dess effekt på något annat]',
+    i: [
+      '[ENKEL: Den variabel som mäts och registreras för att se om den påverkats av förändringen i experimentet]',
+      '[ENKEL: Den variabel som hålls konstant i alla försöksgrupper för att eliminera störningar från omgivningen]',
+      '[ENKEL: Den variabel som är omöjlig att kontrollera och som riskerar att påverka experimentets resultat]'
+    ],
+    expl: '[ENKEL: Den oberoende variabeln är det som forskaren aktivt ändrar – t.ex. belysningsstyrkan i ett lökexperiment. Den antas orsaka en förändring i den beroende variabeln.]'
+  },
+  {
+    q: '[ENKEL: Vad är en beroende variabel?]',
+    a: '[ENKEL: Det som mäts i experimentet och som antas påverkas av förändringen i den oberoende variabeln]',
+    i: [
+      '[ENKEL: En variabel som inte kan ändras och som alltid hålls konstant under hela experimentet]',
+      '[ENKEL: En variabel som påverkar experimentet utan att den som forskar är medveten om det]',
+      '[ENKEL: Det som aktivt förändras av forskaren för att undersöka dess effekt på ett annat fenomen]'
+    ],
+    expl: '[ENKEL: Den beroende variabeln är det man mäter – t.ex. tillväxten (biomassa) hos lökplantor. Den "beror" på den oberoende variabeln (belysningsstyrkan).]'
+  },
+  {
+    q: '[ENKEL: Vad är en kontrollgrupp?]',
+    a: '[ENKEL: En grupp som inte utsätts för den behandling som testas – den används för jämförelse med försöksgruppen]',
+    i: [
+      '[ENKEL: En grupp som kontrollerar att experimentet genomförs korrekt och att inga procedurmisstag görs]',
+      '[ENKEL: Den grupp som utsätts för den starkaste dosen av det ämne eller den faktor som testas]',
+      '[ENKEL: En grupp bestående av externa experter som bedömer om experimentets resultat är trovärdiga]'
+    ],
+    expl: '[ENKEL: Kontrollgruppen utsätts inte för behandlingen men väljs ut och hanteras på exakt samma sätt som de övriga grupperna. Den minimerar störvariabler och ger en jämförelsepunkt.]'
+  },
+  {
+    q: '[ENKEL: Vad är placeboeffekten?]',
+    a: '[ENKEL: Att en person mår bättre enbart för att de förväntar sig det – trots att de inte fått någon verksam medicin]',
+    i: [
+      '[ENKEL: Att ett läkemedel fungerar sämre än förväntat eftersom det inte testats tillräckligt noggrant]',
+      '[ENKEL: Att försöksdeltagare medvetet rapporterar felaktiga resultat för att påverka experimentets utfall]',
+      '[ENKEL: Att effekten av ett läkemedel avtar över tid även om personen fortsätter att ta medicinen]'
+    ],
+    expl: '[ENKEL: Placeboeffekten innebär att förväntan i sig kan ge en mätbar effekt. En person som tror de fått medicin kan känna sig bättre – även om de bara fått en sockerpiller. Blindstudier används för att utesluta detta.]'
+  },
+  {
+    q: '[ENKEL: Varför genomförs blindstudier i medicinsk forskning?]',
+    a: '[ENKEL: För att utesluta placeboeffekten – deltagarna vet inte om de får verksam substans eller placebo]',
+    i: [
+      '[ENKEL: För att skydda forskarnas identitet och förhindra att känsliga resultat läcker till allmänheten]',
+      '[ENKEL: För att experimentet ska kunna genomföras utan att en full etikprövning krävs i förväg]',
+      '[ENKEL: För att underlätta för deltagarna som slipper ta ställning till om de vill ha det aktiva preparatet]'
+    ],
+    expl: '[ENKEL: I en blindstudie vet inte deltagarna om de ingår i försöksgruppen eller kontrollgruppen. Det eliminerar placeboeffekten och ger mer tillförlitliga resultat.]'
+  },
+  {
+    q: '[ENKEL: Varför ger fler upprepningar av ett experiment säkrare slutsatser?]',
+    a: '[ENKEL: Fler mätningar minskar påverkan av slumpmässiga fel och individuella variationer i resultaten]',
+    i: [
+      '[ENKEL: Varje ny upprepning genererar en ny hypotes som kan leda till bättre och mer relevanta slutsatser]',
+      '[ENKEL: Upprepningar krävs av etikkommittén innan resultaten godkänns för publicering i tidskrifter]',
+      '[ENKEL: Det ökar sannolikheten att minst ett av experimenten ger det förväntade resultatet]'
+    ],
+    expl: '[ENKEL: Individuella variationer och slumpmässiga mätfel påverkar alltid ett enskilt experiment. Ju fler repetitioner, desto mer jämnas dessa ut och desto pålitligare blir genomsnittsresultaten.]'
+  },
+  {
+    q: '[ENKEL: Vad menas med att samvariation inte är detsamma som orsakssamband?]',
+    a: '[ENKEL: Att två variabler kan variera tillsammans utan att den ena orsakar den andra – en tredje faktor kan ligga bakom]',
+    i: [
+      '[ENKEL: Att starka samband alltid kräver fler oberoende experiment för att bekräftas som verkliga orsakssamband]',
+      '[ENKEL: Att ett orsakssamband kan existera utan att det yttrar sig som en mätbar samvariation i data]',
+      '[ENKEL: Att samvariation enbart är relevant inom medicin medan orsakssamband gäller alla vetenskapliga fält]'
+    ],
+    expl: '[ENKEL: Klassiskt exempel: glasskonsumtion och solbränna samvarierar – men glass orsakar inte solbränna. Förklaringen är en tredje faktor: varmt och soligt väder påverkar båda. Att dra förhastade slutsatser om orsak och verkan är ett vanligt misstag.]'
+  },
+  {
+    q: '[ENKEL: Vilka delar ska ingå i en vetenskaplig rapport?]',
+    a: '[ENKEL: Titel, inledning, material och metod, resultat, diskussion och källförteckning]',
+    i: [
+      '[ENKEL: Titel, sammanfattning, hypotes, experiment, analys och slutsatser]',
+      '[ENKEL: Bakgrund, teori, observationer, beräkningar, slutsats och bilagor]',
+      '[ENKEL: Rubrik, frågeställning, mätdata, diagram, tolkning och tacksägelse]'
+    ],
+    expl: '[ENKEL: En vetenskaplig rapport innehåller: titel, inledning (bakgrund + frågeställning), material och metod (så noggrann att experimentet kan upprepas), resultat (tabeller/diagram), diskussion (tolkning + utvärdering) och källförteckning.]'
+  },
+  {
+    q: '[ENKEL: Varför ska material och metod i en rapport beskrivas noggrant?]',
+    a: '[ENKEL: Så att andra forskare kan upprepa och kontrollera experimentet – repeterbarhet är ett grundkrav i vetenskapen]',
+    i: [
+      '[ENKEL: Så att läsaren enkelt kan bedöma om experimentet var tillräckligt stort för att ge statistiskt pålitliga slutsatser]',
+      '[ENKEL: Eftersom myndigheter och etikkommittéer kräver att metoden finns dokumenterad för efterhandskontroll]',
+      '[ENKEL: Så att den som utförde experimentet lättare kan gå tillbaka och korrigera eventuella procedurmisstag]'
+    ],
+    expl: '[ENKEL: Repeterbarhet är ett grundkrav i vetenskapen. Andra måste kunna göra om experimentet och kontrollera att resultaten stämmer. Utan en tydlig metodbeskrivning är det omöjligt.]'
+  },
+  {
+    q: '[ENKEL: Vad menas med en riskbedömning inför ett laboratoriearbete?]',
+    a: '[ENKEL: En planerad genomgång av potentiella faror med utrustning och kemikalier som görs innan det praktiska arbetet påbörjas]',
+    i: [
+      '[ENKEL: En efteranalys av olyckor som inträffat i laboratoriet för att förhindra att de upprepas i framtiden]',
+      '[ENKEL: En granskning som etikkommittén genomför för att avgöra om experimentet uppfyller säkerhetskraven]',
+      '[ENKEL: En lista med laborationsregler som eleverna skriver under för att bekräfta att de deltar frivilligt]'
+    ],
+    expl: '[ENKEL: En riskbedömning görs i förväg – man går igenom vilka faror som kan finnas med kemikalier, utrustning och metoder. Syftet är att förebygga skador innan de sker.]'
+  },
+  // A3
+  {
+    q: '[ENKEL: Vad innebär källkritik?]',
+    a: '[ENKEL: Att systematiskt granska och bedöma källors trovärdighet för att undvika vilseledande information]',
+    i: [
+      '[ENKEL: Att uteslutande använda vetenskapliga artiklar som enda källtyp i all argumentation och analys]',
+      '[ENKEL: Att enbart godkänna källor som publicerats av myndigheter, lärosäten eller välkända institutioner]',
+      '[ENKEL: Att kontrollera stavning och grammatik i en källa för att bedöma om den är professionellt framtagen]'
+    ],
+    expl: '[ENKEL: Källkritik handlar om att systematiskt granska trovärdigheten hos information – är källan äkta, aktuell, oberoende, tendensiös och granskad? Syftet är att sortera bort opålitliga källor.]'
+  },
+  {
+    q: '[ENKEL: Vad menas med att en källa är tendensiös?]',
+    a: '[ENKEL: Att källan är vinklad på grund av bakomliggande ekonomiska, politiska eller ideologiska intressen]',
+    i: [
+      '[ENKEL: Att källan saknar peer review och därmed inte kan anses vetenskapligt trovärdig]',
+      '[ENKEL: Att källan är för gammal och att informationen inte längre är relevant eller aktuell]',
+      '[ENKEL: Att källan är skriven anonymt och att det är omöjligt att verifiera upphovsmannens identitet]'
+    ],
+    expl: '[ENKEL: En tendensiös källa är vinklad – t.ex. kan en rapport om rökningens skadeverkningar som finansieras av tobaksindustrin underdriva riskerna, eftersom industrin tjänar på det.]'
+  },
+  {
+    q: '[ENKEL: Vad är peer review?]',
+    a: '[ENKEL: En granskningsprocess där en vetenskaplig rapport bedöms av minst två oberoende forskare innan publicering]',
+    i: [
+      '[ENKEL: En statlig process där forskning utvärderas av myndigheter innan den får tillämpas i samhällspraktiken]',
+      '[ENKEL: En databas där forskare kan söka efter och jämföra varandras publicerade vetenskapliga artiklar]',
+      '[ENKEL: En metod för att räkna hur många gånger en vetenskaplig artikel citerats av andra forskare]'
+    ],
+    expl: '[ENKEL: Peer review innebär att en artikel granskas av minst två oberoende experter inom samma fält innan den publiceras. Det är en kvalitetskontroll som skiljer vetenskapliga artiklar från t.ex. bloggar.]'
+  },
+  {
+    q: '[ENKEL: Vad är skillnaden mellan en primärkälla och en sekundärkälla?]',
+    a: '[ENKEL: En primärkälla baseras på egna observationer och insamlade data – en sekundärkälla hämtar information från andra källor]',
+    i: [
+      '[ENKEL: En primärkälla är alltid publicerad i tryckt bokform medan en sekundärkälla enbart finns på internet]',
+      '[ENKEL: En primärkälla är alltid skriven av en expert inom området medan en sekundärkälla är skriven av en journalist]',
+      '[ENKEL: En primärkälla är nyare och mer aktuell än en sekundärkälla som ofta bygger på föråldrad information]'
+    ],
+    expl: '[ENKEL: Primärkällor (t.ex. vetenskapliga artiklar) baseras på ursprunglig forskning. Sekundärkällor hämtar och tolkar information från primärkällor – de är beroende av att originalinformationen är korrekt.]'
+  },
+  {
+    q: '[ENKEL: Vad är desinformation?]',
+    a: '[ENKEL: Felaktig information som sprids medvetet i syfte att lura eller vilseleda mottagaren]',
+    i: [
+      '[ENKEL: Information som är vetenskapligt osäker och som saknar tillräcklig forskning och evidens bakom sig]',
+      '[ENKEL: Nyheter som av misstag blivit felaktiga på grund av journalistens okunskap eller tidsbrist]',
+      '[ENKEL: Reklam som överdriver en produkts fördelar utan att tydligt lyfta fram dess eventuella nackdelar]'
+    ],
+    expl: '[ENKEL: Desinformation är medvetet vilseledande – skillnaden mot vanliga felaktigheter är avsikten. Syftet kan vara att gynna ekonomiska intressen, påverka politiken eller skapa misstro mot myndigheter och experter.]'
+  },
+  {
+    q: '[ENKEL: Varför kan falska nyheter spridas snabbt på sociala medier?]',
+    a: '[ENKEL: Algoritmer prioriterar innehåll som väcker starka reaktioner – sensationellt och falskt innehåll delar sig snabbt]',
+    i: [
+      '[ENKEL: Sociala medieplattformar har inga redaktörer och ingen kontroll av innehållet som publiceras]',
+      '[ENKEL: Falska nyheter är alltid kortare och enklare att läsa och dela än korrekta, faktabaserade nyheter]',
+      '[ENKEL: Användare på sociala medier är generellt sämre på källkritik än läsare av tryckta tidningar]'
+    ],
+    expl: '[ENKEL: Algoritmerna i sociala medier belönar engagemang – inlägg med många reaktioner, delningar och kommentarer sprids till fler. Sensationellt, provocerande och falskt innehåll genererar ofta mer engagemang än nyanserad information.]'
+  },
+  {
+    q: '[ENKEL: Vad menas med faktaresistens?]',
+    a: '[ENKEL: Att en person håller fast vid sin övertygelse trots att det finns välgrundade fakta som talar emot den]',
+    i: [
+      '[ENKEL: Att en person konsekvent vägrar ta del av information från källor som inte godkänts av vetenskapssamhället]',
+      '[ENKEL: Att forskning om ett visst ämne är så tekniskt komplicerad att den inte är tillgänglig för gemene man]',
+      '[ENKEL: Att myndigheter och institutioner undanhåller fakta från allmänheten av politiska eller ekonomiska skäl]'
+    ],
+    expl: '[ENKEL: Faktaresistens innebär att man inte ändrar uppfattning trots motstående bevis. Det strider mot ett vetenskapligt förhållningssätt och kan förstärka felaktiga uppfattningar – t.ex. om vaccinationer eller klimatförändringar.]'
+  },
+  {
+    q: '[ENKEL: Vad är en filterbubbla?]',
+    a: '[ENKEL: Ett fenomen där algoritmer anpassar innehållsflödet efter en persons profil – hen möter nästan bara information som bekräftar det hen redan tror]',
+    i: [
+      '[ENKEL: En säkerhetsfunktion i sociala medier som automatiskt blockerar falska nyheter och desinformation]',
+      '[ENKEL: En avancerad sökmotor som filtrerar bort opålitliga källor och enbart visar vetenskapligt granskade artiklar]',
+      '[ENKEL: En sluten grupp på sociala medier där medlemmar aktivt delar och förstärker varandras gemensamma åsikter]'
+    ],
+    expl: '[ENKEL: Filterbubblor uppstår av algoritmerna – de lär sig vad du gillar och visar mer av det. Till skillnad från ekokammare (som skapas av användarna aktivt) uppstår filterbubblor passivt utan att man märker det.]'
+  },
+  {
+    q: '[ENKEL: Vad menas med bekräftelsebias?]',
+    a: '[ENKEL: Att vi omedvetet söker och tillmäter information högre trovärdighet om den stämmer med vad vi redan tänker]',
+    i: [
+      '[ENKEL: Att vi alltid bekräftar att en källa är trovärdig innan vi delar vidare information på sociala medier]',
+      '[ENKEL: Att vi systematiskt litar mer på vetenskapliga källor än på folkliga uppfattningar och traditioner]',
+      '[ENKEL: Att vi lättare tar till oss information som presenteras i punktlistor och diagram än i löpande brödtext]'
+    ],
+    expl: '[ENKEL: Bekräftelsebias är en psykologisk mekanism: vi söker aktivt efter information som bekräftar vad vi redan tror och avfärdar omedvetet sådant som strider mot det. Det gör det svårt att ändra ståndpunkt.]'
+  },
+  {
+    q: '[ENKEL: Vad är pseudovetenskap?]',
+    a: '[ENKEL: Läror som påstår sig vara vetenskapliga men saknar vetenskapligt stöd och ofta inte kan falsifieras med experiment]',
+    i: [
+      '[ENKEL: Vetenskapliga teorier som ännu inte fått tillräcklig forskning bakom sig för att accepteras av forskarsamhället]',
+      '[ENKEL: Forskning som bedrivs utanför akademiska institutioner men som ändå kan ge tillförlitliga och reproducerbara resultat]',
+      '[ENKEL: Teorier som avvisats av majoriteten av forskare men som fortfarande kan bevisas med rätt experimentell uppställning]'
+    ],
+    expl: '[ENKEL: Pseudovetenskap ser ut som vetenskap men uppfyller inte kraven – t.ex. astrologi, vars förutsägelser är för vaga för att falsifieras. Problemet är att folk kan lita på pseudovetenskapliga "behandlingar" istället för beprövad vård.]'
+  }
+];
+
+// Knapptexter i enkel svenska — används när easyMode är på
+const UI_ENKEL = {
+  backBtn: '← Bakåt',
+  nextBtn: 'Nästa →',
+  showResult: 'Se resultat →',
+  modalNext: 'Nästa fråga →',
+  correct: 'Rätt!',
+  wrong: 'Fel svar',
+  restart: '↺ Börja om',
+  missedHd: 'Frågorna du hade fel',
+  fullFacit: 'Alla svar',
+  yourAnswer: 'Ditt svar:',
+  correctAnswer: 'Rätt svar:'
+};
+
+// Enkel-läge — persists i session, inte localStorage
+let easyMode = sessionStorage.getItem('nk1a1_nvq_easy') === '1';
+
+// ────────────────────────────────────────────────────────────
+// mapOpt(variant, qState, optStr)
+// Returnerar det alternativ i variant som motsvarar optStr
+// i originalet. qState måste ha .opts, .correct och .origIdx.
+// ────────────────────────────────────────────────────────────
+function mapOpt(variant, qState, optStr) {
+  if (variant !== 'sv_enkel') return null;
+  const eq = EASY_Q[qState.origIdx];
+  if (!eq) return null;
+  if (optStr === qState.opts[qState.correct]) return eq.a;
+  const incorrects = qState.opts.filter((_, i) => i !== qState.correct);
+  const iIdx = incorrects.indexOf(optStr);
+  return iIdx >= 0 ? eq.i[iIdx] : null;
+}
+
+function toggleEasyMode() {
+  easyMode = !easyMode;
+  sessionStorage.setItem('nk1a1_nvq_easy', easyMode ? '1' : '0');
+  document.getElementById('easy-btn').setAttribute('aria-pressed', String(easyMode));
+  const quizActive = document.getElementById('screen-quiz').classList.contains('active');
+  const resActive  = document.getElementById('screen-result').classList.contains('active');
+  if (quizActive) render();
+  else if (resActive) showResults();
+}
+
+// Skapar en .easy-line-div och lägger den i parentEl
+function addEasyLine(parentEl, text) {
+  const line  = document.createElement('div');
+  line.className = 'easy-line';
+  const badge = document.createElement('span');
+  badge.className = 'easy-badge';
+  badge.textContent = '📖';
+  line.appendChild(badge);
+  line.appendChild(document.createTextNode(' ' + text));
+  parentEl.appendChild(line);
+}
+
 // ════════════════════════════════════════════════════════════
 // QUESTION DATA — 30 frågor (A1×10, A2×10, A3×10)
 // ════════════════════════════════════════════════════════════
@@ -560,6 +937,7 @@ function buildState() {
   const shuffled = shuffleArray([...QUESTIONS]);
   qs = shuffled.map(q => ({
     ...q,
+    origIdx: QUESTIONS.indexOf(q),
     shuffledIdx: shuffleArray(q.opts.map((_, i) => i)),
     selectedDisplay: null,
     answered: false
@@ -608,7 +986,10 @@ function render() {
   document.getElementById('progress-bar').style.width = (cur / total * 100) + '%';
   document.getElementById('q-counter').textContent = 'Fråga ' + (cur + 1) + ' av ' + total;
   document.getElementById('score-pill').textContent = 'Poäng: ' + score;
-  document.getElementById('q-text').textContent = q.q;
+
+  const qTextEl = document.getElementById('q-text');
+  qTextEl.textContent = q.q;
+  if (easyMode && EASY_Q[q.origIdx]) addEasyLine(qTextEl, EASY_Q[q.origIdx].q);
 
   const optsEl = document.getElementById('opts');
   optsEl.innerHTML = '';
@@ -616,14 +997,20 @@ function render() {
   q.shuffledIdx.forEach((origIdx, displayPos) => {
     const btn = document.createElement('button');
     btn.className = 'opt-btn';
+    // Klickhanteraren skickar alltid displayPos (originalbaserad index),
+    // aldrig den visade enkla texten — rättningslogiken påverkas inte.
     btn.textContent = q.opts[origIdx];
+    if (easyMode) {
+      const easyText = mapOpt('sv_enkel', q, q.opts[origIdx]);
+      if (easyText) addEasyLine(btn, easyText);
+    }
     btn.disabled = q.answered;
 
     if (q.answered) {
       const correctDisplay = q.shuffledIdx.indexOf(q.correct);
-      if (displayPos === correctDisplay)      btn.classList.add('correct');
+      if (displayPos === correctDisplay)         btn.classList.add('correct');
       else if (displayPos === q.selectedDisplay) btn.classList.add('wrong');
-      else                                    btn.classList.add('dimmed');
+      else                                       btn.classList.add('dimmed');
     } else {
       btn.addEventListener('click', () => handleAnswer(displayPos));
     }
@@ -667,10 +1054,12 @@ function handleAnswer(displayPos) {
 // MODAL
 // ════════════════════════════════════════════════════════════
 function showModal(isCorrect, expl) {
-  document.getElementById('modal-icon').textContent      = isCorrect ? '✅' : '❌';
-  document.getElementById('modal-verdict').textContent   = isCorrect ? 'Rätt svar!' : 'Fel svar';
-  document.getElementById('modal-verdict').className     = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
-  document.getElementById('modal-expl').textContent      = expl;
+  document.getElementById('modal-icon').textContent    = isCorrect ? '✅' : '❌';
+  document.getElementById('modal-verdict').textContent = isCorrect ? 'Rätt svar!' : 'Fel svar';
+  document.getElementById('modal-verdict').className   = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
+  const explEl = document.getElementById('modal-expl');
+  explEl.textContent = expl;
+  if (easyMode && EASY_Q[qs[cur].origIdx]) addEasyLine(explEl, EASY_Q[qs[cur].origIdx].expl);
   document.getElementById('modal-overlay').classList.remove('hidden');
 }
 function closeModal() {
@@ -736,26 +1125,55 @@ function showResults() {
   facitEl.innerHTML = '';
   qs.forEach((q, i) => {
     const correctDisplay = q.shuffledIdx.indexOf(q.correct);
-    const isCorrect  = q.answered && q.selectedDisplay === correctDisplay;
+    const isCorrect   = q.answered && q.selectedDisplay === correctDisplay;
     const notAnswered = !q.answered;
     const correctText  = q.opts[q.correct];
     const selectedText = q.answered ? q.opts[q.shuffledIdx[q.selectedDisplay]] : null;
+    const eq = easyMode ? EASY_Q[q.origIdx] : null;
 
     const div = document.createElement('div');
     div.className = 'facit-item ' + (notAnswered ? '' : isCorrect ? 'fc' : 'fw');
 
-    let html = '<div class="fi-num">Fråga ' + (i + 1) + '</div>';
-    html += '<div class="fi-q">' + q.q + '</div>';
+    // Frågenummer
+    const numEl = document.createElement('div');
+    numEl.className = 'fi-num';
+    numEl.textContent = 'Fråga ' + (i + 1);
+    div.appendChild(numEl);
+
+    // Frågetext
+    const qEl = document.createElement('div');
+    qEl.className = 'fi-q';
+    qEl.textContent = q.q;
+    if (eq) addEasyLine(qEl, eq.q);
+    div.appendChild(qEl);
+
     if (notAnswered) {
-      html += '<div class="fi-row"><span class="lbl">Ditt svar: </span>— (inte besvarad)</div>';
-      html += '<div class="fi-row ra"><span class="lbl">Rätt svar: </span>' + correctText + '</div>';
+      const r1 = document.createElement('div'); r1.className = 'fi-row';
+      r1.innerHTML = '<span class="lbl">Ditt svar: </span>— (inte besvarad)';
+      div.appendChild(r1);
+      const r2 = document.createElement('div'); r2.className = 'fi-row ra';
+      r2.innerHTML = '<span class="lbl">Rätt svar: </span>';
+      r2.appendChild(document.createTextNode(correctText));
+      if (eq) addEasyLine(r2, eq.a);
+      div.appendChild(r2);
     } else if (isCorrect) {
-      html += '<div class="fi-row ya-ok">✓ <span class="lbl">Ditt svar: </span>' + selectedText + '</div>';
+      const r1 = document.createElement('div'); r1.className = 'fi-row ya-ok';
+      r1.innerHTML = '✓ <span class="lbl">Ditt svar: </span>';
+      r1.appendChild(document.createTextNode(selectedText));
+      if (eq) addEasyLine(r1, mapOpt('sv_enkel', q, selectedText));
+      div.appendChild(r1);
     } else {
-      html += '<div class="fi-row ya-bad">✗ <span class="lbl">Ditt svar: </span>' + selectedText + '</div>';
-      html += '<div class="fi-row ra"><span class="lbl">Rätt svar: </span>' + correctText + '</div>';
+      const r1 = document.createElement('div'); r1.className = 'fi-row ya-bad';
+      r1.innerHTML = '✗ <span class="lbl">Ditt svar: </span>';
+      r1.appendChild(document.createTextNode(selectedText));
+      if (eq) addEasyLine(r1, mapOpt('sv_enkel', q, selectedText));
+      div.appendChild(r1);
+      const r2 = document.createElement('div'); r2.className = 'fi-row ra';
+      r2.innerHTML = '<span class="lbl">Rätt svar: </span>';
+      r2.appendChild(document.createTextNode(correctText));
+      if (eq) addEasyLine(r2, eq.a);
+      div.appendChild(r2);
     }
-    div.innerHTML = html;
     facitEl.appendChild(div);
   });
 }
@@ -767,6 +1185,9 @@ function restartQuiz() {
   stopTimer();
   show('screen-start');
 }
+
+// Synka knappens visuella tillstånd med sessionStorage vid sidladdning
+document.getElementById('easy-btn').setAttribute('aria-pressed', String(easyMode));
 </script>
 </body>
 </html>
