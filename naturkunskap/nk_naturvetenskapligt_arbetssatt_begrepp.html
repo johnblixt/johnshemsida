@@ -401,6 +401,82 @@
       },
     ];
 
+    // ════════════════════════════════════════════════════════════
+    // EASY_DATA – Enkel svenska, exakt samma ordning som concepts[].
+    // Fyll i rätt förklaring för varje [ENKEL: ...]-platshållare.
+    // Termen ändras ALDRIG – bara definitioner och beskrivningstext.
+    // ════════════════════════════════════════════════════════════
+    const EASY_DATA = [
+      // 0 – Den vetenskapliga revolutionen
+      { def: '[ENKEL: Perioden efter medeltiden i Europa då man började använda systematiska undersökningsmetoder och experiment istället för att söka svar i antika skrifter eller kyrkans lära.]', scenario: '[ENKEL: Istället för att fråga prästen varför äpplet föll mot marken bestämde sig en grupp tänkare för att väga, mäta och upprepa försök för att hitta svaret själva.]', ickeExempelOptions: ['[ENKEL: Galileo använde teleskop och experiment istället för att hänvisa till kyrkans lära och antika skrifter.]', '[ENKEL: En nutida fysiker utmanar en etablerad teori med ett nytt banbrytande experiment.]'] },
+      // 1 – Frågeställning
+      { def: '[ENKEL: En specifik och avgränsad fråga som preciserar syftet med en undersökning.]', scenario: '[ENKEL: Innan laborationen skriver du ned exakt vad du ska ta reda på: "Påverkar mängden solljus hur snabbt ett frö gror?"]', ickeExempelOptions: ['[ENKEL: "Påverkar mängden solljus hur fort ett frö gror?"]', '[ENKEL: "Jag vill undersöka allt om hur ljus påverkar växter och deras fysiologi."]'] },
+      // 2 – Hypotes
+      { def: '[ENKEL: Ett påstående som ger ett möjligt svar på frågeställningen. När en hypotes föreslås vet man inte om den är sann eller falsk.]', scenario: '[ENKEL: Utan att ha testat det ännu skriver du ned ditt förslag på vad du tror är svaret – du vet inte om det stämmer men det verkar rimligt.]', ickeExempelOptions: ['[ENKEL: "Jag tror att växter med mer solljus växer snabbare" – formulerat innan undersökningen.]', '[ENKEL: "Växter med mer solljus växer snabbare" – en slutsats efter att experimenten avslutats.]'] },
+      // 3 – Testbar hypotes
+      { def: '[ENKEL: En hypotes som går att undersöka genom experiment och observationer.]', scenario: '[ENKEL: Du formulerar påståendet så att du faktiskt kan sätta upp ett experiment och mäta ett tydligt resultat för att kontrollera om det stämmer.]', ickeExempelOptions: ['[ENKEL: "Saltvatten kokar vid en högre temperatur än destillerat vatten" – kan mätas med termometer.]', '[ENKEL: "Kärlek är det viktigaste i livet" – ett påstående som inte kan undersökas med experiment.]'] },
+      // 4 – Falsifierbar hypotes
+      { def: '[ENKEL: En hypotes som är möjlig att motbevisa, exempelvis genom att resultaten motsäger den.]', scenario: '[ENKEL: Om fröna i mörkret gror lika snabbt som i ljuset visar det att din idé var fel – och det är just det som gör påståendet vetenskapligt godkänt.]', ickeExempelOptions: ['[ENKEL: "Alla metallföremål sjunker i vatten" – ett enda flytande metallföremål motbevisar det.]', '[ENKEL: "Universum skapades för ett syfte" – ett påstående som inga observationer kan motbevisa.]'] },
+      // 5 – Repeterbart experiment
+      { def: '[ENKEL: Ett experiment som kan upprepas och kontrolleras av andra.]', scenario: '[ENKEL: Tre olika laboratorier i tre länder genomför exakt samma försök och jämför om de oberoende av varandra får liknande svar.]', ickeExempelOptions: ['[ENKEL: Tre oberoende laboratorier i olika länder genomför exakt samma försök och jämför resultaten.]', '[ENKEL: En forskare upprepar sitt eget experiment fem gånger i rad för att kontrollera sin precision.]'] },
+      // 6 – Den hypotetisk-deduktiva metoden
+      { def: '[ENKEL: Arbetsgång där en frågeställning leder till en hypotes, en förutsägelse, en undersökning och slutligen en slutsats.]', scenario: '[ENKEL: Forskaren följer en bestämd ordning: han formulerar en gissning, räknar ut vad som borde hända om den stämmer, testar det och drar sedan en slutsats.]', ickeExempelOptions: ['[ENKEL: Forskaren formulerar en hypotes, härleder en förutsägelse, testar den och drar en slutsats.]', '[ENKEL: Forskaren samlar in massvis med data och försöker sedan hitta mönster som kan förklara dem.]'] },
+      // 7 – Förutsägelse
+      { def: '[ENKEL: Ett påstående om vad man förväntar sig ska hända om hypotesen stämmer.]', scenario: '[ENKEL: Om din idé om solljuset är rätt, borde fröna i det ljusa fönstret ha grott efter tre dagar – det är vad du räknar med att se innan du testar.]', ickeExempelOptions: ['[ENKEL: "Om min hypotes stämmer borde fröna i mörkret inte ha grott alls efter tre dagar."]', '[ENKEL: "Fröna grodde inte i mörkret, precis som hypotesen föreslog." – skrivet efter experimentet.]'] },
+      // 8 – Vetenskaplig teori
+      { def: '[ENKEL: En väl underbyggd förklaringsmodell för hur något i omvärlden är uppbyggt eller fungerar. Långt mer än en gissning.]', scenario: '[ENKEL: Det är inte en lös tanke – det är en genomarbetad förklaringsmodell som hundratals oberoende experiment bekräftat under lång tid.]', ickeExempelOptions: ['[ENKEL: Evolutionsteorin stöds av fossiler, DNA-analys och observationer – långt ifrån en lös gissning.]', '[ENKEL: "Jag har en teori om varför min chef alltid är på dåligt humör på måndagar."]'] },
+      // 9 – Forskningsfusk
+      { def: '[ENKEL: Att plagiera, förfalska eller undanhålla resultat från sin forskning.]', scenario: '[ENKEL: Forskaren lade till mätvärden som aldrig samlades in och kopierade en kollegas text utan att ange källan.]', ickeExempelOptions: ['[ENKEL: Forskaren kopierar en kollegas tabell utan källhänvisning och lägger till mätpunkter som aldrig samlades in.]', '[ENKEL: Forskaren väljer att inte aktivt marknadsföra ett negativt resultat och publicerar en positiv uppföljning.]'] },
+      // 10 – Oberoende variabel
+      { def: '[ENKEL: Det som ändras i ett experiment, och som antas orsaka en förändring.]', scenario: '[ENKEL: Det är den faktor du som forskare aktivt väljer att ändra i experimentet för att se vad som händer.]', ickeExempelOptions: ['[ENKEL: Mängden gödning som tillsätts – det som forskaren aktivt väljer att ändra i experimentet.]', '[ENKEL: Plantornas höjd, som mäts och registreras varje dag under hela experimentet.]'] },
+      // 11 – Beroende variabel
+      { def: '[ENKEL: Det som mäts, och som antas påverkas av den oberoende variabeln.]', scenario: '[ENKEL: Det är det du mäter varje dag – den sak du förväntar dig ska förändras när du justerar något annat.]', ickeExempelOptions: ['[ENKEL: Musornas reaktionstid, som mäts efter att de exponerats för olika mängder koffein.]', '[ENKEL: Mängden koffein som injiceras i varje grupp av möss.]'] },
+      // 12 – Kontrollerade variabler
+      { def: '[ENKEL: Faktorer som hålls så konstanta som möjligt för att de inte ska påverka resultatet.]', scenario: '[ENKEL: Du ser till att temperatur, jordmängd och vattning är exakt lika i alla grupper – bara det du undersöker får skilja sig åt.]', ickeExempelOptions: ['[ENKEL: Temperatur, luftfuktighet och jordmängd hålls exakt lika för alla grupper under hela experimentet.]', '[ENKEL: Forskaren noterar och registrerar alla faktorer som varierar naturligt mellan grupperna.]'] },
+      // 13 – Kontrollgrupp
+      { def: '[ENKEL: En jämförelsegrupp som inte utsätts för behandlingen eller det verksamma ämnet, vilket minskar risken att andra variabler påverkar slutsatsen.]', scenario: '[ENKEL: En av grupperna får ingenting – den används bara som jämförelse mot de grupper som faktiskt fick en behandling.]', ickeExempelOptions: ['[ENKEL: En grupp råttor som inte får någon behandling alls – de används enbart som jämförelsegrupp.]', '[ENKEL: En grupp råttor som får den lägsta dosen av det läkemedel som testas.]'] },
+      // 14 – Blindstudie
+      { def: '[ENKEL: Studie där försökspersonerna inte vet om de får en aktiv substans eller inte, för att utesluta placeboeffekten.]', scenario: '[ENKEL: Ingen av deltagarna vet om de fick den riktiga behandlingen eller ett overksamt alternativ, för att deras förväntningar inte ska påverka hur de mår.]', ickeExempelOptions: ['[ENKEL: Deltagarna vet inte om de fått det aktiva läkemedlet eller ett sockerpiller.]', '[ENKEL: Forskaren vet inte vem i studien som tillhör experimentgruppen respektive kontrollgruppen.]'] },
+      // 15 – Placeboeffekten
+      { def: '[ENKEL: Påverkan på ett behandlingsresultat som beror på att försökspersonen förväntar sig att bli bättre, trots att ingen verksam medicin getts.]', scenario: '[ENKEL: Patienterna som fick ett sockerpiller mådde bättre – inte för att pillret hjälpte, utan för att de trodde att de fått riktig medicin.]', ickeExempelOptions: ['[ENKEL: Patienter som fick sockerpiller rapporterade minskad smärta – de trodde att de fått riktig medicin.]', '[ENKEL: Läkemedlet fungerade bättre för äldre patienter eftersom deras immunsystem reagerade annorlunda.]'] },
+      // 16 – Samvariation (korrelation)
+      { def: '[ENKEL: När två variabler varierar tillsammans.]', scenario: '[ENKEL: Försäljningen av glass och antalet drunkningsolyckor ökar båda under sommaren – de rör sig parallellt men det ena leder inte till det andra.]', ickeExempelOptions: ['[ENKEL: Glasskonsumtion och drunkningsolyckor ökar båda på sommaren – de rör sig parallellt.]', '[ENKEL: Rökning orsakar lungcancer – det finns ett direkt biologiskt samband som förklarar kopplingen.]'] },
+      // 17 – Orsakssamband
+      { def: '[ENKEL: När en variabel faktiskt orsakar förändring i en annan. Samvariation behöver inte betyda orsakssamband.]', scenario: '[ENKEL: Rökning leder faktiskt till lungcancer – det är inte bara en tillfällighet att båda företeelserna förekommer hos samma personer.]', ickeExempelOptions: ['[ENKEL: Cigarettrökning leder faktiskt till lungcancer – det finns ett direkt biologiskt förklaringssätt.]', '[ENKEL: Länder med hög chokladkonsumtion har fler nobelpristagare – båda ökar med välstånd.]'] },
+      // 18 – Vetenskaplig rapport
+      { def: '[ENKEL: Skriftlig redovisning av ett experiment med delarna inledning, material och metod, resultat, diskussion och källförteckning.]', scenario: '[ENKEL: Du skriver ned allt om ditt försök i en bestämd ordning: bakgrund, hur du gick till väga, vad du fick för siffror och vad du tror att det betyder.]', ickeExempelOptions: ['[ENKEL: Rapporten innehåller inledning, material och metod, resultat, diskussion och källförteckning i rätt ordning.]', '[ENKEL: Forskaren sammanfattar de viktigaste slutsatserna i ett email till sin handledare.]'] },
+      // 19 – Vetenskapligt förhållningssätt
+      { def: '[ENKEL: Att ha ett kritiskt tänkande, vara opartisk, vara öppen för nya idéer och basera sina slutsatser på välgrundade fakta.]', scenario: '[ENKEL: Du läser en ny studie som talar emot det du alltid trott – istället för att avfärda den funderar du noga på om dina gamla slutsatser håller.]', ickeExempelOptions: ['[ENKEL: Du tar del av en studie som talar emot din uppfattning och funderar öppet på om dina slutsatser håller.]', '[ENKEL: Du söker aktivt efter bevis som stödjer det du redan tror för att bygga ett starkare argument.]'] },
+      // 20 – Källkritik
+      { def: '[ENKEL: Att systematiskt granska och bedöma källors trovärdighet.]', scenario: '[ENKEL: Innan du litar på en artikel kontrollerar du vem som skrivit den, när den publicerades och om den kan ha ett syfte som påverkar innehållet.]', ickeExempelOptions: ['[ENKEL: Du granskar vem som skrivit artikeln, när den publicerades och om avsändaren kan ha ett intresse av att vinkla.]', '[ENKEL: Du väljer enbart att använda källor från välkända, stora medier som SVT och DN.]'] },
+      // 21 – Primärkälla
+      { def: '[ENKEL: Källa som bygger på egen data, t.ex. vetenskapliga artiklar baserade på observationer och experiment. Mer tillförlitlig.]', scenario: '[ENKEL: Artikeln bygger på mätningar och experiment som forskargruppen själv genomfört – inga andrahandsuppgifter.]', ickeExempelOptions: ['[ENKEL: En vetenskaplig artikel som presenterar egna experiment och observationer som forskargruppen genomfört.]', '[ENKEL: En välrenommerad lärobok som sammanfattar forskning inom ett ämne.]'] },
+      // 22 – Tendensiös (vinklad) källa
+      { def: '[ENKEL: En källa med underliggande politiska, ekonomiska eller ideologiska intressen, vilket gör den mindre trovärdig.]', scenario: '[ENKEL: Rapporten är finansierad av det företag vars produkt utvärderas – avsändaren har ett ekonomiskt intresse av att resultaten ser positiva ut.]', ickeExempelOptions: ['[ENKEL: En hälsorapport om sockrets risker finansierad av sockerindustrin – ekonomiska intressen påverkar slutsatserna.]', '[ENKEL: En ensamforskares artikel som inte granskat av kollegor och därför kan innehålla metodfel.]'] },
+      // 23 – Peer review
+      { def: '[ENKEL: Granskning av en vetenskaplig rapport av minst två oberoende forskare innan publicering; ett sätt att garantera kvaliteten.]', scenario: '[ENKEL: Innan artikeln publiceras i tidskriften läser minst två oberoende experter igenom den och kontrollerar att metoden och slutsatserna håller.]', ickeExempelOptions: ['[ENKEL: Artikeln läses igenom och godkänns av minst två oberoende experter inom fältet innan den publiceras.]', '[ENKEL: Artikeln publiceras på ett öppet vetenskapsforum där vem som helst kan lämna kommentarer.]'] },
+      // 24 – Desinformation
+      { def: '[ENKEL: Felaktig information som sprids medvetet för att lura eller vilseleda.]', scenario: '[ENKEL: Nyheten skapades med avsikt att vilseleda folk – de som spred den visste från början att innehållet var falskt.]', ickeExempelOptions: ['[ENKEL: En nyhetssajt sprider medvetet en falsk historia om att ett vaccin orsakar allvarliga biverkningar.]', '[ENKEL: En journalist publicerar ett faktafel som sedan rättas efter påpekanden från läsare.]'] },
+      // 25 – Konspirationsteorier
+      { def: '[ENKEL: Föreställningar om att hemliga grupper i en sammansvärjning arbetar för att uppnå dolda mål.]', scenario: '[ENKEL: Trots officiella förklaringar är många övertygade om att en grupp i skuggorna planerat allt i hemlighet för att uppnå sina egna mål.]', ickeExempelOptions: ['[ENKEL: Trots att tusentals NASA-anställda dokumenterade månlandningen tror en del att en hemlig grupp planerade allt som en bluff.]', '[ENKEL: En journalist avslöjar med dokument att ett läkemedelsföretag aktivt dolde information om biverkningar.]'] },
+      // 26 – Faktaresistens
+      { def: '[ENKEL: När en person håller fast vid sin övertygelse trots att fakta talar emot.]', scenario: '[ENKEL: Röntgenbilden visar tydligt att knäet är skadat, men personen insisterar på att det inte kan stämma – inga bevis ändrar uppfattningen.]', ickeExempelOptions: ['[ENKEL: Läkaren visar röntgenbilder som dokumenterar skadan, men patienten insisterar på att bilderna måste vara fel.]', '[ENKEL: Eleven tror att svaret är C men ändrar sig direkt när läraren visar att svaret faktiskt är A.]'] },
+      // 27 – Ekokammare
+      { def: '[ENKEL: En miljö, t.ex. på sociala medier, där en grupps åsikter förstärks genom att användarna ständigt bekräftar varandra.]', scenario: '[ENKEL: På forumet håller alla med varandra och utesluter direkt dem som tänker annorlunda – åsikterna förstärks av att gruppen ständigt bekräftar sig själv.]', ickeExempelOptions: ['[ENKEL: I gruppen bekräftar alla varandra och de som framför avvikande åsikter utestängs eller ignoreras direkt.]', '[ENKEL: En algoritm visar dig allt mer anpassat innehåll baserat på vad du tidigare klickat på.]'] },
+      // 28 – Filterbubblor
+      { def: '[ENKEL: När algoritmer på sociala medier anpassar innehållet efter en persons profil, så att man främst möter information som bekräftar den egna världsbilden.]', scenario: '[ENKEL: Appen registrerar varje klick du gör och anpassar vad du ser – utan att du märker det presenteras du allt mer ensidigt innehåll av en algoritm.]', ickeExempelOptions: ['[ENKEL: Algoritmerna registrerar dina klick och visar dig allt mer ensidigt innehåll utan att du märker det.]', '[ENKEL: En sluten Facebook-grupp där alla delar samma politiska åsikter och aldrig lyfter in motargument.]'] },
+      // 29 – Pseudovetenskap
+      { def: '[ENKEL: Läror som gör anspråk på att vara vetenskapliga utan att ha vetenskapligt stöd, t.ex. astrologi.]', scenario: '[ENKEL: Påståendet ser ut som vetenskap och använder ord som "studier visar", men när man granskar det finns inga riktiga kontrollerade experiment bakom det.]', ickeExempelOptions: ['[ENKEL: Astrologin påstår sig förutsäga personlighet baserat på födelsetidpunkten men saknar kontrollerade experiment.]', '[ENKEL: En ny behandling som ännu inte godkänts av Läkemedelsverket men visar lovande preliminära studieresultat.]'] },
+    ];
+
+    // Helper: hämtar enkel-text för ett begrepp.
+    // idx = 0-baserat index i concepts[] (= c.id - 1).
+    // field = 'def' | 'scenario' | 'ickeExempelOptions'
+    // Generisk nog att byggas ut med fler språk.
+    function getEasy(idx, field) {
+      return EASY_DATA[idx] ? EASY_DATA[idx][field] : undefined;
+    }
+
     function shuffleArray(array) {
       const a = [...array];
       for (let i = a.length - 1; i > 0; i--) {
@@ -460,9 +536,9 @@
       return 'NVA-' + hash.toString(36).toUpperCase().padStart(4, '0');
     }
 
-    function FlashcardView({ onComplete }) {
+    function FlashcardView({ onComplete, easyMode }) {
       const total = concepts.length;
-      const [deck, setDeck] = React.useState(() => shuffleArray(concepts.map(c => ({ term: c.term, definition: c.def }))));
+      const [deck, setDeck] = React.useState(() => shuffleArray(concepts.map((c, i) => ({ term: c.term, definition: c.def, easyDef: EASY_DATA[i].def }))));
       const [deckIdx, setDeckIdx] = React.useState(0);
       const [isFlipped, setIsFlipped] = React.useState(false);
       const [kudeInte, setKudeInte] = React.useState([]);
@@ -470,7 +546,7 @@
       const [phase, setPhase] = React.useState('playing');
 
       const restartAll = () => {
-        setDeck(shuffleArray(concepts.map(c => ({ term: c.term, definition: c.def }))));
+        setDeck(shuffleArray(concepts.map((c, i) => ({ term: c.term, definition: c.def, easyDef: EASY_DATA[i].def }))));
         setDeckIdx(0);
         setIsFlipped(false);
         setKudeInte([]);
@@ -568,7 +644,7 @@
                 </div>
               </div>
               <div className="flip-card-back" style={{background: '#fff', border: `2px solid ${PRIMARY}`}}>
-                <p className="text-xl leading-relaxed text-slate-800 font-medium px-4">{card.definition}</p>
+                <p className="text-xl leading-relaxed text-slate-800 font-medium px-4">{easyMode ? card.easyDef : card.definition}</p>
                 <div className="absolute bottom-6">
                   <span className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">Klicka för att vända</span>
                 </div>
@@ -755,7 +831,7 @@
       );
     }
 
-    function ScenarioView({ onComplete }) {
+    function ScenarioView({ onComplete, easyMode }) {
       const total = concepts.length;
 
       const buildOptions = (currentIdx, currentItems) => {
@@ -840,7 +916,7 @@
 
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{color: PRIMARY}}>Vilket begrepp beskrivs?</p>
-            <p className="text-gray-800 text-base leading-relaxed">{current.scenario}</p>
+            <p className="text-gray-800 text-base leading-relaxed">{easyMode ? getEasy(current.id - 1, 'scenario') : current.scenario}</p>
           </div>
 
           <div className="flex flex-col gap-2">
@@ -892,9 +968,9 @@
       );
     }
 
-    function IckeExempelView({ onComplete }) {
+    function IckeExempelView({ onComplete, easyMode }) {
       const [items, setItems] = React.useState(() =>
-        shuffleArray(concepts.map(c => ({ id: c.id, term: c.term, options: shuffleArray([...c.ickeExempel.options]), explanation: c.ickeExempel.explanation })))
+        shuffleArray(concepts.map((c, cIdx) => ({ id: c.id, term: c.term, options: shuffleArray(c.ickeExempel.options.map((opt, oIdx) => ({ ...opt, easyText: EASY_DATA[cIdx].ickeExempelOptions[oIdx] }))), explanation: c.ickeExempel.explanation })))
       );
       const [idx, setIdx] = React.useState(0);
       const [selected, setSelected] = React.useState(null);
@@ -903,7 +979,7 @@
       const total = items.length;
 
       const restart = () => {
-        setItems(shuffleArray(concepts.map(c => ({ id: c.id, term: c.term, options: shuffleArray([...c.ickeExempel.options]), explanation: c.ickeExempel.explanation }))));
+        setItems(shuffleArray(concepts.map((c, cIdx) => ({ id: c.id, term: c.term, options: shuffleArray(c.ickeExempel.options.map((opt, oIdx) => ({ ...opt, easyText: EASY_DATA[cIdx].ickeExempelOptions[oIdx] }))), explanation: c.ickeExempel.explanation }))));
         setIdx(0);
         setSelected(null);
         setScore(0);
@@ -992,7 +1068,7 @@
                   <span className="font-bold mr-2">{label}.</span>
                   {isAnswered && opt.correct && '✓ '}
                   {isAnswered && i === selected && !opt.correct && '✗ '}
-                  {opt.text}
+                  {easyMode ? opt.easyText : opt.text}
                 </button>
               );
             })}
@@ -1015,7 +1091,7 @@
       );
     }
 
-    function ListView({ onComplete }) {
+    function ListView({ onComplete, easyMode }) {
       const sentinelRef = React.useRef(null);
 
       React.useEffect(() => {
@@ -1045,7 +1121,7 @@
                 </span>
                 <div>
                   <p className="font-bold text-gray-800">{c.term}</p>
-                  <p className="text-gray-500 text-sm mt-0.5">{c.def}</p>
+                  <p className="text-gray-500 text-sm mt-0.5">{easyMode ? getEasy(c.id - 1, 'def') : c.def}</p>
                 </div>
               </div>
             </div>
@@ -1129,6 +1205,14 @@
       const [celebrateRank, setCelebrateRank] = React.useState(null);
       const prevRankRef = React.useRef(computeRank(loadProgress()));
 
+      const EASY_KEY = 'nva_easy';
+      const [easyMode, setEasyMode] = React.useState(() => {
+        try { return sessionStorage.getItem(EASY_KEY) === '1'; } catch(e) { return false; }
+      });
+      React.useEffect(() => {
+        try { sessionStorage.setItem(EASY_KEY, easyMode ? '1' : '0'); } catch(e) {}
+      }, [easyMode]);
+
       React.useEffect(() => {
         saveProgress(progress);
       }, [progress]);
@@ -1187,13 +1271,34 @@
             code={code}
           />
 
+          {/* Enkel svenska-knapp – dold i Lucktext-vyn */}
+          {activeView !== 'Lucktext' && (
+            <button
+              aria-pressed={easyMode}
+              onClick={() => setEasyMode(m => !m)}
+              style={{
+                position: 'fixed', top: '1rem', right: '1rem', zIndex: 9999,
+                padding: '6px 16px', borderRadius: '9999px',
+                fontFamily: 'EB Garamond, serif', fontSize: '14px',
+                fontWeight: '600', cursor: 'pointer',
+                border: easyMode ? 'none' : '2px solid #16a34a',
+                background: easyMode ? '#16a34a' : '#fff',
+                color: easyMode ? '#fff' : '#16a34a',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+                transition: 'all 0.15s'
+              }}
+            >
+              📖 {easyMode ? 'Enkel svenska ✓' : 'Enkel svenska'}
+            </button>
+          )}
+
           {/* Content */}
           <main className="max-w-3xl mx-auto px-4 py-6">
-            {activeView === 'Lista' && <ListView onComplete={completeLista} />}
-            {activeView === 'Flashcards' && <FlashcardView key="flashcards" onComplete={completeFlashcards} />}
+            {activeView === 'Lista' && <ListView onComplete={completeLista} easyMode={easyMode} />}
+            {activeView === 'Flashcards' && <FlashcardView key="flashcards" onComplete={completeFlashcards} easyMode={easyMode} />}
             {activeView === 'Lucktext' && <LucktextView key="lucktext" onComplete={completeLucktext} />}
-            {activeView === 'Scenario' && <ScenarioView key="scenario" onComplete={completeScenario} />}
-            {activeView === 'Icke-ex.' && <IckeExempelView key="ickeex" onComplete={completeIckeEx} />}
+            {activeView === 'Scenario' && <ScenarioView key="scenario" onComplete={completeScenario} easyMode={easyMode} />}
+            {activeView === 'Icke-ex.' && <IckeExempelView key="ickeex" onComplete={completeIckeEx} easyMode={easyMode} />}
           </main>
 
           {/* Footer */}
