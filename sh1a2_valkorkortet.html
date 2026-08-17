@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Valkörkortet – Quiz | Samhällskunskap 1a2 &amp; Naturkunskap 1a2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #c2410c;
+      --primary-btn: #fb923c;
+      --primary-light: #ffedd5;
+      --primary-dark: #9a3412;
+      --correct-bg: #dcfce7;
+      --correct-border: #16a34a;
+      --correct-text: #16a34a;
+      --wrong-bg: #fee2e2;
+      --wrong-border: #dc2626;
+      --wrong-text: #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'EB Garamond', Georgia, serif; background: #fff7ed; min-height: 100vh; color: #1e293b; }
+
+    a.back-btn {
+      display: inline-block; padding: 8px 16px; color: var(--primary-dark);
+      text-decoration: none; font-size: 0.95rem; position: fixed;
+      top: 14px; left: 14px; z-index: 200; border-radius: 8px; transition: background 0.2s;
+    }
+    a.back-btn:hover { background: var(--primary-light); }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Start ── */
+    #screen-start { max-width: 620px; margin: 0 auto; padding: 90px 24px 40px; text-align: center; }
+    .badge {
+      display: inline-block; background: var(--primary-light); color: var(--primary-dark);
+      padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;
+      letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 20px;
+    }
+    #screen-start h1 { font-size: 2.4rem; font-weight: 600; font-style: italic; color: #0f172a; margin-bottom: 8px; }
+    #screen-start .subtitle { font-size: 1.05rem; color: #64748b; margin-bottom: 20px; }
+    .intro-text { font-size: 0.98rem; color: #78350f; background: var(--primary-light); border-radius: 14px; padding: 14px 20px; margin-bottom: 30px; line-height: 1.6; }
+
+    .mode-select { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px; }
+    .mode-btn {
+      background: white; border: 2px solid #fed7aa; border-radius: 20px; padding: 10px 18px;
+      font-family: inherit; font-size: 0.92rem; color: #78350f; cursor: pointer; transition: all 0.15s;
+    }
+    .mode-btn:hover { border-color: var(--primary-btn); }
+    .mode-btn.active { background: var(--primary-btn); border-color: var(--primary-btn); color: white; font-weight: 600; }
+
+    .info-cards { display: flex; gap: 12px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; }
+    .info-card {
+      background: white; border: 1px solid #fed7aa; border-radius: 12px;
+      padding: 16px 20px; text-align: center; flex: 1; min-width: 100px; max-width: 150px;
+    }
+    .info-card .num { font-size: 1.5rem; font-weight: 600; color: var(--primary-dark); }
+    .info-card .lbl { font-size: 0.78rem; color: #94a3b8; margin-top: 2px; }
+
+    .session-stats { font-size: 0.85rem; color: #94a3b8; margin-bottom: 22px; }
+
+    /* ── Quiz ── */
+    #screen-quiz { max-width: 700px; margin: 0 auto; padding: 70px 20px 60px; }
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .score-pill { background: var(--primary-light); color: var(--primary-dark); border-radius: 20px; padding: 5px 14px; font-size: 0.92rem; font-weight: 600; }
+    .progress-wrap { background: #fed7aa; border-radius: 4px; height: 6px; overflow: hidden; margin-bottom: 6px; }
+    .progress-bar { background: var(--primary-btn); height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+    .q-counter { font-size: 0.82rem; color: #94a3b8; text-align: right; margin-bottom: 22px; }
+    .q-type-tag {
+      display: inline-block; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--primary-dark); background: var(--primary-light);
+      padding: 3px 10px; border-radius: 20px; margin-bottom: 12px;
+    }
+    .q-text { font-size: 1.25rem; font-weight: 600; line-height: 1.55; color: #0f172a; margin-bottom: 22px; }
+    .opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+    .opt-btn {
+      background: white; border: 2px solid #fed7aa; border-radius: 12px;
+      padding: 13px 18px; text-align: left; font-size: 1rem; font-family: inherit;
+      cursor: pointer; transition: border-color 0.15s, background 0.15s; line-height: 1.45;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--primary-btn); background: var(--primary-light); }
+    .opt-btn:disabled { cursor: default; }
+    .opt-btn.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); font-weight: 600; }
+    .opt-btn.wrong   { background: var(--wrong-bg);   border-color: var(--wrong-border);   color: var(--wrong-text); }
+    .opt-btn.dimmed  { opacity: 0.4; }
+    .nav-row { display: flex; gap: 12px; align-items: center; }
+    .btn-back { background: white; border: 2px solid #fed7aa; border-radius: 10px; padding: 10px 20px; font-family: inherit; font-size: 0.9rem; color: #64748b; cursor: pointer; }
+    .btn-back:hover { border-color: var(--primary-btn); }
+    .btn-next { background: var(--primary-btn); border: none; border-radius: 10px; padding: 10px 28px; font-family: inherit; font-size: 0.9rem; font-weight: 600; color: white; cursor: pointer; margin-left: auto; transition: background 0.15s; }
+    .btn-next:hover { background: #f97316; }
+
+    /* ── Result ── */
+    #screen-result { max-width: 620px; margin: 0 auto; padding: 80px 20px 80px; text-align: center; }
+    .score-ring { width: 130px; height: 130px; border-radius: 50%; border: 5px solid var(--primary-btn); display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 18px; }
+    .score-ring.pass { border-color: var(--correct-border); }
+    .score-ring .rnum { font-size: 1.7rem; font-weight: 600; color: var(--primary-dark); line-height: 1; }
+    .score-ring.pass .rnum { color: var(--correct-text); }
+    .score-ring .rlbl { font-size: 0.72rem; color: #94a3b8; margin-top: 4px; }
+    .res-title  { font-size: 1.8rem; font-weight: 600; font-style: italic; margin-bottom: 6px; }
+    .res-msg    { font-size: 1rem; color: #64748b; margin-bottom: 22px; line-height: 1.6; }
+    .res-mode   { font-size: 0.85rem; color: #94a3b8; margin-bottom: 28px; }
+
+    .code-box {
+      background: var(--correct-bg); border: 2px solid var(--correct-border); border-radius: 16px;
+      padding: 20px 24px; margin-bottom: 28px;
+    }
+    .code-box .code-lbl { font-size: 0.82rem; color: var(--correct-text); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+    .code-box .code-val { font-size: 1.7rem; font-weight: 700; color: var(--correct-text); letter-spacing: 0.05em; font-family: 'Courier New', monospace; }
+
+    .btn-primary { display: inline-block; background: var(--primary-btn); color: white; border: none; border-radius: 12px; padding: 13px 36px; font-size: 1.05rem; font-family: inherit; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+    .btn-primary:hover { background: #f97316; transform: translateY(-1px); }
+    .btn-primary:active { transform: none; }
+    .btn-link { display: block; margin-top: 16px; background: none; border: none; font-family: inherit; font-size: 0.88rem; color: #94a3b8; text-decoration: underline; cursor: pointer; }
+    .btn-link:hover { color: var(--primary-dark); }
+
+    @media (max-width: 768px) {
+      #screen-quiz { padding-top: 60px; }
+      .nav-row { flex-wrap: wrap; justify-content: space-between; }
+      .btn-back, .btn-next { flex: 1; min-width: 120px; text-align: center; margin-left: 0; }
+    }
+    @media (max-width: 500px) {
+      #screen-start h1 { font-size: 1.85rem; }
+      .q-text { font-size: 1.1rem; }
+      .info-cards { gap: 8px; }
+      .info-card { padding: 12px 10px; min-width: 88px; }
+    }
+  </style>
+</head>
+<body>
+
+<a href="index.html" class="back-btn" id="back-link">← Tillbaka till startsidan</a>
+
+<!-- ═══════════ START ═══════════ -->
+<div id="screen-start" class="screen active">
+  <div class="badge">Samhällskunskap 1a2 &amp; Naturkunskap 1a2</div>
+  <h1>Valkörkortet</h1>
+  <p class="subtitle">Klimatvalet 2026 — Samhällskunskap 1a2 och Naturkunskap 1a2</p>
+  <p class="intro-text">25 frågor. 80 % rätt krävs för godkänt. Du får göra om provet hur många gånger du vill. Visa din kod för John innan din grupp redovisar.</p>
+
+  <div class="mode-select" id="mode-select">
+    <button class="mode-btn" data-mode="del1" onclick="selectMode('del1')">Del 1 — Samhällskunskap</button>
+    <button class="mode-btn" data-mode="del2" onclick="selectMode('del2')">Del 2 — Naturkunskap</button>
+    <button class="mode-btn active" data-mode="alla" onclick="selectMode('alla')">Alla 25 frågor</button>
+  </div>
+
+  <div class="info-cards">
+    <div class="info-card"><div class="num" id="info-count">25</div><div class="lbl">Frågor</div></div>
+    <div class="info-card"><div class="num">80%</div><div class="lbl">För godkänt</div></div>
+  </div>
+
+  <div class="session-stats" id="session-stats"></div>
+
+  <button class="btn-primary" onclick="startQuiz()">Starta Quiz →</button>
+</div>
+
+<!-- ═══════════ QUIZ ═══════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-header">
+    <div></div>
+    <div class="score-pill" id="score-pill">Poäng: 0</div>
+  </div>
+  <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+  <div class="q-counter" id="q-counter">Fråga 1 av 25</div>
+  <div class="q-type-tag" id="q-type-tag"></div>
+  <div class="q-text" id="q-text"></div>
+  <div class="opts" id="opts"></div>
+  <div class="nav-row">
+    <button class="btn-back" id="btn-back" onclick="goBack()" style="display:none">← Bakåt</button>
+    <button class="btn-next" id="btn-next" onclick="goNext()" style="display:none">Nästa →</button>
+  </div>
+</div>
+
+<!-- ═══════════ RESULT ═══════════ -->
+<div id="screen-result" class="screen">
+  <div class="score-ring" id="score-ring">
+    <div class="rnum" id="r-score"></div>
+    <div class="rlbl">rätt svar</div>
+  </div>
+  <div class="res-title" id="r-title"></div>
+  <div class="res-msg"   id="r-msg"></div>
+  <div class="res-mode"  id="r-mode"></div>
+
+  <div class="code-box" id="code-box" style="display:none">
+    <div class="code-lbl">Din verifieringskod</div>
+    <div class="code-val" id="code-val"></div>
+  </div>
+
+  <button class="btn-primary" onclick="retryQuiz()">↺ Försök igen</button>
+  <button class="btn-link" onclick="backToStart()">Välj annat läge</button>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// SMART TILLBAKA-NAVIGERING
+// ════════════════════════════════════════════════════════════
+document.getElementById('back-link').addEventListener('click', function (e) {
+  e.preventDefault();
+  const ref = document.referrer;
+  if (ref && ref.indexOf(location.hostname) !== -1) {
+    history.back();
+  } else {
+    window.location.href = 'index.html';
+  }
+});
+
+// ════════════════════════════════════════════════════════════
+// FRÅGEDATA — { del, fraga, ratt, fel[] }, inga parallella arrayer
+// Del 1 (1–12): Samhällskunskap · Del 2 (13–25): Naturkunskap
+// ════════════════════════════════════════════════════════════
+const QUESTIONS = [
+  { del: 1, fraga: "Vad väljer man i riksdagsvalet den 13 september?", ratt: "Ledamöter till Sveriges riksdag", fel: ["Sveriges statsminister direkt", "Sveriges kung och kungahus", "Domare till Sveriges domstolar"] },
+  { del: 1, fraga: "Hur många ledamöter sitter i Sveriges riksdag?", ratt: "349 ledamöter", fel: ["249 ledamöter", "449 ledamöter", "549 ledamöter"] },
+  { del: 1, fraga: "Hur gammal måste du vara för att få rösta?", ratt: "18 år på valdagen", fel: ["16 år på valdagen", "17 år på valdagen", "20 år på valdagen"] },
+  { del: 1, fraga: "Vilka tre val hålls samma dag den 13 september?", ratt: "Riksdag, region och kommun", fel: ["Riksdag, kommun och EU", "Riksdag, region och EU", "Kommun, region och EU"] },
+  { del: 1, fraga: "Vad innebär fyraprocentsspärren?", ratt: "Ett parti behöver minst fyra procent av rösterna för att komma in i riksdagen", fel: ["Ett parti får som mest fyra procent av alla platser som finns i riksdagen", "Ett parti måste ha minst fyra procent av sina kandidater under trettio år", "Ett parti behöver minst fyra procent av rösterna i varje enskild kommun"] },
+  { del: 1, fraga: "Vilka två partier placeras oftast till vänster på skalan?", ratt: "Vänsterpartiet och Socialdemokraterna", fel: ["Moderaterna och Kristdemokraterna", "Sverigedemokraterna och Liberalerna", "Centerpartiet och Kristdemokraterna"] },
+  { del: 1, fraga: "Vad handlar höger–vänster-skalan framför allt om?", ratt: "Hur mycket staten ska styra ekonomin", fel: ["Hur gamla ett partis väljare brukar vara", "Hur länge partiet har suttit i riksdagen", "Hur många medlemmar partiet har totalt"] },
+  { del: 1, fraga: "Vad är en enkät?", ratt: "Samma frågor ställs till många personer", fel: ["Ett långt samtal med en enda person", "En text som analyseras rad för rad", "En observation av hur människor beter sig"] },
+  { del: 1, fraga: "Vad menas med urval i en undersökning?", ratt: "Vilka personer man väljer att fråga", fel: ["Vilka frågor man väljer att ställa", "Vilka svar man väljer att redovisa", "Vilka källor man väljer att lita på"] },
+  { del: 1, fraga: "Vad betyder bortfall?", ratt: "De som inte svarade på undersökningen", fel: ["De som svarade fel på undersökningen", "De frågor som togs bort ur enkäten", "De svar som råkade räknas två gånger"] },
+  { del: 1, fraga: "Vilken av frågorna nedan är en ledande fråga?", ratt: '"Tycker du inte också att klimatet är viktigast?"', fel: ['"Hur viktig tycker du att klimatfrågan är?"', '"Vilken samhällsfråga är viktigast för dig?"', '"Hur ofta pratar du om klimatet med vänner?"'] },
+  { del: 1, fraga: "Vad är viktigast att fråga sig när du bedömer en källa?", ratt: "Vem som ligger bakom den och varför", fel: ["Hur många bilder som finns med i den", "Hur högt upp den ligger i sökresultatet", "Hur många som har delat den på nätet"] },
+
+  { del: 2, fraga: "Vad är växthuseffekten?", ratt: "Vissa gaser håller kvar värme i atmosfären", fel: ["Solen lyser starkare under sommarhalvåret", "Ozonlagret släpper igenom mer strålning", "Havet värms upp av strömmar söderifrån"] },
+  { del: 2, fraga: "Vilken gas bidrar mest till den förstärkta växthuseffekten?", ratt: "Koldioxid", fel: ["Syrgas", "Kvävgas", "Vätgas"] },
+  { del: 2, fraga: "Var kommer merparten av koldioxidutsläppen ifrån?", ratt: "Förbränning av fossila bränslen", fel: ["Nedbrytning av skräp på soptippar", "Avdunstning från sjöar och hav", "Utandningsluft från djur och människor"] },
+  { del: 2, fraga: "Vad är skillnaden mellan väder och klimat?", ratt: "Klimat är vädret mätt över mycket lång tid", fel: ["Klimat är vädret på södra halvklotet", "Klimat mäts av SMHI, väder av forskare", "Klimat handlar bara om nederbörd"] },
+  { del: 2, fraga: "Vilka sektorer står för de största utsläppen i Sverige?", ratt: "Industrin och inrikes transporter", fel: ["Skolor, sjukhus och kontor", "Hushållens användning av el", "Handeln och restaurangbranschen"] },
+  { del: 2, fraga: "Vad är fossila bränslen?", ratt: "Bränslen bildade av rester från forntida liv", fel: ["Bränslen tillverkade av färsk växtbiomassa", "Bränslen som framställs ur vanligt havsvatten", "Bränslen som bildas när metaller reagerar"] },
+  { del: 2, fraga: "Vad betyder hållbar utveckling?", ratt: "Utveckling som inte förstör för kommande generationer", fel: ["Utveckling som gör att ekonomin växer varenda år", "Utveckling som sker långsamt och mycket försiktigt", "Utveckling som helt och hållet styrs av staten"] },
+  { del: 2, fraga: "Vilka tre dimensioner delas hållbar utveckling in i?", ratt: "Ekologisk, ekonomisk och social", fel: ["Ekologisk, teknisk och politisk", "Ekonomisk, kulturell och juridisk", "Social, medicinsk och teknisk"] },
+  { del: 2, fraga: "Vad menas med kretslopp i naturen?", ratt: "Ämnen används om och om igen i naturen", fel: ["Ämnen försvinner helt när de har använts", "Ämnen rör sig bara nedåt genom marken", "Ämnen kan bara återvinnas av människan"] },
+  { del: 2, fraga: "Vilken förändring minskar en svensks klimatavtryck mest?", ratt: "Att flyga mindre och köra bil mindre", fel: ["Att sortera sina förpackningar noggrant", "Att släcka lampor i rum som står tomma", "Att diska för hand istället för i maskin"] },
+  { del: 2, fraga: "Varför räcker det inte att enskilda personer ändrar sina vanor?", ratt: "Stora utsläpp styrs av politik och industri", fel: ["Enskilda personer släpper inte ut något alls", "Utsläppen minskar ändå helt av sig själva", "Bara andra länder kan påverka klimatet"] },
+  { del: 2, fraga: "Hur granskar du bäst ett påstående om klimatet?", ratt: "Kollar vad forskning och myndigheter säger", fel: ["Kollar hur många som har gillat inlägget", "Kollar om den som talar låter säker på sin sak", "Kollar om påståendet känns rimligt för dig"] },
+  { del: 2, fraga: "Vad kan naturvetenskapen hjälpa dig med i en politisk debatt?", ratt: "Att avgöra om ett påstående stämmer", fel: ["Att avgöra vilket parti som är bäst", "Att avgöra vad som är rättvist för alla", "Att avgöra vilka värderingar som är rätt"] }
+];
+
+// ════════════════════════════════════════════════════════════
+// FISHER-YATES SHUFFLE
+// ════════════════════════════════════════════════════════════
+function shuffleArray(array) {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// ════════════════════════════════════════════════════════════
+// LÄGESVAL
+// ════════════════════════════════════════════════════════════
+let currentMode = 'alla';
+
+function filterByMode(mode) {
+  if (mode === 'del1') return QUESTIONS.filter(q => q.del === 1);
+  if (mode === 'del2') return QUESTIONS.filter(q => q.del === 2);
+  return QUESTIONS.slice();
+}
+
+function modeLabel(mode) {
+  if (mode === 'del1') return 'Del 1 — Samhällskunskap';
+  if (mode === 'del2') return 'Del 2 — Naturkunskap';
+  return 'Alla 25 frågor';
+}
+
+function selectMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+  document.getElementById('info-count').textContent = filterByMode(mode).length;
+}
+
+// ════════════════════════════════════════════════════════════
+// SESSIONSTORAGE — attempts/bäst resultat denna session
+// ════════════════════════════════════════════════════════════
+const STATS_KEY = 'valk_progress';
+
+function loadStats() {
+  try {
+    const raw = sessionStorage.getItem(STATS_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return { attempts: 0, bestPct: 0, bestMode: null };
+}
+
+function saveStats(stats) {
+  try { sessionStorage.setItem(STATS_KEY, JSON.stringify(stats)); } catch (e) {}
+}
+
+function renderSessionStats() {
+  const stats = loadStats();
+  const el = document.getElementById('session-stats');
+  el.textContent = stats.attempts > 0
+    ? `Försök denna session: ${stats.attempts} · Bästa resultat: ${stats.bestPct}%`
+    : '';
+}
+
+// ════════════════════════════════════════════════════════════
+// VERIFIERINGSKOD — samma hashformel som portalens rank-system,
+// datumberoende så koden roterar dagligen
+// ════════════════════════════════════════════════════════════
+const CODE_SALT = 'valkorkortet2026sakerhet';
+
+function computeVerificationCode(pct, mode) {
+  const d = new Date();
+  const dateStr = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+  const input = dateStr + '|' + mode + '|' + pct + '|' + CODE_SALT;
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) {
+    hash = (hash + input.charCodeAt(i) * (i + 1)) % 1679616; // 36^4
+  }
+  return 'VALK-' + hash.toString(36).toUpperCase().padStart(4, '0');
+}
+
+// ════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════
+let qs = [];
+let cur = 0;
+let score = 0;
+
+function buildState(mode) {
+  const filtered = shuffleArray(filterByMode(mode));
+  qs = filtered.map(q => ({
+    del: q.del,
+    fraga: q.fraga,
+    ratt: q.ratt,
+    options: shuffleArray([q.ratt, ...q.fel]),
+    selected: null,
+    answered: false
+  }));
+}
+
+// ════════════════════════════════════════════════════════════
+// SCREENS
+// ════════════════════════════════════════════════════════════
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ════════════════════════════════════════════════════════════
+// START
+// ════════════════════════════════════════════════════════════
+function startQuiz() {
+  buildState(currentMode);
+  cur = 0;
+  score = 0;
+  show('screen-quiz');
+  render();
+}
+
+function backToStart() {
+  renderSessionStats();
+  show('screen-start');
+}
+
+// ════════════════════════════════════════════════════════════
+// RENDER
+// ════════════════════════════════════════════════════════════
+function render() {
+  const q = qs[cur];
+  const total = qs.length;
+
+  document.getElementById('progress-bar').style.width = (cur / total * 100) + '%';
+  document.getElementById('q-counter').textContent = 'Fråga ' + (cur + 1) + ' av ' + total;
+  document.getElementById('score-pill').textContent = 'Poäng: ' + score;
+  document.getElementById('q-type-tag').textContent = q.del === 1 ? 'Del 1 · Samhällskunskap' : 'Del 2 · Naturkunskap';
+  document.getElementById('q-text').textContent = q.fraga;
+
+  const optsEl = document.getElementById('opts');
+  optsEl.innerHTML = '';
+
+  q.options.forEach(optText => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = optText;
+    btn.disabled = q.answered;
+
+    if (q.answered) {
+      if (optText === q.ratt)              btn.classList.add('correct');
+      else if (optText === q.selected)     btn.classList.add('wrong');
+      else                                 btn.classList.add('dimmed');
+    } else {
+      btn.addEventListener('click', () => handleAnswer(optText));
+    }
+    optsEl.appendChild(btn);
+  });
+
+  document.getElementById('btn-back').style.display = cur > 0 ? 'inline-block' : 'none';
+  document.getElementById('btn-next').style.display = q.answered ? 'inline-block' : 'none';
+  document.getElementById('btn-next').textContent = cur === total - 1 ? 'Se resultat →' : 'Nästa →';
+}
+
+// ════════════════════════════════════════════════════════════
+// ANSWER — direkt återkoppling, rätt alternativ visas vid fel
+// ════════════════════════════════════════════════════════════
+function handleAnswer(optText) {
+  const q = qs[cur];
+  if (q.answered) return;
+
+  q.answered = true;
+  q.selected = optText;
+  if (optText === q.ratt) score++;
+
+  render();
+}
+
+// ════════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════════
+function goBack() { if (cur > 0) { cur--; render(); } }
+function goNext() {
+  if (cur < qs.length - 1) { cur++; render(); }
+  else showResults();
+}
+
+// ════════════════════════════════════════════════════════════
+// RESULTS
+// ════════════════════════════════════════════════════════════
+function showResults() {
+  show('screen-result');
+
+  const total = qs.length;
+  const pct = Math.round(score / total * 100);
+  const pass = pct >= 80;
+
+  document.getElementById('r-score').textContent = score + '/' + total;
+  document.getElementById('score-ring').className = 'score-ring' + (pass ? ' pass' : '');
+  document.getElementById('r-mode').textContent = 'Läge: ' + modeLabel(currentMode) + ' · ' + pct + '% rätt';
+
+  const codeBox = document.getElementById('code-box');
+  if (pass) {
+    document.getElementById('r-title').textContent = '✅ Godkänt!';
+    document.getElementById('r-msg').textContent = 'Du klarade Valkörkortet. Visa koden nedan för John innan din grupp redovisar.';
+    document.getElementById('code-val').textContent = computeVerificationCode(pct, currentMode);
+    codeBox.style.display = 'block';
+  } else {
+    document.getElementById('r-title').textContent = '📖 Öva lite till';
+    document.getElementById('r-msg').textContent = 'Du är på god väg men nådde inte 80 % ännu. Kör om provet så många gånger du behöver!';
+    codeBox.style.display = 'none';
+  }
+
+  const stats = loadStats();
+  stats.attempts = (stats.attempts || 0) + 1;
+  if (pct > (stats.bestPct || 0)) {
+    stats.bestPct = pct;
+    stats.bestMode = currentMode;
+  }
+  saveStats(stats);
+}
+
+// ════════════════════════════════════════════════════════════
+// FÖRSÖK IGEN
+// ════════════════════════════════════════════════════════════
+function retryQuiz() {
+  startQuiz();
+}
+
+// ════════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════════
+document.getElementById('info-count').textContent = filterByMode(currentMode).length;
+renderSessionStats();
+</script>
+</body>
+</html>
