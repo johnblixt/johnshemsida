@@ -3,24 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ideologier Quiz - Repetitionsspel</title>
-  
+  <title>Del 2 — Partier och ideologier</title>
+
   <!-- Laddar in React -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  
+
   <!-- Laddar in Babel -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  
+
   <!-- Laddar in Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'EB Garamond', serif; }
+    .easy-toggle[aria-pressed="true"] { background: #16a34a; color: white; border-color: #16a34a; }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
-  <a href="index.html" class="fixed top-4 left-4 z-50 text-sm font-medium text-slate-500 hover:text-slate-800 bg-white/90 px-3 py-2 rounded-xl shadow-sm transition-colors">← Tillbaka till startsidan</a>
+  <a href="index.html" id="back-link" class="fixed top-4 left-4 z-50 text-sm font-medium text-slate-500 hover:text-slate-800 bg-white/90 px-3 py-2 rounded-xl shadow-sm transition-colors">← Tillbaka till startsidan</a>
+  <button id="btn-easy" type="button" aria-pressed="false" class="easy-toggle fixed top-4 right-4 z-50 text-sm font-bold bg-white border-2 border-green-600 text-green-600 px-3 py-2 rounded-xl shadow-sm transition-colors">📖 Enkel svenska</button>
   <div id="root"></div>
 
   <script type="text/babel">
@@ -48,28 +50,36 @@
     const ChevronRight = ({ className }) => (
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m9 18 6-6-6-6"/></svg>
     );
+    const ChevronLeft = ({ className }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m15 18-6-6 6-6"/></svg>
+    );
 
     // --- DATA ---
-    // Distraktorer har uppdaterats för att matcha längd och ton med det rätta svaret.
+    // Alla alternativ är avvägda i längd/detaljnivå enligt husets regler,
+    // så att det rätta svaret aldrig sticker ut som märkbart längre eller mer specifikt.
     const allQuestionsData = [
+      // ── Ideologier (ursprungliga 15 frågor) ──
       {
         question: "Vad är en politisk ideologi?",
         correct: "En samling idéer om hur samhället ska styras och fungera.",
         incorrect: [
           "Ett juridiskt system för att reglera landets lagar och ordning.",
-          "En vetenskaplig metod för att analysera historiska händelser.",
+          "En vetenskaplig metod för att analysera historiska händelser noggrant.",
           "En ekonomisk plan för hur statens budget ska fördelas årligen."
-        ]
+        ],
+        expl: "En ideologi är en samling sammanhängande idéer om hur samhället bör styras, vem som ska ha makt och hur resurser ska fördelas. Liberalism, konservatism och socialism är exempel på ideologier."
       },
       {
         question: "Vilken historisk händelse lade grunden för liberalismen?",
         correct: "Franska revolutionen.",
-        incorrect: ["Industriella revolutionen.", "Ryska revolutionen.", "Amerikanska inbördeskriget."]
+        incorrect: ["Industriella revolutionen.", "Ryska revolutionen.", "Amerikanska inbördeskriget."],
+        expl: "Franska revolutionen (1789) spred idéer om frihet, jämlikhet och individens rättigheter, vilket lade grunden för liberalismen som ideologi."
       },
       {
         question: "Vilken händelse låg bakom att socialismen växte fram?",
         correct: "Industriella revolutionen.",
-        incorrect: ["Amerikanska revolutionen.", "Franska revolutionen.", "Den vetenskapliga revolutionen."]
+        incorrect: ["Amerikanska revolutionen.", "Franska revolutionen.", "Den vetenskapliga revolutionen."],
+        expl: "Industriella revolutionen skapade en ny arbetarklass som levde och arbetade under svåra förhållanden i fabrikerna. Socialismen växte fram som en reaktion mot dessa orättvisor."
       },
       {
         question: "Varför växte konservatismen fram?",
@@ -78,7 +88,8 @@
           "För att skapa ett modernt försvar mot yttre hot från grannländer.",
           "Som ett krav på att införa allmän rösträtt för alla vuxna medborgare.",
           "För att skydda de nya industrier som växte fram under 1800-talet."
-        ]
+        ],
+        expl: "Konservatismen uppstod som en motreaktion mot franska revolutionens snabba och våldsamma förändringar. Konservativa ville istället bevara samhällets institutioner och förändra dem gradvis, inte genom revolution."
       },
       {
         question: "Vad är ett centralt mål inom socialismen?",
@@ -87,16 +98,18 @@
           "Att bevara kyrkans och kungamaktens roll i det dagliga livet.",
           "Att öka det privata ägandet av skogar, mark och råvaror.",
           "Att ta bort statliga regleringar för att främja fri konkurrens."
-        ]
+        ],
+        expl: "Socialismen vill minska klyftorna mellan rika och fattiga, ofta genom att omfördela resurser via skatter och gemensamt finansierad vård, skola och omsorg."
       },
       {
         question: "Vad är det viktigaste för liberalismen?",
         correct: "Individens frihet och rätten att fatta egna beslut.",
         incorrect: [
-          "Gemensamt ägande av produktion och tunga industrier.",
+          "Gemensamt ägande av produktionsmedel och tunga industrier.",
           "Starka religiösa värderingar och bevarande av traditioner.",
-          "Staten absoluta makt över medborgarnas vardagliga val."
-        ]
+          "Statens fulla makt över alla medborgares vardagliga val."
+        ],
+        expl: "Liberalismen sätter individens frihet främst – rätten att själv välja sitt jobb, sin bostad och sitt sätt att leva, med minsta möjliga inblandning från staten."
       },
       {
         question: "Vad vill konservatismen uppnå?",
@@ -105,7 +118,8 @@
           "Genomföra snabba revolutioner för att störta den sittande makten.",
           "Avskaffa alla former av klasskillnader och hierarkier i samhället.",
           "Minimera statens roll så att individen blir helt oberoende."
-        ]
+        ],
+        expl: "Konservatismen värnar om beprövade traditioner, institutioner och gemenskaper. Förändring ses inte som fel, men bör ske stegvis och försiktigt istället för genom snabba omvälvningar."
       },
       {
         question: "Vilken politisk fråga förknippas ofta med socialismen?",
@@ -114,7 +128,8 @@
           "Att sänka skatterna kraftigt för att locka till sig företag.",
           "Att minska den offentliga sektorns inflytande över ekonomin.",
           "Att privatisera järnvägar och energi för att öka effektiviteten."
-        ]
+        ],
+        expl: "Socialistiska partier vill ofta begränsa vinstuttag inom skola, vård och omsorg, eftersom de menar att gemensamma resurser i första hand ska gå till verksamheten och inte till aktieägare."
       },
       {
         question: "Vilken politisk fråga är typisk för liberalismen?",
@@ -123,7 +138,8 @@
           "Ett totalt förbud mot vinstdrivande företag inom utbildning.",
           "Styrning av ekonomin genom statliga femårsplaner och kontroll.",
           "Kraftigt höjda bidrag som finansieras genom förmögenhetsskatt."
-        ]
+        ],
+        expl: "Liberalismen värnar valfrihet och en fri marknad. Det märks bland annat i frågan om privata alternativ inom skola och vård, som liberala partier ofta vill värna eller utöka."
       },
       {
         question: "Vilken politisk fråga förknippas ofta med konservatismen?",
@@ -132,7 +148,8 @@
           "Ett krav på att avskaffa polismyndigheten i dess nuvarande form.",
           "En önskan om att helt öppna gränserna för fri rörlighet globalt.",
           "En kamp för att omedelbart upplösa alla traditionella kärnfamiljer."
-        ]
+        ],
+        expl: "Konservatismen betonar ofta ordning, trygghet och nationens säkerhet, vilket brukar synas i frågor om ett starkt rättsväsende, polis och försvar."
       },
       {
         question: "Vad har socialism och liberalism gemensamt?",
@@ -141,25 +158,28 @@
           "Ett gemensamt motstånd mot individens rätt till yttrandefrihet.",
           "En önskan att återinföra monarkin som den främsta statsmakten.",
           "En fientlig inställning till alla typer av sociala förändringar."
-        ]
+        ],
+        expl: "Trots sina skillnader delar socialismen och liberalismen en tro på demokrati, mänskliga rättigheter och folkets rätt att påverka genom fria val."
       },
       {
         question: "Vad skiljer liberalismen från socialismen?",
-        correct: "Liberalismen prioriterar frihet, socialismen prioriterar jämlikhet.",
+        correct: "Liberalismen sätter individens frihet främst, socialismen jämlikhet mellan människor.",
         incorrect: [
-          "Socialismen vill ha lägre skatter medan liberalismen vill ha högre.",
-          "Liberalismen är motståndare till demokrati och folkstyre.",
-          "Det finns inga ideologiska skillnader mellan dessa två ismer."
-        ]
+          "Socialismen vill ha lägre skatter, medan liberalismen alltid vill ha högre.",
+          "Liberalismen är i grunden motståndare till demokrati och allmän rösträtt.",
+          "Det finns i praktiken inga ideologiska skillnader mellan dessa två ismer."
+        ],
+        expl: "Liberalismen sätter individens frihet i centrum, medan socialismen prioriterar jämlikhet och att minska ekonomiska klyftor. Båda kan stödja demokrati, men de väger frihet och jämlikhet olika tungt."
       },
       {
         question: "Vad skiljer konservatismen från liberalismen?",
-        correct: "Konservatismen värnar tradition, liberalismen välkomnar förnyelse.",
+        correct: "Konservatismen vill bevara traditioner, liberalismen välkomnar snabbare samhällsförändring.",
         incorrect: [
-          "Konservatismen kräver mer personlig frihet än vad liberalismen gör.",
+          "Konservatismen kräver betydligt mer personlig frihet än vad liberalismen gör.",
           "Konservatismen bygger på idén om att staten ska äga alla fabriker.",
           "Liberalismen strävar efter att bevara religionens makt i politiken."
-        ]
+        ],
+        expl: "Konservatismen vill bevara beprövade traditioner och förändra samhället långsamt, medan liberalismen ofta välkomnar snabbare förändring för att öka individens frihet och valmöjligheter."
       },
       {
         question: "Vad har konservatismen och liberalismen gemensamt?",
@@ -168,7 +188,8 @@
           "Ett krav på väpnad revolution för att förändra samhällsklasserna.",
           "Ett starkt motstånd mot rätten att äga privat egendom och mark.",
           "En gemensam plan för att förstatliga alla banker och storföretag."
-        ]
+        ],
+        expl: "Både konservatismen och liberalismen betonar individens eget ansvar, till skillnad från socialismen som lägger större vikt vid gemensamma lösningar och omfördelning."
       },
       {
         question: "Hur ser konservatismen på ekonomisk ojämlikhet?",
@@ -177,9 +198,547 @@
           "Man vill avskaffa pengar helt för att skapa ett klasslöst samhälle.",
           "Man kräver att staten konfiskerar alla arv för att nå rättvisa.",
           "Man anser att staten ska garantera exakt samma lön till alla."
-        ]
+        ],
+        expl: "Konservatismen ser en viss ekonomisk ojämlikhet som en naturlig och oundviklig del av samhället, till skillnad från socialismen som aktivt vill minska sådana skillnader genom omfördelning."
+      },
+
+      // ── Partier och valsystem (importerat och anpassat från demokratiska-statsskick-quiz.html) ──
+      {
+        question: "Hur många ledamöter sitter i Sveriges riksdag?",
+        correct: "349 ledamöter, som väljs i allmänna val vart fjärde år.",
+        incorrect: [
+          "365 ledamöter, som väljs i allmänna val vart tredje år.",
+          "300 ledamöter, som väljs i allmänna val vart femte år.",
+          "250 ledamöter, som väljs i allmänna val vart fjärde år."
+        ],
+        expl: "Riksdagen har 349 ledamöter som väljs vart fjärde år. Ledamöterna fördelas mellan partierna utifrån hur många röster respektive parti fått i valet."
+      },
+      {
+        question: "Vad innebär det att Sverige har ett proportionellt valsystem?",
+        correct: "Ett parti får ungefär lika stor andel mandat som andelen röster partiet fått.",
+        incorrect: [
+          "Det parti som får flest röster i landet vinner samtliga mandat i riksdagen.",
+          "Varje valkrets ger sitt enda mandat till partiet som vinner just där.",
+          "Bara partier som får över tio procent av rösterna får några mandat alls."
+        ],
+        expl: "I ett proportionellt valsystem speglar mandatfördelningen röstandelen – får ett parti 20 % av rösterna får partiet ungefär 20 % av mandaten. Det skiljer sig från majoritetsval, där vinnaren i en valkrets tar hela mandatet."
+      },
+      {
+        question: "Vad innebär fyraprocentsspärren i svenska riksdagsval?",
+        correct: "Ett parti måste få minst 4 % av rösterna i hela landet för att komma in i riksdagen.",
+        incorrect: [
+          "Ett parti måste få minst 4 % av rösterna i varje enskild valkrets för mandat.",
+          "Högst 4 % av riksdagens samtliga platser får gå till ett och samma parti.",
+          "Ett parti måste ha minst 4 % av sina medlemmar bosatta i Stockholm."
+        ],
+        expl: "Fyraprocentsspärren finns för att förhindra att alltför många småpartier splittrar riksdagen. Ett parti kan även ta sig in genom att få minst 12 % av rösterna i en enskild valkrets."
+      },
+      {
+        question: "Vad menas med ett mandat i riksdagen?",
+        correct: "En plats i riksdagen som ett parti får utifrån sin andel av rösterna.",
+        incorrect: [
+          "En skriftlig instruktion som ett parti ger till sina riksdagsledamöter.",
+          "Ett löfte som ett parti ger sina väljare inför ett kommande val.",
+          "En regel som avgör hur länge en riksdagsledamot får sitta kvar."
+        ],
+        expl: "Ett mandat är en plats i riksdagen. De 349 mandaten fördelas mellan partierna i proportion till hur många röster varje parti fått i valet."
+      },
+      {
+        question: "Vad är en valkrets?",
+        correct: "Ett geografiskt område som ger ett bestämt antal mandat i riksdagen.",
+        incorrect: [
+          "Ett parti som bara ställer upp i val på lokal och kommunal nivå.",
+          "En grupp väljare som alltid röstar på samma parti i varje val.",
+          "En myndighet som räknar rösterna efter att vallokalerna har stängt."
+        ],
+        expl: "Sverige är indelat i 29 valkretsar. Varje valkrets tilldelas ett antal mandat i riksdagen utifrån hur många som bor där, och mandaten fördelas sedan mellan partierna proportionellt."
+      },
+      {
+        question: "Vad är skillnaden mellan partival och personval i Sverige?",
+        correct: "Vid partival röstar man på ett parti, vid personval kryssar man för en kandidat.",
+        incorrect: [
+          "Partival gäller bara i riksdagsval, personval gäller bara i kommunval.",
+          "Personval infördes för att helt ersätta det gamla partivalet i Sverige.",
+          "Partival avgör mandaten, personval avgör enbart vilket parti som vinner valet."
+        ],
+        expl: "I grunden röstar man på ett parti i Sverige. Genom personval kan väljaren dessutom kryssa för en särskild kandidat – får kandidaten tillräckligt många personkryss kan hen bli invald före andra på partiets lista."
+      },
+      {
+        question: "Vad är skillnaden mellan proportionellt val och majoritetsval?",
+        correct: "Proportionellt val ger mandat efter röstandel, majoritetsval ger allt till vinnaren i valkretsen.",
+        incorrect: [
+          "Proportionellt val gäller riksdagen, majoritetsval gäller bara kommunfullmäktige i Sverige.",
+          "Majoritetsval används numera i Sverige istället för det äldre proportionella systemet.",
+          "Proportionellt val kräver alltid fler röster totalt än vad majoritetsval gör."
+        ],
+        expl: "Sverige och de flesta europeiska länder använder proportionella valsystem, där mandaten speglar röstandelen. USA och Storbritannien använder istället majoritetsval, där den som får flest röster i en valkrets tar hela mandatet där."
+      },
+      {
+        question: "Vad innebär parlamentarism, och varför behöver regeringar ibland stödpartier?",
+        correct: "Regeringen måste ha riksdagens stöd för att styra, så en minoritetsregering behöver stödpartier.",
+        incorrect: [
+          "Regeringen väljs direkt av folket och behöver därför aldrig stöd av riksdagen.",
+          "Riksdagen måste ha regeringens godkännande innan den får rösta om en lag.",
+          "Stödpartier är partier som alltid ingår i regeringen tillsammans med huvudpartiet."
+        ],
+        expl: "Parlamentarism betyder att regeringen måste ha stöd av en majoritet i riksdagen, annars kan den avsättas. En regering utan egen majoritet, en minoritetsregering, behöver då stödpartier som röstar för dess förslag i utbyte mot inflytande."
+      },
+      {
+        question: "Vilken roll har talmannen i arbetet med att bilda en ny regering?",
+        correct: "Talmannen föreslår vem som ska bli statsminister, och riksdagen röstar om förslaget.",
+        incorrect: [
+          "Talmannen utser själv samtliga ministrar i den nya regering som ska bildas.",
+          "Talmannen leder de förhandlingar där partierna kommer överens om ett valresultat.",
+          "Talmannen avgör vilket parti som ska räknas som blockets ledande parti."
+        ],
+        expl: "Efter ett val leder talmannen arbetet med att bilda en ny regering, bland annat genom talmansrundor där partiledarna hörs. Talmannen föreslår sedan en statsminister som riksdagen röstar om."
+      },
+
+      // ── Samhällsvetenskaplig metod (nya frågor, förankrade i partikontext) ──
+      {
+        question: "Du vill veta vad eleverna på skolan tycker om ett partiförslag och snabbt nå många. Vilken metod passar bäst?",
+        correct: "En enkät, där många elever svarar skriftligt på samma frågor.",
+        incorrect: [
+          "En intervju, där du pratar länge med varje elev en och en.",
+          "En observation, där du bara tittar på elevernas beteende i skolan.",
+          "En dokumentanalys, där du läser gamla artiklar om partiet i fråga."
+        ],
+        expl: "En enkät passar bra när man snabbt vill nå många personer och jämföra svar, eftersom alla svarar på samma frågor. En intervju ger djupare svar men tar längre tid per person, så den passar sämre om man vill nå väldigt många."
+      },
+      {
+        question: "Du vill förstå VARFÖR en elev röstar på ett visst parti, med utförliga och personliga svar. Vilken metod passar bäst?",
+        correct: "En intervju, där eleven får förklara sina tankar med egna ord.",
+        incorrect: [
+          "En enkät med färdiga svarsalternativ som eleven bara kryssar i.",
+          "En observation av hur eleven beter sig i vallokalen på valdagen.",
+          "En statistisk sammanställning av skolans samlade röstresultat i stort."
+        ],
+        expl: "En intervju ger möjlighet till följdfrågor och utförliga, personliga svar. En enkät med färdiga alternativ är snabbare men ger inte samma djup i varför någon tycker som hen gör."
+      },
+      {
+        question: "Du vill undersöka vad Sveriges befolkning tycker om ett parti, men kan inte fråga alla. Vad kallas den mindre grupp du väljer att fråga?",
+        correct: "Ett urval, en mindre grupp som ska representera hela befolkningen.",
+        incorrect: [
+          "Ett bortfall, personer som valt att inte svara på undersökningen.",
+          "En tendens, en vinkling som visar sig i undersökningens resultat.",
+          "En primärkälla, den ursprungliga plats där informationen kommer ifrån."
+        ],
+        expl: "Ett urval är den mindre grupp av personer som forskaren väljer att fråga, eftersom det oftast är omöjligt att fråga alla i hela befolkningen. Urvalet ska helst spegla befolkningen så att resultatet går att lita på."
+      },
+      {
+        question: "I en undersökning om partisympatier svarar bara 40 % av de tillfrågade. Vad kallas de 60 % som inte svarade?",
+        correct: "Bortfall, personer i urvalet som inte svarat på undersökningen.",
+        incorrect: [
+          "Urval, personer i undersökningen som forskaren valt att fråga.",
+          "Tendens, en vinkling i hur frågorna i undersökningen är ställda.",
+          "Källkritik, en granskning av vem som ligger bakom undersökningen."
+        ],
+        expl: "Bortfall är de personer i urvalet som inte svarar. Är bortfallet stort finns risk att resultatet blir missvisande, till exempel om en viss grupp väljare är överrepresenterad bland dem som faktiskt svarade."
+      },
+      {
+        question: "En enkät om ett parti innehåller frågan: 'Håller du med om att detta uppenbart dåliga förslag bör stoppas?' Vad är problemet med frågan?",
+        correct: "Den är en ledande fråga som styr svaret åt ett visst håll.",
+        incorrect: [
+          "Den har för få svarsalternativ för att undersökningen ska fungera.",
+          "Den är en primärkälla som inte går att kontrollera i efterhand.",
+          "Den orsakar ett stort bortfall eftersom ingen vill svara på den."
+        ],
+        expl: "En ledande fråga är formulerad så att den påverkar hur personen svarar, till exempel genom ord som 'uppenbart dåliga'. Bra enkätfrågor ska vara neutrala så att svaren speglar personens egen åsikt, inte frågans vinkling."
+      },
+      {
+        question: "Ett partis egen hemsida påstår att just deras politik är bäst för alla väljargrupper. Vad bör du tänka på när du källkritiskt granskar det påståendet?",
+        correct: "Att texten kan ha en tendens, eftersom partiet vill framställa sig positivt.",
+        incorrect: [
+          "Att texten räknas som en sekundärkälla eftersom partiet skriver om sig själv.",
+          "Att texten alltid är opålitlig, eftersom politiska partier inte får ha hemsidor.",
+          "Att texten saknar bortfall, vilket gör att den automatiskt blir trovärdig."
+        ],
+        expl: "Tendens betyder att en källa är vinklad utifrån avsändarens eget intresse. Ett partis egen hemsida är en primärkälla till partiets åsikter, men eftersom partiet vill vinna väljare bör man vara medveten om att beskrivningen kan vara vinklad."
+      },
+      {
+        question: "En elev skriver om ett partiprogram genom att läsa partiets egen webbsida. En kompis skriver om samma partiprogram genom att läsa en tidningsartikel om partiet. Vem av dem använder en primärkälla?",
+        correct: "Eleven som läser partiets egen webbsida, den ursprungliga källan till informationen.",
+        incorrect: [
+          "Kompisen som läser tidningsartikeln, eftersom artikeln är skriven senare.",
+          "Ingen av dem, eftersom partiprogram aldrig räknas som en källa alls.",
+          "Båda två, eftersom all information om ett parti räknas som primärkälla."
+        ],
+        expl: "En primärkälla är den ursprungliga källan – här partiets egen webbsida. En sekundärkälla bygger istället på andrahandsinformation, som en tidningsartikel som återger vad partiet sagt. Sekundärkällor kan ge nyttiga perspektiv, men är ett steg längre bort från originalet."
+      },
+      {
+        question: "Ett parti får kraftigt ökat väljarstöd efter en lyckad valdebatt. Vad är orsaken och vad är konsekvensen?",
+        correct: "Den lyckade valdebatten är orsaken, det ökade väljarstödet är konsekvensen.",
+        incorrect: [
+          "Det ökade väljarstödet är orsaken, den lyckade valdebatten är konsekvensen.",
+          "Valdebatten och väljarstödet är samma sak och kan inte skiljas åt.",
+          "Väljarstödet är ett bortfall som uppstått på grund av debatten."
+        ],
+        expl: "Orsaken är det som händer först och som gör att något annat sker – här den lyckade valdebatten. Konsekvensen är resultatet av det, här det ökade väljarstödet. Att skilja orsak från konsekvens hjälper till att förstå varför något hänt i samhället."
       }
     ];
+
+    // --- ENKEL SVENSKA — samma ordning som allQuestionsData ---
+    // Ideologiernas namn samt blockpolitik/stödparti/GAL-TAN/Tidöavtalet
+    // förenklas aldrig — bara meningsbyggnaden runt dem.
+    const EASY_Q = [
+      {
+        question: "Vad betyder ordet ideologi?",
+        correct: "En samling idéer om hur landet ska styras.",
+        incorrect: [
+          "Ett system med lagar och regler i landet.",
+          "Ett sätt att undersöka gamla händelser i historien.",
+          "En plan för hur staten ska använda sina pengar."
+        ],
+        expl: "En ideologi är idéer om hur landet ska styras och vem som ska bestämma. Liberalism, konservatism och socialism är tre exempel."
+      },
+      {
+        question: "Vilken händelse gjorde att liberalismen började?",
+        correct: "Franska revolutionen.",
+        incorrect: ["Industriella revolutionen.", "Ryska revolutionen.", "Amerikanska inbördeskriget."],
+        expl: "Franska revolutionen (1789) handlade om frihet och att alla människor är lika mycket värda. Det blev grunden för liberalismen."
+      },
+      {
+        question: "Vilken händelse gjorde att socialismen började?",
+        correct: "Industriella revolutionen.",
+        incorrect: ["Amerikanska revolutionen.", "Franska revolutionen.", "Den vetenskapliga revolutionen."],
+        expl: "När fabrikerna byggdes fick många arbetare det svårt och fattigt. Socialismen började som ett svar på det."
+      },
+      {
+        question: "Varför började konservatismen?",
+        correct: "Som ett svar på de snabba förändringarna i franska revolutionen.",
+        incorrect: [
+          "För att bygga ett modernt försvar mot andra länder.",
+          "Som ett krav på att alla vuxna skulle få rösta.",
+          "För att skydda de nya fabrikerna på 1800-talet."
+        ],
+        expl: "Konservatismen kom som ett svar på franska revolutionens snabba förändringar. Konservativa ville hellre behålla det gamla och ändra sakta."
+      },
+      {
+        question: "Vad vill socialismen uppnå?",
+        correct: "Mindre skillnad mellan rika och fattiga människor.",
+        incorrect: [
+          "Att kyrkan och kungen ska bestämma mer i vardagen.",
+          "Att fler privatpersoner ska äga skog och mark.",
+          "Att staten ska bestämma mindre över ekonomin."
+        ],
+        expl: "Socialismen vill minska skillnaden mellan rika och fattiga, till exempel genom skatt och gemensam vård, skola och omsorg."
+      },
+      {
+        question: "Vad är viktigast för liberalismen?",
+        correct: "Att varje person själv får bestämma över sitt liv.",
+        incorrect: [
+          "Att fabriker och företag ska ägas gemensamt av alla.",
+          "Starka religiösa regler och gamla traditioner.",
+          "Att staten bestämmer över allt i människors vardag."
+        ],
+        expl: "Liberalismen tycker att varje person ska få bestämma själv, till exempel var man bor och vad man jobbar med, utan för mycket inblandning från staten."
+      },
+      {
+        question: "Vad vill konservatismen göra?",
+        correct: "Behålla gamla traditioner och ändra samhället sakta.",
+        incorrect: [
+          "Göra snabba och stora förändringar av makten i landet.",
+          "Ta bort alla skillnader mellan olika grupper i samhället.",
+          "Göra staten så liten som möjligt i allt den gör."
+        ],
+        expl: "Konservatismen vill spara på gamla, beprövade saker. Förändring är okej, men ska ske långsamt och försiktigt, inte snabbt och plötsligt."
+      },
+      {
+        question: "Vilken fråga hör ofta ihop med socialismen?",
+        correct: "Att stoppa stora vinster inom vård och skola.",
+        incorrect: [
+          "Att sänka skatten mycket för att locka fler företag.",
+          "Att staten ska bestämma mindre över ekonomin.",
+          "Att sälja järnvägar och energi till privata företag."
+        ],
+        expl: "Socialistiska partier vill ofta stoppa stora vinster inom skola, vård och omsorg. Pengarna ska istället gå till verksamheten, tycker de."
+      },
+      {
+        question: "Vilken fråga hör ofta ihop med liberalismen?",
+        correct: "Att man själv får välja mellan olika skolor och vårdgivare.",
+        incorrect: [
+          "Ett totalt förbud mot företag som vill tjäna pengar på skola.",
+          "Att staten planerar hela ekonomin flera år i förväg.",
+          "Mycket högre bidrag som betalas med en ny förmögenhetsskatt."
+        ],
+        expl: "Liberalismen gillar valfrihet och en fri marknad. Det syns till exempel i att man vill kunna välja mellan olika skolor och vårdgivare."
+      },
+      {
+        question: "Vilken fråga hör ofta ihop med konservatismen?",
+        correct: "Ordning och ett starkt försvar för landet.",
+        incorrect: [
+          "Ett krav på att lägga ner polisen helt.",
+          "En önskan om helt öppna gränser för alla länder.",
+          "En kamp för att ta bort alla vanliga familjer."
+        ],
+        expl: "Konservatismen bryr sig mycket om ordning, trygghet och att landet ska ha ett starkt försvar och en stark polis."
+      },
+      {
+        question: "Vad har socialism och liberalism gemensamt?",
+        correct: "Båda tror på demokrati.",
+        incorrect: [
+          "Båda är emot att människor får säga sin åsikt fritt.",
+          "Båda vill att Sverige ska få tillbaka en kung med makt.",
+          "Båda är emot alla förändringar i samhället."
+        ],
+        expl: "Även om de tycker olika om mycket, tror både socialismen och liberalismen på demokrati och att folket ska få rösta fritt."
+      },
+      {
+        question: "Vad är skillnaden mellan liberalism och socialism?",
+        correct: "Liberalismen bryr sig mest om frihet, socialismen mest om att alla ska ha lika mycket.",
+        incorrect: [
+          "Socialismen vill ha lägre skatt, medan liberalismen alltid vill ha högre.",
+          "Liberalismen tycker illa om demokrati och att folket får rösta.",
+          "Det finns nästan inga skillnader mellan dessa två ismer."
+        ],
+        expl: "Liberalismen bryr sig mest om att varje person ska vara fri. Socialismen bryr sig mest om att alla ska ha det ungefär lika bra."
+      },
+      {
+        question: "Vad är skillnaden mellan konservatism och liberalism?",
+        correct: "Konservatismen vill spara det gamla, liberalismen gillar snabbare förändring.",
+        incorrect: [
+          "Konservatismen vill ge mer frihet till varje person än liberalismen.",
+          "Konservatismen tycker att staten ska äga alla fabriker.",
+          "Liberalismen vill att religionen ska bestämma mer i politiken."
+        ],
+        expl: "Konservatismen vill spara på gamla saker och ändra långsamt. Liberalismen gillar ofta snabbare förändring, så att människor får mer frihet."
+      },
+      {
+        question: "Vad har konservatism och liberalism gemensamt?",
+        correct: "Båda tycker att varje person själv ansvarar för sitt liv.",
+        incorrect: [
+          "Ett krav på att göra revolution mot samhällsklasserna.",
+          "Ett starkt motstånd mot att äga sitt eget hus eller mark.",
+          "En plan om att staten ska ta över alla banker."
+        ],
+        expl: "Både konservatismen och liberalismen tycker att varje person själv ansvarar för sitt liv. Socialismen tänker mer på gemensamma lösningar."
+      },
+      {
+        question: "Vad tycker konservatismen om att vissa har mer pengar än andra?",
+        correct: "Man tycker att det är naturligt, en del av hur samhället fungerar.",
+        incorrect: [
+          "Man vill ta bort alla pengar för att alla ska ha lika mycket.",
+          "Man vill att staten ska ta allt arv som folk får.",
+          "Man vill att alla ska få exakt samma lön."
+        ],
+        expl: "Konservatismen tycker att det är naturligt att vissa har mer pengar än andra. Socialismen vill istället aktivt minska sådana skillnader."
+      },
+      {
+        question: "Hur många personer sitter i Sveriges riksdag?",
+        correct: "349 personer, som väljs vart fjärde år.",
+        incorrect: [
+          "365 personer, som väljs vart tredje år.",
+          "300 personer, som väljs vart femte år.",
+          "250 personer, som väljs vart fjärde år."
+        ],
+        expl: "Riksdagen har 349 personer som väljs vart fjärde år. Platserna fördelas mellan partierna efter hur många röster varje parti fått."
+      },
+      {
+        question: "Vad betyder det att Sverige har ett proportionellt valsystem?",
+        correct: "Ett parti får ungefär lika många platser som andelen röster partiet fått.",
+        incorrect: [
+          "Partiet med flest röster i landet vinner alla platser i riksdagen.",
+          "Varje område ger sin enda plats till partiet som vinner just där.",
+          "Bara partier med över tio procent av rösterna får några platser."
+        ],
+        expl: "I ett proportionellt valsystem stämmer platserna med hur många röster partiet fick. Får ett parti 20 % av rösterna får det ungefär 20 % av platserna."
+      },
+      {
+        question: "Vad betyder fyraprocentsspärren i svenska val?",
+        correct: "Ett parti måste få minst 4 % av rösterna i hela landet för att komma in i riksdagen.",
+        incorrect: [
+          "Ett parti måste få minst 4 % av rösterna i varje enskilt område.",
+          "Högst 4 % av riksdagens platser får gå till samma parti.",
+          "Ett parti måste ha minst 4 % av sina medlemmar i Stockholm."
+        ],
+        expl: "Fyraprocentsspärren finns så att inte för många små partier splittrar riksdagen. Ett parti kan ändå komma in om det får minst 12 % i ett enda område."
+      },
+      {
+        question: "Vad menas med en plats (mandat) i riksdagen?",
+        correct: "En plats i riksdagen som ett parti får utifrån hur många röster de fått.",
+        incorrect: [
+          "En skriftlig regel som ett parti ger till sina politiker.",
+          "Ett löfte som ett parti ger till sina väljare före ett val.",
+          "En regel om hur länge en politiker får sitta kvar."
+        ],
+        expl: "En plats i riksdagen kallas mandat. De 349 platserna delas mellan partierna efter hur många röster varje parti fick i valet."
+      },
+      {
+        question: "Vad är ett valområde (valkrets)?",
+        correct: "Ett område som ger ett bestämt antal platser i riksdagen.",
+        incorrect: [
+          "Ett parti som bara finns med i kommunval, inte i riksdagsval.",
+          "En grupp människor som alltid röstar på samma parti.",
+          "En myndighet som räknar rösterna efter att vallokalen stängt."
+        ],
+        expl: "Sverige är delat i 29 sådana områden. Varje område får ett antal platser i riksdagen, och platserna delas sedan mellan partierna."
+      },
+      {
+        question: "Vad är skillnaden mellan att rösta på ett parti och att rösta på en person?",
+        correct: "Man kan rösta bara på partiet, eller kryssa för en särskild person också.",
+        incorrect: [
+          "Att rösta på parti gäller bara riksdagen, person gäller bara kommunen.",
+          "Att kryssa för en person ersatte helt det gamla sättet att rösta.",
+          "Att rösta på parti bestämmer platserna, person bestämmer bara vinnaren."
+        ],
+        expl: "I Sverige röstar man i grunden på ett parti. Man kan också kryssa för en särskild person – får personen tillräckligt många kryss kommer hen in före andra på listan."
+      },
+      {
+        question: "Vad är skillnaden mellan de två sätten att fördela platser i val?",
+        correct: "Ena sättet ger platser efter andel röster, andra ger allt till vinnaren i området.",
+        incorrect: [
+          "Ena sättet gäller riksdagen, andra gäller bara kommunfullmäktige.",
+          "Det ena sättet används numera istället för det äldre sättet i Sverige.",
+          "Ena sättet kräver alltid fler röster totalt än det andra sättet."
+        ],
+        expl: "Sverige och de flesta länder i Europa ger platser efter andel röster. USA och Storbritannien ger istället alla platser i ett område till den som vinner där."
+      },
+      {
+        question: "Varför behöver en regering ibland hjälp av andra partier (stödparti)?",
+        correct: "Regeringen behöver riksdagens stöd, så en regering utan egen majoritet behöver stödpartier.",
+        incorrect: [
+          "Regeringen väljs direkt av folket och behöver aldrig hjälp av riksdagen.",
+          "Riksdagen måste fråga regeringen om lov innan den får rösta om en lag.",
+          "Ett stödparti är ett parti som alltid sitter i regeringen själv."
+        ],
+        expl: "En regering måste ha stöd av de flesta i riksdagen för att kunna styra. En regering utan egen majoritet behöver då stödpartier som röstar för dess förslag."
+      },
+      {
+        question: "Vad gör talmannen när en ny regering ska bildas?",
+        correct: "Talmannen föreslår vem som ska bli statsminister, och riksdagen röstar om det.",
+        incorrect: [
+          "Talmannen väljer själv alla ministrar i den nya regeringen.",
+          "Talmannen leder samtalen där partierna kommer överens om valresultatet.",
+          "Talmannen bestämmer vilket parti som ska leda blocket."
+        ],
+        expl: "Efter ett val pratar talmannen med alla partiledare. Sedan föreslår talmannen en statsminister som riksdagen får rösta om."
+      },
+      {
+        question: "Du vill veta vad eleverna tycker om ett partiförslag och nå många snabbt. Vad ska du göra?",
+        correct: "Skicka ut en enkät som många kan svara på samtidigt.",
+        incorrect: [
+          "Prata länge med varje elev, en efter en.",
+          "Bara titta på hur eleverna beter sig i skolan.",
+          "Läsa gamla artiklar om partiet i fråga."
+        ],
+        expl: "En enkät är bra när man snabbt vill fråga många och jämföra svaren, eftersom alla får samma frågor. En intervju tar längre tid per person."
+      },
+      {
+        question: "Du vill veta VARFÖR en elev gillar ett visst parti och få ett långt svar. Vad ska du göra?",
+        correct: "Göra en intervju, så eleven kan förklara med egna ord.",
+        incorrect: [
+          "Skicka en enkät med färdiga svar att kryssa i.",
+          "Titta på eleven i vallokalen på valdagen.",
+          "Räkna ut hur skolan röstat i stort."
+        ],
+        expl: "En intervju gör att du kan ställa fler frågor och få ett långt, personligt svar. En enkät med färdiga svar går snabbare men blir inte lika djup."
+      },
+      {
+        question: "Du vill fråga hela Sveriges befolkning om ett parti, men kan inte fråga alla. Vad kallas de du frågar istället?",
+        correct: "Ett urval, en mindre grupp som ska likna hela befolkningen.",
+        incorrect: [
+          "Ett bortfall, de som valt att inte svara.",
+          "En tendens, en vinkling i svaren du fått.",
+          "En primärkälla, den första platsen informationen kom ifrån."
+        ],
+        expl: "Ett urval är den mindre grupp man frågar istället för alla. Urvalet ska likna hela befolkningen så att svaret går att lita på."
+      },
+      {
+        question: "I en undersökning svarar bara 4 av 10 personer. Vad kallas de 6 som inte svarade?",
+        correct: "Bortfall, de i urvalet som inte svarat.",
+        incorrect: [
+          "Urval, de personer som forskaren valde att fråga.",
+          "Tendens, en vinkling i hur frågorna är skrivna.",
+          "Källkritik, en granskning av vem som gjort undersökningen."
+        ],
+        expl: "De som inte svarar kallas bortfall. Är bortfallet stort kan resultatet bli fel, till exempel om en viss grupp oftare låter bli att svara."
+      },
+      {
+        question: "En fråga i en enkät lyder: 'Håller du med om att detta uppenbart dåliga förslag bör stoppas?' Vad är fel med frågan?",
+        correct: "Frågan är ledande — den styr vad man ska svara.",
+        incorrect: [
+          "Frågan har för få svarsalternativ för att fungera.",
+          "Frågan är en primärkälla som inte går att kolla.",
+          "Frågan gör att nästan ingen vill svara alls."
+        ],
+        expl: "En ledande fråga är skriven så att den styr svaret, till exempel med ord som 'uppenbart dåliga'. Bra frågor ska vara neutrala."
+      },
+      {
+        question: "Ett partis egen sida säger att just deras politik är bäst för alla. Vad ska du tänka på?",
+        correct: "Att sidan kan vara vinklad, eftersom partiet vill se bra ut.",
+        incorrect: [
+          "Att sidan räknas som andrahandskälla eftersom partiet skriver om sig själv.",
+          "Att sidan alltid är falsk, eftersom partier inte får ha hemsidor.",
+          "Att sidan blir sann bara för att alla kan svara på den."
+        ],
+        expl: "En vinkling kallas tendens och betyder att källan är påverkad av vad avsändaren vill. Partiets egen sida är förstahandskälla till deras åsikter, men kan vara vinklad."
+      },
+      {
+        question: "En elev läser partiets egen sida om deras politik. En kompis läser en tidningsartikel om samma politik. Vem läser förstahandskällan?",
+        correct: "Eleven som läser partiets egen sida, den ursprungliga källan.",
+        incorrect: [
+          "Kompisen som läser tidningsartikeln, eftersom den är skriven senare.",
+          "Ingen av dem, för partiers texter räknas inte som källor.",
+          "Båda två, för all information om ett parti räknas likadant."
+        ],
+        expl: "Förstahandskällan (primärkällan) är den ursprungliga källan – här partiets egen sida. En tidningsartikel är istället en andrahandskälla, för den återberättar det partiet sagt."
+      },
+      {
+        question: "Ett parti får många fler väljare efter en bra debatt. Vad är orsaken och vad är följden?",
+        correct: "Den bra debatten är orsaken, de fler väljarna är följden.",
+        incorrect: [
+          "De fler väljarna är orsaken, den bra debatten är följden.",
+          "Debatten och väljarna är samma sak och går inte att skilja på.",
+          "De fler väljarna kom av att många inte svarade på en enkät."
+        ],
+        expl: "Orsaken är det som händer först och gör att något annat sker — här den bra debatten. Följden (konsekvensen) är resultatet, här de fler väljarna."
+      }
+    ];
+
+    const UI = {
+      sv: {
+        typeMc: "Flerval",
+        scoreLabel: "Poäng: ",
+        nextBtn: "Nästa fråga",
+        resultBtn: "Se resultat",
+        backBtn: "← Bakåt",
+        modalCorrectTitle: "Rätt!",
+        modalWrongTitle: "Fel svar",
+        modalNextBtn: "Nästa fråga →",
+        modalResultBtn: "Se resultat →",
+        missedHd: "Frågor du svarade fel på",
+        facitHd: "Fullständigt facit",
+        yourAnswerLbl: "Du svarade: ",
+        correctAnswerLbl: "Rätt svar: ",
+        restartBtn: "Försök igen",
+        startTitle: "Del 2 — Partier och ideologier",
+        startSubtitle: "Ideologierna, partierna och samhällsvetenskaplig metod",
+        startBtn: "Starta quizet",
+        resultTitle: "Bra jobbat!",
+        timeLbl: "Din tid: "
+      },
+      easy: {
+        typeMc: "Flera svar",
+        scoreLabel: "Poäng: ",
+        nextBtn: "Nästa fråga",
+        resultBtn: "Se svaren",
+        backBtn: "← Tillbaka",
+        modalCorrectTitle: "Rätt!",
+        modalWrongTitle: "Fel svar",
+        modalNextBtn: "Nästa fråga →",
+        modalResultBtn: "Se svaren →",
+        missedHd: "Frågor du svarade fel på",
+        facitHd: "Alla frågor och svar",
+        yourAnswerLbl: "Du svarade: ",
+        correctAnswerLbl: "Rätt svar: ",
+        restartBtn: "Gör om",
+        startTitle: "Del 2 — Partier och ideologier",
+        startSubtitle: "Ideologierna, partierna och enkla ord om metod",
+        startBtn: "Starta quizet",
+        resultTitle: "Bra jobbat!",
+        timeLbl: "Din tid: "
+      }
+    };
 
     // --- HJÄLPFUNKTIONER ---
     const shuffleArray = (array) => {
@@ -197,65 +756,117 @@
       return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
     };
 
+    // Slår upp motsvarande text för ett svarsalternativ i en given variant.
+    // q._easy måste vara den enkla motsvarigheten till q (samma index i EASY_Q).
+    function mapOpt(variant, q, optStr) {
+      if (variant !== 'easy' || !q._easy) return optStr;
+      if (optStr === q.correct) return q._easy.correct;
+      const idx = q.incorrect.indexOf(optStr);
+      if (idx === -1) return optStr;
+      return q._easy.incorrect[idx] || optStr;
+    }
+
+    const EASY_KEY = 'sh1a2_ideologier_easy';
+
     // --- HUVUDKOMPONENT ---
     function App() {
       const [gameState, setGameState] = useState('start');
-      const [questions, setQuestions] = useState([]);
-      const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-      const [currentOptions, setCurrentOptions] = useState([]);
-      const [selectedOption, setSelectedOption] = useState(null);
-      const [isAnswered, setIsAnswered] = useState(false);
-      const [score, setScore] = useState(0);
+      const [quizQuestions, setQuizQuestions] = useState([]);
+      const [currentIndex, setCurrentIndex] = useState(0);
       const [timer, setTimer] = useState(0);
-      
+      const [easyMode, setEasyMode] = useState(() => sessionStorage.getItem(EASY_KEY) === '1');
+      const [modal, setModal] = useState(null); // { isCorrect, question }
+
       const timerRef = useRef(null);
+      const t = easyMode ? UI.easy : UI.sv;
 
       useEffect(() => {
         if (gameState === 'playing') {
-          timerRef.current = setInterval(() => {
-            setTimer(prev => prev + 1);
-          }, 1000);
+          timerRef.current = setInterval(() => setTimer(prev => prev + 1), 1000);
         } else {
           clearInterval(timerRef.current);
         }
         return () => clearInterval(timerRef.current);
       }, [gameState]);
 
-      const startGame = () => {
-        const shuffledQuestions = shuffleArray(allQuestionsData).slice(0, 15);
-        setQuestions(shuffledQuestions);
-        setScore(0);
-        setTimer(0);
-        setCurrentQuestionIndex(0);
-        setGameState('playing');
-        loadQuestion(shuffledQuestions[0]);
-      };
+      useEffect(() => {
+        const btn = document.getElementById('btn-easy');
+        btn.setAttribute('aria-pressed', easyMode ? 'true' : 'false');
+        const handler = () => {
+          setEasyMode(prev => {
+            const next = !prev;
+            sessionStorage.setItem(EASY_KEY, next ? '1' : '0');
+            return next;
+          });
+        };
+        btn.addEventListener('click', handler);
+        return () => btn.removeEventListener('click', handler);
+      }, []);
 
-      const loadQuestion = (questionData) => {
-        setSelectedOption(null);
-        setIsAnswered(false);
-        const options = [questionData.correct, ...questionData.incorrect];
-        setCurrentOptions(shuffleArray(options));
+      useEffect(() => {
+        const link = document.getElementById('back-link');
+        const handler = (e) => {
+          e.preventDefault();
+          const ref = document.referrer;
+          if (ref && ref.indexOf(location.hostname) !== -1) {
+            history.back();
+          } else {
+            window.location.href = 'index.html';
+          }
+        };
+        link.addEventListener('click', handler);
+        return () => link.removeEventListener('click', handler);
+      }, []);
+
+      const startGame = () => {
+        const shuffledData = shuffleArray(allQuestionsData).map((q, i) => {
+          const origIdx = allQuestionsData.indexOf(q);
+          return {
+            ...q,
+            _easy: EASY_Q[origIdx],
+            options: shuffleArray([q.correct, ...q.incorrect]),
+            selected: null,
+            answered: false
+          };
+        });
+        setQuizQuestions(shuffledData);
+        setTimer(0);
+        setCurrentIndex(0);
+        setModal(null);
+        setGameState('playing');
       };
 
       const handleOptionClick = (option) => {
-        if (isAnswered) return;
-        setSelectedOption(option);
-        setIsAnswered(true);
-        if (option === questions[currentQuestionIndex].correct) {
-          setScore(score + 1);
-        }
+        const q = quizQuestions[currentIndex];
+        if (q.answered) return;
+        const isCorrect = option === q.correct;
+        const updated = [...quizQuestions];
+        updated[currentIndex] = { ...q, selected: option, answered: true };
+        setQuizQuestions(updated);
+        setTimeout(() => setModal({ isCorrect, question: updated[currentIndex] }), 600);
       };
 
-      const handleNext = () => {
-        if (currentQuestionIndex + 1 < questions.length) {
-          const nextIndex = currentQuestionIndex + 1;
-          setCurrentQuestionIndex(nextIndex);
-          loadQuestion(questions[nextIndex]);
+      const closeModalAndAdvance = () => {
+        setModal(null);
+        goNext();
+      };
+
+      const goNext = () => {
+        if (currentIndex + 1 < quizQuestions.length) {
+          setCurrentIndex(currentIndex + 1);
         } else {
           setGameState('result');
         }
       };
+
+      const goBack = () => {
+        if (currentIndex > 0) {
+          setModal(null);
+          setCurrentIndex(currentIndex - 1);
+        }
+      };
+
+      const restart = () => startGame();
 
       if (gameState === 'start') {
         return (
@@ -265,10 +876,10 @@
                 <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Landmark className="w-10 h-10 text-yellow-600" />
                 </div>
-                <h1 className="text-3xl font-black text-slate-900 mb-2">Ideologier Quiz</h1>
-                <p className="text-slate-500 mb-8">Träna på ismerna inför provet. Svaren är nu svårare att gissa och tiden räknas!</p>
+                <h1 className="text-3xl font-black text-slate-900 mb-2">{t.startTitle}</h1>
+                <p className="text-slate-500 mb-8">{t.startSubtitle}</p>
                 <button onClick={startGame} className="w-full bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-bold py-4 rounded-xl shadow-lg transition-all active:scale-95">
-                  Starta quizet
+                  {t.startBtn}
                 </button>
               </div>
             </div>
@@ -277,24 +888,97 @@
       }
 
       if (gameState === 'result') {
+        const total = quizQuestions.length;
+        const score = quizQuestions.filter(q => q.selected === q.correct).length;
+        const wrong = total - score;
+        const pct = Math.round((score / total) * 100);
+        const missed = quizQuestions.filter(q => q.selected !== q.correct);
+
+        let resultMsg;
+        if (pct >= 90) resultMsg = '🏆 Utmärkt! Du behärskar ideologierna, partierna och metoden.';
+        else if (pct >= 75) resultMsg = '✅ Redo för provet! Bra resultat.';
+        else if (pct >= 55) resultMsg = '📖 Öva lite till, du är på rätt spår.';
+        else resultMsg = '💡 Fortsätt repetera pluggmaterialet.';
+
         return (
-          <div className="min-h-screen flex items-center justify-center p-4">
-            <div className="bg-white max-w-md w-full rounded-2xl shadow-xl p-8 text-center border-t-8 border-green-400">
-              <Trophy className="w-20 h-20 mx-auto mb-4 text-yellow-500" />
-              <h2 className="text-3xl font-black text-slate-800 mb-2">Bra jobbat!</h2>
-              <div className="mb-6">
-                <p className="text-5xl font-black text-slate-900">{score} / {questions.length}</p>
-                <p className="text-slate-500 font-medium mt-1">Din tid: {formatTime(timer)}</p>
+          <div className="min-h-screen flex flex-col items-center py-8 p-4">
+            <div className="w-full max-w-lg">
+              <div className="bg-white rounded-2xl shadow-xl p-8 text-center border-t-8 border-green-400 mb-6">
+                <Trophy className="w-20 h-20 mx-auto mb-4 text-yellow-500" />
+                <h2 className="text-3xl font-black text-slate-800 mb-2">{t.resultTitle}</h2>
+                <div className="mb-4">
+                  <p className="text-5xl font-black text-slate-900">{score} / {total}</p>
+                  <p className="text-slate-500 font-medium mt-1">{t.timeLbl}{formatTime(timer)}</p>
+                </div>
+                <p className="text-slate-600 font-medium mb-6">{resultMsg}</p>
+                <div className="flex justify-center gap-8 mb-2">
+                  <div className="text-center">
+                    <p className="text-2xl font-black text-green-600">{score}</p>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">Rätt</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-black text-red-500">{wrong}</p>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">Fel</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-black text-slate-700">{pct}%</p>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">Andel rätt</p>
+                  </div>
+                </div>
               </div>
-              <button onClick={startGame} className="w-full bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95">
-                <RefreshCw className="w-5 h-5" /> Försök igen
+
+              {missed.length > 0 && (
+                <div className="bg-white rounded-2xl shadow p-6 mb-6">
+                  <h3 className="text-lg font-black text-slate-800 mb-3 pb-2 border-b-2 border-slate-100">
+                    {t.missedHd} ({missed.length})
+                  </h3>
+                  <ul className="space-y-2">
+                    {missed.map((q, i) => (
+                      <li key={i} className="bg-red-50 border-l-4 border-red-400 rounded-lg px-4 py-2 text-sm text-slate-700">
+                        {easyMode ? q._easy.question : q.question}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <div className="bg-white rounded-2xl shadow p-6 mb-6">
+                <h3 className="text-lg font-black text-slate-800 mb-3 pb-2 border-b-2 border-slate-100">{t.facitHd}</h3>
+                <div className="space-y-3">
+                  {quizQuestions.map((q, i) => {
+                    const isCorrect = q.selected === q.correct;
+                    const qText = easyMode ? q._easy.question : q.question;
+                    const yourText = easyMode ? mapOpt('easy', q, q.selected) : q.selected;
+                    const correctText = easyMode ? q._easy.correct : q.correct;
+                    return (
+                      <div key={i} className={`rounded-xl border-2 p-4 ${isCorrect ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
+                        <p className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Fråga {i + 1}</p>
+                        <p className="font-bold text-slate-800 mb-2">{qText}</p>
+                        <p className={`text-sm flex items-center gap-1 ${isCorrect ? 'text-green-700' : 'text-red-700'}`}>
+                          {isCorrect ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <XCircle className="w-4 h-4 shrink-0" />}
+                          <span className="font-semibold">{t.yourAnswerLbl}</span>{yourText}
+                        </p>
+                        {!isCorrect && (
+                          <p className="text-sm text-green-700 font-semibold mt-1">{t.correctAnswerLbl}{correctText}</p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <button onClick={restart} className="w-full bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95">
+                <RefreshCw className="w-5 h-5" /> {t.restartBtn}
               </button>
             </div>
           </div>
         );
       }
 
-      const currentQ = questions[currentQuestionIndex];
+      const currentQ = quizQuestions[currentIndex];
+      const total = quizQuestions.length;
+      const scoreSoFar = quizQuestions.filter(q => q.selected === q.correct).length;
+      const isLast = currentIndex === total - 1;
 
       return (
         <div className="min-h-screen flex flex-col items-center py-8 p-4">
@@ -302,59 +986,84 @@
             <div className="mb-6">
               <div className="flex justify-between items-end text-xs font-black uppercase tracking-widest text-slate-400 mb-2 px-1">
                 <div className="flex flex-col gap-1">
-                  <span>Fråga {currentQuestionIndex + 1} / {questions.length}</span>
+                  <span>Fråga {currentIndex + 1} / {total}</span>
                   <div className="flex items-center gap-1 text-slate-600">
                     <Clock className="w-3 h-3" />
                     <span>{formatTime(timer)}</span>
                   </div>
                 </div>
-                <span>Poäng: {score}</span>
+                <span>{t.scoreLabel}{scoreSoFar}</span>
               </div>
               <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-yellow-400 transition-all duration-300" 
-                  style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
+                <div
+                  className="h-full bg-yellow-400 transition-all duration-300"
+                  style={{ width: `${((currentIndex + 1) / total) * 100}%` }}
                 ></div>
               </div>
             </div>
 
             <div className="bg-white rounded-2xl shadow-lg p-8 mb-6 border-b-4 border-slate-100">
-              <h2 className="text-xl font-bold text-slate-800 leading-snug">{currentQ.question}</h2>
+              <h2 className="text-xl font-bold text-slate-800 leading-snug">
+                {easyMode ? currentQ._easy.question : currentQ.question}
+              </h2>
             </div>
 
             <div className="space-y-3">
-              {currentOptions.map((option, index) => {
+              {currentQ.options.map((option, index) => {
+                const displayText = easyMode ? mapOpt('easy', currentQ, option) : option;
                 let btnClasses = "w-full text-left p-5 rounded-xl border-2 transition-all font-bold flex items-center justify-between gap-3 shadow-sm ";
-                if (!isAnswered) {
+                if (!currentQ.answered) {
                   btnClasses += "border-slate-100 bg-white text-slate-600 hover:border-yellow-400 hover:shadow-md active:scale-95";
                 } else {
                   if (option === currentQ.correct) {
                     btnClasses += "border-green-500 bg-green-50 text-green-800";
-                  } else if (option === selectedOption) {
+                  } else if (option === currentQ.selected) {
                     btnClasses += "border-red-500 bg-red-50 text-red-800";
                   } else {
                     btnClasses += "border-slate-50 bg-slate-50 text-slate-300 opacity-60";
                   }
                 }
                 return (
-                  <button key={index} onClick={() => handleOptionClick(option)} disabled={isAnswered} className={btnClasses}>
-                    <span className="text-sm md:text-base">{option}</span>
-                    {isAnswered && option === currentQ.correct && <CheckCircle2 className="w-6 h-6 text-green-500 shrink-0" />}
-                    {isAnswered && option === selectedOption && option !== currentQ.correct && <XCircle className="w-6 h-6 text-red-500 shrink-0" />}
+                  <button key={index} onClick={() => handleOptionClick(option)} disabled={currentQ.answered} className={btnClasses}>
+                    <span className="text-sm md:text-base">{displayText}</span>
+                    {currentQ.answered && option === currentQ.correct && <CheckCircle2 className="w-6 h-6 text-green-500 shrink-0" />}
+                    {currentQ.answered && option === currentQ.selected && option !== currentQ.correct && <XCircle className="w-6 h-6 text-red-500 shrink-0" />}
                   </button>
                 );
               })}
             </div>
 
-            {isAnswered && (
-              <div className="mt-8">
-                <button onClick={handleNext} className="w-full bg-slate-900 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95">
-                  {currentQuestionIndex + 1 === questions.length ? 'Se resultat' : 'Nästa fråga'}
+            <div className="mt-8 flex gap-3">
+              {currentIndex > 0 && (
+                <button onClick={goBack} className="bg-white border-2 border-slate-200 text-slate-600 font-bold py-4 px-5 rounded-xl shadow-sm flex items-center justify-center gap-1 transition-all active:scale-95">
+                  <ChevronLeft className="w-5 h-5" /> {t.backBtn}
+                </button>
+              )}
+              {currentQ.answered && (
+                <button onClick={goNext} className="flex-1 bg-slate-900 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95">
+                  {isLast ? t.resultBtn : t.nextBtn}
                   <ChevronRight className="w-5 h-5" />
                 </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
+
+          {modal && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
+              <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
+                <div className="text-5xl mb-3">{modal.isCorrect ? '✅' : '❌'}</div>
+                <h3 className={`text-xl font-black mb-3 ${modal.isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+                  {modal.isCorrect ? t.modalCorrectTitle : t.modalWrongTitle}
+                </h3>
+                <p className="text-slate-600 leading-relaxed mb-6">
+                  {easyMode ? modal.question._easy.expl : modal.question.expl}
+                </p>
+                <button onClick={closeModalAndAdvance} className="w-full bg-slate-900 text-white font-bold py-3 rounded-xl shadow-lg transition-all active:scale-95">
+                  {isLast ? t.modalResultBtn : t.modalNextBtn}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       );
     }
