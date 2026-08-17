@@ -29,6 +29,17 @@
     }
     a.back-btn:hover { background: var(--primary-light); }
 
+    .easy-toggle {
+      position: fixed; top: 14px; right: 14px; z-index: 200;
+      background: white; border: 2px solid #16a34a; color: #16a34a;
+      padding: 7px 16px; border-radius: 999px; font-family: inherit;
+      font-size: 0.88rem; font-weight: 600; cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .easy-toggle:hover { background: #dcfce7; }
+    .easy-toggle[aria-pressed="true"] { background: #16a34a; color: white; }
+    .easy-toggle[aria-pressed="true"]:hover { background: #15803d; }
+
     .screen { display: none; }
     .screen.active { display: block; }
 
@@ -144,6 +155,7 @@
 <body>
 
 <a href="index.html" class="back-btn" id="back-link">← Tillbaka till startsidan</a>
+<button class="easy-toggle" id="btn-easy" type="button" aria-pressed="false" onclick="toggleEasy()">📖 Enkel svenska</button>
 
 <!-- ═══════════ START ═══════════ -->
 <div id="screen-start" class="screen active">
@@ -202,10 +214,10 @@
     <div class="stat-box"><div class="snum" id="s-pct">0%</div><div class="slbl">Andel rätt</div></div>
   </div>
   <div class="missed-section" id="missed-section"></div>
-  <div class="section-hd">Fullständigt facit</div>
+  <div class="section-hd" id="facit-hd">Fullständigt facit</div>
   <div id="facit-list"></div>
   <div style="text-align:center;margin-top:32px">
-    <button class="btn-primary" onclick="restartQuiz()">↺ Gör om quizet</button>
+    <button class="btn-primary" id="btn-restart" onclick="restartQuiz()">↺ Gör om quizet</button>
   </div>
 </div>
 
@@ -545,6 +557,287 @@ const QUESTIONS = [
 ];
 
 // ════════════════════════════════════════════════════════════
+// ENKEL SVENSKA — EASY_Q (samma ordning/längd som QUESTIONS)
+// Platshållartext "[ENKEL: ...]" — fylls i med riktig enkel
+// svenska senare. UI_ENKEL innehåller knapp-/etikettexter som
+// bara används när enkelt-läget är på.
+// ════════════════════════════════════════════════════════════
+const EASY_Q = [
+  {
+    q: '[ENKEL: Vilka tre saker brukar räknas som hörnstenarna i ett vetenskapligt förhållningssätt?]',
+    opts: [
+      '[ENKEL: Systematik, kreativitet och kritiskt tänkande – ordning, nytänkande och ifrågasättande av information och källor]',
+      '[ENKEL: Objektivitet, repeterbarhet och falsifierbarhet – att resultat kan kontrolleras och bevisas felaktiga]',
+      '[ENKEL: Saklighet, öppenhet och empiri – att bygga slutsatser enbart på mätbara och synliga fakta]',
+      '[ENKEL: Auktoritet, tradition och intuition – att lita på erfarna experters samlade kunskap och omdöme]'
+    ],
+    expl: '[ENKEL: De tre hörnstenarna i vetenskaplighet är systematik (ordning och logiska resonemang), kreativitet (att ställa nya frågor och tänka i nya banor) och kritiskt tänkande (att ifrågasätta information, källor och slutsatser).]'
+  },
+  {
+    q: '[ENKEL: Vad kännetecknar vetenskaplig metod enligt materialet?]',
+    opts: [
+      '[ENKEL: Vetenskap undersöker verkligheten, bygger på saklighet och präglas av öppenhet där andra forskare får granska resultaten]',
+      '[ENKEL: Vetenskap bygger på konsensus, kräver statlig finansiering och utförs enbart av professorer vid universitet]',
+      '[ENKEL: Vetenskap utgår från etablerade auktoriteter, kräver enighet bland forskare och undviker att ifrågasätta tidigare resultat]',
+      '[ENKEL: Vetenskap grundas på personlig erfarenhet, bygger på intuition och behöver inte kunna kontrolleras av andra]'
+    ],
+    expl: '[ENKEL: Vetenskaplig metod kännetecknas av att vetenskap undersöker verkligheten (inte tro), bygger på saklighet (fakta och bevis, inte löst tyckande) och bygger på öppenhet (metoder och resultat delas och granskas av andra forskare).]'
+  },
+  {
+    q: '[ENKEL: Att Olof Palme sköts den 28 februari 1986 är ett exempel på ett faktum, inte en värdering.]',
+    expl: '[ENKEL: Ett faktum kan vara sant eller falskt, som att Palme sköts 28 februari 1986. Om han var en bra statsminister eller inte är däremot en värderingsfråga, eftersom det uttrycker vad någon tycker.]'
+  },
+  {
+    q: '[ENKEL: Vad är peer review och varför är det viktigt inom vetenskapen?]',
+    opts: [
+      '[ENKEL: Det är en granskning av andra forskare som ska säkerställa att artiklar håller god kvalitet och är gjorda vetenskapligt]',
+      '[ENKEL: Det är en process där staten kontrollerar att forskningen inte strider mot gällande lagar och regler]',
+      '[ENKEL: Det är ett sätt att mäta hur många gånger en artikel har lästs och delats av allmänheten]',
+      '[ENKEL: Det är en metod för att avgöra vilken tidskrift som ska publicera en forskares kommande artikel]'
+    ],
+    expl: '[ENKEL: Peer review innebär att vetenskaplig text som publiceras granskas av andra forskare inom samma område. Det är en säkerhetsåtgärd som gör att man kan skilja granskad vetenskap från fejkade studier eller rena påhitt.]'
+  },
+  {
+    q: '[ENKEL: Vad innebär cherry-picking (russinplockning) och varför är det problematiskt?]',
+    opts: [
+      '[ENKEL: Att göra ett tydligt urval av fakta utan att säga hela sanningen, för att stödja egna värderingar]',
+      '[ENKEL: Att medvetet förfalska mätdata i en undersökning för att resultaten ska stämma med hypotesen]',
+      '[ENKEL: Att undvika peer review genom att publicera forskningsresultat direkt på egna hemsidor och bloggar]',
+      '[ENKEL: Att blanda ihop fakta och värderingar så att läsaren inte längre kan skilja dem åt]'
+    ],
+    expl: '[ENKEL: Cherry-picking innebär att man gör ett urval av fakta utan att redovisa hela bilden. Ett exempel är i klimatdebatten, där man jämför två enstaka år för att "bevisa" att uppvärmningen uteblivit, trots att den långsiktiga trenden visar motsatsen.]'
+  },
+  {
+    q: '[ENKEL: Vilken funktion fyller ett begrepp inom samhällsvetenskapen?]',
+    opts: [
+      '[ENKEL: Det ger innebörden av ett ord och gör det tydligare att kommunicera, vilket minskar risken för missförstånd]',
+      '[ENKEL: Det bevisar att en teori stämmer genom att sammanfatta resultat från flera olika vetenskapliga undersökningar]',
+      '[ENKEL: Det avgör om en källa är trovärdig genom att jämföra avsändarens syfte med informationens innehåll]',
+      '[ENKEL: Det beskriver orsakssamband mellan olika fenomen och används för att förutsäga framtida samhällsutveckling]'
+    ],
+    expl: '[ENKEL: Ett begrepp är innebörden av ett ord, till exempel samhälle, frihet eller demokrati. Eftersom alla inte uppfattar begrepp på samma sätt är det viktigt att definiera dem tydligt, så att kommunikationen underlättas.]'
+  },
+  {
+    q: '[ENKEL: Vad är en vetenskaplig teori och hur kan sådana användas?]',
+    opts: [
+      '[ENKEL: Att förklara, förstå eller förutsäga händelser i samhället genom fastställda eller tänkbara orsakssamband forskare upptäckt]',
+      '[ENKEL: Att bevisa att en enskild persons åsikt om ett ämne alltid är den mest korrekta]',
+      '[ENKEL: Att ersätta behovet av källkritik eftersom teorier redan är granskade och därmed garanterat sanna]',
+      '[ENKEL: Att fastställa lagar som styr hur myndigheter ska agera i samhällsvetenskapliga frågor och beslut]'
+    ],
+    expl: '[ENKEL: En teori är sammansatt av fastställda eller tänkbara orsakssamband som forskare upptäckt i sina studier. Teorier hjälper oss att förklara, förstå eller förutsäga olika händelser eller företeelser i samhället.]'
+  },
+  {
+    q: '[ENKEL: Vad, förutom sökorden, påverkar vilka träffar du får i en sökmotor?]',
+    opts: [
+      '[ENKEL: Tidigare sökningar som du och dina bekanta gjort, samt hur uppdaterad och länkad en webbplats är]',
+      '[ENKEL: Enbart hur många gånger sökordet förekommer på webbplatsen, oavsett innehållets ålder eller kvalitet]',
+      '[ENKEL: Vilket land webbplatsens server är placerad i samt vilket språk webbplatsen är skriven på]',
+      '[ENKEL: Hur lång webbplatsens text är, eftersom sökmotorer alltid prioriterar längre och mer omfattande artiklar]'
+    ],
+    expl: '[ENKEL: Träffarna styrs inte bara av sökorden, utan även av vilka sökningar du och personer du känner gjort tidigare, vilka sidor du besökt, samt hur uppdaterad webbplatsen är och hur många andra sidor som länkar till den.]'
+  },
+  {
+    q: '[ENKEL: Betalda sökträffar, märkta "Annons" eller "Sponsrad", visas längst ner på sökmotorns första sida, efter de vanliga träffarna.]',
+    expl: '[ENKEL: Betalda sökträffar visas längst upp i trafflistan, före de vanliga träffarna. Företag betalar för att hamna där, och träffarna märks med texten "Annons" eller "Sponsrad".]'
+  },
+  {
+    q: '[ENKEL: Vad är ett AI-verktyg? Ge ett exempel på ett sådant som nämns i materialet.]',
+    opts: [
+      '[ENKEL: En stor språkmodell, LLM, som är en av de vanligaste typerna av AI-verktyg som finns]',
+      '[ENKEL: En vetenskaplig databas som enbart innehåller granskade uppsatser från svenska universitet och högskolor]',
+      '[ENKEL: En sökoperator som används för att begränsa och precisera resultatet av en vanlig sökning]',
+      '[ENKEL: Ett peer review-system som granskar och godkänner texter innan de publiceras på internet]'
+    ],
+    expl: '[ENKEL: Det finns många olika typer av AI-verktyg. Mycket viktiga är så kallade stora språkmodeller, LLM (Large Language Models).]'
+  },
+  {
+    q: '[ENKEL: Vad betyder LLM och vad används det till?]',
+    opts: [
+      '[ENKEL: En stor språkmodell som förutsäger nästa ord utifrån miljontals texter – bra som hjälp med att skriva och sammanfatta]',
+      '[ENKEL: En sökmotor som alltid ger helt korrekt information genom att jämföra flera vetenskapliga källor]',
+      '[ENKEL: En databas med granskade forskningsartiklar som är gratis att använda för alla gymnasieelever]',
+      '[ENKEL: Ett verktyg som enbart används för att kontrollera stavning och grammatik i skrivna texter]'
+    ],
+    expl: '[ENKEL: LLM (Large Language Model) är en stor språkmodell som försöker förutsäga nästa ord utifrån analys av miljontals texter. De är utmärkta som "study buddy" för att skriva, sammanfatta eller förenkla, men sämre på ren information eftersom de kan hallucinera.]'
+  },
+  {
+    q: '[ENKEL: Vilken är fördelen med att kombinera en språkmodell med en sökmotor?]',
+    opts: [
+      '[ENKEL: Man kan få källtexter, till och med vetenskapliga källor, och själv kontrollera hur de tolkats]',
+      '[ENKEL: Svaren blir alltid kortare och man slipper läsa långa texter för att hitta information]',
+      '[ENKEL: Verktyget slutar helt att kunna hallucinera eftersom det bara använder verifierade källor och fakta]',
+      '[ENKEL: Man behöver inte längre vara källkritisk eftersom verktyget redan har granskat all information]'
+    ],
+    expl: '[ENKEL: I ett verktyg som kombinerar språkmodell och sökmotor kan du få källtexterna, och till och med be om vetenskapliga källor. Då kan du själv gå till källorna och kontrollera att språkmodellen tolkat dem rimligt.]'
+  },
+  {
+    q: '[ENKEL: Vad innebär det att "prompta" ett AI-verktyg? Ge ett exempel.]',
+    opts: [
+      '[ENKEL: Att ställa frågor eller ge instruktioner – ju mer precis prompten är, desto träffsäkrare blir svaret]',
+      '[ENKEL: Att ladda upp en fil med källor som AI-verktyget sedan automatiskt granskar och sammanfattar]',
+      '[ENKEL: Att låta AI-verktyget själv välja vilken fråga som är mest relevant att besvara]',
+      '[ENKEL: Att jämföra svar från flera olika AI-verktyg för att se vilket som är mest korrekt]'
+    ],
+    expl: '[ENKEL: Att prompta innebär att ställa frågor eller ge instruktioner till ett AI-verktyg. Ju mer precis frågan är, desto mer träffsäkert blir svaret. Att prompta korrekt kräver övning och ämneskunskap, till exempel: "Sammanfatta huvudargumenten i denna text i punktform."]'
+  },
+  {
+    q: '[ENKEL: Vad är en analys och vilka verktyg används i samhällsvetenskapliga analyser?]',
+    opts: [
+      '[ENKEL: Källkritisk analys, kausalanalys, argumentationsanalys och bildanalys – fyra vanliga sätt att bearbeta ett material]',
+      '[ENKEL: Statistisk analys, enkätanalys, intervjuanalys och observationsanalys – fyra metoder för att samla in data]',
+      '[ENKEL: Peer review, cherry-picking, faktagranskning och källtillit – fyra begrepp som hör ihop med trovärdighet]',
+      '[ENKEL: Denotation, konnotation, generalisering och paradigmskifte – fyra centrala begrepp inom vetenskaplig teori]'
+    ],
+    expl: '[ENKEL: Att analysera innebär att noggrant och systematiskt undersöka alla beståndsdelar av något, ofta med tolkningar. Materialet lyfter fram källkritisk analys, kausalanalys, argumentationsanalys och bildanalys som vanliga analysverktyg.]'
+  },
+  {
+    q: '[ENKEL: Vilka två faktorer är centrala för att avgöra kvaliteten på ett argument?]',
+    opts: [
+      '[ENKEL: Hållbarhet, det vill säga argumentets styrka, och relevans, det vill säga om det hör till saken]',
+      '[ENKEL: Längd, det vill säga hur utförligt argumentet är, och källa, det vill säga vem som säger det]',
+      '[ENKEL: Popularitet, det vill säga hur många som håller med, och tydlighet, det vill säga hur lättförståeligt det är]',
+      '[ENKEL: Nyhetsvärde, det vill säga hur aktuellt argumentet är, och känsla, det vill säga hur starkt det engagerar]'
+    ],
+    expl: '[ENKEL: Argument bedöms utifrån hållbarhet (argumentets styrka eller trovärdighet, om det går att kontrollera att det stämmer) och relevans (om argumentet hör till saken och kan kopplas till tesen).]'
+  },
+  {
+    q: '[ENKEL: Källtillit innebär att man ska lita lika mycket på alla källor, så länge man är källkritisk.]',
+    expl: '[ENKEL: Källtillit innebär att vi inte bara ska vara allmänt kritiska till alla källor, utan lita mer på vissa källor än andra. Information från myndigheter i en demokratisk stat med låg korruption är generellt mer trovärdig än till exempel en privatpersons blogg.]'
+  },
+  {
+    q: '[ENKEL: a) Vad betyder det att information är "användbar" inom källkritik?]',
+    opts: [
+      '[ENKEL: Att informationen är relevant, det vill säga att den kan bidra till att besvara de frågor man har]',
+      '[ENKEL: Att informationen är kort och lättläst, så att man snabbt kan ta till sig innehållet]',
+      '[ENKEL: Att informationen kommer från en myndighet, eftersom myndigheter alltid räknas som fullt trovärdiga]',
+      '[ENKEL: Att informationen har granskats genom peer review innan den publicerades på internet eller i tryck]'
+    ],
+    expl: '[ENKEL: Ett grundkrav är att avgöra om informationen är användbar, det vill säga relevant – att den kan bidra till att besvara de frågor man har. Trovärdighet är en separat fråga, som handlar om avsändarens och informationens tillförlitlighet.]'
+  },
+  {
+    q: '[ENKEL: b) Ge ett exempel på ett tips för att avgöra en källas trovärdighet.]',
+    opts: [
+      '[ENKEL: Att skilja på avsändarens trovärdighet och informationens trovärdighet, och undersöka om innehållet är allsidigt]',
+      '[ENKEL: Att enbart lita på källor som är skrivna av forskare med en doktorsexamen inom ämnet]',
+      '[ENKEL: Att jämföra hur många som delat källan på sociala medier under den senaste veckan]',
+      '[ENKEL: Att kontrollera om texten innehåller bilder, eftersom bildbevis alltid gör information mer trovärdig]'
+    ],
+    expl: '[ENKEL: Ett bra tips är att skilja på avsändarens trovärdighet och informationens trovärdighet, samt att bedöma om informationen är sann och allsidig eller tendentiös (vinklad). En bra minnesregel är: vem skriver vad till vem och i vilket syfte?]'
+  },
+  {
+    q: '[ENKEL: Vilka är nackdelarna med att använda Wikipedia som källa?]',
+    opts: [
+      '[ENKEL: Vem som helst kan skriva och redigera artiklar, och artikelförfattarna är oftast anonyma]',
+      '[ENKEL: Artiklarna är alltid för långa och detaljerade för att vara användbara i skolarbeten]',
+      '[ENKEL: Wikipedia saknar helt referenser till andra källor i sina artiklar om samhällsfrågor]',
+      '[ENKEL: Artiklarna uppdateras för sällan för att innehålla aktuell och relevant information om ämnet]'
+    ],
+    expl: '[ENKEL: Ett problem med Wikipedia är att vem som helst kan skriva och redigera artiklar, utan att det syns direkt om innehållet är vinklat eller av dålig kvalitet. Att artikelförfattarna är anonyma gör det svårt att veta om de vinklar innehållet.]'
+  },
+  {
+    q: '[ENKEL: Hur kan du kontrollera att informationen i en Wikipedia-artikel är korrekt?]',
+    opts: [
+      '[ENKEL: Genom att titta på källorna artikeln bygger på samt flikarna "visa historik" och "diskussion"]',
+      '[ENKEL: Genom att jämföra artikelns längd med liknande artiklar på andra språk i Wikipedia]',
+      '[ENKEL: Genom att kontrollera hur många bilder och illustrationer som finns med i artikeln]',
+      '[ENKEL: Genom att se hur högt upp artikeln hamnar bland träffarna i en vanlig sökmotor]'
+    ],
+    expl: '[ENKEL: Ett tips är att se vilka källor artikeln bygger på och kontrollera några av dem. Fliken "visa historik" visar vilka redigeringar som gjorts, och fliken "diskussion" visar hur användare diskuterat formuleringar och källor.]'
+  },
+  {
+    q: '[ENKEL: a) Vilka fyra delar består en enkel kausalanalys av?]',
+    opts: [
+      '[ENKEL: Fenomen, orsaker, konsekvenser och åtgärder, där fenomenet står i mitten och de andra kopplas till det]',
+      '[ENKEL: Hypotes, undersökning, resultat och slutsats, där varje del testas systematiskt i tur och ordning]',
+      '[ENKEL: Tes, argument, motargument och slutsats, där tesen ska stödjas av hållbara och relevanta argument]',
+      '[ENKEL: Avsändare, budskap, mottagare och syfte, där varje del analyseras för att avgöra källans trovärdighet]'
+    ],
+    expl: '[ENKEL: Kausalanalysmodellen består av fyra delar: beskrivningen av fenomenet/situationen/företeelsen i mitten, samt orsaker, konsekvenser och åtgärder som kopplas till fenomenet.]'
+  },
+  {
+    q: '[ENKEL: b) Kausalitet och korrelation betyder samma sak – att två saker samvarierar med varandra.]',
+    expl: '[ENKEL: Kausalitet innebär ett orsakssamband, det vill säga att en variabel faktiskt orsakar förändring i en annan. Korrelation innebär bara att två saker samvarierar, utan att den ena orsakar den andra. Att blanda ihop dem kallas falsk kausalitet.]'
+  },
+  {
+    q: '[ENKEL: I exemplet med farliga glassar följs kurvorna för drunkningsdödsfall och glasskonsumtion åt under sommaren. Vilken slutsats vore felaktig att dra?]',
+    opts: [
+      '[ENKEL: Att glassätningen orsakar drunkningsolyckorna, trots att det bara handlar om en samvariation mellan de två]',
+      '[ENKEL: Att fler människor badar under sommaren, vilket ökar risken för drunkningsolyckor jämfört med vintern]',
+      '[ENKEL: Att både glasskonsumtion och drunkningsolyckor ökar under juni, juli och augusti varje år]',
+      '[ENKEL: Att undersökningen visar en tydlig samvariation mellan glasskonsumtion och antalet drunkningsolyckor i Sverige]'
+    ],
+    expl: '[ENKEL: Att glassätningen skulle orsaka drunkningsolyckorna är en felaktig slutsats – exemplet illustrerar falsk kausalitet. De två saker samvarierar (korrelerar), men det finns inget orsakssamband mellan dem.]'
+  },
+  {
+    q: '[ENKEL: Vad är den troliga bakomliggande (oberoende) variabeln som påverkar både glassätning och drunkningsolyckor?]',
+    opts: [
+      '[ENKEL: Att det är sommar och varmt, vilket gör att fler människor äter glass och tillbringar tid vid vatten]',
+      '[ENKEL: Att glasstillverkare medvetet ökar sin produktion under sommaren för att möta en högre efterfrågan]',
+      '[ENKEL: Att fler badplatser håller öppet under sommaren, vilket lockar fler människor att bada regelbundet]',
+      '[ENKEL: Att skolorna har sommarlov, vilket gör att fler barn och ungdomar är lediga och utomhus]'
+    ],
+    expl: '[ENKEL: Det är betydligt troligare att det finns en bakomliggande oberoende variabel – att det är sommar och varmt och att vi tillbringar mer tid vid vatten – som påverkar både glassätning och drunkningsolyckor, snarare än att den ena orsakar den andra.]'
+  },
+  {
+    q: '[ENKEL: Undersökningen om glass och drunkning i exemplet har hög validitet eftersom sambandet mellan kurvorna är starkt.]',
+    expl: '[ENKEL: Undersökningen får låg validitet (bevisvärde), eftersom man kopplat ihop två saker som saknar orsakssamband. Ett starkt samband mellan kurvorna bevisar inte kausalitet – det handlar om korrelation.]'
+  },
+  {
+    q: '[ENKEL: Vad är skillnaden mellan denotation och konnotation vid en bildanalys?]',
+    opts: [
+      '[ENKEL: Denotation beskriver vad som syns på bilden, medan konnotation tolkar vilka värderingar och budskap bilden förmedlar]',
+      '[ENKEL: Denotation handlar om bildens färger, medan konnotation handlar om bildens komposition och uppbyggnad]',
+      '[ENKEL: Denotation avser bildens avsändare, medan konnotation avser vilken målgrupp som bilden riktar sig till]',
+      '[ENKEL: Denotation beskriver bildens känslomässiga budskap, medan konnotation räknar upp de personer som syns på bilden]'
+    ],
+    expl: '[ENKEL: Denotation innebär att beskriva bilden utan att tolka eller lägga in värderingar – vad som faktiskt syns. Konnotation handlar om tolkningen: vilket budskap, vilka värderingar och vilken symbolik som förmedlas via bilden.]'
+  },
+  {
+    q: '[ENKEL: Vilken är den övergripande tesen i debatten inför folkomröstningen om trängselavgifter i Stockholm 2006?]',
+    opts: [
+      '[ENKEL: Rösta ja till trängselavgifter för en bättre livsmiljö, även om flera delteser också fördes fram]',
+      '[ENKEL: Rösta nej till trängselavgifter eftersom de gynnar enbart biltrafiken i Stockholms innerstad]',
+      '[ENKEL: Inför trängselavgifter enbart i förorterna för att skydda Stockholms centrala grönområden]',
+      '[ENKEL: Avskaffa kollektivtrafiken helt och satsa istället på ett effektivare vägnät för biltrafik]'
+    ],
+    expl: '[ENKEL: Det finns flera möjliga deltesers i texten, men den övergripande tesen är "rösta ja till trängselavgifter för en bättre livsmiljö". Argumenten handlade om bättre kollektivtrafik, effektivare vägnät, räddade grönområden och färre bilavgasrelaterade sjukdomar.]'
+  },
+  {
+    q: '[ENKEL: Argumentet "Trängselavgifter kommer att göra mig glad varje morgon" är relevant för tesen att trängselavgifter är bra för miljön.]',
+    expl: '[ENKEL: Argumentet saknar koppling till tesen om miljön och är därför irrelevant, även om det i och för sig kan vara sant. Relevans handlar om att argumentet måste kunna ställas i relation till tesen.]'
+  },
+  {
+    q: '[ENKEL: Hur kan man kontrollera hållbarheten i argumentet "Trängselavgifter gör att människor åker mindre bil"?]',
+    opts: [
+      '[ENKEL: Genom att studera hur trafiken faktiskt har förändrats i städer där trängselavgifter har införts]',
+      '[ENKEL: Genom att fråga ett antal bilister om de personligen tycker att argumentet känns rimligt]',
+      '[ENKEL: Genom att undersöka om argumentet nämns i tidningsartiklar som skrivits om trängselavgifter]',
+      '[ENKEL: Genom att kontrollera om politikerna som förde fram argumentet vann folkomröstningen 2006]'
+    ],
+    expl: '[ENKEL: Hållbarhet handlar om argumentets styrka eller trovärdighet. Detta arguments hållbarhet går att kontrollera genom att studera hur trafiken faktiskt förändrats i storstäder där trängselavgifter införts.]'
+  }
+];
+
+const UI_ENKEL = {
+  typeMc: 'Flera svar',
+  typeTf: 'Rätt eller fel',
+  scoreLabel: 'Poäng: ',
+  nextQBtn: 'Nästa →',
+  seeResultBtn: 'Se svaren →',
+  backBtn: '← Tillbaka',
+  modalCorrectTitle: 'Rätt!',
+  modalWrongTitle: 'Fel svar',
+  modalNextBtn: 'Nästa fråga →',
+  missedHd: 'Frågor du svarade fel på',
+  facitHd: 'Alla frågor och svar',
+  yourAnswerLbl: 'Du svarade: ',
+  correctAnswerLbl: 'Rätt svar: ',
+  notAnsweredTxt: '— (du svarade inte)',
+  restartBtn: '↺ Gör om'
+};
+
+// ════════════════════════════════════════════════════════════
 // FISHER-YATES SHUFFLE
 // ════════════════════════════════════════════════════════════
 function shuffleArray(array) {
@@ -564,6 +857,40 @@ let score = 0;
 let elapsed = 0;
 let timerID = null;
 
+// ════════════════════════════════════════════════════════════
+// ENKEL SVENSKA — state, persistens och helpers
+// ════════════════════════════════════════════════════════════
+const EASY_KEY = 'sh1a1_vetenskap_easy_svenska';
+let easyMode = sessionStorage.getItem(EASY_KEY) === '1';
+let modalState = null; // { isCorrect, q } — senast visade modal, för att kunna uppdatera texten vid toggle
+
+function updateEasyButton() {
+  const btn = document.getElementById('btn-easy');
+  btn.setAttribute('aria-pressed', easyMode ? 'true' : 'false');
+}
+updateEasyButton();
+
+// Generisk helper: slår upp motsvarande text för ett svarsalternativ i en
+// given variant (idag bara 'easy', skriven så fler varianter kan läggas till).
+function mapOpt(variant, q, optStr) {
+  if (variant !== 'easy' || !q._easy || !q._easy.opts) return optStr;
+  const idx = q.opts.indexOf(optStr);
+  if (idx === -1) return optStr;
+  return q._easy.opts[idx] || optStr;
+}
+
+function toggleEasy() {
+  easyMode = !easyMode;
+  sessionStorage.setItem(EASY_KEY, easyMode ? '1' : '0');
+  updateEasyButton();
+
+  if (document.getElementById('screen-quiz').classList.contains('active')) render();
+  if (document.getElementById('screen-result').classList.contains('active')) showResults();
+  if (!document.getElementById('modal-overlay').classList.contains('hidden') && modalState) {
+    showModal(modalState.isCorrect, modalState.q);
+  }
+}
+
 function normalize(q) {
   if (q.type === 'tf') {
     return {
@@ -571,14 +898,16 @@ function normalize(q) {
       q: q.q,
       opts: ['Sant', 'Falskt'],
       correct: q.correct ? 0 : 1,
-      expl: q.expl
+      expl: q.expl,
+      _easy: q._easy
     };
   }
   return q;
 }
 
 function buildState() {
-  const shuffled = shuffleArray([...QUESTIONS]).map(normalize);
+  const withEasy = QUESTIONS.map((q, i) => ({ ...q, _easy: EASY_Q[i] }));
+  const shuffled = shuffleArray(withEasy).map(normalize);
   qs = shuffled.map(q => ({
     ...q,
     shuffledIdx: shuffleArray(q.opts.map((_, i) => i)),
@@ -628,9 +957,11 @@ function render() {
 
   document.getElementById('progress-bar').style.width = (cur / total * 100) + '%';
   document.getElementById('q-counter').textContent = 'Fråga ' + (cur + 1) + ' av ' + total;
-  document.getElementById('score-pill').textContent = 'Poäng: ' + score;
-  document.getElementById('q-type-tag').textContent = q.type === 'tf' ? 'Sant eller falskt' : 'Flerval';
-  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('score-pill').textContent = (easyMode ? UI_ENKEL.scoreLabel : 'Poäng: ') + score;
+  document.getElementById('q-type-tag').textContent = q.type === 'tf'
+    ? (easyMode ? UI_ENKEL.typeTf : 'Sant eller falskt')
+    : (easyMode ? UI_ENKEL.typeMc : 'Flerval');
+  document.getElementById('q-text').textContent = (easyMode && q._easy) ? q._easy.q : q.q;
 
   const optsEl = document.getElementById('opts');
   optsEl.innerHTML = '';
@@ -638,7 +969,7 @@ function render() {
   q.shuffledIdx.forEach((origIdx, displayPos) => {
     const btn = document.createElement('button');
     btn.className = 'opt-btn';
-    btn.textContent = q.opts[origIdx];
+    btn.textContent = easyMode ? mapOpt('easy', q, q.opts[origIdx]) : q.opts[origIdx];
     btn.disabled = q.answered;
 
     if (q.answered) {
@@ -653,8 +984,11 @@ function render() {
   });
 
   document.getElementById('btn-back').style.display = cur > 0 ? 'inline-block' : 'none';
+  document.getElementById('btn-back').textContent = easyMode ? UI_ENKEL.backBtn : '← Bakåt';
   document.getElementById('btn-next').style.display = q.answered ? 'inline-block' : 'none';
-  document.getElementById('btn-next').textContent = cur === total - 1 ? 'Se resultat →' : 'Nästa →';
+  document.getElementById('btn-next').textContent = cur === total - 1
+    ? (easyMode ? UI_ENKEL.seeResultBtn : 'Se resultat →')
+    : (easyMode ? UI_ENKEL.nextQBtn : 'Nästa →');
 }
 
 // ════════════════════════════════════════════════════════════
@@ -679,24 +1013,32 @@ function handleAnswer(displayPos) {
   });
 
   document.getElementById('btn-next').style.display = 'inline-block';
-  document.getElementById('btn-next').textContent = cur === qs.length - 1 ? 'Se resultat →' : 'Nästa →';
-  document.getElementById('score-pill').textContent = 'Poäng: ' + score;
+  document.getElementById('btn-next').textContent = cur === qs.length - 1
+    ? (easyMode ? UI_ENKEL.seeResultBtn : 'Se resultat →')
+    : (easyMode ? UI_ENKEL.nextQBtn : 'Nästa →');
+  document.getElementById('score-pill').textContent = (easyMode ? UI_ENKEL.scoreLabel : 'Poäng: ') + score;
 
-  setTimeout(() => showModal(isCorrect, q.expl), 600);
+  setTimeout(() => showModal(isCorrect, q), 600);
 }
 
 // ════════════════════════════════════════════════════════════
 // MODAL
 // ════════════════════════════════════════════════════════════
-function showModal(isCorrect, expl) {
+function showModal(isCorrect, q) {
+  modalState = { isCorrect, q };
+  const expl = (easyMode && q._easy) ? q._easy.expl : q.expl;
   document.getElementById('modal-icon').textContent      = isCorrect ? '✅' : '❌';
-  document.getElementById('modal-verdict').textContent   = isCorrect ? 'Rätt svar!' : 'Fel svar';
+  document.getElementById('modal-verdict').textContent   = isCorrect
+    ? (easyMode ? UI_ENKEL.modalCorrectTitle : 'Rätt svar!')
+    : (easyMode ? UI_ENKEL.modalWrongTitle : 'Fel svar');
   document.getElementById('modal-verdict').className     = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
   document.getElementById('modal-expl').textContent      = expl;
+  document.querySelector('#modal-overlay .btn-primary').textContent = easyMode ? UI_ENKEL.modalNextBtn : 'Nästa fråga →';
   document.getElementById('modal-overlay').classList.remove('hidden');
 }
 function closeModal() {
   document.getElementById('modal-overlay').classList.add('hidden');
+  modalState = null;
   goNext();
 }
 
@@ -742,40 +1084,50 @@ function showResults() {
   const missedEl = document.getElementById('missed-section');
   const missed = qs.filter(q => q.answered && q.shuffledIdx.indexOf(q.correct) !== q.selectedDisplay);
   if (missed.length) {
-    missedEl.innerHTML = '<div class="section-hd">Missade frågor (' + missed.length + ')</div>';
+    const missedHdTxt = (easyMode ? UI_ENKEL.missedHd : 'Missade frågor') + ' (' + missed.length + ')';
+    missedEl.innerHTML = '<div class="section-hd">' + missedHdTxt + '</div>';
     missed.forEach(q => {
       const d = document.createElement('div');
       d.className = 'missed-item';
-      d.textContent = q.q;
+      d.textContent = (easyMode && q._easy) ? q._easy.q : q.q;
       missedEl.appendChild(d);
     });
   } else {
     missedEl.innerHTML = '';
   }
 
+  document.getElementById('facit-hd').textContent = easyMode ? UI_ENKEL.facitHd : 'Fullständigt facit';
+  document.getElementById('btn-restart').textContent = easyMode ? UI_ENKEL.restartBtn : '↺ Gör om quizet';
+
   // Full facit
   const facitEl = document.getElementById('facit-list');
   facitEl.innerHTML = '';
+  const yourAnswerLbl   = easyMode ? UI_ENKEL.yourAnswerLbl   : 'Ditt svar: ';
+  const correctAnswerLbl = easyMode ? UI_ENKEL.correctAnswerLbl : 'Rätt svar: ';
+  const notAnsweredTxt  = easyMode ? UI_ENKEL.notAnsweredTxt  : '— (inte besvarad)';
   qs.forEach((q, i) => {
     const correctDisplay = q.shuffledIdx.indexOf(q.correct);
     const isCorrect  = q.answered && q.selectedDisplay === correctDisplay;
     const notAnswered = !q.answered;
-    const correctText  = q.opts[q.correct];
-    const selectedText = q.answered ? q.opts[q.shuffledIdx[q.selectedDisplay]] : null;
+    const correctText  = easyMode ? mapOpt('easy', q, q.opts[q.correct]) : q.opts[q.correct];
+    const selectedText = q.answered
+      ? (easyMode ? mapOpt('easy', q, q.opts[q.shuffledIdx[q.selectedDisplay]]) : q.opts[q.shuffledIdx[q.selectedDisplay]])
+      : null;
+    const qText = (easyMode && q._easy) ? q._easy.q : q.q;
 
     const div = document.createElement('div');
     div.className = 'facit-item ' + (notAnswered ? '' : isCorrect ? 'fc' : 'fw');
 
     let html = '<div class="fi-num">Fråga ' + (i + 1) + '</div>';
-    html += '<div class="fi-q">' + q.q + '</div>';
+    html += '<div class="fi-q">' + qText + '</div>';
     if (notAnswered) {
-      html += '<div class="fi-row"><span class="lbl">Ditt svar: </span>— (inte besvarad)</div>';
-      html += '<div class="fi-row ra"><span class="lbl">Rätt svar: </span>' + correctText + '</div>';
+      html += '<div class="fi-row"><span class="lbl">' + yourAnswerLbl + '</span>' + notAnsweredTxt + '</div>';
+      html += '<div class="fi-row ra"><span class="lbl">' + correctAnswerLbl + '</span>' + correctText + '</div>';
     } else if (isCorrect) {
-      html += '<div class="fi-row ya-ok">✓ <span class="lbl">Ditt svar: </span>' + selectedText + '</div>';
+      html += '<div class="fi-row ya-ok">✓ <span class="lbl">' + yourAnswerLbl + '</span>' + selectedText + '</div>';
     } else {
-      html += '<div class="fi-row ya-bad">✗ <span class="lbl">Ditt svar: </span>' + selectedText + '</div>';
-      html += '<div class="fi-row ra"><span class="lbl">Rätt svar: </span>' + correctText + '</div>';
+      html += '<div class="fi-row ya-bad">✗ <span class="lbl">' + yourAnswerLbl + '</span>' + selectedText + '</div>';
+      html += '<div class="fi-row ra"><span class="lbl">' + correctAnswerLbl + '</span>' + correctText + '</div>';
     }
     div.innerHTML = html;
     facitEl.appendChild(div);
