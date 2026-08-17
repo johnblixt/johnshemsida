@@ -1,584 +1,1149 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Begreppslista Ideologier</title>
-    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <style>
-        body { font-family: 'EB Garamond', serif; }
-        .flip-card { perspective: 1000px; height: 350px; width: 100%; max-width: 400px; cursor: pointer; }
-        .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
-        .flipped-classes { transform: rotateY(180deg); }
-        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
-        .flip-card-front { background-color: #fbbf24; border: 6px solid white; }
-        .flip-card-back { background-color: white; border: 6px solid #fbbf24; transform: rotateY(180deg); }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ideologier och metod</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Fredoka:wght@300..700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: 'EB Garamond', serif; background: #fffbeb; }
+    .font-fredoka { font-family: 'Fredoka', sans-serif; }
+    .flip-card { perspective: 1000px; height: 350px; width: 100%; max-width: 400px; cursor: pointer; }
+    .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+    .flipped-classes { transform: rotateY(180deg); }
+    .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+    .flip-card-back { transform: rotateY(180deg); }
+    @media (max-width: 768px) {
+      .view-tabs { justify-content: flex-start; }
+    }
+  </style>
 </head>
-<body class="bg-slate-50 text-slate-800">
-    <div id="root"></div>
-    <script type="text/babel">
-        const { useState } = React;
+<body class="bg-amber-50 min-h-screen">
 
-        const concepts = [
-            {
-                term: "Ideologi",
-                definition: "Idéer om hur samhället ska styras och hur det borde se ut.",
-                sentence: "Socialdemokraternas _____ bygger på tanken om ett samhälle med små ekonomiska klyftor och stark välfärd.",
-                scenario: "Ett parti presenterar en sammanhängande vision om hur ekonomin, välfärden och rättvisan ska organiseras i samhället – alla politiska förslag bygger på samma grundvärderingar.",
-                ickeExempel: {
-                    korrekt: "Socialdemokraternas ideologi bygger på jämlikhet, solidaritet och stark offentlig välfärd.",
-                    icke: "En politikers personliga åsikt om ett enskilt skatteförslag är en ideologi.",
-                    forklaring: "En enstaka åsikt är inte en ideologi – en ideologi är ett sammanhängande system av idéer om hur hela samhället bör organiseras."
+<div id="root"></div>
+
+<script>
+function shuffleArray(array) {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function smartBack(fallbackUrl) {
+  try {
+    if (document.referrer && new URL(document.referrer).hostname === window.location.hostname) {
+      history.back();
+      return;
+    }
+  } catch (e) {}
+  window.location.href = fallbackUrl;
+}
+</script>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+const PRIMARY = '#fbbf24';
+const PRIMARY_LIGHT = '#fef9c3';
+const PRIMARY_TEXT = '#78350f';
+
+// ════════════════════════════════════════════════════════════
+// BEGREPP — 20 ideologibegrepp (id 1–20, oförändrade) +
+// 15 metodbegrepp (id 21–35, nya)
+// ════════════════════════════════════════════════════════════
+const concepts = [
+  { id: 1,  term: 'Ideologi', definition: 'Idéer om hur samhället ska styras och hur det borde se ut.', category: 'ideologi' },
+  { id: 2,  term: 'Blockpolitik', definition: 'När partier samarbetar i grupper, t.ex. höger (borgerliga) eller vänster (rödgröna).', category: 'ideologi' },
+  { id: 3,  term: 'Stödparti', definition: 'Ett parti som stödjer regeringen men ingår inte i den.', category: 'ideologi' },
+  { id: 4,  term: 'Höger-vänsterskalan', definition: 'En skala som visar partiers syn på ekonomi, skatt och fördelning.', category: 'ideologi' },
+  { id: 5,  term: 'GAL-TAN-skalan', definition: 'En skala som visar värderingar från grönt/liberalt till traditionellt/nationalistiskt.', category: 'ideologi' },
+  { id: 6,  term: 'Socialism', definition: 'En ideologi som vill minska skillnader mellan rika och fattiga, staten ska äga viktiga delar av samhället.', category: 'ideologi' },
+  { id: 7,  term: 'Liberalism', definition: 'En ideologi som betonar individens frihet, privat ägande och marknadsekonomi.', category: 'ideologi' },
+  { id: 8,  term: 'Konservatism', definition: 'En ideologi som vill bevara traditioner, religion och kultur, och förändra samhället långsamt.', category: 'ideologi' },
+  { id: 9,  term: 'Ekologism', definition: 'En ideologi som sätter miljö och hållbar utveckling i centrum.', category: 'ideologi' },
+  { id: 10, term: 'Feminism', definition: 'En ideologi som vill ha jämställdhet mellan kvinnor och män.', category: 'ideologi' },
+  { id: 11, term: 'Nationalism', definition: 'En ideologi som betonar nationell gemenskap, språk och kultur.', category: 'ideologi' },
+  { id: 12, term: 'Kommunism', definition: 'En ideologi som vill skapa ett klasslöst samhälle genom att staten äger allt.', category: 'ideologi' },
+  { id: 13, term: 'Fascism', definition: 'En ideologi som är emot demokrati och vill ha en stark ledare som styr.', category: 'ideologi' },
+  { id: 14, term: 'Nazism', definition: "En ideologi som liknar fascism men bygger på rasistiska idéer om en 'överlägsen ras'.", category: 'ideologi' },
+  { id: 15, term: 'Populism', definition: "En politisk stil som säger sig tala för 'folket' mot 'eliten', ofta med enkla lösningar.", category: 'ideologi' },
+  { id: 16, term: 'Solidaritet', definition: 'Tanken att människor ska hjälpa och stötta varandra i samhället.', category: 'ideologi' },
+  { id: 17, term: 'Välfärdsstat', definition: 'Ett samhälle där staten ansvarar för vård, skola och omsorg.', category: 'ideologi' },
+  { id: 18, term: 'Partiprogram', definition: 'Ett dokument där ett parti skriver sina idéer, mål och förslag.', category: 'ideologi' },
+  { id: 19, term: 'Folkrörelser', definition: 'Stora grupper av människor som driver förändring, t.ex. arbetarrörelsen.', category: 'ideologi' },
+  { id: 20, term: 'Tidöavtalet', definition: 'Ett avtal mellan M, KD, L och SD om gemensam politik.', category: 'ideologi' },
+  { id: 21, term: 'Enkät', definition: 'En undersökning där många personer får svara på samma frågor.', category: 'metod' },
+  { id: 22, term: 'Intervju', definition: 'Ett samtal med en person i taget, för att få veta mer om hur hen tänker.', category: 'metod' },
+  { id: 23, term: 'Observation', definition: 'Att titta på vad människor gör, i stället för att fråga dem.', category: 'metod' },
+  { id: 24, term: 'Urval', definition: 'De personer man har valt ut att fråga.', category: 'metod' },
+  { id: 25, term: 'Bortfall', definition: 'De som inte svarade, fast man frågade dem.', category: 'metod' },
+  { id: 26, term: 'Ledande fråga', definition: 'En fråga som är skriven så att den styr vilket svar man ger.', category: 'metod' },
+  { id: 27, term: 'Statistik', definition: 'Siffror från en undersökning, ofta visade i procent eller diagram.', category: 'metod' },
+  { id: 28, term: 'Samhällsvetenskaplig textanalys', definition: 'Att undersöka en text noga för att se vad den säger och vad den inte säger.', category: 'metod' },
+  { id: 29, term: 'Argumentationsanalys', definition: 'Att granska om argumenten i en text håller eller inte.', category: 'metod' },
+  { id: 30, term: 'Argument', definition: 'Ett skäl som används för att övertyga någon.', category: 'metod' },
+  { id: 31, term: 'Orsak', definition: 'Det som gör att något händer.', category: 'metod' },
+  { id: 32, term: 'Konsekvens', definition: 'Det som blir följden av något.', category: 'metod' },
+  { id: 33, term: 'Källkritik', definition: 'Att granska om en källa går att lita på.', category: 'metod' },
+  { id: 34, term: 'Trovärdighet', definition: 'Hur mycket man kan lita på att en källa säger sanningen.', category: 'metod' },
+  { id: 35, term: 'Relevans', definition: 'Hur mycket informationen hör ihop med frågan man undersöker.', category: 'metod' },
+];
+
+const CONCEPT_CATEGORY = Object.fromEntries(concepts.map(c => [c.id, c.category]));
+const CATEGORY_LABELS = { all: 'Alla begrepp', ideologi: 'Ideologibegrepp', metod: 'Metodbegrepp' };
+
+// ════════════════════════════════════════════════════════════
+// LUCKTEXT — en mening per begrepp
+// ════════════════════════════════════════════════════════════
+const LUCKTEXT_ITEMS = [
+  { id: 1,  term: 'Ideologi', sentence: 'Socialdemokraternas ___ bygger på tanken om ett samhälle med små ekonomiska klyftor och stark välfärd.', answers: ['Ideologi'], explanation: 'En ideologi är idéer om hur samhället ska styras och hur det borde se ut.' },
+  { id: 2,  term: 'Blockpolitik', sentence: 'Under många år präglade ___ svensk politik, där de rödgröna och de borgerliga blockade mot varandra.', answers: ['Blockpolitik'], explanation: 'Blockpolitik är när partier samarbetar i grupper, t.ex. höger (borgerliga) eller vänster (rödgröna).' },
+  { id: 3,  term: 'Stödparti', sentence: 'Sverigedemokraterna fungerade som ___ åt den borgerliga regeringen utan att ha ministerposter.', answers: ['Stödparti'], explanation: 'Ett stödparti är ett parti som stödjer regeringen men ingår inte i den.' },
+  { id: 4,  term: 'Höger-vänsterskalan', sentence: 'Moderaterna placeras till höger och Vänsterpartiet till vänster på ___.', answers: ['Höger-vänsterskalan', 'Höger-vänster-skalan', 'Höger vänsterskalan'], explanation: 'Höger-vänsterskalan är en skala som visar partiers syn på ekonomi, skatt och fördelning.' },
+  { id: 5,  term: 'GAL-TAN-skalan', sentence: 'Miljöpartiet hamnar på GAL-sidan och Sverigedemokraterna på TAN-sidan av ___.', answers: ['GAL-TAN-skalan', 'GAL-TAN skalan'], explanation: 'GAL-TAN-skalan är en skala som visar värderingar från grönt/liberalt till traditionellt/nationalistiskt.' },
+  { id: 6,  term: 'Socialism', sentence: '___ förespråkar att skatter och offentliga tjänster används för att utjämna ekonomiska klyftor.', answers: ['Socialism'], explanation: 'Socialism är en ideologi som vill minska skillnader mellan rika och fattiga, där staten ska äga viktiga delar av samhället.' },
+  { id: 7,  term: 'Liberalism', sentence: '___ värnar om den personliga friheten och menar att marknaden, inte staten, ska styra ekonomin.', answers: ['Liberalism'], explanation: 'Liberalism är en ideologi som betonar individens frihet, privat ägande och marknadsekonomi.' },
+  { id: 8,  term: 'Konservatism', sentence: '___ betonar att förändringar ska ske försiktigt för att bevara det som fungerar i samhället.', answers: ['Konservatism'], explanation: 'Konservatism är en ideologi som vill bevara traditioner, religion och kultur, och förändra samhället långsamt.' },
+  { id: 9,  term: 'Ekologism', sentence: 'Miljöpartiet grundar sin politik på ___, med fokus på klimat och ekologisk hållbarhet.', answers: ['Ekologism'], explanation: 'Ekologism är en ideologi som sätter miljö och hållbar utveckling i centrum.' },
+  { id: 10, term: 'Feminism', sentence: '___ kräver lika lön, lika möjligheter och ett slut på strukturell diskriminering av kvinnor.', answers: ['Feminism'], explanation: 'Feminism är en ideologi som vill ha jämställdhet mellan kvinnor och män.' },
+  { id: 11, term: 'Nationalism', sentence: '___ lyfter fram det gemensamma språket och kulturen som det viktigaste kittet i ett samhälle.', answers: ['Nationalism'], explanation: 'Nationalism är en ideologi som betonar nationell gemenskap, språk och kultur.' },
+  { id: 12, term: 'Kommunism', sentence: 'I Kina under Mao tillämpades ___, där staten kontrollerade produktionsmedlen och privat ägande förbjöds.', answers: ['Kommunism'], explanation: 'Kommunism är en ideologi som vill skapa ett klasslöst samhälle genom att staten äger allt.' },
+  { id: 13, term: 'Fascism', sentence: 'Mussolinis Italien på 1930-talet är ett historiskt exempel på ___, där en diktator styrde utan opposition.', answers: ['Fascism'], explanation: 'Fascism är en ideologi som är emot demokrati och vill ha en stark ledare som styr.' },
+  { id: 14, term: 'Nazism', sentence: 'Hitlers Tyskland byggde på ___, som ledde till Förintelsen och andra världskriget.', answers: ['Nazism'], explanation: "Nazism är en ideologi som liknar fascism men bygger på rasistiska idéer om en 'överlägsen ras'." },
+  { id: 15, term: 'Populism', sentence: "Politikern använde sig av ___ och lovade att 'vanligt folk' äntligen skulle få sin röst hörd mot etablissemanget.", answers: ['Populism'], explanation: "Populism är en politisk stil som säger sig tala för 'folket' mot 'eliten', ofta med enkla lösningar." },
+  { id: 16, term: 'Solidaritet', sentence: '___ är en grundvärdering inom socialdemokratin – de starka ska hjälpa de svaga.', answers: ['Solidaritet'], explanation: 'Solidaritet är tanken att människor ska hjälpa och stötta varandra i samhället.' },
+  { id: 17, term: 'Välfärdsstat', sentence: 'Sverige anses vara en typisk ___ där medborgarna finansierar gemensam vård och utbildning via skatten.', answers: ['Välfärdsstat'], explanation: 'En välfärdsstat är ett samhälle där staten ansvarar för vård, skola och omsorg.' },
+  { id: 18, term: 'Partiprogram', sentence: 'Inför valet lanserade partiet ett nytt ___ med löften om sänkta skatter och mer pengar till skolan.', answers: ['Partiprogram'], explanation: 'Ett partiprogram är ett dokument där ett parti skriver sina idéer, mål och förslag.' },
+  { id: 19, term: 'Folkrörelser', sentence: 'Arbetarrörelsen är en av Sveriges viktigaste ___ och lade grunden för den moderna välfärdsstaten.', answers: ['Folkrörelser'], explanation: 'Folkrörelser är stora grupper av människor som driver förändring, t.ex. arbetarrörelsen.' },
+  { id: 20, term: 'Tidöavtalet', sentence: '___ reglerade samarbetet mellan den borgerliga regeringen och Sverigedemokraterna efter valet 2022.', answers: ['Tidöavtalet'], explanation: 'Tidöavtalet är ett avtal mellan M, KD, L och SD om gemensam politik.' },
+  { id: 21, term: 'Enkät', sentence: 'Elevrådet skickade ut samma tio frågor om skolmaten till alla elever på skolan – en typisk ___.', answers: ['Enkät'], explanation: 'En enkät är en undersökning där många personer får svara på samma frågor.' },
+  { id: 22, term: 'Intervju', sentence: 'Journalisten satte sig ner med en enda riksdagsledamot och ställde följdfrågor, det vill säga en ___.', answers: ['Intervju'], explanation: 'En intervju är ett samtal med en person i taget, för att få veta mer om hur hen tänker.' },
+  { id: 23, term: 'Observation', sentence: 'Genom att bara titta på hur eleverna faktiskt betedde sig i korridoren, utan att fråga dem, gjorde läraren en ___.', answers: ['Observation'], explanation: 'En observation är att titta på vad människor gör, i stället för att fråga dem.' },
+  { id: 24, term: 'Urval', sentence: 'De 100 elever i årskurs 3 som eleverna valde att skicka enkäten till kallas ___.', answers: ['Urval', 'Urvalet'], explanation: 'Urvalet är de personer man har valt ut att fråga.' },
+  { id: 25, term: 'Bortfall', sentence: 'De 40 elever som fick enkäten men aldrig svarade räknas som ___.', answers: ['Bortfall'], explanation: 'Bortfall är de som inte svarade, fast man frågade dem.' },
+  { id: 26, term: 'Ledande fråga', sentence: "Frågan 'Tycker du också att skolmaten borde bli godare?' är ett exempel på en ___.", answers: ['Ledande fråga'], explanation: 'En ledande fråga är en fråga som är skriven så att den styr vilket svar man ger.' },
+  { id: 27, term: 'Statistik', sentence: 'Resultatet från enkäten sammanställdes i ett diagram som visade att 72 procent var missnöjda – ett exempel på ___.', answers: ['Statistik'], explanation: 'Statistik är siffror från en undersökning, ofta visade i procent eller diagram.' },
+  { id: 28, term: 'Samhällsvetenskaplig textanalys', sentence: 'Att läsa en debattartikel noga för att se vilka ord som används och vad som utelämnas kallas ___.', answers: ['Samhällsvetenskaplig textanalys', 'Textanalys'], explanation: 'Samhällsvetenskaplig textanalys är att undersöka en text noga för att se vad den säger och vad den inte säger.' },
+  { id: 29, term: 'Argumentationsanalys', sentence: 'Att granska om skälen i en debattartikel om rösträttsålder verkligen håller ihop logiskt kallas ___.', answers: ['Argumentationsanalys'], explanation: 'Argumentationsanalys är att granska om argumenten i en text håller eller inte.' },
+  { id: 30, term: 'Argument', sentence: "'Yngre personer betalar också skatt och borde därför få rösta' är ett exempel på ett ___.", answers: ['Argument'], explanation: 'Ett argument är ett skäl som används för att övertyga någon.' },
+  { id: 31, term: 'Orsak', sentence: 'Att vallokalen flyttades långt bort från centrum var ___ till att färre röstade i kommunen.', answers: ['Orsak', 'Orsaken'], explanation: 'En orsak är det som gör att något händer.' },
+  { id: 32, term: 'Konsekvens', sentence: 'Att valdeltagandet sjönk i kommunen blev en ___ av att vallokalen flyttades långt bort.', answers: ['Konsekvens'], explanation: 'En konsekvens är det som blir följden av något.' },
+  { id: 33, term: 'Källkritik', sentence: 'Att fundera på om en artikel går att lita på innan man använder den i sin uppsats kallas ___.', answers: ['Källkritik'], explanation: 'Källkritik är att granska om en källa går att lita på.' },
+  { id: 34, term: 'Trovärdighet', sentence: 'Hur mycket man kan lita på att en tidningsartikel om valet verkligen säger sanningen handlar om artikelns ___.', answers: ['Trovärdighet'], explanation: 'Trovärdighet är hur mycket man kan lita på att en källa säger sanningen.' },
+  { id: 35, term: 'Relevans', sentence: 'Att en artikel om skolmat väljs bort i en uppsats om valdeltagande, eftersom den inte hör ihop med ämnet, handlar om bristande ___.', answers: ['Relevans'], explanation: 'Relevans är hur mycket informationen hör ihop med frågan man undersöker.' },
+];
+
+// ════════════════════════════════════════════════════════════
+// SCENARIO (Test 1) — fyra alternativ per fråga, distraktorer är
+// begrepp som eleven rimligen kan förväxla med det rätta svaret
+// ════════════════════════════════════════════════════════════
+const SCENARIO_ITEMS = [
+  { id: 1,  term: 'Ideologi', scenario: 'Ett parti presenterar en sammanhängande vision om hur ekonomin, välfärden och rättvisan ska organiseras i samhället – alla politiska förslag bygger på samma grundvärderingar.', correct: 'Ideologi', options: ['Ideologi', 'Partiprogram', 'Blockpolitik', 'Höger-vänsterskalan'], explanation: 'En ideologi är idéer om hur samhället ska styras och hur det borde se ut.' },
+  { id: 2,  term: 'Blockpolitik', scenario: 'Fyra partier med liknande värderingar samordnar sina positioner, presenterar gemensam budget och avtalar om att inte stödja det andra blockets kandidat till statsministerposten.', correct: 'Blockpolitik', options: ['Blockpolitik', 'Stödparti', 'Tidöavtalet', 'Höger-vänsterskalan'], explanation: 'Blockpolitik är när partier samarbetar i grupper, t.ex. höger (borgerliga) eller vänster (rödgröna).' },
+  { id: 3,  term: 'Stödparti', scenario: 'Ett parti röstar med regeringen i riksdagen och möjliggör att budgeten går igenom, men ingen av partiets ledamöter sitter i regeringen eller har ministrars mandat.', correct: 'Stödparti', options: ['Stödparti', 'Blockpolitik', 'Tidöavtalet', 'Partiprogram'], explanation: 'Ett stödparti är ett parti som stödjer regeringen men ingår inte i den.' },
+  { id: 4,  term: 'Höger-vänsterskalan', scenario: 'En politisk analys rangordnar alla riksdagspartier utifrån deras inställning till skattenivåer, välfärdsutgifter och statens roll i ekonomin.', correct: 'Höger-vänsterskalan', options: ['Höger-vänsterskalan', 'GAL-TAN-skalan', 'Blockpolitik', 'Ideologi'], explanation: 'Höger-vänsterskalan är en skala som visar partiers syn på ekonomi, skatt och fördelning.' },
+  { id: 5,  term: 'GAL-TAN-skalan', scenario: 'Forskare placerar partier utifrån deras syn på miljö, invandring, HBTQ-rättigheter och nationell identitet – frågor som inte fångas av den ekonomiska höger-vänsterskalan.', correct: 'GAL-TAN-skalan', options: ['GAL-TAN-skalan', 'Höger-vänsterskalan', 'Nationalism', 'Konservatism'], explanation: 'GAL-TAN-skalan är en skala som visar värderingar från grönt/liberalt till traditionellt/nationalistiskt.' },
+  { id: 6,  term: 'Socialism', scenario: 'En politisk rörelse kämpar för att staten ska äga järnvägar och sjukvård, och att progressiv skatt ska finansiera gratis utbildning för alla.', correct: 'Socialism', options: ['Socialism', 'Kommunism', 'Välfärdsstat', 'Liberalism'], explanation: 'Socialism är en ideologi som vill minska skillnader mellan rika och fattiga, där staten ska äga viktiga delar av samhället.' },
+  { id: 7,  term: 'Liberalism', scenario: 'Ett parti driver politiken att avveckla statliga monopol, sänka skatter och ge individen maximal frihet att välja skola, sjukvård och pensionssparande på marknaden.', correct: 'Liberalism', options: ['Liberalism', 'Konservatism', 'Socialism', 'Nationalism'], explanation: 'Liberalism är en ideologi som betonar individens frihet, privat ägande och marknadsekonomi.' },
+  { id: 8,  term: 'Konservatism', scenario: 'Ett parti motsätter sig snabba samhällsreformer, värnar om traditionella institutioner som kyrka och familj och menar att beprövade lösningar är bättre än radikala experiment.', correct: 'Konservatism', options: ['Konservatism', 'Nationalism', 'Liberalism', 'Fascism'], explanation: 'Konservatism är en ideologi som vill bevara traditioner, religion och kultur, och förändra samhället långsamt.' },
+  { id: 9,  term: 'Ekologism', scenario: 'En politisk rörelse kräver att alla politiska beslut ska bedömas utifrån miljökonsekvenser och att ekonomisk tillväxt aldrig får prioriteras före planetens gränser.', correct: 'Ekologism', options: ['Ekologism', 'Socialism', 'Feminism', 'Nationalism'], explanation: 'Ekologism är en ideologi som sätter miljö och hållbar utveckling i centrum.' },
+  { id: 10, term: 'Feminism', scenario: 'En rörelse kartlägger hur strukturer i arbetslivet, politiken och kulturen systematiskt missgynnar kvinnor och kräver lagstiftning och normer som ger verklig jämlikhet.', correct: 'Feminism', options: ['Feminism', 'Solidaritet', 'Socialism', 'Nationalism'], explanation: 'Feminism är en ideologi som vill ha jämställdhet mellan kvinnor och män.' },
+  { id: 11, term: 'Nationalism', scenario: 'En politisk rörelse förespråkar att landets kultur, språk och traditioner ska skyddas och att nationell sammanhållning värderas högt i politiska beslut.', correct: 'Nationalism', options: ['Nationalism', 'Konservatism', 'Fascism', 'Populism'], explanation: 'Nationalism är en ideologi som betonar nationell gemenskap, språk och kultur.' },
+  { id: 12, term: 'Kommunism', scenario: 'Alla fabriker, jordbruk och bostäder ägs av staten, privat egendom avskaffas och målet är ett samhälle utan klasser där alla delar lika.', correct: 'Kommunism', options: ['Kommunism', 'Socialism', 'Fascism', 'Nazism'], explanation: 'Kommunism är en ideologi som vill skapa ett klasslöst samhälle genom att staten äger allt.' },
+  { id: 13, term: 'Fascism', scenario: 'En rörelse förespråkar att nationens styrka kräver en stark obestridlig ledare, avskaffad politisk opposition och att statens intresse alltid går före individens fri- och rättigheter.', correct: 'Fascism', options: ['Fascism', 'Nazism', 'Nationalism', 'Populism'], explanation: 'Fascism är en ideologi som är emot demokrati och vill ha en stark ledare som styr.' },
+  { id: 14, term: 'Nazism', scenario: 'En rörelse kombinerar ultranationalism med rasistisk pseudovetenskap som hävdar att en viss folkgrupp är biologiskt överlägsen och att andra grupper ska förföljas eller utrotas.', correct: 'Nazism', options: ['Nazism', 'Fascism', 'Nationalism', 'Kommunism'], explanation: "Nazism är en ideologi som liknar fascism men bygger på rasistiska idéer om en 'överlägsen ras'." },
+  { id: 15, term: 'Populism', scenario: "En politiker hävdar att alla landets problem orsakas av en korrupt elit som motarbetar det vanliga folket, och lovar enkla snabblösningar utan att förklara svårigheterna.", correct: 'Populism', options: ['Populism', 'Nationalism', 'Fascism', 'Blockpolitik'], explanation: "Populism är en politisk stil som säger sig tala för 'folket' mot 'eliten', ofta med enkla lösningar." },
+  { id: 16, term: 'Solidaritet', scenario: 'Skattebetalare utan barn finansierar skolan, friska betalar försäkringar som sjuka behöver – samhällets resurser delas så att alla får hjälp när de behöver det.', correct: 'Solidaritet', options: ['Solidaritet', 'Välfärdsstat', 'Feminism', 'Socialism'], explanation: 'Solidaritet är tanken att människor ska hjälpa och stötta varandra i samhället.' },
+  { id: 17, term: 'Välfärdsstat', scenario: 'Staten finansierar gratis sjukvård, kostnadsfri utbildning upp till universitetsnivå och ger ekonomiskt stöd till arbetslösa och pensionärer via ett skattebaserat system.', correct: 'Välfärdsstat', options: ['Välfärdsstat', 'Solidaritet', 'Socialism', 'Folkrörelser'], explanation: 'En välfärdsstat är ett samhälle där staten ansvarar för vård, skola och omsorg.' },
+  { id: 18, term: 'Partiprogram', scenario: 'Inför valet publicerar ett parti ett dokument som beskriver partiets syn på ekonomi, skola, miljö och migration – en samlad vision för hur landet ska styras.', correct: 'Partiprogram', options: ['Partiprogram', 'Ideologi', 'Tidöavtalet', 'Blockpolitik'], explanation: 'Ett partiprogram är ett dokument där ett parti skriver sina idéer, mål och förslag.' },
+  { id: 19, term: 'Folkrörelser', scenario: 'Tiotusentals vanliga medborgare organiserar sig, håller möten och driver krav på politiska förändringar – utan att vara ett politiskt parti men med stor samhällelig påverkan.', correct: 'Folkrörelser', options: ['Folkrörelser', 'Blockpolitik', 'Stödparti', 'Populism'], explanation: 'Folkrörelser är stora grupper av människor som driver förändring, t.ex. arbetarrörelsen.' },
+  { id: 20, term: 'Tidöavtalet', scenario: 'Efter riksdagsvalet 2022 undertecknar fyra partier ett detaljerat dokument som reglerar vilken politik som ska föras under mandatperioden och hur partierna ska samarbeta.', correct: 'Tidöavtalet', options: ['Tidöavtalet', 'Blockpolitik', 'Stödparti', 'Partiprogram'], explanation: 'Tidöavtalet är ett avtal mellan M, KD, L och SD om gemensam politik.' },
+  { id: 21, term: 'Enkät', scenario: 'Elevrådet skickar ut samma tio frågor om skolmaten till alla elever på skolan, så att svaren går att jämföra.', correct: 'Enkät', options: ['Enkät', 'Intervju', 'Urval', 'Observation'], explanation: 'En enkät är en undersökning där många personer får svara på samma frågor.' },
+  { id: 22, term: 'Intervju', scenario: 'En journalist sätter sig ner med en enskild riksdagsledamot och ställer följdfrågor för att förstå hur hen resonerar.', correct: 'Intervju', options: ['Intervju', 'Enkät', 'Observation', 'Ledande fråga'], explanation: 'En intervju är ett samtal med en person i taget, för att få veta mer om hur hen tänker.' },
+  { id: 23, term: 'Observation', scenario: 'En forskare sitter i ett klassrum och antecknar hur eleverna faktiskt beter sig under lektionen, utan att fråga dem något.', correct: 'Observation', options: ['Observation', 'Enkät', 'Intervju', 'Urval'], explanation: 'En observation är att titta på vad människor gör, i stället för att fråga dem.' },
+  { id: 24, term: 'Urval', scenario: 'Av skolans 900 elever bestämmer sig eleverna i samhällskunskapen för att fråga just de 100 elever som går i årskurs 3.', correct: 'Urval', options: ['Urval', 'Bortfall', 'Enkät', 'Observation'], explanation: 'Urvalet är de personer man har valt ut att fråga.' },
+  { id: 25, term: 'Bortfall', scenario: 'Av de 100 elever som fick enkäten om skolmaten svarade bara 60 – de 40 som aldrig lämnade in sitt svar utgör ett visst antal.', correct: 'Bortfall', options: ['Bortfall', 'Urval', 'Enkät', 'Källkritik'], explanation: 'Bortfall är de som inte svarade, fast man frågade dem.' },
+  { id: 26, term: 'Ledande fråga', scenario: "En fråga i enkäten lyder: 'Tycker du också att skolmaten borde bli godare?' – frågan är formulerad så att den nästan bara går att svara ja på.", correct: 'Ledande fråga', options: ['Ledande fråga', 'Enkät', 'Intervju', 'Källkritik'], explanation: 'En ledande fråga är en fråga som är skriven så att den styr vilket svar man ger.' },
+  { id: 27, term: 'Statistik', scenario: 'Resultatet från enkäten om skolmaten sammanställs i ett diagram som visar att 72 procent av eleverna är missnöjda.', correct: 'Statistik', options: ['Statistik', 'Samhällsvetenskaplig textanalys', 'Argumentationsanalys', 'Urval'], explanation: 'Statistik är siffror från en undersökning, ofta visade i procent eller diagram.' },
+  { id: 28, term: 'Samhällsvetenskaplig textanalys', scenario: 'En elev läser en debattartikel noga för att se vilka ord som används, vad som sägs rakt ut och vad som utelämnas.', correct: 'Samhällsvetenskaplig textanalys', options: ['Samhällsvetenskaplig textanalys', 'Argumentationsanalys', 'Statistik', 'Källkritik'], explanation: 'Samhällsvetenskaplig textanalys är att undersöka en text noga för att se vad den säger och vad den inte säger.' },
+  { id: 29, term: 'Argumentationsanalys', scenario: 'En elev granskar en debattartikel om rösträttsålder för att se om skälen som ges verkligen håller ihop logiskt.', correct: 'Argumentationsanalys', options: ['Argumentationsanalys', 'Samhällsvetenskaplig textanalys', 'Argument', 'Statistik'], explanation: 'Argumentationsanalys är att granska om argumenten i en text håller eller inte.' },
+  { id: 30, term: 'Argument', scenario: "'Yngre personer betalar också skatt och borde därför få rösta' är ett skäl som används för att övertyga läsaren om sänkt rösträttsålder.", correct: 'Argument', options: ['Argument', 'Argumentationsanalys', 'Orsak', 'Konsekvens'], explanation: 'Ett argument är ett skäl som används för att övertyga någon.' },
+  { id: 31, term: 'Orsak', scenario: 'Att valdeltagandet sjönk i kommunen berodde på att vallokalen flyttades långt bort från centrum – det var det som gjorde att färre röstade.', correct: 'Orsak', options: ['Orsak', 'Konsekvens', 'Argument', 'Statistik'], explanation: 'En orsak är det som gör att något händer.' },
+  { id: 32, term: 'Konsekvens', scenario: 'Efter att vallokalen flyttades långt bort blev följden att färre personer i kommunen röstade i valet.', correct: 'Konsekvens', options: ['Konsekvens', 'Orsak', 'Argument', 'Statistik'], explanation: 'En konsekvens är det som blir följden av något.' },
+  { id: 33, term: 'Källkritik', scenario: 'Innan en elev använder en artikel i sin uppsats funderar hen på om källan går att lita på.', correct: 'Källkritik', options: ['Källkritik', 'Trovärdighet', 'Relevans', 'Bortfall'], explanation: 'Källkritik är att granska om en källa går att lita på.' },
+  { id: 34, term: 'Trovärdighet', scenario: 'En elev jämför en nyhetsartikel från en etablerad tidning med ett anonymt inlägg och bedömer vilken av dem som är mest sannolik att stämma.', correct: 'Trovärdighet', options: ['Trovärdighet', 'Källkritik', 'Relevans', 'Statistik'], explanation: 'Trovärdighet är hur mycket man kan lita på att en källa säger sanningen.' },
+  { id: 35, term: 'Relevans', scenario: 'En elev som skriver om valdeltagande väljer bort en artikel om skolmat, eftersom den inte har något med uppgiften att göra.', correct: 'Relevans', options: ['Relevans', 'Trovärdighet', 'Källkritik', 'Argument'], explanation: 'Relevans är hur mycket informationen hör ihop med frågan man undersöker.' },
+];
+
+// ════════════════════════════════════════════════════════════
+// ICKE-EXEMPEL (Test 2) — eleven avgör vilket av två alternativ
+// (A/B) som är ett korrekt exempel på begreppet
+// ════════════════════════════════════════════════════════════
+const ICKEEX_ITEMS = [
+  { id: 1,  term: 'Ideologi', optionA: 'Socialdemokraternas ideologi bygger på jämlikhet, solidaritet och stark offentlig välfärd.', optionB: 'En politikers personliga åsikt om ett enskilt skatteförslag är en ideologi.', correctLetter: 'A', explanation: 'En enstaka åsikt är inte en ideologi – en ideologi är ett sammanhängande system av idéer om hur hela samhället bör organiseras.' },
+  { id: 2,  term: 'Blockpolitik', optionA: 'Att ett enskilt parti förhandlar med ett annat om ett specifikt lagförslag är blockpolitik.', optionB: 'Blockpolitik innebär att partier samarbetar i grupper – de rödgröna mot de borgerliga.', correctLetter: 'B', explanation: 'Enstaka förhandlingar om sakfrågor är inte blockpolitik – blockpolitik är ett bredare mönster där partier systematiskt samarbetar som grupp mot en annan grupp.' },
+  { id: 3,  term: 'Stödparti', optionA: 'Sverigedemokraterna var stödparti till den borgerliga regeringen – de stödde den i riksdagen utan att delta i regeringen.', optionB: 'Ett parti som ibland röstar med regeringen om enstaka frågor är ett stödparti.', correctLetter: 'A', explanation: 'Att ibland rösta med regeringen räcker inte – ett stödparti har ett mer formellt avtal om att ge regeringen ett stabilt parlamentariskt underlag.' },
+  { id: 4,  term: 'Höger-vänsterskalan', optionA: 'Höger-vänsterskalan mäter partiers syn på invandring och nationell identitet.', optionB: 'Höger-vänsterskalan rangordnar partier utifrån ekonomiska frågor som skattetryck och statlig styrning.', correctLetter: 'B', explanation: 'Invandring och identitetsfrågor mäts bättre på GAL-TAN-skalan – höger-vänsterskalan handlar primärt om ekonomi, fördelning och statens roll.' },
+  { id: 5,  term: 'GAL-TAN-skalan', optionA: 'GAL-TAN-skalan mäter värderingsfrågor som miljö, invandring och kulturell öppenhet.', optionB: 'GAL-TAN-skalan mäter hur höga skatter ett parti vill ha.', correctLetter: 'A', explanation: 'Skattenivåer mäts på höger-vänsterskalan – GAL-TAN handlar om värderingsfrågor kring livsstil, identitet och samhällsöppenhet.' },
+  { id: 6,  term: 'Socialism', optionA: 'Att en stat erbjuder gratis skola finansierad av skatter är socialism.', optionB: 'Socialism förespråkar statligt ägande av nyckelindustrier och omfördelning via skatter för att minska klyftor.', correctLetter: 'B', explanation: 'Gratis skola är en välfärdsreform som finns i de flesta demokratier – socialism kräver ett bredare system med statligt ägande och radikal omfördelning.' },
+  { id: 7,  term: 'Liberalism', optionA: 'Liberalism betonar individens frihet, fria marknader och begränsad statlig inblandning.', optionB: 'En ideologi som förespråkar fri invandring men stark statlig ekonomisk styrning är liberalism.', correctLetter: 'A', explanation: 'Fri invandring kan förespråkas av liberaler, men stark statlig ekonomisk styrning är motsatsen till liberal ekonomisk politik – det kombineras sällan konsekvent under etiketten liberalism.' },
+  { id: 8,  term: 'Konservatism', optionA: 'Att ett parti vill bevara höga skattenivåer och inte sänka dem är konservatism.', optionB: 'Konservatism värnar om traditioner och vill förändra samhället försiktigt och stegvis.', correctLetter: 'B', explanation: 'Att vilja behålla hög skatt kan vara socialdemokratisk politik – konservatism handlar om att bevara traditionella värderingar och institutioner, inte specifika skattesatser.' },
+  { id: 9,  term: 'Ekologism', optionA: 'Ekologism sätter naturens gränser och hållbar utveckling i centrum för all politik.', optionB: 'Att ett parti vill bygga fler cykelbanor i städerna är ekologism.', correctLetter: 'A', explanation: 'Enstaka miljöåtgärder innebär inte att partiet har ekologism som ideologi – ekologism är ett heltäckande politiskt system där miljön är överordnad andra hänsyn.' },
+  { id: 10, term: 'Feminism', optionA: 'Feminism handlar om att kvinnor ska ha mer makt än män för att kompensera för historisk diskriminering.', optionB: 'Feminism kräver lika lön, lika möjligheter och avskaffandet av strukturell diskriminering av kvinnor.', correctLetter: 'B', explanation: 'Feminism strävar efter jämlikhet och lika rättigheter – inte att vända på maktbalansen till kvinnors fördel på mäns bekostnad.' },
+  { id: 11, term: 'Nationalism', optionA: 'Nationalism betonar nationell identitet, gemensamt språk och kultur som samhällets fundament.', optionB: 'Att vara stolt över sitt land och dess historia är nationalism.', correctLetter: 'A', explanation: 'Nationalkänsla och patriotism är vanliga känslor – nationalism som ideologi är ett politiskt program som sätter nationen som den överordnade organiserande principen.' },
+  { id: 12, term: 'Kommunism', optionA: 'Socialism och kommunism är samma sak eftersom båda vill minska skillnader.', optionB: 'Kommunism syftar till ett klasslöst samhälle med kollektivt ägande av produktionsmedlen.', correctLetter: 'B', explanation: 'Socialism och kommunism delar vissa mål men skiljer sig åt – kommunism kräver statligt ägande av allt och avskaffande av klasser, medan socialism rymmer ett bredare spektrum av reformer.' },
+  { id: 13, term: 'Fascism', optionA: 'Fascism förespråkar en stark auktoritär ledare, nationalism och avskaffad politisk opposition.', optionB: 'Att en demokratisk ledare har ett starkt personligt mandat och fattar snabba beslut är fascism.', correctLetter: 'A', explanation: 'En stark demokratisk ledare vald i fria val är inte fascism – fascism avskaffar demokratin och oppositionen, inte bara är en stark ledarstil.' },
+  { id: 14, term: 'Nazism', optionA: 'Fascism och nazism är exakt samma ideologi med samma idéer.', optionB: "Nazism kombinerade fascistisk auktoritarism med rasistisk ideologi om en 'arisk övermänniska'.", correctLetter: 'B', explanation: 'Nazism och fascism liknar varandra men skiljer sig – nazismens kärna är rasbiologin och antisemitismen, medan fascism kan existera utan dessa specifika rasistiska idéer.' },
+  { id: 15, term: 'Populism', optionA: "Populism framställer komplexa problem som enkla, pekar ut en elit och hävdar sig tala för det 'riktiga folket'.", optionB: 'Att ett parti vill lyssna mer på medborgarna och minska byråkratin är populism.', correctLetter: 'A', explanation: "Att vilja lyssna på medborgarna är demokratisk grundtanke – populism karaktäriseras av att ställa 'folket' mot 'eliten' på ett förenklat och polariserande sätt." },
+  { id: 16, term: 'Solidaritet', optionA: 'Att ge pengar till en välgörenhetsorganisation en gång är solidaritet som politisk princip.', optionB: 'Solidaritet innebär att starka delar med sig till svaga – t.ex. att välbärgade via skatt finansierar stöd till behövande.', correctLetter: 'B', explanation: 'Välgörenhet är frivillig och individuell – solidaritet som politisk princip handlar om strukturella system där samhället kollektivt tar ansvar för alla medborgare.' },
+  { id: 17, term: 'Välfärdsstat', optionA: 'Sverige är en välfärdsstat där staten via skattemedel erbjuder universell sjukvård, skola och socialt skyddsnät.', optionB: 'En stat som erbjuder militärt skydd och rättsväsende är en välfärdsstat.', correctLetter: 'A', explanation: 'Militär och rättsväsende tillhör statens grundläggande funktioner i alla stater – välfärdsstat kräver dessutom sociala tjänster som sjukvård, utbildning och socialförsäkringar.' },
+  { id: 18, term: 'Partiprogram', optionA: 'En ministers uttalande i en enskild fråga är partiets partiprogram.', optionB: 'Ett partis partiprogram beskriver partiets samlade ideologi och politik i ett dokument.', correctLetter: 'B', explanation: 'En ministers uttalande är en enstaka politisk ståndpunkt – ett partiprogram är ett formellt, av partiet antaget dokument som beskriver hela partiets politiska linje.' },
+  { id: 19, term: 'Folkrörelser', optionA: 'Arbetarrörelsen är en folkrörelse som organiserade miljontals arbetstagare och drev fram bättre villkor.', optionB: 'En organisation med 50 aktiva medlemmar som lobbar för ett enskilt lagförslag är en folkrörelse.', correctLetter: 'A', explanation: 'Folkrörelser karaktäriseras av bred folklig förankring och stor medlemsbas – en liten lobbyorganisation har inte den bredd och djup i samhället som definierar en folkrörelse.' },
+  { id: 20, term: 'Tidöavtalet', optionA: 'Tidöavtalet är ett avtal där alla riksdagspartier kommit överens om att samarbeta.', optionB: 'Tidöavtalet är det samarbetsavtal mellan M, KD, L och SD som reglerade den borgerliga regeringens politik från 2022.', correctLetter: 'B', explanation: 'Tidöavtalet gäller specifikt M, KD, L och SD – inte alla riksdagspartier. De rödgröna partierna stod utanför och var i opposition.' },
+  { id: 21, term: 'Enkät', optionA: 'Elevrådet skickar samma tio frågor till alla 300 elever på skolan för att kunna jämföra svaren.', optionB: 'En lärare sätter sig ner med en enskild elev och ställer följdfrågor om skolmaten.', correctLetter: 'A', explanation: 'En enkät innebär att många personer svarar på samma frågor, ofta skriftligt. Att prata med en person i taget och ställa följdfrågor är i stället en intervju.' },
+  { id: 22, term: 'Intervju', optionA: 'Skolan skickar ut samma frågeformulär till alla elever i årskurs 2.', optionB: 'En elev sätter sig ner med rektorn och ställer följdfrågor för att förstå hur hen tänker kring skolans regler.', correctLetter: 'B', explanation: 'En intervju är ett samtal med en person i taget där man kan ställa följdfrågor. Att skicka samma formulär till alla är i stället en enkät.' },
+  { id: 23, term: 'Observation', optionA: 'En elev sitter i korridoren och antecknar hur klasskompisarna faktiskt använder mobilen, utan att fråga dem.', optionB: 'En elev frågar sina klasskompisar hur mycket tid de tror att de lägger på mobilen varje dag.', correctLetter: 'A', explanation: 'Observation innebär att titta på vad människor gör i stället för att fråga dem. Att ställa frågor om vanor är i stället en enkät eller intervju.' },
+  { id: 24, term: 'Urval', optionA: 'De 40 elever som inte svarade på enkäten trots att de blev tillfrågade.', optionB: 'De 100 elever i årskurs 3 som eleverna bestämde sig för att skicka enkäten till.', correctLetter: 'B', explanation: 'Urvalet är de personer man har valt ut att fråga. De som blev tillfrågade men inte svarade räknas i stället som bortfall.' },
+  { id: 25, term: 'Bortfall', optionA: 'De 40 elever som fick enkäten om skolmaten men aldrig lämnade in ett svar.', optionB: 'De 100 elever som eleverna från början valde ut att skicka enkäten till.', correctLetter: 'A', explanation: 'Bortfall är de som inte svarade, fast man frågade dem. De som från början valdes ut att tillfrågas är i stället urvalet.' },
+  { id: 26, term: 'Ledande fråga', optionA: 'Frågan "Vilken maträtt äter du oftast i skolmatsalen?" i enkäten om skolmaten.', optionB: "Frågan 'Tycker du också att skolmaten borde bli godare?' i enkäten om skolmaten.", correctLetter: 'B', explanation: "En ledande fråga är formulerad så att den styr vilket svar man ger, till exempel genom ordet 'också'. Den första frågan är i stället neutralt formulerad." },
+  { id: 27, term: 'Statistik', optionA: 'Ett stapeldiagram som visar att 72 procent av eleverna är missnöjda med skolmaten.', optionB: 'En elev som läser en debattartikel noga för att se vad texten säger och inte säger.', correctLetter: 'A', explanation: 'Statistik är siffror från en undersökning, ofta visade i procent eller diagram. Att granska en texts innehåll noga är i stället en textanalys.' },
+  { id: 28, term: 'Samhällsvetenskaplig textanalys', optionA: 'Ett diagram som visar hur många elever som röstade i skolvalet, uppdelat i procent.', optionB: 'En elev som läser en debattartikel om skolvalet noga för att se vilka ord som används och vad som utelämnas.', correctLetter: 'B', explanation: 'Samhällsvetenskaplig textanalys innebär att undersöka en text noga för att se vad den säger och inte säger. Siffror i ett diagram är i stället statistik.' },
+  { id: 29, term: 'Argumentationsanalys', optionA: 'En elev granskar en debattartikel om rösträttsålder för att se om skälen som ges verkligen håller ihop logiskt.', optionB: 'En elev räknar ut hur många procent av klassen som röstade Ja i en enkät.', correctLetter: 'A', explanation: 'Argumentationsanalys innebär att granska om argumenten i en text håller eller inte. Att räkna ut procentandelar är i stället statistik.' },
+  { id: 30, term: 'Argument', optionA: 'Att en fråga i enkäten är skriven så att den styr vilket svar man ger.', optionB: "'Yngre personer betalar också skatt och borde därför få rösta' – ett skäl som används för att övertyga om sänkt rösträttsålder.", correctLetter: 'B', explanation: 'Ett argument är ett skäl som används för att övertyga någon. En fråga som styr svaret är i stället en ledande fråga.' },
+  { id: 31, term: 'Orsak', optionA: 'Att vallokalen flyttades långt bort från centrum, vilket var det som gjorde att färre röstade.', optionB: 'Att färre personer röstade i kommunen efter att vallokalen flyttades långt bort.', correctLetter: 'A', explanation: 'Orsaken är det som gör att något händer. Att färre röstade är i stället konsekvensen av att vallokalen flyttades.' },
+  { id: 32, term: 'Konsekvens', optionA: 'Att vallokalen flyttades långt bort från centrum, vilket gjorde att färre kunde ta sig dit lätt.', optionB: 'Att valdeltagandet sjönk i kommunen, som en följd av att vallokalen flyttades långt bort.', correctLetter: 'B', explanation: 'Konsekvensen är det som blir följden av något. Att vallokalen flyttades är i stället orsaken till att färre röstade.' },
+  { id: 33, term: 'Källkritik', optionA: 'En elev funderar på om en artikel går att lita på innan hen använder den i sin uppsats.', optionB: 'En elev använder första bästa träff i sökmotorn i sin uppsats utan att fundera på vem som skrivit den.', correctLetter: 'A', explanation: 'Källkritik är att granska om en källa går att lita på innan man använder den. Att använda första bästa träff utan att fundera över den är motsatsen till källkritik.' },
+  { id: 34, term: 'Trovärdighet', optionA: 'En elev läser en artikel för att se om den har med skoluppgiften att göra över huvud taget.', optionB: 'En elev bedömer hur mycket hen kan lita på att en tidningsartikel om valet verkligen säger sanningen.', correctLetter: 'B', explanation: 'Trovärdighet handlar om hur mycket man kan lita på att en källa säger sanningen. Att bedöma om innehållet hör till uppgiften handlar i stället om relevans.' },
+  { id: 35, term: 'Relevans', optionA: 'En elev som skriver om valdeltagande väljer bort en artikel om skolmat, eftersom den inte har med uppgiften att göra.', optionB: 'En elev bedömer om en artikelförfattare kan ha skrivit sanningsenligt om ämnet.', correctLetter: 'A', explanation: 'Relevans handlar om hur mycket informationen hör ihop med frågan man undersöker. Att bedöma om något är sant handlar i stället om trovärdighet.' },
+];
+
+// ════════════════════════════════════════════════════════════
+// ENKEL SVENSKA — förenklad definition/scenario/icke-exempeltext
+// per begrepp. Ordningen matchar EXAKT concepts / SCENARIO_ITEMS /
+// ICKEEX_ITEMS (id 1–35). Termen ('term') förenklas ALDRIG.
+// ════════════════════════════════════════════════════════════
+const EASY_DATA = [
+  { id: 1,  definition: 'Tankar om hur ett land ska styras och hur allt ska vara.', scenario: 'En elev ifrågasätter något hen hör. Eleven letar bevis och tänker själv.', ickeExOptionA: 'Socialdemokraterna tycker att alla ska ha det bra och lika, och att staten ska hjälpa mycket.', ickeExOptionB: 'Att en politiker tycker en sak om en enda skatt är inte en hel ideologi.' },
+  { id: 2,  definition: 'När partier jobbar ihop i grupper, till exempel höger eller vänster.', scenario: 'Flera partier som tycker lika samarbetar. De lovar att inte rösta på det andra lagets ledare.', ickeExOptionA: 'Att ett parti pratar med ett annat parti om en enda lag är blockpolitik.', ickeExOptionB: 'Partier som samarbetar i grupper, till exempel röda mot blå, kallas blockpolitik.' },
+  { id: 3,  definition: 'Ett parti som hjälper regeringen men är inte med i den.', scenario: 'Ett parti röstar för regeringens budget i riksdagen. Partiet har ingen minister själv.', ickeExOptionA: 'Sverigedemokraterna hjälpte regeringen i riksdagen, men var inte med i regeringen själva.', ickeExOptionB: 'Ett parti som ibland röstar med regeringen om en enda sak är ett stödparti.' },
+  { id: 4,  definition: 'En skala som visar vad partier tycker om pengar, skatt och rättvisa.', scenario: 'Alla partier rangordnas efter vad de tycker om skatt och pengar.', ickeExOptionA: 'Höger-vänsterskalan visar vad partier tycker om invandring.', ickeExOptionB: 'Höger-vänsterskalan visar vad partier tycker om skatt och pengar.' },
+  { id: 5,  definition: 'En skala som visar värderingar, från öppna och gröna till traditionella.', scenario: 'Partier rangordnas efter vad de tycker om miljö, invandring och kultur.', ickeExOptionA: 'GAL-TAN-skalan visar vad partier tycker om miljö, invandring och kultur.', ickeExOptionB: 'GAL-TAN-skalan visar hur höga skatter ett parti vill ha.' },
+  { id: 6,  definition: 'En ideologi som vill minska skillnaden mellan rika och fattiga. Staten äger mycket.', scenario: 'En rörelse vill att staten ska äga tåg och sjukvård. Höga skatter betalar skolan.', ickeExOptionA: 'Att en stat har gratis skola är socialism.', ickeExOptionB: 'Att staten äger tåg och sjukvård, och höga skatter jämnar ut skillnader, är socialism.' },
+  { id: 7,  definition: 'En ideologi som tycker frihet, eget ägande och en fri marknad är viktigast.', scenario: 'Ett parti vill sänka skatter och låta folk själva välja skola och vård.', ickeExOptionA: 'Liberalism tycker att frihet, fri marknad och lite statlig styrning är viktigast.', ickeExOptionB: 'En ideologi som vill ha fri invandring men mycket statlig styrning av pengar är liberalism.' },
+  { id: 8,  definition: 'En ideologi som vill bevara gamla vanor och ändra samhället långsamt.', scenario: 'Ett parti vill inte ändra mycket snabbt. De vill bevara familj och traditioner.', ickeExOptionA: 'Att ett parti vill ha kvar höga skatter är konservatism.', ickeExOptionB: 'Att vilja bevara traditioner och ändra samhället långsamt är konservatism.' },
+  { id: 9,  definition: 'En ideologi som sätter miljön först.', scenario: 'En rörelse säger att miljön alltid ska komma före allt annat, till exempel pengar.', ickeExOptionA: 'Att sätta naturen och miljön först i all politik är ekologism.', ickeExOptionB: 'Att ett parti vill bygga fler cykelbanor är ekologism.' },
+  { id: 10, definition: 'En ideologi som vill att kvinnor och män ska ha det lika bra.', scenario: 'En rörelse vill att kvinnor ska ha samma lön och samma chanser som män.', ickeExOptionA: 'Feminism betyder att kvinnor ska ha mer makt än män.', ickeExOptionB: 'Feminism vill att kvinnor och män ska ha lika lön och lika chanser.' },
+  { id: 11, definition: 'En ideologi som tycker landets språk och kultur är viktigast.', scenario: 'En rörelse vill skydda landets kultur och språk. De tycker samhörighet är viktigast.', ickeExOptionA: 'Att tycka att landets språk och kultur är det viktigaste är nationalism.', ickeExOptionB: 'Att vara stolt över sitt land är nationalism.' },
+  { id: 12, definition: 'En ideologi som vill att alla ska vara lika, och staten äger allt.', scenario: 'Staten äger alla fabriker och hus. Ingen får äga privat. Alla ska vara lika.', ickeExOptionA: 'Socialism och kommunism är exakt samma sak.', ickeExOptionB: 'Att staten äger allt och alla ska vara lika är kommunism.' },
+  { id: 13, definition: 'En ideologi som är emot demokrati och vill ha en stark ledare.', scenario: 'En ledare styr utan att andra får säga emot. Ingen opposition är tillåten.', ickeExOptionA: 'Att ha en stark ledare och ta bort demokrati och opposition är fascism.', ickeExOptionB: 'En folkvald ledare som fattar snabba beslut är fascism.' },
+  { id: 14, definition: 'En ideologi som liknar fascism, men tror att en folkgrupp är bättre än andra.', scenario: 'En rörelse tror att en viss folkgrupp är bättre än andra och vill skada dem.', ickeExOptionA: 'Fascism och nazism är precis samma sak.', ickeExOptionB: 'Att tro att en folkgrupp är bättre än andra och vill skada dem är nazism.' },
+  { id: 15, definition: "En politisk stil som säger sig prata för 'folket' mot 'eliten'.", scenario: 'En politiker säger att alla problem beror på en elit, och lovar enkla lösningar.', ickeExOptionA: "Att säga att man pratar för 'folket' mot en 'elit', med enkla lösningar, är populism.", ickeExOptionB: 'Att ett parti vill lyssna mer på folket är populism.' },
+  { id: 16, definition: 'Att människor hjälper varandra i samhället.', scenario: 'De som har det bra betalar skatt som hjälper dem som har det svårt.', ickeExOptionA: 'Att ge pengar en gång till välgörenhet är solidaritet som politisk princip.', ickeExOptionB: 'Att de som har det bra hjälper dem som har det svårt, via skatt, är solidaritet.' },
+  { id: 17, definition: 'Ett land där staten sköter vård, skola och omsorg.', scenario: 'Staten betalar för gratis sjukvård och skola med hjälp av skatt.', ickeExOptionA: 'Sverige är en välfärdsstat, där staten betalar för vård och skola med skatt.', ickeExOptionB: 'En stat som bara har polis och militär är en välfärdsstat.' },
+  { id: 18, definition: 'Ett dokument där ett parti skriver sina idéer och mål.', scenario: 'Ett parti skriver ner allt de tycker om skola, skatt och miljö inför valet.', ickeExOptionA: 'En ministers uttalande om en enda fråga är partiets partiprogram.', ickeExOptionB: 'Ett dokument där partiet skriver alla sina idéer och mål är partiprogrammet.' },
+  { id: 19, definition: 'Stora grupper människor som vill ändra samhället.', scenario: 'Massor av vanliga människor går samman och kräver förändring, utan att vara ett parti.', ickeExOptionA: 'Arbetarrörelsen, som var väldigt många människor, är en folkrörelse.', ickeExOptionB: 'En liten grupp på 50 personer som vill ändra en enda lag är en folkrörelse.' },
+  { id: 20, definition: 'Ett avtal mellan fyra partier om vad de ska göra tillsammans.', scenario: 'Fyra partier skriver under ett papper om hur de ska styra tillsammans efter valet.', ickeExOptionA: 'Tidöavtalet är ett avtal mellan alla partier i riksdagen.', ickeExOptionB: 'Tidöavtalet är ett avtal mellan fyra partier: M, KD, L och SD.' },
+  { id: 21, definition: 'En undersökning där många får svara på samma frågor.', scenario: 'Elevrådet skickar samma tio frågor till alla elever på skolan.', ickeExOptionA: 'Att skicka samma frågor till alla elever på skolan är en enkät.', ickeExOptionB: 'Att prata med en enda elev och ställa följdfrågor är en enkät.' },
+  { id: 22, definition: 'Ett samtal med en person i taget.', scenario: 'En elev pratar med rektorn och frågar mer och mer om skolans regler.', ickeExOptionA: 'Att skicka samma papper till alla elever är en intervju.', ickeExOptionB: 'Att prata med en enda person och fråga mer är en intervju.' },
+  { id: 23, definition: 'Att titta på vad folk gör, i stället för att fråga.', scenario: 'En elev tittar på hur klasskompisarna gör, utan att fråga dem något.', ickeExOptionA: 'Att titta på vad klasskompisarna gör, utan att fråga, är en observation.', ickeExOptionB: 'Att fråga klasskompisarna vad de gör är en observation.' },
+  { id: 24, definition: 'De personer man har valt ut att fråga.', scenario: 'Eleverna väljer ut 100 av 900 elever att skicka enkäten till.', ickeExOptionA: 'De 40 elever som inte svarade är urvalet.', ickeExOptionB: 'De 100 elever man valde ut att fråga är urvalet.' },
+  { id: 25, definition: 'De som inte svarade, fast man frågade dem.', scenario: 'Fyrtio av hundra elever svarade aldrig på enkäten, fast de fick den.', ickeExOptionA: 'De 40 elever som fick enkäten men aldrig svarade är bortfallet.', ickeExOptionB: 'De 100 elever man valde ut från början är bortfallet.' },
+  { id: 26, definition: 'En fråga som styr vilket svar man ger.', scenario: "Frågan 'Tycker du också att maten borde bli godare?' styr svaret.", ickeExOptionA: "Frågan 'Vad äter du oftast i matsalen?' styr inte svaret.", ickeExOptionB: "Frågan 'Tycker du också att maten borde bli godare?' är en ledande fråga." },
+  { id: 27, definition: 'Siffror från en undersökning, till exempel i procent.', scenario: 'Ett diagram visar att 72 procent av eleverna är missnöjda med maten.', ickeExOptionA: 'Ett diagram som visar att 72 procent är missnöjda är statistik.', ickeExOptionB: 'Att läsa en text noga för att se vad den säger är statistik.' },
+  { id: 28, definition: 'Att läsa en text noga för att se vad den säger och inte säger.', scenario: 'En elev läser en debattartikel noga, för att se vilka ord som används.', ickeExOptionA: 'Ett diagram som visar hur många som röstat är en textanalys.', ickeExOptionB: 'Att läsa en artikel noga, för att se vad den säger och inte säger, är en textanalys.' },
+  { id: 29, definition: 'Att granska om skälen i en text håller eller inte.', scenario: 'En elev kollar om skälen i en debattartikel om rösträtt håller ihop.', ickeExOptionA: 'Att kolla om skälen i en debattartikel håller ihop är argumentationsanalys.', ickeExOptionB: 'Att räkna ut hur många procent som röstade Ja är argumentationsanalys.' },
+  { id: 30, definition: 'Ett skäl som används för att övertyga någon.', scenario: "'Unga betalar också skatt, så de borde få rösta' är ett skäl som ska övertyga.", ickeExOptionA: 'En fråga som styr vilket svar man ger är ett argument.', ickeExOptionB: "'Unga betalar också skatt och borde få rösta' är ett argument." },
+  { id: 31, definition: 'Det som gör att något händer.', scenario: 'Vallokalen flyttades långt bort. Det gjorde att färre röstade.', ickeExOptionA: 'Att vallokalen flyttades långt bort, vilket gjorde att färre röstade, är orsaken.', ickeExOptionB: 'Att färre röstade, efter att vallokalen flyttades, är orsaken.' },
+  { id: 32, definition: 'Det som blir följden av något.', scenario: 'Vallokalen flyttades långt bort. Följden blev att färre röstade.', ickeExOptionA: 'Att vallokalen flyttades långt bort är en konsekvens.', ickeExOptionB: 'Att färre röstade, som en följd av flytten, är en konsekvens.' },
+  { id: 33, definition: 'Att kolla om en källa går att lita på.', scenario: 'En elev funderar på om en artikel går att lita på innan hen använder den.', ickeExOptionA: 'Att fundera på om en artikel går att lita på, innan man använder den, är källkritik.', ickeExOptionB: 'Att använda första bästa träff i sökmotorn utan att tänka är källkritik.' },
+  { id: 34, definition: 'Hur mycket man kan lita på att en källa säger sanningen.', scenario: 'En elev funderar på om en tidningsartikel om valet verkligen säger sanningen.', ickeExOptionA: 'Att kolla om en artikel har med uppgiften att göra är trovärdighet.', ickeExOptionB: 'Hur mycket man kan lita på att artikeln säger sanningen är dess trovärdighet.' },
+  { id: 35, definition: 'Hur mycket informationen hör ihop med frågan man undersöker.', scenario: 'En elev som skriver om valdeltagande väljer bort en artikel om skolmat.', ickeExOptionA: 'Att välja bort en artikel om skolmat, i en uppsats om valdeltagande, handlar om relevans.', ickeExOptionB: 'Att kolla om artikelförfattaren skrivit sanningsenligt handlar om relevans.' },
+];
+
+// Generisk uppslagning: ersätter en text med dess enkla version om
+// easyOn är true och en enkel version finns, annars originaltexten.
+function getEasyText(id, field, easyOn, originalText) {
+  if (!easyOn) return originalText;
+  const entry = EASY_DATA.find(e => e.id === id);
+  const easyText = entry && entry[field];
+  return easyText || originalText;
+}
+
+function normalizeAnswer(s) {
+  return (s || '').trim().toLowerCase().replace(/\s+/g, ' ').replace(/[.,!?]/g, '');
+}
+
+function gradeFeedback(pct) {
+  if (pct >= 90) return { emoji: '🏆', text: 'Utmärkt! Redo för provet!' };
+  if (pct >= 80) return { emoji: '🎉', text: 'Bra jobbat! Nästan i mål.' };
+  if (pct >= 50) return { emoji: '💪', text: 'På god väg – öva lite till.' };
+  return { emoji: '📚', text: 'Öva mer på begreppen.' };
+}
+
+// ════════════════════════════════════════════════════════════
+// PROGRESS- OCH RANK-SYSTEM (sessionStorage, ingen backend)
+// ════════════════════════════════════════════════════════════
+const VIEWS = ['Lista', 'Flashcards', 'Lucktext', 'Scenario', 'Icke-ex.'];
+const VIEW_LABELS = { 'Scenario': 'Test 1', 'Icke-ex.': 'Test 2' };
+const ACTIVE_VIEWS = { 'Lista': true, 'Flashcards': true, 'Lucktext': true, 'Scenario': true, 'Icke-ex.': true };
+const SCORE_VIEWS = ['Lucktext', 'Scenario', 'Icke-ex.'];
+const PROGRESS_KEY = 'sh1a2_ideologier_progress';
+const RANK_SALT = 'sh1a2ideologiermetod';
+const RANK_ORDER = { D: 1, C: 2, B: 3, A: 4, S: 5 };
+
+const EASY_KEY = 'sh1a2_ideologier_enkelsvenska';
+
+function loadEasyMode() {
+  try {
+    return sessionStorage.getItem(EASY_KEY) === '1';
+  } catch (e) {
+    return false;
+  }
+}
+
+function saveEasyMode(on) {
+  try {
+    sessionStorage.setItem(EASY_KEY, on ? '1' : '0');
+  } catch (e) {}
+}
+
+function loadProgress() {
+  try {
+    const raw = sessionStorage.getItem(PROGRESS_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return { completed: {}, best: {} };
+}
+
+function saveProgress(progress) {
+  try {
+    sessionStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+  } catch (e) {}
+}
+
+function computeRank(progress) {
+  const completedCount = VIEWS.filter(v => progress.completed[v]).length;
+  if (completedCount === 0) return null;
+  if (completedCount === 5) {
+    const allPerfect = SCORE_VIEWS.every(v => (progress.best[v] || 0) >= 100);
+    return allPerfect ? 'S' : 'A';
+  }
+  if (completedCount === 4) return 'A';
+  if (completedCount === 3) return 'B';
+  if (completedCount === 2) return 'C';
+  return 'D';
+}
+
+function computeVerificationCode(progress, rank) {
+  const d = new Date();
+  const dateStr = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+  const completedViews = VIEWS.filter(v => progress.completed[v]).sort().join(',');
+  const input = dateStr + '|' + completedViews + '|' + (rank || '-') + '|' + RANK_SALT;
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) {
+    hash = (hash + input.charCodeAt(i) * (i + 1)) % 1679616; // 36^4
+  }
+  return 'SH1A2-' + hash.toString(36).toUpperCase().padStart(4, '0');
+}
+
+// ════════════════════════════════════════════════════════════
+// KATEGORIFILTER — låter eleven öva enbart ideologi- eller
+// metodbegrepp, eller allt blandat
+// ════════════════════════════════════════════════════════════
+function CategoryFilter({ categoryFilter, setCategoryFilter, counts }) {
+  return (
+    <div className="flex flex-wrap justify-center gap-1 bg-white rounded-full p-1 shadow-sm border border-slate-200 mb-6 font-fredoka text-xs max-w-full overflow-x-auto">
+      {['all', 'ideologi', 'metod'].map(key => (
+        <button
+          key={key}
+          onClick={() => setCategoryFilter(key)}
+          className={
+            'px-3 py-1.5 rounded-full font-bold transition-colors whitespace-nowrap ' +
+            (categoryFilter === key ? 'text-white' : 'text-slate-500 hover:text-slate-700')
+          }
+          style={categoryFilter === key ? { background: PRIMARY_TEXT } : {}}
+        >
+          {CATEGORY_LABELS[key]} ({counts[key]})
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════
+// VYER
+// ════════════════════════════════════════════════════════════
+
+function ListView({ concepts, onComplete, easyOn }) {
+  const [query, setQuery] = useState('');
+  const sentinelRef = useRef(null);
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) onComplete();
+    }, { threshold: 1.0 });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [onComplete]);
+
+  const filtered = concepts.filter(c =>
+    c.term.toLowerCase().includes(query.toLowerCase()) ||
+    c.definition.toLowerCase().includes(query.toLowerCase())
+  );
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={query}
+        onChange={e => setQuery(e.target.value)}
+        placeholder="🔍 Sök begrepp eller definition..."
+        className="w-full mb-6 px-5 py-3 rounded-2xl border border-slate-200 shadow-sm focus:outline-none focus:ring-2 text-lg"
+        style={{ '--tw-ring-color': PRIMARY }}
+      />
+      <div className="flex flex-col gap-3">
+        {filtered.map((c) => (
+          <div
+            key={c.id}
+            className="bg-white rounded-2xl shadow-sm p-5 border-l-8 hover:shadow-md transition-shadow"
+            style={{ borderColor: PRIMARY }}
+          >
+            <div className="flex items-start gap-3">
+              <span
+                className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold font-fredoka mt-0.5"
+                style={{ background: PRIMARY_LIGHT, color: PRIMARY_TEXT }}
+              >
+                {c.id}
+              </span>
+              <div>
+                <p className="font-bold text-lg text-slate-800">{c.term}</p>
+                <p className="text-slate-500 mt-1 leading-relaxed">{getEasyText(c.id, 'definition', easyOn, c.definition)}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+        {filtered.length === 0 && (
+          <p className="text-center text-slate-400 mt-8">Inga begrepp matchade sökningen.</p>
+        )}
+      </div>
+      <div ref={sentinelRef} style={{ height: 1 }} />
+    </div>
+  );
+}
+
+function FlashcardView({ concepts, onComplete, easyOn }) {
+  const total = concepts.length;
+  const [deck, setDeck] = useState(() => shuffleArray(concepts));
+  const [deckIdx, setDeckIdx] = useState(0);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [kudeInte, setKudeInte] = useState([]);
+  const [kunde, setKunde] = useState([]);
+  const [phase, setPhase] = useState('playing'); // 'playing' | 'roundEnd' | 'allDone'
+
+  const restartAll = () => {
+    setDeck(shuffleArray(concepts));
+    setDeckIdx(0);
+    setIsFlipped(false);
+    setKudeInte([]);
+    setKunde([]);
+    setPhase('playing');
+  };
+
+  const sort = (pile) => {
+    const card = deck[deckIdx];
+    const newKudeInte = pile === 'kudeInte' ? [...kudeInte, card] : kudeInte;
+    const newKunde    = pile === 'kunde'    ? [...kunde, card]    : kunde;
+    const nextIdx = deckIdx + 1;
+    setKudeInte(newKudeInte);
+    setKunde(newKunde);
+    setIsFlipped(false);
+    if (nextIdx >= deck.length) {
+      setDeckIdx(nextIdx);
+      setPhase(newKudeInte.length === 0 ? 'allDone' : 'roundEnd');
+      onComplete();
+    } else {
+      setDeckIdx(nextIdx);
+    }
+  };
+
+  const nextRound = () => {
+    setDeck(shuffleArray(kudeInte));
+    setDeckIdx(0);
+    setIsFlipped(false);
+    setKudeInte([]);
+    setPhase('playing');
+  };
+
+  if (phase === 'allDone') return (
+    <div className="flex flex-col items-center gap-6">
+      <div className="bg-green-50 border-2 border-green-400 rounded-3xl p-8 text-center w-full max-w-sm">
+        <div className="text-5xl mb-4">🎉</div>
+        <p className="text-2xl font-bold text-green-700 mb-2">Alla kort klarade!</p>
+        <p className="text-slate-600 mb-6">Du behärskar <span className="font-bold text-green-700">{kunde.length} av {total}</span> begrepp.</p>
+        <button onClick={restartAll} className="w-full text-white px-8 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY }}>
+          Börja om med alla
+        </button>
+      </div>
+    </div>
+  );
+
+  if (phase === 'roundEnd') return (
+    <div className="flex flex-col items-center gap-6">
+      <div className="bg-white border-2 border-slate-200 rounded-3xl p-8 text-center w-full max-w-sm shadow-sm">
+        <p className="text-lg font-bold text-slate-700 mb-4">Runda klar!</p>
+        <div className="flex justify-center gap-8 mb-6">
+          <div className="text-center">
+            <p className="text-3xl font-bold text-green-600">{kunde.length}</p>
+            <p className="text-xs text-slate-400 uppercase tracking-wide mt-1 font-fredoka">Kunde</p>
+          </div>
+          <div className="text-center">
+            <p className="text-3xl font-bold text-red-500">{kudeInte.length}</p>
+            <p className="text-xs text-slate-400 uppercase tracking-wide mt-1 font-fredoka">Kunde inte</p>
+          </div>
+        </div>
+        <div className="flex flex-col gap-3">
+          <button onClick={nextRound} className="w-full bg-slate-900 text-white px-8 py-3 rounded-2xl font-bold font-fredoka hover:bg-slate-800 transition-colors">
+            Öva på Kunde inte ({kudeInte.length} kort) →
+          </button>
+          <button onClick={restartAll} className="w-full text-white px-8 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY }}>
+            Börja om med alla
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const card = deck[deckIdx];
+  const remaining = deck.length - deckIdx;
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="flex gap-3 mb-5 w-full max-w-sm">
+        <div className="flex-1 bg-red-50 border border-red-200 rounded-xl p-2 text-center">
+          <p className="text-xl font-bold text-red-500">{kudeInte.length}</p>
+          <p className="text-[10px] text-red-400 uppercase tracking-wide font-bold font-fredoka">Kunde inte</p>
+        </div>
+        <div className="flex-1 bg-slate-100 border border-slate-200 rounded-xl p-2 text-center">
+          <p className="text-xl font-bold text-slate-400">{remaining}</p>
+          <p className="text-[10px] text-slate-400 uppercase tracking-wide font-bold font-fredoka">Kvar</p>
+        </div>
+        <div className="flex-1 bg-green-50 border border-green-200 rounded-xl p-2 text-center">
+          <p className="text-xl font-bold text-green-500">{kunde.length}</p>
+          <p className="text-[10px] text-green-400 uppercase tracking-wide font-bold font-fredoka">Kunde</p>
+        </div>
+      </div>
+      <div className="flip-card mb-5" onClick={() => setIsFlipped(!isFlipped)}>
+        <div className={`flip-card-inner ${isFlipped ? 'flipped-classes' : ''}`}>
+          <div className="flip-card-front" style={{ background: PRIMARY }}>
+            <h2 className="text-2xl font-bold text-white text-center px-4">{card.term}</h2>
+            <div className="absolute bottom-6 animate-pulse">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-white font-bold opacity-70 font-fredoka">Klicka för svar</span>
+            </div>
+          </div>
+          <div className="flip-card-back bg-white" style={{ border: `2px solid ${PRIMARY}` }}>
+            <p className="text-xl leading-relaxed text-slate-800 font-medium px-4">{getEasyText(card.id, 'definition', easyOn, card.definition)}</p>
+            <div className="absolute bottom-6">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold font-fredoka">Klicka för att vända</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {isFlipped && (
+        <div className="flex gap-3 w-full max-w-sm mb-4">
+          <button onClick={() => sort('kudeInte')} className="flex-1 bg-red-100 text-red-700 border-2 border-red-300 font-bold font-fredoka py-3 rounded-2xl hover:bg-red-200 active:scale-95 transition-all">
+            ✗ Kunde inte
+          </button>
+          <button onClick={() => sort('kunde')} className="flex-1 bg-green-100 text-green-700 border-2 border-green-300 font-bold font-fredoka py-3 rounded-2xl hover:bg-green-200 active:scale-95 transition-all">
+            ✓ Kunde
+          </button>
+        </div>
+      )}
+      <div className="flex flex-col items-center gap-2 mt-1">
+        <p className="text-slate-500 font-medium bg-slate-200 px-4 py-1 rounded-full text-xs font-fredoka">{deckIdx + 1} av {deck.length}</p>
+        <button onClick={restartAll} className="text-slate-400 text-xs hover:text-slate-600 transition-colors underline font-fredoka">↺ Börja om med alla</button>
+      </div>
+    </div>
+  );
+}
+
+function ResultCard({ correct, total, onRestart }) {
+  const pct = Math.round((correct / total) * 100);
+  const g = gradeFeedback(pct);
+  return (
+    <div className="flex flex-col items-center gap-6">
+      <div className="bg-white border-2 rounded-3xl p-8 text-center w-full max-w-sm shadow-sm" style={{ borderColor: PRIMARY }}>
+        <div className="text-5xl mb-3">{g.emoji}</div>
+        <p className="text-2xl font-bold mb-1" style={{ color: PRIMARY_TEXT }}>{correct} / {total} rätt</p>
+        <p className="text-slate-400 text-sm mb-1">({pct}%)</p>
+        <p className="text-slate-600 mb-6 font-fredoka">{g.text}</p>
+        <button onClick={onRestart} className="w-full text-white px-8 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY }}>
+          Börja om
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function LucktextView({ items, onComplete }) {
+  const makeInitialState = () => {
+    const s = {};
+    items.forEach(it => { s[it.id] = { value: '', status: 'unanswered' }; });
+    return s;
+  };
+
+  const [order, setOrder] = useState(() => shuffleArray(items));
+  const [state, setState] = useState(makeInitialState);
+  const [finished, setFinished] = useState(false);
+
+  const correctCount = order.filter(it => state[it.id].status === 'correct').length;
+  const resolvedCount = order.filter(it => state[it.id].status === 'correct' || state[it.id].status === 'revealed').length;
+  const allResolved = resolvedCount === order.length;
+
+  useEffect(() => {
+    if (allResolved && !finished) {
+      setFinished(true);
+      onComplete(Math.round((correctCount / order.length) * 100));
+    }
+  }, [allResolved]);
+
+  const handleChange = (id, value) => {
+    setState(prev => ({ ...prev, [id]: { ...prev[id], value } }));
+  };
+
+  const handleSubmit = (id) => {
+    const item = items.find(o => o.id === id);
+    setState(prev => {
+      const cur = prev[id];
+      if (cur.status === 'correct' || cur.status === 'revealed') return prev;
+      const norm = normalizeAnswer(cur.value);
+      const isCorrect = item.answers.some(a => normalizeAnswer(a) === norm);
+      if (isCorrect) {
+        return { ...prev, [id]: { ...cur, status: 'correct' } };
+      }
+      return { ...prev, [id]: { ...cur, status: cur.status === 'wrong1' || cur.status === 'wrong2' ? 'wrong2' : 'wrong1' } };
+    });
+  };
+
+  const revealAll = () => {
+    setState(prev => {
+      const next = { ...prev };
+      order.forEach(it => {
+        if (next[it.id].status !== 'correct') {
+          next[it.id] = { ...next[it.id], status: 'revealed' };
+        }
+      });
+      return next;
+    });
+  };
+
+  const restart = () => {
+    setOrder(shuffleArray(items));
+    setState(makeInitialState());
+    setFinished(false);
+  };
+
+  if (finished) {
+    return <ResultCard correct={correctCount} total={order.length} onRestart={restart} />;
+  }
+
+  return (
+    <div>
+      <div className="bg-white rounded-2xl shadow-sm p-4 mb-6 border" style={{ borderColor: PRIMARY_LIGHT }}>
+        <p className="text-xs uppercase tracking-wide text-slate-400 font-fredoka font-bold mb-2">Begreppsbank</p>
+        <div className="flex flex-wrap gap-2">
+          {items.map(it => {
+            const st = state[it.id];
+            const done = st.status === 'correct';
+            const revealed = st.status === 'revealed';
+            return (
+              <span
+                key={it.id}
+                className={
+                  'text-xs px-2.5 py-1 rounded-full font-fredoka border ' +
+                  (done
+                    ? 'line-through text-green-600 border-green-300 bg-green-50'
+                    : revealed
+                      ? 'line-through text-slate-400 border-slate-200 bg-slate-50'
+                      : 'text-slate-600 border-slate-200')
                 }
-            },
-            {
-                term: "Blockpolitik",
-                definition: "När partier samarbetar i grupper, t.ex. höger (borgerliga) eller vänster (rödgröna).",
-                sentence: "Under många år präglade _____ svensk politik, där de rödgröna och de borgerliga blockade mot varandra.",
-                scenario: "Fyra partier med liknande värderingar samordnar sina positioner, presenterar gemensam budget och avtalar om att inte stödja det andra blockets kandidat till statsministerposten.",
-                ickeExempel: {
-                    korrekt: "Blockpolitik innebär att partier samarbetar i grupper – de rödgröna mot de borgerliga.",
-                    icke: "Att ett enskilt parti förhandlar med ett annat om ett specifikt lagförslag är blockpolitik.",
-                    forklaring: "Enstaka förhandlingar om sakfrågor är inte blockpolitik – blockpolitik är ett bredare mönster där partier systematiskt samarbetar som grupp mot en annan grupp."
-                }
-            },
-            {
-                term: "Stödparti",
-                definition: "Ett parti som stödjer regeringen men ingår inte i den.",
-                sentence: "Sverigedemokraterna fungerade som _____ åt den borgerliga regeringen utan att ha ministerposter.",
-                scenario: "Ett parti röstar med regeringen i riksdagen och möjliggör att budgeten går igenom, men ingen av partiets ledamöter sitter i regeringen eller har ministrars mandat.",
-                ickeExempel: {
-                    korrekt: "Sverigedemokraterna var stödparti till den borgerliga regeringen – de stödde den i riksdagen utan att delta i regeringen.",
-                    icke: "Ett parti som ibland röstar med regeringen om enstaka frågor är ett stödparti.",
-                    forklaring: "Att ibland rösta med regeringen räcker inte – ett stödparti har ett mer formellt avtal om att ge regeringen ett stabilt parlamentariskt underlag."
-                }
-            },
-            {
-                term: "Höger-vänsterskalan",
-                definition: "En skala som visar partiers syn på ekonomi, skatt och fördelning.",
-                sentence: "Moderaterna placeras till höger och Vänsterpartiet till vänster på _____.",
-                scenario: "En politisk analys rangordnar alla riksdagspartier utifrån deras inställning till skattenivåer, välfärdsutgifter och statens roll i ekonomin.",
-                ickeExempel: {
-                    korrekt: "Höger-vänsterskalan rangordnar partier utifrån ekonomiska frågor som skattetryck och statlig styrning.",
-                    icke: "Höger-vänsterskalan mäter partiers syn på invandring och nationell identitet.",
-                    forklaring: "Invandring och identitetsfrågor mäts bättre på GAL-TAN-skalan – höger-vänsterskalan handlar primärt om ekonomi, fördelning och statens roll."
-                }
-            },
-            {
-                term: "GAL-TAN-skalan",
-                definition: "En skala som visar värderingar från grönt/liberalt till traditionellt/nationalistiskt.",
-                sentence: "Miljöpartiet hamnar på GAL-sidan och Sverigedemokraterna på TAN-sidan av _____.",
-                scenario: "Forskare placerar partier utifrån deras syn på miljö, invandring, HBTQ-rättigheter och nationell identitet – frågor som inte fångas av den ekonomiska höger-vänsterskalan.",
-                ickeExempel: {
-                    korrekt: "GAL-TAN-skalan mäter värderingsfrågor som miljö, invandring och kulturell öppenhet.",
-                    icke: "GAL-TAN-skalan mäter hur höga skatter ett parti vill ha.",
-                    forklaring: "Skattenivåer mäts på höger-vänsterskalan – GAL-TAN handlar om värderingsfrågor kring livsstil, identitet och samhällsöppenhet."
-                }
-            },
-            {
-                term: "Socialism",
-                definition: "En ideologi som vill minska skillnader mellan rika och fattiga, staten ska äga viktiga delar av samhället.",
-                sentence: "_____ förespråkar att skatter och offentliga tjänster används för att utjämna ekonomiska klyftor.",
-                scenario: "En politisk rörelse kämpar för att staten ska äga järnvägar och sjukvård, och att progressiv skatt ska finansiera gratis utbildning för alla.",
-                ickeExempel: {
-                    korrekt: "Socialism förespråkar statligt ägande av nyckelindustrier och omfördelning via skatter för att minska klyftor.",
-                    icke: "Att en stat erbjuder gratis skola finansierad av skatter är socialism.",
-                    forklaring: "Gratis skola är en välfärdsreform som finns i de flesta demokratier – socialism kräver ett bredare system med statligt ägande och radikal omfördelning."
-                }
-            },
-            {
-                term: "Liberalism",
-                definition: "En ideologi som betonar individens frihet, privat ägande och marknadsekonomi.",
-                sentence: "_____ värnar om den personliga friheten och menar att marknaden, inte staten, ska styra ekonomin.",
-                scenario: "Ett parti driver politiken att avveckla statliga monopol, sänka skatter och ge individen maximal frihet att välja skola, sjukvård och pensionssparande på marknaden.",
-                ickeExempel: {
-                    korrekt: "Liberalism betonar individens frihet, fria marknader och begränsad statlig inblandning.",
-                    icke: "En ideologi som förespråkar fri invandring men stark statlig ekonomisk styrning är liberalism.",
-                    forklaring: "Fri invandring kan förespråkas av liberaler, men stark statlig ekonomisk styrning är motsatsen till liberal ekonomisk politik – det kombineras sällan konsekvent under etiketten liberalism."
-                }
-            },
-            {
-                term: "Konservatism",
-                definition: "En ideologi som vill bevara traditioner, religion och kultur, och förändra samhället långsamt.",
-                sentence: "_____ betonar att förändringar ska ske försiktigt för att bevara det som fungerar i samhället.",
-                scenario: "Ett parti motsätter sig snabba samhällsreformer, värnar om traditionella institutioner som kyrka och familj och menar att beprövade lösningar är bättre än radikala experiment.",
-                ickeExempel: {
-                    korrekt: "Konservatism värnar om traditioner och vill förändra samhället försiktigt och stegvis.",
-                    icke: "Att ett parti vill bevara höga skattenivåer och inte sänka dem är konservatism.",
-                    forklaring: "Att vilja behålla hög skatt kan vara socialdemokratisk politik – konservatism handlar om att bevara traditionella värderingar och institutioner, inte specifika skattesatser."
-                }
-            },
-            {
-                term: "Ekologism",
-                definition: "En ideologi som sätter miljö och hållbar utveckling i centrum.",
-                sentence: "Miljöpartiet grundar sin politik på _____, med fokus på klimat och ekologisk hållbarhet.",
-                scenario: "En politisk rörelse kräver att alla politiska beslut ska bedömas utifrån miljökonsekvenser och att ekonomisk tillväxt aldrig får prioriteras före planetens gränser.",
-                ickeExempel: {
-                    korrekt: "Ekologism sätter naturens gränser och hållbar utveckling i centrum för all politik.",
-                    icke: "Att ett parti vill bygga fler cykelbanor i städerna är ekologism.",
-                    forklaring: "Enstaka miljöåtgärder innebär inte att partiet har ekologism som ideologi – ekologism är ett heltäckande politiskt system där miljön är överordnad andra hänsyn."
-                }
-            },
-            {
-                term: "Feminism",
-                definition: "En ideologi som vill ha jämställdhet mellan kvinnor och män.",
-                sentence: "_____ kräver lika lön, lika möjligheter och ett slut på strukturell diskriminering av kvinnor.",
-                scenario: "En rörelse kartlägger hur strukturer i arbetslivet, politiken och kulturen systematiskt missgynnar kvinnor och kräver lagstiftning och normer som ger verklig jämlikhet.",
-                ickeExempel: {
-                    korrekt: "Feminism kräver lika lön, lika möjligheter och avskaffandet av strukturell diskriminering av kvinnor.",
-                    icke: "Feminism handlar om att kvinnor ska ha mer makt än män för att kompensera för historisk diskriminering.",
-                    forklaring: "Feminism strävar efter jämlikhet och lika rättigheter – inte att vända på maktbalansen till kvinnors fördel på mäns bekostnad."
-                }
-            },
-            {
-                term: "Nationalism",
-                definition: "En ideologi som betonar nationell gemenskap, språk och kultur.",
-                sentence: "_____ lyfter fram det gemensamma språket och kulturen som det viktigaste kittet i ett samhälle.",
-                scenario: "En politisk rörelse förespråkar att landets kultur, språk och traditioner ska skyddas och att nationell sammanhållning värderas högt i politiska beslut.",
-                ickeExempel: {
-                    korrekt: "Nationalism betonar nationell identitet, gemensamt språk och kultur som samhällets fundament.",
-                    icke: "Att vara stolt över sitt land och dess historia är nationalism.",
-                    forklaring: "Nationalkänsla och patriotism är vanliga känslor – nationalism som ideologi är ett politiskt program som sätter nationen som det överordnade politiska organiserande principen."
-                }
-            },
-            {
-                term: "Kommunism",
-                definition: "En ideologi som vill skapa ett klasslöst samhälle genom att staten äger allt.",
-                sentence: "I Kina under Mao tillämpades _____, där staten kontrollerade produktionsmedlen och privat ägande förbjöds.",
-                scenario: "Alla fabriker, jordbruk och bostäder ägs av staten, privat egendom avskaffas och målet är ett samhälle utan klasser där alla delar lika.",
-                ickeExempel: {
-                    korrekt: "Kommunism syftar till ett klasslöst samhälle med kollektivt ägande av produktionsmedlen.",
-                    icke: "Socialism och kommunism är samma sak eftersom båda vill minska skillnader.",
-                    forklaring: "Socialism och kommunism delar vissa mål men skiljer sig åt – kommunism kräver statligt ägande av allt och avskaffande av klasser, medan socialism rymmer ett bredare spektrum av reformer."
-                }
-            },
-            {
-                term: "Fascism",
-                definition: "En ideologi som är emot demokrati och vill ha en stark ledare som styr.",
-                sentence: "Mussolinis Italien på 1930-talet är ett historiskt exempel på _____, där en diktator styrde utan opposition.",
-                scenario: "En rörelse förespråkar att nationens styrka kräver en stark obestridlig ledare, avskaffad politisk opposition och att statens intresse alltid går före individens fri- och rättigheter.",
-                ickeExempel: {
-                    korrekt: "Fascism förespråkar en stark auktoritär ledare, nationalism och avskaffad politisk opposition.",
-                    icke: "Att en demokratisk ledare har ett starkt personligt mandat och fattar snabba beslut är fascism.",
-                    forklaring: "En stark demokratisk ledare vald i fria val är inte fascism – fascism avskaffar demokratin och oppositionen, inte bara är en stark ledarstil."
-                }
-            },
-            {
-                term: "Nazism",
-                definition: "En ideologi som liknar fascism men bygger på rasistiska idéer om en 'överlägsen ras'.",
-                sentence: "Hitlers Tyskland byggde på _____, som ledde till Förintelsen och andra världskriget.",
-                scenario: "En rörelse kombinerar ultranationalism med rasistisk pseudovetenskap som hävdar att en viss folkgrupp är biologiskt överlägsen och att andra grupper ska förföljas eller utrotas.",
-                ickeExempel: {
-                    korrekt: "Nazism kombinerade fascistisk auktoritarism med rasistisk ideologi om en 'arisk övermänniska'.",
-                    icke: "Fascism och nazism är exakt samma ideologi med samma idéer.",
-                    forklaring: "Nazism och fascism liknar varandra men skiljer sig – nazismens kärna är rasbiologin och antisemitismen, medan fascism kan existera utan dessa specifika rasistiska idéer."
-                }
-            },
-            {
-                term: "Populism",
-                definition: "En politisk stil som säger sig tala för 'folket' mot 'eliten', ofta med enkla lösningar.",
-                sentence: "Politikern använde sig av _____ och lovade att 'vanligt folk' äntligen skulle få sin röst hörd mot etablissemanget.",
-                scenario: "En politiker hävdar att alla landets problem orsakas av en korrupt elit som motarbetar det vanliga folket, och lovar enkla snabblösningar utan att förklara svårigheterna.",
-                ickeExempel: {
-                    korrekt: "Populism framställer komplexa problem som enkla, pekar ut en elit och hävdar sig tala för det 'riktiga folket'.",
-                    icke: "Att ett parti vill lyssna mer på medborgarna och minska byråkratin är populism.",
-                    forklaring: "Att vilja lyssna på medborgarna är demokratisk grundtanke – populism karaktäriseras av att ställa 'folket' mot 'eliten' på ett förenklat och polariserande sätt."
-                }
-            },
-            {
-                term: "Solidaritet",
-                definition: "Tanken att människor ska hjälpa och stötta varandra i samhället.",
-                sentence: "_____ är en grundvärdering inom socialdemokratin – de starka ska hjälpa de svaga.",
-                scenario: "Skattebetalare utan barn finansierar skolan, friska betalar försäkringar som sjuka behöver – samhällets resurser delas så att alla får hjälp när de behöver det.",
-                ickeExempel: {
-                    korrekt: "Solidaritet innebär att starka delar med sig till svaga – t.ex. att välbärgade via skatt finansierar stöd till behövande.",
-                    icke: "Att ge pengar till en välgörenhetsorganisation en gång är solidaritet som politisk princip.",
-                    forklaring: "Välgörenhet är frivillig och individuell – solidaritet som politisk princip handlar om strukturella system där samhället kollektivt tar ansvar för alla medborgare."
-                }
-            },
-            {
-                term: "Välfärdsstat",
-                definition: "Ett samhälle där staten ansvarar för vård, skola och omsorg.",
-                sentence: "Sverige anses vara en typisk _____ där medborgarna finansierar gemensam vård och utbildning via skatten.",
-                scenario: "Staten finansierar gratis sjukvård, kostnadsfri utbildning upp till universitetsnivå och ger ekonomiskt stöd till arbetslösa och pensionärer via ett skattebaserat system.",
-                ickeExempel: {
-                    korrekt: "Sverige är en välfärdsstat där staten via skattemedel erbjuder universell sjukvård, skola och socialt skyddsnät.",
-                    icke: "En stat som erbjuder militärt skydd och rättsväsende är en välfärdsstat.",
-                    forklaring: "Militär och rättsväsende tillhör statens grundläggande funktioner i alla stater – välfärdsstat kräver dessutom sociala tjänster som sjukvård, utbildning och socialförsäkringar."
-                }
-            },
-            {
-                term: "Partiprogram",
-                definition: "Ett dokument där ett parti skriver sina idéer, mål och förslag.",
-                sentence: "Inför valet lanserade partiet ett nytt _____ med löften om sänkta skatter och mer pengar till skolan.",
-                scenario: "Inför valet publicerar ett parti ett dokument som beskriver partiets syn på ekonomi, skola, miljö och migration – en samlad vision för hur landet ska styras.",
-                ickeExempel: {
-                    korrekt: "Ett partis partiprogram beskriver partiets samlade ideologi och politik i ett dokument.",
-                    icke: "En ministers uttalande i en enskild fråga är partiets partiprogram.",
-                    forklaring: "En ministers uttalande är en enstaka politisk ståndpunkt – ett partiprogram är ett formellt, av partiet antaget dokument som beskriver hela partiets politiska linje."
-                }
-            },
-            {
-                term: "Folkrörelser",
-                definition: "Stora grupper av människor som driver förändring, t.ex. arbetarrörelsen.",
-                sentence: "Arbetarrörelsen är en av Sveriges viktigaste _____ och lade grunden för den moderna välfärdsstaten.",
-                scenario: "Tiotusentals vanliga medborgare organiserar sig, håller möten och driver krav på politiska förändringar – utan att vara ett politiskt parti men med stor samhällelig påverkan.",
-                ickeExempel: {
-                    korrekt: "Arbetarrörelsen är en folkrörelse som organiserade miljontals arbetstagare och drev fram bättre villkor.",
-                    icke: "En organisation med 50 aktiva medlemmar som lobbar för ett enskilt lagförslag är en folkrörelse.",
-                    forklaring: "Folkrörelser karaktäriseras av bred folklig förankring och stor medlemsbas – en liten lobbyorganisation har inte den bredd och djup i samhället som definierar en folkrörelse."
-                }
-            },
-            {
-                term: "Tidöavtalet",
-                definition: "Ett avtal mellan M, KD, L och SD om gemensam politik.",
-                sentence: "_____ reglerade samarbetet mellan den borgerliga regeringen och Sverigedemokraterna efter valet 2022.",
-                scenario: "Efter riksdagsvalet 2022 undertecknar fyra partier ett detaljerat dokument som reglerar vilken politik som ska föras under mandatperioden och hur partierna ska samarbeta.",
-                ickeExempel: {
-                    korrekt: "Tidöavtalet är det samarbetsavtal mellan M, KD, L och SD som reglerade den borgerliga regeringens politik från 2022.",
-                    icke: "Tidöavtalet är ett avtal där alla riksdagspartier kommit överens om att samarbeta.",
-                    forklaring: "Tidöavtalet gäller specifikt M, KD, L och SD – inte alla riksdagspartier. De rödgröna partierna stod utanför och var i opposition."
-                }
+              >
+                {it.term}
+              </span>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-2 sticky top-0 bg-amber-50 py-2 z-10">
+        <span className="text-sm font-semibold text-slate-600 font-fredoka">{correctCount} / {order.length} rätta hittills</span>
+        <button onClick={revealAll} className="text-sm font-bold font-fredoka px-4 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-colors">
+          Rätta alla
+        </button>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        {order.map(item => {
+          const st = state[item.id];
+          const locked = st.status === 'correct' || st.status === 'revealed';
+          const [before, after] = item.sentence.split('___');
+          const boxClass =
+            st.status === 'correct' ? 'border-green-400 bg-green-50' :
+            st.status === 'revealed' ? 'border-red-300 bg-red-50' :
+            st.status === 'wrong2' ? 'border-red-200' :
+            st.status === 'wrong1' ? 'border-amber-300' : 'border-slate-100';
+          return (
+            <div key={item.id} className={'bg-white rounded-2xl shadow-sm p-4 border-2 transition-colors ' + boxClass}>
+              <p className="text-slate-700 leading-relaxed">
+                {before}
+                <input
+                  type="text"
+                  value={st.value}
+                  disabled={locked}
+                  onChange={e => handleChange(item.id, e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') handleSubmit(item.id); }}
+                  placeholder="skriv begrepp..."
+                  className={
+                    'inline-block mx-1 px-2 py-1 rounded-lg border-b-2 text-center font-semibold focus:outline-none bg-transparent ' +
+                    (locked ? 'border-slate-300' : 'border-slate-300 focus:border-amber-400')
+                  }
+                  style={{ minWidth: '160px' }}
+                />
+                {after}
+              </p>
+              {st.status === 'wrong1' && (
+                <p className="text-amber-600 text-sm font-semibold font-fredoka mt-1">Är du säker att du stavat rätt? Försök igen.</p>
+              )}
+              {st.status === 'wrong2' && (
+                <p className="text-red-500 text-sm font-semibold font-fredoka mt-1">Fel svar. Försök igen eller tryck "Rätta alla".</p>
+              )}
+              {st.status === 'correct' && (
+                <div className="mt-1">
+                  <p className="text-green-700 font-bold font-fredoka text-sm">✓ {item.term}</p>
+                  <p className="text-slate-500 text-sm mt-0.5">{item.explanation}</p>
+                </div>
+              )}
+              {st.status === 'revealed' && (
+                <div className="mt-1">
+                  <p className="text-red-600 font-bold font-fredoka text-sm">Rätt svar: {item.term}</p>
+                  <p className="text-slate-500 text-sm mt-0.5">{item.explanation}</p>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function ScenarioView({ items, onComplete, easyOn }) {
+  const buildItems = () => shuffleArray(items).map(it => ({ ...it, options: shuffleArray(it.options) }));
+
+  const [qs, setQs] = useState(buildItems);
+  const [idx, setIdx] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  const total = qs.length;
+  const item = qs[idx];
+
+  const choose = (opt) => {
+    if (selected) return;
+    setSelected(opt);
+    if (opt === item.correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (idx + 1 >= total) {
+      setFinished(true);
+      onComplete(Math.round((score / total) * 100));
+    } else {
+      setIdx(i => i + 1);
+      setSelected(null);
+    }
+  };
+
+  const restart = () => {
+    setQs(buildItems());
+    setIdx(0);
+    setSelected(null);
+    setScore(0);
+    setFinished(false);
+  };
+
+  if (finished) {
+    return <ResultCard correct={score} total={total} onRestart={restart} />;
+  }
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="w-full max-w-lg mb-4">
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-sm font-semibold text-slate-600 font-fredoka">Fråga {idx + 1} av {total}</span>
+          <span className="text-sm font-semibold text-slate-400 font-fredoka">{score} rätt hittills</span>
+        </div>
+        <div className="w-full bg-slate-200 rounded-full h-1.5">
+          <div className="h-1.5 rounded-full transition-all" style={{ width: `${(idx / total) * 100}%`, background: PRIMARY }} />
+        </div>
+      </div>
+
+      <div className="bg-white rounded-3xl shadow-sm p-6 w-full max-w-lg border" style={{ borderColor: PRIMARY_LIGHT }}>
+        <p className="text-lg text-slate-800 leading-relaxed mb-5">{getEasyText(item.id, 'scenario', easyOn, item.scenario)}</p>
+        <div className="flex flex-col gap-3">
+          {item.options.map(opt => {
+            let cls = 'border-slate-200 hover:border-slate-300 text-slate-700';
+            if (selected) {
+              if (opt === item.correct) cls = 'border-green-400 bg-green-50 text-green-700';
+              else if (opt === selected) cls = 'border-red-400 bg-red-50 text-red-600';
+              else cls = 'border-slate-100 text-slate-400';
             }
-        ];
-
-        function shuffleArray(arr) {
-            const a = [...arr];
-            for (let i = a.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [a[i], a[j]] = [a[j], a[i]];
-            }
-            return a;
-        }
-
-        function getFeedback(score, total) {
-            const p = score / total;
-            if (p >= 0.9) return "Redo för provet! Fantastiskt bra!";
-            if (p >= 0.7) return "Bra jobbat! Öva lite till på de du missade.";
-            if (p >= 0.5) return "Halvvägs! Fortsätt träna.";
-            return "Öva lite till – du är på rätt väg!";
-        }
-
-        function LucktextView() {
-            const [inputs, setInputs] = useState(concepts.map(() => ''));
-            const [attempts, setAttempts] = useState(concepts.map(() => 0));
-            const [statuses, setStatuses] = useState(concepts.map(() => null));
-            const [done, setDone] = useState(false);
-
-            const normalize = s => s.trim().toLowerCase();
-
-            const submit = (i) => {
-                if (statuses[i] === 'correct' || statuses[i] === 'wrong-final') return;
-                if (normalize(inputs[i]) === normalize(concepts[i].term)) {
-                    const s = [...statuses]; s[i] = 'correct'; setStatuses(s);
-                } else {
-                    const a = [...attempts]; a[i]++; setAttempts(a);
-                    const s = [...statuses]; s[i] = a[i] >= 2 ? 'wrong-final' : 'wrong-once'; setStatuses(s);
-                }
-            };
-
-            const rättaAlla = () => { setStatuses(statuses.map(s => s === 'correct' ? 'correct' : 'wrong-final')); setDone(true); };
-            const börjaOm = () => { setInputs(concepts.map(() => '')); setAttempts(concepts.map(() => 0)); setStatuses(concepts.map(() => null)); setDone(false); };
-
-            const correctCount = statuses.filter(s => s === 'correct').length;
-            const allDone = done || statuses.every(s => s === 'correct' || s === 'wrong-final');
-
             return (
-                <div>
-                    <div className="mb-6 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Begreppsbank</p>
-                        <div className="flex flex-wrap gap-2">
-                            {concepts.map((c, i) => (
-                                <span key={i} className={`px-3 py-1 rounded-full text-sm font-medium border transition-all ${statuses[i] === 'correct' ? 'line-through text-slate-400 bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-300 text-yellow-800'}`}>{c.term}</span>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="grid gap-4">
-                        {concepts.map((c, i) => {
-                            const parts = c.sentence.split('_____');
-                            const st = statuses[i];
-                            return (
-                                <div key={i} className={`bg-white p-5 rounded-2xl shadow-sm border-l-8 transition-all ${st === 'correct' ? 'border-green-500' : st === 'wrong-final' ? 'border-red-400' : 'border-yellow-400'}`}>
-                                    <p className="text-slate-700 mb-3 leading-relaxed">{parts[0]}<span className="font-bold text-yellow-600">[_____]</span>{parts[1]}</p>
-                                    {st === 'correct' ? (
-                                        <div className="flex flex-wrap items-center gap-2 text-green-600"><span className="font-bold">✓ {c.term}</span><span className="text-sm font-normal text-slate-500">– {c.definition}</span></div>
-                                    ) : st === 'wrong-final' ? (
-                                        <div><p className="text-red-500 text-sm">Rätt svar: <span className="font-bold">{c.term}</span></p><p className="text-slate-500 text-sm mt-1">{c.definition}</p></div>
-                                    ) : (
-                                        <div>
-                                            <div className="flex gap-2">
-                                                <input type="text" value={inputs[i]} onChange={e => { const v = [...inputs]; v[i] = e.target.value; setInputs(v); }} onKeyDown={e => e.key === 'Enter' && submit(i)} placeholder="Skriv begreppet och tryck Enter..." className="flex-1 border-2 border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:border-yellow-400 text-sm" />
-                                                <button onClick={() => submit(i)} className="bg-yellow-400 text-yellow-900 px-4 py-2 rounded-xl font-bold hover:bg-yellow-500 transition-colors">→</button>
-                                            </div>
-                                            {st === 'wrong-once' && <p className="text-orange-500 text-sm mt-2 font-medium">Är du säker att du stavat rätt?</p>}
-                                        </div>
-                                    )}
-                                </div>
-                            );
-                        })}
-                    </div>
-                    <div className="mt-8 flex justify-between items-center">
-                        <button onClick={börjaOm} className="text-slate-500 hover:text-slate-700 font-medium transition-colors">↺ Börja om</button>
-                        {!allDone && <button onClick={rättaAlla} className="bg-slate-800 text-white px-6 py-3 rounded-2xl font-bold hover:bg-slate-700 transition-colors">Rätta alla</button>}
-                    </div>
-                    {allDone && (
-                        <div className="mt-8 bg-yellow-50 border-2 border-yellow-400 rounded-3xl p-8 text-center">
-                            <p className="text-5xl font-bold text-yellow-500 mb-2">{correctCount}/{concepts.length}</p>
-                            <p className="text-xl font-bold text-slate-800 mb-4">{getFeedback(correctCount, concepts.length)}</p>
-                            <button onClick={börjaOm} className="bg-yellow-400 text-yellow-900 px-8 py-3 rounded-2xl font-bold hover:bg-yellow-500 transition-colors">Börja om</button>
-                        </div>
-                    )}
-                </div>
+              <button
+                key={opt}
+                disabled={!!selected}
+                onClick={() => choose(opt)}
+                className={'text-left px-4 py-3 rounded-2xl border-2 font-medium font-fredoka transition-colors ' + cls}
+              >
+                {opt}
+              </button>
             );
-        }
+          })}
+        </div>
+        {selected && (
+          <div className="mt-5 p-4 rounded-2xl bg-slate-50">
+            <p className="text-slate-600 text-sm leading-relaxed">{item.explanation}</p>
+          </div>
+        )}
+      </div>
 
-        function ScenarioView() {
-            const [shuffledIdxs] = useState(() => shuffleArray(concepts.map((_, i) => i)));
-            const [current, setCurrent] = useState(0);
-            const [answered, setAnswered] = useState(null);
-            const [selected, setSelected] = useState(null);
-            const [score, setScore] = useState(0);
-            const [done, setDone] = useState(false);
-            const [termOptions, setTermOptions] = useState(() => shuffleArray(concepts.map(c => c.term)));
+      {selected && (
+        <button onClick={next} className="mt-5 text-white px-8 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY }}>
+          {idx + 1 >= total ? 'Se resultat' : 'Nästa fråga →'}
+        </button>
+      )}
+    </div>
+  );
+}
 
-            const conceptIdx = shuffledIdxs[current];
-            const concept = concepts[conceptIdx];
+function IckeExView({ items, onComplete, easyOn }) {
+  const [qs, setQs] = useState(() => shuffleArray(items));
+  const [idx, setIdx] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
 
-            const handleSelect = (term) => {
-                if (answered !== null) return;
-                setSelected(term);
-                const isCorrect = term === concept.term;
-                setAnswered(isCorrect ? 'correct' : 'wrong');
-                if (isCorrect) setScore(s => s + 1);
-            };
+  const total = qs.length;
+  const item = qs[idx];
 
-            const next = () => {
-                if (current + 1 >= concepts.length) { setDone(true); return; }
-                setCurrent(c => c + 1);
-                setAnswered(null);
-                setSelected(null);
-                setTermOptions(shuffleArray(concepts.map(c => c.term)));
-            };
+  const choose = (letter) => {
+    if (selected) return;
+    setSelected(letter);
+    if (letter === item.correctLetter) setScore(s => s + 1);
+  };
 
-            const reset = () => {
-                setCurrent(0); setAnswered(null); setSelected(null); setScore(0); setDone(false);
-                setTermOptions(shuffleArray(concepts.map(c => c.term)));
-            };
+  const next = () => {
+    if (idx + 1 >= total) {
+      setFinished(true);
+      onComplete(Math.round((score / total) * 100));
+    } else {
+      setIdx(i => i + 1);
+      setSelected(null);
+    }
+  };
 
-            if (done) return (
-                <div className="text-center">
-                    <div className="bg-yellow-50 border-2 border-yellow-400 rounded-3xl p-8 mb-6">
-                        <p className="text-5xl font-bold text-yellow-500 mb-2">{score}/{concepts.length}</p>
-                        <p className="text-xl font-bold text-slate-800 mb-4">{getFeedback(score, concepts.length)}</p>
-                        <button onClick={reset} className="bg-yellow-400 text-yellow-900 px-8 py-3 rounded-2xl font-bold hover:bg-yellow-500 transition-colors">Börja om</button>
-                    </div>
-                </div>
-            );
+  const restart = () => {
+    setQs(shuffleArray(items));
+    setIdx(0);
+    setSelected(null);
+    setScore(0);
+    setFinished(false);
+  };
 
-            return (
-                <div className="max-w-2xl mx-auto">
-                    <div className="flex justify-between items-center mb-3">
-                        <span className="font-bold text-yellow-700">Poäng: {score}</span>
-                        <span className="text-slate-400 text-sm">{current + 1} / {concepts.length}</span>
-                    </div>
-                    <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
-                        <div className="bg-yellow-400 h-2 rounded-full transition-all" style={{width: `${((current + 1) / concepts.length) * 100}%`}}></div>
-                    </div>
-                    <div className="bg-white p-6 rounded-3xl shadow-lg mb-6">
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Vilket begrepp beskrivs?</p>
-                        <p className="text-lg text-slate-800 leading-relaxed italic">"{concept.scenario}"</p>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3 mb-6">
-                        {termOptions.map((term, i) => (
-                            <button key={i} onClick={() => handleSelect(term)} disabled={answered !== null}
-                                className={`p-4 rounded-2xl font-bold border-2 text-left transition-all ${
-                                    answered === null ? 'bg-white border-slate-200 hover:border-yellow-400 hover:bg-yellow-50' :
-                                    term === concept.term ? 'bg-green-50 border-green-500 text-green-700' :
-                                    term === selected ? 'bg-red-50 border-red-500 text-red-700' :
-                                    'bg-white border-slate-100 text-slate-300'
-                                }`}>
-                                {term}
-                            </button>
-                        ))}
-                    </div>
-                    {answered !== null && (
-                        <div>
-                            <div className={`p-4 rounded-2xl text-sm font-medium mb-4 ${answered === 'correct' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>
-                                {answered === 'correct' ? `✓ Rätt! ${concept.definition}` : `✗ Fel. Rätt svar: ${concept.term} – ${concept.definition}`}
-                            </div>
-                            <button onClick={next} className="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-slate-800 transition-all">
-                                {current + 1 >= concepts.length ? 'Se resultat' : 'Nästa scenario →'}
-                            </button>
-                        </div>
-                    )}
-                </div>
-            );
-        }
+  if (finished) {
+    return <ResultCard correct={score} total={total} onRestart={restart} />;
+  }
 
-        function IckeExempelView() {
-            const makeOpts = (c) => {
-                const flip = Math.random() > 0.5;
-                return flip
-                    ? [{ text: c.ickeExempel.korrekt, isCorrect: true }, { text: c.ickeExempel.icke, isCorrect: false }]
-                    : [{ text: c.ickeExempel.icke, isCorrect: false }, { text: c.ickeExempel.korrekt, isCorrect: true }];
-            };
-            const freshState = () => {
-                const ord = shuffleArray(concepts.map((_, i) => i));
-                return { ord, cur: 0, opts: makeOpts(concepts[ord[0]]), answered: null, selIdx: null, score: 0, done: false };
-            };
-            const [s, setS] = useState(freshState);
-            const concept = concepts[s.ord[s.cur]];
+  const optionClass = (letter) => {
+    if (!selected) return 'border-slate-200 hover:border-slate-300 text-slate-700';
+    if (letter === item.correctLetter) return 'border-green-400 bg-green-50 text-green-700';
+    if (letter === selected) return 'border-red-400 bg-red-50 text-red-600';
+    return 'border-slate-100 text-slate-400';
+  };
 
-            const handleSelect = (idx) => {
-                if (s.answered !== null) return;
-                const isCorrect = s.opts[idx].isCorrect;
-                setS(prev => ({ ...prev, answered: isCorrect ? 'correct' : 'wrong', selIdx: idx, score: prev.score + (isCorrect ? 1 : 0) }));
-            };
+  return (
+    <div className="flex flex-col items-center">
+      <div className="w-full max-w-lg mb-4">
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-sm font-semibold text-slate-600 font-fredoka">Fråga {idx + 1} av {total}</span>
+          <span className="text-sm font-semibold text-slate-400 font-fredoka">{score} rätt hittills</span>
+        </div>
+        <div className="w-full bg-slate-200 rounded-full h-1.5">
+          <div className="h-1.5 rounded-full transition-all" style={{ width: `${(idx / total) * 100}%`, background: PRIMARY }} />
+        </div>
+      </div>
 
-            const next = () => {
-                const nextCur = s.cur + 1;
-                if (nextCur >= concepts.length) { setS(prev => ({ ...prev, done: true })); return; }
-                setS(prev => ({ ...prev, cur: nextCur, opts: makeOpts(concepts[prev.ord[nextCur]]), answered: null, selIdx: null }));
-            };
+      <div className="bg-white rounded-3xl shadow-sm p-6 w-full max-w-lg border" style={{ borderColor: PRIMARY_LIGHT }}>
+        <p className="text-xs uppercase tracking-wide text-slate-400 font-fredoka font-bold mb-1">Vilket exempel stämmer på begreppet?</p>
+        <p className="text-xl font-bold mb-5" style={{ color: PRIMARY_TEXT }}>{item.term}</p>
+        <div className="flex flex-col gap-3">
+          <button disabled={!!selected} onClick={() => choose('A')} className={'text-left px-4 py-3 rounded-2xl border-2 font-medium transition-colors ' + optionClass('A')}>
+            <span className="font-fredoka font-bold mr-2">A</span>{getEasyText(item.id, 'ickeExOptionA', easyOn, item.optionA)}
+          </button>
+          <button disabled={!!selected} onClick={() => choose('B')} className={'text-left px-4 py-3 rounded-2xl border-2 font-medium transition-colors ' + optionClass('B')}>
+            <span className="font-fredoka font-bold mr-2">B</span>{getEasyText(item.id, 'ickeExOptionB', easyOn, item.optionB)}
+          </button>
+        </div>
+        {selected && (
+          <div className="mt-5 p-4 rounded-2xl bg-slate-50">
+            <p className={'font-bold font-fredoka text-sm mb-1 ' + (selected === item.correctLetter ? 'text-green-700' : 'text-red-600')}>
+              {selected === item.correctLetter ? '✓ Rätt!' : `✗ Fel — rätt svar är ${item.correctLetter}`}
+            </p>
+            <p className="text-slate-600 text-sm leading-relaxed">{item.explanation}</p>
+          </div>
+        )}
+      </div>
 
-            const reset = () => setS(freshState);
+      {selected && (
+        <button onClick={next} className="mt-5 text-white px-8 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY }}>
+          {idx + 1 >= total ? 'Se resultat' : 'Nästa fråga →'}
+        </button>
+      )}
+    </div>
+  );
+}
 
-            if (s.done) return (
-                <div className="text-center">
-                    <div className="bg-yellow-50 border-2 border-yellow-400 rounded-3xl p-8 mb-6">
-                        <p className="text-5xl font-bold text-yellow-500 mb-2">{s.score}/{concepts.length}</p>
-                        <p className="text-xl font-bold text-slate-800 mb-4">{getFeedback(s.score, concepts.length)}</p>
-                        <button onClick={reset} className="bg-yellow-400 text-yellow-900 px-8 py-3 rounded-2xl font-bold hover:bg-yellow-500 transition-colors">Börja om</button>
-                    </div>
-                </div>
-            );
+// ════════════════════════════════════════════════════════════
+// ENKEL SVENSKA — av/på-knapp, fast uppe till höger
+// ════════════════════════════════════════════════════════════
+function EasyToggleButton({ easyOn, onToggle, disabled }) {
+  return (
+    <button
+      type="button"
+      aria-pressed={easyOn}
+      disabled={disabled}
+      onClick={onToggle}
+      title={disabled ? 'Inte tillgänglig i Lucktext' : undefined}
+      className={
+        'fixed top-4 right-4 z-40 flex items-center gap-1.5 px-4 py-2 rounded-full font-fredoka font-bold text-sm shadow-md border-2 transition-colors ' +
+        (disabled
+          ? 'bg-slate-100 border-slate-200 text-slate-300 cursor-not-allowed'
+          : easyOn
+            ? 'bg-green-500 border-green-500 text-white'
+            : 'bg-white border-green-400 text-green-600 hover:bg-green-50')
+      }
+    >
+      📖 Enkel svenska: {easyOn ? 'På' : 'Av'}
+    </button>
+  );
+}
 
-            return (
-                <div className="max-w-2xl mx-auto">
-                    <div className="flex justify-between items-center mb-3">
-                        <span className="font-bold text-yellow-700">Poäng: {s.score}</span>
-                        <span className="text-slate-400 text-sm">{s.cur + 1} / {concepts.length}</span>
-                    </div>
-                    <div className="w-full bg-slate-200 rounded-full h-2 mb-6">
-                        <div className="bg-yellow-400 h-2 rounded-full transition-all" style={{width: `${((s.cur + 1) / concepts.length) * 100}%`}}></div>
-                    </div>
-                    <div className="bg-white p-6 rounded-3xl shadow-lg mb-6">
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Vilket är rätt tillämpning?</p>
-                        <h2 className="text-2xl font-bold text-yellow-700">{concept.term}</h2>
-                        <p className="text-sm text-slate-500 mt-1 leading-relaxed">{concept.definition}</p>
-                    </div>
-                    <div className="grid gap-3 mb-6">
-                        {s.opts.map((opt, i) => (
-                            <button key={i} onClick={() => handleSelect(i)} disabled={s.answered !== null}
-                                className={`p-4 rounded-2xl border-2 text-left transition-all ${
-                                    s.answered === null ? 'bg-white border-slate-200 hover:border-yellow-400 hover:bg-yellow-50' :
-                                    opt.isCorrect ? 'bg-green-50 border-green-500 text-green-700' :
-                                    i === s.selIdx ? 'bg-red-50 border-red-500 text-red-700' :
-                                    'bg-white border-slate-100 text-slate-300'
-                                }`}>
-                                <span className="font-bold mr-2">{i === 0 ? 'A' : 'B'}.</span>{opt.text}
-                            </button>
-                        ))}
-                    </div>
-                    {s.answered !== null && (
-                        <div>
-                            <div className={`p-4 rounded-2xl text-sm mb-4 ${s.answered === 'correct' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>
-                                <p className="font-bold mb-1">{s.answered === 'correct' ? '✓ Rätt!' : '✗ Fel!'}</p>
-                                <p>{concept.ickeExempel.forklaring}</p>
-                            </div>
-                            <button onClick={next} className="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-slate-800 transition-all">
-                                {s.cur + 1 >= concepts.length ? 'Se resultat' : 'Nästa begrepp →'}
-                            </button>
-                        </div>
-                    )}
-                </div>
-            );
-        }
+// ════════════════════════════════════════════════════════════
+// HEADER + NAVIGERING
+// ════════════════════════════════════════════════════════════
+function Header({ activeView, setActiveView, progress, rank, completedCount, code, categoryFilter, setCategoryFilter, counts }) {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-2">
+        <a
+          href="index.html"
+          onClick={(e) => { e.preventDefault(); smartBack('index.html'); }}
+          className="text-sm font-semibold transition-colors"
+          style={{ color: PRIMARY_TEXT }}
+        >
+          ← Tillbaka till startsidan
+        </a>
+        <div className="w-32 hidden sm:block"></div>
+      </div>
 
-        function App() {
-            const [view, setView] = useState('list');
-            const [currentIndex, setCurrentIndex] = useState(0);
-            const [isFlipped, setIsFlipped] = useState(false);
+      <h1 className="text-3xl md:text-4xl font-bold italic text-center uppercase tracking-wide mb-1" style={{ color: PRIMARY_TEXT }}>
+        Ideologier och metod
+      </h1>
+      <p className="text-center text-slate-400 text-sm mb-6 font-fredoka">Samhällskunskap Sa1a2 — Begrepp</p>
 
-            const nextCard = () => {
-                setIsFlipped(false);
-                setTimeout(() => {
-                    let n; do { n = Math.floor(Math.random() * concepts.length); } while (n === currentIndex && concepts.length > 1);
-                    setCurrentIndex(n);
-                }, 150);
-            };
+      {/* Progress + rank */}
+      <div className="mb-4">
+        <div className="flex items-center justify-between mb-1.5 flex-wrap gap-2">
+          <span className="text-sm font-semibold text-slate-600 font-fredoka">{completedCount}/5 avsnitt klara</span>
+          {rank && (
+            <span
+              className="text-xs font-bold px-2.5 py-1 rounded-full font-fredoka"
+              style={{ background: PRIMARY_LIGHT, color: PRIMARY_TEXT }}
+            >
+              Rank: {rank} · Kod: {code}
+            </span>
+          )}
+        </div>
+        <div className="w-full bg-slate-200 rounded-full h-1.5">
+          <div className="h-1.5 rounded-full transition-all" style={{ width: `${(completedCount / 5) * 100}%`, background: PRIMARY }} />
+        </div>
+      </div>
 
-            const activeTab = 'bg-yellow-400 text-yellow-900 font-bold shadow-sm';
-            const inactiveTab = 'text-slate-500';
+      <CategoryFilter categoryFilter={categoryFilter} setCategoryFilter={setCategoryFilter} counts={counts} />
 
-            return (
-                <div className="min-h-screen p-4 md:p-8">
-                    <header className="max-w-2xl mx-auto mb-8 flex items-center justify-between">
-                        <a href="index.html" className="text-slate-500 hover:text-yellow-600 transition-colors flex items-center gap-2 font-medium text-sm">← Tillbaka till startsidan</a>
-                        <h1 className="text-2xl md:text-3xl font-bold text-center">Ideologier</h1>
-                        <div className="w-36"></div>
-                    </header>
+      {/* Toggle */}
+      <div className="view-tabs flex flex-wrap justify-center gap-1 bg-white rounded-full p-1 shadow-sm border border-slate-200 mb-8 font-fredoka text-sm max-w-full overflow-x-auto">
+        {VIEWS.map((view) => {
+          const active = ACTIVE_VIEWS[view];
+          return (
+            <button
+              key={view}
+              disabled={!active}
+              onClick={() => active && setActiveView(view)}
+              title={!active ? 'Kommer snart' : undefined}
+              className={
+                'px-4 py-2 rounded-full font-bold transition-colors whitespace-nowrap ' +
+                (!active
+                  ? 'text-slate-300 cursor-not-allowed'
+                  : activeView === view
+                    ? 'text-white'
+                    : 'text-slate-500 hover:text-slate-700')
+              }
+              style={activeView === view && active ? { background: PRIMARY } : {}}
+            >
+              {VIEW_LABELS[view] || view}
+              {progress.completed[view] && (
+                <span className="ml-1" style={{ color: activeView === view ? '#fff' : '#16a34a' }}>✓</span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
-                    <div className="max-w-2xl mx-auto mb-10 flex bg-white p-1 rounded-full shadow-md border border-slate-200">
-                        <button onClick={() => setView('list')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'list' ? activeTab : inactiveTab}`}>Lista</button>
-                        <button onClick={() => setView('flashcards')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'flashcards' ? activeTab : inactiveTab}`}>Flashcards</button>
-                        <button onClick={() => setView('lucktext')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'lucktext' ? activeTab : inactiveTab}`}>Lucktext</button>
-                        <button onClick={() => setView('scenario')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'scenario' ? activeTab : inactiveTab}`}>Scenario</button>
-                        <button onClick={() => setView('icke')} className={`flex-1 py-2 rounded-full transition-all duration-300 text-sm ${view === 'icke' ? activeTab : inactiveTab}`}>Icke-ex.</button>
-                    </div>
+// ════════════════════════════════════════════════════════════
+// APP
+// ════════════════════════════════════════════════════════════
+function App() {
+  const [activeView, setActiveView] = useState('Lista');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [progress, setProgress] = useState(loadProgress);
+  const [celebrateRank, setCelebrateRank] = useState(null);
+  const [easyOn, setEasyOn] = useState(loadEasyMode);
+  const prevRankRef = useRef(computeRank(loadProgress()));
 
-                    <main className="max-w-2xl mx-auto">
-                        {view === 'list' && (
-                            <div className="grid gap-4">
-                                {concepts.map((item, index) => (
-                                    <div key={index} className="bg-white p-5 rounded-2xl border-l-8 border-yellow-400 shadow-sm hover:shadow-md transition-shadow">
-                                        <div className="flex items-center gap-3 mb-1">
-                                            <span className="bg-yellow-100 text-yellow-700 text-xs font-bold px-2 py-1 rounded-lg">{index + 1}</span>
-                                            <h3 className="text-lg font-bold">{item.term}</h3>
-                                        </div>
-                                        <p className="text-slate-600 leading-relaxed ml-10">{item.definition}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                        {view === 'flashcards' && (
-                            <div className="flex flex-col items-center">
-                                <div className="flip-card mb-8" onClick={() => setIsFlipped(!isFlipped)}>
-                                    <div className={`flip-card-inner ${isFlipped ? 'flipped-classes' : ''}`}>
-                                        <div className="flip-card-front">
-                                            <h2 className="text-3xl font-bold text-slate-900 text-center px-4">{concepts[currentIndex].term}</h2>
-                                            <div className="absolute bottom-6 animate-pulse"><span className="text-[10px] uppercase tracking-[0.2em] text-yellow-900 font-bold opacity-70">Klicka för svar</span></div>
-                                        </div>
-                                        <div className="flip-card-back">
-                                            <p className="text-xl leading-relaxed text-slate-800 font-medium px-4">{concepts[currentIndex].definition}</p>
-                                            <div className="absolute bottom-6"><span className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">Klicka för att vända</span></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="flex flex-col items-center gap-4">
-                                    <button onClick={nextCard} className="bg-slate-900 text-white px-10 py-4 rounded-2xl font-bold shadow-xl hover:bg-slate-800 active:scale-95 transition-all flex items-center gap-3 text-lg">Nästa begrepp <span>→</span></button>
-                                    <p className="text-slate-500 font-medium bg-slate-200 px-4 py-1 rounded-full text-xs">{currentIndex + 1} av {concepts.length}</p>
-                                </div>
-                            </div>
-                        )}
-                        {view === 'lucktext' && <LucktextView />}
-                        {view === 'scenario' && <ScenarioView />}
-                        {view === 'icke' && <IckeExempelView />}
-                    </main>
+  useEffect(() => {
+    saveProgress(progress);
+  }, [progress]);
 
-                    <footer className="mt-12 text-center text-slate-400 text-sm italic pb-8">Källa: Samhällskunskap – Ideologier begreppslista</footer>
-                </div>
-            );
-        }
+  useEffect(() => {
+    saveEasyMode(easyOn);
+  }, [easyOn]);
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
+  const toggleEasy = useCallback(() => setEasyOn(v => !v), []);
+
+  const markComplete = useCallback((view, pct) => {
+    setProgress(prev => {
+      const nextCompleted = { ...prev.completed };
+      const nextBest = { ...prev.best };
+      let changed = false;
+
+      if (typeof pct === 'number' && !(nextBest[view] >= pct)) {
+        nextBest[view] = pct;
+        changed = true;
+      }
+
+      const thresholdMet = typeof pct === 'number' ? pct >= 80 : true;
+      if (thresholdMet && !nextCompleted[view]) {
+        nextCompleted[view] = true;
+        changed = true;
+      }
+
+      return changed ? { completed: nextCompleted, best: nextBest } : prev;
+    });
+  }, []);
+
+  const completeLista = useCallback(() => markComplete('Lista'), [markComplete]);
+  const completeFlashcards = useCallback(() => markComplete('Flashcards'), [markComplete]);
+  const completeLucktext = useCallback((pct) => markComplete('Lucktext', pct), [markComplete]);
+  const completeScenario = useCallback((pct) => markComplete('Scenario', pct), [markComplete]);
+  const completeIckeEx = useCallback((pct) => markComplete('Icke-ex.', pct), [markComplete]);
+
+  const rank = computeRank(progress);
+  const completedCount = VIEWS.filter(v => progress.completed[v]).length;
+  const code = computeVerificationCode(progress, rank);
+
+  useEffect(() => {
+    const prevOrder = prevRankRef.current ? RANK_ORDER[prevRankRef.current] : 0;
+    const newOrder = rank ? RANK_ORDER[rank] : 0;
+    if (newOrder > prevOrder) {
+      setCelebrateRank(rank);
+      const t = setTimeout(() => setCelebrateRank(null), 2500);
+      prevRankRef.current = rank;
+      return () => clearTimeout(t);
+    }
+    prevRankRef.current = rank;
+  }, [rank]);
+
+  const filteredConcepts = concepts.filter(c => categoryFilter === 'all' || c.category === categoryFilter);
+  const filteredLucktext = LUCKTEXT_ITEMS.filter(it => categoryFilter === 'all' || CONCEPT_CATEGORY[it.id] === categoryFilter);
+  const filteredScenario = SCENARIO_ITEMS.filter(it => categoryFilter === 'all' || CONCEPT_CATEGORY[it.id] === categoryFilter);
+  const filteredIckeEx = ICKEEX_ITEMS.filter(it => categoryFilter === 'all' || CONCEPT_CATEGORY[it.id] === categoryFilter);
+  const counts = {
+    all: concepts.length,
+    ideologi: concepts.filter(c => c.category === 'ideologi').length,
+    metod: concepts.filter(c => c.category === 'metod').length,
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 py-6">
+      <EasyToggleButton easyOn={easyOn} onToggle={toggleEasy} disabled={activeView === 'Lucktext'} />
+      <Header
+        activeView={activeView}
+        setActiveView={setActiveView}
+        progress={progress}
+        rank={rank}
+        completedCount={completedCount}
+        code={code}
+        categoryFilter={categoryFilter}
+        setCategoryFilter={setCategoryFilter}
+        counts={counts}
+      />
+
+      <div className="pb-16">
+        {activeView === 'Lista' && <ListView key={`lista-${categoryFilter}`} concepts={filteredConcepts} onComplete={completeLista} easyOn={easyOn} />}
+        {activeView === 'Flashcards' && <FlashcardView key={`flashcards-${categoryFilter}`} concepts={filteredConcepts} onComplete={completeFlashcards} easyOn={easyOn} />}
+        {activeView === 'Lucktext' && <LucktextView key={`lucktext-${categoryFilter}`} items={filteredLucktext} onComplete={completeLucktext} />}
+        {activeView === 'Scenario' && <ScenarioView key={`scenario-${categoryFilter}`} items={filteredScenario} onComplete={completeScenario} easyOn={easyOn} />}
+        {activeView === 'Icke-ex.' && <IckeExView key={`ickeex-${categoryFilter}`} items={filteredIckeEx} onComplete={completeIckeEx} easyOn={easyOn} />}
+      </div>
+
+      <footer className="text-center text-slate-400 italic text-sm pb-8">
+        Källa: Samhällskunskap – Ideologier och metod, begreppslista
+      </footer>
+
+      {/* Rank celebration overlay */}
+      {celebrateRank && (
+        <div
+          className="fixed inset-0 flex items-center justify-center z-50 px-4"
+          style={{ background: 'rgba(15, 23, 42, 0.55)' }}
+          onClick={() => setCelebrateRank(null)}
+        >
+          <div className="bg-white rounded-3xl px-10 py-8 text-center shadow-2xl">
+            <div className="text-5xl mb-3">{celebrateRank === 'S' ? '🎉🏆🎉' : '🎉'}</div>
+            <p className="text-3xl font-bold" style={{ color: PRIMARY_TEXT }}>{celebrateRank}-RANK!</p>
+            <p className="text-slate-400 text-sm mt-2">Ny rank uppnådd</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
     <script src="feedback-widget.js" defer></script>
     <script data-goatcounter="https://johnblixt.goatcounter.com/count"
             async src="//gc.zgo.at/count.js"></script>
