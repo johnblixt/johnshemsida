@@ -123,6 +123,23 @@
             letter-spacing: 0.15em;
             color: #94a3b8;
         }
+
+        /* ── Jeopardy (Spel) ── */
+        .jp-cell { transition: all .15s ease; cursor: pointer; }
+        .jp-cell:hover:not(.jp-used) { transform: scale(1.04); filter: brightness(1.08); }
+        .jp-used { background: #e2e8f0 !important; color: #94a3b8 !important; cursor: default; box-shadow: none; }
+        .jp-modal-overlay {
+            background: rgba(15, 23, 42, .82);
+            position: fixed; inset: 0; z-index: 300;
+            display: none; align-items: center; justify-content: center; padding: 16px;
+        }
+        .jp-opt { transition: all .15s ease; border: 2px solid #e2e8f0; text-align: left; font-family: 'EB Garamond', serif; }
+        .jp-opt:hover:not(:disabled) { border-color: #0891b2; background: #ecfeff; }
+        .jp-opt:disabled { cursor: default; }
+        .jp-opt.jp-picked { background: #fef3c7; border-color: #f59e0b; }
+        .jp-opt.jp-wrong { background: #fee2e2; border-color: #dc2626; color: #991b1b; opacity: .7; }
+        .jp-opt.jp-correct { background: #dcfce7; border-color: #16a34a; color: #166534; font-weight: 700; }
+        .jp-timerbar { transition: width 1s linear, background-color .3s; }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen">
@@ -144,6 +161,7 @@
     <div class="pill-toggle flex gap-1 bg-slate-100 p-1 rounded-full w-fit mb-10">
         <button id="btn-lattlast"    class="active"   onclick="showView('lattlast')">Lättläst</button>
         <button id="btn-fordjupning" class="inactive" onclick="showView('fordjupning')">Fördjupning</button>
+        <button id="btn-spel"        class="inactive" onclick="showView('spel')">Spel</button>
     </div>
 
     <!-- ════════════════ LÄTTLÄST ════════════════ -->
@@ -595,6 +613,78 @@
     </div>
     <!-- ════════════════ SLUT FÖRDJUPNING ════════════════ -->
 
+    <!-- ════════════════ SPEL (JEOPARDY) ════════════════ -->
+    <div id="view-spel" class="hidden">
+        <p class="text-slate-500 italic mb-6 text-center text-sm">Jeopardy för vikarier — kräver ingen förkunskap i ämnet. Facit och förklaring finns alltid tillgängligt för spelledaren.</p>
+
+        <!-- Lagval -->
+        <div id="jp-setup" class="max-w-sm mx-auto bg-white border-2 rounded-2xl p-6 text-center" style="border-color:#0891b2;">
+            <h3 class="font-bold text-lg mb-4">Vilka lag tävlar?</h3>
+            <div id="jp-team-inputs" class="space-y-2 mb-3"></div>
+            <div class="flex justify-center gap-4 mb-5 text-xs font-bold" style="color:#0891b2;">
+                <button onclick="jpChangeTeamCount(1)" id="jp-add-team">+ Lägg till lag</button>
+                <button onclick="jpChangeTeamCount(-1)" id="jp-remove-team">− Ta bort lag</button>
+            </div>
+            <button onclick="jpStartGame()" class="w-full text-white py-3 rounded-2xl font-bold uppercase tracking-wide text-sm" style="background:#0891b2;">Starta spelet →</button>
+        </div>
+
+        <!-- Spelet -->
+        <div id="jp-game" class="hidden">
+            <div id="jp-team-panel" class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-5"></div>
+            <div id="jp-board" class="grid grid-cols-4 gap-1.5 sm:gap-2"></div>
+        </div>
+    </div>
+
+    <!-- Jeopardy-modal -->
+    <div id="jp-modal" class="jp-modal-overlay">
+        <div class="bg-white rounded-3xl p-5 sm:p-6 max-w-lg w-full max-h-[92vh] overflow-y-auto">
+
+            <div class="mb-3">
+                <div class="flex justify-center items-center mb-1">
+                    <span id="jp-modal-timer-text" class="text-sm font-bold text-slate-400">30s</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                    <div id="jp-modal-timerbar" class="jp-timerbar h-full" style="width:100%;background:#0891b2;"></div>
+                </div>
+            </div>
+
+            <div class="flex justify-center items-center gap-2 mb-3 flex-wrap">
+                <span id="jp-modal-cat" class="px-3 py-0.5 rounded-full text-xs font-bold uppercase text-white" style="background:#0891b2;"></span>
+                <span id="jp-modal-value" class="text-sm font-bold text-slate-400 italic"></span>
+            </div>
+
+            <div id="jp-modal-steal" class="hidden mb-3 text-center">
+                <p class="text-sm font-bold text-amber-700 bg-amber-50 border border-amber-300 rounded-lg py-2 px-3 inline-block"></p>
+            </div>
+
+            <div id="jp-modal-q" class="text-lg font-bold text-center mb-4 text-slate-800"></div>
+
+            <div id="jp-modal-opts" class="grid grid-cols-1 gap-2 mb-3"></div>
+
+            <div id="jp-modal-judge" class="hidden grid grid-cols-2 gap-2 mb-3">
+                <button onclick="jpJudge(true)" class="bg-green-600 hover:bg-green-700 text-white py-2 rounded-xl font-bold text-sm">✓ Rätt (ge poäng)</button>
+                <button onclick="jpJudge(false)" class="bg-red-600 hover:bg-red-700 text-white py-2 rounded-xl font-bold text-sm">✗ Fel</button>
+            </div>
+
+            <div id="jp-modal-expl-wrap" class="hidden border-l-4 rounded-r-lg p-3 mb-3 text-sm text-slate-700" style="background:#ecfeff;border-color:#0891b2;">
+                <p class="font-bold text-xs uppercase tracking-wide mb-1" style="color:#0891b2;">Förklaring</p>
+                <p id="jp-modal-expl"></p>
+            </div>
+
+            <div id="jp-modal-teamselect" class="hidden mb-3">
+                <p class="text-sm font-bold text-slate-600 mb-2 text-center">Vilket lag fick rätt?</p>
+                <div id="jp-modal-teamselect-grid" class="grid grid-cols-2 gap-2"></div>
+            </div>
+
+            <div id="jp-modal-noteam-actions" class="flex justify-center gap-4 text-xs font-bold pt-2 border-t border-slate-100">
+                <button onclick="jpRevealAnswer()" style="color:#0891b2;">Visa svar</button>
+                <button onclick="jpCloseModal(null)" class="text-slate-400">Ingen fick rätt / Stäng</button>
+            </div>
+
+        </div>
+    </div>
+    <!-- ════════════════ SLUT SPEL ════════════════ -->
+
     <footer class="mt-16 text-center border-t border-slate-200 pt-8">
         <p class="text-slate-400 text-xs uppercase tracking-[0.2em] font-black italic">Designad av John</p>
     </footer>
@@ -605,9 +695,361 @@
     function showView(view) {
         document.getElementById('view-lattlast').classList.toggle('hidden', view !== 'lattlast');
         document.getElementById('view-fordjupning').classList.toggle('hidden', view !== 'fordjupning');
+        document.getElementById('view-spel').classList.toggle('hidden', view !== 'spel');
         document.getElementById('btn-lattlast').className    = view === 'lattlast'    ? 'active' : 'inactive';
         document.getElementById('btn-fordjupning').className = view === 'fordjupning' ? 'active' : 'inactive';
+        document.getElementById('btn-spel').className        = view === 'spel'        ? 'active' : 'inactive';
     }
+</script>
+
+<script>
+    // ════════════════════════════════════════════════════════════
+    // JEOPARDY — Naturvetenskapligt arbetssätt (klassrumsversion)
+    // 4 kategorier × 5 poängnivåer, hämtat från nk1a1_naturvetenskap_quiz.html
+    // ════════════════════════════════════════════════════════════
+    function jpShuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    const JP_CATEGORIES = [
+        {
+            name: 'Vetenskaplig metod',
+            qs: [
+                { v: 100, q: 'Vad är en frågeställning i en vetenskaplig undersökning?',
+                  opts: ['En specifik och avgränsad fråga som preciserar syftet med undersökningen','En hypotes formulerad som ett påstående om vad man förväntar sig hitta','En sammanfattning av de resultat som uppnåtts efter att experimentet genomförts','En teori om hur världen fungerar som ska bevisas stämma med hjälp av data'],
+                  correct: 0, expl: 'En frågeställning är en specifik och avgränsad fråga – t.ex. "Vad beror det här på?" Det skiljer sig från hypotesen, som är ett möjligt svar formulerat som ett påstående.' },
+                { v: 200, q: 'Vad är en hypotes?',
+                  opts: ['Ett testbart påstående som ger ett möjligt svar på frågeställningen – vi vet inte om det är sant eller falskt','En bekräftad slutsats som dragits efter att ett experiment upprepats ett stort antal gånger','En fråga om vad som ska undersökas, formulerad på ett specifikt och avgränsat sätt','En observation som gjorts under ett experiment och som behöver förklaras av forskaren'],
+                  correct: 0, expl: 'En hypotes är ett påstående – ett möjligt svar på frågeställningen. Den ska vara testbar och falsifierbar. När den formuleras vet vi ännu inte om den är sann.' },
+                { v: 300, q: 'Vad menas med att en hypotes är falsifierbar?',
+                  opts: ['Att det måste vara möjligt att motbevisa hypotesen – t.ex. om experimentets resultat strider mot den','Att hypotesen är formulerad på ett sådant sätt att den aldrig kan motbevisas av experiment','Att hypotesen automatiskt förklaras som falsk om den inte kan testas i ett laboratorium','Att hypotesen måste testas av minst tre oberoende forskargrupper för att godkännas'],
+                  correct: 0, expl: 'Falsifierbarhet innebär att det måste vara möjligt att visa att hypotesen är fel. Om inga tänkbara resultat kunde motbevisa den är den inte vetenskaplig.' },
+                { v: 400, q: 'Vilka tre krav måste en vetenskaplig undersökning uppfylla?',
+                  opts: ['Hypotesen ska vara testbar och falsifierbar, och experimentet ska vara repeterbart','Hypotesen ska baseras på befintlig teori, godkännas av en etikkommitté och ge signifikanta resultat','Hypotesen ska bevisas sann, formuleras av minst två oberoende forskare och publiceras i en tidskrift','Experimentet ska vara enkelt, billigt att genomföra och förståeligt för en bred allmänhet'],
+                  correct: 0, expl: 'En vetenskaplig undersökning kräver att hypotesen är testbar (kan undersökas experimentellt), falsifierbar (kan motbevisas) och att experimentet är repeterbart (kan upprepas och kontrolleras av andra).' },
+                { v: 500, q: 'Vilka är stegen i den hypotetisk-deduktiva metoden i rätt ordning?',
+                  opts: ['Frågeställning → Hypotes → Förutsägelse → Undersökning → Slutsats','Hypotes → Frågeställning → Undersökning → Förutsägelse → Slutsats','Observation → Slutsats → Frågeställning → Hypotes → Experiment','Frågeställning → Undersökning → Hypotes → Förutsägelse → Slutsats'],
+                  correct: 0, expl: 'Den hypotetisk-deduktiva metoden: 1) Frågeställning, 2) Hypotes, 3) Förutsägelse (vad förväntar vi oss?), 4) Undersökning (experiment), 5) Slutsats (stöds eller falsifieras hypotesen?).' }
+            ]
+        },
+        {
+            name: 'Teorier, etik & gränser',
+            qs: [
+                { v: 100, q: 'Vad menas med den vetenskapliga revolutionen?',
+                  opts: ['Det skifte på 1500-talet då man slutade förlita sig på auktoriteter och istället började testa teorier med experiment och observationer','Den period då Galileo Galilei uppfann teleskopet och möjliggjorde systematiska astronomiska observationer','Det vetenskapliga genombrott som skedde under antiken då grekiska filosofer grundade naturvetenskapen','Den omvandling under 1800-talet då industrialiseringen ledde till nya vetenskapliga metoder och laboratorier'],
+                  correct: 0, expl: 'Den vetenskapliga revolutionen inleddes i slutet av 1500-talet. Istället för att söka svar i kyrkans lära eller antika skrifter började man använda systematiska undersökningar och experiment – t.ex. Copernicus och Galileo Galilei.' },
+                { v: 200, q: 'Vad är en vetenskaplig teori?',
+                  opts: ['En väl underbyggd förklaringsmodell baserad på data från många noggranna och systematiska experiment','En kvalificerad gissning om hur något fungerar som ännu inte testats i ett experiment','En slutsats som dragits utifrån ett enskilt experiment med entydiga och reproducerbara resultat','En filosofisk tanke om naturens lagar som presenteras av en erkänd auktoritet inom området'],
+                  correct: 0, expl: 'En vetenskaplig teori är långt mer än en gissning – det är en väl underbyggd förklaringsmodell som stöds av data från många experiment. Teorier är öppna för revidering om nya bevis dyker upp.' },
+                { v: 300, q: 'Vad innebär ett paradigmskifte?',
+                  opts: ['Att en etablerad vetenskaplig teori ersätts av en ny när tillräckliga bevis visar att den gamla är felaktig','Att ett experiment misslyckas och att nya variabler måste introduceras i undersökningen','Att en forskargrupp byter inriktning och börjar forska inom ett helt nytt ämnesområde','Att en ny teknisk metod gör att gamla experiment kan genomföras snabbare och mer precist'],
+                  correct: 0, expl: 'Ett paradigmskifte är när en teori ersätts av en annan. Exempel: den geocentriska världsbilden ersattes av den heliocentriska. Att teorier byts ut är ett tecken på att vetenskapen fungerar.' },
+                { v: 400, q: 'Vad räknas som forskningsfusk?',
+                  opts: ['Att plagiera, förfalska eller undanhålla resultat från sin forskning','Att använda en otillräckligt testad metod och publicera resultaten utan peer review','Att utföra experiment på ryggradsdjur utan att genomföra en etikprövning i förväg','Att byta hypotes mitt i ett experiment utan att börja om hela undersökningen från grunden'],
+                  correct: 0, expl: 'Forskningsfusk innebär att plagiera, förfalska data eller undanhålla resultat. Det skadar både forskning och förtroende. Kända fall har lett till allvarliga konsekvenser – t.ex. ett fall på Karolinska där patienter dog.' },
+                { v: 500, q: 'Varför kan naturvetenskapen inte svara på frågan "Är klimatförändringar dåliga?"',
+                  opts: ['Det är en värderingsfråga – naturvetenskapen kan beskriva och mäta fenomenet men inte avgöra om det är rätt eller fel','Klimatförändringar är ett för komplext fenomen för att kunna undersökas med vetenskapliga metoder','Frågans svar är beroende av politiska beslut och faller därmed utanför naturvetenskapens område','Naturvetenskapen saknar ännu tillräckliga data för att ge ett tillförlitligt svar på frågan'],
+                  correct: 0, expl: 'Naturvetenskapen är begränsad till det som kan testas. Frågor om vad som är "bra" eller "dåligt" är värderingsfrågor – de faller utanför ämnets räckvidd.' }
+            ]
+        },
+        {
+            name: 'Experiment & undersökning',
+            qs: [
+                { v: 100, q: 'Vad menas med den oberoende variabeln i ett experiment?',
+                  opts: ['Den variabel som den som utför experimentet medvetet ändrar för att undersöka dess effekt på något annat','Den variabel som mäts och registreras för att se om den påverkats av förändringen i experimentet','Den variabel som hålls konstant i alla försöksgrupper för att eliminera störningar från omgivningen','Den variabel som är omöjlig att kontrollera och som riskerar att påverka experimentets resultat'],
+                  correct: 0, expl: 'Den oberoende variabeln är det som forskaren aktivt ändrar – t.ex. belysningsstyrkan i ett lökexperiment. Den antas orsaka en förändring i den beroende variabeln.' },
+                { v: 200, q: 'Vad är en beroende variabel?',
+                  opts: ['Det som mäts i experimentet och som antas påverkas av förändringen i den oberoende variabeln','En variabel som inte kan ändras och som alltid hålls konstant under hela experimentet','En variabel som påverkar experimentet utan att den som forskar är medveten om det','Det som aktivt förändras av forskaren för att undersöka dess effekt på ett annat fenomen'],
+                  correct: 0, expl: 'Den beroende variabeln är det man mäter – t.ex. tillväxten (biomassa) hos lökplantor. Den "beror" på den oberoende variabeln (belysningsstyrkan).' },
+                { v: 300, q: 'Vad är en kontrollgrupp?',
+                  opts: ['En grupp som inte utsätts för den behandling som testas – den används för jämförelse med försöksgruppen','En grupp som kontrollerar att experimentet genomförs korrekt och att inga procedurmisstag görs','Den grupp som utsätts för den starkaste dosen av det ämne eller den faktor som testas','En grupp bestående av externa experter som bedömer om experimentets resultat är trovärdiga'],
+                  correct: 0, expl: 'Kontrollgruppen utsätts inte för behandlingen men väljs ut och hanteras på exakt samma sätt som de övriga grupperna. Den minimerar störvariabler och ger en jämförelsepunkt.' },
+                { v: 400, q: 'Vad är placeboeffekten?',
+                  opts: ['Att en person mår bättre enbart för att de förväntar sig det – trots att de inte fått någon verksam medicin','Att ett läkemedel fungerar sämre än förväntat eftersom det inte testats tillräckligt noggrant','Att försöksdeltagare medvetet rapporterar felaktiga resultat för att påverka experimentets utfall','Att effekten av ett läkemedel avtar över tid även om personen fortsätter att ta medicinen'],
+                  correct: 0, expl: 'Placeboeffekten innebär att förväntan i sig kan ge en mätbar effekt. En person som tror de fått medicin kan känna sig bättre – även om de bara fått en sockerpiller. Blindstudier används för att utesluta detta.' },
+                { v: 500, q: 'Vad menas med att samvariation inte är detsamma som orsakssamband?',
+                  opts: ['Att två variabler kan variera tillsammans utan att den ena orsakar den andra – en tredje faktor kan ligga bakom','Att starka samband alltid kräver fler oberoende experiment för att bekräftas som verkliga orsakssamband','Att ett orsakssamband kan existera utan att det yttrar sig som en mätbar samvariation i data','Att samvariation enbart är relevant inom medicin medan orsakssamband gäller alla vetenskapliga fält'],
+                  correct: 0, expl: 'Klassiskt exempel: glasskonsumtion och solbränna samvarierar – men glass orsakar inte solbränna. Förklaringen är en tredje faktor: varmt och soligt väder påverkar båda.' }
+            ]
+        },
+        {
+            name: 'Källkritik & att inte bli lurad',
+            qs: [
+                { v: 100, q: 'Vad innebär källkritik?',
+                  opts: ['Att systematiskt granska och bedöma källors trovärdighet för att undvika vilseledande information','Att uteslutande använda vetenskapliga artiklar som enda källtyp i all argumentation och analys','Att enbart godkänna källor som publicerats av myndigheter, lärosäten eller välkända institutioner','Att kontrollera stavning och grammatik i en källa för att bedöma om den är professionellt framtagen'],
+                  correct: 0, expl: 'Källkritik handlar om att systematiskt granska trovärdigheten hos information – är källan äkta, aktuell, oberoende, tendensiös och granskad? Syftet är att sortera bort opålitliga källor.' },
+                { v: 200, q: 'Vad är peer review?',
+                  opts: ['En granskningsprocess där en vetenskaplig rapport bedöms av minst två oberoende forskare innan publicering','En statlig process där forskning utvärderas av myndigheter innan den får tillämpas i samhällspraktiken','En databas där forskare kan söka efter och jämföra varandras publicerade vetenskapliga artiklar','En metod för att räkna hur många gånger en vetenskaplig artikel citerats av andra forskare'],
+                  correct: 0, expl: 'Peer review innebär att en artikel granskas av minst två oberoende experter inom samma fält innan den publiceras. Det är en kvalitetskontroll som skiljer vetenskapliga artiklar från t.ex. bloggar.' },
+                { v: 300, q: 'Vad är desinformation?',
+                  opts: ['Felaktig information som sprids medvetet i syfte att lura eller vilseleda mottagaren','Information som är vetenskapligt osäker och som saknar tillräcklig forskning och evidens bakom sig','Nyheter som av misstag blivit felaktiga på grund av journalistens okunskap eller tidsbrist','Reklam som överdriver en produkts fördelar utan att tydligt lyfta fram dess eventuella nackdelar'],
+                  correct: 0, expl: 'Desinformation är medvetet vilseledande – skillnaden mot vanliga felaktigheter är avsikten. Syftet kan vara att gynna ekonomiska intressen, påverka politiken eller skapa misstro mot myndigheter och experter.' },
+                { v: 400, q: 'Vad menas med faktaresistens?',
+                  opts: ['Att en person håller fast vid sin övertygelse trots att det finns välgrundade fakta som talar emot den','Att en person konsekvent vägrar ta del av information från källor som inte godkänts av vetenskapssamhället','Att forskning om ett visst ämne är så tekniskt komplicerad att den inte är tillgänglig för gemene man','Att myndigheter och institutioner undanhåller fakta från allmänheten av politiska eller ekonomiska skäl'],
+                  correct: 0, expl: 'Faktaresistens innebär att man inte ändrar uppfattning trots motstående bevis. Det strider mot ett vetenskapligt förhållningssätt och kan förstärka felaktiga uppfattningar – t.ex. om vaccinationer eller klimatförändringar.' },
+                { v: 500, q: 'Vad är pseudovetenskap?',
+                  opts: ['Läror som påstår sig vara vetenskapliga men saknar vetenskapligt stöd och ofta inte kan falsifieras med experiment','Vetenskapliga teorier som ännu inte fått tillräcklig forskning bakom sig för att accepteras av forskarsamhället','Forskning som bedrivs utanför akademiska institutioner men som ändå kan ge tillförlitliga och reproducerbara resultat','Teorier som avvisats av majoriteten av forskare men som fortfarande kan bevisas med rätt experimentell uppställning'],
+                  correct: 0, expl: 'Pseudovetenskap ser ut som vetenskap men uppfyller inte kraven – t.ex. astrologi, vars förutsägelser är för vaga för att falsifieras. Problemet är att folk kan lita på pseudovetenskapliga "behandlingar" istället för beprövad vård.' }
+            ]
+        }
+    ];
+
+    // ── Lagval ──────────────────────────────────────────────
+    let jpTeamCount = 2;
+    let jpTeams = [];
+
+    function jpRenderTeamInputs() {
+        const wrap = document.getElementById('jp-team-inputs');
+        wrap.innerHTML = '';
+        for (let i = 0; i < jpTeamCount; i++) {
+            const inp = document.createElement('input');
+            inp.type = 'text';
+            inp.id = 'jp-team-' + i;
+            inp.placeholder = 'Lag ' + (i + 1);
+            inp.className = 'w-full p-2 border-2 rounded-lg text-sm outline-none';
+            inp.style.borderColor = '#cffafe';
+            wrap.appendChild(inp);
+        }
+        document.getElementById('jp-remove-team').style.visibility = jpTeamCount <= 2 ? 'hidden' : 'visible';
+        document.getElementById('jp-add-team').style.visibility = jpTeamCount >= 4 ? 'hidden' : 'visible';
+    }
+
+    function jpChangeTeamCount(delta) {
+        jpTeamCount = Math.min(4, Math.max(2, jpTeamCount + delta));
+        jpRenderTeamInputs();
+    }
+
+    function jpStartGame() {
+        jpTeams = [];
+        for (let i = 0; i < jpTeamCount; i++) {
+            const val = document.getElementById('jp-team-' + i).value.trim();
+            jpTeams.push({ name: val || ('Lag ' + (i + 1)), score: 0 });
+        }
+        document.getElementById('jp-setup').classList.add('hidden');
+        document.getElementById('jp-game').classList.remove('hidden');
+        jpRenderTeamPanel();
+        jpBuildBoard();
+    }
+
+    // ── Poängpanel ──────────────────────────────────────────
+    function jpRenderTeamPanel() {
+        const panel = document.getElementById('jp-team-panel');
+        panel.innerHTML = '';
+        jpTeams.forEach((t, i) => {
+            const el = document.createElement('div');
+            el.className = 'bg-white border-2 rounded-xl p-2 text-center';
+            el.style.borderColor = '#0891b2';
+            el.innerHTML = `
+                <p class="text-[10px] uppercase tracking-wide text-slate-400 font-bold truncate">${t.name}</p>
+                <p class="text-xl font-bold" style="color:#0891b2;">${t.score}</p>
+                <div class="grid grid-cols-2 gap-1 mt-1">
+                    <button onclick="jpAdjustScore(${i},-100)" class="bg-red-100 text-red-700 text-[10px] font-bold py-1 rounded">-100</button>
+                    <button onclick="jpAdjustScore(${i},100)" class="bg-green-100 text-green-700 text-[10px] font-bold py-1 rounded">+100</button>
+                </div>
+                <button onclick="jpManualScore(${i})" class="w-full mt-1 bg-slate-100 text-slate-600 text-[9px] font-bold py-0.5 rounded">Ändra manuellt</button>
+            `;
+            panel.appendChild(el);
+        });
+    }
+
+    function jpAdjustScore(i, amt) {
+        jpTeams[i].score += amt;
+        jpRenderTeamPanel();
+    }
+
+    function jpManualScore(i) {
+        const input = prompt('Ange poäng att lägga till/dra bort för ' + jpTeams[i].name + ':');
+        const amt = parseInt(input, 10);
+        if (!isNaN(amt)) jpAdjustScore(i, amt);
+    }
+
+    // ── Spelplan ────────────────────────────────────────────
+    function jpBuildBoard() {
+        const board = document.getElementById('jp-board');
+        board.innerHTML = '';
+        JP_CATEGORIES.forEach(cat => {
+            const hd = document.createElement('div');
+            hd.className = 'text-white rounded-t-lg text-center font-bold text-[10px] sm:text-xs py-2 px-1 uppercase leading-tight flex items-center justify-center';
+            hd.style.background = '#0891b2';
+            hd.textContent = cat.name;
+            board.appendChild(hd);
+        });
+        for (let row = 0; row < 5; row++) {
+            JP_CATEGORIES.forEach((cat, ci) => {
+                const q = cat.qs[row];
+                const cell = document.createElement('div');
+                cell.className = 'jp-cell bg-cyan-50 border-2 rounded-lg text-center font-black text-lg sm:text-2xl h-14 sm:h-16 flex items-center justify-center';
+                cell.style.borderColor = '#0891b2';
+                cell.style.color = '#0e7490';
+                cell.textContent = q.v;
+                cell.onclick = () => jpOpenQuestion(ci, row, cell);
+                board.appendChild(cell);
+            });
+        }
+    }
+
+    // ── Frågemodal ──────────────────────────────────────────
+    let jpCurrentCat = null, jpCurrentRow = null, jpCurrentCell = null;
+    let jpOpts = [];
+    let jpPickedIdx = null;
+    let jpWrongIdxs = [];
+    let jpRevealed = false;
+    let jpTimer = null;
+    let jpTimeLeft = 30;
+
+    function jpOpenQuestion(ci, row, cellEl) {
+        if (cellEl.classList.contains('jp-used')) return;
+        jpCurrentCat = ci; jpCurrentRow = row; jpCurrentCell = cellEl;
+        const cat = JP_CATEGORIES[ci];
+        const q = cat.qs[row];
+
+        jpPickedIdx = null;
+        jpWrongIdxs = [];
+        jpRevealed = false;
+        jpOpts = jpShuffle(q.opts.map((t, i) => ({ text: t, isCorrect: i === q.correct })));
+
+        document.getElementById('jp-modal-cat').textContent = cat.name;
+        document.getElementById('jp-modal-value').textContent = q.v + ' poäng';
+        document.getElementById('jp-modal-q').textContent = q.q;
+        document.getElementById('jp-modal-expl').textContent = q.expl;
+        document.getElementById('jp-modal-expl-wrap').classList.add('hidden');
+        document.getElementById('jp-modal-teamselect').classList.add('hidden');
+        document.getElementById('jp-modal-judge').classList.add('hidden');
+        document.getElementById('jp-modal-steal').classList.add('hidden');
+        document.getElementById('jp-modal-noteam-actions').classList.remove('hidden');
+
+        jpRenderOptions();
+        document.getElementById('jp-modal').style.display = 'flex';
+        jpStartTimer();
+    }
+
+    function jpRenderOptions() {
+        const wrap = document.getElementById('jp-modal-opts');
+        wrap.innerHTML = '';
+        jpOpts.forEach((o, idx) => {
+            const btn = document.createElement('button');
+            let cls = 'jp-opt bg-white rounded-xl p-3 font-semibold text-sm w-full';
+            let disabled = false;
+            if (jpWrongIdxs.includes(idx)) {
+                cls += ' jp-wrong'; disabled = true;
+            } else if (jpRevealed) {
+                cls += o.isCorrect ? ' jp-correct' : ' opacity-40';
+                disabled = true;
+            } else if (jpPickedIdx === idx) {
+                cls += ' jp-picked'; disabled = true;
+            } else if (jpPickedIdx !== null) {
+                disabled = true;
+            }
+            btn.className = cls;
+            btn.textContent = String.fromCharCode(97 + idx) + ') ' + o.text;
+            btn.disabled = disabled;
+            btn.onclick = () => jpPickOption(idx);
+            wrap.appendChild(btn);
+        });
+    }
+
+    function jpPickOption(idx) {
+        if (jpPickedIdx !== null || jpRevealed) return;
+        jpPickedIdx = idx;
+        clearInterval(jpTimer);
+        document.getElementById('jp-modal-steal').classList.add('hidden');
+        jpRenderOptions();
+        document.getElementById('jp-modal-judge').classList.remove('hidden');
+    }
+
+    function jpJudge(isCorrect) {
+        document.getElementById('jp-modal-judge').classList.add('hidden');
+        if (isCorrect) {
+            clearInterval(jpTimer);
+            jpShowTeamSelect();
+        } else {
+            jpWrongIdxs.push(jpPickedIdx);
+            jpPickedIdx = null;
+            jpRenderOptions();
+            if (jpWrongIdxs.length >= jpOpts.length) {
+                jpRevealAnswer();
+            } else {
+                const banner = document.getElementById('jp-modal-steal');
+                banner.querySelector('p').textContent = '✗ Fel svar – övriga lag får chansen att svara.';
+                banner.classList.remove('hidden');
+                jpStartTimer();
+            }
+        }
+    }
+
+    function jpRevealAnswer() {
+        clearInterval(jpTimer);
+        jpRevealed = true;
+        jpRenderOptions();
+        document.getElementById('jp-modal-expl-wrap').classList.remove('hidden');
+        document.getElementById('jp-modal-judge').classList.add('hidden');
+        document.getElementById('jp-modal-steal').classList.add('hidden');
+    }
+
+    function jpShowTeamSelect() {
+        document.getElementById('jp-modal-teamselect').classList.remove('hidden');
+        document.getElementById('jp-modal-noteam-actions').classList.add('hidden');
+        const grid = document.getElementById('jp-modal-teamselect-grid');
+        grid.innerHTML = '';
+        jpTeams.forEach((t, i) => {
+            const b = document.createElement('button');
+            b.className = 'bg-cyan-50 hover:text-white p-2 rounded-lg font-bold text-sm border-2 truncate transition-colors';
+            b.style.borderColor = '#0891b2';
+            b.onmouseenter = () => { b.style.background = '#0891b2'; };
+            b.onmouseleave = () => { b.style.background = ''; };
+            b.textContent = t.name;
+            b.onclick = () => jpCloseModal(i);
+            grid.appendChild(b);
+        });
+    }
+
+    function jpCloseModal(winnerIdx) {
+        clearInterval(jpTimer);
+        const q = JP_CATEGORIES[jpCurrentCat].qs[jpCurrentRow];
+        if (winnerIdx !== null) {
+            jpTeams[winnerIdx].score += q.v;
+            jpRenderTeamPanel();
+        }
+        jpCurrentCell.classList.add('jp-used');
+        jpCurrentCell.textContent = '✓';
+        document.getElementById('jp-modal').style.display = 'none';
+        document.getElementById('jp-modal-teamselect').classList.add('hidden');
+        document.getElementById('jp-modal-noteam-actions').classList.remove('hidden');
+        document.getElementById('jp-modal-steal').classList.add('hidden');
+    }
+
+    // ── Timer ───────────────────────────────────────────────
+    function jpStartTimer() {
+        clearInterval(jpTimer);
+        jpTimeLeft = 30;
+        const bar = document.getElementById('jp-modal-timerbar');
+        const txt = document.getElementById('jp-modal-timer-text');
+        bar.style.width = '100%';
+        bar.style.background = '#0891b2';
+        txt.textContent = '30s';
+        txt.className = 'text-sm font-bold text-slate-400';
+        jpTimer = setInterval(() => {
+            jpTimeLeft--;
+            txt.textContent = jpTimeLeft + 's';
+            bar.style.width = (jpTimeLeft / 30 * 100) + '%';
+            if (jpTimeLeft <= 10) {
+                bar.style.background = '#dc2626';
+                txt.className = 'text-sm font-bold text-red-600';
+            }
+            if (jpTimeLeft <= 0) {
+                clearInterval(jpTimer);
+                const banner = document.getElementById('jp-modal-steal');
+                banner.querySelector('p').textContent = '⏰ Tiden är ute! Övriga lag får chansen att svara.';
+                banner.classList.remove('hidden');
+            }
+        }, 1000);
+    }
+
+    jpRenderTeamInputs();
 </script>
     <script src="feedback-widget.js" defer></script>
     <script data-goatcounter="https://johnblixt.goatcounter.com/count"
