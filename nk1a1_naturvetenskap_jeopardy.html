@@ -128,6 +128,8 @@
       <button id="jp-fsbtn" onclick="jpToggleFullscreen()" class="bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-lg">⛶ Helskärm</button>
     </div>
 
+    <p id="jp-turn" class="text-center font-bold px-4 pb-2" style="font-size:clamp(.8rem,2vh,1.1rem)"></p>
+
     <div id="jp-board"></div>
     <div id="jp-teams"></div>
 
@@ -142,6 +144,10 @@
         </div>
         <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden mb-4">
           <div id="jp-bar" class="jp-bar h-full" style="width:100%"></div>
+        </div>
+
+        <div id="jp-answering-wrap" class="mb-3">
+          <span id="jp-answering" class="px-3 py-1 rounded-full text-xs font-bold text-white"></span>
         </div>
 
         <div id="jp-banner" class="hidden mb-3 text-center">
@@ -159,11 +165,6 @@
         <div id="jp-expl-wrap" class="hidden border-l-4 rounded-r-lg p-3 mb-3 text-sm text-slate-700">
           <p class="font-bold text-[11px] uppercase tracking-wide mb-1" id="jp-expl-label">Förklaring</p>
           <p id="jp-expl"></p>
-        </div>
-
-        <div id="jp-teamselect" class="hidden mb-2">
-          <p class="text-sm font-bold text-slate-500 mb-2 text-center">Vilket lag får poängen?</p>
-          <div id="jp-teamselect-grid" class="grid grid-cols-2 gap-2"></div>
         </div>
 
         <div id="jp-actions" class="flex justify-center gap-5 text-xs font-bold pt-2 border-t border-slate-100">
@@ -282,7 +283,16 @@ const JP_CATEGORIES = [
 ];
 
 /* ════════ SETUP ════════ */
-let jpTeamCount = 2, jpTeams = [], jpUsed = 0;
+let jpTeamCount = 2, jpTeams = [], jpUsed = 0, jpTurn = null;
+
+function jpTeamColor(i){ return JP_CATEGORIES[i%4].color; }
+
+function jpRenderTurn(){
+  const el=document.getElementById('jp-turn');
+  if(jpTurn===null||!jpTeams[jpTurn]){ el.textContent=''; return; }
+  el.textContent=jpTeams[jpTurn].name+' väljer fråga';
+  el.style.color=jpTeamColor(jpTurn);
+}
 
 function jpRenderTeamInputs(){
   const wrap = document.getElementById('jp-team-inputs');
@@ -304,14 +314,16 @@ function jpStartGame(){
     const v=document.getElementById('jp-team-'+i).value.trim();
     jpTeams.push({name:v||('Lag '+(i+1)),score:0});
   }
+  jpTurn=Math.floor(Math.random()*jpTeams.length);
   document.getElementById('jp-setup').classList.add('hidden');
   document.getElementById('jp-stage').classList.remove('hidden');
   document.getElementById('jp-end').classList.add('hidden');
   document.getElementById('jp-end').style.display='none';
   document.getElementById('jp-teams').style.setProperty('--tc', jpTeams.length);
-  jpRenderTeams(); jpBuildBoard();
+  jpRenderTeams(); jpRenderTurn(); jpBuildBoard();
 }
 function jpNewGame(){
+  jpTurn=null;
   jpExitFullscreen();
   document.getElementById('jp-stage').classList.add('hidden');
   document.getElementById('jp-setup').classList.remove('hidden');
@@ -322,9 +334,15 @@ function jpNewGame(){
 function jpRenderTeams(){
   const p=document.getElementById('jp-teams'); p.innerHTML='';
   jpTeams.forEach((t,i)=>{
-    const c=JP_CATEGORIES[i%4].color;
+    const c=jpTeamColor(i);
     const el=document.createElement('div');
     el.className='jp-team';
+    if(i===jpTurn){
+      el.style.border='2px solid '+c;
+      el.style.background='rgba(255,255,255,.13)';
+    }else{
+      el.style.opacity='.5';
+    }
     el.innerHTML=`<span class="nm" style="border-left:3px solid ${c};padding-left:.5rem">${t.name}</span>
       <span class="sc" style="color:${c}">${t.score}</span>
       <button class="jp-step" onclick="jpAdjust(${i},-100)">−</button>
@@ -360,6 +378,21 @@ function jpBuildBoard(){
 
 /* ════════ FRÅGA ════════ */
 let jpCat=null,jpRow=null,jpCell=null,jpOpts=[],jpPicked=null,jpWrong=[],jpRevealed=false,jpTimer=null,jpTime=30;
+let jpChooser=null,jpAnswering=null,jpFailed=[];
+
+function jpNextAnswerer(){
+  const n=jpTeams.length;
+  for(let step=1;step<=n;step++){
+    const cand=(jpAnswering+step)%n;
+    if(!jpFailed.includes(cand)) return cand;
+  }
+  return null;
+}
+function jpRenderAnswering(){
+  const el=document.getElementById('jp-answering');
+  el.textContent='Svarar: '+jpTeams[jpAnswering].name;
+  el.style.background=jpTeamColor(jpAnswering);
+}
 
 function jpShuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
 
@@ -367,7 +400,8 @@ function jpOpenQuestion(ci,row,cell){
   if(cell.classList.contains('jp-used')) return;
   jpCat=ci; jpRow=row; jpCell=cell;
   const cat=JP_CATEGORIES[ci], q=cat.qs[row];
-  jpPicked=null; jpWrong=[]; jpRevealed=false;
+  jpPicked=null; jpWrong=[]; jpRevealed=false; jpFailed=[];
+  jpChooser=jpTurn; jpAnswering=jpTurn;
   jpOpts=jpShuffle(q.opts.map((t,i)=>({text:t,isCorrect:i===q.correct})));
 
   const catEl=document.getElementById('jp-cat');
@@ -380,10 +414,11 @@ function jpOpenQuestion(ci,row,cell){
   document.getElementById('jp-expl-label').style.color=cat.color;
   document.getElementById('jp-bar').style.background=cat.color;
   ew.classList.add('hidden');
-  document.getElementById('jp-teamselect').classList.add('hidden');
   document.getElementById('jp-judge').classList.add('hidden');
   document.getElementById('jp-banner').classList.add('hidden');
   document.getElementById('jp-actions').classList.remove('hidden');
+  document.getElementById('jp-answering-wrap').classList.remove('hidden');
+  jpRenderAnswering();
   jpRenderOptions();
   document.getElementById('jp-modal').classList.add('on');
   jpStartTimer();
@@ -415,17 +450,32 @@ function jpPick(idx){
 
 function jpJudge(ok){
   document.getElementById('jp-judge').classList.add('hidden');
-  if(ok){ clearInterval(jpTimer); jpShowTeamSelect(); }
-  else{
-    jpWrong.push(jpPicked); jpPicked=null; jpRenderOptions();
-    if(jpWrong.length>=jpOpts.length){ jpRevealAnswer(); }
-    else{ jpBanner('✗ Fel svar – övriga lag får chansen.'); jpStartTimer(); }
+  if(ok){
+    jpCloseModal(jpAnswering);
+    return;
+  }
+  jpWrong.push(jpPicked); jpPicked=null;
+  if(!jpFailed.includes(jpAnswering)) jpFailed.push(jpAnswering);
+  jpRenderOptions();
+  const next=jpNextAnswerer();
+  if(next===null || jpWrong.length>=jpOpts.length){
+    jpRevealAnswer();
+    jpBanner('Ingen fick rätt.');
+  }else{
+    jpAnswering=next;
+    jpRenderAnswering();
+    jpBanner('✗ Fel – chansen går över till '+jpTeams[next].name, jpTeamColor(next));
+    jpStartTimer();
   }
 }
 
-function jpBanner(txt){
+function jpBanner(txt,color){
   const b=document.getElementById('jp-banner');
-  b.querySelector('p').textContent=txt; b.classList.remove('hidden');
+  const p=b.querySelector('p');
+  p.textContent=txt;
+  if(color){ p.style.color=color; p.style.borderColor=color; p.style.background=color+'18'; }
+  else{ p.style.color=''; p.style.borderColor=''; p.style.background=''; }
+  b.classList.remove('hidden');
 }
 
 function jpRevealAnswer(){
@@ -433,32 +483,21 @@ function jpRevealAnswer(){
   document.getElementById('jp-expl-wrap').classList.remove('hidden');
   document.getElementById('jp-judge').classList.add('hidden');
   document.getElementById('jp-banner').classList.add('hidden');
-}
-
-function jpShowTeamSelect(){
-  document.getElementById('jp-teamselect').classList.remove('hidden');
-  document.getElementById('jp-actions').classList.add('hidden');
-  const g=document.getElementById('jp-teamselect-grid'); g.innerHTML='';
-  jpTeams.forEach((t,i)=>{
-    const c=JP_CATEGORIES[i%4].color;
-    const b=document.createElement('button');
-    b.className='p-2.5 rounded-lg font-bold text-sm border-2 truncate text-slate-700';
-    b.style.borderColor=c;
-    b.onmouseenter=()=>{b.style.background=c;b.style.color='#fff';};
-    b.onmouseleave=()=>{b.style.background='';b.style.color='';};
-    b.textContent=t.name;
-    b.onclick=()=>jpCloseModal(i);
-    g.appendChild(b);
-  });
+  document.getElementById('jp-answering-wrap').classList.add('hidden');
 }
 
 function jpCloseModal(winner){
   clearInterval(jpTimer);
   const q=JP_CATEGORIES[jpCat].qs[jpRow];
-  if(winner!==null){ jpTeams[winner].score+=q.v; jpRenderTeams(); }
+  if(winner!==null && winner!==undefined){
+    jpTeams[winner].score+=q.v;
+    jpTurn=winner;
+  }else{
+    jpTurn=(jpChooser+1)%jpTeams.length;
+  }
+  jpRenderTeams(); jpRenderTurn();
   jpCell.classList.add('jp-used'); jpCell.textContent='✓'; jpCell.onmouseenter=null; jpCell.onmouseleave=null;
   document.getElementById('jp-modal').classList.remove('on');
-  document.getElementById('jp-teamselect').classList.add('hidden');
   document.getElementById('jp-actions').classList.remove('hidden');
   jpUsed++;
   if(jpUsed>=20) jpShowEnd();
