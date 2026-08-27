@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jeopardy – Konstitutionell rätt | Rätten och samhället Block 1</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;0,800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0b1120;
+    --navy2:#111c33;
+  }
+  body{font-family:'EB Garamond',serif;}
+  .num{font-family:'Fredoka',sans-serif;font-variant-numeric:tabular-nums;}
+
+  /* ── Scenen ── */
+  #jp-stage{
+    background:var(--navy);
+    border-radius:1.25rem;
+    overflow:hidden;
+    position:relative;
+    display:flex;flex-direction:column;
+    height:min(78vh,660px);
+  }
+  #jp-stage.jp-fs{
+    position:fixed;inset:0;z-index:400;
+    height:100dvh;border-radius:0;
+  }
+  #jp-stage:fullscreen{height:100dvh;border-radius:0;}
+
+  /* ── Rutnät ── */
+  #jp-board{
+    flex:1;min-height:0;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    grid-template-rows:auto repeat(5,1fr);
+    gap:6px;padding:10px;
+  }
+  .jp-head{
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    font-family:'Fredoka',sans-serif;font-weight:700;
+    text-transform:uppercase;letter-spacing:.06em;line-height:1.1;
+    font-size:clamp(.6rem,1.5vh,.95rem);
+    color:#fff;padding:.5rem .35rem;border-radius:.6rem .6rem .2rem .2rem;
+  }
+  .jp-cell{
+    display:flex;align-items:center;justify-content:center;
+    border-radius:.6rem;cursor:pointer;
+    font-family:'Fredoka',sans-serif;font-weight:700;
+    font-size:clamp(1.3rem,4.6vh,3.1rem);
+    border:1px solid rgba(255,255,255,.07);
+    transition:transform .12s ease,filter .12s ease,background .12s ease;
+  }
+  .jp-cell:hover:not(.jp-used){transform:translateY(-2px) scale(1.02);}
+  .jp-cell:focus-visible{outline:3px solid #fff;outline-offset:2px;}
+  .jp-used{
+    background:rgba(255,255,255,.04)!important;color:rgba(255,255,255,.16)!important;
+    cursor:default;transform:none;font-size:clamp(1rem,2.6vh,1.6rem);
+  }
+
+  /* ── Lagrad ── */
+  #jp-teams{
+    display:grid;gap:6px;padding:0 10px 10px;
+    grid-template-columns:repeat(var(--tc,2),1fr);
+  }
+  .jp-team{
+    background:var(--navy2);border-radius:.7rem;padding:.4rem .6rem;
+    display:flex;align-items:center;gap:.6rem;border:1px solid rgba(255,255,255,.08);
+  }
+  .jp-team .nm{
+    flex:1;min-width:0;color:#cbd5e1;font-weight:700;
+    font-size:clamp(.7rem,1.6vh,.95rem);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .jp-team .sc{font-family:'Fredoka',sans-serif;font-size:clamp(1rem,2.6vh,1.6rem);font-weight:700;}
+  .jp-step{
+    background:rgba(255,255,255,.08);color:#e2e8f0;border:none;border-radius:.4rem;
+    width:1.7rem;height:1.7rem;font-weight:700;cursor:pointer;font-family:'Fredoka',sans-serif;
+  }
+  .jp-step:hover{background:rgba(255,255,255,.2);}
+
+  /* ── Modal ── */
+  #jp-modal{position:absolute;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(4,8,18,.9);}
+  #jp-modal.on{display:flex;}
+  .jp-card{background:#fff;border-radius:1.1rem;width:100%;max-width:820px;max-height:94%;overflow-y:auto;padding:1.1rem 1.3rem 1rem;}
+  .jp-opt{
+    text-align:left;font-family:'EB Garamond',serif;border:2px solid #e2e8f0;background:#fff;
+    border-radius:.7rem;padding:.6rem .8rem;font-size:clamp(.85rem,1.9vh,1.05rem);
+    line-height:1.35;transition:all .12s ease;width:100%;
+  }
+  .jp-opt:hover:not(:disabled){background:#f8fafc;}
+  .jp-opt:disabled{cursor:default;}
+  .jp-picked{background:#fef3c7!important;border-color:#f59e0b!important;}
+  .jp-wrong{background:#fee2e2!important;border-color:#dc2626!important;color:#991b1b;opacity:.65;}
+  .jp-correct{background:#dcfce7!important;border-color:#16a34a!important;color:#166534;font-weight:700;}
+  .jp-bar{transition:width 1s linear,background-color .3s;}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body class="bg-slate-50">
+
+<a href="rs_konstitutionell.html" onclick="smartBack(event)" class="fixed top-4 left-4 z-50 text-sm font-medium text-slate-500 hover:text-teal-700 bg-white/90 px-3 py-2 rounded-xl shadow-sm transition-colors">← Tillbaka till området</a>
+
+<div class="max-w-5xl mx-auto px-5 py-8">
+
+  <div class="border-l-4 pl-4 mb-8" style="border-color: #0d9488;">
+    <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Rätten och samhället · Block 1 · Spel</p>
+    <h1 class="text-3xl md:text-4xl font-bold italic text-slate-900">Jeopardy – Konstitutionell rätt</h1>
+  </div>
+
+  <!-- ══ SETUP ══ -->
+  <div id="jp-setup" class="max-w-sm mx-auto bg-white border-2 border-slate-200 rounded-2xl p-6">
+    <h2 class="font-bold text-xl mb-4 text-center">Vilka lag tävlar?</h2>
+    <div id="jp-team-inputs" class="space-y-2 mb-3"></div>
+    <div class="flex justify-center gap-5 mb-5 text-xs font-bold text-teal-700">
+      <button id="jp-add" onclick="jpChangeTeamCount(1)">+ Lägg till lag</button>
+      <button id="jp-remove" onclick="jpChangeTeamCount(-1)">− Ta bort lag</button>
+    </div>
+    <button onclick="jpStartGame()" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold uppercase tracking-wide text-sm hover:bg-slate-700">Starta spelet</button>
+  </div>
+
+  <!-- ══ SCEN ══ -->
+  <div id="jp-stage" class="hidden">
+
+    <div class="flex items-center gap-3 px-4 pt-3 pb-1">
+      <p class="text-slate-400 text-[11px] uppercase tracking-[.2em] font-bold flex-1 truncate">Konstitutionell rätt</p>
+      <button onclick="jpShowRules(false)" class="text-slate-400 hover:text-white text-xs font-bold">Regler</button>
+      <button onclick="jpNewGame()" class="text-slate-400 hover:text-white text-xs font-bold">Nytt spel</button>
+      <button id="jp-fsbtn" onclick="jpToggleFullscreen()" class="bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-lg">⛶ Helskärm</button>
+    </div>
+
+    <p id="jp-turn" class="text-center font-bold px-4 pb-2" style="font-size:clamp(.8rem,2vh,1.1rem)"></p>
+
+    <div id="jp-board"></div>
+    <div id="jp-teams"></div>
+
+    <!-- Spelregler -->
+    <div id="jp-rules" class="hidden absolute inset-0 z-[55] items-center justify-center p-6" style="background:rgba(4,8,18,.94)">
+      <div class="bg-white rounded-2xl w-full max-w-lg p-6 max-h-[92%] overflow-y-auto">
+        <h2 class="font-bold text-2xl mb-4 text-center">Så funkar det</h2>
+        <ul class="space-y-2 text-sm text-slate-700 mb-4 list-disc pl-5 leading-snug">
+          <li>Ett lag i taget har turen och väljer en ruta på spelplanen.</li>
+          <li>Laget säger sitt svar högt — du klickar på det alternativ de väljer.</li>
+          <li>Rätt svar: laget får poängen och väljer nästa ruta. Läs gärna upp förklaringen som visas.</li>
+          <li>Fel svar: turen går vidare till nästa lag, och frågan blir värd mindre poäng.</li>
+          <li>Har alla lag svarat fel visas rätt svar automatiskt. Ingen får poäng.</li>
+          <li>Du behöver inte kunna ämnet — spelet rättar själv.</li>
+        </ul>
+        <p id="jp-rules-start" class="text-center font-bold mb-4" style="font-size:clamp(.9rem,2.2vh,1.15rem)"></p>
+        <button onclick="jpHideRules()" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold uppercase tracking-wide text-sm hover:bg-slate-700">Kör igång</button>
+      </div>
+    </div>
+
+    <!-- Frågemodal -->
+    <div id="jp-modal">
+      <div class="jp-card" id="jp-card">
+        <div class="flex items-center gap-3 mb-3">
+          <span id="jp-cat" class="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide text-white"></span>
+          <span id="jp-val" class="num font-bold text-slate-400"></span>
+          <span class="flex-1"></span>
+          <span id="jp-time" class="num text-sm font-bold text-slate-400">30</span>
+        </div>
+        <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden mb-4">
+          <div id="jp-bar" class="jp-bar h-full" style="width:100%"></div>
+        </div>
+
+        <div id="jp-answering-wrap" class="mb-3">
+          <span id="jp-answering" class="px-3 py-1 rounded-full text-xs font-bold text-white"></span>
+        </div>
+
+        <div id="jp-banner" class="hidden mb-3 text-center">
+          <p class="text-sm font-bold text-amber-800 bg-amber-50 border border-amber-300 rounded-lg py-2 px-3 inline-block"></p>
+        </div>
+
+        <p id="jp-q" class="font-bold text-slate-900 mb-4 leading-snug" style="font-size:clamp(1.05rem,2.7vh,1.6rem)"></p>
+        <div id="jp-opts" class="grid gap-2 mb-3"></div>
+
+        <div id="jp-expl-wrap" class="hidden border-l-4 rounded-r-lg p-3 mb-3 text-sm text-slate-700">
+          <p class="font-bold text-[11px] uppercase tracking-wide mb-1" id="jp-expl-label">Förklaring</p>
+          <p id="jp-expl"></p>
+        </div>
+
+        <div id="jp-actions" class="flex justify-center gap-5 text-xs font-bold pt-2 border-t border-slate-100">
+          <button id="jp-reveal-btn" onclick="jpRevealAnswer()" class="text-teal-700">Visa svar</button>
+          <button id="jp-close-btn" onclick="jpCloseModal()" class="text-slate-400">Stäng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slutresultat -->
+    <div id="jp-end" class="hidden absolute inset-0 z-[60] items-center justify-center p-6" style="background:rgba(4,8,18,.94)">
+      <div class="text-center">
+        <p class="text-slate-400 text-xs uppercase tracking-[.25em] font-bold mb-4">Slutresultat</p>
+        <div id="jp-end-list" class="space-y-2 mb-6"></div>
+        <button onclick="jpNewGame()" class="bg-white text-slate-900 px-6 py-2.5 rounded-xl font-bold text-sm">Spela igen</button>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="mt-16 text-center border-t border-slate-200 pt-8">
+    <p class="text-slate-400 text-xs uppercase tracking-[0.2em] font-black italic">Designad av John</p>
+  </footer>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// TILLBAKA-NAVIGERING
+// ════════════════════════════════════════════════════════════
+function smartBack(e) {
+  if (e) e.preventDefault();
+  var ref = document.referrer;
+  if (ref) {
+    try {
+      if (new URL(ref).origin === window.location.origin) {
+        history.back();
+        return;
+      }
+    } catch (err) {}
+  }
+  window.location.href = 'rs_konstitutionell.html';
+}
+</script>
+
+<script>
+/* ════════ DATA ════════ */
+const JP_CATEGORIES = [
+  { name:'Rättsordning & normhierarki', color:'#0d9488', rgb:'13,148,136', qs:[
+    { v:100, q:'Vad är en förordning?',
+      opts:[
+        'En bindande regel som kommuner och regioner får utfärda helt på eget initiativ',
+        'Ett internationellt avtal som Sverige har förbundit sig att följa fullt ut',
+        'En regel som regeringen beslutar och som ger mer detaljerade bestämmelser byggda på en lag',
+        'En regel som riksdagen beslutar och som har samma rang som en av grundlagarna'
+      ],
+      correct:2, expl:'En förordning beslutas av regeringen och ger mer detaljerade regler som bygger på en lag från riksdagen. I normhierarkin ligger förordningen under lagen.' },
+    { v:200, q:'Vad menas med begreppet författning?',
+      opts:[
+        'Ett samlingsnamn för lagar och förordningar – även grundlagarna räknas som författningar',
+        'Ett annat ord för enbart de fyra grundlagar som styr hur riket ska fungera',
+        'En detaljregel som en enskild myndighet utfärdar för ett särskilt bestämt ändamål',
+        'En kommunal regel som bara gäller inom ett geografiskt avgränsat område i landet'
+      ],
+      correct:0, expl:'Författning är ett samlingsbegrepp. Grundlagar, lagar och förordningar räknas alla som författningar.' },
+    { v:300, q:'Vad innebär normhierarkin?',
+      opts:[
+        'En turordning för hur riksdagen behandlar de olika lagförslag som lämnas in under året',
+        'En rangordning av rättsreglerna där en lägre regel aldrig får strida mot en högre',
+        'En lista över landets myndigheter ordnade efter hur stor makt var och en har fått',
+        'En ordning som avgör vilken domstol som ska pröva ett visst mål allra först'
+      ],
+      correct:1, expl:'Normhierarkin rangordnar reglerna. En förordning får inte strida mot en lag, och en lag får inte strida mot grundlagen.' },
+    { v:400, q:'I vilken ordning står normhierarkin, från högst till lägst?',
+      opts:[
+        'Lag → grundlag → förordning → riksdagsordningen → föreskrift',
+        'Riksdagsordningen → grundlag → lag → föreskrift → förordning',
+        'Grundlag → lag → riksdagsordningen → föreskrift → förordning',
+        'Grundlag → riksdagsordningen → lag → förordning → föreskrift'
+      ],
+      correct:3, expl:'Uppifrån och ner: grundlag, riksdagsordningen, vanlig lag, förordning, föreskrift. Riksdagsordningen är ett mellanting mellan grundlag och vanlig lag.' },
+    { v:500, q:'Vad är skillnaden mellan en tvingande och en dispositiv lag?',
+      opts:[
+        'En tvingande lag beslutas av riksdagen, medan en dispositiv lag beslutas av regeringen genom en förordning',
+        'En tvingande lag går inte att avtala bort, medan en dispositiv lag kan ersättas av parternas eget avtal',
+        'En tvingande lag gäller alla medborgare, medan en dispositiv lag bara gäller för företag och myndigheter',
+        'En tvingande lag börjar gälla direkt, medan en dispositiv lag börjar gälla först efter en övergångstid'
+      ],
+      correct:1, expl:'En tvingande lag kan inte avtalas bort – t.ex. semesterlagens minimiregler. En dispositiv lag, som köplagen, gäller bara om parterna inte kommit överens om annat.' }
+  ]},
+  { name:'Grundlagarna & statsskick', color:'#7c3aed', rgb:'124,58,237', qs:[
+    { v:100, q:'Vilken av Sveriges grundlagar reglerar hur landet styrs?',
+      opts:[
+        'Successionsordningen, som beskriver hur riksdagen och dess utskott är sammansatta',
+        'Tryckfrihetsförordningen, som beskriver hur regeringen utses efter ett riksdagsval',
+        'Yttrandefrihetsgrundlagen, som beskriver hur domstolarna dömer i vanliga brottmål',
+        'Regeringsformen, som beskriver riksdag, regering, domstolar och medborgarnas rättigheter'
+      ],
+      correct:3, expl:'Regeringsformen (RF) är den centrala grundlagen. Den slår fast hur Sverige styrs och vilka fri- och rättigheter medborgarna har. Se RF 1 kap.' },
+    { v:200, q:'Vilka är Sveriges fyra grundlagar?',
+      opts:[
+        'Regeringsformen, successionsordningen, tryckfrihetsförordningen och yttrandefrihetsgrundlagen',
+        'Regeringsformen, brottsbalken, tryckfrihetsförordningen och yttrandefrihetsgrundlagen',
+        'Successionsordningen, riksdagsordningen, skattelagen och tryckfrihetsförordningen',
+        'Regeringsformen, successionsordningen, riksdagsordningen och offentlighetslagen'
+      ],
+      correct:0, expl:'De fyra grundlagarna är regeringsformen (RF), successionsordningen (SO), tryckfrihetsförordningen (TF) och yttrandefrihetsgrundlagen (YGL). Riksdagsordningen är en mellanlag.' },
+    { v:300, q:'Vad reglerar successionsordningen?',
+      opts:[
+        'Hur arvet efter en avliden privatperson ska delas mellan de närmaste arvingarna',
+        'Hur statsministerposten lämnas över när en regering byts ut efter ett val',
+        'Arvsrätten till tronen – alltså vem som kan bli Sveriges statschef',
+        'Hur riksdagens platser fördelas mellan de olika partierna efter ett val'
+      ],
+      correct:2, expl:'Successionsordningen (SO) är en grundlag som styr tronföljden – vem som ärver tronen och kan bli kung eller drottning.' },
+    { v:400, q:'Vad innebär det att Sverige har ett representativt styrelseskick?',
+      opts:[
+        'Alla medborgare röstar direkt om varje ny lag genom återkommande folkomröstningar',
+        'Folket väljer representanter till riksdagen som fattar besluten å medborgarnas vägnar',
+        'Statsministern väljs direkt av folket och utser därefter fritt sina egna ministrar',
+        'Partierna turas om att styra landet enligt ett schema som bestäms på förhand'
+      ],
+      correct:1, expl:'Representativt styrelseskick betyder att vi väljer ombud – riksdagsledamöter – som fattar besluten. Vi röstar alltså inte själva om varje lag.' },
+    { v:500, q:'Varför är grundlagarna svårare att ändra än vanliga lagar?',
+      opts:[
+        'Riksdagen måste fatta samma beslut två gånger med ett riksdagsval emellan, vilket skyddar demokratin',
+        'En grundlagsändring kräver att Högsta domstolen först prövar och godkänner det nya förslaget noga',
+        'Varje grundlagsändring måste antas av minst tre fjärdedelar av riksdagens ledamöter samma dag',
+        'En grundlag kan bara ändras genom en folkomröstning där en klar majoritet röstar för förslaget'
+      ],
+      correct:0, expl:'En grundlag ändras genom två likadana riksdagsbeslut med ett val emellan. Det tar minst ett år och gör att ingen tillfällig majoritet snabbt kan ta bort rättigheter.' }
+  ]},
+  { name:'Maktdelning & statsmakterna', color:'#f59e0b', rgb:'245,158,11', qs:[
+    { v:100, q:'Vem har den lagstiftande makten i Sverige?',
+      opts:[
+        'Regeringen, som leder landet i vardagen och styr de statliga myndigheterna',
+        'Riksdagen, som beslutar om nya lagar och ändrar eller tar bort gamla',
+        'Konstitutionsutskottet, som granskar om statsråden har skött sina uppdrag rätt',
+        'Högsta domstolen, som avgör hur oklara lagar ska tolkas i praktiken'
+      ],
+      correct:1, expl:'Den lagstiftande makten tillhör riksdagen. Det är riksdagen som beslutar vilka lagar som ska gälla i Sverige.' },
+    { v:200, q:'Vem har den verkställande makten i Sverige?',
+      opts:[
+        'Riksdagen, som utöver att stifta lagar även verkställer dem ute i samhället',
+        'Domstolarna, som ser till att fattade beslut följs av myndigheter och enskilda',
+        'Riksrevisionen, som kontrollerar hur statens pengar används av myndigheterna',
+        'Regeringen, som genomför riksdagens lagar och leder den statliga förvaltningen'
+      ],
+      correct:3, expl:'Den verkställande makten tillhör regeringen. Den ser till att lagarna genomförs och leder de statliga myndigheterna.' },
+    { v:300, q:'Vem har den dömande makten i Sverige?',
+      opts:[
+        'Domstolarna, som är oberoende och dömer i både brottmål och tvister',
+        'Riksdagen, som genom sitt justitieutskott avgör de mest allvarliga målen',
+        'Justitieombudsmannen, som prövar klagomål från medborgare mot myndigheter',
+        'Regeringen, som utser domarna och därför styr hur domstolarna dömer'
+      ],
+      correct:0, expl:'Den dömande makten utövas av de oberoende domstolarna. Varken riksdag eller regering får styra hur en domstol dömer i ett mål.' },
+    { v:400, q:'Vilka är maktens tre delar?',
+      opts:[
+        'Den lagstiftande makten, den kontrollerande makten och den verkställande makten',
+        'Den statliga makten, den kommunala makten och den regionala makten',
+        'Den lagstiftande makten, den verkställande makten och den dömande makten',
+        'Den politiska makten, den rättsliga makten och den ekonomiska makten'
+      ],
+      correct:2, expl:'Makten delas i tre: den lagstiftande (riksdagen), den verkställande (regeringen) och den dömande (domstolarna).' },
+    { v:500, q:'Varför är statsmakten uppdelad på tre olika instanser?',
+      opts:[
+        'För att de tre delarna ska kunna kontrollera varandra så att makten inte missbrukas',
+        'För att arbetet ska gå snabbare när tre olika organ kan fatta besluten samtidigt',
+        'För att varje politiskt parti i riksdagen ska få styra minst en av de tre delarna',
+        'För att staten, kommunerna och regionerna ska få lika mycket att säga till om'
+      ],
+      correct:0, expl:'Idén kommer från Montesquieu: om samma instans stiftar lagar, genomför dem och dömer kan den göra vad den vill. Delad makt hindrar maktmissbruk.' }
+  ]},
+  { name:'Fri- & rättigheter + kontrollmakt', color:'#e11d48', rgb:'225,29,72', qs:[
+    { v:100, q:'Vilket av följande är en grundläggande fri- och rättighet enligt regeringsformen?',
+      opts:[
+        'Skattefriheten, alltså rätten att slippa betala skatt på en del av sin inkomst',
+        'Bostadsrätten, alltså rätten att av staten få en egen bostad inom en viss tid',
+        'Yttrandefriheten, alltså rätten att uttrycka sina åsikter i tal, skrift och bild',
+        'Tingsrättsrätten, alltså rätten att alltid få sitt mål prövat av en tingsrätt först'
+      ],
+      correct:2, expl:'Yttrandefrihet, mötesfrihet och religionsfrihet är exempel på grundläggande fri- och rättigheter i regeringsformen 2 kap. De skyddar medborgaren mot staten.' },
+    { v:200, q:'Vad innebär allmän och lika rösträtt i Sverige?',
+      opts:[
+        'Alla som bor i Sverige och har fyllt 16 år får rösta i alla typer av val',
+        'Alla myndiga medborgare får rösta, och varje röst väger exakt lika mycket',
+        'Varje kommun bestämmer själv vilken åldersgräns som ska gälla för att få rösta',
+        'De som betalar mest skatt får rösta i fler val än vad övriga medborgare får'
+      ],
+      correct:1, expl:'Allmän rösträtt: alla myndiga medborgare (18 år) får rösta. Lika rösträtt: alla röster räknas lika mycket, oavsett vem som röstar.' },
+    { v:300, q:'Vad innebär offentlighetsprincipen?',
+      opts:[
+        'Alla myndigheter måste lägga ut samtliga sina beslut på sina egna webbplatser',
+        'Alla domstolsförhandlingar är alltid öppna för allmänheten och går aldrig att stänga',
+        'Alla privatpersoner kan kräva att staten publicerar deras egna uppgifter offentligt',
+        'Alla medborgare har rätt att begära ut och läsa myndigheternas allmänna handlingar'
+      ],
+      correct:3, expl:'Offentlighetsprincipen ger var och en rätt att ta del av allmänna handlingar hos myndigheter. Den skyddas av tryckfrihetsförordningen (TF).' },
+    { v:400, q:'Vad innebär meddelarfriheten?',
+      opts:[
+        'Anställda får lämna uppgifter till media utan att arbetsgivaren straffar dem för det',
+        'Journalister har rätt att gå in på en myndighet och läsa precis vilka papper de vill',
+        'Myndigheter är skyldiga att hålla en presskonferens varje gång något viktigt har hänt',
+        'Alla medborgare har rätt att få en egen insändare publicerad i sin lokala dagstidning'
+      ],
+      correct:0, expl:'Meddelarfriheten skyddar den som tipsar media. En anställd kan berätta om missförhållanden för en journalist utan att arbetsgivaren får straffa hen. Chefen får inte heller efterforska källan.' },
+    { v:500, q:'Vad är Konstitutionsutskottets (KU) uppgift?',
+      opts:[
+        'Att gå igenom och godkänna varje nytt lagförslag innan riksdagen får rösta om det',
+        'Att granska om statsråden har skött sina uppdrag och följt lagen i regeringens arbete',
+        'Att besluta om ändringar i grundlagarna och tillsätta de statliga utredningarna åt riksdagen',
+        'Att utse ledamöterna i Högsta domstolen och Högsta förvaltningsdomstolen varje år'
+      ],
+      correct:1, expl:'KU är ett utskott i riksdagen som granskar ministrarnas tjänsteutövning. KU kan rikta offentlig kritik mot ett statsråd, men är ingen domstol och kan inte döma.' }
+  ]}
+];
+
+/* ════════ SETUP ════════ */
+let jpTeamCount = 2, jpTeams = [], jpUsed = 0, jpTurn = null;
+
+function jpTeamColor(i){ return JP_CATEGORIES[i%4].color; }
+
+function jpRenderTurn(){
+  const el=document.getElementById('jp-turn');
+  if(jpTurn===null||!jpTeams[jpTurn]){ el.textContent=''; return; }
+  el.textContent=jpTeams[jpTurn].name+' väljer fråga';
+  el.style.color=jpTeamColor(jpTurn);
+}
+
+function jpRenderTeamInputs(){
+  const wrap = document.getElementById('jp-team-inputs');
+  wrap.innerHTML = '';
+  for(let i=0;i<jpTeamCount;i++){
+    const inp = document.createElement('input');
+    inp.type='text'; inp.id='jp-team-'+i; inp.placeholder='Lag '+(i+1);
+    inp.className='w-full p-2.5 border-2 border-slate-200 rounded-lg text-sm outline-none focus:border-slate-900';
+    wrap.appendChild(inp);
+  }
+  document.getElementById('jp-remove').style.visibility = jpTeamCount<=2?'hidden':'visible';
+  document.getElementById('jp-add').style.visibility    = jpTeamCount>=4?'hidden':'visible';
+}
+function jpChangeTeamCount(d){ jpTeamCount=Math.min(4,Math.max(2,jpTeamCount+d)); jpRenderTeamInputs(); }
+
+function jpStartGame(){
+  jpTeams=[]; jpUsed=0;
+  for(let i=0;i<jpTeamCount;i++){
+    const v=document.getElementById('jp-team-'+i).value.trim();
+    jpTeams.push({name:v||('Lag '+(i+1)),score:0});
+  }
+  jpTurn=Math.floor(Math.random()*jpTeams.length);
+  document.getElementById('jp-setup').classList.add('hidden');
+  document.getElementById('jp-stage').classList.remove('hidden');
+  document.getElementById('jp-end').classList.add('hidden');
+  document.getElementById('jp-end').style.display='none';
+  document.getElementById('jp-teams').style.setProperty('--tc', jpTeams.length);
+  jpRenderTeams(); jpRenderTurn(); jpBuildBoard();
+  jpShowRules(true);
+}
+function jpNewGame(){
+  jpTurn=null;
+  jpExitFullscreen();
+  jpHideRules();
+  document.getElementById('jp-modal').classList.remove('on');
+  document.getElementById('jp-stage').classList.add('hidden');
+  document.getElementById('jp-setup').classList.remove('hidden');
+  document.getElementById('jp-end').style.display='none';
+}
+
+/* ════════ SPELREGLER ════════ */
+function jpShowRules(initial){
+  if(jpTurn===null||!jpTeams[jpTurn]) return;
+  const el=document.getElementById('jp-rules-start');
+  el.textContent=jpTeams[jpTurn].name+(initial?' börjar.':' har turen.');
+  el.style.color=jpTeamColor(jpTurn);
+  const r=document.getElementById('jp-rules');
+  r.classList.remove('hidden'); r.style.display='flex';
+}
+function jpHideRules(){
+  const r=document.getElementById('jp-rules');
+  r.classList.add('hidden'); r.style.display='none';
+}
+
+/* ════════ LAG ════════ */
+function jpRenderTeams(){
+  const p=document.getElementById('jp-teams'); p.innerHTML='';
+  jpTeams.forEach((t,i)=>{
+    const c=jpTeamColor(i);
+    const el=document.createElement('div');
+    el.className='jp-team';
+    if(i===jpTurn){
+      el.style.border='2px solid '+c;
+      el.style.background='rgba(255,255,255,.13)';
+    }else{
+      el.style.opacity='.5';
+    }
+    el.innerHTML=`<span class="nm" style="border-left:3px solid ${c};padding-left:.5rem">${t.name}</span>
+      <span class="sc" style="color:${c}">${t.score}</span>
+      <button class="jp-step" onclick="jpAdjust(${i},-100)">−</button>
+      <button class="jp-step" onclick="jpAdjust(${i},100)">+</button>`;
+    p.appendChild(el);
+  });
+}
+function jpAdjust(i,a){ jpTeams[i].score+=a; jpRenderTeams(); }
+
+/* ════════ SPELPLAN ════════ */
+function jpBuildBoard(){
+  const b=document.getElementById('jp-board'); b.innerHTML='';
+  JP_CATEGORIES.forEach(cat=>{
+    const h=document.createElement('div');
+    h.className='jp-head'; h.style.background=cat.color; h.textContent=cat.name;
+    b.appendChild(h);
+  });
+  for(let row=4;row>=0;row--){
+    JP_CATEGORIES.forEach((cat,ci)=>{
+      const q=cat.qs[row];
+      const cell=document.createElement('button');
+      cell.className='jp-cell';
+      cell.style.background=`rgba(${cat.rgb},.13)`;
+      cell.style.color=cat.color;
+      cell.textContent=q.v;
+      cell.onmouseenter=()=>{ if(!cell.classList.contains('jp-used')){cell.style.background=cat.color;cell.style.color='#0b1120';} };
+      cell.onmouseleave=()=>{ if(!cell.classList.contains('jp-used')){cell.style.background=`rgba(${cat.rgb},.13)`;cell.style.color=cat.color;} };
+      cell.onclick=()=>jpOpenQuestion(ci,row,cell);
+      b.appendChild(cell);
+    });
+  }
+}
+
+/* ════════ FRÅGA ════════ */
+let jpCat=null,jpRow=null,jpCell=null,jpOpts=[],jpPicked=null,jpWrong=[],jpRevealed=false,jpTimer=null,jpTime=30;
+let jpChooser=null,jpAnswering=null,jpFailed=[];
+let jpValue=0,jpResolved=false,jpWinner=null;
+
+function jpLowerValue(){
+  let v=Math.floor(jpValue/2);
+  v=Math.floor(v/50)*50;
+  jpValue=Math.max(50,v);
+}
+function jpRenderValue(old){
+  const el=document.getElementById('jp-val');
+  if(old!==undefined && old!==jpValue){
+    el.innerHTML='<span class="line-through opacity-60">'+old+' p</span> <span class="text-slate-800">'+jpValue+' p</span>';
+  }else{
+    el.textContent=jpValue+' p';
+  }
+}
+
+function jpNextAnswerer(){
+  const n=jpTeams.length;
+  for(let step=1;step<=n;step++){
+    const cand=(jpAnswering+step)%n;
+    if(!jpFailed.includes(cand)) return cand;
+  }
+  return null;
+}
+function jpRenderAnswering(){
+  const el=document.getElementById('jp-answering');
+  el.textContent='Svarar: '+jpTeams[jpAnswering].name;
+  el.style.background=jpTeamColor(jpAnswering);
+}
+
+function jpShuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+function jpOpenQuestion(ci,row,cell){
+  if(cell.classList.contains('jp-used')) return;
+  if(document.getElementById('jp-rules').style.display==='flex') return;
+  jpCat=ci; jpRow=row; jpCell=cell;
+  const cat=JP_CATEGORIES[ci], q=cat.qs[row];
+  jpPicked=null; jpWrong=[]; jpRevealed=false; jpResolved=false; jpWinner=null; jpFailed=[];
+  jpChooser=jpTurn; jpAnswering=jpTurn;
+  jpValue=q.v;
+  jpOpts=jpShuffle(q.opts.map((t,i)=>({text:t,isCorrect:i===q.correct})));
+
+  const catEl=document.getElementById('jp-cat');
+  catEl.textContent=cat.name; catEl.style.background=cat.color;
+  jpRenderValue();
+  document.getElementById('jp-q').textContent=q.q;
+  document.getElementById('jp-expl').textContent=q.expl;
+  const ew=document.getElementById('jp-expl-wrap');
+  ew.style.background=`rgba(${cat.rgb},.08)`; ew.style.borderColor=cat.color;
+  document.getElementById('jp-expl-label').style.color=cat.color;
+  document.getElementById('jp-bar').style.background=cat.color;
+  ew.classList.add('hidden');
+  document.getElementById('jp-banner').classList.add('hidden');
+  document.getElementById('jp-actions').classList.remove('hidden');
+  document.getElementById('jp-reveal-btn').classList.remove('hidden');
+  document.getElementById('jp-answering-wrap').classList.remove('hidden');
+  jpRenderAnswering();
+  jpRenderOptions();
+  document.getElementById('jp-modal').classList.add('on');
+  jpStartTimer();
+}
+
+function jpRenderOptions(){
+  const w=document.getElementById('jp-opts'); w.innerHTML='';
+  const done = jpResolved || jpRevealed;
+  jpOpts.forEach((o,idx)=>{
+    const b=document.createElement('button');
+    let cls='jp-opt', dis=false;
+    if(done && o.isCorrect){ cls+=' jp-correct'; dis=true; }
+    else if(jpWrong.includes(idx)){ cls+=' jp-wrong'; dis=true; }
+    else if(done){ cls+=' opacity-40'; dis=true; }
+    b.className=cls; b.disabled=dis;
+    b.textContent=String.fromCharCode(97+idx)+') '+o.text;
+    b.onclick=()=>jpPick(idx);
+    w.appendChild(b);
+  });
+}
+
+function jpPick(idx){
+  if(jpResolved||jpRevealed) return;
+  if(jpWrong.includes(idx)) return;
+  const o=jpOpts[idx];
+  if(o.isCorrect){
+    clearInterval(jpTimer);
+    jpResolved=true; jpWinner=jpAnswering; jpPicked=idx;
+    jpTeams[jpAnswering].score+=jpValue;
+    jpTurn=jpAnswering;
+    jpRenderTeams(); jpRenderTurn(); jpRenderOptions();
+    document.getElementById('jp-expl-wrap').classList.remove('hidden');
+    document.getElementById('jp-answering-wrap').classList.add('hidden');
+    document.getElementById('jp-reveal-btn').classList.add('hidden');
+    jpBanner('✓ Rätt – '+jpTeams[jpAnswering].name+' får '+jpValue+' poäng.', jpTeamColor(jpAnswering));
+  }else{
+    jpFailAndAdvance({clickedIdx:idx});
+  }
+}
+
+function jpFailAndAdvance(o){
+  if(o.clickedIdx!==undefined && !jpWrong.includes(o.clickedIdx)) jpWrong.push(o.clickedIdx);
+  if(!jpFailed.includes(jpAnswering)) jpFailed.push(jpAnswering);
+  const old=jpValue; jpLowerValue(); jpRenderValue(old);
+  jpRenderOptions();
+  const next=jpNextAnswerer();
+  if(next===null){
+    clearInterval(jpTimer);
+    jpResolved=true; jpRevealed=true; jpWinner=null;
+    jpTurn=(jpChooser+1)%jpTeams.length;
+    jpRenderOptions();
+    document.getElementById('jp-expl-wrap').classList.remove('hidden');
+    document.getElementById('jp-answering-wrap').classList.add('hidden');
+    document.getElementById('jp-reveal-btn').classList.add('hidden');
+    jpBanner('Ingen fick rätt.', '#dc2626');
+  }else{
+    jpAnswering=next;
+    jpRenderAnswering();
+    const lead = o.timedOut ? '⏰ Tiden är ute.' : '✗ FEL – försök igen.';
+    jpBanner(lead+' Turen går över till '+jpTeams[next].name+'. Frågan är nu värd '+jpValue+' p.', jpTeamColor(next));
+    jpStartTimer();
+  }
+}
+
+function jpBanner(txt,color){
+  const b=document.getElementById('jp-banner');
+  const p=b.querySelector('p');
+  p.textContent=txt;
+  if(color){ p.style.color=color; p.style.borderColor=color; p.style.background=color+'18'; }
+  else{ p.style.color=''; p.style.borderColor=''; p.style.background=''; }
+  b.classList.remove('hidden');
+}
+
+function jpRevealAnswer(){
+  clearInterval(jpTimer);
+  jpRevealed=true; jpResolved=true; jpWinner=null;
+  jpTurn=(jpChooser+1)%jpTeams.length;
+  jpRenderTeams(); jpRenderTurn(); jpRenderOptions();
+  document.getElementById('jp-expl-wrap').classList.remove('hidden');
+  document.getElementById('jp-banner').classList.add('hidden');
+  document.getElementById('jp-answering-wrap').classList.add('hidden');
+  document.getElementById('jp-reveal-btn').classList.add('hidden');
+}
+
+function jpCloseModal(){
+  clearInterval(jpTimer);
+  if(!jpResolved) jpTurn=(jpChooser+1)%jpTeams.length;
+  jpRenderTeams(); jpRenderTurn();
+  jpCell.classList.add('jp-used'); jpCell.textContent='✓'; jpCell.onmouseenter=null; jpCell.onmouseleave=null;
+  document.getElementById('jp-modal').classList.remove('on');
+  document.getElementById('jp-actions').classList.remove('hidden');
+  jpUsed++;
+  if(jpUsed>=20) jpShowEnd();
+}
+
+function jpShowEnd(){
+  const list=document.getElementById('jp-end-list'); list.innerHTML='';
+  [...jpTeams].sort((a,b)=>b.score-a.score).forEach((t,i)=>{
+    const c=JP_CATEGORIES[i%4].color;
+    const row=document.createElement('div');
+    row.className='flex items-center gap-4 justify-center';
+    row.innerHTML=`<span class="text-slate-300 font-bold" style="font-size:clamp(1rem,3vh,1.6rem)">${i===0?'🏆':(i+1)+'.'} ${t.name}</span>
+      <span class="num font-bold" style="color:${c};font-size:clamp(1.3rem,4vh,2.4rem)">${t.score}</span>`;
+    list.appendChild(row);
+  });
+  const e=document.getElementById('jp-end');
+  e.classList.remove('hidden'); e.style.display='flex';
+}
+
+/* ════════ TIMER ════════ */
+function jpStartTimer(){
+  clearInterval(jpTimer); jpTime=30;
+  const bar=document.getElementById('jp-bar'), txt=document.getElementById('jp-time');
+  const c=JP_CATEGORIES[jpCat].color;
+  bar.style.width='100%'; bar.style.background=c;
+  txt.textContent='30'; txt.className='num text-sm font-bold text-slate-400';
+  jpTimer=setInterval(()=>{
+    jpTime--; txt.textContent=jpTime; bar.style.width=(jpTime/30*100)+'%';
+    if(jpTime<=10){ bar.style.background='#dc2626'; txt.className='num text-sm font-bold text-red-600'; }
+    if(jpTime<=0){ clearInterval(jpTimer); if(!jpResolved && !jpRevealed) jpFailAndAdvance({timedOut:true}); }
+  },1000);
+}
+
+/* ════════ HELSKÄRM ════════ */
+function jpToggleFullscreen(){
+  const s=document.getElementById('jp-stage');
+  if(s.classList.contains('jp-fs')){ jpExitFullscreen(); return; }
+  s.classList.add('jp-fs');
+  document.getElementById('jp-fsbtn').textContent='⤫ Avsluta helskärm';
+  if(s.requestFullscreen) s.requestFullscreen().catch(()=>{});
+}
+function jpExitFullscreen(){
+  const s=document.getElementById('jp-stage');
+  s.classList.remove('jp-fs');
+  document.getElementById('jp-fsbtn').textContent='⛶ Helskärm';
+  if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+}
+document.addEventListener('fullscreenchange',()=>{
+  if(!document.fullscreenElement) jpExitFullscreen();
+});
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape') return;
+  if(document.getElementById('jp-modal').classList.contains('on')){ jpCloseModal(); }
+  else if(document.getElementById('jp-rules').style.display==='flex'){ jpHideRules(); }
+  else{ jpExitFullscreen(); }
+});
+
+jpRenderTeamInputs();
+</script>
+
+<script src="feedback-widget.js" defer></script>
+<script data-goatcounter="https://johnblixt.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
