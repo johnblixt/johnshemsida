@@ -624,3 +624,62 @@ Alla begreppsfiler med flera övningsvyer (Lista/Flashcards/Lucktext/Scenario/Ic
 - **Verifieringskod:** "PREFIX-XXXX" genererad från datum + avklarade vyer + rank + saltsträng (unik per fil), ändras dagligen — låter läraren snabbt syna en skärmdump utan att behöva logga in eleven någonstans
 
 Använd samma mönster (state lyft till toppkomponenten, onComplete-callback till varje vy-komponent) oavsett antal vyer i filen.
+
+---
+
+## Jeopardy – Regler som ALLTID ska gälla
+
+### Syfte
+Ett jeopardy-spel bygger om ett arbetsområdes befintliga quiz-/begreppsinnehåll till ett lagspel som **vikarier** kan köra på lektionen utan att själva kunna ämnet. Spelledaren (vikarien) ska aldrig behöva gissa vad som är rätt svar.
+
+### Teknikstack
+- Fristående HTML-fil, samma mönster som quiz-/begreppsfiler: Tailwind CSS via CDN + EB Garamond (Google Fonts)
+- Ingen fil-uppladdning (varken bild eller ljud) — spelet ska fungera direkt i webbläsaren utan externa filer eller inställningar innan lektionen
+- Ingen inloggning, inga sparade resultat mellan lektioner (samma princip som under "Vad som INTE ska finnas")
+
+### Innehåll – hämtas ALLTID från befintligt material
+- Utgå från områdets befintliga `_quiz.html` och/eller `_begrepp_data.md` — hitta aldrig på nytt sakinnehåll
+- **4 kategorier × 5 poängnivåer (100/200/300/400/500) = 20 frågor totalt**
+- Kategorierna ska motsvara områdets naturliga underteman (t.ex. rubrikerna som redan finns i begreppslistan eller pluggmaterialet). Saknas tydliga underteman: dela in de 30 quiz-frågorna i fyra ungefär lika stora, tematiskt sammanhängande grupper
+- Inom varje kategori sorteras frågorna efter svårighetsgrad: 100p = lättast, 500p = svårast
+- Samma regler för svarsalternativ gäller som under **Quiz** ovan: exakt 4 alternativ, ungefär lika långa, trovärdiga och pedagogiskt relevanta distraktorer, inget mönster (längd/formulering) som läcker rätt svar
+
+### Facit alltid tillgängligt för spelledaren
+- Varje fråga har ett "Visa svar"-läge som markerar rätt alternativ grönt **och** visar en kort (1–2 meningar) pedagogisk förklaring till varför svaret är rätt
+- Förklaringen ska vara skriven så att en vikarie utan ämneskunskap direkt kan avgöra om ett elevsvar räknas som rätt eller fel
+
+### Spelplan
+- Rutnät: 4 kolumner × 5 rader, kategori-header överst i ämnets primärfärg (se färgtabellen ovan)
+- Redan spelade rutor markeras som "använda" — gråtonas och går inte att klicka igen
+
+### Lag och poäng
+- Startskärm: valfritt antal lag (2–4) med fritextfält för lagnamn — inga förifyllda festrelaterade exempelnamn
+- Poängpanel alltid synlig under spelets gång: lagnamn + löpande poäng
+- Spelledaren kan justera poäng manuellt (snabbknappar +100/−100 samt fritt poängtal) för varje lag, för rättningar eller bonuspoäng
+
+### Frågeflöde
+- Klick på en ruta öppnar frågan i en modal med nedräkningstimer (t.ex. 30 sekunder) och progressbar
+- Laget vars tur det är svarar muntligt; spelledaren klickar Rätt/Fel
+- **Stöld-regel** (ersätter shot-/alkoholregeln i originalmallen helt): Vid fel svar eller om tiden tar slut får övriga lag chansen att svara på samma fråga. Ingen uppoffring, shot eller fysisk uppgift ska förekomma — det räcker att spelledaren väljer vilket lag som får chansen (t.ex. den som räcker upp handen snabbast)
+- Poäng tilldelas det lag spelledaren markerar som vinnare av frågan; en "Ingen fick rätt"-knapp stänger frågan utan att dela ut poäng
+
+### Vad som INTE ska finnas i ett Jeopardy-spel
+- ❌ Referenser till fest, alkohol/shots eller personer utanför klassrumskontexten
+- ❌ Beroende av externa bild- eller ljudfiler som inte redan finns i repot
+- ❌ Elevnamn eller resultat som sparas mellan lektioner
+
+### Tillbaka-navigering och namngivning
+- Samma tillbaka-knapp-mönster som övriga filer (se [Tillbaka-navigering](#tillbaka-navigering))
+- Filnamn: `<prefix>_jeopardy.html` (t.ex. `sh_demokrati_jeopardy.html`, `jur1_block2_jeopardy.html`)
+
+---
+
+## När John ber dig skapa ett Jeopardy-spel
+
+1. Han anger vilket arbetsområde det gäller (t.ex. pekar på ett områdeskort på startsidan eller en befintlig fil)
+2. Du läser motsvarande `_quiz.html` och/eller `_begrepp_data.md` för att hämta sakinnehållet — du hittar inte på nytt innehåll
+3. Du delar in innehållet i 4 kategorier × 5 poängnivåer enligt reglerna ovan
+4. Du skapar hela HTML-filen direkt, klar att lägga in i GitHub, och matchar ämnets färg från tabellen
+5. Du uppdaterar `index.html` med en Jeopardy-knapp på områdets kort
+
+*John ska inte behöva ändra något manuellt.*
