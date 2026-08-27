@@ -143,6 +143,7 @@
           <li>Ett lag i taget har turen och väljer en ruta på spelplanen.</li>
           <li>Laget säger sitt svar högt — du klickar på det alternativ de väljer.</li>
           <li>Rätt svar: laget får poängen och väljer nästa ruta. Läs gärna upp förklaringen som visas.</li>
+          <li>Ett lag kan ta max tre rutor i rad — sedan går turen vidare automatiskt.</li>
           <li>Fel svar: turen går vidare till nästa lag, och frågan blir värd mindre poäng.</li>
           <li>Har alla lag svarat fel visas rätt svar automatiskt. Ingen får poäng.</li>
           <li>Du behöver inte kunna ämnet — spelet rättar själv.</li>
@@ -297,15 +298,26 @@ const JP_CATEGORIES = [
 ];
 
 /* ════════ SETUP ════════ */
-let jpTeamCount = 2, jpTeams = [], jpUsed = 0, jpTurn = null;
+let jpTeamCount = 2, jpTeams = [], jpUsed = 0, jpTurn = null, jpStreak = 0;
 
 function jpTeamColor(i){ return JP_CATEGORIES[i%4].color; }
 
 function jpRenderTurn(){
   const el=document.getElementById('jp-turn');
   if(jpTurn===null||!jpTeams[jpTurn]){ el.textContent=''; return; }
-  el.textContent=jpTeams[jpTurn].name+' väljer fråga';
-  el.style.color=jpTeamColor(jpTurn);
+  const c=jpTeamColor(jpTurn);
+  let dots='';
+  if(jpStreak===1||jpStreak===2){
+    dots='<span style="display:inline-flex;gap:.22em;vertical-align:middle;margin-left:.5em" aria-hidden="true">';
+    for(let i=0;i<3;i++){
+      dots+= i<jpStreak
+        ? `<span style="width:.42em;height:.42em;border-radius:50%;background:${c};display:inline-block"></span>`
+        : `<span style="width:.42em;height:.42em;border-radius:50%;border:1px solid ${c};opacity:.4;display:inline-block"></span>`;
+    }
+    dots+='</span>';
+  }
+  el.innerHTML=jpTeams[jpTurn].name+' väljer fråga'+dots;
+  el.style.color=c;
 }
 
 function jpRenderTeamInputs(){
@@ -323,7 +335,7 @@ function jpRenderTeamInputs(){
 function jpChangeTeamCount(d){ jpTeamCount=Math.min(4,Math.max(2,jpTeamCount+d)); jpRenderTeamInputs(); }
 
 function jpStartGame(){
-  jpTeams=[]; jpUsed=0;
+  jpTeams=[]; jpUsed=0; jpStreak=0;
   for(let i=0;i<jpTeamCount;i++){
     const v=document.getElementById('jp-team-'+i).value.trim();
     jpTeams.push({name:v||('Lag '+(i+1)),score:0});
@@ -496,12 +508,24 @@ function jpPick(idx){
     clearInterval(jpTimer);
     jpResolved=true; jpWinner=jpAnswering; jpPicked=idx;
     jpTeams[jpAnswering].score+=jpValue;
-    jpTurn=jpAnswering;
+    jpStreak = (jpAnswering===jpChooser) ? jpStreak+1 : 1;
+    let streakBroken=false;
+    if(jpStreak>=3){
+      jpTurn=(jpAnswering+1)%jpTeams.length;
+      jpStreak=0;
+      streakBroken=true;
+    }else{
+      jpTurn=jpAnswering;
+    }
     jpRenderTeams(); jpRenderTurn(); jpRenderOptions();
     document.getElementById('jp-expl-wrap').classList.remove('hidden');
     document.getElementById('jp-answering-wrap').classList.add('hidden');
     document.getElementById('jp-reveal-btn').classList.add('hidden');
-    jpBanner('✓ Rätt – '+jpTeams[jpAnswering].name+' får '+jpValue+' poäng.', jpTeamColor(jpAnswering));
+    if(streakBroken){
+      jpBanner('✓ Rätt – '+jpTeams[jpAnswering].name+' får '+jpValue+' poäng. Tre i rad — turen går över till '+jpTeams[jpTurn].name+'.', jpTeamColor(jpAnswering));
+    }else{
+      jpBanner('✓ Rätt – '+jpTeams[jpAnswering].name+' får '+jpValue+' poäng.', jpTeamColor(jpAnswering));
+    }
   }else{
     jpFailAndAdvance({clickedIdx:idx});
   }
@@ -517,6 +541,7 @@ function jpFailAndAdvance(o){
     clearInterval(jpTimer);
     jpResolved=true; jpRevealed=true; jpWinner=null;
     jpTurn=(jpChooser+1)%jpTeams.length;
+    jpStreak=0;
     jpRenderOptions();
     document.getElementById('jp-expl-wrap').classList.remove('hidden');
     document.getElementById('jp-answering-wrap').classList.add('hidden');
@@ -544,6 +569,7 @@ function jpRevealAnswer(){
   clearInterval(jpTimer);
   jpRevealed=true; jpResolved=true; jpWinner=null;
   jpTurn=(jpChooser+1)%jpTeams.length;
+  jpStreak=0;
   jpRenderTeams(); jpRenderTurn(); jpRenderOptions();
   document.getElementById('jp-expl-wrap').classList.remove('hidden');
   document.getElementById('jp-banner').classList.add('hidden');
@@ -553,7 +579,7 @@ function jpRevealAnswer(){
 
 function jpCloseModal(){
   clearInterval(jpTimer);
-  if(!jpResolved) jpTurn=(jpChooser+1)%jpTeams.length;
+  if(!jpResolved){ jpTurn=(jpChooser+1)%jpTeams.length; jpStreak=0; }
   jpRenderTeams(); jpRenderTurn();
   jpCell.classList.add('jp-used'); jpCell.textContent='✓'; jpCell.onmouseenter=null; jpCell.onmouseleave=null;
   document.getElementById('jp-modal').classList.remove('on');

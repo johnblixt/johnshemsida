@@ -662,6 +662,7 @@ Ett jeopardy-spel bygger om ett arbetsområdes befintliga quiz-/begreppsinnehål
 - Laget vars tur det är svarar muntligt; spelledaren klickar Rätt/Fel
 - **Stöld-regel** (ersätter shot-/alkoholregeln i originalmallen helt): Vid fel svar eller om tiden tar slut får övriga lag chansen att svara på samma fråga. Ingen uppoffring, shot eller fysisk uppgift ska förekomma — det räcker att spelledaren väljer vilket lag som får chansen (t.ex. den som räcker upp handen snabbast)
 - Poäng tilldelas det lag spelledaren markerar som vinnare av frågan; en "Ingen fick rätt"-knapp stänger frågan utan att dela ut poäng
+- **Streak-gräns:** ett lag får max ta tre rutor i rad genom att svara rätt. Har laget precis tagit sin tredje ruta i rad går turen automatiskt vidare till nästa lag, oavsett att svaret var rätt (se teknisk referensimplementation nedan)
 
 ### Vad som INTE ska finnas i ett Jeopardy-spel
 - ❌ Referenser till fest, alkohol/shots eller personer utanför klassrumskontexten
@@ -717,16 +718,17 @@ Ett jeopardy-spel bygger om ett arbetsområdes befintliga quiz-/begreppsinnehål
 - `#jp-modal`, `#jp-rules` och `#jp-end` ligger **inuti `#jp-stage`** (annars försvinner de i helskärmsläge)
 
 ### Spellogik (vikarievänlig – spelledaren behöver inte kunna ämnet)
-Centrala tillståndsvariabler (globala): `jpTeamCount`, `jpTeams` (`[{name,score}]`), `jpTurn` (lag som **väljer** ruta), `jpUsed` (antal spelade rutor, spelet slut vid 20). Per fråga: `jpCat`, `jpRow`, `jpCell`, `jpOpts` (blandade `{text,isCorrect}`), `jpValue` (aktuellt, sjunkande värde), `jpChooser` (laget som valde rutan), `jpAnswering` (laget som svarar nu), `jpFailed` (lag som svarat fel på denna fråga), `jpWrong` (låsta felaktiga alternativindex), `jpResolved`, `jpRevealed`, `jpWinner`, `jpTimer`, `jpTime`.
+Centrala tillståndsvariabler (globala): `jpTeamCount`, `jpTeams` (`[{name,score}]`), `jpTurn` (lag som **väljer** ruta), `jpUsed` (antal spelade rutor, spelet slut vid 20), `jpStreak` (antal rutor det lag som just tog rutan har tagit i rad genom att svara rätt på sin egen tur — max 3, nollställs i `jpStartGame`). Per fråga: `jpCat`, `jpRow`, `jpCell`, `jpOpts` (blandade `{text,isCorrect}`), `jpValue` (aktuellt, sjunkande värde), `jpChooser` (laget som valde rutan), `jpAnswering` (laget som svarar nu), `jpFailed` (lag som svarat fel på denna fråga), `jpWrong` (låsta felaktiga alternativindex), `jpResolved`, `jpRevealed`, `jpWinner`, `jpTimer`, `jpTime`.
 
-- **Setup:** `jpRenderTeamInputs` / `jpChangeTeamCount(±1)` (2–4 lag, fritextnamn). `jpStartGame` fyller `jpTeams`, slumpar `jpTurn`, sätter `--tc`, ritar bräde + lagpanel och anropar `jpShowRules(true)`
+- **Setup:** `jpRenderTeamInputs` / `jpChangeTeamCount(±1)` (2–4 lag, fritextnamn). `jpStartGame` fyller `jpTeams`, slumpar `jpTurn`, nollställer `jpStreak`, sätter `--tc`, ritar bräde + lagpanel och anropar `jpShowRules(true)`
 - **Regelruta:** `#jp-rules` visas efter lagvalet, innan spelplanen används; `jpShowRules(false)` / `jpHideRules` öppnar/stänger den igen via "Regler" i toppraden. Frågor kan inte öppnas medan regelrutan är uppe
 - **Turordning:** `jpOpenQuestion` sätter `jpChooser = jpAnswering = jpTurn`, `jpValue = q.v`, blandar `jpOpts` med `jpShuffle`, startar timern
-- **Rätt svar** (`jpPick` → `o.isCorrect`): `jpValue` läggs på `jpTeams[jpAnswering].score`, `jpTurn = jpAnswering` (laget **behåller turen**), `expl` visas, banner i lagets färg. Ingen manuell bedömning — spelet rättar själv
+- **Rätt svar** (`jpPick` → `o.isCorrect`): `jpValue` läggs på `jpTeams[jpAnswering].score`. `jpStreak` ökar med 1 om `jpAnswering===jpChooser` (laget fortsätter sin egen svit), annars sätts den till 1 (ett annat lag har stulit rutan och startar en ny svit). Är `jpStreak<3`: `jpTurn = jpAnswering` (laget **behåller turen**) som idag. Har laget precis tagit sin **tredje** ruta i rad (`jpStreak>=3`): `jpTurn` sätts istället till `(jpAnswering+1)%jpTeams.length` och `jpStreak` nollställs — turen tvingas vidare trots rätt svar, med bannertext "Tre i rad — turen går över till …". `expl` visas, banner i lagets färg. Ingen manuell bedömning — spelet rättar själv
+- **Streak-gräns visuellt:** `jpRenderTurn` ritar tre små prickar bredvid "[Lag] väljer fråga" när `jpStreak` är 1 eller 2 (ifyllda i lagets färg upp till `jpStreak`, tomma därefter) — inget visas vid 0
 - **Fel svar** (`jpPick` → fel, eller timeout via `jpStartTimer`): `jpFailAndAdvance` låser alternativet (`jpWrong`), lägger laget i `jpFailed`, halverar värdet med **`jpLowerValue`** (`Math.floor(v/2)` → nedåt till närmaste 50 → `Math.max(50, …)`; 500→250→100→50), `jpNextAnswerer` ger nästa lag som inte finns i `jpFailed` (cykliskt), timern startar om
-- **Alla lag fel / alla alternativ slut:** `jpNextAnswerer` returnerar `null` → rätt svar + `expl` visas, `jpWinner=null`, ingen poäng, `jpTurn=(jpChooser+1)%n`
+- **Alla lag fel / alla alternativ slut:** `jpNextAnswerer` returnerar `null` → rätt svar + `expl` visas, `jpWinner=null`, ingen poäng, `jpTurn=(jpChooser+1)%n`, `jpStreak` nollställs (turen byter lag ändå)
 - **Timer:** `jpStartTimer` – 30 s, `#jp-bar` krymper linjärt, växlar rött ≤10 s, vid 0 anropas `jpFailAndAdvance({timedOut:true})`
-- **`jpRevealAnswer`** ("Visa svar"): nödknapp som avslöjar facit utan poäng och flyttar turen till `(jpChooser+1)%n`
-- **`jpCloseModal`:** markerar rutan `.jp-used`, `jpUsed++`; om frågan var olöst flyttas turen till nästa lag; vid `jpUsed>=20` → `jpShowEnd`
+- **`jpRevealAnswer`** ("Visa svar"): nödknapp som avslöjar facit utan poäng, flyttar turen till `(jpChooser+1)%n` och nollställer `jpStreak`
+- **`jpCloseModal`:** markerar rutan `.jp-used`, `jpUsed++`; om frågan var olöst flyttas turen till nästa lag och `jpStreak` nollställs; vid `jpUsed>=20` → `jpShowEnd`
 - **Lagpanel:** `jpRenderTeams` – aktivt lag (`jpTurn`) markeras med färgram, övriga tonas ned. `jpAdjust(i,±100)` är spelledarens manuella nödutgång för poäng
 - **Slut:** `jpShowEnd` – `#jp-end`-overlay med lagen sorterade på poäng, 🏆 på ettan, "Spela igen" → `jpNewGame`
