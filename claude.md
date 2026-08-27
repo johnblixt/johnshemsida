@@ -683,3 +683,50 @@ Ett jeopardy-spel bygger om ett arbetsområdes befintliga quiz-/begreppsinnehål
 5. Du uppdaterar `index.html` med en Jeopardy-knapp på områdets kort
 
 *John ska inte behöva ändra något manuellt.*
+
+---
+
+## Jeopardy – teknisk referensimplementation
+
+`nk1a1_naturvetenskap_jeopardy.html` är **facit** för alla framtida Jeopardy-spel — både markup, spellogik och design. Bygg nya spel genom att kopiera den filen och byta ut `JP_CATEGORIES` samt back-länkens fallback. Ändra aldrig funktions- eller variabelnamnen nedan utan att uppdatera alla beroenden. Reglerna i avsnitten ovan ("Jeopardy – Regler som ALLTID ska gälla" m.fl.) gäller fortfarande för *innehållet*; det här avsnittet låser *implementationen*.
+
+### Filplacering och portalintegration
+- Egen fil per område: `[kurs]_[omrade]_jeopardy.html` (t.ex. `nk1a1_naturvetenskap_jeopardy.html`, `sh_demokrati_jeopardy.html`)
+- Eget kort på **områdessidan** (inte `index.html`), alltid **längst ner, direkt efter quiz-kortet**
+- Kortbeskrivningen ska nämna att spelet kan **ledas av en vikarie** som inte kan ämnet
+- Back-länk uppe till vänster med `smartBack(event)`: `history.back()` om `document.referrer` är samma origin, annars fallback till områdessidan (aldrig hårdkodat `index.html`)
+- Footer `Designad av John`, `<script src="feedback-widget.js" defer>` och GoatCounter-snippet (`johnblixt.goatcounter.com`) sist i `<body>` — exakt som i referensfilen
+
+### Innehåll och data (`JP_CATEGORIES`)
+- Array med **exakt 4 kategoriobjekt**, vart och ett `{ name, color, rgb, qs }`
+  - `color`: kategorins hex-kulör · `rgb`: samma färg som `"r,g,b"`-sträng (används för `rgba()`-bakgrunder)
+  - `qs`: **exakt 5 frågeobjekt**, sorterade `v:100 → v:500` i arrayen (lättast först); brädet vänder ordningen visuellt
+- Frågeobjekt: `{ v, q, opts:[4 st], correct:<index i opts>, expl }`
+  - Frågorna (`q`) hämtas från områdets `_quiz.html`; förklaringen (`expl`) bygger på teori-/begreppsfilen
+  - `opts`: fyra alternativ, ungefär lika långa och lika detaljerade (kvalitetsreglerna under **Quiz**). `correct` pekar på rätt alternativ i den **oblandade** arrayen — blandning sker i runtime
+  - `expl`: 1–2 meningar, skrivet så att en vikarie kan läsa upp det rakt av och direkt se varför svaret är rätt
+- Kategorinamnen speglar områdets huvudteman (samma indelning som begreppslistan/pluggmaterialet)
+
+### Design (lås mot referensfilen)
+- Mörk spelplan (`--navy #0b1120`, `--navy2 #111c33`), **fyra tydligt åtskilda kategorikulörer** (referens: `#06b6d4`, `#a855f7`, `#f59e0b`, `#f43f5e`)
+- Kategorifärgen följer med överallt: `.jp-head`, `.jp-cell` (bakgrund `rgba(rgb,.13)`, hover fylls med `color`), kategoripill `#jp-cat`, timerbar `#jp-bar`, förklaringsruta `#jp-expl-wrap`, aktiv lagpanel `.jp-team`, `#jp-turn`-texten och slutlistan
+- `#jp-board`: `grid-template-columns:repeat(4,1fr); grid-template-rows:auto repeat(5,1fr)` — rutnätet fyller scenens höjd. **500 överst, 100 nederst** (`jpBuildBoard` loopar `row=4→0`)
+- All typografi skalar med `clamp(min, <n>vh, max)` så den syns från bakre bänkraden. Spelade rutor: `.jp-used` (gråtonad, ej klickbar, `✓`)
+- Typsnitt: **Fredoka** på siffror (`.num`, poäng, rutvärden, timer), **EB Garamond** på all brödtext
+- Helskärm: `jpToggleFullscreen()` försöker Fullscreen API på `#jp-stage` och lägger alltid på `.jp-fs` (`position:fixed; inset:0`) som fallback. `keydown` Escape stänger **modal först** (`jpCloseModal`), annars regelrutan, annars helskärm. `fullscreenchange` utan `fullscreenElement` → `jpExitFullscreen()`
+- `#jp-modal`, `#jp-rules` och `#jp-end` ligger **inuti `#jp-stage`** (annars försvinner de i helskärmsläge)
+
+### Spellogik (vikarievänlig – spelledaren behöver inte kunna ämnet)
+Centrala tillståndsvariabler (globala): `jpTeamCount`, `jpTeams` (`[{name,score}]`), `jpTurn` (lag som **väljer** ruta), `jpUsed` (antal spelade rutor, spelet slut vid 20). Per fråga: `jpCat`, `jpRow`, `jpCell`, `jpOpts` (blandade `{text,isCorrect}`), `jpValue` (aktuellt, sjunkande värde), `jpChooser` (laget som valde rutan), `jpAnswering` (laget som svarar nu), `jpFailed` (lag som svarat fel på denna fråga), `jpWrong` (låsta felaktiga alternativindex), `jpResolved`, `jpRevealed`, `jpWinner`, `jpTimer`, `jpTime`.
+
+- **Setup:** `jpRenderTeamInputs` / `jpChangeTeamCount(±1)` (2–4 lag, fritextnamn). `jpStartGame` fyller `jpTeams`, slumpar `jpTurn`, sätter `--tc`, ritar bräde + lagpanel och anropar `jpShowRules(true)`
+- **Regelruta:** `#jp-rules` visas efter lagvalet, innan spelplanen används; `jpShowRules(false)` / `jpHideRules` öppnar/stänger den igen via "Regler" i toppraden. Frågor kan inte öppnas medan regelrutan är uppe
+- **Turordning:** `jpOpenQuestion` sätter `jpChooser = jpAnswering = jpTurn`, `jpValue = q.v`, blandar `jpOpts` med `jpShuffle`, startar timern
+- **Rätt svar** (`jpPick` → `o.isCorrect`): `jpValue` läggs på `jpTeams[jpAnswering].score`, `jpTurn = jpAnswering` (laget **behåller turen**), `expl` visas, banner i lagets färg. Ingen manuell bedömning — spelet rättar själv
+- **Fel svar** (`jpPick` → fel, eller timeout via `jpStartTimer`): `jpFailAndAdvance` låser alternativet (`jpWrong`), lägger laget i `jpFailed`, halverar värdet med **`jpLowerValue`** (`Math.floor(v/2)` → nedåt till närmaste 50 → `Math.max(50, …)`; 500→250→100→50), `jpNextAnswerer` ger nästa lag som inte finns i `jpFailed` (cykliskt), timern startar om
+- **Alla lag fel / alla alternativ slut:** `jpNextAnswerer` returnerar `null` → rätt svar + `expl` visas, `jpWinner=null`, ingen poäng, `jpTurn=(jpChooser+1)%n`
+- **Timer:** `jpStartTimer` – 30 s, `#jp-bar` krymper linjärt, växlar rött ≤10 s, vid 0 anropas `jpFailAndAdvance({timedOut:true})`
+- **`jpRevealAnswer`** ("Visa svar"): nödknapp som avslöjar facit utan poäng och flyttar turen till `(jpChooser+1)%n`
+- **`jpCloseModal`:** markerar rutan `.jp-used`, `jpUsed++`; om frågan var olöst flyttas turen till nästa lag; vid `jpUsed>=20` → `jpShowEnd`
+- **Lagpanel:** `jpRenderTeams` – aktivt lag (`jpTurn`) markeras med färgram, övriga tonas ned. `jpAdjust(i,±100)` är spelledarens manuella nödutgång för poäng
+- **Slut:** `jpShowEnd` – `#jp-end`-overlay med lagen sorterade på poäng, 🏆 på ettan, "Spela igen" → `jpNewGame`
