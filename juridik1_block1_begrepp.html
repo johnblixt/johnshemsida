@@ -57,6 +57,78 @@ const concepts = [
   { id: 27, term: 'Successionsrätten', definition: 'Arvsrätten till Sveriges tron.' },
 ];
 
+// ════════════════════════════════════════════════════════════
+// ENKEL SVENSKA — förenklade versioner av definition, scenario
+// och Test 2-texter. Termerna förenklas aldrig.
+//
+// Fält:
+//   definition       → används i Lista, Flashcards och som
+//                       förklaring i Test 1 (Scenario)
+//   scenario         → används i Test 1 (Scenario)
+//   ickeExCorrect    → speglar ickeExData[].correct
+//   ickeExTrap       → speglar ickeExData[].trap
+//   ickeExExplanation → används i Test 2 (Icke-ex.)
+//
+// Uppslag sker alltid via EASY_DATA.find(e => e.id === id),
+// aldrig via indexaritmetik.
+// ════════════════════════════════════════════════════════════
+const EASY_DATA = [
+  { id: 1,  definition: 'Handlar om hur lagar blir till. Handlar också om vilka rättigheter medborgarna har. Och om hur man kontrollerar att staten inte missbrukar sin makt. Sveriges fyra grundlagar styr det mesta av detta.', scenario: 'Kursen handlar om hur lagar blir till. Den handlar om vilka rättigheter medborgarna har. Den handlar också om hur man ser till att staten inte missbrukar sin makt.', ickeExCorrect: 'Riksdagen ändrar en paragraf i en av grundlagarna. Ändringen ska göra tidningarna friare från staten.', ickeExTrap: 'Polisen inför en lokal ordningsregel för ett torg. Regeln ska hålla ordning under en marknad.', ickeExExplanation: 'Konstitutionell rätt handlar om grundlagar och medborgarnas rättigheter. Den handlar också om att kontrollera statens makt. En lokal ordningsregel hör inte dit.' },
+  { id: 2,  definition: 'Medborgarna i ett land ska kunna påverka hur landet styrs. Det gör de genom att rösta i val som hålls regelbundet.', scenario: 'Vart fjärde år går medborgarna och röstar. På så sätt får de vara med och bestämma vilka som ska styra landet.', ickeExCorrect: 'Medborgarna röstar vart fjärde år. De väljer vilka partier som ska sitta i riksdagen.', ickeExTrap: 'Kungen bestämmer ensam vilka lagar som ska gälla. Han gör det för att han är statschef och landets högsta myndighet.', ickeExExplanation: 'Demokrati betyder att folket kan påverka styret genom val. Kungen har ingen makt att bestämma politik i Sverige.' },
+  { id: 3,  definition: 'Du kan lita på att domstolar och myndigheter faktiskt skyddar dina rättigheter.', scenario: 'Sofia visste att hon kunde lita på domstolar och myndigheter. Om hon råkade illa ut skulle de skydda hennes rättigheter.', ickeExCorrect: 'Maria vet att hon kan vända sig till Diskrimineringsombudsmannen om hon blir diskriminerad på jobbet. Hon kan lita på att hennes rättigheter skyddas.', ickeExTrap: 'Ali vet i förväg vilket straff ett visst brott ger. Han vet det för att lagen är tydligt skriven.', ickeExExplanation: 'Rättstrygghet är att veta att rättsväsendet skyddar dina rättigheter. Att veta straffet i förväg är i stället rättssäkerhet.' },
+  { id: 4,  definition: 'Lagar ska vara skrivna tydligt. Du ska kunna veta i förväg vad som händer om du gör något.', scenario: 'Innan han skrev under kontraktet läste han lagen noga. Han visste redan i förväg vad som skulle hända om han bröt avtalet.', ickeExCorrect: 'Innan Erik skriver på ett hyreskontrakt läser han hyreslagen. Han vet i förväg exakt vad som händer om han bryter avtalet.', ickeExTrap: 'Erik är säker på att domstolen alltid ger honom rätt om han klagar. Han tror det för att han bor i en demokrati.', ickeExExplanation: 'Rättssäkerhet är att du kan förutse vad en handling leder till. Det betyder inte att du alltid vinner i domstol.' },
+  { id: 5,  definition: 'En stat där rättssäkerhet gäller. Domstolarna är oberoende. Ingen kan bli behandlad godtyckligt.', scenario: 'I landet kan ingen sättas i fängelse utan rättegång. Politikerna styr inte domstolarna. Samma regler gäller alla, även presidenten.', ickeExCorrect: 'I Sverige kan inte ens statsministern sättas i fängelse utan ett domstolsbeslut. Domstolarna är helt oberoende av politikerna.', ickeExTrap: 'Staten ser till att alla medborgare får gratis sjukvård och skola, betalt med skattepengar.', ickeExExplanation: 'Rättsstat handlar om oberoende domstolar och att ingen behandlas godtyckligt. Gratis sjukvård och skola hör i stället till välfärdsstaten.' },
+  { id: 6,  definition: 'Alla lagar och regler i ett land, tillsammans.', scenario: 'Trafikregler, lagar om äktenskap och lagar om brott och straff — allt detta hör till landets samlade regelverk.', ickeExCorrect: 'Trafikregler, lagar om äktenskap och lagar om brott och straff — allt detta hör till landets samlade regelverk.', ickeExTrap: 'En domstols egna regler för hur mål ska handläggas kallas rättssystem.', ickeExExplanation: 'Rättssystem är alla lagar och regler i ett land, tillsammans. En enskild domstols egna rutiner hör inte dit.' },
+  { id: 7,  definition: 'Lagar som är nedskrivna. Riksdagen har beslutat om dem.', scenario: 'Riksdagen röstade igenom en ny paragraf i brottsbalken. Beslutet är officiellt och nedskrivet. Det gäller nu för alla som bor i Sverige.', ickeExCorrect: 'Riksdagen röstar igenom en ny paragraf i brottsbalken. Beslutet är officiellt och nedskrivet. Det gäller alla som bor i Sverige.', ickeExTrap: 'Kommunen skriver en egen rutin för hur soporna ska sorteras på kommunens kontor.', ickeExExplanation: 'Rättsregler är lagar som riksdagen har beslutat och skrivit ner. En kommuns egen rutin räknas inte som en rättsregel.' },
+  { id: 8,  definition: 'Det vi vanligtvis kallar "straff". Det kan till exempel vara böter eller fängelse.', scenario: 'Domstolen bestämde att föraren måste betala 4 000 kronor. Det var straffet för att ha kört för fort.', ickeExCorrect: 'Domstolen dömer en rattfull förare till böter och indraget körkort. Det är straffet för brottet.', ickeExTrap: 'Chefen ger en anställd en muntlig varning. Hon kom sent till ett möte.', ickeExExplanation: 'En sanktion är ett straff som en domstol beslutar om. En muntlig varning från chefen är inget rättsligt straff.' },
+  { id: 9,  definition: 'Alla rättsregler i landet tillsammans: grundlagar, lagar, förordningar och föreskrifter.', scenario: 'Det svenska regelverket är byggt i lager. Högst upp finns grundlagarna. Sedan kommer vanliga lagar. Därefter förordningar. Sist föreskrifter.', ickeExCorrect: 'Sveriges hela regelverk kallas rättsordningen. Det består av grundlagar, lagar, förordningar och föreskrifter, ordnade i en rangordning.', ickeExTrap: 'Normhierarkin visar att grundlagen väger tyngre än en vanlig lag, om de skulle stå i konflikt.', ickeExExplanation: 'Rättsordning är alla rättsregler samlade i ett system. Normhierarkin beskriver bara rangordningen mellan dem — det är ett snävare begrepp.' },
+  { id: 10, definition: 'Ordningen som visar vilka lagar och regler som bestämmer över andra lagar och regler.', scenario: 'En kommunal regel om buller krockar med riksdagens miljölag. Riksdagens lag väger tyngre, så den kommunala regeln måste ändras.', ickeExCorrect: 'En kommunal regel om buller krockar med en riksdagslag om miljöskydd. Riksdagslagen väger tyngre, så regeln måste ändras.', ickeExTrap: 'Riksdagen stiftar en ny lag som stärker miljöskyddet. Den gamla lagen räckte inte till.', ickeExExplanation: 'Normhierarki handlar om vilken regel som väger tyngst. Att stifta en ny lag är i stället lagstiftning, inte normhierarki.' },
+  { id: 11, definition: 'Grundläggande regler för hur politiska beslut ska fattas.', scenario: 'Dessa fyra viktiga dokument är svåra att ändra. Det krävs två riksdagsbeslut med ett val emellan. De slår fast grundreglerna för hur politiska beslut får fattas.', ickeExCorrect: 'Riksdagen vill ändra regeringsformen. Det krävs två riksdagsbeslut med ett val emellan, eftersom det är en grundlag.', ickeExTrap: 'Riksdagen röstar igenom en ny skattelag med enkel majoritet på en eftermiddag.', ickeExExplanation: 'Grundlagar kräver ett särskilt tungt förfarande för att ändras. Vanliga lagar stiftas med enkel majoritet.' },
+  { id: 12, definition: 'Alla institutioner och personer som tillsammans påverkar hur Sverige styrs.', scenario: 'Riksdag, regering, kommuner, regioner och partier samarbetar. Tillsammans formar de hur Sverige styrs.', ickeExCorrect: 'Riksdag, regering, kommuner, regioner och partier samarbetar för att forma hur Sverige styrs. Det kallas det politiska systemet.', ickeExTrap: 'Riksdagen fattar ensam alla politiska beslut i Sverige. De andra institutionerna bara genomför besluten.', ickeExExplanation: 'Det politiska systemet är alla institutioner som påverkar styrningen, inte bara riksdagen.' },
+  { id: 13, definition: 'De som sitter i riksdagen är valda av folket.', scenario: 'Medborgarna röstar inte direkt om varje ny lag. I stället väljer de politiker som gör det åt dem.', ickeExCorrect: 'Medborgarna röstar inte om varje enskild lag. I stället väljer de folkvalda politiker som gör det åt dem i riksdagen.', ickeExTrap: 'Alla röstberättigade medborgare röstar direkt om varje ny lag via en app.', ickeExExplanation: 'Representativt styrelseskick betyder att folkvalda representanter bestämmer. Att alla röstar direkt om varje lag är i stället direkt demokrati.' },
+  { id: 14, definition: 'Statens makt kommer från folket. Regeringen måste ha riksdagens stöd.', scenario: 'Statsministern förlorade en omröstning om misstroende och fick avgå. Ingen regering kan styra landet mot riksdagens vilja.', ickeExCorrect: 'Riksdagen röstar igenom ett misstroende mot regeringen. Statsministern måste avgå eller utlysa nyval.', ickeExTrap: 'Kungen utser statsministern utan att bry sig om vilka partier som har flest platser i riksdagen.', ickeExExplanation: 'Parlamentariskt styrelseskick kräver att regeringen har riksdagens stöd. Kungen utser inte statsministern själv.' },
+  { id: 15, definition: 'Den lagstiftande församlingen. Den består av personer som folket har valt.', scenario: 'De 349 folkvalda ledamöterna samlas i riksdagen. De bildar den lagstiftande församlingen. De är valda att stifta lagar åt folket.', ickeExCorrect: 'De 349 riksdagsledamöterna, valda av folket, samlas och stiftar lagar. De bildar folkrepresentationen.', ickeExTrap: 'Alla som bor i Sverige, även de som inte får rösta, räknas som folkrepresentationen.', ickeExExplanation: 'Folkrepresentation är den lagstiftande församlingen av valda personer, inte hela befolkningen.' },
+  { id: 16, definition: 'Kallades förut landsting. De styr sig själva och motsvarar ett län.', scenario: 'Den självstyrande enheten på länsnivå ansvarar för sjukvård och kollektivtrafik. Den hette tidigare landsting.', ickeExCorrect: 'Västra Götalandsregionen ansvarar för sjukhus och kollektivtrafik i sitt område. Det är en region, som förut hette landsting.', ickeExTrap: 'Göteborgs stad ansvarar för sjukvård och kallas ibland region. Men det är egentligen kommunens uppgift.', ickeExExplanation: 'Regioner styr sig själva på länsnivå och hette förut landsting. Kommuner är en annan, lokal nivå med andra uppgifter.' },
+  { id: 17, definition: 'Ett geografiskt område med ett visst lokalt självstyre.', scenario: 'Den lokala enheten bestämmer var förskolor ska byggas. Den bestämmer också hur äldreomsorgen ska organiseras och vilka gator som ska skötas i din stad.', ickeExCorrect: 'Kommunen i Luleå bestämmer var förskolor ska byggas. Den bestämmer också hur äldreomsorgen ska organiseras.', ickeExTrap: 'Regionen bestämmer hur skolan och äldreomsorgen ska organiseras i länet.', ickeExExplanation: 'Kommuner ansvarar för lokal service som skola och äldreomsorg. Sjukvård är i stället regionens ansvar.' },
+  { id: 18, definition: 'Riksdagen har den, det vill säga folkrepresentationen.', scenario: 'Denna gren av staten bestämmer om nya lagar. Den ändrar gamla lagar och kan ta bort lagar som inte behövs längre. Det är folkrepresentationen som gör detta.', ickeExCorrect: 'Riksdagen röstar igenom en ny lag om vapenkontroll. Det är den lagstiftande makten som används.', ickeExTrap: 'Regeringen beslutar om en förordning om vapenkontroll. Det är den lagstiftande makten som används.', ickeExExplanation: 'Den lagstiftande makten tillhör riksdagen. När regeringen beslutar om förordningar använder den i stället den verkställande makten.' },
+  { id: 19, definition: 'Skatt som medborgarna betalar in. Den finansierar viktiga saker i samhället.', scenario: 'Varje månad drar arbetsgivaren av pengar från lönen. De pengarna finansierar sjukvård, skola och polis.', ickeExCorrect: 'Löneskatten och momsen som medborgarna betalar finansierar sjukvård, skola och polis. Det är skattepengar.', ickeExTrap: 'Kommunen tar ut en parkeringsavgift. Pengarna används för att sköta parkeringshuset och räknas som skattepengar.', ickeExExplanation: 'Skattepengar är pengar som betalas in som skatt. En parkeringsavgift är i stället en avgift, inte en skatt.' },
+  { id: 20, definition: 'Regeringen har den. Regeringen ser till att riksdagens lagar blir verklighet.', scenario: 'Denna gren har ansvaret att se till att riksdagens lagar faktiskt genomförs. Det är regeringen som gör det.', ickeExCorrect: 'Regeringen beslutar om en förordning. Förordningen genomför riksdagens trafiklag i praktiken.', ickeExTrap: 'Riksdagen röstar igenom en ny trafiklag efter lång debatt. Det är den verkställande makten som används.', ickeExExplanation: 'Den verkställande makten tillhör regeringen. Riksdagen använder i stället den lagstiftande makten.' },
+  { id: 21, definition: 'Landets högsta ämbete som går att bli vald till. Talmannen leder riksdagens arbete.', scenario: 'Hon valdes till det högsta ämbetet medborgarna kan rösta fram. Hennes uppgift är att leda riksdagens debatter och arbete.', ickeExCorrect: 'Den folkvalda personen som leder riksdagens debatter och har det högsta valbara ämbetet i Sverige kallas riksdagens talman.', ickeExTrap: 'Statsministern har det högsta valbara ämbetet i Sverige och leder riksdagens dagliga arbete.', ickeExExplanation: 'Riksdagens talman har det högsta valbara ämbetet och leder riksdagen. Statsministern leder i stället regeringens arbete.' },
+  { id: 22, definition: 'De allmänna domstolarna, förvaltningsdomstolarna och specialdomstolarna har den.', scenario: 'Denna gren avgör om en person har begått ett brott. Den bestämmer också straffet. Det är landets domstolar som gör det.', ickeExCorrect: 'Hovrätten dömer i ett brottmål och bestämmer om fängelsestraff. Det är den dömande makten som används.', ickeExTrap: 'Justitieministern bestämmer om ett fängelsestraff för en dömd person. Det är den dömande makten.', ickeExExplanation: 'Den dömande makten tillhör domstolarna. Ministrar tillhör den verkställande makten och får inte bestämma straff.' },
+  { id: 23, definition: 'Myndigheter ska behandla alla lika. Det spelar ingen roll vilken nationalitet eller utbildning man har.', scenario: 'Handläggaren på Skatteverket använder exakt samma regler för en professor från Stockholm som för en arbetslös från Luleå. Ingen favoriseras för sin bakgrund.', ickeExCorrect: 'Skatteverket använder exakt samma regler för alla skattebetalare. Det spelar ingen roll vilken utbildning, nationalitet eller ekonomi de har.', ickeExTrap: 'Handläggaren är noggrann och saklig i sina beslut. Hen låter inte egna åsikter påverka bedömningen.', ickeExExplanation: 'Likhetsprincipen handlar om att behandla alla lika. Att vara saklig och opartisk är i stället objektivitetsprincipen.' },
+  { id: 24, definition: 'Alla som jobbar på myndigheter ska vara sakliga och opartiska.', scenario: 'Tjänstemannen gillar egentligen inte den som söker. Ändå lägger han sina känslor åt sidan. Han bedömer ansökan bara utifrån fakta och regler.', ickeExCorrect: 'Handläggaren på Migrationsverket bedömer ansökan bara utifrån fakta och regler. Det gäller trots att hon egentligen ogillar personen som söker.', ickeExTrap: 'Skattemyndigheten behandlar alla som söker lika. Det spelar ingen roll vilken nationalitet eller bakgrund de har.', ickeExExplanation: 'Objektivitetsprincipen handlar om att vara saklig och opartisk. Att behandla alla lika kallas i stället likhetsprincipen.' },
+  { id: 25, definition: 'Ett statsskick där statschefen är en monark. Det betyder kung eller drottning.', scenario: 'I detta statsskick ärver en person rollen som landets statschef. Positionen bestäms inte genom val, utan går i arv inom en familj.', ickeExCorrect: 'Carl XVI Gustaf är statschef och ärvde sin position. Sverige är ett exempel på monarki.', ickeExTrap: 'Sverige är en republik, eftersom statsministern väljs av riksdagen och styr landet i praktiken.', ickeExExplanation: 'Monarki betyder att statschefen är en monark som ärver positionen. Sverige är en monarki, även om statsministern styr i praktiken.' },
+  { id: 26, definition: 'Den grundlag som bestämmer vem som kan bli Sveriges statschef.', scenario: 'Det finns ett särskilt grundlagsdokument. Det slår fast vilka krav en person måste uppfylla för att bli Sveriges statschef.', ickeExCorrect: 'En av Sveriges grundlagar slår fast vilka krav en person måste uppfylla för att bli statschef. Det är successionsordningen.', ickeExTrap: 'Riksdagen röstar med enkel majoritet om vem som ska bli nästa statschef när tronen blir ledig.', ickeExExplanation: 'Successionsordningen är en grundlag som bestämmer vem som ärver statschefsrollen. Den kan inte ändras med enkel majoritet i riksdagen.' },
+  { id: 27, definition: 'Rätten att ärva Sveriges tron.', scenario: 'Monarkens äldsta barn ärver automatiskt rätten till tronen. Det sker när monarken avgår eller dör.', ickeExCorrect: 'Monarkens äldsta barn ärver automatiskt rätten till tronen när monarken avgår eller dör. Det kallas successionsrätten.', ickeExTrap: 'Riksdagen föreslår och röstar om vem som ska bli nästa monark, varje gång tronen blir ledig.', ickeExExplanation: 'Successionsrätten är rätten att ärva tronen. Monarken utses inte genom en omröstning i riksdagen, utan positionen ärvs.' },
+];
+
+// Generisk uppslagning: ersätter en text med dess enkla version om
+// easyOn är true och en enkel version finns, annars originaltexten.
+function getEasyText(id, field, easyOn, originalText) {
+  if (!easyOn) return originalText;
+  const entry = EASY_DATA.find(e => e.id === id);
+  const easyText = entry && entry[field];
+  return easyText || originalText;
+}
+
+// Egen sessionStorage-nyckel för Enkel svenska-läget — krockar inte
+// med progress-nyckeln.
+const EASY_KEY = 'jur1_block1_enkelsvenska';
+
+function loadEasyMode() {
+  try {
+    return sessionStorage.getItem(EASY_KEY) === '1';
+  } catch (e) {
+    return false;
+  }
+}
+
+function saveEasyMode(on) {
+  try {
+    sessionStorage.setItem(EASY_KEY, on ? '1' : '0');
+  } catch (e) {}
+}
+
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -358,7 +430,7 @@ function LucktextView({ onComplete }) {
   );
 }
 
-function FlashcardView({ onComplete }) {
+function FlashcardView({ onComplete, easyOn }) {
   const total = concepts.length;
   const [deck, setDeck] = React.useState(() => shuffleArray([...concepts]));
   const [deckIdx, setDeckIdx] = React.useState(0);
@@ -466,7 +538,7 @@ function FlashcardView({ onComplete }) {
             </div>
           </div>
           <div className="flip-card-back bg-white" style={{ border: `2px solid ${PRIMARY}` }}>
-            <p className="text-xl leading-relaxed text-slate-800 font-medium px-4">{card.definition}</p>
+            <p className="text-xl leading-relaxed text-slate-800 font-medium px-4">{getEasyText(card.id, 'definition', easyOn, card.definition)}</p>
             <div className="absolute bottom-6">
               <span className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">Klicka för att vända</span>
             </div>
@@ -491,7 +563,7 @@ function FlashcardView({ onComplete }) {
   );
 }
 
-function ScenarioView({ onComplete }) {
+function ScenarioView({ onComplete, easyOn }) {
   const total = scenarioData.length;
   const [items, setItems] = React.useState(() => shuffleArray([...scenarioData]));
   const [idx, setIdx] = React.useState(0);
@@ -567,7 +639,7 @@ function ScenarioView({ onComplete }) {
 
       <div className="bg-white rounded-2xl shadow-sm p-5 border-l-4" style={{ borderLeftColor: PRIMARY }}>
         <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Vilket begrepp beskrivs?</p>
-        <p className="text-slate-800 text-base leading-relaxed">{current.scenario}</p>
+        <p className="text-slate-800 text-base leading-relaxed">{getEasyText(current.id, 'scenario', easyOn, current.scenario)}</p>
       </div>
 
       <div className="flex flex-col gap-3">
@@ -603,7 +675,7 @@ function ScenarioView({ onComplete }) {
           }
         >
           {selected.id === current.id ? '✓ Rätt! ' : `✗ Rätt svar: ${current.term}. `}
-          {concepts.find(c => c.id === current.id).definition}
+          {getEasyText(current.id, 'definition', easyOn, concepts.find(c => c.id === current.id).definition)}
         </div>
       )}
 
@@ -731,7 +803,7 @@ const ickeExData = [
     explanation: 'Successionsrätten innebär arvsrätt till tronen — monarken utses inte via riksdagsröstning utan positionen ärvs.' },
 ];
 
-function IckeExView({ onComplete }) {
+function IckeExView({ onComplete, easyOn }) {
   const total = ickeExData.length;
 
   const makeQuestion = (item) => {
@@ -835,7 +907,9 @@ function IckeExView({ onComplete }) {
 
       <div className="flex flex-col gap-3">
         {['A', 'B'].map(option => {
-          const text = option === 'A' ? current.optionA : current.optionB;
+          const isThisCorrect = (option === 'A') === current.correctIsA;
+          const original = option === 'A' ? current.optionA : current.optionB;
+          const text = getEasyText(current.item.id, isThisCorrect ? 'ickeExCorrect' : 'ickeExTrap', easyOn, original);
           const s = optionStyle(option);
           return (
             <button
@@ -860,7 +934,7 @@ function IckeExView({ onComplete }) {
               : { background: '#fee2e2', color: '#dc2626' }}
           >
             {chosenCorrect ? '✓ Rätt! ' : '✗ Fel! '}
-            {current.item.explanation}
+            {getEasyText(current.item.id, 'ickeExExplanation', easyOn, current.item.explanation)}
           </div>
           <button
             onClick={next}
@@ -875,7 +949,7 @@ function IckeExView({ onComplete }) {
   );
 }
 
-function ListView({ onComplete }) {
+function ListView({ onComplete, easyOn }) {
   const sentinelRef = React.useRef(null);
 
   React.useEffect(() => {
@@ -905,7 +979,7 @@ function ListView({ onComplete }) {
             </span>
             <div>
               <p className="font-bold text-slate-800 text-base leading-snug">{c.term}</p>
-              <p className="text-slate-500 text-sm mt-1 leading-relaxed">{c.definition}</p>
+              <p className="text-slate-500 text-sm mt-1 leading-relaxed">{getEasyText(c.id, 'definition', easyOn, c.definition)}</p>
             </div>
           </div>
         </div>
@@ -915,15 +989,47 @@ function ListView({ onComplete }) {
   );
 }
 
+// ════════════════════════════════════════════════════════════
+// ENKEL SVENSKA — av/på-knapp, fast uppe till höger
+// ════════════════════════════════════════════════════════════
+function EasyToggleButton({ easyOn, onToggle, disabled }) {
+  return (
+    <button
+      type="button"
+      aria-pressed={easyOn}
+      disabled={disabled}
+      onClick={onToggle}
+      title={disabled ? 'Inte tillgänglig i Lucktext' : undefined}
+      className={
+        'fixed top-4 right-4 z-40 flex items-center gap-1.5 px-4 py-2 rounded-full font-bold text-sm shadow-md border-2 transition-colors ' +
+        (disabled
+          ? 'bg-slate-100 border-slate-200 text-slate-300 cursor-not-allowed'
+          : easyOn
+            ? 'bg-green-500 border-green-500 text-white'
+            : 'bg-white border-green-400 text-green-600 hover:bg-green-50')
+      }
+    >
+      📖 Enkel svenska: {easyOn ? 'På' : 'Av'}
+    </button>
+  );
+}
+
 function App() {
   const [activeView, setActiveView] = React.useState('Lista');
   const [progress, setProgress] = React.useState(loadProgress);
   const [celebrateRank, setCelebrateRank] = React.useState(null);
+  const [easyOn, setEasyOn] = React.useState(loadEasyMode);
   const prevRankRef = React.useRef(computeRank(loadProgress()));
 
   React.useEffect(() => {
     saveProgress(progress);
   }, [progress]);
+
+  React.useEffect(() => {
+    saveEasyMode(easyOn);
+  }, [easyOn]);
+
+  const toggleEasy = React.useCallback(() => setEasyOn(v => !v), []);
 
   const markComplete = React.useCallback((view, pct) => {
     setProgress(prev => {
@@ -970,6 +1076,7 @@ function App() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">
+      <EasyToggleButton easyOn={easyOn} onToggle={toggleEasy} disabled={activeView === 'Lucktext'} />
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <a
@@ -1030,11 +1137,11 @@ function App() {
       </div>
 
       {/* Content */}
-      {activeView === 'Lista' && <ListView onComplete={completeLista} />}
-      {activeView === 'Flashcards' && <FlashcardView onComplete={completeFlashcards} />}
+      {activeView === 'Lista' && <ListView onComplete={completeLista} easyOn={easyOn} />}
+      {activeView === 'Flashcards' && <FlashcardView onComplete={completeFlashcards} easyOn={easyOn} />}
       {activeView === 'Lucktext' && <LucktextView onComplete={completeLucktext} />}
-      {activeView === 'Scenario' && <ScenarioView onComplete={completeScenario} />}
-      {activeView === 'Icke-ex.' && <IckeExView onComplete={completeIckeEx} />}
+      {activeView === 'Scenario' && <ScenarioView onComplete={completeScenario} easyOn={easyOn} />}
+      {activeView === 'Icke-ex.' && <IckeExView onComplete={completeIckeEx} easyOn={easyOn} />}
 
       {/* Footer */}
       <footer className="mt-10 text-center text-xs text-slate-400 italic">
