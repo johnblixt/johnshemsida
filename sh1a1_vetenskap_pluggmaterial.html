@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pluggmaterial – Vetenskap | Sh 1a1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'EB Garamond', serif; font-size: 1.1rem; }
+        .prose { line-height: 1.9; }
+        .prose h2 {
+            font-size: 1.45rem;
+            font-weight: 700;
+            font-style: italic;
+            color: #1e293b;
+            margin-top: 2.2rem;
+            margin-bottom: 0.5rem;
+            padding-left: 0.75rem;
+            border-left: 4px solid #d97706;
+        }
+        .prose h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #334155;
+            margin-top: 1.5rem;
+            margin-bottom: 0.3rem;
+        }
+        .prose h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            font-style: italic;
+            color: #475569;
+            margin-top: 1.1rem;
+            margin-bottom: 0.2rem;
+        }
+        .prose p {
+            color: #334155;
+            margin-bottom: 0.85rem;
+        }
+        .prose ul {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 1rem;
+        }
+        .prose ul li {
+            color: #334155;
+            padding: 0.25rem 0 0.25rem 1.5rem;
+            position: relative;
+        }
+        .prose ul li::before {
+            content: '→';
+            color: #d97706;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        .pill-toggle button {
+            padding: 0.45rem 1.2rem;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .pill-toggle button.active  { background: #fbbf24; color: #1e293b; }
+        .pill-toggle button.inactive { background: transparent; color: #94a3b8; }
+        .faktaruta {
+            background: #fef9c3;
+            border-left: 4px solid #d97706;
+            padding: 1rem 1.2rem;
+            border-radius: 0 0.75rem 0.75rem 0;
+            margin: 1.2rem 0;
+        }
+        .faktaruta p { margin: 0; color: #78350f; }
+        .faktaruta p + p { margin-top: 0.5rem; }
+        .citat {
+            border-left: 4px solid #fbbf24;
+            padding: 0.85rem 1.1rem;
+            margin: 1.2rem 0;
+            font-style: italic;
+            color: #475569;
+            background: #fffbeb;
+            border-radius: 0 0.75rem 0.75rem 0;
+        }
+        .citat p { margin: 0; color: #475569; }
+        .citat p + p { margin-top: 0.5rem; }
+        .begrepp-rad {
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+            margin-bottom: 0.9rem;
+        }
+        .begrepp-badge {
+            font-family: 'Fredoka', sans-serif;
+            background: #fef3c7;
+            color: #78350f;
+            font-weight: 700;
+            font-size: 0.8rem;
+            padding: 0.15rem 0.6rem;
+            border-radius: 999px;
+            flex-shrink: 0;
+            margin-top: 0.2rem;
+            border: 1px solid #fbbf24;
+        }
+        .begrepp-rad p { margin: 0; color: #334155; }
+        .hierarki-box {
+            border: 2px solid #fbbf24;
+            border-radius: 1rem;
+            overflow: hidden;
+            margin: 1.2rem 0;
+        }
+        .hierarki-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .hierarki-row:last-child { border-bottom: none; }
+        .hierarki-num {
+            font-family: 'Fredoka', sans-serif;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .del-avdelare {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 2.5rem 0;
+        }
+        .del-avdelare .linje { flex: 1; border-top: 2px dashed #e2e8f0; }
+        .del-avdelare .etikett {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: #94a3b8;
+        }
+        .prose-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.2rem 0;
+            font-size: 0.92rem;
+            border: 2px solid #fbbf24;
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+        .prose-table th {
+            font-family: 'Fredoka', sans-serif;
+            background: #fef3c7;
+            color: #78350f;
+            font-weight: 700;
+            padding: 0.55rem 0.7rem;
+            text-align: left;
+        }
+        .prose-table td {
+            padding: 0.55rem 0.7rem;
+            border-top: 1px solid #e2e8f0;
+            color: #334155;
+        }
+        .diagram-box {
+            background: #fffbeb;
+            border: 2px dashed #fbbf24;
+            border-radius: 0.75rem;
+            padding: 1.2rem;
+            margin: 1.2rem 0;
+            text-align: center;
+            color: #78350f;
+            font-weight: 700;
+            font-size: 0.92rem;
+        }
+        .diagram-box .rad { display: flex; align-items: center; justify-content: center; gap: 0.6rem; flex-wrap: wrap; }
+        .diagram-box .pil { color: #d97706; font-weight: 900; }
+        @media (max-width: 768px) {
+            body { font-size: 1.02rem; }
+            .prose h2 { font-size: 1.25rem; }
+            .diagram-box .rad { flex-direction: column; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+<div class="max-w-2xl mx-auto px-6 py-10">
+
+    <!-- Tillbaka-knapp -->
+    <div class="flex items-center justify-between mb-8">
+        <a href="sh1a1_vetenskap.html" id="backLink" class="text-sm font-medium text-slate-500 hover:text-yellow-700 transition-colors">← Tillbaka till startsidan</a>
+        <div></div>
+    </div>
+
+    <!-- Rubrik -->
+    <div class="border-l-4 pl-4 mb-8" style="border-color: #fbbf24;">
+        <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Samhällskunskap nivå 1a1 · Pluggmaterial</p>
+        <h1 class="text-3xl md:text-4xl font-bold italic text-slate-900">🔬 Vetenskap</h1>
+    </div>
+
+    <!-- Toggle -->
+    <div class="pill-toggle flex gap-1 bg-slate-100 p-1 rounded-full w-fit mb-10">
+        <button id="btn-lattlast"    class="active"   onclick="showView('lattlast')">Lättläst</button>
+        <button id="btn-fordjupning" class="inactive" onclick="showView('fordjupning')">Fördjupning</button>
+    </div>
+
+    <!-- ════════════════ LÄTTLÄST ════════════════ -->
+    <div id="view-lattlast" class="prose">
+
+        <h2>Vetenskapens grunder</h2>
+        <p>Vetenskap ska öka vår kunskap om världen.</p>
+        <p>Vetenskap hjälper oss att förstå hur saker hänger ihop.</p>
+        <p>Vetenskap hittar mönster och samband.</p>
+        <p>Ibland kan vetenskap också förutse vad som kommer att hända.</p>
+
+        <h3>Vetenskaplighet i samhällskunskap</h3>
+        <p>Varje dag möter vi mycket information.</p>
+        <p>Vi behöver kunna granska den kritiskt.</p>
+        <p>Vi behöver också kunna hitta fakta själva.</p>
+        <p>Att kunna göra detta kallas <strong>vetenskaplighet</strong>.</p>
+        <p>Vetenskaplighet är en viktig del av gymnasiet, särskilt i ämnet samhällskunskap.</p>
+        <p>I samhällskunskap ska du kunna se en fråga från flera håll.</p>
+        <p>Du ska också kunna använda källor och vetenskapliga metoder för att dra slutsatser.</p>
+        <div class="faktaruta">
+            <p><strong>Betygen bygger på detta:</strong> Ju högre betyg, desto bättre ska du kunna analysera samhällsfrågor och bedöma källors trovärdighet — från enkla resonemang (E) till välutvecklade (A).</p>
+        </div>
+        <p>Man kan inte träna vetenskaplighet utan ett innehåll att öva på.</p>
+        <p>Därför ska hela ämnet samhällskunskap ha ett kritiskt och vetenskapligt förhållningssätt — oavsett om frågorna handlar om politik, ekonomi eller sociala frågor.</p>
+
+        <h2>Att tänka nytt och kritiskt – på samma gång</h2>
+        <p>Många framsteg i historien bygger på att nya idéer har prövats och testats.</p>
+        <p>När detta sker systematiskt och kontrolleras av forskare kallas det vetenskap.</p>
+        <p>Även om du inte är forskare har du nytta av ett <strong>vetenskapligt förhållningssätt</strong> i vardagen.</p>
+        <p>Ett vetenskapligt förhållningssätt bygger på tre saker:</p>
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Systematik</span>
+                <p>Ordning och reda. Föra logiska resonemang för att dra slutsatser.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Kreativitet</span>
+                <p>Våga ställa nya frågor och testa nya idéer.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Kritiskt tänkande</span>
+                <p>Ifrågasätta information, källor och slutsatser.</p>
+            </div>
+        </div>
+        <p>Kombinationen av logik och kreativitet gör vetenskapen kraftfull.</p>
+
+        <h3>Vetenskaplig metod</h3>
+        <p>Vetenskap delas ofta in i tre områden: naturvetenskap, samhällsvetenskap och humaniora.</p>
+        <p>Gränserna mellan dem är inte alltid tydliga.</p>
+        <p>Men alla vetenskaper delar samma arbetssätt. Det kallas <strong>vetenskaplig metod</strong>.</p>
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Undersöker verkligheten</span>
+                <p>Vetenskap samlar fakta om världen. Frågor om Guds existens eller livets mening är inte vetenskap — de handlar om tro.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Saklighet</span>
+                <p>Vetenskap bygger på fakta och bevis, inte löst tyckande.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Öppenhet</span>
+                <p>Forskare delar sina metoder och resultat så att andra kan granska dem.</p>
+            </div>
+        </div>
+
+        <h3>Granskning av andra forskare – peer review</h3>
+        <p><strong>Peer review</strong> betyder att all vetenskaplig text granskas av andra forskare innan den publiceras.</p>
+        <p>Detta är en kvalitetskontroll.</p>
+        <p>Mycket av det som kallas "vetenskap" i reklam och på sociala medier har inte granskats så här.</p>
+        <p>Det gör det svårt att veta vad som är riktig vetenskap och vad som är påhitt.</p>
+        <div class="citat">
+            <p>Exempel: Ett fejkat varumärke skriver "vetenskapligt bevisad effekt" i sin reklam — en vag hänvisning utan grund.</p>
+        </div>
+
+        <h3>Fakta och värderingar</h3>
+        <p>Ett vetenskapligt förhållningssätt kräver att man skiljer på <strong>fakta</strong> och <strong>värderingar</strong>.</p>
+        <p>Ett faktum kan vara sant eller falskt. Exempel: Olof Palme sköts den 28 februari 1986.</p>
+        <p>En värdering är vad någon tycker. Exempel: om Palme var en bra statsminister.</p>
+
+        <h3>Forskningsresultat och politik</h3>
+        <p>Ibland väljer man bara ut de fakta som passar den egna åsikten.</p>
+        <p>Detta kallas <strong>cherry-picking</strong> eller <strong>russinplockning</strong>.</p>
+        <div class="faktaruta">
+            <p><strong>Exempel:</strong> Vissa klimatkritiker jämför bara två enstaka år för att "bevisa" att uppvärmningen inte finns. Då stämmer siffrorna för just de åren, men den långsiktiga trenden döljs. FN:s klimatpanel räknar med en ökning på 2,5 grader till 2100 — redan 1,5 grader ger allvarliga konsekvenser.</p>
+        </div>
+
+        <h2>Begrepp, teorier och modeller</h2>
+        <p>Samhällsvetenskapen undersöker en del av verkligheten — samhället.</p>
+        <p>Det handlar till exempel om människor, relationer, statsskick och ekonomi.</p>
+        <p>Det är ofta svåra frågor. Då är det extra viktigt att skilja fakta från värderingar.</p>
+        <p>Vi behöver också vara tydliga med vad vi menar för att kunna kommunicera.</p>
+
+        <h3>Begrepp</h3>
+        <p>Ett <strong>begrepp</strong> är innebörden av ett ord.</p>
+        <p>Alla uppfattar inte ord som samhälle, frihet, demokrati och jämlikhet på samma sätt.</p>
+        <p>Därför är det viktigt att tydligt beskriva och definiera begrepp.</p>
+        <p>Det minskar risken för missförstånd.</p>
+
+        <h3>Teorier och modeller</h3>
+        <p>Samhällsvetenskapen försöker göra världen mer begriplig genom förenklingar.</p>
+        <p>Att dra allmänna slutsatser utifrån fakta och samband kallas att <strong>generalisera</strong>.</p>
+        <p>Forskare bygger <strong>teorier</strong> om hur saker hänger ihop.</p>
+        <p>En teori kan hjälpa oss att förklara, förstå eller förutsäga händelser i samhället.</p>
+        <p>För att pröva en teori kan man göra den enklare med en <strong>modell</strong>.</p>
+        <p>En karta är en modell — den visar delar av verkligheten, men är inte verkligheten själv.</p>
+        <div class="diagram-box">
+            <div class="rad"><span>Samhälle</span><span class="pil">→</span><span>Teori</span><span class="pil">→</span><span>Modell</span></div>
+        </div>
+
+        <h2>Metoder för att söka och samla in information</h2>
+        <p>Det kan verka lätt att söka information om samhället — men det är ganska svårt.</p>
+        <p>Man behöver förkunskaper för att hitta rätt information och granska den kritiskt.</p>
+
+        <h3>Att använda sökmotorer</h3>
+        <p>När du inte vet var du hittar information använder du en <strong>sökmotor</strong>, till exempel Google.</p>
+        <p>Dina träffar styrs inte bara av orden du skriver.</p>
+        <p>De styrs också av vad du och andra har sökt på tidigare, och vilka sidor du besökt.</p>
+        <p>Sökmotorn bedömer också hur uppdaterad en sida är och hur många andra sidor som länkar dit.</p>
+        <p>Överst i din trafflista finns ofta betalda annonser, märkta "Annons" eller "Sponsrad".</p>
+        <p>Även sidor längre ner kan vara sökoptimerade av företag med råd att göra det.</p>
+        <p>Om du bara skriver ett ord får du väldigt många träffar.</p>
+        <p>Skriver du flera ord får du träffar där alla orden finns med.</p>
+
+        <h3>Sökoperatorer</h3>
+        <p><strong>Sökoperatorer</strong> gör din sökning mer exakt. De kan kombineras på många sätt.</p>
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">OR</span>
+                <p>Ger träffar där något av orden finns. Exempel: kyckling recept ugn OR gryta.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">NOT / -</span>
+                <p>Tar bort ett ord ur träffarna. Exempel: kyckling recept ugn -timjan.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">"Citattecken"</span>
+                <p>Ger träffar där orden står i exakt den ordningen. Bra för citat och titlar.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">filetype:</span>
+                <p>Visar bara en viss filtyp. Exempel: makroekonomi filetype:pptx.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">site:</span>
+                <p>Visar bara träffar från en viss webbplats. Exempel: socialdemokraterna site:aftonbladet.se.</p>
+            </div>
+        </div>
+
+        <h2>LLM – Large Language Model</h2>
+
+        <h3>Att använda AI-verktyg</h3>
+        <p>Det finns många typer av AI-verktyg.</p>
+        <p>De viktigaste kallas <strong>stora språkmodeller, LLM</strong> (Large Language Models).</p>
+
+        <h3>LLM – stora språkmodeller</h3>
+        <p>LLM försöker förutsäga vilket ord som kommer härnäst, baserat på miljontals texter.</p>
+        <p>De är bra som en "hjälplärare" — de kan skriva i en viss stil, göra listor eller korta ner texter.</p>
+        <p>De är sämre på ren fakta, eftersom de ibland ger fel svar. Detta kallas att modellen <strong>hallucinerar</strong>.</p>
+
+        <h3>Kombinerade språkmodeller och sökmotorer</h3>
+        <p>Vill du ha korrekt fakta är det bättre att använda ett verktyg som kombinerar språkmodell och sökmotor.</p>
+        <p>Där kan du få källtexter och be om vetenskapliga källor.</p>
+        <p>Då kan du själv kontrollera att modellen har tolkat källorna rätt.</p>
+
+        <h3>Att ställa frågor eller "prompta"</h3>
+        <p>Det viktigaste när man använder AI-verktyg är hur man ställer frågan. Detta kallas att <strong>"prompta"</strong>.</p>
+        <p>Ju mer exakt frågan är, desto bättre svar får du.</p>
+        <p>Att prompta bra kräver övning och kunskap om ämnet.</p>
+
+        <h3>Att använda vetenskapliga databaser</h3>
+        <p>Ett bra sätt att hitta trovärdig information är att använda vetenskapliga <strong>databaser</strong>.</p>
+        <p>De flesta kostar pengar, men några är gratis.</p>
+        <p><em>diva-portal.org</em> samlar svenska uppsatser. <em>scholar.google.com</em> har vetenskapliga texter från hela världen.</p>
+
+        <h2>Metoder för att analysera information</h2>
+        <p>Att <strong>analysera</strong> betyder att noggrant undersöka alla delar av något.</p>
+        <p>En samhällsvetenskaplig analys innehåller ofta också tolkningar.</p>
+        <p>Det finns flera analysverktyg: källkritisk analys, kausalanalys, argumentationsanalys och bildanalys.</p>
+
+        <h3>Källkritisk analys</h3>
+        <p><strong>Källkritik</strong> är att bedöma sanningshalten i information man möter.</p>
+        <p>Man ska vara kritisk både till eget material och till andra källor.</p>
+        <p>Fråga dig alltid varför skribenten skrev texten.</p>
+        <h4>Källkritik och källtillit</h4>
+        <p>I samhällskunskap ska du dra slutsatser om källors <strong>trovärdighet</strong> och <strong>användbarhet</strong>.</p>
+        <p><strong>Källtillit</strong> betyder att vissa källor är mer pålitliga än andra.</p>
+        <p>En svensk myndighet är oftast mer trovärdig än en privatpersons blogg.</p>
+        <h4>Användbarhet och trovärdighet</h4>
+        <p>Information är <strong>användbar</strong> om den svarar på din fråga — då är den <strong>relevant</strong>.</p>
+        <p>För att bedöma <strong>trovärdighet</strong>, skilj på avsändarens trovärdighet och informationens trovärdighet.</p>
+        <p>Information som bygger på forskning är mer trovärdig än en enskild persons upplevelse.</p>
+        <p>Kontrollera också om informationen är allsidig eller vinklad.</p>
+        <h4>Källkritik på internet</h4>
+        <p>Många får sina nyheter från sociala medier idag.</p>
+        <p>Där finns ofta ingen redaktion som granskar innehållet innan det publiceras.</p>
+        <p>Innehållet kan också vara text, ljud, bild och film på samma gång.</p>
+        <h4>Wikipedia som källa</h4>
+        <p>Wikipedia är bra att börja med — artiklarna är korta och fyllda med fakta.</p>
+        <p>Problemet är att vem som helst kan skriva och ändra artiklarna, ofta anonymt.</p>
+        <p>Kolla vilka källor artikeln bygger på. Saknas källor — var extra skeptisk.</p>
+        <p>Flikarna "visa historik" och "diskussion" visar vem som redigerat och vad de diskuterat.</p>
+        <div class="citat">
+            <p>Sammanfatta källkritik med frågan: Vem skriver vad till vem och i vilket syfte?</p>
+        </div>
+
+        <h3>Kausalanalys</h3>
+        <p><strong>Kausalanalys</strong> handlar om orsaker och konsekvenser (kausalitet).</p>
+        <div class="diagram-box">
+            <div class="rad"><span>Orsaker</span><span class="pil">→</span><span>Fenomen</span><span class="pil">→</span><span>Konsekvenser</span></div>
+            <div class="rad" style="margin-top:0.4rem;"><span class="pil">↑</span></div>
+            <div class="rad"><span>Åtgärder</span></div>
+        </div>
+        <p><strong>1. Beskrivning:</strong> Beskriv fenomenet du undersöker så sakligt som möjligt.</p>
+        <p><strong>2. Orsaker:</strong> Ta reda på varför något är som det är, till exempel genom att jämföra faktorer.</p>
+        <div class="faktaruta">
+            <p><strong>Farliga glassar?</strong> Fler drunknar och fler äter glass i juni–augusti. Kurvorna följs åt — men glass orsakar inte drunkning. Detta är <strong>korrelation</strong> (samvariation), inte <strong>kausalitet</strong> (orsakssamband). Att tro motsatt kallas <strong>falsk kausalitet</strong>.</p>
+        </div>
+        <p>En <strong>oberoende variabel</strong> orsakar förändring. En <strong>beroende variabel</strong> påverkas.</p>
+        <p>I glass-exemplet är den riktiga orsaken en tredje variabel: varmt sommarväder.</p>
+        <p><strong>3. Konsekvenser:</strong> Vilka följder får fenomenet för individer, grupper eller samhället?</p>
+        <p><strong>4. Åtgärder:</strong> Åtgärder kan riktas mot fenomenet (reaktiva), mot orsakerna (förebyggande) eller mot konsekvenserna (lindrande).</p>
+
+        <h3>Argumentationsanalys</h3>
+        <p><strong>Argumentationsanalys</strong> visar hur en argumentation är uppbyggd.</p>
+        <p>Man tittar på: Vad innehåller argumentationen? Hur hänger delarna ihop? Håller argumentationen?</p>
+        <p><strong>Tesen</strong> är det man egentligen vill säga — kärnan i argumentationen.</p>
+        <p>Tesen kan vara svår att hitta, särskilt om skribenten är otydlig.</p>
+        <p><strong>Argument</strong> är påståenden som ska övertyga andra om att tesen stämmer.</p>
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Hållbarhet</span>
+                <p>Är argumentet sant eller sannolikt? Går det att kontrollera?</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Relevans</span>
+                <p>Hör argumentet till tesen? Annars är det irrelevant.</p>
+            </div>
+        </div>
+
+        <h3>Bildanalys</h3>
+        <p>Vi möter bilder hela tiden. Det är viktigt att kunna tolka dem.</p>
+        <p>Många bilder i tidningar är retuscherade, alltså bearbetade för att se bättre ut.</p>
+        <p><strong>Denotation</strong> är att beskriva vad man ser utan att tolka — miljö, färger, människor, text.</p>
+        <p><strong>Konnotation</strong> är tolkningen — vilket budskap bilden sänder och vilka känslor den väcker.</p>
+        <p>Fråga dig: vem står bakom bilden, vad vill den få dig att känna, och vem är målgruppen?</p>
+        <p>Var uppmärksam på stereotyper — de är ofta tydligare i medier än i verkligheten.</p>
+
+        <h2>Kapitelavslutning</h2>
+        <p>Det här kapitlet har handlat om:</p>
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">1</span>
+                <p>Vad som kännetecknar ett vetenskapligt förhållningssätt och en vetenskaplig metod.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">2</span>
+                <p>Hur begrepp, teorier och modeller kan strukturera frågor om samhället.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">3</span>
+                <p>Metoder för att söka och analysera information: källkritik, kausalanalys och argumentationsanalys.</p>
+            </div>
+        </div>
+
+    </div>
+    <!-- ════════════════ SLUT LÄTTLÄST ════════════════ -->
+
+    <!-- ════════════════ FÖRDJUPNING ════════════════ -->
+    <div id="view-fordjupning" class="prose hidden">
+
+        <h2>Vetenskapens grunder</h2>
+        <p>Vetenskapens uppgift är att öka vår kunskap om världen. Den hjälper oss att förstå och förklara olika delar av verkligheten genom att upptäcka mönster och samband. Genom vetenskapen kan vi inte bara förstå hur saker fungerar, utan ibland också förutse vad som kan hända i framtiden.</p>
+
+        <h3>Vetenskaplighet i samhällskunskap</h3>
+        <p>Varje dag möter vi stora mängder information. För att kunna lita på den och ha nytta av den behöver vi verktyg för kritisk granskning och metoder för att upptäcka olika samband. För att vara aktiva samhällsmedborgare behöver vi också själva kunna ta reda på saker och hitta användbara fakta.</p>
+        <p>Vetenskaplighet och metodfrågor ingår därför som viktiga delar i gymnasieutbildningen och inte minst i ämnet samhällskunskap. Det betyder att man ska kunna formulera, förstå och reflektera över samhällsfrågor ur olika perspektiv och aspekter, samt använda olika källor och samhällsvetenskapliga teorier och metoder. Även i betygskriterierna finns många formuleringar som hör direkt ihop med vetenskaplighet.</p>
+        <table class="prose-table">
+            <thead>
+                <tr><th>Kunskap, förmåga</th><th>E</th><th>C</th><th>A</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Eleven <strong>analyserar</strong> och <strong>diskuterar</strong> samhällsfrågor med samhällsvetenskaplig underbyggnad</td><td>godtagbar</td><td>god</td><td>mycket god</td></tr>
+                <tr><td>Eleven använder samhällsvetenskapliga metoder för att hantera information och drar slutsatser om källors trovärdighet och användbarhet</td><td>enkla</td><td>utvecklade</td><td>välutvecklade</td></tr>
+            </tbody>
+        </table>
+        <p>Vetenskaplighet kan inte läras eller tränas utan ett faktiskt innehåll. Hela ämnet samhällskunskap ska därför genomsyras av ett kritiskt och vetenskapligt förhållningssätt oavsett om det är politiska, ekonomiska eller sociala frågor som studeras. De vetenskapliga förmågorna ska utvecklas i förhållande till ämnesinnehållet.</p>
+
+        <h2>Att tänka nytt och kritiskt – på samma gång</h2>
+        <p>Olika framgångar i mänsklighetens historia bygger på att nya idéer har prövats, testats och utvecklats. När det sker systematiskt och kontrolleras av olika forskare är det frågan om vetenskap. Även om vi inte är forskare har vi alla nytta av att ha ett <strong>vetenskapligt förhållningssätt</strong> till det vi ser och möter i vardagen och till olika idéer.</p>
+        <p>En viktig del av vetenskapen är att tänka systematiskt och strukturerat samt att ha ordning och reda i sina undersökningar. Det gäller att föra logiska resonemang för att dra slutsatser utifrån resultaten. Allt detta kan beskrivas med ordet <strong>systematik</strong>.</p>
+        <p>I ett vetenskapligt förhållningssätt ingår också att tänka <strong>kritiskt</strong>, genom att ifrågasätta information, källor och slutsatser, för att se att kunskapen är pålitlig och trovärdig. Men vetenskap är inte bara struktur, regler och kritiskt tänkande — det handlar också om <strong>kreativitet</strong>: att våga ställa nya frågor, testa idéer och tänka i nya banor. Det är kombinationen av logik och kreativitet som gör vetenskapen till ett kraftfullt verktyg för att undersöka och förstå världen.</p>
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Systematik</span>
+                <p>Ordning och reda. Logiska resonemang och slutsatser.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Kreativitet</span>
+                <p>Ställa nya frågor, testa idéer och tänka i nya banor.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Kritiskt tänkande</span>
+                <p>Ifrågasätta information, källor och slutsatser.</p>
+            </div>
+        </div>
+
+        <h3>Vetenskaplig metod</h3>
+        <p>Vetenskap brukar delas in i tre olika områden: naturvetenskap, samhällsvetenskap och humaniora. Gränserna mellan dessa är inte alltid tydliga, men det som förenar alla vetenskaper är arbetssättet man använder då man forskar och förhållningssättet till kunskap och sanning. Det brukar kallas <strong>vetenskaplig metod</strong>.</p>
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Undersöker verkligheten</span>
+                <p>Genom forskning samlar vi in fakta om världen — oavsett om det handlar om fysikens lagar eller hur människor beter sig i samhället. Frågor om Guds existens, meningen med livet eller andra världar tillhör inte vetenskapen — de handlar om tro snarare än kunskap som kan undersökas vetenskapligt.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Saklighet</span>
+                <p>Vetenskap bygger på fakta och bevis. En forskare får inte bygga teorier på löst tyckande utan måste hitta argument som går att bevisa. Den som stödjer sig på osakliga argument arbetar inte vetenskapligt.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Öppenhet</span>
+                <p>En forskare delar med sig av sina metoder och resultat och låter dem granskas av andra forskare. Annars går det inte att avslöja om forskaren försökt påverka undersökningens resultat.</p>
+            </div>
+        </div>
+        <p>Vetenskap består alltså både av ett sätt att tänka (vetenskapligt förhållningssätt) och ett sätt att arbeta (vetenskaplig metod). Med hjälp av dessa verktyg kan vi undersöka och förstå vår värld bättre. Eftersom samhällsvetenskaperna handlar om frågor där det ofta finns starka och olika åsikter är det extra viktigt att vara medveten om vad som kännetecknar vetenskap.</p>
+
+        <h3>Granskning av andra forskare – peer review</h3>
+        <p>En grundprincip inom vetenskapen är så kallad <strong>peer review</strong>, vilket betyder att all vetenskaplig text som publiceras ska granskas av andra forskare inom området. Detta är en säkerhetsåtgärd vars syfte är att vetenskapliga artiklar ska hålla god kvalitet och vara gjorda på ett vetenskapligt sätt.</p>
+        <p>Mycket av den information som sprids som "vetenskap" i reklam, på hemsidor och i sociala medier har inte utsatts för denna granskning. Det gör det svårt att veta om det är vetenskap, fejkade studier eller rena påhitt.</p>
+        <div class="citat">
+            <p>Exempel: "Forum Cosmetic" är ett fingerat varumärke som hänvisar till "vetenskapligt bevisad effekt" — en typ av vaga vetenskapshänvisningar som ofta förekommer i reklam.</p>
+        </div>
+
+        <h3>Fakta och värderingar</h3>
+        <p>Ett vetenskapligt förhållningssätt förutsätter att man skiljer på <strong>fakta</strong> och <strong>värderingar</strong>. Ett faktum är till exempel att Sveriges dåvarande statsminister, Olof Palme, sköts den 28 februari 1986. Om Palme var en bra statsminister eller inte är däremot en värderingsfråga. Fakta kan vara sanna eller falska, medan värderingar är ett uttryck för vad någon tycker i en fråga.</p>
+
+        <h3>Forskningsresultat och politik</h3>
+        <p>Ibland gör man ett tydligt urval av fakta, utan att säga hela sanningen, för att motivera eller ge stöd till sina egna handlingar och värderingar. Detta brukar kallas <strong>cherry-picking</strong> eller <strong>russinplockning</strong> på svenska.</p>
+        <div class="faktaruta">
+            <p>Ett exempel är i klimatdebatten, när motståndare till tanken om människans klimatpåverkan väljer att jämföra två enstaka år för att "bevisa" att ingen uppvärmning skett. Det som sägs om just de åren kan stämma, samtidigt som inget anges om den långsiktiga trenden. FN:s klimatpanel har uppskattat att vi når en ökning på 2,5 grader till 2100, och redan en uppvärmning på mer än 1,5 grader skulle ge allvarliga konsekvenser för mänskligheten. Klimatkritiska politiker och debattörer väljer att bortse från den övervägande forskning som slagit fast att klimatförändringen har sin grund i mänsklig påverkan.</p>
+        </div>
+
+        <h2>Begrepp, teorier och modeller</h2>
+        <p>Inom samhällsvetenskapen undersöker man en del av verkligheten, samhället och de delar som ingår i det, till exempel människor, relationer, statsskick och ekonomi. Det är många gånger svåra frågor där det är extra viktigt att skilja mellan fakta och värderingar. För att kunna kommunicera behöver vi vara tydliga med vad vi menar. Det gäller också att hitta sätt att överblicka det komplexa samhället.</p>
+
+        <h3>Begrepp</h3>
+        <p>Ett <strong>begrepp</strong> är innebörden av ett ord. Alla människor uppfattar inte begrepp som exempelvis samhälle, frihet, demokrati och jämlikhet på samma sätt. Det är därför viktigt att göra sitt bästa för att tydligt beskriva och definiera olika begrepp. Då underlättas kommunikationen och risken för missförstånd minskar.</p>
+
+        <h3>Teorier och modeller</h3>
+        <p>Samhällsvetenskapen försöker göra världen mer begriplig. Det sker genom förenklingar, men också genom att dra allmängiltiga slutsatser utifrån ett antal fastställda fakta eller samband. Detta kallas att <strong>generalisera</strong>. Forskare konstruerar <strong>teorier</strong> om hur saker och ting hänger ihop eller fungerar. En teori är sammansatt av ett antal fastställda eller tänkbara orsakssamband eller relationer som forskare har upptäckt i sina studier. Teorierna kan hjälpa oss att förklara, förstå eller förutsäga olika händelser eller företeelser i samhället.</p>
+        <p>För att kunna pröva teorierna eller göra dem mer överskådliga måste de ibland förenklas. För detta ändamål kan <strong>modeller</strong> vara användbara. En modell som vi alla är bekanta med är kartor. En karta är egentligen en modell av verkligheten, men den är inte verkligheten. Den är en tvådimensionell bild som visar vissa delar av verkligheten: vägnät och orter (vägkarta), konturer i landskapet (topografisk karta), befolkningstäthet (befolkningskarta) och så vidare.</p>
+        <div class="diagram-box">
+            <div class="rad"><span>Samhälle</span><span class="pil">→</span><span>Teori</span><span class="pil">→</span><span>Modell</span></div>
+        </div>
+        <p>Teorier handlar om verkligheten och hur den fungerar. För att kunna pröva teorierna eller göra dem mer överskådliga måste de ibland förenklas i form av modeller.</p>
+
+        <h2>Metoder för att söka och samla in information</h2>
+        <p>Detta avsnitt behandlar olika sätt att söka information om samhället, hur man kan avgöra om informationen är trovärdig och olika metoder för att tolka och bearbeta samhällsvetenskaplig information. Att söka samhällsvetenskaplig information kan verka lätt, men är faktiskt ganska komplicerat. Ofta krävs en hel del förkunskaper för att hitta relevant information och för att granska den kritiskt, så att man vet om den är användbar.</p>
+
+        <h3>Att använda sökmotorer</h3>
+        <p>När du inte vet på vilken webbplats du kan hitta den information du söker använder du normalt en <strong>sökmotor</strong>. Nedan beskrivs i första hand sökningar via Google, men principen är densamma för andra sökmotorer.</p>
+        <h4>Varför får jag de träffar jag får?</h4>
+        <p>I grund och botten får du träffar utifrån hur du skriver sökord i sökfältet, men det är inte hela sanningen. Dina träffar styrs också av vilka sökningar du, och människor du känner, har gjort tidigare och vilka hemsidor du har besökt. Resultatet styrs också av hur viktig och relevant sökmotorn bedömer att respektive träff är — bland annat utifrån hur uppdaterad en webbplats är och hur många andra webbplatser som länkar till den.</p>
+        <p>Längst upp i trafflistan hittar du betalda sökträffar där företag har betalat för att hamna på första sidan — märkta med texten "Annons" eller "Sponsrad". Först efter annonserna börjar listan med träffar som kommit högt upp på egna meriter. Även bland dessa har de företag och organisationer som har råd sökoptimerat sina webbplatser för att komma högt upp i trafflistan.</p>
+        <h4>Hur får jag de träffar jag vill ha?</h4>
+        <p>Om du skriver ett ord i sökfältet får du träffar där det ordet finns med. Resultatet kan bli väldigt många träffar — sökordet "kyckling" ger till exempel över 1,3 miljoner träffar. Skriver du två ord, till exempel både "kyckling" och "recept", får du först träffar på hemsidor där båda orden finns med.</p>
+
+        <h3>Sökoperatorer</h3>
+        <p><strong>Sökoperatorer</strong> används när du vill begränsa din sökning på olika sätt för att få mer precisa träffar. De kan kombineras på i stort sett hur många sätt som helst, och dessutom med olika sökverktyg.</p>
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">OR</span>
+                <p>Ger träffar där något av dina sökord finns med. Exempel: kyckling recept ugn OR gryta — ger träffar där orden kyckling och recept måste finnas tillsammans med något av orden ugn eller gryta.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">NOT / -</span>
+                <p>Begränsar sökningen genom att ta bort vissa träffar. Exempel: kyckling recept ugn NOT timjan (eller -timjan) — ger träffar med kyckling, recept och ugn, men inte timjan.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">"Citattecken"</span>
+                <p>Ger träffar där flera ord förekommer i en viss exakt ordning — användbart för titlar och citat. Exempel: "Världens bästa kycklingrecept" ger bara träffar på exakt den frasen.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">filetype:</span>
+                <p>Visar bara träffar i en viss filtyp, till exempel pdf, jpg eller pptx. Exempel: makroekonomi filetype:pptx visar powerpoint-presentationer om makroekonomi.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">site:</span>
+                <p>Visar bara träffar inom en viss webbplats eller toppdomän. Exempel: socialdemokraterna site:aftonbladet.se visar material om Socialdemokraterna på Aftonbladets webbplats.</p>
+            </div>
+        </div>
+
+        <h2>LLM – Large Language Model</h2>
+
+        <h3>Att använda AI-verktyg</h3>
+        <p>Det finns många olika typer av AI-verktyg. Mycket viktiga är så kallade <strong>stora språkmodeller, LLM</strong> (Large Language Models).</p>
+
+        <h3>LLM – stora språkmodeller</h3>
+        <p>Ett sätt att få snabba svar på olika frågor är att använda olika AI-verktyg. LLM är stora språkmodeller som försöker förutsäga vad nästa ord ska bli, grundat på analys av miljontals texter. Dessa verktyg är utmärkta att använda som en hjälplärare eller "study buddy" när du vill ha hjälp med att exempelvis skriva texter i en viss stil, göra punktlistor eller instuderingsfrågor, korta ner, sammanfatta eller förenkla texter. De är inte lika bra på ren information, eftersom de kan ge felaktiga svar och till och med börja "hallucinera".</p>
+
+        <h3>Kombinerade språkmodeller och sökmotorer</h3>
+        <p>Om du är ute efter korrekt information i en fråga är det oftast bättre att använda ett verktyg som kombinerar språkmodell och sökmotor. I ett sådant kan du få källtexterna och till och med be om vetenskapliga källor som utgångspunkt. Då kan du gå till dessa källor och kontrollera att språkmodellen har tolkat dem på ett rimligt sätt.</p>
+
+        <h3>Att ställa frågor eller "prompta"</h3>
+        <p>När man använder AI-verktyg är det allra viktigaste hur man ställer frågorna och ger instruktioner till verktyget, vilket kallas att "<strong>prompta</strong>". Ju mer precis frågan eller instruktionen är, desto mer träffsäkra svar kommer AI-verktyget att ge. Att prompta korrekt kräver både övning och kunskap inom det ämnesområde som ska undersökas — utan kunskaper är det svårt att veta vilka frågor som bör ställas.</p>
+
+        <h3>Att använda vetenskapliga databaser</h3>
+        <p>Ett bra sätt att hitta relevant och trovärdig information är att använda olika vetenskapliga <strong>databaser</strong>. Sökning på dessa avviker egentligen inte från de råd som gavs ovan under "Att använda sökmotorer", men det kan vara bra att kontrollera om det finns särskilda instruktioner till den databas du vill använda.</p>
+        <p>Vetenskapliga databaser kostar tyvärr ofta pengar, men det finns några som är gratis. En sådan är diva-portal.org, där många av de vetenskapliga uppsatser som skrivs på universitet och högskolor i Sverige finns upplagda. En annan är scholar.google.com, som innehåller väldigt många vetenskapliga texter från hela världen.</p>
+
+        <h2>Metoder för att analysera information</h2>
+        <p>Att <strong>analysera</strong> innebär att noggrant och systematiskt undersöka alla beståndsdelar av något. Samhällsvetenskapliga analyser innehåller också ofta tolkningar av de olika delarna. Detta är särskilt vanligt vid analys av texter eller idéer och vid analys av intervjusvar.</p>
+        <p>Det finns många olika analysmetoder för att bearbeta ett material. I detta avsnitt redovisas några vanliga analysverktyg inom samhällsvetenskapen — från källkritisk analys och kausalanalys till argumentationsanalys och bildanalys. Analysverktygen kan vara en mycket god hjälp för att hålla sig till ett genomtänkt och strukturerat sätt att analysera och tolka ett material.</p>
+
+        <h3>Källkritisk analys</h3>
+        <p>Ett viktigt inslag när det handlar om att analysera information om samhället är <strong>källkritik</strong>. Att vara källkritisk är att försöka avgöra sanningshalten eller rimligheten i den information man möter. Det innebär att förhålla sig kritisk både till det egna materialet vid egna undersökningar och till andra källor. Använder man till exempel tidningsartiklar gäller det att fråga sig om artikelförfattaren hade ett eget syfte med att skriva på just det sättet.</p>
+        <p>Källkritik är viktig för alla, men särskilt för journalister och forskare, eftersom de tolkar och presenterar information för en publik. Källkritik ska också ingå i studier på gymnasiet. För att göra en källkritisk analys har man nytta av vissa verktyg, men det allra viktigaste är att man har vissa förkunskaper i ämnet — utan dem kan det vara svårt att avgöra hur korrekta källorna är.</p>
+        <h4>Källkritik och källtillit i samhällskunskap</h4>
+        <p>Formuleringen i betygskriterierna är att "eleven drar slutsatser om olika källors trovärdighet och användbarhet". I det centrala innehållet finns också en formulering om <strong>källtillit</strong>, som innebär att vi inte bara ska vara allmänt kritiska till alla källor utan att vi ska lita mer på vissa källor än andra. Information från myndigheter i en demokratisk stat som Sverige, som har låg korruption och som har som grundprincip att all information är öppen för allmänheten, är generellt mer trovärdig än en blogg som skrivs av en privatperson.</p>
+        <h4>Användbarhet och trovärdighet</h4>
+        <p>Ett grundkrav i samhällsvetenskapliga studier är att avgöra om den information vi får fram är <strong>användbar</strong> — det vill säga att den kan bidra till att besvara de frågor vi har, alltså att informationen är <strong>relevant</strong>.</p>
+        <p>För att avgöra en källas <strong>trovärdighet</strong> är det bra att skilja på avsändarens trovärdighet och själva informationens trovärdighet. Avsändare kan vara till exempel en forskare, en myndighet, en organisation, en tv-kanal, en tidning, en hemsida eller en film. Oftast är det ganska enkelt att få fram information om avsändarens trovärdighet genom att söka information om avsändaren via webben.</p>
+        <p>Om information bygger på omfattande vetenskaplig forskning är den mer trovärdig än om den bygger på att exempelvis en kusin upplevt att det inte är på det sättet. Faktiska förhållanden handlar inte om tro, enskilda upplevelser eller känslor, utan om systematiskt genomförda studier som utsätts för granskning av andra kritiska forskare. Det finns alltså inte "min sanning" och "din sanning" i faktiska förhållanden — ett faktum är antingen sant eller inte, oavsett vad vi tycker om det.</p>
+        <p>När det gäller informationens trovärdighet är det viktigt att kontrollera var informationen ursprungligen kommer ifrån. Men kanske ännu viktigare är att bedöma om informationen är sann och om den är allsidig eller tendentiös (vinklad). Om alla sidor får komma till tals och informationen inte innehåller värdeladdade ord, gör det informationen mer trovärdig.</p>
+        <h4>Källkritik på internet</h4>
+        <p>Över hälften av alla internetanvändare får i dag sina huvudsakliga nyheter från olika sociala medier. För att kunna förhålla oss källkritiska till detta informationsflöde behöver vi förstå hur nätet skiljer sig från andra källor som böcker eller traditionella medier, vilka funnits i flera århundraden. En skillnad är att det ofta inte finns någon redaktion eller ansvarig utgivare som granskar informationen på sociala medier. En annan viktig skillnad är att innehållet kommer i olika format som text, ljud, bild och film — ofta samspelar dessa med varandra. För att kunna värdera källor på internet behöver vi inte bara ha utvecklat en källkritisk förmåga, utan också ha kunskaper om olika medieformer, hur olika tjänster fungerar och hur information publiceras.</p>
+        <h4>Wikipedia som källa</h4>
+        <p>Wikipedia kan vara en utmärkt källa att starta med när du behöver läsa in dig på ett ämne. Ofta är artiklarna korta, fyllda med fakta och rakt på sak. Ett problem med Wikipedia är dock att vem som helst kan skriva och redigera artiklar. Man kan ofta inte direkt se om artikeln är vinklad, av dålig kvalitet eller ren lögn. Ett annat problem är att artikelförfattarna är anonyma, så man kan inte veta om de utgår från en viss ståndpunkt och därför vinklar innehållet åt ett visst håll.</p>
+        <p>Ett tips är att se vilka källor artikeln bygger på och kontrollera några av dem för att se att artikelförfattaren tolkat dem på ett rimligt sätt. Om inga källor är angivna bör du ta artikeln med en stor nypa salt. Vid varje artikel i Wikipedia finns en flik "visa historik" som visar vilka redigeringar som gjorts, när de gjordes och av vem, samt en flik "diskussion" där användare och administratörer diskuterar vad som står i artikeln, vilka formuleringar som är lämpliga och vilka källor som passar till innehållet.</p>
+        <div class="citat">
+            <p>Ett sätt att sammanfatta resonemanget om källkritik är att fråga sig: Vem skriver vad till vem och i vilket syfte?</p>
+        </div>
+
+        <h3>Kausalanalys</h3>
+        <p>En mycket vanlig analysmodell inom samhällsvetenskapen är en enkel <strong>kausalanalys</strong>. Begreppet kausalitet utgår från orsaker (eng. cause) och konsekvenser.</p>
+        <div class="diagram-box">
+            <div class="rad"><span>Orsaker (2)</span><span class="pil">→</span><span>Fenomen/situation/företeelse (1)</span><span class="pil">→</span><span>Konsekvenser (3)</span></div>
+            <div class="rad" style="margin-top:0.4rem;"><span class="pil">↑</span></div>
+            <div class="rad"><span>Åtgärder (4)</span></div>
+        </div>
+        <p><strong>1. Beskrivning av fenomenet/situationen/företeelsen.</strong> I en kausalanalys börjar man med att beskriva det fenomen, den situation eller den företeelse man undersöker, så sakligt och noggrant som möjligt.</p>
+        <p><strong>2. Orsaker.</strong> Målet är ofta att identifiera orsaker till att något är som det är. Det kan man göra på flera sätt — läsa vetenskapliga artiklar, eller kombinera olika faktorer och upptäcka samband som kan vara kausala. Ett exempel är att jämföra föräldrars inkomster och utbildningsnivå med skolelevers betyg i en stadsdel. Ser man att låga inkomster och låg utbildningsnivå ofta finns i områden där elever har låga betyg kan man anta att det finns ett samband.</p>
+        <p><strong>Falsk kausalitet.</strong> Man bör vara försiktig med kausala samband. Det är förmodligen så att inkomst och utbildningsnivå påverkar barns möjligheter att få höga betyg, men vi kan inte bevisa det med säkerhet. Det gäller att alltid vara uppmärksam på falsk kausalitet.</p>
+        <div class="faktaruta">
+            <p><strong>Exempel: Farliga glassar?</strong> Drunkningsolyckor "förorsakas" av glassätning — om man kontrollerar under vilka månader flest drunknar (juni–augusti) och under vilka månader vi äter mest glass (samma månader) följs kurvorna åt i ett diagram. Risken är då att man drar en felaktig slutsats: glassätningen förorsakar dödsfallen. Undersökningen får låg validitet, eftersom man kopplat ihop två saker som saknar orsakssamband — ett kausalt samband. I stället handlar det om <strong>korrelation</strong>: två saker samvarierar, men det ena orsakar inte det andra.</p>
+            <p>Vid kausala resonemang talar man om oberoende och beroende <strong>variabler</strong>. En oberoende variabel är den faktor som orsakar förändringar; en beroende variabel är den faktor som påverkas. I glass-exemplet kan man (felaktigt!) påstå att glassätning är den oberoende variabeln och drunkningsolyckor den beroende. Men det är betydligt troligare att det finns en bakomliggande oberoende variabel — att det är sommar och varmt och att vi tillbringar mer tid vid vatten — som påverkar både glassätning och drunkningsolyckor.</p>
+        </div>
+        <p><strong>3. Konsekvenser.</strong> En kausalanalys innehåller också ofta konsekvenser — vilka följdverkningar ett fenomen får för olika människor, grupper eller samhället som helhet. Ett exempel kan vara konsekvenser av det fria valet av gymnasieskola: på ett personligt plan är valfrihet viktigt, men på samhällsnivå är det inte lika självklart. Om ambitiösa elever med höga betyg samlas på ett fåtal skolor kan det uppstå hopplöshet och tuffa förhållanden på de skolor som blir mindre populära — det som är bra för en individ är inte alltid bra för samhället som helhet.</p>
+        <p><strong>4. Åtgärder.</strong> Analysen kan byggas ut till att innefatta vilka åtgärder som vidtagits eller hade kunnat vidtas — riktade mot själva fenomenet, mot orsakerna eller mot konsekvenserna. Som exempel: åtgärder mot gängkriminalitet riktade mot situationen (mer polismakt, skärpt lagstiftning) kallas <strong>reaktiva</strong> åtgärder. Åtgärder mot orsakerna (utanförskap, hopplöshet, arbetslöshet) försöker <strong>förebygga</strong> att kriminalitet uppstår. Åtgärder mot konsekvenserna försöker mildra effekterna, till exempel hjälp till brottsoffer och skyddat boende.</p>
+        <table class="prose-table">
+            <thead><tr><th></th><th>1. Fenomen</th><th>2. Orsaker</th><th>3. Konsekvenser</th></tr></thead>
+            <tbody>
+                <tr><td><strong>Beskrivning</strong></td><td></td><td></td><td></td></tr>
+                <tr><td><strong>4. Åtgärder</strong></td><td colspan="3"></td></tr>
+            </tbody>
+        </table>
+
+        <h3>Argumentationsanalys</h3>
+        <p>Många texter har som mål att argumentera för en tes eller åsikt. Då kan <strong>argumentationsanalys</strong> vara mycket användbart för att mer i detalj se hur argumentationen är uppbyggd — att identifiera <strong>tesen</strong> (det man vill säga) samt <strong>argument</strong> för och emot tesen. Argumentationsanalys innebär att man studerar en argumentation utifrån några frågeställningar: Vad innehåller argumentationen (dela upp den i tes, argument och motargument)? Hur hänger delarna ihop? Håller argumentationen — finns svagheter, osakligheter eller debattknep?</p>
+        <p>När du ska analysera en argumentation, börja med att leta efter tesen — det centrala, själva "saken", det man egentligen vill säga. Det är inte alltid lätt att hitta tesen.</p>
+        <div class="citat">
+            <p>Exempel: I debatten inför folkomröstningen om trängselavgifter i Stockholm 2006 handlade argumenten bland annat om bättre kollektivtrafik, effektivare vägnät, räddade grönområden och färre dödsfall från bilavgaser. Den övergripande tesen är nog ändå "rösta Ja till trängselavgifter för en bättre livsmiljö".</p>
+        </div>
+        <p>Tesen kan medvetet vara dold, men vanligare är att debattörer uttrycker sig otydligt för att de är dåliga på att bygga en logiskt sammanhängande argumentation. Det är lätt att missta det starkaste argumentet för själva tesen, när det i själva verket bara är ett stöd för tesen — då har man missat kärnan i argumentationen.</p>
+        <p>När tesen är fastslagen går man vidare till argumenten — påståenden som ska övertyga andra om att tesen är sann, riktig eller önskvärd. Argument bedöms utifrån hållbarhet och relevans. <strong>Hållbarhet</strong> är ett arguments styrka eller trovärdighet — går det att kontrollera? <strong>Relevans</strong> handlar om argumentet hör till saken. Det är tesen som avgör om ett argument är relevant; alla argument måste kunna kopplas till tesen, annars är de irrelevanta.</p>
+        <p>I exemplet med trängselavgifter kanske någon säger: "Trängselavgifter kommer att göra mig glad varje morgon." Det kan vara sant, men argumentet har inget med tesen (att trängselavgifter är bra för miljön) att göra och är därmed irrelevant.</p>
+        <p>Enkla kontrollfrågor: hållbarhet — "Är detta verkligen sant/sannolikt?"; relevans — "På vilket sätt hör det till saken?"; samt "Hur bra stöder det här argumentet tesen?"</p>
+
+        <h3>Bildanalys</h3>
+        <p>Bilder finns ständigt runt omkring oss — vi lever med bilder under hela vår vakna tid. Med ökade möjligheter att fotografera, sprida och manipulera bilder har det blivit allt viktigare att kunna tolka och analysera dem. De flesta bilder på tidskriftsomslag är retuscherade, det vill säga bearbetade för att ge den avbildade ett fördelaktigare utseende eller motsvara ett visst ideal.</p>
+        <p>Ett bildanalysverktyg består av ett antal frågor uppdelade i olika delar. Det går bra att bara välja ut de delar som är relevanta för den analys man vill göra.</p>
+        <div style="margin: 1.2rem 0;">
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Kanal</span>
+                <p>När och var publicerades bilden?</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Avsändare</span>
+                <p>Vem/vilka står bakom bilden? Företag, organisation, varumärke, logotyp?</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Denotation</span>
+                <p>Beskriv bilden utan att tolka eller lägga in värderingar: tid, rum, miljö, komposition, färger, människor (ålder, kön, kläder, kroppsställning, placering), text och blickfång.</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Konnotation</span>
+                <p>Tolkningen — vilket budskap förmedlas? Vädjar bilden till förnuft eller känslor? Vad framställs som positivt? Är människorna aktiva/passiva, objekt/subjekt? Finns stereotyper?</p>
+            </div>
+            <div class="begrepp-rad">
+                <span class="begrepp-badge">Mottagare</span>
+                <p>Vem riktar sig bilden till? Når den fram effektivt? Vilka känslor används för att nå målgruppen?</p>
+            </div>
+        </div>
+        <p>De normer, ideal och stereotyper som finns om till exempel genus, sexualitet och etnicitet är ofta tydligare i medierna än i verkligheten. När generaliseringar befäster exkluderande normer och diskriminerar människor är det viktigt att reagera — exempelvis är idealbilden av en kvinna som smal, sexig, passiv och ett objekt som finns till för att tillfredsställa mannen vida spridd i många medier.</p>
+        <p>Ägna inte alltför mycket tid åt ren beskrivning — denotation. Det är tolkningen — konnotationen — som är mest intressant.</p>
+
+        <h2>Kapitelavslutning</h2>
+        <p>Det här kapitlet har handlat om:</p>
+        <ul>
+            <li>Grundläggande kännetecken för vetenskapliga förhållningssätt och metoder.</li>
+            <li>Hur begrepp, teorier och modeller kan användas för att strukturera frågor och kunskaper om samhället.</li>
+            <li>Metoder för att söka och analysera information, bland annat källkritik, kausalanalys och argumentationsanalys.</li>
+        </ul>
+
+    </div>
+    <!-- ════════════════ SLUT FÖRDJUPNING ════════════════ -->
+
+    <footer class="mt-16 text-center border-t border-slate-200 pt-8">
+        <p class="text-slate-400 text-xs uppercase tracking-[0.2em] font-black italic mb-2">Designad av John</p>
+        <p class="text-slate-400 text-xs italic">Källa: Samhällsvetenskap – Vetenskapens grunder</p>
+    </footer>
+
+</div>
+
+<script>
+    function showView(view) {
+        document.getElementById('view-lattlast').classList.toggle('hidden', view !== 'lattlast');
+        document.getElementById('view-fordjupning').classList.toggle('hidden', view !== 'fordjupning');
+        document.getElementById('btn-lattlast').className    = view === 'lattlast'    ? 'active' : 'inactive';
+        document.getElementById('btn-fordjupning').className = view === 'fordjupning' ? 'active' : 'inactive';
+    }
+
+    (function () {
+        var backLink = document.getElementById('backLink');
+        backLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            try {
+                if (document.referrer && new URL(document.referrer).hostname === window.location.hostname) {
+                    history.back();
+                    return;
+                }
+            } catch (err) {}
+            window.location.href = 'sh1a1_vetenskap.html';
+        });
+    })();
+</script>
+    <script src="feedback-widget.js" defer></script>
+    <script data-goatcounter="https://johnblixt.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
