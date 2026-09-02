@@ -734,7 +734,12 @@
     // sh1a2_ideologier_quizfragor.md. Förklaringarna bygger på områdets
     // teori-/begreppsmaterial, inte på själva frågetexten.
     // ══════════════════════════════════════════════════════════════════
-    const VIEW_LABELS = { ovning: 'Övningsquiz', kryssprov: 'Kryssprov' };
+    const VIEW_LABELS = { ovning: 'Övningsquiz', kryssprov: 'Inför läxförhör' };
+
+    // Vy-konfiguration: sätt enabled till true igen för att tända en dold flik.
+    // Vyn och dess data ligger kvar oavsett – bara synligheten styrs härifrån.
+    const VIEW_ENABLED = { ovning: false, kryssprov: true };
+    const ACTIVE_VIEWS = Object.keys(VIEW_LABELS).filter(k => VIEW_ENABLED[k]);
 
     const KRYSS_PROGRESS_KEY = 'sh1a2_ideologier_kryssprov_progress';
     const KRYSS_RANK_SALT = 'kryssprovPartierOchIdeologierSh1a2v1';
@@ -1794,7 +1799,7 @@
 
     // --- YTTRE APP: växlar mellan Övningsquiz och Kryssprov ---
     function App() {
-      const [view, setView] = useState('ovning');
+      const [view, setView] = useState(ACTIVE_VIEWS[0]);
       const [subActive, setSubActive] = useState(false);
       const [easyMode, setEasyMode] = useState(() => {
         try { return sessionStorage.getItem(EASY_KEY) === '1'; } catch (e) { return false; }
@@ -1837,10 +1842,10 @@
 
       return (
         <div>
-          {!subActive && (
+          {!subActive && ACTIVE_VIEWS.length > 1 && (
             <div className="pt-16 pb-2 flex justify-center px-4">
               <div className="inline-flex bg-white rounded-full p-1 shadow-sm border border-slate-200">
-                {Object.keys(VIEW_LABELS).map(key => (
+                {ACTIVE_VIEWS.map(key => (
                   <button
                     key={key}
                     onClick={() => { setSubActive(false); setView(key); }}
@@ -1851,6 +1856,13 @@
                   </button>
                 ))}
               </div>
+            </div>
+          )}
+          {!subActive && ACTIVE_VIEWS.length === 1 && (
+            <div className="pt-16 pb-2 flex justify-center px-4">
+              <h2 className="text-lg font-black tracking-wide" style={{ color: '#fb923c' }}>
+                {VIEW_LABELS[view]}
+              </h2>
             </div>
           )}
           {!subActive && (
