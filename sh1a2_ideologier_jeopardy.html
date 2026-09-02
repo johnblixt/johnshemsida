@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jeopardy – Partier och ideologier | SH 1a2</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;0,800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0b1120;
+    --navy2:#111c33;
+  }
+  body{font-family:'EB Garamond',serif;}
+  .num{font-family:'Fredoka',sans-serif;font-variant-numeric:tabular-nums;}
+
+  /* ── Scenen ── */
+  #jp-stage{
+    background:var(--navy);
+    border-radius:1.25rem;
+    overflow:hidden;
+    position:relative;
+    display:flex;flex-direction:column;
+    height:min(78vh,660px);
+  }
+  #jp-stage.jp-fs{
+    position:fixed;inset:0;z-index:400;
+    height:100dvh;border-radius:0;
+  }
+  #jp-stage:fullscreen{height:100dvh;border-radius:0;}
+
+  /* ── Rutnät ── */
+  #jp-board{
+    flex:1;min-height:0;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    grid-template-rows:auto repeat(5,1fr);
+    gap:6px;padding:10px;
+  }
+  .jp-head{
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    font-family:'Fredoka',sans-serif;font-weight:700;
+    text-transform:uppercase;letter-spacing:.06em;line-height:1.1;
+    font-size:clamp(.6rem,1.5vh,.95rem);
+    color:#fff;padding:.5rem .35rem;border-radius:.6rem .6rem .2rem .2rem;
+  }
+  .jp-cell{
+    display:flex;align-items:center;justify-content:center;
+    border-radius:.6rem;cursor:pointer;
+    font-family:'Fredoka',sans-serif;font-weight:700;
+    font-size:clamp(1.3rem,4.6vh,3.1rem);
+    border:1px solid rgba(255,255,255,.07);
+    transition:transform .12s ease,filter .12s ease,background .12s ease;
+  }
+  .jp-cell:hover:not(.jp-used){transform:translateY(-2px) scale(1.02);}
+  .jp-cell:focus-visible{outline:3px solid #fff;outline-offset:2px;}
+  .jp-used{
+    background:rgba(255,255,255,.04)!important;color:rgba(255,255,255,.16)!important;
+    cursor:default;transform:none;font-size:clamp(1rem,2.6vh,1.6rem);
+  }
+
+  /* ── Lagrad ── */
+  #jp-teams{
+    display:grid;gap:6px;padding:0 10px 10px;
+    grid-template-columns:repeat(var(--tc,2),1fr);
+  }
+  .jp-team{
+    background:var(--navy2);border-radius:.7rem;padding:.4rem .6rem;
+    display:flex;align-items:center;gap:.6rem;border:1px solid rgba(255,255,255,.08);
+  }
+  .jp-team .nm{
+    flex:1;min-width:0;color:#cbd5e1;font-weight:700;
+    font-size:clamp(.7rem,1.6vh,.95rem);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .jp-team .sc{font-family:'Fredoka',sans-serif;font-size:clamp(1rem,2.6vh,1.6rem);font-weight:700;}
+  .jp-step{
+    background:rgba(255,255,255,.08);color:#e2e8f0;border:none;border-radius:.4rem;
+    width:1.7rem;height:1.7rem;font-weight:700;cursor:pointer;font-family:'Fredoka',sans-serif;
+  }
+  .jp-step:hover{background:rgba(255,255,255,.2);}
+
+  /* ── Modal ── */
+  #jp-modal{position:absolute;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(4,8,18,.9);}
+  #jp-modal.on{display:flex;}
+  .jp-card{background:#fff;border-radius:1.1rem;width:100%;max-width:820px;max-height:94%;overflow-y:auto;padding:1.1rem 1.3rem 1rem;}
+  .jp-opt{
+    text-align:left;font-family:'EB Garamond',serif;border:2px solid #e2e8f0;background:#fff;
+    border-radius:.7rem;padding:.6rem .8rem;font-size:clamp(.85rem,1.9vh,1.05rem);
+    line-height:1.35;transition:all .12s ease;width:100%;
+  }
+  .jp-opt:hover:not(:disabled){background:#f8fafc;}
+  .jp-opt:disabled{cursor:default;}
+  .jp-picked{background:#fef3c7!important;border-color:#f59e0b!important;}
+  .jp-wrong{background:#fee2e2!important;border-color:#dc2626!important;color:#991b1b;opacity:.65;}
+  .jp-correct{background:#dcfce7!important;border-color:#16a34a!important;color:#166534;font-weight:700;}
+  .jp-bar{transition:width 1s linear,background-color .3s;}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body class="bg-slate-50">
+
+<a href="sh_ideologier.html" onclick="smartBack(event)" class="fixed top-4 left-4 z-50 text-sm font-medium text-slate-500 hover:text-orange-600 bg-white/90 px-3 py-2 rounded-xl shadow-sm transition-colors">← Tillbaka till området</a>
+
+<div class="max-w-5xl mx-auto px-5 py-8">
+
+  <div class="border-l-4 pl-4 mb-8" style="border-color: #fb923c;">
+    <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Samhällskunskap Sa1a2 · Spel</p>
+    <h1 class="text-3xl md:text-4xl font-bold italic text-slate-900">Jeopardy – Partier och ideologier</h1>
+  </div>
+
+  <!-- ══ SETUP ══ -->
+  <div id="jp-setup" class="max-w-sm mx-auto bg-white border-2 border-slate-200 rounded-2xl p-6">
+    <h2 class="font-bold text-xl mb-4 text-center">Vilka lag tävlar?</h2>
+    <div id="jp-team-inputs" class="space-y-2 mb-3"></div>
+    <div class="flex justify-center gap-5 mb-5 text-xs font-bold text-orange-600">
+      <button id="jp-add" onclick="jpChangeTeamCount(1)">+ Lägg till lag</button>
+      <button id="jp-remove" onclick="jpChangeTeamCount(-1)">− Ta bort lag</button>
+    </div>
+    <button onclick="jpStartGame()" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold uppercase tracking-wide text-sm hover:bg-slate-700">Starta spelet</button>
+  </div>
+
+  <!-- ══ SCEN ══ -->
+  <div id="jp-stage" class="hidden">
+
+    <div class="flex items-center gap-3 px-4 pt-3 pb-1">
+      <p class="text-slate-400 text-[11px] uppercase tracking-[.2em] font-bold flex-1 truncate">Partier och ideologier</p>
+      <button onclick="jpShowRules(false)" class="text-slate-400 hover:text-white text-xs font-bold">Regler</button>
+      <button onclick="jpNewGame()" class="text-slate-400 hover:text-white text-xs font-bold">Nytt spel</button>
+      <button id="jp-fsbtn" onclick="jpToggleFullscreen()" class="bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-lg">⛶ Helskärm</button>
+    </div>
+
+    <p id="jp-turn" class="text-center font-bold px-4 pb-2" style="font-size:clamp(.8rem,2vh,1.1rem)"></p>
+
+    <div id="jp-board"></div>
+    <div id="jp-teams"></div>
+
+    <!-- Spelregler -->
+    <div id="jp-rules" class="hidden absolute inset-0 z-[55] items-center justify-center p-6" style="background:rgba(4,8,18,.94)">
+      <div class="bg-white rounded-2xl w-full max-w-lg p-6 max-h-[92%] overflow-y-auto">
+        <h2 class="font-bold text-2xl mb-4 text-center">Så funkar det</h2>
+        <ul class="space-y-2 text-sm text-slate-700 mb-4 list-disc pl-5 leading-snug">
+          <li>Ett lag i taget har turen och väljer en ruta på spelplanen.</li>
+          <li>Laget säger sitt svar högt — du klickar på det alternativ de väljer.</li>
+          <li>Rätt svar: laget får poängen och väljer nästa ruta. Läs gärna upp förklaringen som visas.</li>
+          <li>Ett lag kan ta max tre rutor i rad — sedan går turen vidare automatiskt.</li>
+          <li>Fel svar: turen går vidare till nästa lag, och frågan blir värd mindre poäng.</li>
+          <li>Har alla lag svarat fel visas rätt svar automatiskt. Ingen får poäng.</li>
+          <li>Du behöver inte kunna ämnet — spelet rättar själv.</li>
+        </ul>
+        <p id="jp-rules-start" class="text-center font-bold mb-4" style="font-size:clamp(.9rem,2.2vh,1.15rem)"></p>
+        <button onclick="jpHideRules()" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold uppercase tracking-wide text-sm hover:bg-slate-700">Kör igång</button>
+      </div>
+    </div>
+
+    <!-- Frågemodal -->
+    <div id="jp-modal">
+      <div class="jp-card" id="jp-card">
+        <div class="flex items-center gap-3 mb-3">
+          <span id="jp-cat" class="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide text-white"></span>
+          <span id="jp-val" class="num font-bold text-slate-400"></span>
+          <span class="flex-1"></span>
+          <span id="jp-time" class="num text-sm font-bold text-slate-400">30</span>
+        </div>
+        <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden mb-4">
+          <div id="jp-bar" class="jp-bar h-full" style="width:100%"></div>
+        </div>
+
+        <div id="jp-answering-wrap" class="mb-3">
+          <span id="jp-answering" class="px-3 py-1 rounded-full text-xs font-bold text-white"></span>
+        </div>
+
+        <div id="jp-banner" class="hidden mb-3 text-center">
+          <p class="text-sm font-bold text-amber-800 bg-amber-50 border border-amber-300 rounded-lg py-2 px-3 inline-block"></p>
+        </div>
+
+        <p id="jp-q" class="font-bold text-slate-900 mb-4 leading-snug" style="font-size:clamp(1.05rem,2.7vh,1.6rem)"></p>
+        <div id="jp-opts" class="grid gap-2 mb-3"></div>
+
+        <div id="jp-expl-wrap" class="hidden border-l-4 rounded-r-lg p-3 mb-3 text-sm text-slate-700">
+          <p class="font-bold text-[11px] uppercase tracking-wide mb-1" id="jp-expl-label">Förklaring</p>
+          <p id="jp-expl"></p>
+        </div>
+
+        <div id="jp-actions" class="flex justify-center gap-5 text-xs font-bold pt-2 border-t border-slate-100">
+          <button id="jp-reveal-btn" onclick="jpRevealAnswer()" class="text-orange-600">Visa svar</button>
+          <button id="jp-close-btn" onclick="jpCloseModal()" class="text-slate-400">Stäng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slutresultat -->
+    <div id="jp-end" class="hidden absolute inset-0 z-[60] items-center justify-center p-6" style="background:rgba(4,8,18,.94)">
+      <div class="text-center">
+        <p class="text-slate-400 text-xs uppercase tracking-[.25em] font-bold mb-4">Slutresultat</p>
+        <div id="jp-end-list" class="space-y-2 mb-6"></div>
+        <button onclick="jpNewGame()" class="bg-white text-slate-900 px-6 py-2.5 rounded-xl font-bold text-sm">Spela igen</button>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="mt-16 text-center border-t border-slate-200 pt-8">
+    <p class="text-slate-400 text-xs uppercase tracking-[0.2em] font-black italic">Designad av John</p>
+  </footer>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// TILLBAKA-NAVIGERING
+// ════════════════════════════════════════════════════════════
+function smartBack(e) {
+  if (e) e.preventDefault();
+  var ref = document.referrer;
+  if (ref) {
+    try {
+      if (new URL(ref).origin === window.location.origin) {
+        history.back();
+        return;
+      }
+    } catch (err) {}
+  }
+  window.location.href = 'sh_ideologier.html';
+}
+</script>
+
+<script>
+/* ════════ DATA ════════
+   Allt sakinnehåll är hämtat ur sh_ideologier.html (Del 2 — Partier och
+   ideologier, Sh 1a2). Förklaringarna bygger på områdets kryssprov- och
+   övningsmaterial, inte på nya fakta.
+*/
+const JP_CATEGORIES = [
+  { name:'Vad är en ideologi?', color:'#06b6d4', rgb:'6,182,212', qs:[
+    { v:100, q:'Vad är en politisk ideologi?',
+      opts:['En samlad bild av hur samhället ser ut i dag och hur det borde vara','En lista med de vallöften som ett parti ger sina väljare inför valet','En uppsättning regler som riksdagen beslutar om efter varje allmänt val','En metod för att räkna ut hur riksdagens platser fördelas mellan partierna'],
+      correct:0, expl:'En ideologi är ett sammanhängande system av idéer: en bild av hur samhället är, en bild av hur det borde vara och tankar om hur man tar sig dit.' },
+    { v:200, q:'Vad är ett partiprogram?',
+      opts:['Ett dokument där partiet skriver ner sin ideologi och sina åsikter','En tidsplan för hur partiet ska lägga upp sin valrörelse i landet','En lista över de personer som partiet sätter upp på sina valsedlar','En sammanställning av de förslag som partiet lämnat in till riksdagen'],
+      correct:0, expl:'Partiprogrammet är partiets grundläggande idédokument. Där förklarar partiet sin ideologi och vad det vill göra inom olika samhällsområden.' },
+    { v:300, q:'Vad skiljer ett politiskt parti från en intresseorganisation?',
+      opts:['Partiet har åsikter om hela samhället, organisationen om ett enskilt område','Partiet driver en enda fråga, medan organisationen driver många olika frågor','Partiet finansieras av staten, medan organisationen betalas av sina medlemmar','Partiet finns bara i demokratier, medan organisationen finns i alla länder'],
+      correct:0, expl:'Ett parti har en samlad syn på hela samhället – ekonomi, skola, försvar och miljö. En intresseorganisation driver frågor inom ett avgränsat område, till exempel löner eller djurskydd.' },
+    { v:400, q:'Vilka tre delar består en ideologi av?',
+      opts:['En syn på dagens samhälle, på hur det ska förändras och på framtidens samhälle','En syn på partiledaren, på valresultatet och på antalet platser i riksdagen','En syn på lagarna, på domstolarna och på polisens arbete ute i samhället','En syn på skatterna, på skolan och på sjukvården ute i landets kommuner'],
+      correct:0, expl:'En ideologi rymmer en verklighetsbild (hur samhället är), en framtidsbild (hur det borde vara) och en strategi för hur förändringen ska gå till.' },
+    { v:500, q:'Riksdagspartierna tycker olika i sakfrågor men är ändå överens om demokratin. Vad kallas det?',
+      opts:['Att demokratin är en överideologi som alla partier delar oavsett ideologi','Att demokratin är den ideologi som flest väljare i Sverige säger sig stödja','Att demokratin bara handlar om hur valen går till och inte alls om ekonomin','Att demokratin står i grundlagen och därför inte får diskuteras i riksdagen'],
+      correct:0, expl:'Alla partier i riksdagen accepterar demokratins spelregler – fria val, yttrandefrihet och rättsstat – även om de har olika ideologier. Därför står demokratin över den vanliga vänster–högerkonflikten.' }
+  ]},
+  { name:'Vänster och höger', color:'#a855f7', rgb:'168,85,247', qs:[
+    { v:100, q:'Varifrån kommer begreppen vänster och höger i politiken?',
+      opts:['Från franska revolutionen, där ledamöterna satt på olika sidor i salen','Från engelska parlamentet, där två block satt mittemot varandra i kammaren','Från arbetarrörelsens möten i Sverige under andra halvan av 1800-talet','Från FN:s generalförsamling, där staterna delades in efter sin ekonomi'],
+      correct:0, expl:'Under franska revolutionen satt de som ville bevara kungamakten till höger om talmannen och de som ville ha förändring till vänster. Placeringen blev med tiden en symbol för politiska åsikter.' },
+    { v:200, q:'Vad kännetecknar partier till vänster på skalan?',
+      opts:['Ekonomisk jämlikhet och en stark offentlig sektor som fördelar resurser','Låga skatter och stor frihet för företagen att fatta sina egna beslut','Hårdare straff, ett starkare försvar och mer resurser till polisen i landet','Fler privata alternativ inom vård och skola och en mindre offentlig sektor'],
+      correct:0, expl:'Vänsterpartier vill minska de ekonomiska klyftorna. De vill använda skatter och en stor gemensam sektor för att fördela resurser jämnare mellan människor.' },
+    { v:300, q:'Vad kännetecknar partier till höger på skalan?',
+      opts:['Marknadsekonomi, låga skatter och stort utrymme för individens eget ansvar','Höga skatter som används för att jämna ut skillnaderna mellan människor','Gemensamt ägande av företagen och en mycket stor offentlig sektor i landet','Statlig styrning av lönerna och ett generellt förbud mot privata företag'],
+      correct:0, expl:'Högerpartier vill ha en fri marknad och låga skatter. De menar att individen själv ska ta ansvar och att staten ska styra ekonomin så lite som möjligt.' },
+    { v:400, q:'Ett parti vill sänka skatterna, låta marknaden styra och betonar individens eget ansvar. Var på skalan står partiet?',
+      opts:['Till höger, eftersom det vill ha låga skatter och en fri marknad','Till vänster, eftersom det vill fördela resurser jämnare mellan människor','I mitten, eftersom det varken vill höja eller sänka några skatter alls','Utanför skalan, eftersom skatter inte har med vänster och höger att göra'],
+      correct:0, expl:'Låga skatter, tro på marknaden och betoning på individens ansvar är typiska högerståndpunkter. Vänstern vill i stället använda skatter och en stor offentlig sektor för att jämna ut skillnader.' },
+    { v:500, q:'Varför gör vänster–högerskalan inte alltid ideologierna full rättvisa?',
+      opts:['Ett parti kan stå till vänster i vissa frågor och till höger i andra','Skalan används bara i Sverige och saknar motsvarighet i andra länder','Skalan ändras varje gång ett nytt parti kommer in i riksdagen efter ett val','Partierna byter plats med varandra på skalan inför varje nytt riksdagsval'],
+      correct:0, expl:'Skalan fångar främst ekonomi och statens roll. Ett parti kan vara vänster i ekonomiska frågor men konservativt i värderingsfrågor – något som skalan inte visar.' }
+  ]},
+  { name:'Partierna', color:'#f59e0b', rgb:'245,158,11', qs:[
+    { v:100, q:'Vilka tre grundläggande värderingar utgår Socialdemokraterna från?',
+      opts:['Frihet, jämlikhet och solidaritet','Ordning, trygghet och tradition','Frihet, äganderätt och konkurrens','Miljö, hälsa och global rättvisa'],
+      correct:0, expl:'Socialdemokratin bygger på frihet, jämlikhet och solidaritet. Solidariteten – att vi tar ansvar för varandra – är den värdering som tydligast skiljer partiet från de borgerliga.' },
+    { v:200, q:'Vilka begrepp utgår Liberalernas politik från?',
+      opts:['Frihet, individen och marknadsekonomi','Trygghet, gemenskap och ansvar','Jämlikhet, solidaritet och gemensamt ägande','Tradition, familj och kristen etik'],
+      correct:0, expl:'Liberalerna sätter den enskilda individens frihet främst och försvarar marknadsekonomin. Staten ska skydda friheten och ge alla lika möjligheter, men annars hålla sig undan.' },
+    { v:300, q:'Vad tycker Vänsterpartiet om vinster i vård, skola och omsorg?',
+      opts:['Vinster hör inte hemma där – skattepengarna ska stanna i verksamheten','Vinster behövs för att höja kvaliteten i hela den svenska välfärden','Vinster bör tillåtas, men beskattas hårdare än vinster i andra branscher','Vinster bör varje enskild kommun få besluta om helt på egen hand'],
+      correct:0, expl:'Vänsterpartiet vill förbjuda vinstuttag i välfärden. Partiet menar att skattepengar till skola och vård ska gå till verksamheten och eleverna, inte till privata ägare.' },
+    { v:400, q:'Vad hette Centerpartiet från början, och vad driver partiet i dag?',
+      opts:['Bondeförbundet – i dag drivs decentralisering, miljö och landsbygd','Folkpartiet – i dag drivs skolan, friheten och internationell handel','Landsbygdspartiet – i dag drivs försvaret, familjen och traditionen','Jordbrukspartiet – i dag drivs vården, äldreomsorgen och skatterna'],
+      correct:0, expl:'Centerpartiet grundades som Bondeförbundet och företrädde jordbrukarna. I dag driver partiet decentralisering – att makt och jobb ska spridas ut i landet – tillsammans med miljö- och landsbygdsfrågor.' },
+    { v:500, q:'Vilket parti accepterar marknadsekonomin men vill styra den med regler, skatter och en utbyggd välfärd?',
+      opts:['Socialdemokraterna, som vill tämja marknaden snarare än att avskaffa den','Vänsterpartiet, som vill ersätta marknaden med företag som ägs av staten','Moderaterna, som vill lämna marknaden helt fri från politiska regler','Liberalerna, som vill att marknaden ska styra så mycket som möjligt'],
+      correct:0, expl:'Dagens socialdemokrati vill inte avskaffa marknadsekonomin utan tämja den. Marknaden får skapa tillväxt, men politiken ska styra med regler, skatter och en utbyggd välfärd.' }
+  ]},
+  { name:'Vem är vem?', color:'#f43f5e', rgb:'244,63,94', qs:[
+    { v:100, q:'Vilket parti leds av två språkrör i stället för en partiledare?',
+      opts:['Miljöpartiet','Centerpartiet','Vänsterpartiet','Kristdemokraterna'],
+      correct:0, expl:'Miljöpartiet bygger på ekologismen och leds av ett kvinnligt och ett manligt språkrör tillsammans, i stället för av en ensam partiledare.' },
+    { v:200, q:'Vilket parti hette från början Bondeförbundet?',
+      opts:['Centerpartiet','Socialdemokraterna','Liberalerna','Kristdemokraterna'],
+      correct:0, expl:'Centerpartiet grundades som Bondeförbundet och företrädde landets jordbrukare. I dag driver partiet frågor om decentralisering, miljö och landsbygd.' },
+    { v:300, q:'Vilket parti bildades för att ge kristna värderingar en plats i politiken?',
+      opts:['Kristdemokraterna','Socialdemokraterna','Moderaterna','Centerpartiet'],
+      correct:0, expl:'Kristdemokraterna bildades för att stärka kristendomens ställning i politiken. I dag är partiet mest känt för frågor om vården, äldreomsorgen och familjen.' },
+    { v:400, q:'Vilket parti har sitt ursprung i nationalistiska rörelser och blev stödparti åt regeringen efter valet 2022?',
+      opts:['Sverigedemokraterna, som stödde regeringen genom Tidöavtalet','Vänsterpartiet, som tog plats i regeringen med Socialdemokraterna','Miljöpartiet, som bildade regering med Centerpartiet och Liberalerna','Kristdemokraterna, som lämnade sitt stöd till oppositionen i riksdagen'],
+      correct:0, expl:'Sverigedemokraterna har rötter i nationalistiska rörelser och driver frågor om nationell kultur och begränsad invandring. Efter valet 2022 blev partiet stödparti åt regeringen genom Tidöavtalet, utan egna statsråd.' },
+    { v:500, q:'Vilket parti började som konservativt högerparti och förenar i dag konservatism med tro på fri marknad och lägre skatter?',
+      opts:['Moderaterna, som med tiden tagit upp mycket liberalt tankegods','Liberalerna, som med tiden blivit alltmer konservativa i sin politik','Kristdemokraterna, som gått från religiös politik till ren nyliberalism','Centerpartiet, som gått från bondepolitik till att försvara storföretagen'],
+      correct:0, expl:'Moderaterna började som ett konservativt högerparti. Med tiden har partiet tagit upp mycket liberalt tankegods och förenar i dag konservatism med tron på fri marknad och lägre skatter.' }
+  ]}
+];
+
+/* ════════ SETUP ════════ */
+let jpTeamCount = 2, jpTeams = [], jpUsed = 0, jpTurn = null, jpStreak = 0;
+
+function jpTeamColor(i){ return JP_CATEGORIES[i%4].color; }
+
+function jpRenderTurn(){
+  const el=document.getElementById('jp-turn');
+  if(jpTurn===null||!jpTeams[jpTurn]){ el.textContent=''; return; }
+  const c=jpTeamColor(jpTurn);
+  let dots='';
+  if(jpStreak===1||jpStreak===2){
+    dots='<span style="display:inline-flex;gap:.22em;vertical-align:middle;margin-left:.5em" aria-hidden="true">';
+    for(let i=0;i<3;i++){
+      dots+= i<jpStreak
+        ? `<span style="width:.42em;height:.42em;border-radius:50%;background:${c};display:inline-block"></span>`
+        : `<span style="width:.42em;height:.42em;border-radius:50%;border:1px solid ${c};opacity:.4;display:inline-block"></span>`;
+    }
+    dots+='</span>';
+  }
+  el.innerHTML=jpTeams[jpTurn].name+' väljer fråga'+dots;
+  el.style.color=c;
+}
+
+function jpRenderTeamInputs(){
+  const wrap = document.getElementById('jp-team-inputs');
+  wrap.innerHTML = '';
+  for(let i=0;i<jpTeamCount;i++){
+    const inp = document.createElement('input');
+    inp.type='text'; inp.id='jp-team-'+i; inp.placeholder='Lag '+(i+1);
+    inp.className='w-full p-2.5 border-2 border-slate-200 rounded-lg text-sm outline-none focus:border-slate-900';
+    wrap.appendChild(inp);
+  }
+  document.getElementById('jp-remove').style.visibility = jpTeamCount<=2?'hidden':'visible';
+  document.getElementById('jp-add').style.visibility    = jpTeamCount>=4?'hidden':'visible';
+}
+function jpChangeTeamCount(d){ jpTeamCount=Math.min(4,Math.max(2,jpTeamCount+d)); jpRenderTeamInputs(); }
+
+function jpStartGame(){
+  jpTeams=[]; jpUsed=0; jpStreak=0;
+  for(let i=0;i<jpTeamCount;i++){
+    const v=document.getElementById('jp-team-'+i).value.trim();
+    jpTeams.push({name:v||('Lag '+(i+1)),score:0});
+  }
+  jpTurn=Math.floor(Math.random()*jpTeams.length);
+  document.getElementById('jp-setup').classList.add('hidden');
+  document.getElementById('jp-stage').classList.remove('hidden');
+  document.getElementById('jp-end').classList.add('hidden');
+  document.getElementById('jp-end').style.display='none';
+  document.getElementById('jp-teams').style.setProperty('--tc', jpTeams.length);
+  jpRenderTeams(); jpRenderTurn(); jpBuildBoard();
+  jpShowRules(true);
+}
+function jpNewGame(){
+  jpTurn=null;
+  jpExitFullscreen();
+  jpHideRules();
+  document.getElementById('jp-modal').classList.remove('on');
+  document.getElementById('jp-stage').classList.add('hidden');
+  document.getElementById('jp-setup').classList.remove('hidden');
+  document.getElementById('jp-end').style.display='none';
+}
+
+/* ════════ SPELREGLER ════════ */
+function jpShowRules(initial){
+  if(jpTurn===null||!jpTeams[jpTurn]) return;
+  const el=document.getElementById('jp-rules-start');
+  el.textContent=jpTeams[jpTurn].name+(initial?' börjar.':' har turen.');
+  el.style.color=jpTeamColor(jpTurn);
+  const r=document.getElementById('jp-rules');
+  r.classList.remove('hidden'); r.style.display='flex';
+}
+function jpHideRules(){
+  const r=document.getElementById('jp-rules');
+  r.classList.add('hidden'); r.style.display='none';
+}
+
+/* ════════ LAG ════════ */
+function jpRenderTeams(){
+  const p=document.getElementById('jp-teams'); p.innerHTML='';
+  jpTeams.forEach((t,i)=>{
+    const c=jpTeamColor(i);
+    const el=document.createElement('div');
+    el.className='jp-team';
+    if(i===jpTurn){
+      el.style.border='2px solid '+c;
+      el.style.background='rgba(255,255,255,.13)';
+    }else{
+      el.style.opacity='.5';
+    }
+    el.innerHTML=`<span class="nm" style="border-left:3px solid ${c};padding-left:.5rem">${t.name}</span>
+      <span class="sc" style="color:${c}">${t.score}</span>
+      <button class="jp-step" onclick="jpAdjust(${i},-100)">−</button>
+      <button class="jp-step" onclick="jpAdjust(${i},100)">+</button>`;
+    p.appendChild(el);
+  });
+}
+function jpAdjust(i,a){ jpTeams[i].score+=a; jpRenderTeams(); }
+
+/* ════════ SPELPLAN ════════ */
+function jpBuildBoard(){
+  const b=document.getElementById('jp-board'); b.innerHTML='';
+  JP_CATEGORIES.forEach(cat=>{
+    const h=document.createElement('div');
+    h.className='jp-head'; h.style.background=cat.color; h.textContent=cat.name;
+    b.appendChild(h);
+  });
+  for(let row=4;row>=0;row--){
+    JP_CATEGORIES.forEach((cat,ci)=>{
+      const q=cat.qs[row];
+      const cell=document.createElement('button');
+      cell.className='jp-cell';
+      cell.style.background=`rgba(${cat.rgb},.13)`;
+      cell.style.color=cat.color;
+      cell.textContent=q.v;
+      cell.onmouseenter=()=>{ if(!cell.classList.contains('jp-used')){cell.style.background=cat.color;cell.style.color='#0b1120';} };
+      cell.onmouseleave=()=>{ if(!cell.classList.contains('jp-used')){cell.style.background=`rgba(${cat.rgb},.13)`;cell.style.color=cat.color;} };
+      cell.onclick=()=>jpOpenQuestion(ci,row,cell);
+      b.appendChild(cell);
+    });
+  }
+}
+
+/* ════════ FRÅGA ════════ */
+let jpCat=null,jpRow=null,jpCell=null,jpOpts=[],jpPicked=null,jpWrong=[],jpRevealed=false,jpTimer=null,jpTime=30;
+let jpChooser=null,jpAnswering=null,jpFailed=[];
+let jpValue=0,jpResolved=false,jpWinner=null;
+
+function jpLowerValue(){
+  let v=Math.floor(jpValue/2);
+  v=Math.floor(v/50)*50;
+  jpValue=Math.max(50,v);
+}
+function jpRenderValue(old){
+  const el=document.getElementById('jp-val');
+  if(old!==undefined && old!==jpValue){
+    el.innerHTML='<span class="line-through opacity-60">'+old+' p</span> <span class="text-slate-800">'+jpValue+' p</span>';
+  }else{
+    el.textContent=jpValue+' p';
+  }
+}
+
+function jpNextAnswerer(){
+  const n=jpTeams.length;
+  for(let step=1;step<=n;step++){
+    const cand=(jpAnswering+step)%n;
+    if(!jpFailed.includes(cand)) return cand;
+  }
+  return null;
+}
+function jpRenderAnswering(){
+  const el=document.getElementById('jp-answering');
+  el.textContent='Svarar: '+jpTeams[jpAnswering].name;
+  el.style.background=jpTeamColor(jpAnswering);
+}
+
+function jpShuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+function jpOpenQuestion(ci,row,cell){
+  if(cell.classList.contains('jp-used')) return;
+  if(document.getElementById('jp-rules').style.display==='flex') return;
+  jpCat=ci; jpRow=row; jpCell=cell;
+  const cat=JP_CATEGORIES[ci], q=cat.qs[row];
+  jpPicked=null; jpWrong=[]; jpRevealed=false; jpResolved=false; jpWinner=null; jpFailed=[];
+  jpChooser=jpTurn; jpAnswering=jpTurn;
+  jpValue=q.v;
+  jpOpts=jpShuffle(q.opts.map((t,i)=>({text:t,isCorrect:i===q.correct})));
+
+  const catEl=document.getElementById('jp-cat');
+  catEl.textContent=cat.name; catEl.style.background=cat.color;
+  jpRenderValue();
+  document.getElementById('jp-q').textContent=q.q;
+  document.getElementById('jp-expl').textContent=q.expl;
+  const ew=document.getElementById('jp-expl-wrap');
+  ew.style.background=`rgba(${cat.rgb},.08)`; ew.style.borderColor=cat.color;
+  document.getElementById('jp-expl-label').style.color=cat.color;
+  document.getElementById('jp-bar').style.background=cat.color;
+  ew.classList.add('hidden');
+  document.getElementById('jp-banner').classList.add('hidden');
+  document.getElementById('jp-actions').classList.remove('hidden');
+  document.getElementById('jp-reveal-btn').classList.remove('hidden');
+  document.getElementById('jp-answering-wrap').classList.remove('hidden');
+  jpRenderAnswering();
+  jpRenderOptions();
+  document.getElementById('jp-modal').classList.add('on');
+  jpStartTimer();
+}
+
+function jpRenderOptions(){
+  const w=document.getElementById('jp-opts'); w.innerHTML='';
+  const done = jpResolved || jpRevealed;
+  jpOpts.forEach((o,idx)=>{
+    const b=document.createElement('button');
+    let cls='jp-opt', dis=false;
+    if(done && o.isCorrect){ cls+=' jp-correct'; dis=true; }
+    else if(jpWrong.includes(idx)){ cls+=' jp-wrong'; dis=true; }
+    else if(done){ cls+=' opacity-40'; dis=true; }
+    b.className=cls; b.disabled=dis;
+    b.textContent=String.fromCharCode(97+idx)+') '+o.text;
+    b.onclick=()=>jpPick(idx);
+    w.appendChild(b);
+  });
+}
+
+function jpPick(idx){
+  if(jpResolved||jpRevealed) return;
+  if(jpWrong.includes(idx)) return;
+  const o=jpOpts[idx];
+  if(o.isCorrect){
+    clearInterval(jpTimer);
+    jpResolved=true; jpWinner=jpAnswering; jpPicked=idx;
+    jpTeams[jpAnswering].score+=jpValue;
+    jpStreak = (jpAnswering===jpChooser) ? jpStreak+1 : 1;
+    let streakBroken=false;
+    if(jpStreak>=3){
+      jpTurn=(jpAnswering+1)%jpTeams.length;
+      jpStreak=0;
+      streakBroken=true;
+    }else{
+      jpTurn=jpAnswering;
+    }
+    jpRenderTeams(); jpRenderTurn(); jpRenderOptions();
+    document.getElementById('jp-expl-wrap').classList.remove('hidden');
+    document.getElementById('jp-answering-wrap').classList.add('hidden');
+    document.getElementById('jp-reveal-btn').classList.add('hidden');
+    if(streakBroken){
+      jpBanner('✓ Rätt – '+jpTeams[jpAnswering].name+' får '+jpValue+' poäng. Tre i rad — turen går över till '+jpTeams[jpTurn].name+'.', jpTeamColor(jpAnswering));
+    }else{
+      jpBanner('✓ Rätt – '+jpTeams[jpAnswering].name+' får '+jpValue+' poäng.', jpTeamColor(jpAnswering));
+    }
+  }else{
+    jpFailAndAdvance({clickedIdx:idx});
+  }
+}
+
+function jpFailAndAdvance(o){
+  if(o.clickedIdx!==undefined && !jpWrong.includes(o.clickedIdx)) jpWrong.push(o.clickedIdx);
+  if(!jpFailed.includes(jpAnswering)) jpFailed.push(jpAnswering);
+  const old=jpValue; jpLowerValue(); jpRenderValue(old);
+  jpRenderOptions();
+  const next=jpNextAnswerer();
+  if(next===null){
+    clearInterval(jpTimer);
+    jpResolved=true; jpRevealed=true; jpWinner=null;
+    jpTurn=(jpChooser+1)%jpTeams.length;
+    jpStreak=0;
+    jpRenderOptions();
+    document.getElementById('jp-expl-wrap').classList.remove('hidden');
+    document.getElementById('jp-answering-wrap').classList.add('hidden');
+    document.getElementById('jp-reveal-btn').classList.add('hidden');
+    jpBanner('Ingen fick rätt.', '#dc2626');
+  }else{
+    jpAnswering=next;
+    jpRenderAnswering();
+    const lead = o.timedOut ? '⏰ Tiden är ute.' : '✗ FEL – försök igen.';
+    jpBanner(lead+' Turen går över till '+jpTeams[next].name+'. Frågan är nu värd '+jpValue+' p.', jpTeamColor(next));
+    jpStartTimer();
+  }
+}
+
+function jpBanner(txt,color){
+  const b=document.getElementById('jp-banner');
+  const p=b.querySelector('p');
+  p.textContent=txt;
+  if(color){ p.style.color=color; p.style.borderColor=color; p.style.background=color+'18'; }
+  else{ p.style.color=''; p.style.borderColor=''; p.style.background=''; }
+  b.classList.remove('hidden');
+}
+
+function jpRevealAnswer(){
+  clearInterval(jpTimer);
+  jpRevealed=true; jpResolved=true; jpWinner=null;
+  jpTurn=(jpChooser+1)%jpTeams.length;
+  jpStreak=0;
+  jpRenderTeams(); jpRenderTurn(); jpRenderOptions();
+  document.getElementById('jp-expl-wrap').classList.remove('hidden');
+  document.getElementById('jp-banner').classList.add('hidden');
+  document.getElementById('jp-answering-wrap').classList.add('hidden');
+  document.getElementById('jp-reveal-btn').classList.add('hidden');
+}
+
+function jpCloseModal(){
+  clearInterval(jpTimer);
+  if(!jpResolved){ jpTurn=(jpChooser+1)%jpTeams.length; jpStreak=0; }
+  jpRenderTeams(); jpRenderTurn();
+  jpCell.classList.add('jp-used'); jpCell.textContent='✓'; jpCell.onmouseenter=null; jpCell.onmouseleave=null;
+  document.getElementById('jp-modal').classList.remove('on');
+  document.getElementById('jp-actions').classList.remove('hidden');
+  jpUsed++;
+  if(jpUsed>=20) jpShowEnd();
+}
+
+function jpShowEnd(){
+  const list=document.getElementById('jp-end-list'); list.innerHTML='';
+  [...jpTeams].sort((a,b)=>b.score-a.score).forEach((t,i)=>{
+    const c=JP_CATEGORIES[i%4].color;
+    const row=document.createElement('div');
+    row.className='flex items-center gap-4 justify-center';
+    row.innerHTML=`<span class="text-slate-300 font-bold" style="font-size:clamp(1rem,3vh,1.6rem)">${i===0?'🏆':(i+1)+'.'} ${t.name}</span>
+      <span class="num font-bold" style="color:${c};font-size:clamp(1.3rem,4vh,2.4rem)">${t.score}</span>`;
+    list.appendChild(row);
+  });
+  const e=document.getElementById('jp-end');
+  e.classList.remove('hidden'); e.style.display='flex';
+}
+
+/* ════════ TIMER ════════ */
+function jpStartTimer(){
+  clearInterval(jpTimer); jpTime=30;
+  const bar=document.getElementById('jp-bar'), txt=document.getElementById('jp-time');
+  const c=JP_CATEGORIES[jpCat].color;
+  bar.style.width='100%'; bar.style.background=c;
+  txt.textContent='30'; txt.className='num text-sm font-bold text-slate-400';
+  jpTimer=setInterval(()=>{
+    jpTime--; txt.textContent=jpTime; bar.style.width=(jpTime/30*100)+'%';
+    if(jpTime<=10){ bar.style.background='#dc2626'; txt.className='num text-sm font-bold text-red-600'; }
+    if(jpTime<=0){ clearInterval(jpTimer); if(!jpResolved && !jpRevealed) jpFailAndAdvance({timedOut:true}); }
+  },1000);
+}
+
+/* ════════ HELSKÄRM ════════ */
+function jpToggleFullscreen(){
+  const s=document.getElementById('jp-stage');
+  if(s.classList.contains('jp-fs')){ jpExitFullscreen(); return; }
+  s.classList.add('jp-fs');
+  document.getElementById('jp-fsbtn').textContent='⤫ Avsluta helskärm';
+  if(s.requestFullscreen) s.requestFullscreen().catch(()=>{});
+}
+function jpExitFullscreen(){
+  const s=document.getElementById('jp-stage');
+  s.classList.remove('jp-fs');
+  document.getElementById('jp-fsbtn').textContent='⛶ Helskärm';
+  if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+}
+document.addEventListener('fullscreenchange',()=>{
+  if(!document.fullscreenElement) jpExitFullscreen();
+});
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape') return;
+  if(document.getElementById('jp-modal').classList.contains('on')){ jpCloseModal(); }
+  else if(document.getElementById('jp-rules').style.display==='flex'){ jpHideRules(); }
+  else{ jpExitFullscreen(); }
+});
+
+jpRenderTeamInputs();
+</script>
+
+<script src="feedback-widget.js" defer></script>
+<script data-goatcounter="https://johnblixt.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
