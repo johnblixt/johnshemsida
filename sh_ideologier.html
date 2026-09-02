@@ -728,17 +728,472 @@
 
     const EASY_KEY = 'sh1a2_ideologier_easy';
 
+    // ══════════════════════════════════════════════════════════════════
+    // KRYSSPROV — "Politiska partier och ideologier" (Sh 1a2), 20 frågor
+    // Frågor och svarsalternativ är hämtade oförändrade från
+    // sh1a2_ideologier_quizfragor.md. Förklaringarna bygger på områdets
+    // teori-/begreppsmaterial, inte på själva frågetexten.
+    // ══════════════════════════════════════════════════════════════════
+    const VIEW_LABELS = { ovning: 'Övningsquiz', kryssprov: 'Kryssprov' };
+
+    const KRYSS_PROGRESS_KEY = 'sh1a2_ideologier_kryssprov_progress';
+    const KRYSS_RANK_SALT = 'kryssprovPartierOchIdeologierSh1a2v1';
+    const RANK_ORDER = { D: 1, C: 2, B: 3, A: 4, S: 5 };
+    const RANK_STYLE = {
+      S: { bg: '#fef3c7', border: '#f59e0b', text: '#b45309' },
+      A: { bg: '#dcfce7', border: '#16a34a', text: '#15803d' },
+      B: { bg: '#e0f2fe', border: '#0284c7', text: '#0369a1' },
+      C: { bg: '#ffedd5', border: '#fb923c', text: '#c2410c' }
+    };
+
+    const KRYSS_Q = [
+      {
+        question: "Vad skiljer ett politiskt parti från en intresseorganisation?",
+        correct: "Partiet har åsikter om hela samhället, organisationen om ett enskilt område",
+        incorrect: [
+          "Partiet driver en enda fråga, medan organisationen driver flera olika frågor",
+          "Partiet finansieras av staten, medan organisationen betalas av sina medlemmar",
+          "Partiet finns bara i demokratier, medan organisationen finns i alla länder"
+        ],
+        expl: "Ett politiskt parti har en samlad syn på hela samhället – ekonomi, skola, försvar och miljö – medan en intresseorganisation driver frågor inom ett avgränsat område, till exempel löner eller djurskydd."
+      },
+      {
+        question: "Vad är en politisk ideologi?",
+        correct: "En samlad idé om hur samhället ser ut i dag och hur det borde vara",
+        incorrect: [
+          "En lista över de löften som partiet ger sina väljare inför valet",
+          "En samling regler som riksdagen beslutar om efter varje allmänt val",
+          "En metod för att räkna ut hur mandaten fördelas mellan olika partier"
+        ],
+        expl: "En ideologi är ett sammanhängande system av idéer: en bild av hur samhället är, en bild av hur det borde vara och tankar om hur man tar sig dit."
+      },
+      {
+        question: "Vilka tre delar består en ideologi av?",
+        correct: "Syn på dagens samhälle, hur det ska förändras och framtidens samhälle",
+        incorrect: [
+          "Syn på partiledaren, på valresultatet och på antalet platser i riksdagen",
+          "Syn på lagarna, på domstolarna och på polisens arbete ute i samhället",
+          "Syn på skatterna, på skolan och på sjukvården ute i landets kommuner"
+        ],
+        expl: "En ideologi rymmer en verklighetsbild (hur samhället är), en framtidsbild (hur det borde vara) och en strategi för förändring som binder ihop de två."
+      },
+      {
+        question: "Vilken fråga ger en ideologi svar på?",
+        correct: "Vem som ska äga vad och hur mycket staten ska bestämma över",
+        incorrect: [
+          "Hur många ledamöter som ska sitta i varje kommuns fullmäktige",
+          "Vilket år som nästa ordinarie riksdagsval ska hållas i Sverige",
+          "Hur många partier som får plats i riksdagen efter ett val"
+        ],
+        expl: "Ideologier ger svar på de stora värderingsfrågorna om ägande, frihet och statens roll – inte på tekniska regler för hur val eller fullmäktige är organiserade."
+      },
+      {
+        question: "Vad menas med att en ideologi fungerar som en kompass?",
+        correct: "Den ger riktning så att besluten stämmer med partiets egna värderingar",
+        incorrect: [
+          "Den visar exakt vilka lagar som ska stiftas i varje enskild fråga",
+          "Den mäter hur stort stöd som partiet har bland väljarna inför valet",
+          "Den bestämmer vilka partier som ska få samarbeta med varandra efter valet"
+        ],
+        expl: "Ideologin pekar ut en färdriktning snarare än en exakt väg. Den hjälper partiet att fatta beslut som stämmer med dess grundläggande värderingar, även i nya frågor."
+      },
+      {
+        question: "Varifrån kommer begreppen ”vänster” och ”höger” i politiken?",
+        correct: "Från franska revolutionen, där ledamöterna satt på olika sidor i salen",
+        incorrect: [
+          "Från engelska parlamentet, där två block satt mittemot varandra i kammaren",
+          "Från arbetarrörelsens möten i Sverige under andra halvan av 1800-talet",
+          "Från FN:s generalförsamling, där staterna delades in efter sin ekonomi"
+        ],
+        expl: "Under franska revolutionen satt de som ville bevara kungamakten till höger om talmannen och de som ville ha förändring till vänster. Placeringen blev med tiden en symbol för politiska åsikter."
+      },
+      {
+        question: "Vad kännetecknar partier till vänster på skalan?",
+        correct: "Ekonomisk jämlikhet och en stark offentlig sektor som fördelar resurser",
+        incorrect: [
+          "Låga skatter och stor frihet för företagen att fatta sina egna beslut",
+          "Starkare försvar, hårdare straff och mer resurser till polisen i landet",
+          "Mindre offentlig sektor och fler privata alternativ inom vård och skola"
+        ],
+        expl: "Vänsterpartier vill minska de ekonomiska klyftorna. De vill använda skatter och en stor gemensam sektor för att fördela resurser jämnare mellan människor."
+      },
+      {
+        question: "Vad kännetecknar partier till höger på skalan?",
+        correct: "Marknadsekonomi, låga skatter och stort utrymme för individens ansvar",
+        incorrect: [
+          "Höga skatter som används för att jämna ut skillnader mellan människor",
+          "Gemensamt ägande av företagen och en mycket stor offentlig sektor",
+          "Statlig styrning av lönerna och ett generellt förbud mot privata företag"
+        ],
+        expl: "Högerpartier vill ha en fri marknad och låga skatter. De menar att individen själv ska ta ansvar och att staten ska styra ekonomin så lite som möjligt."
+      },
+      {
+        question: "Varför gör vänster–högerskalan inte alltid ideologierna full rättvisa?",
+        correct: "Ett parti kan stå till vänster i vissa frågor och till höger i andra",
+        incorrect: [
+          "Skalan används bara i Sverige och saknar motsvarighet i andra länder",
+          "Skalan ändras varje gång ett nytt parti kommer in i riksdagen",
+          "Partierna byter plats på skalan inför varje val som hålls i landet"
+        ],
+        expl: "Skalan fångar främst ekonomi och statens roll. Ett parti kan vara vänster i ekonomiska frågor men konservativt i värderingsfrågor, något som skalan inte visar."
+      },
+      {
+        question: "Vad menas med att demokratin kallas en ”överideologi”?",
+        correct: "Att den delas av alla riksdagspartier oavsett vilken ideologi de har",
+        incorrect: [
+          "Att den är den ideologi som flest väljare i Sverige säger sig stödja",
+          "Att den bara handlar om hur valen går till och inte alls om ekonomin",
+          "Att den står skriven i grundlagen och därför aldrig kan ändras igen"
+        ],
+        expl: "Alla partier i riksdagen accepterar demokratins spelregler – fria val, yttrandefrihet och rättsstat – även om de har olika ideologier. Därför står demokratin över den vanliga vänster–högerkonflikten."
+      },
+      {
+        question: "Vad är ett partiprogram?",
+        correct: "Ett dokument där partiet skriver ner sin ideologi och sina åsikter",
+        incorrect: [
+          "En tidsplan för hur partiet ska lägga upp sin valrörelse i landet",
+          "En lista över de personer som partiet sätter upp på sina valsedlar",
+          "En sammanställning av de motioner som partiet lämnat in till riksdagen"
+        ],
+        expl: "Partiprogrammet är partiets grundläggande idédokument. Där förklarar partiet sin ideologi och vad det vill göra inom olika samhällsområden."
+      },
+      {
+        question: "Vilka tre grundläggande värderingar utgår Socialdemokraterna från?",
+        correct: "Frihet, jämlikhet och solidaritet",
+        incorrect: [
+          "Ordning, trygghet och tradition",
+          "Frihet, äganderätt och konkurrens",
+          "Miljö, hälsa och global rättvisa"
+        ],
+        expl: "Socialdemokratin bygger på frihet, jämlikhet och solidaritet. Solidariteten – att vi tar ansvar för varandra – är den värdering som tydligast skiljer partiet från de borgerliga."
+      },
+      {
+        question: "Vad anser Socialdemokraterna om marknadsekonomin?",
+        correct: "Den accepteras, men måste kombineras med politisk styrning och välfärd",
+        incorrect: [
+          "Den bör avskaffas helt och ersättas med företag som ägs av staten",
+          "Den bör lämnas helt fri från politiska regler och statlig inblandning",
+          "Den fungerar inom industrin, men bör förbjudas inom hela tjänstesektorn"
+        ],
+        expl: "Dagens socialdemokrati vill inte avskaffa marknadsekonomin utan tämja den. Marknaden får skapa tillväxt, men politiken ska styra med regler, skatter och en utbyggd välfärd."
+      },
+      {
+        question: "Vad tycker Vänsterpartiet om vinster i vård, skola och omsorg?",
+        correct: "Vinster hör inte hemma där – skattepengarna ska stanna i verksamheten",
+        incorrect: [
+          "Vinster behövs för att höja kvaliteten i hela den svenska välfärden",
+          "Vinster bör tillåtas, men beskattas hårdare än vinster i andra branscher",
+          "Vinster bör varje enskild kommun få besluta om helt på egen hand"
+        ],
+        expl: "Vänsterpartiet vill förbjuda vinstuttag i välfärden. Partiet menar att skattepengar till skola och vård ska gå till verksamheten och eleverna, inte till privata ägare."
+      },
+      {
+        question: "Vilken ideologi bygger Miljöpartiet på, och hur leds partiet?",
+        correct: "Ekologismen, och partiet leds av två språkrör i stället för en partiledare",
+        incorrect: [
+          "Liberalismen, och partiet leds av en ordförande som väljs om varje år",
+          "Socialismen, och partiet leds av ett råd med företrädare för varje län",
+          "Konservatismen, och partiet leds av en partiledare med två ställföreträdare"
+        ],
+        expl: "Miljöpartiet bygger på ekologismen, där hänsyn till naturen och kommande generationer sätts främst. Partiet leds av ett kvinnligt och ett manligt språkrör tillsammans."
+      },
+      {
+        question: "Vad hette Centerpartiet från början, och vad driver partiet i dag?",
+        correct: "Bondeförbundet – i dag drivs frågor om decentralisering, miljö och landsbygd",
+        incorrect: [
+          "Folkpartiet – i dag drivs frågor om skolan, friheten och internationell handel",
+          "Landsbygdspartiet – i dag drivs frågor om försvaret, familjen och traditionen",
+          "Jordbrukspartiet – i dag drivs frågor om vården, äldreomsorgen och skatterna"
+        ],
+        expl: "Centerpartiet grundades som Bondeförbundet och företrädde jordbrukarna. I dag driver partiet decentralisering – att makt och jobb ska spridas ut i landet – tillsammans med miljö- och landsbygdsfrågor."
+      },
+      {
+        question: "Vilka begrepp utgår Liberalernas politik från?",
+        correct: "Frihet, individen och marknadsekonomi",
+        incorrect: [
+          "Trygghet, gemenskap och ansvar",
+          "Jämlikhet, solidaritet och gemensamt ägande",
+          "Tradition, familj och kristen etik"
+        ],
+        expl: "Liberalerna sätter den enskilda individens frihet främst och försvarar marknadsekonomin. Staten ska skydda friheten och ge alla lika möjligheter, men annars hålla sig undan."
+      },
+      {
+        question: "Hur har Moderaterna förändrats ideologiskt sedan starten?",
+        correct: "Från ett konservativt parti till en blandning av konservatism och liberalism",
+        incorrect: [
+          "Från ett liberalt parti till ett tydligt socialistiskt parti under 2000-talet",
+          "Från ett bondeparti till ett parti som i dag främst driver miljöfrågor",
+          "Från ett religiöst parti till ett parti som driver frågor om invandringen"
+        ],
+        expl: "Moderaterna började som ett konservativt högerparti. Med tiden har partiet tagit upp mycket liberalt tankegods och förenar i dag konservatism med tro på fri marknad och lägre skatter."
+      },
+      {
+        question: "Varför bildades Kristdemokraterna, och vad fokuserar partiet på i dag?",
+        correct: "För att stärka kristendomens ställning – i dag drivs vård och familjen",
+        incorrect: [
+          "För att stärka arbetarnas ställning – i dag drivs löner och arbetsrätt",
+          "För att stärka landsbygdens ställning – i dag drivs jordbruk och miljö",
+          "För att stärka företagens ställning – i dag drivs skatter och tillväxt"
+        ],
+        expl: "Kristdemokraterna bildades för att ge kristna värderingar en plats i politiken. I dag är partiet mest känt för frågor om vården, äldreomsorgen och familjen."
+      },
+      {
+        question: "Var har Sverigedemokraterna sitt ursprung, och vad hände efter valet 2022?",
+        correct: "I nationalistiska rörelser – partiet blev stödparti till regeringen efter valet",
+        incorrect: [
+          "I arbetarrörelsen – partiet tog plats i regeringen tillsammans med Socialdemokraterna",
+          "I frikyrkorörelsen – partiet åkte ur riksdagen efter ett svagt valresultat",
+          "I miljörörelsen – partiet bildade regering tillsammans med Centerpartiet och Liberalerna"
+        ],
+        expl: "Sverigedemokraterna har rötter i nationalistiska rörelser och driver frågor om nationell kultur och begränsad invandring. Efter valet 2022 blev partiet stödparti åt regeringen genom Tidöavtalet, utan egna statsråd."
+      }
+    ];
+
+    const KRYSS_EASY = [
+      {
+        question: "Vad är skillnaden mellan ett parti och en intresseorganisation?",
+        correct: "Ett parti tycker till om hela samhället. En organisation bara om en sak.",
+        incorrect: [
+          "Ett parti driver bara en fråga. En organisation driver många frågor.",
+          "Ett parti får pengar av staten. En organisation får pengar av medlemmar.",
+          "Ett parti finns bara i demokratier. En organisation finns i alla länder."
+        ],
+        expl: "Ett parti har åsikter om allt: skola, pengar, försvar och miljö. En intresseorganisation bryr sig bara om en sak, till exempel löner eller djur."
+      },
+      {
+        question: "Vad betyder ordet ideologi?",
+        correct: "En samlad idé om hur samhället är och hur det borde vara.",
+        incorrect: [
+          "En lista med löften som ett parti ger folk före valet.",
+          "Regler som riksdagen bestämmer om efter varje val.",
+          "Ett sätt att räkna ut hur platserna i riksdagen delas."
+        ],
+        expl: "En ideologi är en hel bild: hur samhället ser ut nu, hur det borde se ut, och hur man kommer dit."
+      },
+      {
+        question: "Vilka tre delar har en ideologi?",
+        correct: "Hur samhället är nu, hur det ska ändras, och hur det borde bli.",
+        incorrect: [
+          "Synen på partiledaren, på valet och på antalet platser.",
+          "Synen på lagarna, på domstolarna och på polisen.",
+          "Synen på skatten, på skolan och på sjukvården."
+        ],
+        expl: "En ideologi säger hur det är nu, hur det borde vara sen, och hur man ska ta sig dit."
+      },
+      {
+        question: "Vilken sorts fråga svarar en ideologi på?",
+        correct: "Vem som ska äga saker och hur mycket staten ska bestämma.",
+        incorrect: [
+          "Hur många politiker som ska sitta i varje kommun.",
+          "Vilket år som nästa val ska hållas i Sverige.",
+          "Hur många partier som får plats i riksdagen."
+        ],
+        expl: "En ideologi svarar på stora frågor om ägande, frihet och statens makt. Inte på små regler om hur val funkar."
+      },
+      {
+        question: "Vad menas med att en ideologi är som en kompass?",
+        correct: "Den visar åt vilket håll partiet ska gå när de bestämmer saker.",
+        incorrect: [
+          "Den säger exakt vilken lag som ska skrivas i varje fråga.",
+          "Den mäter hur många väljare partiet har före valet.",
+          "Den bestämmer vilka partier som får jobba ihop efter valet."
+        ],
+        expl: "En kompass visar riktning, inte exakt väg. Ideologin hjälper partiet att välja det som passar deras värderingar."
+      },
+      {
+        question: "Var kommer orden ”vänster” och ”höger” i politiken ifrån?",
+        correct: "Från franska revolutionen, där politikerna satt på olika sidor i salen.",
+        incorrect: [
+          "Från Englands parlament, där två grupper satt mitt emot varandra.",
+          "Från arbetarnas möten i Sverige på 1800-talet.",
+          "Från FN, där länderna delades in efter hur rika de var."
+        ],
+        expl: "I franska revolutionen satt de som ville behålla kungen till höger och de som ville ändra allt till vänster. Sen blev det en symbol."
+      },
+      {
+        question: "Vad vill partier till vänster?",
+        correct: "Att alla ska ha det mer lika och att staten hjälper till mycket.",
+        incorrect: [
+          "Låg skatt och stor frihet för företagen att bestämma själva.",
+          "Starkare försvar, hårdare straff och mer pengar till polisen.",
+          "Mindre stat och fler privata företag inom vård och skola."
+        ],
+        expl: "Vänsterpartier vill minska skillnaden mellan rika och fattiga. De använder skatt och en stor gemensam sektor för det."
+      },
+      {
+        question: "Vad vill partier till höger?",
+        correct: "Fri marknad, låg skatt och att var och en tar eget ansvar.",
+        incorrect: [
+          "Hög skatt som används för att jämna ut skillnader mellan folk.",
+          "Att företagen ägs ihop av alla och att staten är väldigt stor.",
+          "Att staten bestämmer lönerna och förbjuder privata företag."
+        ],
+        expl: "Högerpartier vill ha en fri marknad och låg skatt. De tycker att man ska klara sig själv och att staten ska lägga sig i lite."
+      },
+      {
+        question: "Varför passar inte alla partier in på höger–vänster-skalan?",
+        correct: "Ett parti kan vara vänster i en fråga och höger i en annan.",
+        incorrect: [
+          "Skalan finns bara i Sverige och ingen annanstans i världen.",
+          "Skalan ändras varje gång ett nytt parti kommer in i riksdagen.",
+          "Partierna byter plats på skalan före varje val."
+        ],
+        expl: "Skalan handlar mest om pengar och statens roll. Ett parti kan vilja dela lika på pengar men ändå vilja behålla gamla traditioner."
+      },
+      {
+        question: "Varför säger man att demokratin är en ”överideologi”?",
+        correct: "Alla partier i riksdagen är överens om demokratin, fast de tycker olika annars.",
+        incorrect: [
+          "Det är den ideologi som flest väljare i Sverige gillar bäst.",
+          "Den handlar bara om hur val går till, inte alls om pengar.",
+          "Den står i grundlagen och går aldrig någonsin att ändra."
+        ],
+        expl: "Partierna bråkar om skatt och skola, men alla är överens om fria val, fri press och att lagen gäller lika. Det står över bråket."
+      },
+      {
+        question: "Vad är ett partiprogram?",
+        correct: "Ett papper där partiet skriver sin ideologi och vad de tycker.",
+        incorrect: [
+          "En plan för hur partiet ska göra reklam före valet.",
+          "En lista med namn på personer som partiet vill rösta in.",
+          "En samling förslag som partiet har skickat till riksdagen."
+        ],
+        expl: "Partiprogrammet är partiets viktigaste text. Där står vad partiet tror på och vad de vill göra med skola, skatt och miljö."
+      },
+      {
+        question: "Vilka tre ord bygger Socialdemokraterna på?",
+        correct: "Frihet, jämlikhet och solidaritet",
+        incorrect: [
+          "Ordning, trygghet och tradition",
+          "Frihet, ägande och konkurrens",
+          "Miljö, hälsa och rättvisa"
+        ],
+        expl: "Socialdemokraterna bygger på frihet, jämlikhet och solidaritet. Solidaritet betyder att vi hjälper varandra."
+      },
+      {
+        question: "Vad tycker Socialdemokraterna om marknadsekonomin?",
+        correct: "Den är okej, men staten måste styra den och bygga välfärd.",
+        incorrect: [
+          "Den ska tas bort helt och staten ska äga alla företag.",
+          "Den ska vara helt fri utan några regler alls från staten.",
+          "Den funkar i industrin men ska förbjudas i alla tjänster."
+        ],
+        expl: "Socialdemokraterna vill inte ta bort marknaden. Men politiken ska styra den med regler och skatt, och alla ska få bra vård och skola."
+      },
+      {
+        question: "Vad tycker Vänsterpartiet om vinster i skola och vård?",
+        correct: "Vinster ska inte finnas där. Pengarna ska stanna i skolan och vården.",
+        incorrect: [
+          "Vinster behövs för att göra hela välfärden bättre för alla.",
+          "Vinster är okej, men ska beskattas hårdare än andra vinster.",
+          "Varje kommun ska själv få bestämma helt om vinster."
+        ],
+        expl: "Vänsterpartiet vill förbjuda vinster i välfärden. Skattepengar ska gå till elever och patienter, inte till ägare, tycker de."
+      },
+      {
+        question: "Vilken ideologi har Miljöpartiet, och hur leds partiet?",
+        correct: "Ekologismen, och partiet leds av två språkrör i stället för en ledare.",
+        incorrect: [
+          "Liberalismen, och partiet leds av en ordförande som väljs varje år.",
+          "Socialismen, och partiet leds av en grupp med folk från varje län.",
+          "Konservatismen, och partiet leds av en ledare med två vikarier."
+        ],
+        expl: "Miljöpartiet bygger på ekologismen. Den sätter naturen och framtiden först. Partiet leds av en man och en kvinna ihop, som kallas språkrör."
+      },
+      {
+        question: "Vad hette Centerpartiet förr, och vad vill de i dag?",
+        correct: "Bondeförbundet – i dag vill de sprida ut makt och satsa på miljö och landsbygd.",
+        incorrect: [
+          "Folkpartiet – i dag vill de satsa på skolan, frihet och handel med andra länder.",
+          "Landsbygdspartiet – i dag vill de satsa på försvar, familj och gamla traditioner.",
+          "Jordbrukspartiet – i dag vill de satsa på vård, äldre och lägre skatter för folk."
+        ],
+        expl: "Centerpartiet hette Bondeförbundet och var böndernas parti. I dag vill de att makt och jobb ska finnas i hela landet, inte bara i städerna."
+      },
+      {
+        question: "Vilka ord bygger Liberalerna på?",
+        correct: "Frihet, individen och marknadsekonomi",
+        incorrect: [
+          "Trygghet, gemenskap och ansvar",
+          "Jämlikhet, solidaritet och ägande",
+          "Tradition, familj och religion"
+        ],
+        expl: "Liberalerna sätter den enskilda personens frihet först. De gillar en fri marknad och tycker att staten ska hålla sig undan."
+      },
+      {
+        question: "Hur har Moderaterna ändrats sedan de började?",
+        correct: "Från ett konservativt parti till en blandning av konservatism och liberalism.",
+        incorrect: [
+          "Från ett liberalt parti till ett tydligt socialistiskt parti på 2000-talet.",
+          "Från ett bondeparti till ett parti som i dag mest jobbar med miljöfrågor.",
+          "Från ett religiöst parti till ett parti som i dag jobbar med invandring."
+        ],
+        expl: "Moderaterna började som ett konservativt högerparti. Nu blandar de konservatism med liberala idéer om fri marknad och låg skatt."
+      },
+      {
+        question: "Varför startade Kristdemokraterna, och vad jobbar de med i dag?",
+        correct: "För att ge kristna värderingar en plats – i dag jobbar de med vård och familj.",
+        incorrect: [
+          "För att hjälpa arbetarna – i dag jobbar de med löner och regler på jobbet.",
+          "För att hjälpa landsbygden – i dag jobbar de med jordbruk och med miljön.",
+          "För att hjälpa företagen – i dag jobbar de med skatter och med tillväxt."
+        ],
+        expl: "Kristdemokraterna startade för att kristna idéer skulle synas i politiken. I dag är de mest kända för vård, äldreomsorg och familjefrågor."
+      },
+      {
+        question: "Var kommer Sverigedemokraterna ifrån, och vad hände efter valet 2022?",
+        correct: "Från nationalistiska rörelser – efter valet blev de stödparti åt regeringen.",
+        incorrect: [
+          "Från arbetarrörelsen – efter valet satt de i regering med Socialdemokraterna.",
+          "Från frikyrkan – efter valet åkte de ur riksdagen helt och hållet.",
+          "Från miljörörelsen – efter valet bildade de regering med C och med L."
+        ],
+        expl: "Sverigedemokraterna kommer från nationalistiska rörelser och vill ha mindre invandring. Efter valet 2022 stöttade de regeringen genom Tidöavtalet, men fick inga egna ministrar."
+      }
+    ];
+
+    function loadKryssProgress() {
+      try {
+        const raw = sessionStorage.getItem(KRYSS_PROGRESS_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return { attempts: 0, bestPct: 0, completed: false };
+    }
+    function saveKryssProgress(p) {
+      try { sessionStorage.setItem(KRYSS_PROGRESS_KEY, JSON.stringify(p)); } catch (e) {}
+    }
+    // 80 % = tröskel för godkänt/rank. Under 80 % ger ingen rank.
+    function computeKryssRank(bestPct) {
+      if (!bestPct || bestPct < 80) return null;
+      if (bestPct >= 100) return 'S';
+      if (bestPct >= 93) return 'A';
+      if (bestPct >= 87) return 'B';
+      return 'C';
+    }
+    // Dagsroterande verifieringskod [PREFIX]-XXXX, egen salt för denna fil.
+    function computeKryssCode(pct, rank) {
+      const d = new Date();
+      const dateStr = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+      const input = dateStr + '|' + pct + '|' + (rank || '-') + '|' + KRYSS_RANK_SALT;
+      let hash = 0;
+      for (let i = 0; i < input.length; i++) {
+        hash = (hash + input.charCodeAt(i) * (i + 1)) % 1679616; // 36^4
+      }
+      return 'KRYSS-' + hash.toString(36).toUpperCase().padStart(4, '0');
+    }
+
     // --- HUVUDKOMPONENT ---
-    function App() {
+    function OvningsQuiz({ easyMode, onActiveChange }) {
       const [gameState, setGameState] = useState('start');
       const [quizQuestions, setQuizQuestions] = useState([]);
       const [currentIndex, setCurrentIndex] = useState(0);
       const [timer, setTimer] = useState(0);
-      const [easyMode, setEasyMode] = useState(() => sessionStorage.getItem(EASY_KEY) === '1');
       const [modal, setModal] = useState(null); // { isCorrect, question }
 
       const timerRef = useRef(null);
       const t = easyMode ? UI.easy : UI.sv;
+
+      useEffect(() => { onActiveChange(gameState === 'playing'); }, [gameState]);
 
       useEffect(() => {
         if (gameState === 'playing') {
@@ -748,38 +1203,6 @@
         }
         return () => clearInterval(timerRef.current);
       }, [gameState]);
-
-      useEffect(() => {
-        document.getElementById('btn-easy').setAttribute('aria-pressed', easyMode ? 'true' : 'false');
-      }, [easyMode]);
-
-      useEffect(() => {
-        const btn = document.getElementById('btn-easy');
-        const handler = () => {
-          setEasyMode(prev => {
-            const next = !prev;
-            sessionStorage.setItem(EASY_KEY, next ? '1' : '0');
-            return next;
-          });
-        };
-        btn.addEventListener('click', handler);
-        return () => btn.removeEventListener('click', handler);
-      }, []);
-
-      useEffect(() => {
-        const link = document.getElementById('back-link');
-        const handler = (e) => {
-          e.preventDefault();
-          const ref = document.referrer;
-          if (ref && ref.indexOf(location.hostname) !== -1) {
-            history.back();
-          } else {
-            window.location.href = 'index.html';
-          }
-        };
-        link.addEventListener('click', handler);
-        return () => link.removeEventListener('click', handler);
-      }, []);
 
       const startGame = () => {
         const shuffledData = shuffleArray(allQuestionsData).map((q, i) => {
@@ -1027,6 +1450,412 @@
               </div>
             </div>
           )}
+        </div>
+      );
+    }
+
+    // ── KRYSSPROV: 20 frågor, bakåtnavigering, rank + verifieringskod ──
+    function KryssprovQuiz({ easyMode, onActiveChange }) {
+      const t = easyMode ? UI.easy : UI.sv;
+      const [gameState, setGameState] = useState('start');
+      const [questions, setQuestions] = useState([]);
+      const [currentIndex, setCurrentIndex] = useState(0);
+      const [timer, setTimer] = useState(0);
+      const [modal, setModal] = useState(null);
+      const [progress, setProgress] = useState(loadKryssProgress);
+      const [celebrateRank, setCelebrateRank] = useState(null);
+      const prevRankRef = useRef(computeKryssRank(loadKryssProgress().bestPct));
+      const timerRef = useRef(null);
+
+      useEffect(() => { onActiveChange(gameState === 'playing'); }, [gameState]);
+
+      useEffect(() => {
+        if (gameState === 'playing') {
+          timerRef.current = setInterval(() => setTimer(prev => prev + 1), 1000);
+        } else {
+          clearInterval(timerRef.current);
+        }
+        return () => clearInterval(timerRef.current);
+      }, [gameState]);
+
+      // Rank-overlay när eleven precis nått en högre rank (jämför mot sparad bästa).
+      useEffect(() => {
+        if (gameState !== 'result') return;
+        const newRank = computeKryssRank(progress.bestPct);
+        const prevOrder = prevRankRef.current ? RANK_ORDER[prevRankRef.current] : 0;
+        const newOrder = newRank ? RANK_ORDER[newRank] : 0;
+        if (newOrder > prevOrder) {
+          setCelebrateRank(newRank);
+          const to = setTimeout(() => setCelebrateRank(null), 2600);
+          prevRankRef.current = newRank;
+          return () => clearTimeout(to);
+        }
+        prevRankRef.current = newRank;
+      }, [gameState, progress.bestPct]);
+
+      // Blandas EN gång vid start; ordning + alternativ sparas per fråga.
+      const startGame = () => {
+        const data = shuffleArray(KRYSS_Q).map(q => {
+          const origIdx = KRYSS_Q.indexOf(q);
+          return {
+            ...q,
+            _easy: KRYSS_EASY[origIdx],
+            options: shuffleArray([q.correct, ...q.incorrect]),
+            selected: null,
+            answered: false
+          };
+        });
+        setQuestions(data);
+        setTimer(0);
+        setCurrentIndex(0);
+        setModal(null);
+        setGameState('playing');
+      };
+
+      const handleOptionClick = (option) => {
+        const q = questions[currentIndex];
+        if (q.answered) return;
+        const isCorrect = option === q.correct;
+        const updated = [...questions];
+        updated[currentIndex] = { ...q, selected: option, answered: true };
+        setQuestions(updated);
+        setTimeout(() => setModal({ isCorrect, question: updated[currentIndex] }), 600);
+      };
+
+      const finish = () => {
+        const score = questions.filter(q => q.selected === q.correct).length;
+        const pct = Math.round((score / questions.length) * 100);
+        setProgress(prev => {
+          const next = {
+            attempts: (prev.attempts || 0) + 1,
+            bestPct: Math.max(prev.bestPct || 0, pct),
+            completed: (prev.completed || false) || pct >= 80
+          };
+          saveKryssProgress(next);
+          return next;
+        });
+        setGameState('result');
+      };
+
+      const goNext = () => {
+        setModal(null);
+        if (currentIndex + 1 < questions.length) setCurrentIndex(currentIndex + 1);
+        else finish();
+      };
+      const goBack = () => {
+        if (currentIndex > 0) { setModal(null); setCurrentIndex(currentIndex - 1); }
+      };
+
+      // ── STARTSKÄRM ──
+      if (gameState === 'start') {
+        const rank = computeKryssRank(progress.bestPct);
+        return (
+          <div className="min-h-[80vh] flex items-center justify-center p-4">
+            <div className="bg-white max-w-md w-full rounded-2xl shadow-xl overflow-hidden border-t-8 border-orange-400">
+              <div className="p-8 text-center">
+                <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Landmark className="w-10 h-10 text-orange-500" />
+                </div>
+                <h1 className="text-3xl font-black text-slate-900 mb-2">Kryssprov</h1>
+                <p className="text-slate-500 mb-6">Politiska partier och ideologier</p>
+                <div className="flex flex-wrap justify-center gap-2 mb-6 text-xs">
+                  <span className="bg-orange-50 text-orange-700 font-bold px-3 py-1 rounded-full">20 frågor</span>
+                  <span className="bg-orange-50 text-orange-700 font-bold px-3 py-1 rounded-full">80 % för godkänt</span>
+                </div>
+                {progress.attempts > 0 && (
+                  <p className="text-slate-400 text-sm mb-3">
+                    Försök denna session: {progress.attempts} · Bästa: {progress.bestPct} %
+                  </p>
+                )}
+                {progress.completed && (
+                  <p className="text-green-600 font-bold text-sm mb-3">✓ Godkänt denna session</p>
+                )}
+                {rank && (
+                  <div className="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-2xl font-black"
+                       style={{ background: RANK_STYLE[rank].bg, color: RANK_STYLE[rank].text, border: '2px solid ' + RANK_STYLE[rank].border }}>
+                    <span className="text-2xl">{rank}</span>
+                    <span className="text-xs uppercase tracking-wide">Din rank</span>
+                  </div>
+                )}
+                <button onClick={startGame} className="w-full bg-orange-400 hover:bg-orange-500 text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-95">
+                  {t.startBtn}
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // ── RESULTATSKÄRM ──
+      if (gameState === 'result') {
+        const total = questions.length;
+        const score = questions.filter(q => q.selected === q.correct).length;
+        const wrong = total - score;
+        const pct = Math.round((score / total) * 100);
+        const pass = pct >= 80;
+        const rank = computeKryssRank(progress.bestPct);
+        const code = pass ? computeKryssCode(pct, computeKryssRank(pct)) : null;
+        const missed = questions.filter(q => q.selected !== q.correct);
+
+        let resultMsg;
+        if (pct >= 90) resultMsg = '🏆 Utmärkt! Du behärskar partierna och ideologierna.';
+        else if (pct >= 80) resultMsg = '✅ Godkänt! Bra jobbat.';
+        else if (pct >= 55) resultMsg = '📖 Nästan i mål – kör om provet en gång till.';
+        else resultMsg = '💡 Repetera pluggmaterialet och försök igen.';
+
+        return (
+          <div className="min-h-[80vh] flex flex-col items-center py-8 p-4">
+            {celebrateRank && (
+              <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[200] p-4">
+                <div className="bg-white rounded-3xl p-10 text-center shadow-2xl">
+                  <div className="text-6xl mb-3">🎉</div>
+                  <p className="text-slate-500 font-bold uppercase tracking-widest text-xs mb-2">Ny rank!</p>
+                  <p className="text-6xl font-black" style={{ color: RANK_STYLE[celebrateRank].text }}>{celebrateRank}</p>
+                </div>
+              </div>
+            )}
+            <div className="w-full max-w-lg">
+              <div className="bg-white rounded-2xl shadow-xl p-8 text-center border-t-8 border-orange-400 mb-6">
+                <Trophy className="w-20 h-20 mx-auto mb-4 text-orange-500" />
+                <h2 className="text-3xl font-black text-slate-800 mb-2">{t.resultTitle}</h2>
+                <p className="text-5xl font-black text-slate-900">{score} / {total}</p>
+                <p className="text-slate-500 font-medium mt-1">{t.timeLbl}{formatTime(timer)}</p>
+                <p className="text-slate-600 font-medium my-4">{resultMsg}</p>
+                <div className="flex flex-wrap justify-center gap-8">
+                  <div className="text-center">
+                    <p className="text-2xl font-black text-green-600">{score}</p>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">Rätt</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-black text-red-500">{wrong}</p>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">Fel</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-black text-slate-700">{pct}%</p>
+                    <p className="text-xs text-slate-400 uppercase tracking-wide">Andel rätt</p>
+                  </div>
+                  {rank && (
+                    <div className="text-center">
+                      <p className="text-2xl font-black" style={{ color: RANK_STYLE[rank].text }}>{rank}</p>
+                      <p className="text-xs text-slate-400 uppercase tracking-wide">Rank</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {code && (
+                <div className="bg-green-50 border-2 border-green-500 rounded-2xl p-5 text-center mb-6">
+                  <p className="text-xs text-green-700 uppercase tracking-widest font-bold mb-1">Din verifieringskod</p>
+                  <p className="text-3xl font-black text-green-700 tracking-wider" style={{ fontFamily: 'monospace' }}>{code}</p>
+                  <p className="text-xs text-green-600 mt-1">Visa koden för John. Den byts varje dag.</p>
+                </div>
+              )}
+
+              {missed.length > 0 && (
+                <div className="bg-white rounded-2xl shadow p-6 mb-6">
+                  <h3 className="text-lg font-black text-slate-800 mb-3 pb-2 border-b-2 border-slate-100">
+                    {t.missedHd} ({missed.length})
+                  </h3>
+                  <ul className="space-y-2">
+                    {missed.map((q, i) => (
+                      <li key={i} className="bg-red-50 border-l-4 border-red-400 rounded-lg px-4 py-2 text-sm text-slate-700">
+                        {easyMode ? q._easy.question : q.question}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <div className="bg-white rounded-2xl shadow p-6 mb-6">
+                <h3 className="text-lg font-black text-slate-800 mb-3 pb-2 border-b-2 border-slate-100">{t.facitHd}</h3>
+                <div className="space-y-3">
+                  {questions.map((q, i) => {
+                    const isCorrect = q.selected === q.correct;
+                    const qText = easyMode ? q._easy.question : q.question;
+                    const yourText = q.selected == null ? '—' : (easyMode ? mapOpt('easy', q, q.selected) : q.selected);
+                    const correctText = easyMode ? q._easy.correct : q.correct;
+                    const explText = easyMode ? q._easy.expl : q.expl;
+                    return (
+                      <div key={i} className={`rounded-xl border-2 p-4 ${isCorrect ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
+                        <p className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">Fråga {i + 1}</p>
+                        <p className="font-bold text-slate-800 mb-2">{qText}</p>
+                        <p className={`text-sm flex items-center gap-1 ${isCorrect ? 'text-green-700' : 'text-red-700'}`}>
+                          {isCorrect ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <XCircle className="w-4 h-4 shrink-0" />}
+                          <span className="font-semibold">{t.yourAnswerLbl}</span>{yourText}
+                        </p>
+                        {!isCorrect && (
+                          <p className="text-sm text-green-700 font-semibold mt-1">{t.correctAnswerLbl}{correctText}</p>
+                        )}
+                        <p className="text-sm text-slate-600 mt-2 leading-relaxed">{explText}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <button onClick={startGame} className="w-full bg-orange-400 hover:bg-orange-500 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95">
+                <RefreshCw className="w-5 h-5" /> {t.restartBtn}
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      // ── QUIZSKÄRM ──
+      const currentQ = questions[currentIndex];
+      const total = questions.length;
+      const scoreSoFar = questions.filter(q => q.selected === q.correct).length;
+      const isLast = currentIndex === total - 1;
+
+      return (
+        <div className="min-h-[80vh] flex flex-col items-center py-8 p-4">
+          <div className="w-full max-w-md">
+            <div className="mb-6">
+              <div className="flex justify-between items-end text-xs font-black uppercase tracking-widest text-slate-400 mb-2 px-1">
+                <div className="flex flex-col gap-1">
+                  <span>Fråga {currentIndex + 1} / {total}</span>
+                  <div className="flex items-center gap-1 text-slate-600">
+                    <Clock className="w-3 h-3" />
+                    <span>{formatTime(timer)}</span>
+                  </div>
+                </div>
+                <span>{t.scoreLabel}{scoreSoFar}</span>
+              </div>
+              <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
+                <div className="h-full bg-orange-400 transition-all duration-300" style={{ width: `${((currentIndex + 1) / total) * 100}%` }}></div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-lg p-8 mb-6 border-b-4 border-slate-100">
+              <h2 className="text-xl font-bold text-slate-800 leading-snug">
+                {easyMode ? currentQ._easy.question : currentQ.question}
+              </h2>
+            </div>
+
+            <div className="space-y-3">
+              {currentQ.options.map((option, index) => {
+                const displayText = easyMode ? mapOpt('easy', currentQ, option) : option;
+                let btnClasses = "w-full text-left p-5 rounded-xl border-2 transition-all font-bold flex items-center justify-between gap-3 shadow-sm ";
+                if (!currentQ.answered) {
+                  btnClasses += "border-slate-100 bg-white text-slate-600 hover:border-orange-400 hover:shadow-md active:scale-95";
+                } else {
+                  if (option === currentQ.correct) {
+                    btnClasses += "border-green-500 bg-green-50 text-green-800";
+                  } else if (option === currentQ.selected) {
+                    btnClasses += "border-red-500 bg-red-50 text-red-800";
+                  } else {
+                    btnClasses += "border-slate-50 bg-slate-50 text-slate-300 opacity-60";
+                  }
+                }
+                return (
+                  <button key={index} onClick={() => handleOptionClick(option)} disabled={currentQ.answered} className={btnClasses}>
+                    <span className="text-sm md:text-base">{displayText}</span>
+                    {currentQ.answered && option === currentQ.correct && <CheckCircle2 className="w-6 h-6 text-green-500 shrink-0" />}
+                    {currentQ.answered && option === currentQ.selected && option !== currentQ.correct && <XCircle className="w-6 h-6 text-red-500 shrink-0" />}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="mt-8 flex gap-3">
+              {currentIndex > 0 && (
+                <button onClick={goBack} className="bg-white border-2 border-slate-200 text-slate-600 font-bold py-4 px-5 rounded-xl shadow-sm flex items-center justify-center gap-1 transition-all active:scale-95">
+                  <ChevronLeft className="w-5 h-5" /> {t.backBtn}
+                </button>
+              )}
+              {currentQ.answered && (
+                <button onClick={goNext} className="flex-1 bg-slate-900 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95">
+                  {isLast ? t.resultBtn : t.nextBtn}
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {modal && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
+              <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
+                <div className="text-5xl mb-3">{modal.isCorrect ? '✅' : '❌'}</div>
+                <h3 className={`text-xl font-black mb-3 ${modal.isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+                  {modal.isCorrect ? t.modalCorrectTitle : t.modalWrongTitle}
+                </h3>
+                <p className="text-slate-600 leading-relaxed mb-6">
+                  {easyMode ? modal.question._easy.expl : modal.question.expl}
+                </p>
+                <button onClick={goNext} className="w-full bg-slate-900 text-white font-bold py-3 rounded-xl shadow-lg transition-all active:scale-95">
+                  {isLast ? t.modalResultBtn : t.modalNextBtn}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // --- YTTRE APP: växlar mellan Övningsquiz och Kryssprov ---
+    function App() {
+      const [view, setView] = useState('ovning');
+      const [subActive, setSubActive] = useState(false);
+      const [easyMode, setEasyMode] = useState(() => {
+        try { return sessionStorage.getItem(EASY_KEY) === '1'; } catch (e) { return false; }
+      });
+
+      useEffect(() => {
+        const el = document.getElementById('btn-easy');
+        if (el) el.setAttribute('aria-pressed', easyMode ? 'true' : 'false');
+      }, [easyMode]);
+
+      useEffect(() => {
+        const btn = document.getElementById('btn-easy');
+        if (!btn) return;
+        const handler = () => {
+          setEasyMode(prev => {
+            const next = !prev;
+            try { sessionStorage.setItem(EASY_KEY, next ? '1' : '0'); } catch (e) {}
+            return next;
+          });
+        };
+        btn.addEventListener('click', handler);
+        return () => btn.removeEventListener('click', handler);
+      }, []);
+
+      useEffect(() => {
+        const link = document.getElementById('back-link');
+        if (!link) return;
+        const handler = (e) => {
+          e.preventDefault();
+          const ref = document.referrer;
+          if (ref && ref.indexOf(location.hostname) !== -1) {
+            history.back();
+          } else {
+            window.location.href = 'index.html';
+          }
+        };
+        link.addEventListener('click', handler);
+        return () => link.removeEventListener('click', handler);
+      }, []);
+
+      return (
+        <div>
+          {!subActive && (
+            <div className="pt-16 pb-2 flex justify-center px-4">
+              <div className="inline-flex bg-white rounded-full p-1 shadow-sm border border-slate-200">
+                {Object.keys(VIEW_LABELS).map(key => (
+                  <button
+                    key={key}
+                    onClick={() => { setSubActive(false); setView(key); }}
+                    className={"px-5 py-2 rounded-full text-sm font-bold transition-colors " + (view === key ? "text-white" : "text-slate-500 hover:text-slate-700")}
+                    style={view === key ? { background: '#fb923c' } : {}}
+                  >
+                    {VIEW_LABELS[key]}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          {view === 'ovning'
+            ? <OvningsQuiz easyMode={easyMode} onActiveChange={setSubActive} />
+            : <KryssprovQuiz easyMode={easyMode} onActiveChange={setSubActive} />}
         </div>
       );
     }
