@@ -65,6 +65,21 @@
             transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
         .mob-subject-btn:active { transform: scale(0.97); }
+        .mob-class-btn {
+            padding: 18px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            background: #ffffff;
+            cursor: pointer;
+            font-family: 'EB Garamond', serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #334155;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+            transition: transform 0.15s ease, border-color 0.15s ease;
+        }
+        .mob-class-btn:active { transform: scale(0.97); }
+        .mob-class-btn:hover { border-color: #94a3b8; }
         .mob-area-btn {
             width: 100%;
             padding: 18px 18px 18px 16px;
@@ -675,15 +690,46 @@
       }
     ];
 
+    // ── Klass → kurser. Mappa via kurs-id i MOB_SUBJECTS, aldrig via rubriktext.
+    //    Redigera hela klass/kurs-kopplingen här. ──
+    var CLASS_COURSES = {
+      'BF25': ['sh_ny', 'nk_ny', 'jur'],
+      'FS25': ['sh_ny', 'nk_ny', 'jur'],
+      'VF25': ['sh_ny', 'nk_ny'],
+      'VO25': ['sh_ny', 'nk_ny'],
+      'IN25': ['sh_ny', 'nk_ny'],
+      'BF24': ['sh_1a2', 'nk_1a2', 'ratt'],
+      'FS24': ['ratt'],
+      'VO24': ['sh_1a2']
+    };
+
+    var CLASS_GROUPS = [
+      { label: 'Årskurs 2', classes: ['BF25', 'FS25', 'VF25', 'VO25', 'IN25'] },
+      { label: 'Årskurs 3', classes: ['BF24', 'FS24', 'VO24'] }
+    ];
+
+    var CLASS_STORAGE_KEY = 'johnshemsida_klass';
+
     var mobCurrentStep = 1;
     var mobSelectedSubjectIdx = null;
     var mobSelectedAreaIdx = null;
+    var mobSelectedClass = null;
+    var mobShowAllOverride = false;
+
+    try {
+      var savedClass = localStorage.getItem(CLASS_STORAGE_KEY);
+      if (savedClass && CLASS_COURSES.hasOwnProperty(savedClass)) {
+        mobSelectedClass = savedClass;
+      } else if (savedClass) {
+        localStorage.removeItem(CLASS_STORAGE_KEY);
+      }
+    } catch (e) {}
 
     function mobUpdateHeader() {
       var bc = document.getElementById('mob-breadcrumb');
       var backBtn = document.getElementById('mob-back-btn');
       if (mobCurrentStep === 1) {
-        bc.textContent = 'Välj ett ämne';
+        bc.textContent = mobSelectedClass ? 'Dina kurser' : 'Vilken klass går du i?';
         backBtn.style.display = 'none';
       } else if (mobCurrentStep === 2) {
         var s = MOB_SUBJECTS[mobSelectedSubjectIdx];
@@ -728,6 +774,33 @@
       }
     }
 
+    function mobileSelectClass(cls) {
+      if (!CLASS_COURSES.hasOwnProperty(cls)) return;
+      mobSelectedClass = cls;
+      mobShowAllOverride = false;
+      try { localStorage.setItem(CLASS_STORAGE_KEY, cls); } catch (e) {}
+      renderMobStep1();
+      mobUpdateHeader();
+    }
+
+    function mobileChangeClass() {
+      mobSelectedClass = null;
+      mobShowAllOverride = false;
+      try { localStorage.removeItem(CLASS_STORAGE_KEY); } catch (e) {}
+      renderMobStep1();
+      mobUpdateHeader();
+    }
+
+    function mobileShowAllCourses() {
+      mobShowAllOverride = true;
+      renderMobStep1();
+    }
+
+    function mobileBackToMyCourses() {
+      mobShowAllOverride = false;
+      renderMobStep1();
+    }
+
     function mobileSelectSubject(idx) {
       mobSelectedSubjectIdx = idx;
       renderMobStep2();
@@ -756,33 +829,79 @@
       if (chev) chev.style.transform = mobGy11Open ? 'rotate(180deg)' : 'rotate(0deg)';
     }
 
+    function mobSubjectBtnHtml(i, s) {
+      return '<button class="mob-subject-btn" onclick="mobileSelectSubject(' + i + ')" style="background:' + s.bgLight + ';">'
+        + '<span style="font-size:2.2rem;flex-shrink:0;">' + s.emoji + '</span>'
+        + '<span style="font-size:1.45rem;font-weight:700;color:' + s.textDark + ';flex:1;font-family:\'EB Garamond\',serif;">' + s.name + '</span>'
+        + '<span style="font-size:1.5rem;color:' + s.color + ';flex-shrink:0;">›</span>'
+        + '</button>';
+    }
+
     function renderMobStep1() {
       var el = document.getElementById('mob-step-1');
+      if (!mobSelectedClass) {
+        el.innerHTML = buildClassPickerHtml();
+      } else if (mobShowAllOverride) {
+        el.innerHTML = buildAllCoursesHtml();
+      } else {
+        el.innerHTML = buildMyCoursesHtml();
+      }
+    }
+
+    // Steg 1: klassval – visas när ingen klass är sparad
+    function buildClassPickerHtml() {
       var html = '<div style="text-align:center;margin-bottom:20px;">'
         + '<img src="portalbild.png" alt="Portalbild" style="width:110px;height:110px;border-radius:50%;object-fit:cover;border:3px solid #ffffff;box-shadow:0 4px 16px rgba(0,0,0,0.12);display:inline-block;">'
         + '</div>'
-        + '<div style="background:#eef2ff;border-left:4px solid #6366f1;padding:16px 18px;border-radius:0 12px 12px 0;margin-bottom:24px;">'
-        + '<p style="font-family:\'EB Garamond\',serif;font-size:1.05rem;font-weight:700;font-style:italic;color:#3730a3;line-height:1.55;margin:0 0 10px;">'
-        + 'Öva på att hämta svar från minnet istället för att bara läsa, så fastnar kunskapen mycket bättre. Sätt ett alarm på mobilen och träna 15 minuter varje dag, så lär du dig mer på kortare tid!'
-        + '</p>'
-        + '<p style="font-family:\'EB Garamond\',serif;font-size:1.05rem;font-weight:700;font-style:italic;color:#3730a3;line-height:1.55;margin:0;">'
-        + 'Tips! Börja med att lära dig begreppen innan du gör quizen.'
-        + '</p>'
-        + '</div>'
-        + '<p style="color:#64748b;font-family:\'EB Garamond\',serif;font-size:1.05rem;margin-bottom:20px;">Välj ett ämne för att komma igång.</p>';
+        + '<h2 style="font-family:\'EB Garamond\',serif;font-size:1.7rem;font-weight:700;color:#0f172a;text-align:center;margin-bottom:6px;">Vilken klass går du i?</h2>'
+        + '<p style="color:#64748b;font-family:\'EB Garamond\',serif;font-size:1.05rem;text-align:center;margin-bottom:24px;">Då visar vi bara dina kurser.</p>';
 
-      // Visa vanliga (ej Gy11) ämnen direkt
+      for (var g = 0; g < CLASS_GROUPS.length; g++) {
+        var grp = CLASS_GROUPS[g];
+        html += '<div class="mob-course-label">' + grp.label + '</div>';
+        html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px;">';
+        for (var c = 0; c < grp.classes.length; c++) {
+          var cls = grp.classes[c];
+          html += '<button class="mob-class-btn" onclick="mobileSelectClass(\'' + cls + '\')">' + cls + '</button>';
+        }
+        html += '</div>';
+      }
+      return html;
+    }
+
+    function buildClassHeaderHtml() {
+      return '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:22px;">'
+        + '<div>'
+        + '<div style="font-family:\'EB Garamond\',serif;font-size:1.6rem;font-weight:700;color:#0f172a;line-height:1.2;">Dina kurser</div>'
+        + '<div style="font-family:\'EB Garamond\',serif;font-size:1.05rem;color:#64748b;margin-top:2px;">' + mobSelectedClass + '</div>'
+        + '</div>'
+        + '<button onclick="mobileChangeClass()" style="flex-shrink:0;background:#f1f5f9;border:2px solid #e2e8f0;border-radius:12px;padding:8px 14px;font-family:\'EB Garamond\',serif;font-size:0.95rem;font-weight:700;color:#475569;cursor:pointer;">Byt klass</button>'
+        + '</div>';
+    }
+
+    // Steg 2: kurslistan – bara klassens kurser, i MOB_SUBJECTS-ordning
+    function buildMyCoursesHtml() {
+      var allowed = CLASS_COURSES[mobSelectedClass] || [];
+      var html = buildClassHeaderHtml();
       for (var i = 0; i < MOB_SUBJECTS.length; i++) {
-        var s = MOB_SUBJECTS[i];
-        if (s.gy11) continue;
-        html += '<button class="mob-subject-btn" onclick="mobileSelectSubject(' + i + ')" style="background:' + s.bgLight + ';">'
-          + '<span style="font-size:2.2rem;flex-shrink:0;">' + s.emoji + '</span>'
-          + '<span style="font-size:1.45rem;font-weight:700;color:' + s.textDark + ';flex:1;font-family:\'EB Garamond\',serif;">' + s.name + '</span>'
-          + '<span style="font-size:1.5rem;color:' + s.color + ';flex-shrink:0;">›</span>'
-          + '</button>';
+        if (allowed.indexOf(MOB_SUBJECTS[i].id) === -1) continue;
+        html += mobSubjectBtnHtml(i, MOB_SUBJECTS[i]);
+      }
+      html += '<button onclick="mobileShowAllCourses()" style="display:block;width:100%;margin-top:16px;background:none;border:none;cursor:pointer;color:#94a3b8;font-family:\'EB Garamond\',serif;font-size:0.98rem;text-decoration:underline;">Läser du något annat? Visa alla kurser</button>';
+      return html;
+    }
+
+    // "Visa alla kurser" – hela listan, utan att radera det sparade valet
+    function buildAllCoursesHtml() {
+      mobGy11Open = false;
+      var html = '<button onclick="mobileBackToMyCourses()" style="background:none;border:none;cursor:pointer;color:#64748b;font-family:\'EB Garamond\',serif;font-size:1rem;padding:0;margin-bottom:14px;">← Dina kurser</button>'
+        + '<h2 style="font-family:\'EB Garamond\',serif;font-size:1.6rem;font-weight:700;color:#0f172a;margin-bottom:16px;">Alla kurser</h2>';
+
+      for (var i = 0; i < MOB_SUBJECTS.length; i++) {
+        if (MOB_SUBJECTS[i].gy11) continue;
+        html += mobSubjectBtnHtml(i, MOB_SUBJECTS[i]);
       }
 
-      // Gy11-toggle
       html += '<button onclick="toggleMobGy11()" style="width:100%;padding:18px 20px;margin-bottom:10px;border:2px dashed #cbd5e1;border-radius:16px;background:#f8fafc;cursor:pointer;display:flex;align-items:center;gap:16px;font-family:\'EB Garamond\',serif;">'
         + '<span style="font-size:2.2rem;flex-shrink:0;">🎒</span>'
         + '<span style="font-size:1.45rem;font-weight:700;color:#475569;flex:1;text-align:left;">Gy11-kurser</span>'
@@ -790,19 +909,13 @@
         + '</button>'
         + '<div id="mob-gy11-body" style="display:none;">';
 
-      // Gy11-ämnen
-      for (var i = 0; i < MOB_SUBJECTS.length; i++) {
-        var s = MOB_SUBJECTS[i];
-        if (!s.gy11) continue;
-        html += '<button class="mob-subject-btn" onclick="mobileSelectSubject(' + i + ')" style="background:' + s.bgLight + ';">'
-          + '<span style="font-size:2.2rem;flex-shrink:0;">' + s.emoji + '</span>'
-          + '<span style="font-size:1.45rem;font-weight:700;color:' + s.textDark + ';flex:1;font-family:\'EB Garamond\',serif;">' + s.name + '</span>'
-          + '<span style="font-size:1.5rem;color:' + s.color + ';flex-shrink:0;">›</span>'
-          + '</button>';
+      for (var j = 0; j < MOB_SUBJECTS.length; j++) {
+        if (!MOB_SUBJECTS[j].gy11) continue;
+        html += mobSubjectBtnHtml(j, MOB_SUBJECTS[j]);
       }
 
       html += '</div>';
-      el.innerHTML = html;
+      return html;
     }
 
     function renderMobStep2() {
