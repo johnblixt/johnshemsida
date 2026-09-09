@@ -693,7 +693,7 @@ Ett jeopardy-spel bygger om ett arbetsområdes befintliga quiz-/begreppsinnehål
 
 ### Filplacering och portalintegration
 - Egen fil per område: `[kurs]_[omrade]_jeopardy.html` (t.ex. `nk1a1_naturvetenskap_jeopardy.html`, `sh_demokrati_jeopardy.html`)
-- Eget kort på **områdessidan** (inte `index.html`), alltid **längst ner, direkt efter quiz-kortet**
+- Eget kort på **områdessidan** (inte `index.html`), alltid **direkt efter quiz-kortet** — och före ett eventuellt miljonär-kort. Kanonisk kortordning på ett områdeskort: **material → begrepp → quiz → jeopardy → miljonär** (se [Miljonär-spel](#miljonär-spel))
 - Kortbeskrivningen ska nämna att spelet kan **ledas av en vikarie** som inte kan ämnet
 - Back-länk uppe till vänster med `smartBack(event)`: `history.back()` om `document.referrer` är samma origin, annars fallback till områdessidan (aldrig hårdkodat `index.html`)
 - Footer `Designad av John`, `<script src="feedback-widget.js" defer>` och GoatCounter-snippet (`johnblixt.goatcounter.com`) sist i `<body>` — exakt som i referensfilen
@@ -732,3 +732,98 @@ Centrala tillståndsvariabler (globala): `jpTeamCount`, `jpTeams` (`[{name,score
 - **`jpCloseModal`:** markerar rutan `.jp-used`, `jpUsed++`; om frågan var olöst flyttas turen till nästa lag och `jpStreak` nollställs; vid `jpUsed>=20` → `jpShowEnd`
 - **Lagpanel:** `jpRenderTeams` – aktivt lag (`jpTurn`) markeras med färgram, övriga tonas ned. `jpAdjust(i,±100)` är spelledarens manuella nödutgång för poäng
 - **Slut:** `jpShowEnd` – `#jp-end`-overlay med lagen sorterade på poäng, 🏆 på ettan, "Spela igen" → `jpNewGame`
+
+---
+
+## Miljonär-spel
+
+### Syfte
+Ett spel i formatet "Vem vill bli miljonär?" som bygger om ett arbetsområdes befintliga flervalsfrågor till en soloklättring genom en prisstege — för egen övning eller som lektionsmoment. Till skillnad från Jeopardy kräver spelet ingen spelledare eller lagindelning.
+
+### Teknikstack
+- Fristående HTML-fil, samma mönster som quiz-/begrepp-/jeopardy-filer: ingen extern CSS-/JS-lib, allt körs i webbläsaren
+- Google Fonts: **EB Garamond** (brödtext) + **Fredoka** (rubriker, belopp, spelkomponenter) — samma typsnittspar som begreppslistorna
+- Ingen inloggning, ingen `localStorage`/`sessionStorage` — varje omgång är fristående och nollställs vid omstart (samma princip som under "Vad som INTE ska finnas")
+
+### Endast fyrsvarsfrågor
+- Formatet kräver exakt fyra svarsalternativ per fråga (A–D). Rätt/Fel-påståenden fungerar inte i detta format och ska **aldrig** inkluderas — filtrera bort dem när frågor återanvänds från ett områdes `_quiz.html`
+
+### Frågebank och urval
+- Frågorna hämtas **alltid** från områdets befintliga `_quiz.html` (endast flervalsfrågorna) och/eller `_begrepp_data.md` — hitta aldrig på nytt sakinnehåll
+- Frågebanken delas in i **tre svårighetsnivåer** (1 = lättast, 3 = svårast) med **8 frågor per nivå = 24 totalt**. Bedöm svårighetsgrad utifrån hur mycket syntes/tillämpning frågan kräver (definitioner → organisation/principer → tillämpade scenarier), aldrig genom att hitta på nytt innehåll
+- Varje omgång slumpar **5 frågor per nivå = 15 frågor**, som spelas i stigande svårighet (nivå 1 → nivå 2 → nivå 3)
+- Fisher-Yates-shuffle används både för frågeurvalet inom varje nivå och för svarsalternativens ordning — samma kvalitetsregler som under **Quiz** gäller (fyra ungefär lika långa och lika detaljerade alternativ, inget mönster som läcker rätt svar)
+
+### Prisstege och säkra nivåer
+- 15 steg, 1 000 → 1 000 000 kr: `1000, 2000, 3000, 5000, 10000, 15000, 20000, 30000, 50000, 100000, 150000, 250000, 500000, 750000, 1000000`
+- **Säkra nivåer** på steg 5 (10 000 kr) och steg 10 (100 000 kr). Ett fel svar faller alltid tillbaka till senast passerade säkra nivå — aldrig lägre
+- "Stanna och ta hem summan" är synlig och klickbar från fråga 2 och ger eleven det senast säkrade beloppet
+
+### Lås-svaret-flödet (två klick, obligatoriskt)
+1. Klick på ett alternativ **markerar** det (ingen bedömning ännu)
+2. En bekräftelserad visas: **"Är det ditt slutgiltiga svar?"** med knapparna **Ändra** (avmarkerar, eleven får välja om) och **Lås svaret** (låser)
+3. Efter låsning: **1,3 sekunders paus**, sedan avslöjas facit (rätt alternativ grönt, ev. felval rött)
+
+### De tre livlinjerna (en gång var per omgång, inte per fråga)
+- **50:50** — döljer två av de tre felaktiga alternativen
+- **Fråga klassen** — stapeldiagram viktat mot rätt svar. Basandel för rätt svar per svårighetsnivå: **62 % (nivå 1) / 48 % (nivå 2) / 38 % (nivå 3)** — resten fördelas slumpmässigt mellan de kvarvarande felaktiga alternativen. Nivå 3 ger alltså en betydligt jämnare — mindre avslöjande — fördelning än nivå 1
+- **Ring en vän** — ger ett svarsförslag som brödtext. Felchans per svårighetsnivå: **0 % (nivå 1) / 10 % (nivå 2) / 25 % (nivå 3)**. Formuleringen ska spegla säkerhetsgraden: självsäker fras när vännen har rätt, tveksam/hedgande fras när vännen (slumpmässigt, enligt felchansen) föreslår ett felaktigt alternativ
+
+### Pedagogik och facit
+- Förklaringen visas **alltid** i en modal efter att eleven svarat — minst efter varje rätt svar, men rekommenderat efter varje besvarad fråga (rätt och fel) för bästa inlärningseffekt
+- Resultatskärmen listar **alla besvarade frågor** i ordning med elevens svar, rätt svar (vid fel) och förklaring — även vid tidigt avbrott (stannat eller svarat fel)
+
+### Färgprincip
+- **Mörkt spelbräde** i samma anda som Jeopardy-sidorna, men i **navy/guld** i stället för Jeopardys navy/regnbåge: `--navy-900:#050c22`, `--navy-800:#0a1533`, `--navy-700:#132146`, `--navy-600:#1c2f60`, `--gold:#f0b429`, `--gold-soft:#f7d774`
+- **Kursens/ämnets primärfärg** (se färgtabellen) används enbart som **accent** — i eyebrow-badgen ("Kurs · Block") och för att markera de säkra nivåerna i prisstegen. Guld används genomgående för primära knappar, aktuell nivå i stegen och slutsummans belopp
+
+### Layout
+- Två kolumner: fråga + svarsalternativ till vänster, prisstege till höger
+- Under 860 px: stegen flyttas överst som en kompakt horisontell, scrollbar rad
+- Under 560 px: svarsalternativen läggs i en kolumn (annars två kolumner à två alternativ)
+- `prefers-reduced-motion` respekteras (transitions/animationer stängs av)
+
+### Tillbaka-navigering och namngivning
+- Samma tillbaka-knapp-mönster som övriga filer (se [Tillbaka-navigering](#tillbaka-navigering)) — för Juridik 1-filer specifikt: `<script src="jur1_nav.js">` och `jur1GoBack(event)`
+- Filnamn: `[kurs]_[omrade]_miljonar.html` (t.ex. `jur1_block1_miljonar.html`, `sh_demokrati_miljonar.html`)
+- Kortordning på områdessidan: **material → begrepp → quiz → jeopardy → miljonär** — miljonär-kortet placeras alltid sist
+
+---
+
+## När John ber dig skapa ett Miljonär-spel
+
+1. Han anger vilket arbetsområde det gäller (t.ex. pekar på ett områdeskort eller en befintlig fil)
+2. Du läser motsvarande `_quiz.html` (endast flervalsfrågorna) och/eller `_begrepp_data.md`/pluggmaterial för att hämta sakinnehåll och förklaringar — du hittar inte på nytt innehåll
+3. Du delar in frågorna i tre svårighetsnivåer × 8 frågor enligt reglerna ovan
+4. Du skapar hela HTML-filen direkt, klar att lägga in i GitHub, och matchar ämnets färg som accent
+5. Du lägger till ett miljonär-kort sist på områdessidan, efter quiz- och jeopardy-korten
+
+*John ska inte behöva ändra något manuellt.*
+
+---
+
+## Miljonär-spel – teknisk referensimplementation
+
+`jur1_block1_miljonar.html` är **facit** för alla framtida miljonär-spel — både markup, spellogik och design. Bygg nya spel genom att kopiera den filen och byta ut `QUESTION_BANK` samt back-länkens fallback. Ändra aldrig funktions- eller variabelnamnen nedan utan att uppdatera alla beroenden. Reglerna i avsnitten ovan ("Miljonär-spel" m.fl.) gäller fortfarande för *innehållet*; det här avsnittet låser *implementationen*.
+
+### Data (`QUESTION_BANK`, `LADDER`, `SECURE_IDX`)
+- `QUESTION_BANK`: objekt med nycklarna `1`, `2`, `3` (svårighetsnivå), varje värde en array med **exakt 8 frågeobjekt** `{ q, opts:[4 st], correct:<index i opts>, expl }` i den **oblandade** originalordningen — urval och blandning sker i runtime via `buildRound()`
+- `LADDER`: array med de 15 beloppen i stigande ordning. `SECURE_IDX`: ett `Set` med de 0-indexerade positionerna för de säkra nivåerna (`4` och `9`)
+- `AUDIENCE_BASE` och `FRIEND_ERROR`: objekt nycklade på svårighetsnivå (`1`/`2`/`3`) med respektive procenttal
+
+### Spelflöde
+- **`buildRound()`**: slumpar 5 frågor per nivå ur `QUESTION_BANK` (Fisher-Yates), blandar varje frågas alternativ, returnerar en array med 15 runtime-frågor i stigande svårighet — anropas av `startGame()`
+- **Tillståndsvariabler:** `round` (de 15 frågorna), `qIndex` (0–14, aktuell fråga), `log` (besvarade frågor för facit), `lifelines` (`{fifty,audience,friend}`, en gång per omgång), `hiddenOptions` (dolda av 50:50 för aktuell fråga), `pendingSelection`, `isLocked`
+- **`renderQuestion()`**: ritar fråga, alternativ, prisstege (`renderLadder()`) och "Stanna"-knappen (synlig/aktiv från `qIndex>=1`)
+- **`selectOption(i)` → `changeAnswer()` / `lockAnswer()` → `revealAnswer()`**: implementerar lås-svaret-flödet i två steg exakt som beskrivet ovan; `lockAnswer()` väntar 1300 ms innan `revealAnswer()` anropas
+- **`revealAnswer()`** loggar frågan till `log` och öppnar **`openExplainModal(wasCorrect, expl)`** efter ytterligare en kort paus — vid rätt svar fortsätter `qIndex++` till nästa fråga (eller `finishGame('won')` efter fråga 15), vid fel svar → `finishGame('lost')`
+- **`stopGame()`**: endast tillgänglig när `qIndex>=1` och inget svar är låst just nu → `finishGame('stopped')` med beloppet `LADDER[qIndex-1]`
+- **Livlinjer:** `useFifty()`, `useAudience()`, `useFriend()` — var och en kontrollerar `lifelines.<namn>` innan den kan användas, inaktiverar sin egen knapp permanent för omgången. `useAudience()` bygger `shares` med `AUDIENCE_BASE[q.level]` till rätt svar och slumpad fördelning av resten. `useFriend()` slår slumpmässigt upp fel enligt `FRIEND_ERROR[q.level]` och väljer fras ur `CONFIDENT_PHRASES`/`HESITANT_PHRASES`
+- **`finishGame(reason)`**: `reason` är `'won'`, `'stopped'` eller `'lost'`; beräknar slutbelopp (för `'lost'`: `LADDER[9]` om `qIndex>=10`, `LADDER[4]` om `qIndex>=5`, annars `0`), renderar hela `log` som facit och visar resultatskärmen. "Spela igen" anropar `startGame()` igen (ny `buildRound()`, alla livlinjer återställs)
+
+### Design (lås mot referensfilen)
+- CSS-variabler: `--navy-900`, `--navy-800`, `--navy-700`, `--navy-600`, `--gold`, `--gold-soft` för spelbrädet; ämnets primärfärg sätts inline/via klass enbart på `.badge` (eyebrow) och `.rung.secure` (säkra nivåer i stegen)
+- Typsnitt: **Fredoka** på rubriker, belopp, prisstegens siffror och livlinje-/knapptext; **EB Garamond** på frågetext, alternativ och förklaringar
+- `.game-wrap`: `grid-template-columns:1fr 300px` (fråga/alternativ + prisstege). Under 860 px: `grid-template-columns:1fr` och prisstegen (`.ladder-panel`) blir en horisontell, scrollbar rad ovanför frågan. Under 560 px: `.opts` går från två kolumner till en
+- `.rung.current` markeras i guld, `.rung.secure` i ämnets accentfärg (teal i referensfilen) med skölden `🛡`, `.rung.passed` tonas upp i vanlig textfärg
+- `prefers-reduced-motion:reduce` stänger av alla transitions/animationer, samma mönster som i Jeopardy-referensen
