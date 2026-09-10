@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kollegors kurser</title>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&family=Fredoka:wght@300..700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: 'EB Garamond', serif; }
+    h1, h2, h3, .fredoka { font-family: 'Fredoka', sans-serif; }
+    .area-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .area-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(139,92,246,0.15); }
+  </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800">
+
+  <a href="index.html" onclick="smartBack(event)" class="fixed top-4 left-4 z-50 text-sm font-medium text-slate-500 hover:text-violet-700 bg-white/90 px-3 py-2 rounded-xl shadow-sm transition-colors">← Tillbaka till startsidan</a>
+
+  <div id="root"></div>
+
+  <script>
+  // ════════════════════════════════════════════════════════════
+  // TILLBAKA-NAVIGERING (delad med övriga sidor i portalen)
+  // history.back() om sidan nåddes via en länk på samma domän,
+  // annars fallback till startsidan.
+  // ════════════════════════════════════════════════════════════
+  function smartBack(e) {
+    if (e) e.preventDefault();
+    var ref = document.referrer;
+    if (ref) {
+      try {
+        if (new URL(ref).origin === window.location.origin) {
+          history.back();
+          return;
+        }
+      } catch (err) {}
+    }
+    window.location.href = 'index.html';
+  }
+  </script>
+
+  <script type="text/babel">
+    const PRIMARY = '#8b5cf6';
+
+    /* ════════════════════════════════════════════════════════════════════
+       KOLLEGORS KURSER
+
+       Så lägger du till en ny kollega:
+       Kopiera ett helt objekt nedan (allt mellan { och }) och klistra in
+       det som ett nytt element i listan. Byt sedan ut fälten:
+
+         id          – unik kort text utan mellanslag, t.ex. 'anna-historia'
+         teacher     – lärarens namn
+         course      – kursens namn, t.ex. 'Historia 1b'
+         courseCode  – kurskoden, t.ex. 'HISHIS01b'
+         description – 1–2 meningar som beskriver kursen
+         color       – kortets färg som hex, t.ex. '#0ea5e9'
+         link        – filnamnet på kollegans sida, t.ex. 'kollegor_anna.html'
+         status      – 'klar'  = kortet går att klicka på, knapp "ÖPPNA →"
+                       'kommer' = dämpat kort, badge "Kommer snart"
+                       'tom'    = dämpat kort, badge "Inget material än"
+
+       Är listan tom visas ett vänligt tomt läge automatiskt.
+       ════════════════════════════════════════════════════════════════════ */
+    const COLLEAGUE_COURSES = [
+      {
+        id: 'exempel-kurs',
+        teacher: 'Exempel Lärare',
+        course: 'Exempelkurs 1',
+        courseCode: 'EXEEXE01',
+        description: 'Ett exempelobjekt att kopiera och ersätta. Byt ut alla fält och sätt status till "klar" när materialet finns på plats.',
+        color: '#8b5cf6',
+        link: 'kollegor_exempel.html',
+        status: 'tom'
+      }
+    ];
+
+    const STATUS_META = {
+      klar:   { badge: null,                 muted: false },
+      kommer: { badge: 'Kommer snart',       muted: true  },
+      tom:    { badge: 'Inget material än',  muted: true  }
+    };
+
+    function CourseCard({ c }) {
+      const meta = STATUS_META[c.status] || STATUS_META.tom;
+      const clickable = c.status === 'klar' && !!c.link;
+
+      const inner = (
+        <div
+          className={'area-card bg-white rounded-3xl shadow-sm border-t-8 p-7 h-full flex flex-col ' + (meta.muted ? 'opacity-60' : '')}
+          style={{ borderTopColor: c.color }}
+        >
+          <div className="flex items-start justify-between gap-3 mb-3">
+            <p className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: c.color }}>
+              {c.teacher}
+            </p>
+            {meta.badge && (
+              <span className="fredoka text-[11px] font-semibold uppercase tracking-wide bg-slate-100 text-slate-500 px-2.5 py-1 rounded-full whitespace-nowrap">
+                {meta.badge}
+              </span>
+            )}
+          </div>
+
+          <h2 className="text-2xl font-bold text-slate-900">{c.course}</h2>
+          <p className="text-sm text-slate-400 mb-3 fredoka">{c.courseCode}</p>
+          <p className="text-slate-500 leading-relaxed mb-6 flex-grow">{c.description}</p>
+
+          {clickable ? (
+            <span
+              className="block w-full text-white py-3 rounded-2xl font-bold text-center uppercase tracking-wide text-sm transition-colors fredoka"
+              style={{ background: c.color }}
+            >
+              Öppna →
+            </span>
+          ) : (
+            <span className="block w-full bg-white border-2 border-dashed border-slate-200 text-slate-400 py-3 rounded-2xl font-bold text-center uppercase tracking-wide text-sm fredoka">
+              {meta.badge}
+            </span>
+          )}
+        </div>
+      );
+
+      return clickable
+        ? <a href={c.link} className="block">{inner}</a>
+        : <div>{inner}</div>;
+    }
+
+    function EmptyState() {
+      return (
+        <div className="bg-white rounded-3xl shadow-sm border-t-8 p-12 text-center" style={{ borderTopColor: PRIMARY }}>
+          <div className="text-5xl mb-4">📭</div>
+          <p className="text-xl font-bold text-slate-700 mb-2 fredoka">Inget material uppladdat än.</p>
+          <p className="text-slate-500 leading-relaxed">
+            Här kommer kurser som lärare på skolan delar med sig av att dyka upp.
+          </p>
+        </div>
+      );
+    }
+
+    function App() {
+      const courses = COLLEAGUE_COURSES || [];
+      return (
+        <div className="max-w-xl mx-auto px-6 py-20">
+
+          <div className="text-center mb-14">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-violet-400 mb-3">Repetitionsportalen</p>
+            <h1 className="text-5xl md:text-6xl font-black italic text-slate-900 mb-5">👩‍🏫 Kollegors kurser</h1>
+            <div className="h-1 w-20 rounded-full mx-auto" style={{ background: PRIMARY }}></div>
+            <p className="text-slate-500 leading-relaxed mt-6">
+              Material som lärare på skolan delar med sig av till varandra. En kurs per kollega.
+            </p>
+          </div>
+
+          {courses.length === 0 ? (
+            <EmptyState />
+          ) : (
+            <div className="flex flex-col gap-5">
+              {courses.map((c) => <CourseCard key={c.id} c={c} />)}
+            </div>
+          )}
+
+          <footer className="text-center text-slate-400 text-sm italic mt-16">
+            Designad av John
+          </footer>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+
+  <script src="feedback-widget.js" defer></script>
+  <script data-goatcounter="https://johnblixt.goatcounter.com/count"
+          async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
