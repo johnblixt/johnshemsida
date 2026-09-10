@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vem vill bli miljonär? – Handel 1 kapitel 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-900:#050c22; --navy-800:#0a1533; --navy-700:#132146; --navy-600:#1c2f60;
+    --gold:#f0b429; --gold-soft:#f7d774;
+    --teal:#0ea5e9; --teal-soft:#7dd3fc;
+    --correct-bg:rgba(34,197,94,.22); --correct-border:#22c55e;
+    --wrong-bg:rgba(239,68,68,.22); --wrong-border:#ef4444;
+    --ink:#e2e8f0; --ink-dim:#94a3b8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'EB Garamond',Georgia,serif;background:var(--navy-900);color:var(--ink);min-height:100vh;}
+  h1,h2,h3,.num,.money,.rung-amt,.lifeline-btn,.opt-letter,.badge,.stop-btn,.btn-gold,.q-counter,.result-amount{font-family:'Fredoka',sans-serif;}
+
+  a.back-btn{
+    display:inline-block;padding:8px 16px;color:var(--gold-soft);text-decoration:none;font-size:.95rem;
+    position:fixed;top:14px;left:14px;z-index:200;border-radius:8px;transition:background .2s;
+    background:rgba(255,255,255,.04);
+  }
+  a.back-btn:hover{background:rgba(240,180,41,.16);}
+
+  button.fs-btn{
+    position:fixed;top:14px;right:14px;z-index:200;background:rgba(255,255,255,.04);color:var(--gold-soft);
+    border:none;border-radius:8px;padding:8px 14px;font-size:.95rem;cursor:pointer;font-family:'Fredoka',sans-serif;
+    transition:background .2s;
+  }
+  button.fs-btn:hover{background:rgba(240,180,41,.16);}
+
+  .screen{display:none;}
+  .screen.active{display:block;}
+
+  /* ── Start screen ── */
+  #screen-start{max-width:680px;margin:0 auto;padding:100px 24px 60px;text-align:center;}
+  .badge{
+    display:inline-block;background:rgba(14,165,233,.18);color:var(--teal-soft);border:1px solid rgba(14,165,233,.4);
+    padding:5px 16px;border-radius:20px;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:22px;font-weight:600;
+  }
+  #screen-start h1{font-size:2.6rem;font-weight:600;color:#fff;margin-bottom:10px;}
+  #screen-start .subtitle{font-size:1.1rem;color:var(--ink-dim);margin-bottom:34px;font-style:italic;}
+  .rules-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:30px;}
+  .rule-card{background:var(--navy-800);border:1px solid var(--navy-600);border-radius:16px;padding:18px 14px;}
+  .rule-card .ic{font-size:1.6rem;margin-bottom:6px;}
+  .rule-card .t{font-family:'Fredoka',sans-serif;font-weight:600;font-size:.95rem;color:#fff;margin-bottom:4px;}
+  .rule-card .d{font-size:.88rem;color:var(--ink-dim);line-height:1.4;}
+  .info-cards{display:flex;gap:12px;justify-content:center;margin-bottom:34px;flex-wrap:wrap;}
+  .info-card{background:var(--navy-800);border:1px solid var(--navy-600);border-radius:12px;padding:14px 20px;text-align:center;flex:1;min-width:100px;max-width:150px;}
+  .info-card .num{font-size:1.6rem;font-weight:600;color:var(--gold);}
+  .info-card .lbl{font-size:.76rem;color:var(--ink-dim);margin-top:2px;font-family:'EB Garamond',serif;}
+  .btn-gold{
+    background:linear-gradient(180deg,var(--gold-soft),var(--gold));color:#1c1200;border:none;
+    padding:15px 40px;border-radius:14px;font-size:1.15rem;font-weight:600;cursor:pointer;
+    box-shadow:0 8px 20px rgba(240,180,41,.25);transition:transform .15s;
+  }
+  .btn-gold:hover{transform:translateY(-2px);}
+  .btn-gold:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+
+  /* ── Game screen ── */
+  #screen-game{max-width:1100px;margin:0 auto;padding:70px 20px 50px;}
+  .game-wrap{display:grid;grid-template-columns:1fr 300px;gap:26px;align-items:start;}
+  .question-panel{order:1;}
+  .ladder-panel{order:2;background:var(--navy-800);border:1px solid var(--navy-600);border-radius:18px;padding:10px;display:flex;flex-direction:column-reverse;gap:3px;}
+
+  .rung{display:flex;justify-content:space-between;align-items:center;padding:7px 12px;border-radius:8px;font-size:.92rem;color:var(--ink-dim);}
+  .rung .rung-num{font-size:.8rem;opacity:.7;}
+  .rung.secure{color:var(--teal-soft);font-weight:600;}
+  .rung.secure::after{content:'🛡';margin-left:4px;font-size:.75rem;}
+  .rung.passed{color:var(--ink);}
+  .rung.current{background:linear-gradient(90deg,rgba(240,180,41,.22),rgba(240,180,41,.06));color:#fff;font-weight:700;border:1px solid rgba(240,180,41,.5);}
+
+  .q-top-bar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:18px;}
+  .q-counter{background:var(--navy-800);border:1px solid var(--navy-600);border-radius:20px;padding:6px 16px;font-size:.95rem;color:var(--ink);}
+  .stake{background:rgba(240,180,41,.14);border:1px solid rgba(240,180,41,.35);border-radius:20px;padding:6px 16px;font-size:.95rem;color:var(--gold-soft);font-family:'Fredoka',sans-serif;font-weight:600;}
+
+  .lifelines{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+  .lifeline-btn{
+    background:var(--navy-800);border:1.5px solid var(--navy-600);color:var(--ink);border-radius:12px;
+    padding:9px 14px;font-size:.85rem;font-weight:500;cursor:pointer;transition:border-color .15s,background .15s;
+    display:flex;align-items:center;gap:6px;
+  }
+  .lifeline-btn:hover:not(:disabled){border-color:var(--gold);background:rgba(240,180,41,.08);}
+  .lifeline-btn:disabled{opacity:.32;cursor:not-allowed;text-decoration:line-through;}
+
+  .q-text{font-size:1.35rem;font-weight:600;line-height:1.5;color:#fff;margin-bottom:22px;}
+
+  .opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+  .opt-btn{
+    background:var(--navy-800);border:2px solid var(--navy-600);border-radius:14px;padding:14px 16px;
+    text-align:left;font-size:1.02rem;font-family:'EB Garamond',serif;color:var(--ink);cursor:pointer;
+    transition:border-color .15s,background .15s;line-height:1.4;display:flex;gap:10px;align-items:flex-start;
+  }
+  .opt-btn:hover:not(:disabled){border-color:var(--gold);}
+  .opt-btn.selected{border-color:var(--gold);background:rgba(240,180,41,.12);}
+  .opt-btn.correct{background:var(--correct-bg);border-color:var(--correct-border);color:#fff;}
+  .opt-btn.wrong{background:var(--wrong-bg);border-color:var(--wrong-border);color:#fff;}
+  .opt-btn.hidden-opt{visibility:hidden;pointer-events:none;}
+  .opt-btn:disabled{cursor:default;}
+  .opt-letter{font-weight:600;color:var(--gold-soft);flex-shrink:0;}
+
+  .confirm-bar{display:none;background:var(--navy-800);border:1px solid var(--navy-600);border-radius:14px;padding:14px 18px;margin-bottom:18px;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;}
+  .confirm-bar.show{display:flex;}
+  .confirm-bar p{font-size:1rem;color:#fff;font-weight:600;}
+  .confirm-actions{display:flex;gap:10px;}
+  .btn-outline{background:transparent;border:1.5px solid var(--navy-600);color:var(--ink);padding:9px 18px;border-radius:10px;font-size:.92rem;cursor:pointer;font-family:'EB Garamond',serif;}
+  .btn-outline:hover{border-color:var(--ink-dim);}
+  .btn-lock{background:var(--gold);color:#1c1200;border:none;padding:9px 20px;border-radius:10px;font-size:.92rem;font-weight:700;cursor:pointer;font-family:'Fredoka',sans-serif;}
+
+  .stop-btn{
+    display:none;width:100%;background:var(--navy-700);border:1.5px dashed var(--teal);color:var(--teal-soft);
+    padding:13px;border-radius:14px;font-size:.98rem;font-weight:500;cursor:pointer;margin-top:6px;
+  }
+  .stop-btn.show{display:block;}
+  .stop-btn:hover:not(:disabled){background:rgba(14,165,233,.14);}
+  .stop-btn:disabled{opacity:.35;cursor:not-allowed;}
+
+  /* ── Overlays / modals ── */
+  .overlay{position:fixed;inset:0;background:rgba(2,6,20,.72);display:flex;align-items:center;justify-content:center;z-index:300;padding:20px;}
+  .overlay.hidden{display:none;}
+  .modal-box{background:var(--navy-800);border:1px solid var(--navy-600);border-radius:22px;max-width:520px;width:100%;padding:32px 28px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+  .modal-icon{font-size:2.6rem;margin-bottom:10px;}
+  .modal-verdict{font-family:'Fredoka',sans-serif;font-size:1.4rem;font-weight:600;margin-bottom:6px;}
+  .modal-verdict.ok{color:var(--correct-border);}
+  .modal-verdict.bad{color:var(--wrong-border);}
+  .modal-sub{color:var(--ink-dim);font-size:.95rem;margin-bottom:16px;}
+  .modal-expl{background:var(--navy-700);border-radius:14px;padding:16px 18px;color:var(--ink);font-size:1rem;line-height:1.55;text-align:left;margin-bottom:22px;}
+
+  /* Audience chart */
+  .aud-bars{display:flex;flex-direction:column;gap:10px;margin-bottom:22px;text-align:left;}
+  .aud-row{display:flex;align-items:center;gap:10px;}
+  .aud-letter{font-weight:600;color:var(--gold-soft);width:18px;}
+  .aud-track{flex:1;background:var(--navy-700);border-radius:8px;height:26px;overflow:hidden;position:relative;}
+  .aud-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--teal-soft));border-radius:8px 0 0 8px;transition:width .5s ease;}
+  .aud-pct{width:42px;text-align:right;font-family:'Fredoka',sans-serif;font-weight:600;color:#fff;font-size:.9rem;}
+
+  /* Friend bubble */
+  .friend-bubble{background:var(--navy-700);border-radius:14px;padding:18px 20px;text-align:left;font-size:1.02rem;line-height:1.6;color:var(--ink);margin-bottom:22px;position:relative;}
+  .friend-name{font-family:'Fredoka',sans-serif;font-weight:600;color:var(--gold-soft);margin-bottom:6px;font-size:.9rem;text-transform:uppercase;letter-spacing:.05em;}
+
+  /* ── Result screen ── */
+  #screen-result{max-width:760px;margin:0 auto;padding:80px 20px 60px;}
+  .res-header{text-align:center;margin-bottom:30px;}
+  .result-amount{font-size:3rem;font-weight:700;color:var(--gold);margin-bottom:8px;}
+  .res-title{font-size:1.5rem;font-weight:600;color:#fff;margin-bottom:8px;}
+  .res-msg{color:var(--ink-dim);font-size:1.02rem;margin-bottom:6px;}
+  .section-hd{font-family:'Fredoka',sans-serif;font-size:1.15rem;font-weight:600;color:#fff;margin:34px 0 14px;}
+  .facit-item{background:var(--navy-800);border:1px solid var(--navy-600);border-radius:14px;padding:16px 18px;margin-bottom:12px;}
+  .facit-item.correct{border-left:5px solid var(--correct-border);}
+  .facit-item.wrong{border-left:5px solid var(--wrong-border);}
+  .facit-q{font-size:.78rem;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
+  .facit-text{font-weight:600;color:#fff;margin-bottom:8px;line-height:1.4;}
+  .facit-ans{font-size:.92rem;margin-bottom:3px;}
+  .facit-ans .lbl{color:var(--ink-dim);}
+  .facit-ans.yours.wrong-ans{color:var(--wrong-border);}
+  .facit-ans.yours.right-ans{color:var(--correct-border);}
+  .facit-ans.correctline{color:var(--correct-border);}
+  .facit-expl{font-size:.9rem;color:var(--ink-dim);margin-top:8px;line-height:1.5;border-top:1px solid var(--navy-600);padding-top:8px;}
+
+  /* ── Responsive ── */
+  @media (max-width:860px){
+    .game-wrap{grid-template-columns:1fr;}
+    .ladder-panel{order:0;flex-direction:row;overflow-x:auto;gap:6px;padding:8px;}
+    .rung{flex-direction:column;gap:2px;min-width:64px;text-align:center;font-size:.72rem;padding:6px 8px;}
+    .rung .rung-amt{font-size:.72rem;}
+    .question-panel{order:1;}
+  }
+  @media (max-width:768px){
+    #screen-game{padding:64px 14px 44px;}
+    .q-text{font-size:1.18rem;}
+    .lifeline-btn{font-size:.8rem;padding:8px 11px;}
+  }
+  @media (max-width:560px){
+    .opts{grid-template-columns:1fr;}
+    .rules-grid{grid-template-columns:1fr;}
+    #screen-start h1{font-size:2rem;}
+    .result-amount{font-size:2.2rem;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none!important;animation:none!important;}
+  }
+</style>
+</head>
+<body>
+
+<a href="kollegor_handel1.html" class="back-btn" onclick="smartBack(event)">← Tillbaka</a>
+<button class="fs-btn" onclick="toggleFullscreen()">⛶ Helskärm</button>
+
+<!-- ═══════════ START ═══════════ -->
+<div id="screen-start" class="screen active">
+  <div class="badge">Natali · Handel 1 · Kapitel 1</div>
+  <h1>💰 Vem vill bli miljonär?</h1>
+  <p class="subtitle">Klättra genom 15 frågor om försäljning, service och yrken inom handeln — från 1 000 till 1 000 000 kr.</p>
+
+  <div class="info-cards">
+    <div class="info-card"><div class="num">15</div><div class="lbl">Frågor</div></div>
+    <div class="info-card"><div class="num">2</div><div class="lbl">Säkra nivåer</div></div>
+    <div class="info-card"><div class="num">3</div><div class="lbl">Livlinjer</div></div>
+  </div>
+
+  <div class="rules-grid">
+    <div class="rule-card"><div class="ic">🛡</div><div class="t">Säkra nivåer</div><div class="d">Vid 10 000 kr och 100 000 kr är pengarna säkrade — ett fel svar faller aldrig lägre än så.</div></div>
+    <div class="rule-card"><div class="ic">✌️</div><div class="t">50:50</div><div class="d">Tar bort två felaktiga svarsalternativ.</div></div>
+    <div class="rule-card"><div class="ic">📊</div><div class="t">Fråga publiken</div><div class="d">Publiken röstar och resultatet visas som ett stapeldiagram.</div></div>
+    <div class="rule-card"><div class="ic">📞</div><div class="t">Ring en vän</div><div class="d">Får ett svarsförslag — men ju svårare fråga, desto större risk att vännen har fel.</div></div>
+    <div class="rule-card"><div class="ic">🔒</div><div class="t">Lås svaret</div><div class="d">Du väljer alternativ, bekräftar med "Lås svaret", och facit avslöjas efter en kort paus.</div></div>
+    <div class="rule-card"><div class="ic">🏳</div><div class="t">Stanna när du vill</div><div class="d">Från fråga 2 kan du stanna och ta hem det du säkrat hittills.</div></div>
+  </div>
+
+  <button class="btn-gold" onclick="startGame()">Starta spelet →</button>
+</div>
+
+<!-- ═══════════ GAME ═══════════ -->
+<div id="screen-game" class="screen">
+  <div class="game-wrap">
+    <div class="question-panel">
+      <div class="q-top-bar">
+        <div class="q-counter" id="q-counter">Fråga 1 av 15</div>
+        <div class="stake" id="stake">Spelar om 1 000 kr</div>
+      </div>
+
+      <div class="lifelines">
+        <button class="lifeline-btn" id="btn-fifty" onclick="useFifty()">✌️ 50:50</button>
+        <button class="lifeline-btn" id="btn-audience" onclick="useAudience()">📊 Fråga publiken</button>
+        <button class="lifeline-btn" id="btn-friend" onclick="useFriend()">📞 Ring en vän</button>
+      </div>
+
+      <div class="q-text" id="q-text"></div>
+      <div class="opts" id="opts"></div>
+
+      <div class="confirm-bar" id="confirm-bar">
+        <p>Är det ditt slutgiltiga svar?</p>
+        <div class="confirm-actions">
+          <button class="btn-outline" onclick="changeAnswer()">Ändra</button>
+          <button class="btn-lock" onclick="lockAnswer()">Lås svaret</button>
+        </div>
+      </div>
+
+      <button class="stop-btn" id="stop-btn" onclick="stopGame()"></button>
+    </div>
+
+    <div class="ladder-panel" id="ladder-panel"></div>
+  </div>
+</div>
+
+<!-- ═══════════ EXPLAIN MODAL ═══════════ -->
+<div id="modal-explain" class="overlay hidden">
+  <div class="modal-box">
+    <div class="modal-icon" id="expl-icon"></div>
+    <div class="modal-verdict" id="expl-verdict"></div>
+    <div class="modal-sub" id="expl-sub"></div>
+    <div class="modal-expl" id="expl-text"></div>
+    <button class="btn-gold" id="expl-btn" onclick="closeExplainModal()"></button>
+  </div>
+</div>
+
+<!-- ═══════════ AUDIENCE MODAL ═══════════ -->
+<div id="modal-audience" class="overlay hidden">
+  <div class="modal-box">
+    <div class="modal-icon">📊</div>
+    <div class="modal-verdict" style="color:#fff;">Publikens röster</div>
+    <div class="modal-sub">Så här röstade publiken på de kvarvarande alternativen.</div>
+    <div class="aud-bars" id="aud-bars"></div>
+    <button class="btn-gold" onclick="closeOverlay('modal-audience')">Fortsätt →</button>
+  </div>
+</div>
+
+<!-- ═══════════ FRIEND MODAL ═══════════ -->
+<div id="modal-friend" class="overlay hidden">
+  <div class="modal-box">
+    <div class="modal-icon">📞</div>
+    <div class="modal-verdict" style="color:#fff;">Ring en vän</div>
+    <div class="modal-sub">Du har 30 sekunder på dig att lyssna på svaret.</div>
+    <div class="friend-bubble"><div class="friend-name">Din vän säger</div><div id="friend-text"></div></div>
+    <button class="btn-gold" onclick="closeOverlay('modal-friend')">Fortsätt →</button>
+  </div>
+</div>
+
+<!-- ═══════════ RESULT ═══════════ -->
+<div id="screen-result" class="screen">
+  <div class="res-header">
+    <div class="result-amount" id="r-amount"></div>
+    <div class="res-title" id="r-title"></div>
+    <div class="res-msg" id="r-msg"></div>
+  </div>
+  <div class="section-hd">Fullständigt facit</div>
+  <div id="facit-list"></div>
+  <div style="text-align:center;margin-top:32px">
+    <button class="btn-gold" onclick="startGame()">↺ Spela igen</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// TILLBAKA-NAVIGERING (delad med övriga sidor i portalen)
+// history.back() om sidan nåddes via en länk på samma domän,
+// annars fallback till områdessidan (aldrig hårdkodat index.html).
+// ════════════════════════════════════════════════════════════
+function smartBack(e){
+  if (e) e.preventDefault();
+  var ref = document.referrer;
+  if (ref) {
+    try {
+      if (new URL(ref).origin === window.location.origin) { history.back(); return; }
+    } catch (err) {}
+  }
+  window.location.href = 'kollegor_handel1.html';
+}
+
+// ════════════════════════════════════════════════════════════
+// HELSKÄRM (mörkt projektorläge för helklass)
+// ════════════════════════════════════════════════════════════
+function toggleFullscreen(){
+  var el = document.documentElement;
+  if (!document.fullscreenElement) {
+    (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+  } else {
+    (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+  }
+}
+</script>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// FRÅGEBANK  (24 flervalsfrågor grundade i kapitel 1)
+// Källor: handel1_kap1_kompendium.md (begrepp, exempel, arbetsuppgifter)
+//         handel1_kap1_presentation.md (yrkesbeskrivningar, definitioner)
+// Indelade i tre svårighetsnivåer (1=lättast, 3=svårast), 8 frågor per nivå.
+// Varje omgång slumpar 5 frågor per nivå = 15 frågor i stigande svårighet.
+// ════════════════════════════════════════════════════════════
+const QUESTION_BANK = {
+
+  // ── Nivå 1 — grundbegrepp ──
+  1: [
+    { q:'Vad menas med service i handeln?', opts:[
+        'Allt ett företag gör för att hjälpa kunden före, under och efter ett köp',
+        'Alla regler som styr hur byten, returer och reklamationer sköts i butiken',
+        'Personalens schema och hur arbetsuppgifterna fördelas mellan medarbetarna',
+        'De varor och tjänster som ett företag har valt att erbjuda sina kunder'
+      ], correct:0,
+      expl:'Service är allt företaget gör för att hjälpa kunden före, under och efter köpet – att lyssna, lösa problem och hålla det som lovats.' },
+    { q:'Vad handlar kundbemötande om?', opts:[
+        'Hur personalen tar emot, talar med och behandlar kunden i mötet',
+        'Hur snabbt ett klagomål från en kund blir löst och avslutat',
+        'Hur varorna skyltas och placeras så att kunden hittar i butiken',
+        'Hur företaget gör reklam för sina erbjudanden mot en viss målgrupp'
+      ], correct:0,
+      expl:'Kundbemötande är hur kunden blir mottagen och behandlad – ett vänligt hej, att lyssna och att vara lugn i mötet med kunden.' },
+    { q:'Vad är en vara?', opts:[
+        'Något fysiskt som går att ta på, till exempel skor eller ett kylskåp',
+        'Något som utförs åt kunden och ger värde, till exempel en klippning',
+        'En blandning av ett föremål och ett arbete som säljs i samma paket',
+        'Ett samlingsord för allt ett företag säljer, både saker och tjänster'
+      ], correct:0,
+      expl:'En vara är något fysiskt som går att ta på, som skor, ett äpple eller ett kylskåp. En tjänst utförs i stället åt kunden.' },
+    { q:'Vad är en tjänst?', opts:[
+        'En utförd prestation som ger kunden värde, till exempel en bussresa',
+        'Ett fysiskt föremål som kunden tar med sig hem, till exempel en jacka',
+        'En vara som säljs under butikens eget märke i stället för leverantörens',
+        'Butikens samlade val av varugrupper, modeller och märken i ett område'
+      ], correct:0,
+      expl:'En tjänst är något som utförs och ger kunden värde, som en bussresa, en hotellnatt eller en klippning. Kunden köper prestationen, inte ett föremål.' },
+    { q:'Vad menas med ordet produkt?', opts:[
+        'En vara, en tjänst eller en kombination av en vara och en tjänst',
+        'Enbart de fysiska föremål som en butik har ute på sina hyllor',
+        'En sak som tillverkas i en fabrik innan den transporteras till butiken',
+        'Allt som ett företag för tillfället erbjuder sina kunder att köpa'
+      ], correct:0,
+      expl:'Produkt är ett samlingsord. En produkt kan vara en vara (mobil), en tjänst (abonnemang) eller en kombination av båda.' },
+    { q:'Vad är en EMV (egen märkesvara)?', opts:[
+        'En vara som säljs under butikens eget märke, till exempel Ica eller Lindex',
+        'En vara som butiken säljer billigare än det pris leverantören föreslagit',
+        'En vara som bara får säljas i en enda butikskedjas butiker enligt avtal',
+        'En vara som köpts in i stor mängd för att räcka under en kampanjperiod'
+      ], correct:0,
+      expl:'EMV betyder egen märkesvara – en vara som säljs under butikens eget märke, som Ica, Willys, Lindex eller HM.' },
+    { q:'Vad är ett företags sortiment?', opts:[
+        'De produkter som ett företag har valt ut för att sälja till sina kunder',
+        'De produkter i butiken som just nu säljs till ett nedsatt pris',
+        'De produkter som finns kvar i lagret och kan levereras direkt',
+        'De produkter som en leverantör erbjuder butiken att köpa in'
+      ], correct:0,
+      expl:'Sortimentet är butikens val av vilka varugrupper, modeller och märken den ska sälja. En specialbutik har smalt sortiment, en stormarknad brett.' },
+    { q:'Vad betyder kompetens?', opts:[
+        'Att förstå hur något ska göras och sedan kunna utföra det i praktiken',
+        'Den utbildning och de betyg en person har med sig från skolan sedan förr',
+        'Det ansvar en medarbetare har blivit tilldelad av sin chef på jobbet',
+        'De år av erfarenhet en person har samlat i en och samma yrkesroll'
+      ], correct:0,
+      expl:'Kompetens är att förstå vad som behöver göras och kunna göra det i praktiken. Kunskap är en del, men arbetsgivaren tittar också på hur du agerar med kunder och kollegor.' }
+  ],
+
+  // ── Nivå 2 — yrkesroller och arbetsuppgifter ──
+  2: [
+    { q:'Vad får en ny butikssäljare oftast börja med att göra?', opts:[
+        'Packa upp varor, fylla på hyllor och lära sig butikens sortiment',
+        'Planera personalens scheman och hålla introduktion för nyanställda',
+        'Välja ut vilka varor butiken ska köpa in inför nästa säsong',
+        'Ta fram reklamkampanjer och välja kanaler för butikens annonser'
+      ], correct:0,
+      expl:'Som ny butikssäljare får man ofta börja med att packa upp varor, fylla på hyllor och lära sig sortimentet. Så småningom lär man sig leveranser och kassan.' },
+    { q:'Vad ansvarar en butikschef för?', opts:[
+        'Att leda personalen, planera scheman och se till att butiken går med vinst',
+        'Att välja vilka varor butiken ska köpa in och förhandla med leverantörerna',
+        'Att sköta kassan, fylla på hyllor och hjälpa kunder att hitta rätt vara',
+        'Att svara på kundernas frågor via telefon, mejl, chatt och sociala medier'
+      ], correct:0,
+      expl:'Butikschefen leder det dagliga arbetet, planerar bemanning och schema, följer försäljning och kostnader och ansvarar för att butiken är lönsam.' },
+    { q:'I vilka kanaler möter en kundtjänstmedarbetare oftast kunderna?', opts:[
+        'Via telefon, mejl, chatt och företagets konton i sociala medier',
+        'Bara genom personliga möten vid en disk inne i den fysiska butiken',
+        'Genom brev, fax och betalda annonser i ortens lokaltidning',
+        'Med högtalarutrop, anslagstavlor och skyltar ute i butikslokalen'
+      ], correct:0,
+      expl:'Kundtjänsten möter kunden via telefon, mejl, chatt och sociala medier – före köpet, under leveransen och efteråt vid byte, retur eller reklamation.' },
+    { q:'Vilken ordning har det grundläggande varuflödet på ett lager?', opts:[
+        'Ta emot, registrera, lagra, plocka och skicka',
+        'Registrera, ta emot, plocka, lagra och skicka',
+        'Ta emot, lagra, registrera, skicka och plocka',
+        'Plocka, ta emot, registrera, lagra och skicka'
+      ], correct:0,
+      expl:'Varuflödet på ett lager går: ta emot, registrera, lagra, plocka och skicka. Målet är att rätt vara ska nå rätt kund i rätt tid.' },
+    { q:'Vad är en inköpares huvuduppgift?', opts:[
+        'Att välja ut och beställa hem de varor som företaget sedan ska sälja',
+        'Att prismärka varorna och ställa ut dem på rätt plats i butiken',
+        'Att planera personalens scheman och lära upp nya medarbetare',
+        'Att göra reklamkampanjer som lockar rätt målgrupp till butiken'
+      ], correct:0,
+      expl:'Inköparen väljer och beställer varorna. De ska passa butikens affärsidé, målgrupp och sortiment, ha rätt kvalitet och kunna levereras i tid.' },
+    { q:'Vad är en marknadsförares uppgift?', opts:[
+        'Att göra företaget synligt och locka rätt målgrupp med passande budskap',
+        'Att välja vilka varor som ska köpas in och förhandla pris med leverantörer',
+        'Att ta emot leveranser, registrera varorna och ställa dem på rätt hylla',
+        'Att leda personalen och ansvara för att butiken varje månad går med vinst'
+      ], correct:0,
+      expl:'Marknadsföraren hjälper rätt kunder att upptäcka företaget och förstå erbjudandet – med text, bild, film, kampanjer, kundklubbar och sociala medier.' },
+    { q:'Vad kännetecknar arbetet som fältsäljare?', opts:[
+        'Söker upp kunder utanför butiken, på företagsbesök, event eller via telefon',
+        'Står i kassan och tar betalt av kunderna i en vanlig fysisk butik',
+        'Fyller på hyllor och håller ordning i butikens lokaler under dagen',
+        'Sköter webbutikens inkomna order och packar paketen som ska skickas'
+      ], correct:0,
+      expl:'En fältsäljare söker upp kunder utanför en vanlig butik – på företagsbesök, event, stan, telefon eller mejl – och måste våga ta kontakt och snabbt anpassa samtalet.' },
+    { q:'Vad innebär datumrotation i en livsmedelsbutik?', opts:[
+        'Nya varor ställs bakom de äldre så att varor med kort hållbarhet säljs först',
+        'Varorna räknas varje kväll så att lagersaldot i systemet alltid stämmer',
+        'Priset sänks automatiskt på varor som snart passerat sitt bäst före-datum',
+        'Kylvaror plockas alltid upp före torrvaror när en ny leverans kommer in'
+      ], correct:0,
+      expl:'Vid datumrotation ställs nya varor bakom de gamla. Då säljs varorna med kortast hållbarhet först och mindre mat behöver kastas.' }
+  ],
+
+  // ── Nivå 3 — tillämpade fall: B2B/B2C, kompetenser i situationer, lönsamhet, varuflöde ──
+  3: [
+    { q:'En grossist säljer flyttkartonger till en webbutik. Vilken typ av handel är det?', opts:[
+        'B2B – handeln sker mellan två företag, grossisten och webbutiken',
+        'B2C – webbutiken är sista ledet innan varan når en privatperson',
+        'B2C – förpackningar räknas alltid som en försäljning till konsument',
+        'B2B blir det först när webbutiken sålt varan vidare till en slutkund'
+      ], correct:0,
+      expl:'B2B är handel mellan företag. Grossisten och webbutiken är båda företag. Att webbutiken senare säljer till privatpersoner (B2C) är en annan affär.' },
+    { q:'Ett företag bokar en glasscykel med förare till sin personalfest. Vad är det för handel?', opts:[
+        'B2B, eftersom ett företag köper tjänsten av ett annat företag',
+        'B2C, eftersom det är enskilda anställda som till slut äter glassen',
+        'B2C, eftersom en glasscykel bara kan sälja direkt till konsumenter',
+        'Varken B2B eller B2C, eftersom det räknas som en intern kostnad'
+      ], correct:0,
+      expl:'Handeln sker mellan två företag – kunden är ett företag som köper en tjänst. Det är B2B, även om privatpersoner sedan äter glassen.' },
+    { q:'Du ser själv att en hylla är tom och fyller på den utan att någon säger till. Vilken kompetens visar du?', opts:[
+        'Initiativkompetens – du ser vad som behöver göras och börjar själv',
+        'Servicekompetens – du ger kunden ett gott bemötande i alla lägen',
+        'Relationskompetens – du får kunder att vilja komma tillbaka till butiken',
+        'Ekonomisk kompetens – du håller koll på kostnader och svinn i butiken'
+      ], correct:0,
+      expl:'Initiativkompetens är att se vad som behöver göras och börja utan att bli tillsagd. Det syns när du fyller på en hylla utan att någon ber dig.' },
+    { q:'En kund vill jämföra två högtalare och undrar vilken som passar bäst. Vilken kompetens använder du mest?', opts:[
+        'Säljkompetens – du förstår kundens behov och föreslår rätt produkt',
+        'Samarbetskompetens – du delar information och hjälper dina kollegor',
+        'Initiativkompetens – du ser vad som behöver göras utan att bli tillsagd',
+        'Ekonomisk kompetens – du räknar på pris och butikens lönsamhet'
+      ], correct:0,
+      expl:'Säljkompetens är att förstå vad kunden vill ha och koppla rätt produkt till behovet. Målet är rätt lösning för kunden – inte att sälja det dyraste.' },
+    { q:'En säljare ska hjälpa en kund att välja skor för långa promenader. Vad behöver säljaren mest av allt?', opts:[
+        'Produktkännedom – kunskap om skornas egenskaper, användning och gränser',
+        'Truckkort – ett tillstånd som krävs för att hantera större varupartier',
+        'Kunskap om datumrotation – hur varor med kort hållbarhet ska placeras',
+        'Ansvar för schemat – att planera vilka som jobbar vid vilka tider'
+      ], correct:0,
+      expl:'Produktkännedom är kunskap om varans egenskaper, användning, fördelar och begränsningar. Säljaren ställer frågor, jämför modeller och förklarar skillnader.' },
+    { q:'Vad menas med att en butik är lönsam?', opts:[
+        'Att verksamhetens intäkter på sikt är större än dess kostnader',
+        'Att butiken tar emot fler besökare i år än den gjorde förra året',
+        'Att butiken erbjuder ett brett sortiment med många olika varugrupper',
+        'Att personalen hinner klart med alla sina arbetsuppgifter varje dag'
+      ], correct:0,
+      expl:'Lönsam betyder att intäkterna på sikt är större än kostnaderna. Butikschefen följer både försäljning och kostnader för att butiken ska gå med vinst.' },
+    { q:'En kund e-handlar glass och pasta från matbutiken. Vad är viktigast i hanteringen på lagret?', opts:[
+        'Att glassen hålls fryst hela vägen medan pastan kan ligga i torrzonen',
+        'Att båda varorna packas i samma kartong för att spara plats i transporten',
+        'Att pastan plockas först eftersom den väger mer än förpackningen med glass',
+        'Att varorna registreras i systemet innan de placeras ut i butikens hyllor'
+      ], correct:0,
+      expl:'Olika varor behöver olika temperaturzoner. Pastan klarar torrlager, men glassen måste hållas fryst hela vägen – annars blir kundupplevelsen dålig.' },
+    { q:'En lokal butik vill nå fler kunder i sitt område inför en kampanj. Vad bör marknadsföraren först ta reda på?', opts:[
+        'Vilken målgrupp butiken vill nå och vilket budskap och kanal som passar den',
+        'Hur många varor som finns kvar i centrallagret inför kampanjveckan',
+        'Vilka leverantörer som kan sänka sina priser mest under kampanjen',
+        'Hur personalens scheman ska läggas om för att klara kampanjtrycket'
+      ], correct:0,
+      expl:'Marknadsföraren måste känna målgruppen – budskap och kanal ska passa den. En lokal butik kan till exempel annonsera mot människor i ett visst område.' }
+  ]
+};
+
+// ════════════════════════════════════════════════════════════
+// PRISSTEGE & LIVLINJE-KONFIGURATION
+// ════════════════════════════════════════════════════════════
+const LADDER = [1000,2000,3000,5000,10000,15000,20000,30000,50000,100000,150000,250000,500000,750000,1000000];
+const SECURE_IDX = new Set([4,9]); // steg 5 (10 000 kr) och steg 10 (100 000 kr), 0-indexerat
+const AUDIENCE_BASE = {1:62,2:48,3:38};
+const FRIEND_ERROR = {1:0,2:10,3:25};
+
+const CONFIDENT_PHRASES = [
+  'Det är helt klart {L}: "{T}". Jag är säker på det!',
+  'Lita på mig, det är {L} – "{T}". Ganska självklart faktiskt.',
+  'Hundra procent {L}: "{T}". Jag har läst om det här.'
+];
+const HESITANT_PHRASES = [
+  'Oj, den var svår... Jag tror det kan vara {L}: "{T}", men jag är inte helt säker.',
+  'Hmm, svårt att säga säkert, men jag skulle nog gissa på {L} – "{T}".',
+  'Jag är inte hundra på det här, men magkänslan säger {L}: "{T}".'
+];
+
+// ════════════════════════════════════════════════════════════
+// FISHER-YATES SHUFFLE
+// ════════════════════════════════════════════════════════════
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+function fmtMoney(n){ return n.toLocaleString('sv-SE'); }
+
+// ════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════
+let round = [];           // 15 st runtime-frågor för omgången
+let qIndex = 0;            // aktuell fråga (0-indexerad)
+let log = [];              // besvarade frågor för facit
+let lifelines = { fifty:false, audience:false, friend:false };
+let hiddenOptions = [];    // index dolda av 50:50 för aktuell fråga
+let pendingSelection = null;
+let isLocked = false;
+
+function buildRound() {
+  const picks = [1, 2, 3].flatMap(level =>
+    shuffleArray([...QUESTION_BANK[level]]).slice(0, 5).map(q => ({ ...q, level }))
+  );
+  return picks.map(q => {
+    const order = shuffleArray(q.opts.map((_, i) => i));
+    const opts = order.map(i => ({ text: q.opts[i], isCorrect: i === q.correct }));
+    return { level: q.level, text: q.q, expl: q.expl, opts };
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// SKÄRMAR
+// ════════════════════════════════════════════════════════════
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startGame() {
+  round = buildRound();
+  qIndex = 0;
+  log = [];
+  lifelines = { fifty:false, audience:false, friend:false };
+  ['btn-fifty','btn-audience','btn-friend'].forEach(id => document.getElementById(id).disabled = false);
+  ['modal-explain','modal-audience','modal-friend'].forEach(id => document.getElementById(id).classList.add('hidden'));
+  show('screen-game');
+  renderQuestion();
+}
+
+function renderLadder() {
+  const panel = document.getElementById('ladder-panel');
+  panel.innerHTML = '';
+  for (let i = 0; i < LADDER.length; i++) {
+    const row = document.createElement('div');
+    let cls = 'rung';
+    if (SECURE_IDX.has(i)) cls += ' secure';
+    if (i < qIndex) cls += ' passed';
+    if (i === qIndex) cls += ' current';
+    row.className = cls;
+    row.innerHTML = `<span class="rung-num">${i+1}</span><span class="rung-amt">${fmtMoney(LADDER[i])} kr</span>`;
+    panel.appendChild(row);
+  }
+}
+
+function renderQuestion() {
+  hiddenOptions = [];
+  pendingSelection = null;
+  isLocked = false;
+
+  const q = round[qIndex];
+  document.getElementById('q-counter').textContent = `Fråga ${qIndex+1} av 15`;
+  document.getElementById('stake').textContent = `Spelar om ${fmtMoney(LADDER[qIndex])} kr`;
+  document.getElementById('q-text').textContent = q.text;
+
+  const optsWrap = document.getElementById('opts');
+  optsWrap.innerHTML = '';
+  q.opts.forEach((o, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = `<span class="opt-letter">${'ABCD'[i]}.</span><span>${o.text}</span>`;
+    btn.onclick = () => selectOption(i);
+    btn.dataset.idx = i;
+    optsWrap.appendChild(btn);
+  });
+
+  document.getElementById('confirm-bar').classList.remove('show');
+
+  const stopBtn = document.getElementById('stop-btn');
+  if (qIndex >= 1) {
+    stopBtn.classList.add('show');
+    stopBtn.disabled = false;
+    stopBtn.textContent = `🏳 Stanna och ta hem ${fmtMoney(LADDER[qIndex-1])} kr`;
+  } else {
+    stopBtn.classList.remove('show');
+  }
+
+  renderLadder();
+}
+
+// ════════════════════════════════════════════════════════════
+// SVARSFLÖDE — två klick: markera → lås svaret → paus → facit
+// ════════════════════════════════════════════════════════════
+function selectOption(i) {
+  if (isLocked || hiddenOptions.includes(i)) return;
+  pendingSelection = i;
+  document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelector(`.opt-btn[data-idx="${i}"]`).classList.add('selected');
+  document.getElementById('confirm-bar').classList.add('show');
+  document.getElementById('stop-btn').disabled = true;
+}
+
+function changeAnswer() {
+  pendingSelection = null;
+  document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('confirm-bar').classList.remove('show');
+  if (qIndex >= 1) document.getElementById('stop-btn').disabled = false;
+}
+
+function lockAnswer() {
+  if (pendingSelection === null) return;
+  isLocked = true;
+  document.getElementById('confirm-bar').classList.remove('show');
+  document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+  setTimeout(revealAnswer, 1300);
+}
+
+function revealAnswer() {
+  const q = round[qIndex];
+  const correctIdx = q.opts.findIndex(o => o.isCorrect);
+  document.querySelector(`.opt-btn[data-idx="${correctIdx}"]`).classList.add('correct');
+  if (pendingSelection !== correctIdx) {
+    document.querySelector(`.opt-btn[data-idx="${pendingSelection}"]`).classList.add('wrong');
+  }
+  const wasCorrect = pendingSelection === correctIdx;
+  log.push({
+    level: q.level,
+    text: q.text,
+    yourAnswer: q.opts[pendingSelection].text,
+    correctAnswer: q.opts[correctIdx].text,
+    wasCorrect,
+    expl: q.expl
+  });
+  setTimeout(() => openExplainModal(wasCorrect, q.expl), 900);
+}
+
+function openExplainModal(wasCorrect, expl) {
+  const icon = document.getElementById('expl-icon');
+  const verdict = document.getElementById('expl-verdict');
+  const sub = document.getElementById('expl-sub');
+  const btn = document.getElementById('expl-btn');
+
+  if (wasCorrect) {
+    icon.textContent = '✅';
+    verdict.textContent = 'Rätt svar!';
+    verdict.className = 'modal-verdict ok';
+    sub.textContent = `Du har säkrat ${fmtMoney(LADDER[qIndex])} kr.`;
+    btn.textContent = (qIndex < 14) ? 'Nästa fråga →' : 'Se resultat 🏆';
+    btn.onclick = () => { closeOverlay('modal-explain'); qIndex < 14 ? (qIndex++, renderQuestion()) : finishGame('won'); };
+  } else {
+    icon.textContent = '❌';
+    verdict.textContent = 'Tyvärr, fel svar';
+    verdict.className = 'modal-verdict bad';
+    sub.textContent = 'Spelet är slut för den här omgången.';
+    btn.textContent = 'Se resultat →';
+    btn.onclick = () => { closeOverlay('modal-explain'); finishGame('lost'); };
+  }
+  document.getElementById('expl-text').textContent = expl;
+  document.getElementById('modal-explain').classList.remove('hidden');
+}
+
+function closeExplainModal() { closeOverlay('modal-explain'); }
+function closeOverlay(id) { document.getElementById(id).classList.add('hidden'); }
+
+// ════════════════════════════════════════════════════════════
+// STANNA
+// ════════════════════════════════════════════════════════════
+function stopGame() {
+  if (qIndex < 1 || isLocked) return;
+  finishGame('stopped');
+}
+
+// ════════════════════════════════════════════════════════════
+// LIVLINJER (en gång var per omgång)
+// ════════════════════════════════════════════════════════════
+function useFifty() {
+  if (lifelines.fifty || isLocked) return;
+  lifelines.fifty = true;
+  document.getElementById('btn-fifty').disabled = true;
+
+  const q = round[qIndex];
+  const correctIdx = q.opts.findIndex(o => o.isCorrect);
+  const wrongIdxs = shuffleArray(q.opts.map((_, i) => i).filter(i => i !== correctIdx)).slice(0, 2);
+  hiddenOptions = wrongIdxs;
+  wrongIdxs.forEach(i => document.querySelector(`.opt-btn[data-idx="${i}"]`).classList.add('hidden-opt'));
+}
+
+function useAudience() {
+  if (lifelines.audience || isLocked) return;
+  lifelines.audience = true;
+  document.getElementById('btn-audience').disabled = true;
+
+  const q = round[qIndex];
+  const correctIdx = q.opts.findIndex(o => o.isCorrect);
+  const visible = q.opts.map((_, i) => i).filter(i => !hiddenOptions.includes(i));
+  const base = AUDIENCE_BASE[q.level];
+  const shares = {};
+  shares[correctIdx] = base;
+
+  const others = visible.filter(i => i !== correctIdx);
+  let remaining = 100 - base;
+  if (others.length === 1) {
+    shares[others[0]] = remaining;
+  } else if (others.length > 1) {
+    const weights = others.map(() => Math.random() + 0.15);
+    const sumW = weights.reduce((a, b) => a + b, 0);
+    let used = 0;
+    others.forEach((idx, k) => {
+      if (k === others.length - 1) {
+        shares[idx] = remaining - used;
+      } else {
+        const v = Math.round((weights[k] / sumW) * remaining);
+        shares[idx] = v;
+        used += v;
+      }
+    });
+  }
+
+  const wrap = document.getElementById('aud-bars');
+  wrap.innerHTML = '';
+  visible.forEach(i => {
+    const pct = Math.max(0, shares[i] || 0);
+    const row = document.createElement('div');
+    row.className = 'aud-row';
+    row.innerHTML = `<span class="aud-letter">${'ABCD'[i]}</span><div class="aud-track"><div class="aud-fill" style="width:${pct}%"></div></div><span class="aud-pct">${pct}%</span>`;
+    wrap.appendChild(row);
+  });
+  document.getElementById('modal-audience').classList.remove('hidden');
+}
+
+function useFriend() {
+  if (lifelines.friend || isLocked) return;
+  lifelines.friend = true;
+  document.getElementById('btn-friend').disabled = true;
+
+  const q = round[qIndex];
+  const correctIdx = q.opts.findIndex(o => o.isCorrect);
+  const visible = q.opts.map((_, i) => i).filter(i => !hiddenOptions.includes(i));
+  const errorChance = FRIEND_ERROR[q.level];
+  const wrongVisible = visible.filter(i => i !== correctIdx);
+  const isWrong = wrongVisible.length > 0 && (Math.random() * 100 < errorChance);
+
+  const suggestIdx = isWrong ? wrongVisible[Math.floor(Math.random() * wrongVisible.length)] : correctIdx;
+  const pool = isWrong ? HESITANT_PHRASES : CONFIDENT_PHRASES;
+  const phrase = pool[Math.floor(Math.random() * pool.length)]
+    .replace('{L}', 'ABCD'[suggestIdx])
+    .replace('{T}', q.opts[suggestIdx].text);
+
+  document.getElementById('friend-text').textContent = phrase;
+  document.getElementById('modal-friend').classList.remove('hidden');
+}
+
+// ════════════════════════════════════════════════════════════
+// RESULTAT
+// ════════════════════════════════════════════════════════════
+function finishGame(reason) {
+  let amount;
+  let title, msg;
+  const correctCount = log.filter(i => i.wasCorrect).length;
+
+  if (reason === 'won') {
+    amount = LADDER[14];
+    title = 'Miljonär! 🏆';
+    msg = 'Du klarade alla 15 frågor — full pott!';
+  } else if (reason === 'stopped') {
+    amount = LADDER[qIndex - 1];
+    title = 'Du valde att stanna';
+    msg = 'Bra taktik — du tar hem det du säkrat.';
+  } else {
+    let secured = 0;
+    if (qIndex >= 10) secured = LADDER[9];
+    else if (qIndex >= 5) secured = LADDER[4];
+    amount = secured;
+    title = secured > 0 ? 'Fel svar — men du behåller din säkrade nivå' : 'Fel svar — den här omgången är slut';
+    msg = secured > 0 ? 'Du föll tillbaka till senast säkrade nivå.' : 'Inget säkrat än — försök igen!';
+  }
+
+  document.getElementById('r-amount').textContent = fmtMoney(amount) + ' kr';
+  document.getElementById('r-title').textContent = title;
+  document.getElementById('r-msg').textContent = `${msg} Du hade ${correctCount} rätt av ${log.length} besvarade frågor.`;
+
+  const facit = document.getElementById('facit-list');
+  facit.innerHTML = '';
+  log.forEach((item, idx) => {
+    const el = document.createElement('div');
+    el.className = 'facit-item ' + (item.wasCorrect ? 'correct' : 'wrong');
+    el.innerHTML = `
+      <div class="facit-q">${item.wasCorrect ? '✅ Rätt' : '❌ Fel'} · Fråga ${idx+1} · ${fmtMoney(LADDER[idx])} kr</div>
+      <div class="facit-text">${item.text}</div>
+      <div class="facit-ans yours ${item.wasCorrect ? 'right-ans' : 'wrong-ans'}"><span class="lbl">Ditt svar:</span> ${item.yourAnswer}</div>
+      ${item.wasCorrect ? '' : `<div class="facit-ans correctline"><span class="lbl">Rätt svar:</span> ${item.correctAnswer}</div>`}
+      <div class="facit-expl">${item.expl}</div>
+    `;
+    facit.appendChild(el);
+  });
+
+  show('screen-result');
+}
+</script>
+
+<script src="feedback-widget.js" defer></script>
+<script data-goatcounter="https://johnblixt.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
