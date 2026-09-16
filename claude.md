@@ -627,47 +627,123 @@ Använd samma mönster (state lyft till toppkomponenten, onComplete-callback til
 
 ---
 
-## Jeopardy – Regler som ALLTID ska gälla
+## Jeopardy-spel (standard v2)
 
-### Syfte
-Ett jeopardy-spel bygger om ett arbetsområdes befintliga quiz-/begreppsinnehåll till ett lagspel som **vikarier** kan köra på lektionen utan att själva kunna ämnet. Spelledaren (vikarien) ska aldrig behöva gissa vad som är rätt svar.
+### Syfte och grundform
+Ett jeopardy-spel bygger om ett arbetsområdes befintliga quiz-/begreppsinnehåll till ett lagspel som **vikarier** kan köra på lektionen utan att själva kunna ämnet. Spelledaren ska aldrig behöva gissa vad som är rätt svar — spelet rättar själv.
+
+Fil: `[kurs]_[omrade]_jeopardy.html`, länkas som eget kort på områdets hubbsida direkt efter quiz-kortet (och före ett eventuellt miljonär-kort). Referens: `nk1a1_naturvetenskap_jeopardy.html`.
+
+Mörk helskärmsbräda, **en egen färg per kategori**, vikarieledd, auto-rättning, slumpat startlag, regelskärm efter lagnamn.
 
 ### Teknikstack
-- Fristående HTML-fil, samma mönster som quiz-/begreppsfiler: Tailwind CSS via CDN + EB Garamond (Google Fonts)
+- Fristående HTML-fil, samma mönster som quiz-/begreppsfiler: Tailwind CSS via CDN + EB Garamond och Fredoka (Google Fonts)
 - Ingen fil-uppladdning (varken bild eller ljud) — spelet ska fungera direkt i webbläsaren utan externa filer eller inställningar innan lektionen
 - Ingen inloggning, inga sparade resultat mellan lektioner (samma princip som under "Vad som INTE ska finnas")
 
-### Innehåll – hämtas ALLTID från befintligt material
-- Utgå från områdets befintliga `_quiz.html` och/eller `_begrepp_data.md` — hitta aldrig på nytt sakinnehåll
-- **4 kategorier × 5 poängnivåer (100/200/300/400/500) = 20 frågor totalt**
-- Kategorierna ska motsvara områdets naturliga underteman (t.ex. rubrikerna som redan finns i begreppslistan eller pluggmaterialet). Saknas tydliga underteman: dela in de 30 quiz-frågorna i fyra ungefär lika stora, tematiskt sammanhängande grupper
-- Inom varje kategori sorteras frågorna efter svårighetsgrad: 100p = lättast, 500p = svårast
-- Samma regler för svarsalternativ gäller som under **Quiz** ovan: exakt 4 alternativ, ungefär lika långa, trovärdiga och pedagogiskt relevanta distraktorer, inget mönster (längd/formulering) som läcker rätt svar
+### Två omgångar
+- **Omgång 1:** 4 kategorier × 5 frågor, 100–500p
+- **Omgång 2:** 4 **nya** kategorier × 5 frågor, 600–1000p
+- Kategorierna i omgång 2 får vara fördjupningar av teman i omgång 1
+- **1000p/500p högst upp på brädet** (högsta värdet överst, lägsta nederst)
+- **Mellanskärm** när omgång 1 är tömd: ställning + knapparna "Starta omgång 2" och "Avsluta spelet" (vikarien kan avsluta vid tidsbrist)
+- "Avsluta spelet" leder till slutställning oavsett omgång
+
+### Svårighetstrappa (gäller alla nya frågor)
+
+| Poäng    | Frågetyp                                   |
+|----------|--------------------------------------------|
+| 100–200  | Fakta, begrepp ("Vad kallas…?")            |
+| 300–400  | Förklara, orsak och verkan                 |
+| 500–700  | Tillämpa: kort scenario                    |
+| 800–1000 | Jämföra, analysera, flera steg             |
+
+Frågor hämtas från uppgifter-filer, svar från teorifiler. Hitta aldrig på nytt sakinnehåll.
+
+Samma regler för svarsalternativ gäller som under **Quiz** ovan: exakt 4 alternativ, ungefär lika långa och lika detaljerade, trovärdiga och pedagogiskt relevanta distraktorer, inget mönster (längd/formulering/fackterm) som läcker rätt svar.
+
+### Tid skalad efter poäng
+- **100–300p:** 45 s
+- **400–700p:** 60 s
+- **800–1000p:** 75 s
+- **När frågan går vidare till nästa lag:** 20 s (frågan är redan läst)
+- Tiden styrs av frågans **ursprungliga poängvärde**, inte det halverade
+
+### Turordning – strikt rotation
+- Lagen väljer fråga i **fast ordning** (A → B → C → A …) oavsett resultat
+- Rätt svar ger poäng men **inte** nästa val
+- **Stöld ger inte turen:** laget som tar poäng på ett annat lags fråga väljer inte nästa fråga — rotationen fortsätter som vanligt
+- Vid fel svar går frågan vidare enligt befintlig logik med **halverande poängstege** (t.ex. 1000 → 500 → 250)
+- Rotationen fortsätter in i omgång 2 där omgång 1 slutade
+- Visa tydligt på brädet vilket lag som väljer härnäst
 
 ### Facit alltid tillgängligt för spelledaren
 - Varje fråga har ett "Visa svar"-läge som markerar rätt alternativ grönt **och** visar en kort (1–2 meningar) pedagogisk förklaring till varför svaret är rätt
 - Förklaringen ska vara skriven så att en vikarie utan ämneskunskap direkt kan avgöra om ett elevsvar räknas som rätt eller fel
 
-### Spelplan
-- Rutnät: 4 kolumner × 5 rader, kategori-header överst i ämnets primärfärg (se färgtabellen ovan)
-- Redan spelade rutor markeras som "använda" — gråtonas och går inte att klicka igen
-
 ### Lag och poäng
 - Startskärm: valfritt antal lag (2–4) med fritextfält för lagnamn — inga förifyllda festrelaterade exempelnamn
 - Poängpanel alltid synlig under spelets gång: lagnamn + löpande poäng
-- Spelledaren kan justera poäng manuellt (snabbknappar +100/−100 samt fritt poängtal) för varje lag, för rättningar eller bonuspoäng
+- Lagens färger är **fasta genom hela spelet** och får aldrig följa kategorifärgerna — de byts ut i omgång 2
+- Spelledaren kan justera poäng manuellt (snabbknappar +100/−100) för varje lag, för rättningar eller bonuspoäng
 
 ### Frågeflöde
-- Klick på en ruta öppnar frågan i en modal med nedräkningstimer (t.ex. 30 sekunder) och progressbar
-- Laget vars tur det är svarar muntligt; spelledaren klickar Rätt/Fel
-- **Stöld-regel** (ersätter shot-/alkoholregeln i originalmallen helt): Vid fel svar eller om tiden tar slut får övriga lag chansen att svara på samma fråga. Ingen uppoffring, shot eller fysisk uppgift ska förekomma — det räcker att spelledaren väljer vilket lag som får chansen (t.ex. den som räcker upp handen snabbast)
-- Poäng tilldelas det lag spelledaren markerar som vinnare av frågan; en "Ingen fick rätt"-knapp stänger frågan utan att dela ut poäng
-- **Streak-gräns:** ett lag får max ta tre rutor i rad genom att svara rätt. Har laget precis tagit sin tredje ruta i rad går turen automatiskt vidare till nästa lag, oavsett att svaret var rätt (se teknisk referensimplementation nedan)
+- Klick på en ruta öppnar frågan i en modal med nedräkningstimer (skalad enligt tabellen ovan) och progressbar
+- Laget vars tur det är svarar muntligt; spelledaren klickar på det alternativ laget väljer
+- **Stöld-regel:** Vid fel svar eller om tiden tar slut går frågan vidare till nästa lag som inte redan svarat fel, till halverat värde och med 20 s betänketid. Ingen uppoffring, shot eller fysisk uppgift ska förekomma
+- Har alla lag svarat fel visas rätt svar automatiskt utan att någon får poäng
+- Rutan markeras som spelad när modalen stängs, och turen går vidare till nästa lag i rotationen
+
+### Regelskärmen
+Visas efter att lagnamnen matats in, innan spelplanen kan användas. Den ska förklara:
+- att spelet har **två omgångar** (100–500p och 600–1000p, med mellanskärm emellan)
+- **strikt turordning** — lagen väljer fråga i fast ordning oavsett om de svarar rätt eller fel
+- att **stöld inte ger turen** — man kan ta poäng på ett annat lags fråga men väljer ändå inte nästa
+- att **tiden är längre på svårare frågor**, och att ett stulet försök har 20 s
+- att spelledaren inte behöver kunna ämnet — spelet rättar själv och visar förklaringen
+
+### Spelplan
+- Rutnät: 4 kolumner × 5 rader, kategori-header överst i respektive kategorifärg
+- Högsta poängvärdet överst, lägsta nederst
+- Redan spelade rutor markeras som "använda" — gråtonas och går inte att klicka igen
+
+### Helskärm — projektorläge (obligatoriskt)
+
+Spelet projiceras i klassrummet och eleverna ska kunna läsa frågor och svarsalternativ själva från sina platser. Därför ska allt läsbart innehåll skalas upp **enbart i helskärmsläge**.
+
+**Var skalningen gäller:**
+- Reglerna skrivs mot `#jp-stage.jp-fs`, `#jp-stage:fullscreen` och `#jp-stage:-webkit-full-screen` — alla tre, som separata selektorer i samma selektorlista. `.jp-fs` sätts alltid av `jpToggleFullscreen()` och är därmed den som i praktiken träffar; `:fullscreen`/`:-webkit-full-screen` fångar äkta helskärm
+- **Normalvyn i webbläsarfönstret ska vara exakt oförändrad** — inga storlekar utanför helskärmsblocket får röras
+
+**Vad som ska skalas upp:**
+
+| Element | Selektor | Normalvy | Helskärm |
+|---------|----------|----------|----------|
+| Svarsalternativ (viktigast) | `#jp-opts .jp-opt` | `clamp(.85rem,1.9vh,1.05rem)` | `clamp(1.15rem,2.8vh,2.3rem)` |
+| Frågetext | `#jp-q` | `clamp(1.05rem,2.7vh,1.6rem)` | `clamp(1.35rem,3.2vh,2.4rem)` |
+| Kategorirubriker | `.jp-head` | `clamp(.6rem,1.5vh,.95rem)` | `clamp(.85rem,2.1vh,1.7rem)` |
+| Poängvärden i rutorna | `.jp-cell` / `.jp-used` | `clamp(1.3rem,4.6vh,3.1rem)` | `clamp(1.8rem,6.2vh,4.6rem)` |
+| Lagnamn | `.jp-team .nm` | `clamp(.7rem,1.6vh,.95rem)` | `clamp(.95rem,2.3vh,1.8rem)` |
+| Poängställning | `.jp-team .sc` | `clamp(1rem,2.6vh,1.6rem)` | `clamp(1.3rem,3.4vh,2.6rem)` |
+| Förklaring i modalen | `#jp-expl-wrap` | `.875rem` (`text-sm`) | `clamp(1rem,2.1vh,1.5rem)` |
+| Turtext | `#jp-turn` | `clamp(.8rem,2vh,1.1rem)` | `clamp(1.05rem,2.8vh,2rem)` |
+| Omgångspill | `#jp-round` | `clamp(.55rem,1.3vh,.72rem)` | `clamp(.75rem,1.8vh,1.2rem)` |
+
+Dessutom skalas `#jp-cat`, `#jp-val`, `#jp-time`, `#jp-answering`, `#jp-banner p`, `#jp-board`-gap och `.jp-step`.
+
+**Tekniska krav:**
+- Använd alltid `clamp()` med **viewport-enheter** (`vh` för text, `vw` för horisontell padding) så att storleken följer duken — aldrig fasta px-värden
+- Sätt **aldrig** `font-size` inline i markup på `#jp-q` eller `#jp-turn` — inline-stil slår ut helskärmsreglerna. Basstorlekarna hör hemma i `<style>`
+- Frågekortet: `max-width:min(1500px,94vw)`, `max-height:96%`, `overflow-y:auto` — modalen kan därmed aldrig svämma över scenkanten
+- Långa svarsalternativ måste radbryta snyggt: `overflow-wrap:anywhere` på `.jp-opt`, `overflow-wrap:break-word` på `#jp-q` och `.jp-head`
+- Spelplanens 4×5-rutnät ska hålla ihop utan scroll — `#jp-board` är `flex:1;min-height:0` med `grid-template-rows:auto repeat(5,1fr)`, så raderna krymper i stället för att spilla över
+- Kontrollera alltid mot **16:9** och mot **projektorupplösning 1280×720** att inget bryter layouten
 
 ### Vad som INTE ska finnas i ett Jeopardy-spel
 - ❌ Referenser till fest, alkohol/shots eller personer utanför klassrumskontexten
 - ❌ Beroende av externa bild- eller ljudfiler som inte redan finns i repot
 - ❌ Elevnamn eller resultat som sparas mellan lektioner
+- ❌ Streak-/svitregler — de ersattes av strikt rotation i v2
 
 ### Tillbaka-navigering och namngivning
 - Samma tillbaka-knapp-mönster som övriga filer (se [Tillbaka-navigering](#tillbaka-navigering))
@@ -677,11 +753,11 @@ Ett jeopardy-spel bygger om ett arbetsområdes befintliga quiz-/begreppsinnehål
 
 ## När John ber dig skapa ett Jeopardy-spel
 
-1. Han anger vilket arbetsområde det gäller (t.ex. pekar på ett områdeskort på startsidan eller en befintlig fil)
-2. Du läser motsvarande `_quiz.html` och/eller `_begrepp_data.md` för att hämta sakinnehållet — du hittar inte på nytt innehåll
-3. Du delar in innehållet i 4 kategorier × 5 poängnivåer enligt reglerna ovan
+1. Han anger vilket arbetsområde det gäller (t.ex. pekar på ett områdeskort eller en befintlig fil)
+2. Du läser områdets uppgifter-fil för frågorna och teorifilen (samt `_quiz.html` / `_begrepp_data.md`) för svar och förklaringar — du hittar inte på nytt innehåll
+3. Du delar in innehållet i **två omgångar**: 4 kategorier × 100–500p och 4 nya kategorier × 600–1000p, enligt svårighetstrappan
 4. Du skapar hela HTML-filen direkt, klar att lägga in i GitHub, och matchar ämnets färg från tabellen
-5. Du uppdaterar `index.html` med en Jeopardy-knapp på områdets kort
+5. Du lägger till ett Jeopardy-kort på områdets hubbsida direkt efter quiz-kortet
 
 *John ska inte behöva ändra något manuellt.*
 
@@ -689,7 +765,7 @@ Ett jeopardy-spel bygger om ett arbetsområdes befintliga quiz-/begreppsinnehål
 
 ## Jeopardy – teknisk referensimplementation
 
-`nk1a1_naturvetenskap_jeopardy.html` är **facit** för alla framtida Jeopardy-spel — både markup, spellogik och design. Bygg nya spel genom att kopiera den filen och byta ut `JP_CATEGORIES` samt back-länkens fallback. Ändra aldrig funktions- eller variabelnamnen nedan utan att uppdatera alla beroenden. Reglerna i avsnitten ovan ("Jeopardy – Regler som ALLTID ska gälla" m.fl.) gäller fortfarande för *innehållet*; det här avsnittet låser *implementationen*.
+`nk1a1_naturvetenskap_jeopardy.html` är **facit** för alla framtida Jeopardy-spel — både markup, spellogik och design. Bygg nya spel genom att kopiera den filen och byta ut `JP_ROUNDS` samt back-länkens fallback. Ändra aldrig funktions- eller variabelnamnen nedan utan att uppdatera alla beroenden. Reglerna i avsnittet ovan ("Jeopardy-spel (standard v2)") gäller fortfarande för *innehållet*; det här avsnittet låser *implementationen*.
 
 ### Filplacering och portalintegration
 - Egen fil per område: `[kurs]_[omrade]_jeopardy.html` (t.ex. `nk1a1_naturvetenskap_jeopardy.html`, `sh_demokrati_jeopardy.html`)
@@ -698,38 +774,47 @@ Ett jeopardy-spel bygger om ett arbetsområdes befintliga quiz-/begreppsinnehål
 - Back-länk uppe till vänster med `smartBack(event)`: `history.back()` om `document.referrer` är samma origin, annars fallback till områdessidan (aldrig hårdkodat `index.html`)
 - Footer `Designad av John`, `<script src="feedback-widget.js" defer>` och GoatCounter-snippet (`johnblixt.goatcounter.com`) sist i `<body>` — exakt som i referensfilen
 
-### Innehåll och data (`JP_CATEGORIES`)
-- Array med **exakt 4 kategoriobjekt**, vart och ett `{ name, color, rgb, qs }`
-  - `color`: kategorins hex-kulör · `rgb`: samma färg som `"r,g,b"`-sträng (används för `rgba()`-bakgrunder)
-  - `qs`: **exakt 5 frågeobjekt**, sorterade `v:100 → v:500` i arrayen (lättast först); brädet vänder ordningen visuellt
+### Innehåll och data (`JP_ROUNDS`, `JP_TEAM_COLORS`)
+- `JP_ROUNDS`: array med **exakt 2 omgångsobjekt**, `{ label, cats }`
+  - `label`: kort etikett som visas i `#jp-round`-pillen, t.ex. `'Omgång 1 · 100–500p'`
+  - `cats`: **exakt 4 kategoriobjekt** `{ name, color, rgb, qs }` — omgång 2 har helt nya kategorier
+    - `color`: kategorins hex-kulör · `rgb`: samma färg som `"r,g,b"`-sträng (används för `rgba()`-bakgrunder)
+    - `qs`: **exakt 5 frågeobjekt**, sorterade lägsta → högsta värde i arrayen; brädet vänder ordningen visuellt så högsta värdet hamnar överst
+  - Omgång 1 använder `v:100…500`, omgång 2 `v:600…1000`
+- `JP_TEAM_COLORS`: fyra fasta lagfärger, **frikopplade från kategorifärgerna** — annars byter lagen färg när omgång 2 börjar. `jpTeamColor(i)` läser ur denna array
+- `let JP_CATEGORIES = JP_ROUNDS[0].cats` är den aktiva omgångens kategorier; `jpStartRound(n)` pekar om den
 - Frågeobjekt: `{ v, q, opts:[4 st], correct:<index i opts>, expl }`
-  - Frågorna (`q`) hämtas från områdets `_quiz.html`; förklaringen (`expl`) bygger på teori-/begreppsfilen
+  - Frågorna (`q`) hämtas från områdets uppgifter-fil/`_quiz.html`; förklaringen (`expl`) bygger på teori-/begreppsfilen
   - `opts`: fyra alternativ, ungefär lika långa och lika detaljerade (kvalitetsreglerna under **Quiz**). `correct` pekar på rätt alternativ i den **oblandade** arrayen — blandning sker i runtime
   - `expl`: 1–2 meningar, skrivet så att en vikarie kan läsa upp det rakt av och direkt se varför svaret är rätt
-- Kategorinamnen speglar områdets huvudteman (samma indelning som begreppslistan/pluggmaterialet)
+  - Frågetypen ska följa svårighetstrappan i avsnittet ovan (fakta → förklara → tillämpa → analysera)
 
 ### Design (lås mot referensfilen)
-- Mörk spelplan (`--navy #0b1120`, `--navy2 #111c33`), **fyra tydligt åtskilda kategorikulörer** (referens: `#06b6d4`, `#a855f7`, `#f59e0b`, `#f43f5e`)
-- Kategorifärgen följer med överallt: `.jp-head`, `.jp-cell` (bakgrund `rgba(rgb,.13)`, hover fylls med `color`), kategoripill `#jp-cat`, timerbar `#jp-bar`, förklaringsruta `#jp-expl-wrap`, aktiv lagpanel `.jp-team`, `#jp-turn`-texten och slutlistan
-- `#jp-board`: `grid-template-columns:repeat(4,1fr); grid-template-rows:auto repeat(5,1fr)` — rutnätet fyller scenens höjd. **500 överst, 100 nederst** (`jpBuildBoard` loopar `row=4→0`)
+- Mörk spelplan (`--navy #0b1120`, `--navy2 #111c33`), **fyra tydligt åtskilda kategorikulörer per omgång** (omgång 1: `#06b6d4`, `#a855f7`, `#f59e0b`, `#f43f5e` · omgång 2: `#34d399`, `#818cf8`, `#fb923c`, `#e879f9`)
+- Kategorifärgen följer med överallt: `.jp-head`, `.jp-cell` (bakgrund `rgba(rgb,.13)`, hover fylls med `color`), kategoripill `#jp-cat`, timerbar `#jp-bar` och förklaringsruta `#jp-expl-wrap`. Lagpanelen, `#jp-turn` och slutlistan använder däremot **`jpTeamColor(i)`**
+- `#jp-board`: `grid-template-columns:repeat(4,1fr); grid-template-rows:auto repeat(5,1fr)` — rutnätet fyller scenens höjd. **Högsta värdet överst** (`jpBuildBoard` loopar `row=4→0`)
 - All typografi skalar med `clamp(min, <n>vh, max)` så den syns från bakre bänkraden. Spelade rutor: `.jp-used` (gråtonad, ej klickbar, `✓`)
 - Typsnitt: **Fredoka** på siffror (`.num`, poäng, rutvärden, timer), **EB Garamond** på all brödtext
 - Helskärm: `jpToggleFullscreen()` försöker Fullscreen API på `#jp-stage` och lägger alltid på `.jp-fs` (`position:fixed; inset:0`) som fallback. `keydown` Escape stänger **modal först** (`jpCloseModal`), annars regelrutan, annars helskärm. `fullscreenchange` utan `fullscreenElement` → `jpExitFullscreen()`
-- `#jp-modal`, `#jp-rules` och `#jp-end` ligger **inuti `#jp-stage`** (annars försvinner de i helskärmsläge)
+- Sist i `<style>`, precis före `@media (prefers-reduced-motion)`, ligger helskärmsblocket som skalar upp all läsbar text — se [Helskärm — projektorläge](#helskärm--projektorläge-obligatoriskt) för tabellen med exakta `clamp()`-värden. Blocket kopieras oförändrat mellan spelen
+- `#jp-modal`, `#jp-rules`, `#jp-inter` och `#jp-end` ligger **inuti `#jp-stage`** (annars försvinner de i helskärmsläge)
 
 ### Spellogik (vikarievänlig – spelledaren behöver inte kunna ämnet)
-Centrala tillståndsvariabler (globala): `jpTeamCount`, `jpTeams` (`[{name,score}]`), `jpTurn` (lag som **väljer** ruta), `jpUsed` (antal spelade rutor, spelet slut vid 20), `jpStreak` (antal rutor det lag som just tog rutan har tagit i rad genom att svara rätt på sin egen tur — max 3, nollställs i `jpStartGame`). Per fråga: `jpCat`, `jpRow`, `jpCell`, `jpOpts` (blandade `{text,isCorrect}`), `jpValue` (aktuellt, sjunkande värde), `jpChooser` (laget som valde rutan), `jpAnswering` (laget som svarar nu), `jpFailed` (lag som svarat fel på denna fråga), `jpWrong` (låsta felaktiga alternativindex), `jpResolved`, `jpRevealed`, `jpWinner`, `jpTimer`, `jpTime`.
+Centrala tillståndsvariabler (globala): `jpTeamCount`, `jpTeams` (`[{name,score}]`), `jpTurn` (lag som **väljer** ruta), `jpRound` (0 eller 1), `jpUsed` (antal spelade rutor i **aktuell omgång**, omgången slut vid 20). Per fråga: `jpCat`, `jpRow`, `jpCell`, `jpOpts` (blandade `{text,isCorrect}`), `jpValue` (aktuellt, sjunkande värde), `jpBaseValue` (frågans ursprungliga värde — styr timern), `jpChooser` (laget som valde rutan), `jpAnswering` (laget som svarar nu), `jpFailed` (lag som svarat fel på denna fråga), `jpWrong` (låsta felaktiga alternativindex), `jpResolved`, `jpRevealed`, `jpWinner`, `jpTimer`, `jpTime`, `jpTimeTotal`.
 
-- **Setup:** `jpRenderTeamInputs` / `jpChangeTeamCount(±1)` (2–4 lag, fritextnamn). `jpStartGame` fyller `jpTeams`, slumpar `jpTurn`, nollställer `jpStreak`, sätter `--tc`, ritar bräde + lagpanel och anropar `jpShowRules(true)`
-- **Regelruta:** `#jp-rules` visas efter lagvalet, innan spelplanen används; `jpShowRules(false)` / `jpHideRules` öppnar/stänger den igen via "Regler" i toppraden. Frågor kan inte öppnas medan regelrutan är uppe
-- **Turordning:** `jpOpenQuestion` sätter `jpChooser = jpAnswering = jpTurn`, `jpValue = q.v`, blandar `jpOpts` med `jpShuffle`, startar timern
-- **Rätt svar** (`jpPick` → `o.isCorrect`): `jpValue` läggs på `jpTeams[jpAnswering].score`. `jpStreak` ökar med 1 om `jpAnswering===jpChooser` (laget fortsätter sin egen svit), annars sätts den till 1 (ett annat lag har stulit rutan och startar en ny svit). Är `jpStreak<3`: `jpTurn = jpAnswering` (laget **behåller turen**) som idag. Har laget precis tagit sin **tredje** ruta i rad (`jpStreak>=3`): `jpTurn` sätts istället till `(jpAnswering+1)%jpTeams.length` och `jpStreak` nollställs — turen tvingas vidare trots rätt svar, med bannertext "Tre i rad — turen går över till …". `expl` visas, banner i lagets färg. Ingen manuell bedömning — spelet rättar själv
-- **Streak-gräns visuellt:** `jpRenderTurn` ritar tre små prickar bredvid "[Lag] väljer fråga" när `jpStreak` är 1 eller 2 (ifyllda i lagets färg upp till `jpStreak`, tomma därefter) — inget visas vid 0
-- **Fel svar** (`jpPick` → fel, eller timeout via `jpStartTimer`): `jpFailAndAdvance` låser alternativet (`jpWrong`), lägger laget i `jpFailed`, halverar värdet med **`jpLowerValue`** (`Math.floor(v/2)` → nedåt till närmaste 50 → `Math.max(50, …)`; 500→250→100→50), `jpNextAnswerer` ger nästa lag som inte finns i `jpFailed` (cykliskt), timern startar om
-- **Alla lag fel / alla alternativ slut:** `jpNextAnswerer` returnerar `null` → rätt svar + `expl` visas, `jpWinner=null`, ingen poäng, `jpTurn=(jpChooser+1)%n`, `jpStreak` nollställs (turen byter lag ändå)
-- **Timer:** `jpStartTimer` – 30 s, `#jp-bar` krymper linjärt, växlar rött ≤10 s, vid 0 anropas `jpFailAndAdvance({timedOut:true})`
-- **`jpRevealAnswer`** ("Visa svar"): nödknapp som avslöjar facit utan poäng, flyttar turen till `(jpChooser+1)%n` och nollställer `jpStreak`
-- **`jpCloseModal`:** markerar rutan `.jp-used`, `jpUsed++`; om frågan var olöst flyttas turen till nästa lag och `jpStreak` nollställs; vid `jpUsed>=20` → `jpShowEnd`
+> **v2:** `jpStreak` och all streak-logik är borttagen. Turordningen är strikt rotation — inget lag kan behålla eller vinna turen.
+
+- **Setup:** `jpRenderTeamInputs` / `jpChangeTeamCount(±1)` (2–4 lag, fritextnamn). `jpStartGame` fyller `jpTeams`, slumpar `jpTurn`, sätter `--tc`, anropar `jpStartRound(0)` och sedan `jpShowRules(true)`
+- **Omgångar:** `jpStartRound(n)` sätter `jpRound=n`, pekar om `JP_CATEGORIES=JP_ROUNDS[n].cats`, nollställer `jpUsed`, ritar brädet och uppdaterar `#jp-round`-pillen. `jpTurn` rörs **aldrig** här — rotationen fortsätter där omgång 1 slutade
+- **Mellanskärm:** när `jpUsed>=20` i `jpCloseModal` → `jpShowIntermission()` om `jpRound===0`, annars `jpShowEnd()`. `#jp-inter` visar ställningen plus `jpStartRound2()` ("Starta omgång 2") och `jpShowEnd()` ("Avsluta spelet")
+- **Regelruta:** `#jp-rules` visas efter lagvalet, innan spelplanen används; `jpShowRules(false)` / `jpHideRules` öppnar/stänger den igen via "Regler" i toppraden. Frågor kan inte öppnas medan regelrutan eller mellanskärmen är uppe
+- **Turordning (strikt rotation):** `jpOpenQuestion` sätter `jpChooser = jpAnswering = jpTurn`, `jpValue = jpBaseValue = q.v`, blandar `jpOpts` med `jpShuffle`, startar timern. `jpCloseModal` sätter **alltid** `jpTurn=(jpChooser+1)%jpTeams.length` — oavsett rätt, fel, stöld eller "Visa svar". Ingen annan funktion får skriva till `jpTurn`
+- **Rätt svar** (`jpPick` → `o.isCorrect`): `jpValue` läggs på `jpTeams[jpAnswering].score`, `expl` visas och bannern anger i lagets färg vem som fick poängen **och vilket lag som väljer nästa fråga**. Ingen manuell bedömning — spelet rättar själv
+- **Fel svar** (`jpPick` → fel, eller timeout via `jpStartTimer`): `jpFailAndAdvance` låser alternativet (`jpWrong`), lägger laget i `jpFailed`, halverar värdet med **`jpLowerValue`** (`Math.floor(v/2)` → nedåt till närmaste 50 → `Math.max(50, …)`; 1000→500→250→100→50), `jpNextAnswerer` ger nästa lag som inte finns i `jpFailed` (cykliskt), timern startar om på `JP_STEAL_TIME`
+- **Alla lag fel / alla alternativ slut:** `jpNextAnswerer` returnerar `null` → rätt svar + `expl` visas, `jpWinner=null`, ingen poäng
+- **Timer:** `jpBaseTime(v)` ger 45 s (`v<=300`), 60 s (`v<=700`) eller 75 s (annars) utifrån **`jpBaseValue`**, inte det halverade värdet. `JP_STEAL_TIME = 20` används vid varje stöldförsök. `jpStartTimer(sec)` sätter `jpTimeTotal=sec`, `#jp-bar` krymper linjärt mot `jpTimeTotal`, växlar rött ≤10 s, vid 0 anropas `jpFailAndAdvance({timedOut:true})`
+- **`jpRevealAnswer`** ("Visa svar"): nödknapp som avslöjar facit utan poäng; turen flyttas av `jpCloseModal` som vanligt
+- **`jpCloseModal`:** markerar rutan `.jp-used`, `jpUsed++`, roterar turen, och vid `jpUsed>=20` → mellanskärm eller slut
 - **Lagpanel:** `jpRenderTeams` – aktivt lag (`jpTurn`) markeras med färgram, övriga tonas ned. `jpAdjust(i,±100)` är spelledarens manuella nödutgång för poäng
 - **Slut:** `jpShowEnd` – `#jp-end`-overlay med lagen sorterade på poäng, 🏆 på ettan, "Spela igen" → `jpNewGame`
 
