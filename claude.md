@@ -744,15 +744,23 @@ Ett spel i formatet "Vem vill bli miljonär?" som bygger om ett arbetsområdes b
 - Fristående HTML-fil, samma mönster som quiz-/begrepp-/jeopardy-filer: ingen extern CSS-/JS-lib, allt körs i webbläsaren
 - Google Fonts: **EB Garamond** (brödtext) + **Fredoka** (rubriker, belopp, spelkomponenter) — samma typsnittspar som begreppslistorna
 - Ingen inloggning, ingen `localStorage`/`sessionStorage` — varje omgång är fristående och nollställs vid omstart (samma princip som under "Vad som INTE ska finnas")
+- Sist i `<body>`: `<script src="feedback-widget.js" defer>` och GoatCounter-snippet (`johnblixt.goatcounter.com`) — samma två rader som i övriga filer
 
 ### Endast fyrsvarsfrågor
-- Formatet kräver exakt fyra svarsalternativ per fråga (A–D). Rätt/Fel-påståenden fungerar inte i detta format och ska **aldrig** inkluderas — filtrera bort dem när frågor återanvänds från ett områdes `_quiz.html`
+- Formatet kräver exakt fyra svarsalternativ per fråga (A–D). Rätt/Fel-påståenden fungerar inte som de är och får **aldrig** läggas in i det formatet
+- Två sätt att hantera sant/falskt-frågor när frågor återanvänds från ett områdes `_quiz.html`:
+  - **Filtrera bort dem** — standard när frågebanken ändå räcker till 24 frågor
+  - **Skriva om dem till fyra alternativ** — när John bett om full täckning av quizets frågor. Frågan ska då pröva exakt samma kunskap som originalet: sakinnehållet får inte ändras, bara formen. Gör originalets korrekta bedömning till det rätta alternativet och skriv tre nya distraktorer enligt kvalitetsreglerna. Samma sak gäller flervalsfrågor med färre än fyra alternativ — fyll på med nya felaktiga alternativ, ändra aldrig frågans innehåll
+- Är originalfrågan numrerad som deluppgift (`a)`, `b)`) tas prefixet bort — frågan står fristående i miljonär-spelet
 
 ### Frågebank och urval
 - Frågorna hämtas **alltid** från områdets befintliga `_quiz.html` (endast flervalsfrågorna) och/eller `_begrepp_data.md` — hitta aldrig på nytt sakinnehåll
 - Frågebanken delas in i **tre svårighetsnivåer** (1 = lättast, 3 = svårast) med **8 frågor per nivå = 24 totalt**. Bedöm svårighetsgrad utifrån hur mycket syntes/tillämpning frågan kräver (definitioner → organisation/principer → tillämpade scenarier), aldrig genom att hitta på nytt innehåll
+- **Variant — full täckning:** har John bett om att *alla* frågor i områdets quiz ska med, får banken vara större eller mindre än 24. Fördela frågorna så jämnt som möjligt över de tre nivåerna, med **minst 5 per nivå** (annars går det inte att dra en omgång). Exempel: 29 frågor → 10 / 10 / 9
 - Varje omgång slumpar **5 frågor per nivå = 15 frågor**, som spelas i stigande svårighet (nivå 1 → nivå 2 → nivå 3)
-- Fisher-Yates-shuffle används både för frågeurvalet inom varje nivå och för svarsalternativens ordning — samma kvalitetsregler som under **Quiz** gäller (fyra ungefär lika långa och lika detaljerade alternativ, inget mönster som läcker rätt svar)
+- Fisher-Yates-shuffle används både för frågeurvalet inom varje nivå och för svarsalternativens ordning — samma kvalitetsregler som under **Quiz** gäller (fyra ungefär lika långa och lika detaljerade alternativ, inget mönster som läcker rätt svar). Kontrollera ordlängden på rätt svar mot distraktorerna innan filen sparas; är skillnaden påtaglig förlängs distraktorerna, aldrig tvärtom
+- Svåra frågor (nivå 3): distraktorerna ska vara rimliga missuppfattningar hämtade ur ämnet självt — t.ex. att förväxla korrelation med kausalitet, eller validitet med relevans
+- **"Spela igen" drar i första hand ospelade frågor.** Vilka frågor som spelats hålls i sidans eget state (`playedIds` per nivå) — ingen `localStorage`/`sessionStorage`, allt nollställs när fliken laddas om. Tar en nivå slut på ospelade frågor fylls omgången på med redan spelade, och nivåns räkning börjar om från de frågor som drogs. Med en bank på 29 frågor täcker alltså två omgångar hela quizet
 
 ### Prisstege och säkra nivåer
 - 15 steg, 1 000 → 1 000 000 kr: `1000, 2000, 3000, 5000, 10000, 15000, 20000, 30000, 50000, 100000, 150000, 250000, 500000, 750000, 1000000`
@@ -780,11 +788,12 @@ Ett spel i formatet "Vem vill bli miljonär?" som bygger om ett arbetsområdes b
 ### Layout
 - Två kolumner: fråga + svarsalternativ till vänster, prisstege till höger
 - Under 860 px: stegen flyttas överst som en kompakt horisontell, scrollbar rad
+- Under 768 px (mobilläge): sidans padding och textstorlekar krymper — frågetext, svarsalternativ och livlinjeknappar skalas ned så att hela frågan ryms på en mobilskärm utan att brytas
 - Under 560 px: svarsalternativen läggs i en kolumn (annars två kolumner à två alternativ)
 - `prefers-reduced-motion` respekteras (transitions/animationer stängs av)
 
 ### Tillbaka-navigering och namngivning
-- Samma tillbaka-knapp-mönster som övriga filer (se [Tillbaka-navigering](#tillbaka-navigering)) — för Juridik 1-filer specifikt: `<script src="jur1_nav.js">` och `jur1GoBack(event)`
+- Samma tillbaka-knapp-mönster som övriga filer (se [Tillbaka-navigering](#tillbaka-navigering)) — för Juridik 1-filer specifikt: `<script src="jur1_nav.js">` och `jur1GoBack(event)`. Saknar kursen en delad nav-fil används en inline `smartBack(event)` med samma logik: `history.back()` när `document.referrer` ligger på samma domän, annars fallback till **områdessidan** (aldrig hårdkodat `index.html`)
 - Filnamn: `[kurs]_[omrade]_miljonar.html` (t.ex. `jur1_block1_miljonar.html`, `sh_demokrati_miljonar.html`)
 - Kortordning på områdessidan: **material → begrepp → quiz → jeopardy → miljonär** — miljonär-kortet placeras alltid sist
 
