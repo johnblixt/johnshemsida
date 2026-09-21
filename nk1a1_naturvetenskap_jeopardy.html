@@ -43,6 +43,7 @@
     text-transform:uppercase;letter-spacing:.06em;line-height:1.1;
     font-size:clamp(.6rem,1.5vh,.95rem);
     color:#fff;padding:.5rem .35rem;border-radius:.6rem .6rem .2rem .2rem;
+    overflow-wrap:break-word;
   }
   .jp-cell{
     display:flex;align-items:center;justify-content:center;
@@ -80,16 +81,20 @@
   .jp-step:hover{background:rgba(255,255,255,.2);}
 
   #jp-turn{font-size:clamp(.8rem,2vh,1.1rem);}
+  #jp-round{
+    font-family:'Fredoka',sans-serif;
+    font-size:clamp(.55rem,1.3vh,.72rem);
+  }
 
   /* ── Modal ── */
   #jp-modal{position:absolute;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(4,8,18,.9);}
   #jp-modal.on{display:flex;}
   .jp-card{background:#fff;border-radius:1.1rem;width:100%;max-width:820px;max-height:94%;overflow-y:auto;padding:1.1rem 1.3rem 1rem;}
-  #jp-q{font-size:clamp(1.05rem,2.7vh,1.6rem);}
+  #jp-q{font-size:clamp(1.05rem,2.7vh,1.6rem);overflow-wrap:break-word;}
   .jp-opt{
     text-align:left;font-family:'EB Garamond',serif;border:2px solid #e2e8f0;background:#fff;
     border-radius:.7rem;padding:.6rem .8rem;font-size:clamp(.85rem,1.9vh,1.05rem);
-    line-height:1.35;transition:all .12s ease;width:100%;
+    line-height:1.35;transition:all .12s ease;width:100%;overflow-wrap:anywhere;
   }
   .jp-opt:hover:not(:disabled){background:#f8fafc;}
   .jp-opt:disabled{cursor:default;}
@@ -106,6 +111,12 @@
   #jp-stage:fullscreen #jp-turn,
   #jp-stage:-webkit-full-screen #jp-turn{
     font-size:clamp(1.05rem,2.8vh,2rem);
+  }
+  #jp-stage.jp-fs #jp-round,
+  #jp-stage:fullscreen #jp-round,
+  #jp-stage:-webkit-full-screen #jp-round{
+    font-size:clamp(.75rem,1.8vh,1.2rem);
+    padding:clamp(.2rem,.6vh,.4rem) clamp(.7rem,1.4vw,1.15rem);
   }
   #jp-stage.jp-fs #jp-board,
   #jp-stage:fullscreen #jp-board,
@@ -227,6 +238,7 @@
   <div class="border-l-4 pl-4 mb-8" style="border-color: #0891b2;">
     <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Naturkunskap nivå 1a1 · Spel</p>
     <h1 class="text-3xl md:text-4xl font-bold italic text-slate-900">Jeopardy – Naturvetenskapligt arbetssätt</h1>
+    <p class="text-slate-500 text-sm mt-1 italic">Två omgångar · 100–500p och 600–1000p</p>
   </div>
 
   <!-- ══ SETUP ══ -->
@@ -244,7 +256,9 @@
   <div id="jp-stage" class="hidden">
 
     <div class="flex items-center gap-3 px-4 pt-3 pb-1">
-      <p class="text-slate-400 text-[11px] uppercase tracking-[.2em] font-bold flex-1 truncate">Naturvetenskapligt arbetssätt</p>
+      <p class="text-slate-400 text-[11px] uppercase tracking-[.2em] font-bold truncate">Naturvetenskapligt arbetssätt</p>
+      <span id="jp-round" class="px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wide whitespace-nowrap"></span>
+      <span class="flex-1"></span>
       <button onclick="jpShowRules(false)" class="text-slate-400 hover:text-white text-xs font-bold">Regler</button>
       <button onclick="jpNewGame()" class="text-slate-400 hover:text-white text-xs font-bold">Nytt spel</button>
       <button id="jp-fsbtn" onclick="jpToggleFullscreen()" class="bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-lg">⛶ Helskärm</button>
@@ -260,13 +274,14 @@
       <div class="bg-white rounded-2xl w-full max-w-lg p-6 max-h-[92%] overflow-y-auto">
         <h2 class="font-bold text-2xl mb-4 text-center">Så funkar det</h2>
         <ul class="space-y-2 text-sm text-slate-700 mb-4 list-disc pl-5 leading-snug">
-          <li>Ett lag i taget har turen och väljer en ruta på spelplanen.</li>
+          <li><strong>Två omgångar.</strong> Först 4 kategorier med 100–500p. När brädet är tomt kommer en mellanskärm där du kan starta omgång 2 (nya kategorier, 600–1000p) eller avsluta spelet om tiden är slut.</li>
+          <li><strong>Fast turordning.</strong> Lagen väljer ruta i tur och ordning – Lag 1, Lag 2, Lag 3, Lag 1 igen. Ordningen ändras aldrig, oavsett om laget svarar rätt eller fel.</li>
+          <li><strong>Rätt svar ger poäng, inte turen.</strong> Ett lag kan alltså aldrig ta flera rutor i rad.</li>
+          <li><strong>Stöld ger inte turen.</strong> Svarar ett lag fel går frågan vidare till nästa lag för halva poängen. Det laget kan ta poängen – men väljer ändå inte nästa fråga. Rotationen rullar på som vanligt.</li>
+          <li><strong>Längre tid på svårare frågor.</strong> 100–300p ger 45 sekunder, 400–700p ger 60 och 800–1000p ger 75. Ett stulet försök har 20 sekunder, eftersom frågan redan är uppläst.</li>
           <li>Laget säger sitt svar högt — du klickar på det alternativ de väljer.</li>
-          <li>Rätt svar: laget får poängen och väljer nästa ruta. Läs gärna upp förklaringen som visas.</li>
-          <li>Ett lag kan ta max tre rutor i rad — sedan går turen vidare automatiskt.</li>
-          <li>Fel svar: turen går vidare till nästa lag, och frågan blir värd mindre poäng.</li>
           <li>Har alla lag svarat fel visas rätt svar automatiskt. Ingen får poäng.</li>
-          <li>Du behöver inte kunna ämnet — spelet rättar själv.</li>
+          <li><strong>Du behöver inte kunna ämnet</strong> — spelet rättar själv och visar en förklaring du kan läsa upp.</li>
         </ul>
         <p id="jp-rules-start" class="text-center font-bold mb-4" style="font-size:clamp(.9rem,2.2vh,1.15rem)"></p>
         <button onclick="jpHideRules()" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold uppercase tracking-wide text-sm hover:bg-slate-700">Kör igång</button>
@@ -280,7 +295,7 @@
           <span id="jp-cat" class="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide text-white"></span>
           <span id="jp-val" class="num font-bold text-slate-400"></span>
           <span class="flex-1"></span>
-          <span id="jp-time" class="num text-sm font-bold text-slate-400">30</span>
+          <span id="jp-time" class="num text-sm font-bold text-slate-400">45</span>
         </div>
         <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden mb-4">
           <div id="jp-bar" class="jp-bar h-full" style="width:100%"></div>
@@ -305,6 +320,19 @@
         <div id="jp-actions" class="flex justify-center gap-5 text-xs font-bold pt-2 border-t border-slate-100">
           <button id="jp-reveal-btn" onclick="jpRevealAnswer()" class="text-cyan-700">Visa svar</button>
           <button id="jp-close-btn" onclick="jpCloseModal()" class="text-slate-400">Stäng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mellanskärm mellan omgångarna -->
+    <div id="jp-inter" class="hidden absolute inset-0 z-[58] items-center justify-center p-6" style="background:rgba(4,8,18,.94)">
+      <div class="text-center w-full max-w-md">
+        <p class="text-slate-400 text-xs uppercase tracking-[.25em] font-bold mb-4">Omgång 1 klar</p>
+        <div id="jp-inter-list" class="space-y-2 mb-5"></div>
+        <p id="jp-inter-next" class="font-bold mb-5" style="font-size:clamp(.9rem,2.2vh,1.15rem)"></p>
+        <div class="flex flex-col gap-3">
+          <button onclick="jpStartRound2()" class="bg-white text-slate-900 px-6 py-3 rounded-xl font-bold text-sm uppercase tracking-wide">Starta omgång 2 · 600–1000p</button>
+          <button onclick="jpShowEnd()" class="text-slate-400 hover:text-white text-xs font-bold">Avsluta spelet och visa slutställning</button>
         </div>
       </div>
     </div>
@@ -346,27 +374,39 @@ function smartBack(e) {
 
 <script>
 /* ════════ DATA ════════ */
-const JP_CATEGORIES = [
+
+/* Lagfärgerna är fasta genom hela spelet och frikopplade från
+   kategorifärgerna – annars skulle lagen byta färg i omgång 2. */
+const JP_TEAM_COLORS = ['#06b6d4','#a855f7','#f59e0b','#f43f5e'];
+
+/* Tid i sekunder när en fråga går vidare till nästa lag. Kortare,
+   eftersom frågan redan är uppläst. */
+const JP_STEAL_TIME = 20;
+
+const JP_ROUNDS = [
+{
+  label:'Omgång 1 · 100–500p',
+  cats:[
   { name:'Vetenskaplig metod', color:'#06b6d4', rgb:'6,182,212', qs:[
     { v:100, q:'Vad är en frågeställning i en vetenskaplig undersökning?',
       opts:['En specifik och avgränsad fråga som preciserar syftet med undersökningen','En hypotes formulerad som ett påstående om vad man förväntar sig hitta','En sammanfattning av de resultat som uppnåtts efter att experimentet genomförts','En teori om hur världen fungerar som ska bevisas stämma med hjälp av data'],
       correct:0, expl:'En frågeställning är en specifik och avgränsad fråga – t.ex. "Vad beror det här på?" Det skiljer sig från hypotesen, som är ett möjligt svar formulerat som ett påstående.' },
     { v:200, q:'Vad är en hypotes?',
-      opts:['Ett testbart påstående som ger ett möjligt svar på frågeställningen – vi vet inte om det är sant eller falskt','En bekräftad slutsats som dragits efter att ett experiment upprepats ett stort antal gånger','En fråga om vad som ska undersökas, formulerad på ett specifikt och avgränsat sätt','En observation som gjorts under ett experiment och som behöver förklaras av forskaren'],
+      opts:['Ett testbart påstående som ger ett möjligt svar på frågeställningen – vi vet inte om det är sant eller falskt','En slutsats som redan bekräftats efter att experimentet upprepats ett stort antal gånger av oberoende forskare','En fråga om vad som ska undersökas – den preciserar syftet men ger inget förslag på svar','En observation som gjorts under experimentets gång och som forskaren ännu inte har hunnit förklara'],
       correct:0, expl:'En hypotes är ett påstående – ett möjligt svar på frågeställningen. Den ska vara testbar och falsifierbar. När den formuleras vet vi ännu inte om den är sann.' },
     { v:300, q:'Vad menas med att en hypotes är falsifierbar?',
       opts:['Att det måste vara möjligt att motbevisa hypotesen – t.ex. om experimentets resultat strider mot den','Att hypotesen är formulerad på ett sådant sätt att den aldrig kan motbevisas av experiment','Att hypotesen automatiskt förklaras som falsk om den inte kan testas i ett laboratorium','Att hypotesen måste testas av minst tre oberoende forskargrupper för att godkännas'],
       correct:0, expl:'Falsifierbarhet innebär att det måste vara möjligt att visa att hypotesen är fel. Om inga tänkbara resultat kunde motbevisa den är den inte vetenskaplig.' },
-    { v:400, q:'Vilka tre krav måste en vetenskaplig undersökning uppfylla?',
-      opts:['Hypotesen ska vara testbar och falsifierbar, och experimentet ska vara repeterbart','Hypotesen ska baseras på befintlig teori, godkännas av en etikkommitté och ge signifikanta resultat','Hypotesen ska bevisas sann, formuleras av minst två oberoende forskare och publiceras i en tidskrift','Experimentet ska vara enkelt, billigt att genomföra och förståeligt för en bred allmänhet'],
-      correct:0, expl:'En vetenskaplig undersökning kräver att hypotesen är testbar (kan undersökas experimentellt), falsifierbar (kan motbevisas) och att experimentet är repeterbart (kan upprepas och kontrolleras av andra).' },
-    { v:500, q:'Vilka är stegen i den hypotetisk-deduktiva metoden i rätt ordning?',
-      opts:['Frågeställning → Hypotes → Förutsägelse → Undersökning → Slutsats','Hypotes → Frågeställning → Undersökning → Förutsägelse → Slutsats','Observation → Slutsats → Frågeställning → Hypotes → Experiment','Frågeställning → Undersökning → Hypotes → Förutsägelse → Slutsats'],
-      correct:0, expl:'Den hypotetisk-deduktiva metoden: 1) Frågeställning, 2) Hypotes, 3) Förutsägelse, 4) Undersökning (experiment), 5) Slutsats – stöds eller falsifieras hypotesen?' }
+    { v:400, q:'Varför måste ett vetenskapligt experiment vara repeterbart?',
+      opts:['För att andra ska kunna upprepa och kontrollera undersökningen och se om resultatet håller','För att forskaren ska hinna samla in tillräckligt många mätvärden för att räkna ut ett medelvärde','För att hypotesen ska hinna testas flera gånger innan den formuleras om till en vetenskaplig teori','För att undersökningen ska kunna genomföras med samma utrustning även när den utförs på annan ort'],
+      correct:0, expl:'Repeterbarhet betyder att experimentet måste kunna upprepas och kontrolleras av andra. Utan det går det inte att veta om resultatet berodde på en tillfällighet eller ett misstag.' },
+    { v:500, q:'Cykellampan slutar lysa. Eleven tänker: "Om jag byter batteri kommer lampan att lysa igen." Vilket steg i den hypotetisk-deduktiva metoden är detta?',
+      opts:['Förutsägelse – ett påstående om vad som ska hända om hypotesen stämmer','Hypotes – ett möjligt svar på frågeställningen, formulerat som ett påstående','Slutsats – en tolkning av resultatet efter att undersökningen har genomförts','Frågeställning – en specifik och avgränsad fråga om vad problemet beror på'],
+      correct:0, expl:'Hypotesen är "batteriet är slut". Förutsägelsen är vad som måste hända om hypotesen stämmer: byter man batteri börjar lampan lysa. Själva bytet är undersökningen.' }
   ]},
   { name:'Teorier, etik & gränser', color:'#a855f7', rgb:'168,85,247', qs:[
     { v:100, q:'Vad menas med den vetenskapliga revolutionen?',
-      opts:['Det skifte på 1500-talet då man slutade förlita sig på auktoriteter och istället började testa teorier med experiment och observationer','Den period då Galileo Galilei uppfann teleskopet och möjliggjorde systematiska astronomiska observationer','Det vetenskapliga genombrott som skedde under antiken då grekiska filosofer grundade naturvetenskapen','Den omvandling under 1800-talet då industrialiseringen ledde till nya vetenskapliga metoder och laboratorier'],
+      opts:['Det skifte på 1500-talet då man slutade förlita sig på auktoriteter och istället började testa teorier med experiment och observationer','Den period då Galileo Galilei uppfann teleskopet och därmed gjorde systematiska observationer av himlakroppar möjliga','Det genombrott som skedde under antiken, då grekiska filosofer lade grunden till den naturvetenskap vi har i dag','Den omvandling under 1800-talet då industrialiseringen gav upphov till nya vetenskapliga metoder och moderna laboratorier'],
       correct:0, expl:'Den vetenskapliga revolutionen inleddes i slutet av 1500-talet. Istället för att söka svar i kyrkans lära eller antika skrifter började man använda systematiska undersökningar och experiment – t.ex. Copernicus och Galileo Galilei.' },
     { v:200, q:'Vad är en vetenskaplig teori?',
       opts:['En väl underbyggd förklaringsmodell baserad på data från många noggranna och systematiska experiment','En kvalificerad gissning om hur något fungerar som ännu inte testats i ett experiment','En slutsats som dragits utifrån ett enskilt experiment med entydiga och reproducerbara resultat','En filosofisk tanke om naturens lagar som presenteras av en erkänd auktoritet inom området'],
@@ -374,12 +414,12 @@ const JP_CATEGORIES = [
     { v:300, q:'Vad innebär ett paradigmskifte?',
       opts:['Att en etablerad vetenskaplig teori ersätts av en ny när tillräckliga bevis visar att den gamla är felaktig','Att ett experiment misslyckas och att nya variabler måste introduceras i undersökningen','Att en forskargrupp byter inriktning och börjar forska inom ett helt nytt ämnesområde','Att en ny teknisk metod gör att gamla experiment kan genomföras snabbare och mer precist'],
       correct:0, expl:'Ett paradigmskifte är när en teori ersätts av en annan. Exempel: den geocentriska världsbilden ersattes av den heliocentriska. Att teorier byts ut är ett tecken på att vetenskapen fungerar.' },
-    { v:400, q:'Vad räknas som forskningsfusk?',
-      opts:['Att plagiera, förfalska eller undanhålla resultat från sin forskning','Att använda en otillräckligt testad metod och publicera resultaten utan peer review','Att utföra experiment på ryggradsdjur utan att genomföra en etikprövning i förväg','Att byta hypotes mitt i ett experiment utan att börja om hela undersökningen från grunden'],
-      correct:0, expl:'Forskningsfusk innebär att plagiera, förfalska data eller undanhålla resultat. Det skadar både forskningen och förtroendet för den – t.ex. fallet på Karolinska där patienter dog.' },
-    { v:500, q:'Varför kan naturvetenskapen inte svara på frågan "Är klimatförändringar dåliga?"',
-      opts:['Det är en värderingsfråga – naturvetenskapen kan beskriva och mäta fenomenet men inte avgöra om det är rätt eller fel','Klimatförändringar är ett för komplext fenomen för att kunna undersökas med vetenskapliga metoder','Frågans svar är beroende av politiska beslut och faller därmed utanför naturvetenskapens område','Naturvetenskapen saknar ännu tillräckliga data för att ge ett tillförlitligt svar på frågan'],
-      correct:0, expl:'Naturvetenskapen är begränsad till det som kan testas. Frågor om vad som är "bra" eller "dåligt" är värderingsfrågor – de faller utanför ämnets räckvidd.' }
+    { v:400, q:'Varför skadar forskningsfusk mer än bara den enskilda studien?',
+      opts:['Andra forskare bygger vidare på de felaktiga resultaten, och förtroendet för forskning i stort undergrävs','Den forskare som fuskat förlorar rätten att publicera sig och tvingas lämna sin tjänst omedelbart','Studien måste dras tillbaka och samtliga mätvärden måste samlas in på nytt av en annan forskargrupp','Etikprövningsmyndigheten tvingas stoppa alla pågående experiment inom samma forskningsfält'],
+      correct:0, expl:'Forskningsfusk innebär att plagiera, förfalska eller undanhålla resultat. Skadan sprider sig eftersom andra bygger vidare på uppgifterna – i Macchiarini-fallet på Karolinska dog patienter och förtroendet för forskningen skadades.' },
+    { v:500, q:'I en klassdiskussion ställs fyra frågor om klimatet. Vilken av dem kan naturvetenskapen besvara?',
+      opts:['Hur mycket har jordens medeltemperatur stigit sedan år 1900?','Är det moraliskt fel att flyga på semester när klimatet förändras?','Vad finns utanför universum, bortom det vi kan observera i dag?','Borde Sverige satsa mer av sina pengar på kärnkraft eller på vindkraft?'],
+      correct:0, expl:'Naturvetenskapen är begränsad till det som går att testa och mäta. Temperaturökningen kan mätas. Frågor om vad som är rätt och fel, om politiska prioriteringar eller om sådant som inte kan observeras faller utanför ämnets räckvidd.' }
   ]},
   { name:'Experiment & undersökning', color:'#f59e0b', rgb:'245,158,11', qs:[
     { v:100, q:'Vad menas med den oberoende variabeln i ett experiment?',
@@ -391,12 +431,12 @@ const JP_CATEGORIES = [
     { v:300, q:'Vad är en kontrollgrupp?',
       opts:['En grupp som inte utsätts för den behandling som testas – den används för jämförelse med försöksgruppen','En grupp som kontrollerar att experimentet genomförs korrekt och att inga procedurmisstag görs','Den grupp som utsätts för den starkaste dosen av det ämne eller den faktor som testas','En grupp bestående av externa experter som bedömer om experimentets resultat är trovärdiga'],
       correct:0, expl:'Kontrollgruppen utsätts inte för behandlingen men väljs ut och hanteras på exakt samma sätt som övriga grupper. Den minimerar störvariabler och ger en jämförelsepunkt.' },
-    { v:400, q:'Vad är placeboeffekten?',
-      opts:['Att en person mår bättre enbart för att de förväntar sig det – trots att de inte fått någon verksam medicin','Att ett läkemedel fungerar sämre än förväntat eftersom det inte testats tillräckligt noggrant','Att försöksdeltagare medvetet rapporterar felaktiga resultat för att påverka experimentets utfall','Att effekten av ett läkemedel avtar över tid även om personen fortsätter att ta medicinen'],
-      correct:0, expl:'Placeboeffekten innebär att förväntan i sig kan ge en mätbar effekt. Den som tror sig ha fått medicin kan må bättre – även av ett sockerpiller. Blindstudier används för att utesluta detta.' },
-    { v:500, q:'Vad menas med att samvariation inte är detsamma som orsakssamband?',
-      opts:['Att två variabler kan variera tillsammans utan att den ena orsakar den andra – en tredje faktor kan ligga bakom','Att starka samband alltid kräver fler oberoende experiment för att bekräftas som verkliga orsakssamband','Att ett orsakssamband kan existera utan att det yttrar sig som en mätbar samvariation i data','Att samvariation enbart är relevant inom medicin medan orsakssamband gäller alla vetenskapliga fält'],
-      correct:0, expl:'Klassiskt exempel: glasskonsumtion och solbränna samvarierar – men glass orsakar inte solbränna. Förklaringen är en tredje faktor: varmt och soligt väder påverkar båda.' }
+    { v:400, q:'Varför genomförs medicinska studier ofta som blindstudier?',
+      opts:['För att utesluta placeboeffekten – enbart förväntan kan annars få deltagarna att känna sig bättre','För att forskaren inte ska kunna styra hur mycket av den verksamma substansen varje grupp får','För att deltagarna i kontrollgruppen inte ska hoppa av så snart de får veta att de inte behandlas','För att resultaten ska kunna redovisas som medelvärden i stället för som enskilda mätvärden'],
+      correct:0, expl:'I en blindstudie vet deltagarna inte om de fått verksam medicin eller inte. Det behövs eftersom placeboeffekten gör att den som tror sig ha blivit behandlad kan må bättre även av ett sockerpiller.' },
+    { v:500, q:'En undersökning visar att elever som äter frukost har högre betyg än de som hoppar över den. Vilken slutsats är mest hållbar?',
+      opts:['Det finns en samvariation, men en tredje faktor kan ligga bakom både frukostvanorna och betygen','Frukosten orsakar de högre betygen, eftersom sambandet framgår tydligt av undersökningen','De högre betygen orsakar frukostvanorna, eftersom motiverade elever hinner äta på morgonen','Undersökningen är felaktig, eftersom kostvanor och betyg inte kan mätas i samma undersökning'],
+      correct:0, expl:'Samvariation är inte samma sak som orsakssamband. Precis som med glasskonsumtion och solbränna kan en tredje faktor – t.ex. familjens rutiner eller sömnvanor – ligga bakom båda.' }
   ]},
   { name:'Källkritik & att inte bli lurad', color:'#f43f5e', rgb:'244,63,94', qs:[
     { v:100, q:'Vad innebär källkritik?',
@@ -408,36 +448,110 @@ const JP_CATEGORIES = [
     { v:300, q:'Vad är desinformation?',
       opts:['Felaktig information som sprids medvetet i syfte att lura eller vilseleda mottagaren','Information som är vetenskapligt osäker och som saknar tillräcklig forskning och evidens bakom sig','Nyheter som av misstag blivit felaktiga på grund av journalistens okunskap eller tidsbrist','Reklam som överdriver en produkts fördelar utan att tydligt lyfta fram dess eventuella nackdelar'],
       correct:0, expl:'Desinformation är medvetet vilseledande – skillnaden mot vanliga felaktigheter är avsikten. Syftet kan vara att gynna ekonomiska intressen, påverka politiken eller skapa misstro mot myndigheter.' },
-    { v:400, q:'Vad menas med faktaresistens?',
-      opts:['Att en person håller fast vid sin övertygelse trots att det finns välgrundade fakta som talar emot den','Att en person konsekvent vägrar ta del av information från källor som inte godkänts av vetenskapssamhället','Att forskning om ett visst ämne är så tekniskt komplicerad att den inte är tillgänglig för gemene man','Att myndigheter och institutioner undanhåller fakta från allmänheten av politiska eller ekonomiska skäl'],
-      correct:0, expl:'Faktaresistens innebär att man inte ändrar uppfattning trots motstående bevis. Det strider mot ett vetenskapligt förhållningssätt och kan förstärka felaktiga uppfattningar.' },
-    { v:500, q:'Vad är pseudovetenskap?',
-      opts:['Läror som påstår sig vara vetenskapliga men saknar vetenskapligt stöd och ofta inte kan falsifieras med experiment','Vetenskapliga teorier som ännu inte fått tillräcklig forskning bakom sig för att accepteras av forskarsamhället','Forskning som bedrivs utanför akademiska institutioner men som ändå kan ge tillförlitliga och reproducerbara resultat','Teorier som avvisats av majoriteten av forskare men som fortfarande kan bevisas med rätt experimentell uppställning'],
-      correct:0, expl:'Pseudovetenskap ser ut som vetenskap men uppfyller inte kraven – t.ex. astrologi, vars förutsägelser är för vaga för att falsifieras. Faran är att folk väljer bort beprövad vård.' }
+    { v:400, q:'Varför kan filterbubblor och ekokammare leda till en snedvriden världsbild?',
+      opts:['De gör att vi främst möter åsikter som bekräftar det vi redan tror och sällan ser motstridig information','De sprider medvetet falsk information i syfte att skapa misstro mot myndigheter, experter och forskare','De gör att äldre och inaktuella källor får betydligt större spridning än nya och uppdaterade källor','De hindrar sökmotorerna från att visa vetenskapliga artiklar som har genomgått en peer review'],
+      correct:0, expl:'I en ekokammare förstärker användarna varandras åsikter, och filterbubblan uppstår när algoritmer anpassar innehållet efter användaren. Båda hindrar oss från att möta uppfattningar som strider mot våra egna.' },
+    { v:500, q:'En reklamfilm visar en läkare i vit rock som säger att ett kosttillskott har "bevisad effekt". Vilken källkritisk invändning väger tyngst?',
+      opts:['Läkaren kan vara betald av företaget – källan är tendensiös och påståendet är inte oberoende granskat','Läkaren nämner inte hur många personer som ingick i undersökningen av produktens effekt','Läkaren uttalar sig i rörlig bild, och film räknas alltid som en mindre pålitlig källtyp än text','Läkaren är sannolikt inte expert på kosttillskott, utan har specialiserat sig på ett annat område'],
+      correct:0, expl:'I reklam används ofta experter och kändisar för att bygga trovärdighet – men de kan få betalt för att säga positiva saker. Fråga alltid om den som står bakom påståendet har något att tjäna på det.' }
   ]}
+  ]
+},
+{
+  label:'Omgång 2 · 600–1000p',
+  cats:[
+  { name:'Planera & variabler', color:'#34d399', rgb:'52,211,153', qs:[
+    { v:600, q:'En elev ska undersöka hur vattnets temperatur påverkar hur snabbt isbitar smälter. Vilken frågeställning är tillräckligt specifik och avgränsad?',
+      opts:['Hur påverkar det omgivande vattnets temperatur smälttiden för isbitar som väger 10 gram?','Vad är det egentligen som gör att isbitar smälter snabbare i vatten än de gör i luft?','Varför smälter isbitar olika snabbt beroende på var i rummet man väljer att placera dem?','Hur fungerar smältning av is när temperaturen i den omgivande miljön förändras över tid?'],
+      correct:0, expl:'En specifik frågeställning namnger både den oberoende variabeln (vattnets temperatur) och den beroende variabeln (smälttiden), och är avgränsad genom att isbitarnas vikt anges.' },
+    { v:700, q:'I lökförsöket odlas lök i olika belysningsstyrkor medan jordmån, näring, vatten och temperatur hålls lika i alla grupper. Vad kallas de fyra sistnämnda?',
+      opts:['Kontrollerade variabler, som hålls konstanta för att inte störa resultatet i undersökningen','Oberoende variabler, som ändras av forskaren för att se effekten på plantornas tillväxt','Beroende variabler, som mäts av forskaren för att visa hur mycket plantorna har växt','Kontrollgrupper, som jämförs med de plantor som fått den starkaste belysningen i försöket'],
+      correct:0, expl:'De kontrollerade variablerna är de faktorer som hålls konstanta. Belysningsstyrkan är den oberoende variabeln och tillväxten (biomassan) är den beroende variabeln.' },
+    { v:800, q:'En klasskamrat mäter tillväxten hos en enda lökplanta per belysningsstyrka och drar slutsatsen att mer ljus ger mer tillväxt. Vad är den allvarligaste bristen?',
+      opts:['Med bara en individ per grupp går slumpmässig variation och mätfel inte att skilja från en verklig effekt','Belysningsstyrkan borde ha varit den beroende variabeln, eftersom det är den som forskaren ändrar','Tillväxt mätt som biomassa går inte att jämföra mellan plantor som odlats i olika belysningsstyrkor','Undersökningen saknar en formulerad hypotes och räknas därför inte som ett experiment över huvud taget'],
+      correct:0, expl:'Ju fler individer per försöksgrupp, desto mindre slår slumpmässiga variationer och mätfel igenom. Med en enda planta går det inte att avgöra om skillnaden beror på ljuset eller på slumpen.' },
+    { v:900, q:'Vad är skillnaden mellan att ha en kontrollgrupp och att genomföra en blindstudie?',
+      opts:['Kontrollgruppen får ingen verksam behandling, medan blindstudien innebär att deltagarna inte vet vilken grupp de tillhör','Kontrollgruppen får en lägre dos av behandlingen, medan blindstudien innebär att forskaren inte vet vem som fått vad','Kontrollgruppen väljs ut slumpmässigt, medan blindstudien innebär att deltagarna väljs ut efter hur sjuka de är','Kontrollgruppen används i medicinska studier, medan blindstudier enbart används i studier av växter och djur'],
+      correct:0, expl:'Kontrollgruppen är en jämförelsegrupp som inte får behandlingen. Blindstudien handlar om vad deltagarna vet: de får inte veta vilken grupp de tillhör, så att placeboeffekten kan uteslutas.' },
+    { v:1000, q:'I en blindstudie av en ny medicin får kontrollgruppen sockerpiller. Varför beskrivs det i läroboken som ett moraliskt dilemma?',
+      opts:['Sjuka i kontrollgruppen blir utan fungerande behandling, samtidigt som blindningen behövs för att utesluta placeboeffekten','Deltagarna i kontrollgruppen riskerar allvarliga biverkningar av sockerpillret utan att ha informerats om det i förväg','Resultaten blir opålitliga eftersom kontrollgruppen inte går att jämföra med den grupp som får den verksamma medicinen','Forskarna tvingas avbryta studien så snart medicinen visat effekt, vilket gör att tillräckliga data aldrig hinner samlas in'],
+      correct:0, expl:'Blindstudien behövs vetenskapligt för att skilja medicinens effekt från placeboeffekten. Priset är att sjuka personer i kontrollgruppen under tiden blir utan verksam behandling – därav dilemmat.' }
+  ]},
+  { name:'Resultat & slutsatser', color:'#818cf8', rgb:'129,140,248', qs:[
+    { v:600, q:'Vid 2000 lux mättes ökningen av biomassa till 10, 9, 9, 10 och 12 gram. Vilket värde ska redovisas som gruppens medelvärde i diagrammet?',
+      opts:['10,0 gram – summan av de fem mätvärdena delad med antalet mätningar i gruppen','9,0 gram – det lägsta värde som uppmätts vid just denna belysningsstyrka i försöket','10,5 gram – mittvärdet mellan det lägsta och det högsta uppmätta värdet i gruppen','12,0 gram – det högsta uppmätta värdet, eftersom det visar plantornas fulla potential'],
+      correct:0, expl:'Medelvärdet är summan delad med antalet mätningar: (10+9+9+10+12)/5 = 10,0 gram. I diagram med flera försöksgrupper är det i regel bara medelvärdena som presenteras.' },
+    { v:700, q:'Eleven ska rita ett punktdiagram över lökförsöket. Hur ska diagrammet göras i ordning?',
+      opts:['Belysningsstyrkan på x-axeln, biomassan på y-axeln och enheterna angivna inom parentes i axelrubrikerna','Biomassan på x-axeln, belysningsstyrkan på y-axeln och samtliga fem mätvärden per grupp utsatta som punkter','Alla enskilda mätvärden utsatta på båda axlarna, med en figurtext som ersätter axelrubrikerna helt och hållet','Belysningsstyrkan på x-axeln, men utan enheter eftersom dessa redan framgår av tabellen ovanför diagrammet'],
+      correct:0, expl:'Den oberoende variabeln (belysningsstyrkan) hör hemma på x-axeln och den beroende (biomassan) på y-axeln. Båda axlarna förses med axelrubriker där enheten anges inom parentes.' },
+    { v:800, q:'Förutsägelsen i ett försök inträffar precis som forskaren väntat sig. Hur ska slutsatsen formuleras vetenskapligt korrekt?',
+      opts:['Hypotesen stöds av resultatet – man kan aldrig med absolut säkerhet säga att en hypotes är bevisad','Hypotesen är bevisad, eftersom förutsägelsen inträffade precis på det sätt som forskaren förväntat sig','Hypotesen är falsifierad, eftersom ett enskilt försök aldrig räcker för att avgöra om den faktiskt stämmer','Hypotesen ska omedelbart omformuleras till en teori, eftersom förutsägelsen inträffade redan vid första försöket'],
+      correct:0, expl:'Om förutsägelsen inträffar talar det för hypotesen, men man kan aldrig bevisa den med absolut säkerhet. Därför säger man att hypotesen stöds. Först efter många experiment kan den ingå i en teori.' },
+    { v:900, q:'I vilken del av en vetenskaplig rapport hör avvikande resultat, begränsningar och förbättringsförslag hemma – och varför?',
+      opts:['I diskussionen, där frågeställningen besvaras och resultaten tolkas tillsammans med studiens svagheter','I resultatdelen, eftersom avvikande mätvärden måste redovisas i samma tabell som alla övriga mätvärden','I material och metod, eftersom förbättringsförslagen handlar om hur utrustningen har använts i försöket','I inledningen, eftersom läsaren behöver känna till studiens svagheter innan resultaten alls presenteras'],
+      correct:0, expl:'Resultatdelen redovisar mätdata neutralt i tabeller och diagram. I diskussionen besvaras frågeställningen, hypotesen utvärderas och avvikande resultat, begränsningar och förbättringsförslag tas upp.' },
+    { v:1000, q:'Hur kan forskare vetenskapligt testa om en klimatmodell ger korrekta resultat?',
+      opts:['Modellen får utgå från ett datum bakåt i tiden och räkna fram till nu – stämmer resultatet med dagens klimat stärks den','Modellen jämförs med andra klimatmodeller – ger flera oberoende modeller samma resultat är beräkningen med säkerhet korrekt','Modellen körs framåt i tiden och kontrolleras långt senare mot de mätningar som gjorts under exakt samma period','Modellen granskas av minst två oberoende forskare i en peer review, vilket avgör om beräkningarna är tillförlitliga'],
+      correct:0, expl:'Man sätter startpunkten tillbaka i tiden och kör beräkningarna fram till i dag. Om modellen lyckas återskapa det klimat vi faktiskt har haft ger det stöd för att den också kan förutsäga framtiden.' }
+  ]},
+  { name:'Källkritik i praktiken', color:'#fb923c', rgb:'251,146,60', qs:[
+    { v:600, q:'En webbplats om rökningens hälsorisker visar sig vara finansierad av tobaksindustrin. Vilken fråga i källkritikens ABC gäller det framför allt?',
+      opts:['Om källan är tendensiös – bakomliggande ekonomiska intressen kan påverka hur riskerna beskrivs','Om källan är aktuell – ekonomiska intressen gör att informationen snabbt hinner bli föråldrad','Om källan är äkta – ekonomiska intressen gör det osannolikt att upphovspersonen är den utgivna','Om källan är beroende – ekonomiska intressen innebär att sidan bygger på andra källors uppgifter'],
+      correct:0, expl:'En tendensiös källa är vinklad av politiska, ekonomiska eller ideologiska intressen. Tobaksindustrin tjänar på att riskerna underdrivs, vilket gör källan mindre trovärdig.' },
+    { v:700, q:'En elev hittar en nyhetsartikel som refererar till en vetenskaplig studie. Hur bör eleven gå vidare?',
+      opts:['Söka upp den vetenskapliga studien – primärkällan är pålitligare än en källa som återger andras uppgifter','Använda nyhetsartikeln – journalisten har redan granskat studien och sammanfattat den korrekt åt läsaren','Söka fler nyhetsartiklar om samma studie – ju fler tidningar som skriver om den, desto säkrare är uppgiften','Avstå från att använda uppgiften – information som refereras av andra kan aldrig användas i skolarbeten'],
+      correct:0, expl:'Vetenskapliga artiklar är primärkällor och bygger på egna observationer och experiment. Sekundärkällor är beroende av att den ursprungliga informationen återgetts korrekt, så gå så nära ursprungskällan du kan.' },
+    { v:800, q:'Varför är en artikel som genomgått peer review i regel mer pålitlig än ett blogginlägg om samma forskning?',
+      opts:['Minst två oberoende forskare har granskat rapporten före publicering, vilket fångar upp överdrifter och feltolkningar','Artikeln publiceras i en tidskrift som betalar forskarna, vilket gör att de inte har några skäl att vinkla resultaten','Artikeln bygger på fler mätningar än ett blogginlägg och kan därför aldrig innehålla några felaktiga slutsatser','Artikeln är skriven på ett vetenskapligt språk, vilket gör att läsaren kan kontrollera varje enskilt påstående själv'],
+      correct:0, expl:'Forskare kan överdriva betydelsen av sina upptäckter eller tolka resultaten fel. Peer review innebär att minst två oberoende forskare granskar rapporten innan den publiceras – en kvalitetskontroll bloggar saknar.' },
+    { v:900, q:'En chattbot skriver en text med källhänvisningar. Varför krävs särskild källkritik mot en sådan text?',
+      opts:['Texten har inte granskats av någon expert, och de angivna källorna kan vara påhittade eller sakna anknytning','Texten är alltid hämtad ur uppslagsverk, vilket gör den föråldrad så snart forskningen på området utvecklas','Texten bygger enbart på material som andra AI-system skapat, vilket gör den till en ren sekundärkälla','Texten formuleras om vid varje läsning, vilket gör att två läsare aldrig får se exakt samma påståenden'],
+      correct:0, expl:'AI-genererad text kan verka trovärdig men innehålla falsk information, och den har till skillnad från ett uppslagsverk inte granskats av någon expert. Angivna källor kan vara påhittade eller sakna anknytning till texten.' },
+    { v:1000, q:'Vad skiljer ett vetenskapligt förhållningssätt från faktaresistens?',
+      opts:['Ett vetenskapligt förhållningssätt innebär att man ändrar uppfattning när fakta talar emot; faktaresistens att man håller fast ändå','Ett vetenskapligt förhållningssätt innebär att man avfärdar allt som strider mot den egna uppfattningen; faktaresistens att man tror på allt','Ett vetenskapligt förhållningssätt kräver att man är expert inom området; faktaresistens uppstår hos den som saknar utbildning','Ett vetenskapligt förhållningssätt innebär att man litar på myndigheter; faktaresistens att man i stället litar på sociala medier'],
+      correct:0, expl:'Ett vetenskapligt förhållningssätt innebär kritiskt tänkande, opartiskhet och öppenhet för nya idéer. Faktaresistens är motsatsen: att hålla fast vid sin övertygelse trots att välgrundade fakta talar emot den.' }
+  ]},
+  { name:'Desinformation & tankefällor', color:'#e879f9', rgb:'232,121,249', qs:[
+    { v:600, q:'Ett stort antal anonyma konton sprider exakt samma påstående samtidigt på sociala medier. Vilken effekt är det tänkt att ge?',
+      opts:['En illusion av att påståendet är populärt och allmänt accepterat, trots att det sprids av botar och troll','En garanti för att påståendet når fram även till användare som annars hamnar i en annan filterbubbla','En möjlighet för plattformen att hinna faktagranska påståendet innan det sprids vidare till ännu fler','En snabbare spridning av korrekt information, eftersom fler konton då kan hänvisa till samma källa'],
+      correct:0, expl:'Automatiserade program (botar) och anställda troll används för att sprida stora mängder desinformation. Det skapar en illusion av att den falska informationen är populär eller allmänt accepterad.' },
+    { v:700, q:'En video där en känd politiker säger något uppseendeväckande sprids snabbt och får enormt många delningar. Vad bör man tänka på?',
+      opts:['Videon kan vara en deepfake, och algoritmerna gynnar innehåll som väcker starka reaktioner oavsett om det är sant','Videon är sannolikt äkta, eftersom rörlig bild är betydligt svårare att förfalska än text och stillbilder','Videon bör delas vidare med en varning, så att fler användare får möjlighet att bedöma innehållet själva','Videon kan bedömas utifrån antalet delningar, eftersom falska nyheter sällan får spridning i sociala medier'],
+      correct:0, expl:'Deepfakes använder AI för att skapa falska videor och ljudinspelningar av personer. Dessutom prioriterar algoritmerna innehåll som ger starka reaktioner, så falska nyheter kan spridas snabbare än sanna.' },
+    { v:800, q:'Vad skiljer en ekokammare från en filterbubbla?',
+      opts:['I ekokammaren förstärker användarna varandras åsikter; filterbubblan uppstår när algoritmer anpassar innehållet efter användaren','I ekokammaren styr algoritmerna vilka inlägg som visas; filterbubblan uppstår när användare aktivt blockerar andras åsikter','Ekokammaren uppstår i traditionella medier; filterbubblan är ett fenomen som enbart förekommer på sociala medier','Ekokammaren sprider medvetet falsk information; filterbubblan sprider information som är sann men kraftigt vinklad'],
+      correct:0, expl:'Ekokammaren är en miljö där en grupp ständigt bekräftar varandras övertygelser. Filterbubblan är ett likartat fenomen, men uppstår för att algoritmerna anpassar innehållet efter användarprofilen.' },
+    { v:900, q:'En person läser en studie som motsäger hens övertygelse och förnekar resultaten i stället för att ändra uppfattning. Vilka mekanismer beskriver detta bäst?',
+      opts:['Bekräftelsebias får hen att lita mer på det som redan stämmer, och kognitiv dissonans gör att motstridiga fakta förnekas','Faktaresistens får hen att lita mer på experterna, och kognitiv dissonans gör att hen söker upp fler studier i frågan','Filterbubblan gör att studien aldrig visas för hen, och bekräftelsebias gör att hen litar helt på algoritmens urval','Placeboeffekten gör att hen upplever att studien stämmer, och bekräftelsebias gör att hen delar den vidare direkt'],
+      correct:0, expl:'Bekräftelsebias innebär att vi har högre tilltro till information som stämmer med det vi redan tror. Kognitiv dissonans är den inre konflikt motstridiga fakta skapar – och vissa väljer då att förneka fakta.' },
+    { v:1000, q:'Ett armband marknadsförs som "vetenskapligt bevisat" mot trötthet, med hänvisning till energifält i kroppen. Varför är det pseudovetenskap – och varför är det ett problem?',
+      opts:['Påståendet om energifält kan inte falsifieras med experiment, och köparen kan i falsk trygghet avstå från beprövad vård','Påståendet bygger på en enda studie som saknar kontrollgrupp, och köparen betalar därför ett för högt pris för produkten','Påståendet har inte granskats av en etikprövningsmyndighet, och tillverkaren riskerar att anmälas för forskningsfusk','Påståendet stöds av forskning som ännu inte publicerats, och köparen får därför vänta länge på en verklig effekt'],
+      correct:0, expl:'Pseudovetenskap gör anspråk på att vara vetenskaplig utan vetenskapligt stöd, och påståendena är ofta för vaga för att kunna testas. Faran är att människor känner falsk trygghet och avstår från beprövad sjukvård.' }
+  ]}
+  ]
+}
 ];
 
-/* ════════ SETUP ════════ */
-let jpTeamCount = 2, jpTeams = [], jpUsed = 0, jpTurn = null, jpStreak = 0;
+/* Den aktiva omgångens kategorier. Pekas om av jpStartRound(). */
+let JP_CATEGORIES = JP_ROUNDS[0].cats;
 
-function jpTeamColor(i){ return JP_CATEGORIES[i%4].color; }
+/* ════════ SETUP ════════ */
+let jpTeamCount = 2, jpTeams = [], jpUsed = 0, jpTurn = null, jpRound = 0;
+
+function jpTeamColor(i){ return JP_TEAM_COLORS[i%JP_TEAM_COLORS.length]; }
+
+function jpRenderRound(){
+  const el=document.getElementById('jp-round');
+  el.textContent=JP_ROUNDS[jpRound].label;
+  el.style.background=JP_CATEGORIES[0].color;
+  el.style.color='#0b1120';
+}
 
 function jpRenderTurn(){
   const el=document.getElementById('jp-turn');
   if(jpTurn===null||!jpTeams[jpTurn]){ el.textContent=''; return; }
-  const c=jpTeamColor(jpTurn);
-  let dots='';
-  if(jpStreak===1||jpStreak===2){
-    dots='<span style="display:inline-flex;gap:.22em;vertical-align:middle;margin-left:.5em" aria-hidden="true">';
-    for(let i=0;i<3;i++){
-      dots+= i<jpStreak
-        ? `<span style="width:.42em;height:.42em;border-radius:50%;background:${c};display:inline-block"></span>`
-        : `<span style="width:.42em;height:.42em;border-radius:50%;border:1px solid ${c};opacity:.4;display:inline-block"></span>`;
-    }
-    dots+='</span>';
-  }
-  el.innerHTML=jpTeams[jpTurn].name+' väljer fråga'+dots;
-  el.style.color=c;
+  el.textContent=jpTeams[jpTurn].name+' väljer nästa fråga';
+  el.style.color=jpTeamColor(jpTurn);
 }
 
 function jpRenderTeamInputs(){
@@ -455,7 +569,7 @@ function jpRenderTeamInputs(){
 function jpChangeTeamCount(d){ jpTeamCount=Math.min(4,Math.max(2,jpTeamCount+d)); jpRenderTeamInputs(); }
 
 function jpStartGame(){
-  jpTeams=[]; jpUsed=0; jpStreak=0;
+  jpTeams=[];
   for(let i=0;i<jpTeamCount;i++){
     const v=document.getElementById('jp-team-'+i).value.trim();
     jpTeams.push({name:v||('Lag '+(i+1)),score:0});
@@ -463,20 +577,58 @@ function jpStartGame(){
   jpTurn=Math.floor(Math.random()*jpTeams.length);
   document.getElementById('jp-setup').classList.add('hidden');
   document.getElementById('jp-stage').classList.remove('hidden');
-  document.getElementById('jp-end').classList.add('hidden');
-  document.getElementById('jp-end').style.display='none';
+  jpHideOverlay('jp-end');
+  jpHideOverlay('jp-inter');
   document.getElementById('jp-teams').style.setProperty('--tc', jpTeams.length);
-  jpRenderTeams(); jpRenderTurn(); jpBuildBoard();
+  jpRenderTeams();
+  jpStartRound(0);
   jpShowRules(true);
 }
 function jpNewGame(){
   jpTurn=null;
   jpExitFullscreen();
   jpHideRules();
+  jpHideOverlay('jp-end');
+  jpHideOverlay('jp-inter');
   document.getElementById('jp-modal').classList.remove('on');
   document.getElementById('jp-stage').classList.add('hidden');
   document.getElementById('jp-setup').classList.remove('hidden');
-  document.getElementById('jp-end').style.display='none';
+}
+
+function jpHideOverlay(id){
+  const el=document.getElementById(id);
+  el.classList.add('hidden'); el.style.display='none';
+}
+function jpIsOpen(id){ return document.getElementById(id).style.display==='flex'; }
+
+/* ════════ OMGÅNGAR ════════ */
+/* jpTurn rörs aldrig här – rotationen fortsätter där omgång 1 slutade. */
+function jpStartRound(n){
+  jpRound=n;
+  JP_CATEGORIES=JP_ROUNDS[n].cats;
+  jpUsed=0;
+  jpBuildBoard();
+  jpRenderRound();
+  jpRenderTurn();
+}
+function jpStartRound2(){
+  jpHideOverlay('jp-inter');
+  jpStartRound(1);
+}
+function jpShowIntermission(){
+  const list=document.getElementById('jp-inter-list'); list.innerHTML='';
+  jpTeams.map((t,i)=>({t,i})).sort((a,b)=>b.t.score-a.t.score).forEach((e,pos)=>{
+    const row=document.createElement('div');
+    row.className='flex items-center gap-4 justify-center';
+    row.innerHTML=`<span class="text-slate-300 font-bold" style="font-size:clamp(.95rem,2.6vh,1.4rem)">${pos+1}. ${e.t.name}</span>
+      <span class="num font-bold" style="color:${jpTeamColor(e.i)};font-size:clamp(1.2rem,3.4vh,2rem)">${e.t.score}</span>`;
+    list.appendChild(row);
+  });
+  const nx=document.getElementById('jp-inter-next');
+  nx.textContent=jpTeams[jpTurn].name+' inleder omgång 2.';
+  nx.style.color=jpTeamColor(jpTurn);
+  const el=document.getElementById('jp-inter');
+  el.classList.remove('hidden'); el.style.display='flex';
 }
 
 /* ════════ SPELREGLER ════════ */
@@ -488,10 +640,7 @@ function jpShowRules(initial){
   const r=document.getElementById('jp-rules');
   r.classList.remove('hidden'); r.style.display='flex';
 }
-function jpHideRules(){
-  const r=document.getElementById('jp-rules');
-  r.classList.add('hidden'); r.style.display='none';
-}
+function jpHideRules(){ jpHideOverlay('jp-rules'); }
 
 /* ════════ LAG ════════ */
 function jpRenderTeams(){
@@ -523,6 +672,7 @@ function jpBuildBoard(){
     h.className='jp-head'; h.style.background=cat.color; h.textContent=cat.name;
     b.appendChild(h);
   });
+  /* Högsta värdet överst, lägsta nederst. */
   for(let row=4;row>=0;row--){
     JP_CATEGORIES.forEach((cat,ci)=>{
       const q=cat.qs[row];
@@ -540,9 +690,13 @@ function jpBuildBoard(){
 }
 
 /* ════════ FRÅGA ════════ */
-let jpCat=null,jpRow=null,jpCell=null,jpOpts=[],jpPicked=null,jpWrong=[],jpRevealed=false,jpTimer=null,jpTime=30;
+let jpCat=null,jpRow=null,jpCell=null,jpOpts=[],jpPicked=null,jpWrong=[],jpRevealed=false,jpTimer=null;
+let jpTime=45,jpTimeTotal=45;
 let jpChooser=null,jpAnswering=null,jpFailed=[];
-let jpValue=0,jpResolved=false,jpWinner=null;
+let jpValue=0,jpBaseValue=0,jpResolved=false,jpWinner=null;
+
+/* Tiden styrs av frågans ursprungliga poängvärde, inte det halverade. */
+function jpBaseTime(v){ return v<=300 ? 45 : (v<=700 ? 60 : 75); }
 
 function jpLowerValue(){
   let v=Math.floor(jpValue/2);
@@ -576,12 +730,12 @@ function jpShuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.ran
 
 function jpOpenQuestion(ci,row,cell){
   if(cell.classList.contains('jp-used')) return;
-  if(document.getElementById('jp-rules').style.display==='flex') return;
+  if(jpIsOpen('jp-rules')||jpIsOpen('jp-inter')||jpIsOpen('jp-end')) return;
   jpCat=ci; jpRow=row; jpCell=cell;
   const cat=JP_CATEGORIES[ci], q=cat.qs[row];
   jpPicked=null; jpWrong=[]; jpRevealed=false; jpResolved=false; jpWinner=null; jpFailed=[];
   jpChooser=jpTurn; jpAnswering=jpTurn;
-  jpValue=q.v;
+  jpValue=q.v; jpBaseValue=q.v;
   jpOpts=jpShuffle(q.opts.map((t,i)=>({text:t,isCorrect:i===q.correct})));
 
   const catEl=document.getElementById('jp-cat');
@@ -601,7 +755,7 @@ function jpOpenQuestion(ci,row,cell){
   jpRenderAnswering();
   jpRenderOptions();
   document.getElementById('jp-modal').classList.add('on');
-  jpStartTimer();
+  jpStartTimer(jpBaseTime(jpBaseValue));
 }
 
 function jpRenderOptions(){
@@ -628,24 +782,17 @@ function jpPick(idx){
     clearInterval(jpTimer);
     jpResolved=true; jpWinner=jpAnswering; jpPicked=idx;
     jpTeams[jpAnswering].score+=jpValue;
-    jpStreak = (jpAnswering===jpChooser) ? jpStreak+1 : 1;
-    let streakBroken=false;
-    if(jpStreak>=3){
-      jpTurn=(jpAnswering+1)%jpTeams.length;
-      jpStreak=0;
-      streakBroken=true;
-    }else{
-      jpTurn=jpAnswering;
-    }
-    jpRenderTeams(); jpRenderTurn(); jpRenderOptions();
+    /* Strikt rotation: poängen går till det svarande laget, men turen
+       flyttas alltid ett steg från den som VALDE rutan (jpCloseModal). */
+    const next=(jpChooser+1)%jpTeams.length;
+    const stolen = jpAnswering!==jpChooser;
+    jpRenderTeams(); jpRenderOptions();
     document.getElementById('jp-expl-wrap').classList.remove('hidden');
     document.getElementById('jp-answering-wrap').classList.add('hidden');
     document.getElementById('jp-reveal-btn').classList.add('hidden');
-    if(streakBroken){
-      jpBanner('✓ Rätt – '+jpTeams[jpAnswering].name+' får '+jpValue+' poäng. Tre i rad — turen går över till '+jpTeams[jpTurn].name+'.', jpTeamColor(jpAnswering));
-    }else{
-      jpBanner('✓ Rätt – '+jpTeams[jpAnswering].name+' får '+jpValue+' poäng.', jpTeamColor(jpAnswering));
-    }
+    jpBanner('✓ Rätt – '+jpTeams[jpAnswering].name+' får '+jpValue+' poäng. '
+      +(stolen?'Stöld ger inte turen: ':'')
+      +jpTeams[next].name+' väljer nästa fråga.', jpTeamColor(jpAnswering));
   }else{
     jpFailAndAdvance({clickedIdx:idx});
   }
@@ -660,19 +807,17 @@ function jpFailAndAdvance(o){
   if(next===null){
     clearInterval(jpTimer);
     jpResolved=true; jpRevealed=true; jpWinner=null;
-    jpTurn=(jpChooser+1)%jpTeams.length;
-    jpStreak=0;
     jpRenderOptions();
     document.getElementById('jp-expl-wrap').classList.remove('hidden');
     document.getElementById('jp-answering-wrap').classList.add('hidden');
     document.getElementById('jp-reveal-btn').classList.add('hidden');
-    jpBanner('Ingen fick rätt.', '#dc2626');
+    jpBanner('Ingen fick rätt. '+jpTeams[(jpChooser+1)%jpTeams.length].name+' väljer nästa fråga.', '#dc2626');
   }else{
     jpAnswering=next;
     jpRenderAnswering();
     const lead = o.timedOut ? '⏰ Tiden är ute.' : '✗ FEL – försök igen.';
-    jpBanner(lead+' Turen går över till '+jpTeams[next].name+'. Frågan är nu värd '+jpValue+' p.', jpTeamColor(next));
-    jpStartTimer();
+    jpBanner(lead+' '+jpTeams[next].name+' får chansen på '+jpValue+' p ('+JP_STEAL_TIME+' sek).', jpTeamColor(next));
+    jpStartTimer(JP_STEAL_TIME);
   }
 }
 
@@ -688,9 +833,7 @@ function jpBanner(txt,color){
 function jpRevealAnswer(){
   clearInterval(jpTimer);
   jpRevealed=true; jpResolved=true; jpWinner=null;
-  jpTurn=(jpChooser+1)%jpTeams.length;
-  jpStreak=0;
-  jpRenderTeams(); jpRenderTurn(); jpRenderOptions();
+  jpRenderTeams(); jpRenderOptions();
   document.getElementById('jp-expl-wrap').classList.remove('hidden');
   document.getElementById('jp-banner').classList.add('hidden');
   document.getElementById('jp-answering-wrap').classList.add('hidden');
@@ -699,23 +842,29 @@ function jpRevealAnswer(){
 
 function jpCloseModal(){
   clearInterval(jpTimer);
-  if(!jpResolved){ jpTurn=(jpChooser+1)%jpTeams.length; jpStreak=0; }
+  /* Strikt rotation – turen går alltid vidare från den som valde rutan,
+     oavsett rätt, fel, stöld eller "Visa svar". */
+  jpTurn=(jpChooser+1)%jpTeams.length;
   jpRenderTeams(); jpRenderTurn();
   jpCell.classList.add('jp-used'); jpCell.textContent='✓'; jpCell.onmouseenter=null; jpCell.onmouseleave=null;
   document.getElementById('jp-modal').classList.remove('on');
   document.getElementById('jp-actions').classList.remove('hidden');
   jpUsed++;
-  if(jpUsed>=20) jpShowEnd();
+  if(jpUsed>=20){
+    if(jpRound===0) jpShowIntermission();
+    else jpShowEnd();
+  }
 }
 
 function jpShowEnd(){
+  jpHideOverlay('jp-inter');
   const list=document.getElementById('jp-end-list'); list.innerHTML='';
-  [...jpTeams].sort((a,b)=>b.score-a.score).forEach((t,i)=>{
-    const c=JP_CATEGORIES[i%4].color;
+  jpTeams.map((t,i)=>({t,i})).sort((a,b)=>b.t.score-a.t.score).forEach((e,pos)=>{
+    const c=jpTeamColor(e.i);
     const row=document.createElement('div');
     row.className='flex items-center gap-4 justify-center';
-    row.innerHTML=`<span class="text-slate-300 font-bold" style="font-size:clamp(1rem,3vh,1.6rem)">${i===0?'🏆':(i+1)+'.'} ${t.name}</span>
-      <span class="num font-bold" style="color:${c};font-size:clamp(1.3rem,4vh,2.4rem)">${t.score}</span>`;
+    row.innerHTML=`<span class="text-slate-300 font-bold" style="font-size:clamp(1rem,3vh,1.6rem)">${pos===0?'🏆':(pos+1)+'.'} ${e.t.name}</span>
+      <span class="num font-bold" style="color:${c};font-size:clamp(1.3rem,4vh,2.4rem)">${e.t.score}</span>`;
     list.appendChild(row);
   });
   const e=document.getElementById('jp-end');
@@ -723,14 +872,15 @@ function jpShowEnd(){
 }
 
 /* ════════ TIMER ════════ */
-function jpStartTimer(){
-  clearInterval(jpTimer); jpTime=30;
+function jpStartTimer(sec){
+  clearInterval(jpTimer);
+  jpTimeTotal=sec; jpTime=sec;
   const bar=document.getElementById('jp-bar'), txt=document.getElementById('jp-time');
   const c=JP_CATEGORIES[jpCat].color;
   bar.style.width='100%'; bar.style.background=c;
-  txt.textContent='30'; txt.className='num text-sm font-bold text-slate-400';
+  txt.textContent=sec; txt.className='num text-sm font-bold text-slate-400';
   jpTimer=setInterval(()=>{
-    jpTime--; txt.textContent=jpTime; bar.style.width=(jpTime/30*100)+'%';
+    jpTime--; txt.textContent=jpTime; bar.style.width=(jpTime/jpTimeTotal*100)+'%';
     if(jpTime<=10){ bar.style.background='#dc2626'; txt.className='num text-sm font-bold text-red-600'; }
     if(jpTime<=0){ clearInterval(jpTimer); if(!jpResolved && !jpRevealed) jpFailAndAdvance({timedOut:true}); }
   },1000);
@@ -756,7 +906,8 @@ document.addEventListener('fullscreenchange',()=>{
 document.addEventListener('keydown',e=>{
   if(e.key!=='Escape') return;
   if(document.getElementById('jp-modal').classList.contains('on')){ jpCloseModal(); }
-  else if(document.getElementById('jp-rules').style.display==='flex'){ jpHideRules(); }
+  else if(jpIsOpen('jp-rules')){ jpHideRules(); }
+  else if(jpIsOpen('jp-inter')){ /* mellanskärmen kräver ett aktivt val */ }
   else{ jpExitFullscreen(); }
 });
 
