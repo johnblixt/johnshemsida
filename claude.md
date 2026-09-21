@@ -921,3 +921,89 @@ Ett spel i formatet "Vem vill bli miljonär?" som bygger om ett arbetsområdes b
 - `.game-wrap`: `grid-template-columns:1fr 300px` (fråga/alternativ + prisstege). Under 860 px: `grid-template-columns:1fr` och prisstegen (`.ladder-panel`) blir en horisontell, scrollbar rad ovanför frågan. Under 560 px: `.opts` går från två kolumner till en
 - `.rung.current` markeras i guld, `.rung.secure` i ämnets accentfärg (teal i referensfilen) med skölden `🛡`, `.rung.passed` tonas upp i vanlig textfärg
 - `prefers-reduced-motion:reduce` stänger av alla transitions/animationer, samma mönster som i Jeopardy-referensen
+
+---
+
+## Flappy-spel ("Flaxa & forska")
+
+### Syfte och grundform
+Ett Flappy Bird-spel där **quizfrågor styr progressionen**: eleven flyger mellan provrör, och varje passerat rör öppnar en fråga ur områdets frågebank. Spelet är en solo-repetition för eleven själv — ingen spelledare, ingen lagindelning, ingen inloggning.
+
+Fil: `[kurs]_[omrade]_flappy.html` (t.ex. `nk1a1_naturvetenskap_flappy.html`). Referens: `nk1a1_naturvetenskap_flappy.html`.
+
+**Crediten `Spelidé: Edvin Maloku` står alltid på startskärmen, i liten dämpad text direkt under Starta-knappen. Den följer med när spelet återanvänds för andra kurser och områden — ta aldrig bort den.**
+
+### Delad frågedata — `[kurs]_[omrade]_questions.js`
+Flappy-spelet och områdets quiz delar **samma** frågebank. Frågorna ligger aldrig inline i någon av HTML-filerna.
+
+- Filnamn: `[kurs]_[omrade]_questions.js` (t.ex. `nk1a1_naturvetenskap_questions.js`)
+- Innehåller exakt två globala arrayer: **`QUESTIONS`** (30 frågor, `{ q, opts:[4], correct, expl }`) och **`EASY_Q`** (30 objekt, `{ q, a, i:[3], expl }`)
+- `EASY_Q[i]` motsvarar alltid `QUESTIONS[i]` — **samma ordning, samma längd**. `EASY_Q[i].i[]` listar de felaktiga alternativen i `opts`-ordning med det rätta borttaget
+- Laddas med `<script src="[kurs]_[omrade]_questions.js"></script>` **före** sidans egen `<script>` i både quiz- och flappy-filen
+- Bryter man ut data ur ett befintligt quiz: kontrollera efteråt att quizet fungerar exakt som innan — shuffle, `origIdx`-mappning, facit och Enkel svenska
+
+### Frågeflöde
+- Frågor dras **utan upprepning** tills poolen är slut, sedan blandas hela poolen om (`pool` med index, Fisher-Yates)
+- Svarsalternativen blandas per fråga: `order` mappar visad plats → index i `opts`. **Rättningen utgår alltid från `QUESTIONS[i].correct`** — aldrig från visad text
+- Efter varje passerat rör (`CFG.askEvery = 1`) pausas spelet och en fråga visas. Eleven fortsätter med **"Flyg vidare"** och därefter ett tryck — aldrig direkt tillbaka i fritt fall
+- **Krasch ger en fråga:** rätt svar återupplivar (rör nära fågeln rensas, `CFG.invincibleTime` osårbarhet, vänta på tryck), fel svar är game over. Max `CFG.maxLives = 3` andra chanser, visade som ♥ i HUD:en. En lyckad återupplivning förbrukar ett hjärta
+- `expl` visas efter **varje** svar, rätt som fel
+- Tangent **1–4** väljer svar, **Enter/mellanslag** fortsätter. Både svarsknappar och fortsätt-knappen är låsta `CFG.answerLockMs = 400` ms efter att de visats, så att elever som hamrar på mellanslag inte råkar svara eller hoppa över förklaringen
+
+### Poäng och streak
+- **+1 poäng** per passerat rör (`CFG.pointsPerPipe`)
+- **Rätt svar:** `CFG.pointsPerCorrect` (10) × multiplikatorn
+- **Streak** = antal rätt svar i rad, räknas **över både rör- och dödsfrågor**. Fel svar nollställer streaken
+- **Multiplikator** styrs av `CFG.tiers` (högsta tröskeln först, så nivåerna är lätta att justera): 3 i rad ×2, 5 i rad ×3, 7 i rad ×4, 10 i rad ×5. Multiplikatorn beräknas på streaken **inklusive** det aktuella svaret
+- **HUD:** poäng + sessionens rekord, streak-pill ("🔥 5 i rad") + multiplikator-pill, hjärtan. Toast när en ny multiplikatornivå nås. Glödande ring runt fågeln vid streak ≥ `CFG.glowStreak` (3)
+- **Poängrad under förklaringen efter varje svar:** `+30 poäng (10 × 3, 5 i rad)` vid rätt, `Streaken bröts efter 6 i rad` vid fel
+- **Sessionsrekord** i sessionStorage, nyckel `[prefix]_flappy_best`
+- **Slutskärm:** poäng, passerade rör, rätt/totalt, längsta streak, "Nytt rekord" vid sessionsrekord, samt listan **"Frågor att repetera"** med varje missad fråga och dess rätta svar
+
+### CFG — alla spelkonstanter överst i filen
+Spelet får inte ha magiska tal utspridda i koden. Allt samlas i ett `CFG`-objekt högst upp:
+
+| Grupp | Nycklar |
+|-------|---------|
+| Skala | `designHeight` (640), `minScale`, `maxScale` |
+| Fysik | `gravity` (1900), `flapVelocity` (−520), `maxFallSpeed` (900), `maxStep` (0.05) |
+| Rör | `pipeSpeed` (170), `pipeGap` (200), `pipeSpacing` (268), `pipeWidth` (72), `pipeMargin` (58), `firstPipeDelay` |
+| Fågel | `birdRadius` (16), `birdXFrac` (0.28), `glowStreak` (3) |
+| Mark | `groundHeight` (84) |
+| Frågor | `askEvery` (1), `answerLockMs` (400) |
+| Liv | `maxLives` (3), `invincibleTime` (1.5), `reviveClearAhead` (300) |
+| Poäng | `pointsPerPipe` (1), `pointsPerCorrect` (10), `tiers` |
+| Lagring | `storeBest`, `storeEasy` |
+
+Fysik och mått anges i **designenheter** för en spelyta som är `CFG.designHeight` hög och skalas med `S = clamp(H / designHeight, minScale, maxScale)`. Då blir svårighetsgraden densamma på mobil som på projektor. Rörens öppning sparas som `gapFrac` (0–1), aldrig som absolut y — det gör spelet resize- och rotationssäkert.
+
+### Teknik och grafik
+- Fristående HTML-fil, **canvas + vanilla JS**, ingen extern lib. **Deltatidsbaserad** loop (`requestAnimationFrame`, delta klampat till `CFG.maxStep` så att ett flikbyte inte hoppar fram spelet)
+- Tryck/klick/mellanslag/↑ = flaxa. `pointerdown` på canvasen + `touchstart` med `preventDefault`
+- **Grafik:** provrör som hinder (glaskropp med vätska, bubblor, graderingsstreck och dager), rutat labbpapper som bakgrund med parallaxade labbklotter, labbänk som mark. Fågeln bär skyddsglasögon
+- Ämnets primärfärg enligt färgtabellen (NK 1a1: `#22c55e`), **Fredoka** i spel-UI (HUD, knappar, rubriker), **EB Garamond** i frågetext, alternativ och förklaringar
+- **Mobil först:** `position:fixed` scen, `overflow:hidden` + `overscroll-behavior:none` på `html,body`, `touch-action:none` på canvasen, safe-area-insets på HUD, back-knapp och overlays — inga scrollhopp
+- `prefers-reduced-motion` stänger av transitions, skakning och pulserande animationer. `prefers-color-scheme: dark` byter både CSS-variabler och canvas-paletten (`pal()`)
+- Byter eleven flik mitt i flykten pausas spelet till READY i stället för att fågeln dör
+- Sist i `<body>`: `<script src="feedback-widget.js" defer>` och GoatCounter-snippet — som i quizfilen
+
+### Enkel svenska
+Samma logik som quizet: `EASY_Q` + `mapOpt`, sessionStorage-nyckel `[prefix]_flappy_easy`. Toggeln finns på startskärmen, i varje frågepanel och på slutskärmen, och påverkar **frågor, svarsalternativ, förklaringar, regeltext och slutskärm — aldrig rättningen**.
+
+### Tillbaka-navigering
+Samma mönster som övriga filer (se [Tillbaka-navigering](#tillbaka-navigering)): `smartBack(event)` med `history.back()` vid samma origin, annars fallback till **områdessidan**.
+
+### Kortordning på områdessidan
+Flappy-kortet läggs efter Jeopardy. Kanonisk ordning blir därmed: **material → begrepp → quiz → jeopardy → flappy → miljonär**.
+
+---
+
+## När John ber dig skapa ett Flappy-spel
+
+1. Han anger vilket arbetsområde det gäller
+2. Du bryter ut `QUESTIONS` och `EASY_Q` ur områdets `_quiz.html` till `[kurs]_[omrade]_questions.js` (finns filen redan återanvänder du den) och laddar den i båda filerna — du hittar inte på nytt sakinnehåll
+3. Du verifierar att quizet fungerar exakt som innan: shuffle, `origIdx`-mappning, facit och Enkel svenska
+4. Du kopierar `nk1a1_naturvetenskap_flappy.html`, byter frågedatafil, ämnesfärg och back-länkens fallback — och behåller crediten `Spelidé: Edvin Maloku`
+5. Du lägger till ett flappy-kort på områdessidan direkt efter Jeopardy-kortet
+
+*John ska inte behöva ändra något manuellt.*

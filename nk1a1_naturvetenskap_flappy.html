@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#22c55e">
+<title>Flaxa &amp; forska – Naturvetenskapligt arbetssätt | NK 1a1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#22c55e;
+    --primary-dark:#15803d;
+    --primary-light:#dcfce7;
+    --on-primary:#14532d;
+    --correct-bg:#dcfce7;
+    --correct-border:#16a34a;
+    --correct-text:#166534;
+    --wrong-bg:#fee2e2;
+    --wrong-border:#dc2626;
+    --wrong-text:#b91c1c;
+    --panel:#ffffff;
+    --panel-2:#f8fafc;
+    --text:#0f172a;
+    --muted:#64748b;
+    --line:#e2e8f0;
+    --hud:rgba(255,255,255,.92);
+    --shadow:0 18px 40px -18px rgba(15,23,42,.45);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --primary:#34d399;
+      --primary-dark:#059669;
+      --primary-light:#064e3b;
+      --on-primary:#ecfdf5;
+      --correct-bg:#052e1b;
+      --correct-border:#22c55e;
+      --correct-text:#86efac;
+      --wrong-bg:#3b0d0d;
+      --wrong-border:#ef4444;
+      --wrong-text:#fca5a5;
+      --panel:#0f172a;
+      --panel-2:#111e33;
+      --text:#e2e8f0;
+      --muted:#94a3b8;
+      --line:#1e293b;
+      --hud:rgba(15,23,42,.88);
+      --shadow:0 18px 40px -18px rgba(0,0,0,.8);
+    }
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+  body{
+    font-family:'EB Garamond',Georgia,serif;
+    background:#eef7f1;color:var(--text);
+    -webkit-user-select:none;user-select:none;
+  }
+  @media (prefers-color-scheme: dark){ body{background:#060d18} }
+
+  #stage{position:fixed;inset:0;overflow:hidden}
+  #cv{display:block;width:100%;height:100%;touch-action:none}
+
+  /* ───────── Tillbaka ───────── */
+  .back-btn{
+    position:absolute;z-index:40;
+    top:calc(env(safe-area-inset-top,0px) + 10px);
+    left:calc(env(safe-area-inset-left,0px) + 10px);
+    font-family:'Fredoka',system-ui,sans-serif;font-size:.8rem;font-weight:500;
+    color:var(--muted);text-decoration:none;background:var(--hud);
+    padding:7px 12px;border-radius:12px;border:1px solid var(--line);
+    backdrop-filter:blur(6px);transition:color .2s,background .2s;
+  }
+  .back-btn:hover{color:var(--primary-dark)}
+
+  /* ───────── HUD ───────── */
+  #hud{
+    position:absolute;z-index:30;left:0;right:0;
+    top:calc(env(safe-area-inset-top,0px) + 8px);
+    padding:0 10px;
+    display:none;align-items:flex-start;justify-content:space-between;gap:8px;
+    font-family:'Fredoka',system-ui,sans-serif;pointer-events:none;
+  }
+  #hud.on{display:flex}
+  .hud-box{
+    background:var(--hud);border:1px solid var(--line);border-radius:14px;
+    padding:6px 11px;backdrop-filter:blur(6px);box-shadow:0 4px 14px -8px rgba(0,0,0,.4);
+  }
+  #hud-left{margin-left:96px;display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+  #hud-score{font-size:1.5rem;font-weight:700;line-height:1;color:var(--primary-dark);font-variant-numeric:tabular-nums}
+  @media (prefers-color-scheme: dark){ #hud-score{color:var(--primary)} }
+  #hud-best{font-size:.62rem;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-top:3px;display:block}
+  .pill-row{display:flex;gap:6px;flex-wrap:wrap}
+  #streak-pill,#mult-pill{
+    display:none;font-size:.72rem;font-weight:600;padding:4px 9px;border-radius:999px;
+    border:1px solid transparent;white-space:nowrap;
+  }
+  #streak-pill{background:#fff7ed;color:#c2410c;border-color:#fed7aa}
+  #mult-pill{background:var(--primary);color:#fff;border-color:var(--primary-dark)}
+  #streak-pill.on,#mult-pill.on{display:inline-block}
+  @media (prefers-color-scheme: dark){ #streak-pill{background:#3a1e06;color:#fdba74;border-color:#7c2d12} }
+  #hearts{display:flex;gap:3px;font-size:1.05rem;line-height:1}
+  .heart.spent{opacity:.24;filter:grayscale(1)}
+
+  /* ───────── Toast ───────── */
+  #toast{
+    position:absolute;z-index:45;left:50%;top:calc(env(safe-area-inset-top,0px) + 92px);
+    transform:translate(-50%,-14px);opacity:0;pointer-events:none;
+    font-family:'Fredoka',system-ui,sans-serif;font-weight:600;font-size:.9rem;
+    background:var(--primary);color:#fff;padding:9px 18px;border-radius:999px;
+    box-shadow:0 10px 26px -10px rgba(34,197,94,.9);white-space:nowrap;
+    transition:opacity .28s ease,transform .28s ease;
+  }
+  #toast.on{opacity:1;transform:translate(-50%,0)}
+
+  /* ───────── Overlays ───────── */
+  .ovl{
+    position:absolute;inset:0;z-index:50;display:none;
+    align-items:center;justify-content:center;
+    padding:calc(env(safe-area-inset-top,0px) + 14px) 14px calc(env(safe-area-inset-bottom,0px) + 14px);
+    background:rgba(8,20,14,.55);backdrop-filter:blur(3px);
+  }
+  .ovl.on{display:flex}
+  .panel{
+    width:100%;max-width:540px;max-height:100%;overflow-y:auto;overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+    background:var(--panel);border-radius:22px;border:1px solid var(--line);
+    box-shadow:var(--shadow);padding:22px 20px;
+  }
+
+  /* Startskärm */
+  #panel-start{text-align:center}
+  .eyebrow{
+    display:inline-block;font-family:'Fredoka',system-ui,sans-serif;font-size:.68rem;font-weight:600;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--primary-dark);
+    background:var(--primary-light);padding:5px 13px;border-radius:999px;margin-bottom:14px;
+  }
+  @media (prefers-color-scheme: dark){ .eyebrow{color:var(--on-primary)} }
+  h1{font-family:'Fredoka',system-ui,sans-serif;font-size:2rem;font-weight:700;line-height:1.1;margin-bottom:8px}
+  .lead{color:var(--muted);font-size:1.02rem;line-height:1.5;margin-bottom:18px}
+  .rules{
+    text-align:left;background:var(--panel-2);border:1px solid var(--line);border-radius:16px;
+    padding:14px 16px;margin-bottom:18px;font-size:.95rem;line-height:1.6;color:var(--muted);
+  }
+  .rules b{color:var(--text);font-weight:600}
+  .rules li{margin-left:18px;margin-bottom:5px}
+  .rules li:last-child{margin-bottom:0}
+  .btn{
+    font-family:'Fredoka',system-ui,sans-serif;font-weight:600;font-size:1rem;
+    border:none;border-radius:16px;padding:14px 22px;cursor:pointer;width:100%;
+    background:var(--primary);color:#fff;transition:background .2s,transform .12s;
+  }
+  .btn:hover{background:var(--primary-dark)}
+  .btn:active{transform:scale(.985)}
+  .btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--line);font-size:.9rem;padding:11px 18px}
+  .btn.ghost:hover{background:var(--panel-2);color:var(--text)}
+  .credit{margin-top:11px;font-size:.78rem;color:var(--muted);opacity:.75;font-family:'Fredoka',system-ui,sans-serif}
+  .easy-pill{
+    font-family:'Fredoka',system-ui,sans-serif;font-size:.78rem;font-weight:500;
+    background:var(--panel-2);color:var(--muted);border:1px solid var(--line);
+    padding:7px 13px;border-radius:999px;cursor:pointer;transition:all .2s;
+  }
+  .easy-pill:hover{border-color:var(--primary);color:var(--primary-dark)}
+  .easy-pill[aria-pressed="true"]{background:var(--primary);color:#fff;border-color:var(--primary-dark)}
+
+  /* Frågepanel */
+  .q-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+  .q-tag{
+    font-family:'Fredoka',system-ui,sans-serif;font-size:.68rem;font-weight:600;
+    letter-spacing:.1em;text-transform:uppercase;padding:5px 12px;border-radius:999px;
+    background:var(--primary-light);color:var(--primary-dark);
+  }
+  @media (prefers-color-scheme: dark){ .q-tag{color:var(--on-primary)} }
+  .q-tag.danger{background:var(--wrong-bg);color:var(--wrong-text)}
+  #q-text{font-size:1.16rem;line-height:1.45;font-weight:600;margin-bottom:16px}
+  .opts{display:flex;flex-direction:column;gap:9px}
+  .opt{
+    display:flex;align-items:flex-start;gap:11px;width:100%;text-align:left;
+    font-family:'EB Garamond',Georgia,serif;font-size:1rem;line-height:1.4;
+    background:var(--panel-2);color:var(--text);border:2px solid var(--line);
+    border-radius:14px;padding:12px 14px;cursor:pointer;transition:border-color .18s,background .18s;
+  }
+  .opt:hover:not(:disabled){border-color:var(--primary)}
+  .opt:disabled{cursor:default}
+  .opt .key{
+    flex:none;width:23px;height:23px;border-radius:7px;background:var(--line);color:var(--muted);
+    font-family:'Fredoka',system-ui,sans-serif;font-size:.74rem;font-weight:600;
+    display:flex;align-items:center;justify-content:center;margin-top:1px;
+  }
+  .opt.correct{background:var(--correct-bg);border-color:var(--correct-border);color:var(--correct-text)}
+  .opt.correct .key{background:var(--correct-border);color:#fff}
+  .opt.wrong{background:var(--wrong-bg);border-color:var(--wrong-border);color:var(--wrong-text)}
+  .opt.wrong .key{background:var(--wrong-border);color:#fff}
+  .opt.dim{opacity:.45}
+  .opts.locked .opt{pointer-events:none}
+
+  #q-result{display:none;margin-top:16px}
+  #q-result.on{display:block}
+  .verdict{font-family:'Fredoka',system-ui,sans-serif;font-weight:700;font-size:1.05rem;margin-bottom:8px}
+  .verdict.ok{color:var(--correct-text)}
+  .verdict.no{color:var(--wrong-text)}
+  #q-expl{
+    background:var(--panel-2);border-left:4px solid var(--primary);border-radius:0 12px 12px 0;
+    padding:12px 14px;font-size:.98rem;line-height:1.55;color:var(--text);
+  }
+  #q-points{
+    font-family:'Fredoka',system-ui,sans-serif;font-size:.88rem;font-weight:600;
+    margin-top:10px;color:var(--primary-dark);
+  }
+  @media (prefers-color-scheme: dark){ #q-points{color:var(--primary)} }
+  #q-points.no{color:var(--wrong-text)}
+  #q-continue{margin-top:14px}
+  #q-continue[disabled]{opacity:.45;cursor:default}
+  .q-foot{display:flex;justify-content:center;margin-top:12px}
+
+  /* Slutskärm */
+  #panel-end h2{font-family:'Fredoka',system-ui,sans-serif;font-size:1.65rem;font-weight:700;text-align:center;margin-bottom:4px}
+  #end-sub{text-align:center;color:var(--muted);margin-bottom:16px;font-size:1rem}
+  #end-record{
+    display:none;text-align:center;font-family:'Fredoka',system-ui,sans-serif;font-weight:700;
+    background:var(--primary-light);color:var(--primary-dark);border-radius:14px;
+    padding:10px;margin-bottom:14px;font-size:.95rem;
+  }
+  @media (prefers-color-scheme: dark){ #end-record{color:var(--on-primary)} }
+  #end-record.on{display:block}
+  .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:18px}
+  .stat{background:var(--panel-2);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}
+  .stat .n{font-family:'Fredoka',system-ui,sans-serif;font-size:1.5rem;font-weight:700;color:var(--primary-dark);line-height:1}
+  @media (prefers-color-scheme: dark){ .stat .n{color:var(--primary)} }
+  .stat .l{font-size:.72rem;color:var(--muted);margin-top:5px;text-transform:uppercase;letter-spacing:.05em;font-family:'Fredoka',system-ui,sans-serif}
+  .sec-hd{font-family:'Fredoka',system-ui,sans-serif;font-weight:600;font-size:1rem;margin-bottom:9px}
+  .miss{background:var(--wrong-bg);border-left:4px solid var(--wrong-border);border-radius:0 12px 12px 0;padding:11px 13px;margin-bottom:9px}
+  .miss .mq{font-weight:600;font-size:.98rem;line-height:1.4;margin-bottom:5px}
+  .miss .ma{font-size:.92rem;color:var(--correct-text);line-height:1.4}
+  #end-actions{display:flex;flex-direction:column;gap:9px;margin-top:6px}
+
+  @media (max-width:420px){
+    #hud-left{margin-left:88px}
+    #hud-score{font-size:1.25rem}
+    h1{font-size:1.7rem}
+    .panel{padding:18px 16px;border-radius:18px}
+    #q-text{font-size:1.06rem}
+    .opt{font-size:.94rem;padding:11px 12px}
+  }
+  @media (max-height:520px){
+    .panel{padding:14px 16px}
+    #q-text{margin-bottom:11px}
+    .opts{gap:7px}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none!important;animation:none!important}
+  }
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <canvas id="cv"></canvas>
+
+  <a href="nk1a1_naturvetenskap.html" class="back-btn" onclick="smartBack(event)">← Tillbaka</a>
+
+  <div id="hud">
+    <div id="hud-left">
+      <div class="hud-box">
+        <span id="hud-score">0</span>
+        <span id="hud-best">Rekord 0</span>
+      </div>
+      <div class="pill-row">
+        <span id="streak-pill">🔥 <span id="streak-n">0</span> i rad</span>
+        <span id="mult-pill">×2</span>
+      </div>
+    </div>
+    <div class="hud-box" id="hearts-box"><div id="hearts"></div></div>
+  </div>
+
+  <div id="toast"></div>
+
+  <!-- START -->
+  <div class="ovl on" id="ovl-start">
+    <div class="panel" id="panel-start">
+      <span class="eyebrow">NK 1a1 · Naturvetenskapligt arbetssätt</span>
+      <h1>Flaxa &amp; forska</h1>
+      <p class="lead" id="start-lead"></p>
+      <div class="rules" id="start-rules"></div>
+      <button class="btn" id="btn-start">Starta spelet</button>
+      <p class="credit">Spelidé: Edvin Maloku</p>
+      <div class="q-foot">
+        <button class="easy-pill" id="easy-start" aria-pressed="false">📖 Enkel svenska</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FRÅGA -->
+  <div class="ovl" id="ovl-q">
+    <div class="panel">
+      <div class="q-top">
+        <span class="q-tag" id="q-tag">Fråga</span>
+        <button class="easy-pill" id="easy-q" aria-pressed="false">📖 Enkel svenska</button>
+      </div>
+      <p id="q-text"></p>
+      <div class="opts" id="q-opts"></div>
+      <div id="q-result">
+        <p class="verdict" id="q-verdict"></p>
+        <div id="q-expl"></div>
+        <p id="q-points"></p>
+        <button class="btn" id="q-continue"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLUT -->
+  <div class="ovl" id="ovl-end">
+    <div class="panel" id="panel-end">
+      <h2 id="end-title"></h2>
+      <p id="end-sub"></p>
+      <div id="end-record"></div>
+      <div class="stats" id="end-stats"></div>
+      <div id="end-missed"></div>
+      <div id="end-actions">
+        <button class="btn" id="btn-again"></button>
+        <button class="btn ghost" id="easy-end" aria-pressed="false">📖 Enkel svenska</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="nk1a1_naturvetenskap_questions.js"></script>
+<script>
+// ════════════════════════════════════════════════════════════
+// FLAXA & FORSKA — Flappy-spel med quizfrågor
+// Frågedata: nk1a1_naturvetenskap_questions.js (delas med quizet)
+// Spelidé: Edvin Maloku
+// ════════════════════════════════════════════════════════════
+
+// ────────────────────────────────────────────────────────────
+// CFG — alla spelkonstanter på ett ställe.
+// Fysik och mått anges i designenheter för en spelyta som är
+// CFG.designHeight hög, och skalas med S till aktuell skärm.
+// ────────────────────────────────────────────────────────────
+const CFG = {
+  designHeight: 640,
+  minScale: 0.62,
+  maxScale: 1.45,
+
+  // Fysik
+  gravity: 1900,          // px/s²
+  flapVelocity: -520,     // px/s
+  maxFallSpeed: 900,      // px/s
+  maxStep: 0.05,          // s — största tillåtna delta per bildruta
+
+  // Rör (provrör)
+  pipeSpeed: 170,         // px/s
+  pipeGap: 200,           // öppningens höjd
+  pipeSpacing: 268,       // avstånd mellan rör
+  pipeWidth: 72,
+  pipeMargin: 58,         // minsta avstånd från öppning till tak/mark
+  firstPipeDelay: 1.15,   // andel av bredden innan första röret
+
+  // Fågel
+  birdRadius: 16,
+  birdXFrac: 0.28,
+  glowStreak: 3,          // streak då glödringen tänds
+
+  // Mark
+  groundHeight: 84,
+
+  // Frågor
+  askEvery: 1,            // fråga efter så här många passerade rör
+  answerLockMs: 400,      // knappar låsta efter att något visats
+
+  // Liv
+  maxLives: 3,            // antal andra chanser
+  invincibleTime: 1.5,    // s osårbarhet efter återupplivning
+  reviveClearAhead: 300,  // rensa rör inom detta avstånd framför fågeln
+
+  // Poäng
+  pointsPerPipe: 1,
+  pointsPerCorrect: 10,
+  tiers: [                // streak → multiplikator (högst först)
+    { streak: 10, mult: 5 },
+    { streak: 7,  mult: 4 },
+    { streak: 5,  mult: 3 },
+    { streak: 3,  mult: 2 }
+  ],
+
+  // Lagring (sessionStorage — nollställs när fliken stängs)
+  storeBest: 'nk1a1_flappy_best',
+  storeEasy: 'nk1a1_flappy_easy',
+
+  toastMs: 2100
+};
+
+// ────────────────────────────────────────────────────────────
+// TILLBAKA-NAVIGERING
+// ────────────────────────────────────────────────────────────
+function smartBack(e){
+  if (e) e.preventDefault();
+  var ref = document.referrer;
+  if (ref) {
+    try {
+      if (new URL(ref).origin === window.location.origin) { history.back(); return; }
+    } catch (err) {}
+  }
+  window.location.href = 'nk1a1_naturvetenskap.html';
+}
+
+// ────────────────────────────────────────────────────────────
+// HJÄLPARE
+// ────────────────────────────────────────────────────────────
+function shuffleArray(array){
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+const clamp = (v, a, b) => v < a ? a : (v > b ? b : v);
+const ss = {
+  get(k){ try { return sessionStorage.getItem(k); } catch(e){ return null; } },
+  set(k, v){ try { sessionStorage.setItem(k, v); } catch(e){} }
+};
+
+// ────────────────────────────────────────────────────────────
+// ENKEL SVENSKA — samma logik som quizet (EASY_Q + mapOpt).
+// Påverkar frågor, alternativ, förklaringar och slutskärm.
+// Aldrig rättningen: den utgår alltid från QUESTIONS[i].correct.
+// ────────────────────────────────────────────────────────────
+let easyMode = ss.get(CFG.storeEasy) === '1';
+
+function mapOpt(origIdx, optStr){
+  const q = QUESTIONS[origIdx], eq = EASY_Q[origIdx];
+  if (!q || !eq) return null;
+  if (optStr === q.opts[q.correct]) return eq.a;
+  const incorrects = q.opts.filter((_, i) => i !== q.correct);
+  const iIdx = incorrects.indexOf(optStr);
+  return iIdx >= 0 ? eq.i[iIdx] : null;
+}
+
+const UI = {
+  normal: {
+    lead:'Flyg mellan provrören. Varje rör du passerar ger en fråga – svara rätt och bygg din streak.',
+    start:'Starta spelet',
+    tagPipe:'Fråga', tagDeath:'Andra chansen',
+    correct:'Rätt!', wrong:'Fel svar',
+    flyOn:'Flyg vidare →', revive:'Tillbaka i luften →',
+    tapFly:'Tryck för att flyga vidare', tapStart:'Tryck för att lyfta',
+    again:'↺ Spela igen', repeatHd:'Frågor att repetera',
+    endTitle:'Bra fluget!', endSub:'Så här gick rundan:',
+    record:'🏅 Nytt sessionsrekord!',
+    sScore:'Poäng', sPipes:'Rör', sCorrect:'Rätt svar', sStreak:'Längsta streak',
+    correctIs:'Rätt svar: ',
+    noPoints:'Inga poäng den här gången.',
+    rules:'<b>Så funkar det</b><ul>' +
+      '<li>Tryck, klicka eller tryck mellanslag för att flaxa.</li>' +
+      '<li>Varje passerat provrör ger <b>1 poäng</b> och en fråga.</li>' +
+      '<li>Rätt svar ger <b>10 poäng</b> gånger din multiplikator.</li>' +
+      '<li>3 rätt i rad ger ×2, 5 i rad ×3, 7 i rad ×4, 10 i rad ×5.</li>' +
+      '<li>Kraschar du får du en fråga: rätt svar ger en andra chans. Du har <b>3 hjärtan</b>.</li></ul>'
+  },
+  easy: {
+    lead:'Flyg mellan provrören. Efter varje rör kommer en fråga. Svara rätt och få poäng.',
+    start:'Börja spela',
+    tagPipe:'Fråga', tagDeath:'Ny chans',
+    correct:'Rätt!', wrong:'Fel',
+    flyOn:'Flyg vidare →', revive:'Flyg igen →',
+    tapFly:'Tryck för att flyga', tapStart:'Tryck för att flyga',
+    again:'↺ Spela igen', repeatHd:'Frågor att öva mer på',
+    endTitle:'Bra jobbat!', endSub:'Så gick det:',
+    record:'🏅 Ditt bästa hittills!',
+    sScore:'Poäng', sPipes:'Rör', sCorrect:'Rätt', sStreak:'Bäst i rad',
+    correctIs:'Rätt svar: ',
+    noPoints:'Du fick inga poäng nu.',
+    rules:'<b>Så spelar du</b><ul>' +
+      '<li>Tryck på skärmen så flaxar fågeln.</li>' +
+      '<li>Flyg mellan provrören. Varje rör ger <b>1 poäng</b> och en fråga.</li>' +
+      '<li>Svarar du rätt får du <b>10 poäng</b> eller mer.</li>' +
+      '<li>Svarar du rätt flera gånger i rad får du extra poäng.</li>' +
+      '<li>Krockar du får du en fråga. Svarar du rätt får du flyga vidare. Du har <b>3 hjärtan</b>.</li></ul>'
+  }
+};
+const T = () => easyMode ? UI.easy : UI.normal;
+
+function textQ(origIdx){
+  return easyMode && EASY_Q[origIdx] ? EASY_Q[origIdx].q : QUESTIONS[origIdx].q;
+}
+function textOpt(item, dispIdx){
+  const raw = QUESTIONS[item.origIdx].opts[item.order[dispIdx]];
+  if (!easyMode) return raw;
+  return mapOpt(item.origIdx, raw) || raw;
+}
+function textExpl(origIdx){
+  return easyMode && EASY_Q[origIdx] ? EASY_Q[origIdx].expl : QUESTIONS[origIdx].expl;
+}
+function textCorrect(origIdx){
+  const q = QUESTIONS[origIdx];
+  return easyMode && EASY_Q[origIdx] ? EASY_Q[origIdx].a : q.opts[q.correct];
+}
+
+// ────────────────────────────────────────────────────────────
+// FRÅGEPOOL — dras utan upprepning tills poolen är slut,
+// sedan blandas hela poolen om på nytt.
+// ────────────────────────────────────────────────────────────
+let pool = [];
+function nextQuestion(){
+  if (!pool.length) pool = shuffleArray(QUESTIONS.map((_, i) => i));
+  const origIdx = pool.pop();
+  // order: visad plats → index i QUESTIONS[origIdx].opts
+  return { origIdx: origIdx, order: shuffleArray([0, 1, 2, 3]) };
+}
+
+// ════════════════════════════════════════════════════════════
+// CANVAS OCH VY
+// ════════════════════════════════════════════════════════════
+const stage  = document.getElementById('stage');
+const canvas = document.getElementById('cv');
+const ctx    = canvas.getContext('2d');
+let W = 0, H = 0, S = 1, DPR = 1, groundY = 0, birdX = 0;
+
+function resize(){
+  const r = stage.getBoundingClientRect();
+  W = Math.max(1, Math.round(r.width));
+  H = Math.max(1, Math.round(r.height));
+  DPR = Math.min(window.devicePixelRatio || 1, 2.5);
+  canvas.width  = Math.round(W * DPR);
+  canvas.height = Math.round(H * DPR);
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  S = clamp(H / CFG.designHeight, CFG.minScale, CFG.maxScale);
+  groundY = H - CFG.groundHeight * S;
+  birdX   = W * CFG.birdXFrac;
+  if (bird) bird.y = clamp(bird.y, CFG.birdRadius * S, groundY - CFG.birdRadius * S);
+}
+window.addEventListener('resize', resize);
+window.addEventListener('orientationchange', () => setTimeout(resize, 150));
+
+const darkQ   = window.matchMedia('(prefers-color-scheme: dark)');
+const motionQ = window.matchMedia('(prefers-reduced-motion: reduce)');
+const reduced = () => motionQ.matches;
+
+function pal(){
+  return darkQ.matches ? {
+    paper:'#0a1320', grid:'#16283c', gridMajor:'#1e3750',
+    doodle:'rgba(52,211,153,.12)',
+    glass:'rgba(148,197,255,.13)', glassHi:'rgba(226,245,255,.30)', glassEdge:'#4b7a8f',
+    bench:'#111d2e', benchTop:'#1d3147', benchEdge:'#060d18', benchLine:'rgba(148,163,184,.14)',
+    bird:'#34d399', birdDark:'#0f9d6b', birdBelly:'#d1fae5', beak:'#fbbf24',
+    text:'#e2e8f0'
+  } : {
+    paper:'#f2f9f4', grid:'#d3e8db', gridMajor:'#b7dcc6',
+    doodle:'rgba(34,197,94,.11)',
+    glass:'rgba(255,255,255,.62)', glassHi:'rgba(255,255,255,.92)', glassEdge:'#7fae95',
+    bench:'#334155', benchTop:'#475569', benchEdge:'#1e293b', benchLine:'rgba(255,255,255,.10)',
+    bird:'#22c55e', birdDark:'#15803d', birdBelly:'#ecfdf5', beak:'#f59e0b',
+    text:'#0f172a'
+  };
+}
+
+// Provrörens vätskefärger
+const LIQUIDS = ['#22c55e', '#06b6d4', '#a855f7', '#f59e0b', '#ef4444', '#3b82f6'];
+
+// ════════════════════════════════════════════════════════════
+// SPELTILLSTÅND
+// ════════════════════════════════════════════════════════════
+const ST = { START:'start', READY:'ready', PLAY:'play', QUESTION:'question', OVER:'over' };
+let state = ST.START;
+
+let bird = null;
+let pipes = [];
+let score = 0, pipesPassed = 0, pipesSinceQ = 0;
+let streak = 0, bestStreak = 0, mult = 1;
+let answered = 0, correctCount = 0;
+let livesLeft = CFG.maxLives;
+let invincible = 0, shake = 0;
+let bgX = 0, groundX = 0, wingT = 0, glowT = 0;
+let missed = [];
+let bestScore = parseInt(ss.get(CFG.storeBest) || '0', 10) || 0;
+let popups = [];
+let hintText = '';
+
+// Aktuell fråga
+let qItem = null, qKind = 'pipe', qLocked = true, qDone = false, qContinueLocked = true;
+let lockTimer = null, contTimer = null;
+
+function multFor(s){
+  for (const t of CFG.tiers) if (s >= t.streak) return t.mult;
+  return 1;
+}
+
+// ════════════════════════════════════════════════════════════
+// DOM
+// ════════════════════════════════════════════════════════════
+const el = id => document.getElementById(id);
+const hud = el('hud'), ovlStart = el('ovl-start'), ovlQ = el('ovl-q'), ovlEnd = el('ovl-end');
+const toastEl = el('toast');
+
+function renderHUD(){
+  el('hud-score').textContent = score;
+  el('hud-best').textContent  = 'Rekord ' + bestScore;
+  const sp = el('streak-pill'), mp = el('mult-pill');
+  if (streak >= 2) { sp.classList.add('on'); el('streak-n').textContent = streak; }
+  else sp.classList.remove('on');
+  if (mult > 1) { mp.classList.add('on'); mp.textContent = '×' + mult; }
+  else mp.classList.remove('on');
+  let h = '';
+  for (let i = 0; i < CFG.maxLives; i++) h += '<span class="heart' + (i < livesLeft ? '' : ' spent') + '">❤️</span>';
+  el('hearts').innerHTML = h;
+}
+
+let toastTimer = null;
+function toast(msg){
+  toastEl.textContent = msg;
+  toastEl.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('on'), CFG.toastMs);
+}
+
+// ════════════════════════════════════════════════════════════
+// START OCH RESET
+// ════════════════════════════════════════════════════════════
+function spawnPipe(x){
+  pipes.push({
+    x: x,
+    gapFrac: 0.10 + Math.random() * 0.80,
+    passed: false,
+    liquid: LIQUIDS[Math.floor(Math.random() * LIQUIDS.length)],
+    seed: Math.random()
+  });
+}
+
+function gapCenter(p){
+  const half = CFG.pipeGap * S / 2;
+  const minC = CFG.pipeMargin * S + half;
+  const maxC = groundY - CFG.pipeMargin * S - half;
+  if (maxC <= minC) return groundY / 2;
+  return minC + p.gapFrac * (maxC - minC);
+}
+
+function resetGame(){
+  resize();
+  bird = { y: groundY * 0.42, v: 0, tilt: 0 };
+  pipes = [];
+  score = 0; pipesPassed = 0; pipesSinceQ = 0;
+  streak = 0; bestStreak = 0; mult = 1;
+  answered = 0; correctCount = 0;
+  livesLeft = CFG.maxLives;
+  invincible = 0; shake = 0;
+  missed = []; popups = [];
+  spawnPipe(W * CFG.firstPipeDelay);
+  renderHUD();
+}
+
+function startGame(){
+  resetGame();
+  ovlStart.classList.remove('on');
+  ovlEnd.classList.remove('on');
+  hud.classList.add('on');
+  hintText = T().tapStart;
+  state = ST.READY;
+}
+
+// ════════════════════════════════════════════════════════════
+// INPUT
+// ════════════════════════════════════════════════════════════
+function flap(){
+  if (state === ST.READY) { state = ST.PLAY; hintText = ''; }
+  if (state !== ST.PLAY) return;
+  bird.v = CFG.flapVelocity * S;
+  wingT = 0;
+}
+
+canvas.addEventListener('pointerdown', e => {
+  if (state === ST.PLAY || state === ST.READY) {
+    if (e.cancelable) e.preventDefault();
+    flap();
+  }
+});
+canvas.addEventListener('touchstart', e => { if (e.cancelable) e.preventDefault(); }, { passive: false });
+
+document.addEventListener('keydown', e => {
+  const k = e.key;
+  if (state === ST.PLAY || state === ST.READY) {
+    if (k === ' ' || k === 'Spacebar' || k === 'ArrowUp' || k === 'w' || k === 'W') {
+      e.preventDefault(); flap();
+    }
+    return;
+  }
+  if (state === ST.QUESTION) {
+    if (!qDone && !qLocked && k >= '1' && k <= '4') { e.preventDefault(); answer(parseInt(k, 10) - 1); return; }
+    if (qDone && !qContinueLocked && (k === 'Enter' || k === ' ' || k === 'Spacebar')) {
+      e.preventDefault(); continueAfterQuestion();
+    }
+    return;
+  }
+  if ((state === ST.START || state === ST.OVER) && (k === 'Enter' || k === ' ' || k === 'Spacebar')) {
+    e.preventDefault(); startGame();
+  }
+});
+
+// ════════════════════════════════════════════════════════════
+// FRÅGEFLÖDE
+// ════════════════════════════════════════════════════════════
+function askQuestion(kind){
+  qKind = kind;
+  qItem = nextQuestion();
+  qDone = false; qLocked = true; qContinueLocked = true;
+  state = ST.QUESTION;
+
+  const tag = el('q-tag');
+  tag.textContent = kind === 'death' ? T().tagDeath : T().tagPipe;
+  tag.classList.toggle('danger', kind === 'death');
+
+  renderQuestionPanel();
+  el('q-result').classList.remove('on');
+  ovlQ.classList.add('on');
+
+  // Svarsknappar låsta en kort stund så att mellanslagshamrande
+  // elever inte råkar svara direkt när frågan dyker upp.
+  const opts = el('q-opts');
+  opts.classList.add('locked');
+  clearTimeout(lockTimer);
+  lockTimer = setTimeout(() => { qLocked = false; opts.classList.remove('locked'); }, CFG.answerLockMs);
+}
+
+function renderQuestionPanel(){
+  if (!qItem) return;
+  el('q-text').textContent = textQ(qItem.origIdx);
+  if (qDone) {
+    renderAnsweredOpts();
+    el('q-expl').textContent = textExpl(qItem.origIdx);
+    el('q-verdict').textContent = qItem.wasCorrect ? T().correct : T().wrong;
+    el('q-verdict').className = 'verdict ' + (qItem.wasCorrect ? 'ok' : 'no');
+    el('q-points').textContent = pointsLine(qItem);
+    el('q-points').className = qItem.wasCorrect ? '' : 'no';
+    el('q-continue').textContent = continueLabel();
+  } else {
+    const opts = el('q-opts');
+    opts.innerHTML = '';
+    for (let i = 0; i < 4; i++) {
+      const b = document.createElement('button');
+      b.className = 'opt';
+      b.innerHTML = '<span class="key">' + (i + 1) + '</span><span class="txt"></span>';
+      b.querySelector('.txt').textContent = textOpt(qItem, i);
+      b.addEventListener('click', () => answer(i));
+      opts.appendChild(b);
+    }
+  }
+}
+
+function renderAnsweredOpts(){
+  const opts = el('q-opts');
+  const q = QUESTIONS[qItem.origIdx];
+  opts.innerHTML = '';
+  for (let i = 0; i < 4; i++) {
+    const isCorrect = qItem.order[i] === q.correct;
+    const isPicked  = i === qItem.picked;
+    const b = document.createElement('button');
+    b.className = 'opt' + (isCorrect ? ' correct' : (isPicked ? ' wrong' : ' dim'));
+    b.disabled = true;
+    b.innerHTML = '<span class="key">' + (isCorrect ? '✓' : (isPicked ? '✕' : (i + 1))) + '</span><span class="txt"></span>';
+    b.querySelector('.txt').textContent = textOpt(qItem, i);
+    opts.appendChild(b);
+  }
+  opts.classList.add('locked');
+}
+
+function pointsLine(item){
+  if (item.wasCorrect) {
+    return item.mult > 1
+      ? '+' + item.pts + ' poäng (' + CFG.pointsPerCorrect + ' × ' + item.mult + ', ' + item.streakAt + ' i rad)'
+      : '+' + item.pts + ' poäng';
+  }
+  return item.broke > 0 ? 'Streaken bröts efter ' + item.broke + ' i rad' : T().noPoints;
+}
+
+function continueLabel(){
+  if (qKind === 'death') return qItem.wasCorrect ? T().revive : T().again;
+  return T().flyOn;
+}
+
+function answer(dispIdx){
+  if (state !== ST.QUESTION || qDone || qLocked) return;
+  const q = QUESTIONS[qItem.origIdx];
+  const wasCorrect = qItem.order[dispIdx] === q.correct;
+
+  qItem.picked = dispIdx;
+  qItem.wasCorrect = wasCorrect;
+  qDone = true;
+  answered++;
+
+  if (wasCorrect) {
+    correctCount++;
+    const prevMult = mult;
+    streak++;
+    if (streak > bestStreak) bestStreak = streak;
+    mult = multFor(streak);
+    const pts = CFG.pointsPerCorrect * mult;
+    score += pts;
+    qItem.pts = pts; qItem.mult = mult; qItem.streakAt = streak; qItem.broke = 0;
+    if (mult > prevMult) toast('🔥 ' + streak + ' i rad — ×' + mult + ' poäng!');
+    addPopup('+' + pts, true);
+  } else {
+    qItem.broke = streak;
+    qItem.pts = 0; qItem.mult = 1; qItem.streakAt = 0;
+    streak = 0; mult = 1;
+    missed.push(qItem.origIdx);
+  }
+
+  // En lyckad återupplivning förbrukar en av de tre andra chanserna.
+  if (qKind === 'death' && wasCorrect) livesLeft--;
+
+  renderQuestionPanel();
+
+  const cont = el('q-continue');
+  cont.disabled = true;
+  qContinueLocked = true;
+  clearTimeout(contTimer);
+  contTimer = setTimeout(() => { qContinueLocked = false; cont.disabled = false; }, CFG.answerLockMs);
+
+  el('q-result').classList.add('on');
+  renderHUD();
+}
+
+function continueAfterQuestion(){
+  if (state !== ST.QUESTION || !qDone || qContinueLocked) return;
+  ovlQ.classList.remove('on');
+
+  if (qKind === 'death') {
+    if (qItem.wasCorrect) revive();
+    else gameOver();
+    return;
+  }
+  hintText = T().tapFly;
+  state = ST.READY;
+}
+el('q-continue').addEventListener('click', continueAfterQuestion);
+
+function revive(){
+  // Rensa rören närmast fågeln så hon inte vaknar mitt i ett glas
+  pipes = pipes.filter(p => p.x > birdX + CFG.reviveClearAhead * S);
+  bird.y = groundY * 0.42;
+  bird.v = 0;
+  bird.tilt = 0;
+  invincible = CFG.invincibleTime;
+  hintText = T().tapFly;
+  state = ST.READY;
+  renderHUD();
+}
+
+// ════════════════════════════════════════════════════════════
+// KRASCH OCH SLUT
+// ════════════════════════════════════════════════════════════
+function crash(){
+  if (!reduced()) shake = 0.35;
+  if (livesLeft > 0) askQuestion('death');
+  else gameOver();
+}
+
+function renderEndScreen(isRecord){
+  const t = T();
+  el('end-title').textContent = t.endTitle;
+  el('end-sub').textContent   = t.endSub;
+  const rec = el('end-record');
+  rec.textContent = t.record;
+  rec.classList.toggle('on', isRecord);
+
+  el('end-stats').innerHTML =
+    stat(score, t.sScore) +
+    stat(pipesPassed, t.sPipes) +
+    stat(correctCount + ' / ' + answered, t.sCorrect) +
+    stat(bestStreak, t.sStreak);
+
+  const wrap = el('end-missed');
+  wrap.innerHTML = '';
+  if (missed.length) {
+    const hd = document.createElement('p');
+    hd.className = 'sec-hd';
+    hd.textContent = t.repeatHd;
+    wrap.appendChild(hd);
+    const seen = [];
+    missed.forEach(idx => {
+      if (seen.indexOf(idx) >= 0) return;
+      seen.push(idx);
+      const d = document.createElement('div'); d.className = 'miss';
+      const a = document.createElement('p'); a.className = 'mq'; a.textContent = textQ(idx);
+      const b = document.createElement('p'); b.className = 'ma'; b.textContent = t.correctIs + textCorrect(idx);
+      d.appendChild(a); d.appendChild(b);
+      wrap.appendChild(d);
+    });
+  }
+  el('btn-again').textContent = t.again;
+}
+function stat(n, l){ return '<div class="stat"><div class="n">' + n + '</div><div class="l">' + l + '</div></div>'; }
+
+let wasRecord = false;
+function gameOver(){
+  state = ST.OVER;
+  hud.classList.remove('on');
+  wasRecord = score > bestScore;
+  if (wasRecord) { bestScore = score; ss.set(CFG.storeBest, String(bestScore)); }
+  renderEndScreen(wasRecord);
+  ovlEnd.classList.add('on');
+}
+
+el('btn-start').addEventListener('click', startGame);
+el('btn-again').addEventListener('click', startGame);
+
+// ════════════════════════════════════════════════════════════
+// ENKEL SVENSKA — toggle
+// ════════════════════════════════════════════════════════════
+function syncEasyButtons(){
+  ['easy-start', 'easy-q', 'easy-end'].forEach(id => el(id).setAttribute('aria-pressed', String(easyMode)));
+  el('start-rules').innerHTML   = T().rules;
+  el('start-lead').textContent  = T().lead;
+  el('btn-start').textContent   = T().start;
+}
+function toggleEasy(){
+  easyMode = !easyMode;
+  ss.set(CFG.storeEasy, easyMode ? '1' : '0');
+  syncEasyButtons();
+  if (state === ST.QUESTION) {
+    const tag = el('q-tag');
+    tag.textContent = qKind === 'death' ? T().tagDeath : T().tagPipe;
+    renderQuestionPanel();
+    if (qDone && qContinueLocked) el('q-continue').disabled = true;
+  }
+  if (state === ST.OVER) renderEndScreen(wasRecord);
+  if (state === ST.READY && hintText) hintText = T().tapFly;
+}
+['easy-start', 'easy-q', 'easy-end'].forEach(id => el(id).addEventListener('click', toggleEasy));
+
+// ════════════════════════════════════════════════════════════
+// POÄNGPOPUPS PÅ CANVAS
+// ════════════════════════════════════════════════════════════
+function addPopup(text, good){
+  popups.push({ x: birdX, y: (bird ? bird.y : H / 2) - 30 * S, text: text, good: good, life: 1 });
+}
+
+// ════════════════════════════════════════════════════════════
+// UPPDATERING
+// ════════════════════════════════════════════════════════════
+function update(dt){
+  wingT += dt; glowT += dt;
+  if (shake > 0) shake = Math.max(0, shake - dt);
+
+  if (state === ST.PLAY || state === ST.READY) {
+    bgX     = (bgX     + CFG.pipeSpeed * S * 0.22 * dt) % (40 * S);
+    groundX = (groundX + CFG.pipeSpeed * S * dt) % (52 * S);
+  }
+
+  popups.forEach(p => { p.life -= dt * 1.1; p.y -= 34 * S * dt; });
+  popups = popups.filter(p => p.life > 0);
+
+  if (state !== ST.PLAY) {
+    if (state === ST.READY && bird) bird.tilt += (0 - bird.tilt) * Math.min(1, dt * 8);
+    return;
+  }
+
+  if (invincible > 0) invincible = Math.max(0, invincible - dt);
+
+  // Fågeln
+  bird.v = Math.min(bird.v + CFG.gravity * S * dt, CFG.maxFallSpeed * S);
+  bird.y += bird.v * dt;
+  const r = CFG.birdRadius * S;
+  if (bird.y < r) { bird.y = r; bird.v = Math.max(bird.v, 0); }
+
+  const fall = clamp(bird.v / (CFG.maxFallSpeed * S), -1, 1);
+  const wanted = fall < 0 ? -0.42 : fall * 1.05;
+  bird.tilt += (wanted - bird.tilt) * Math.min(1, dt * 9);
+
+  // Rören
+  const w = CFG.pipeWidth * S;
+  pipes.forEach(p => { p.x -= CFG.pipeSpeed * S * dt; });
+  pipes = pipes.filter(p => p.x + w > -20 * S);
+  const last = pipes.length ? pipes[pipes.length - 1] : null;
+  if (!last || last.x < W - CFG.pipeSpacing * S) spawnPipe(W + 10 * S);
+
+  // Passerat rör → poäng och (enligt CFG.askEvery) en fråga
+  for (const p of pipes) {
+    if (!p.passed && p.x + w < birdX - r) {
+      p.passed = true;
+      score += CFG.pointsPerPipe;
+      pipesPassed++;
+      pipesSinceQ++;
+      addPopup('+' + CFG.pointsPerPipe, true);
+      renderHUD();
+      if (pipesSinceQ >= CFG.askEvery) { pipesSinceQ = 0; askQuestion('pipe'); return; }
+    }
+  }
+
+  if (invincible <= 0 && collides()) crash();
+}
+
+function collides(){
+  const r = CFG.birdRadius * S, w = CFG.pipeWidth * S;
+  if (bird.y + r >= groundY) return true;
+  for (const p of pipes) {
+    if (birdX + r < p.x || birdX - r > p.x + w) continue;
+    const c = gapCenter(p), half = CFG.pipeGap * S / 2;
+    const cx = clamp(birdX, p.x, p.x + w);
+    const rects = [[-H, c - half], [c + half, groundY]];
+    for (const rect of rects) {
+      const cy = clamp(bird.y, rect[0], rect[1]);
+      const dx = birdX - cx, dy = bird.y - cy;
+      if (dx * dx + dy * dy < r * r) return true;
+    }
+  }
+  return false;
+}
+
+// ════════════════════════════════════════════════════════════
+// RITNING
+// ════════════════════════════════════════════════════════════
+function roundRectPath(x, y, w, h, rTop, rBot){
+  ctx.beginPath();
+  ctx.moveTo(x, y + rTop);
+  ctx.quadraticCurveTo(x, y, x + rTop, y);
+  ctx.lineTo(x + w - rTop, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + rTop);
+  ctx.lineTo(x + w, y + h - rBot);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - rBot, y + h);
+  ctx.lineTo(x + rBot, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - rBot);
+  ctx.closePath();
+}
+
+function drawBackground(P){
+  ctx.fillStyle = P.paper;
+  ctx.fillRect(0, 0, W, H);
+
+  // Rutat labbpapper
+  const cell = 40 * S, minor = cell / 2;
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = P.grid;
+  ctx.beginPath();
+  for (let x = -(bgX % minor); x < W; x += minor) { ctx.moveTo(Math.round(x) + .5, 0); ctx.lineTo(Math.round(x) + .5, groundY); }
+  for (let y = 0; y < groundY; y += minor)        { ctx.moveTo(0, Math.round(y) + .5); ctx.lineTo(W, Math.round(y) + .5); }
+  ctx.stroke();
+  ctx.strokeStyle = P.gridMajor;
+  ctx.beginPath();
+  for (let x = -(bgX % cell); x < W; x += cell) { ctx.moveTo(Math.round(x) + .5, 0); ctx.lineTo(Math.round(x) + .5, groundY); }
+  for (let y = 0; y < groundY; y += cell)       { ctx.moveTo(0, Math.round(y) + .5); ctx.lineTo(W, Math.round(y) + .5); }
+  ctx.stroke();
+
+  // Bleka labbklotter som parallax
+  ctx.save();
+  ctx.strokeStyle = P.doodle;
+  ctx.fillStyle   = P.doodle;
+  ctx.lineWidth   = 3 * S;
+  const space = 300 * S;
+  const off = (bgX * 3) % space;
+  for (let i = -1; i < Math.ceil(W / space) + 2; i++) {
+    const dx = i * space - off + 60 * S;
+    drawDoodle(dx, groundY * 0.24, 34 * S, i);
+    drawDoodle(dx + space * 0.5, groundY * 0.66, 27 * S, i + 1);
+  }
+  ctx.restore();
+}
+
+function drawDoodle(x, y, r, i){
+  const kind = ((i % 3) + 3) % 3;
+  if (kind === 0) {                 // bägare
+    ctx.beginPath();
+    ctx.moveTo(x - r * 0.6, y - r * 0.7);
+    ctx.lineTo(x - r * 0.45, y + r * 0.7);
+    ctx.lineTo(x + r * 0.45, y + r * 0.7);
+    ctx.lineTo(x + r * 0.6, y - r * 0.7);
+    ctx.stroke();
+  } else if (kind === 1) {          // molekyl
+    ctx.beginPath(); ctx.arc(x, y, r * 0.28, 0, 6.3); ctx.fill();
+    for (let a = 0; a < 3; a++) {
+      const ang = a * 2.09 + 0.5;
+      const px = x + Math.cos(ang) * r, py = y + Math.sin(ang) * r;
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(px, py); ctx.stroke();
+      ctx.beginPath(); ctx.arc(px, py, r * 0.2, 0, 6.3); ctx.fill();
+    }
+  } else {                          // förstoringsglas
+    ctx.beginPath(); ctx.arc(x, y, r * 0.6, 0, 6.3); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + r * 0.45, y + r * 0.45); ctx.lineTo(x + r * 0.95, y + r * 0.95); ctx.stroke();
+  }
+}
+
+// Ett hinderpar = två provrör, båda stående med mynningen uppåt
+function drawTube(p, P){
+  const w = CFG.pipeWidth * S;
+  const c = gapCenter(p), half = CFG.pipeGap * S / 2;
+  drawOneTube(p.x, -60 * S, (c - half) + 60 * S, w, p, P, true);
+  drawOneTube(p.x, c + half, (groundY + 26 * S) - (c + half), w, p, P, false);
+}
+
+function drawOneTube(x, y, h, w, p, P, isTop){
+  if (h <= 0) return;
+  const rad = w / 2;
+  ctx.save();
+
+  // Glaskropp — rundad i nederkant (provrörets slutna ände)
+  roundRectPath(x, y, w, h, isTop ? 0 : rad * 0.28, rad);
+  ctx.fillStyle = P.glass;
+  ctx.fill();
+
+  // Vätska
+  ctx.save();
+  ctx.clip();
+  const fillH = isTop ? Math.min(h, h * 0.42 + 40 * S) : h * 0.74;
+  const ly = y + h - fillH;
+  const g = ctx.createLinearGradient(x, ly, x, y + h);
+  g.addColorStop(0, p.liquid + 'cc');
+  g.addColorStop(1, p.liquid);
+  ctx.fillStyle = g;
+  ctx.fillRect(x, ly, w, fillH);
+  ctx.fillStyle = 'rgba(255,255,255,.35)';
+  ctx.beginPath(); ctx.ellipse(x + w / 2, ly, w / 2 - 1, 5 * S, 0, 0, 6.3); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.40)';
+  for (let i = 0; i < 4; i++) {
+    const t  = (glowT * 0.4 + p.seed * 3 + i * 0.27) % 1;
+    const bx = x + w * (0.25 + 0.5 * ((p.seed * 7 + i * 0.37) % 1));
+    const by = y + h - 8 * S - t * Math.max(0, fillH - 14 * S);
+    ctx.beginPath(); ctx.arc(bx, by, (2 + (i % 2)) * S, 0, 6.3); ctx.fill();
+  }
+  ctx.restore();
+
+  // Graderingsstreck
+  ctx.strokeStyle = P.glassHi;
+  ctx.lineWidth = Math.max(1, 1.4 * S);
+  ctx.beginPath();
+  let n = 0;
+  for (let gy = y + 22 * S; gy < y + h - 20 * S; gy += 26 * S, n++) {
+    const long = n % 2 === 0;
+    ctx.moveTo(x + w - 7 * S, gy);
+    ctx.lineTo(x + w - (long ? 20 : 13) * S, gy);
+  }
+  ctx.stroke();
+
+  // Glasdager
+  ctx.globalAlpha = 0.55;
+  ctx.fillStyle = P.glassHi;
+  roundRectPath(x + 8 * S, y + 10 * S, 7 * S, Math.max(0, h - 34 * S), 4 * S, 4 * S);
+  ctx.fill();
+  ctx.globalAlpha = 1;
+
+  // Kontur
+  roundRectPath(x, y, w, h, isTop ? 0 : rad * 0.28, rad);
+  ctx.strokeStyle = P.glassEdge;
+  ctx.lineWidth = Math.max(1.5, 2.2 * S);
+  ctx.stroke();
+
+  // Mynningens kant på det nedre röret (vänd mot öppningen)
+  if (!isTop) {
+    ctx.beginPath();
+    ctx.ellipse(x + w / 2, y + 2 * S, w / 2 - 1, 6 * S, 0, 0, 6.3);
+    ctx.globalAlpha = .85; ctx.fillStyle = P.glassHi; ctx.fill(); ctx.globalAlpha = 1;
+    ctx.strokeStyle = P.glassEdge; ctx.lineWidth = Math.max(1.5, 2 * S); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawGround(P){
+  const gh = H - groundY;
+  ctx.fillStyle = P.benchTop;  ctx.fillRect(0, groundY, W, 12 * S);
+  ctx.fillStyle = P.bench;     ctx.fillRect(0, groundY + 12 * S, W, gh - 12 * S);
+  ctx.fillStyle = P.benchEdge; ctx.fillRect(0, groundY + 12 * S, W, 3 * S);
+
+  ctx.strokeStyle = P.benchLine;
+  ctx.lineWidth = Math.max(1, 2 * S);
+  const step = 52 * S;
+  ctx.beginPath();
+  for (let x = -groundX; x < W + step; x += step) {
+    ctx.moveTo(x, groundY + 22 * S); ctx.lineTo(x, H);
+    ctx.moveTo(x + 14 * S, groundY + 34 * S); ctx.lineTo(x + step - 14 * S, groundY + 34 * S);
+  }
+  ctx.stroke();
+}
+
+function drawBird(P){
+  const r = CFG.birdRadius * S;
+  const blink = invincible > 0 && Math.floor(invincible * 12) % 2 === 0;
+
+  ctx.save();
+  ctx.translate(birdX, bird.y);
+
+  // Glödande ring vid streak
+  if (streak >= CFG.glowStreak) {
+    const pulse = reduced() ? 0.5 : (0.5 + 0.5 * Math.sin(glowT * 5));
+    const gr = r * (1.85 + pulse * 0.22);
+    const g = ctx.createRadialGradient(0, 0, r * 0.9, 0, 0, gr);
+    g.addColorStop(0, 'rgba(250,204,21,0)');
+    g.addColorStop(0.65, 'rgba(250,204,21,' + (0.30 + pulse * 0.22) + ')');
+    g.addColorStop(1, 'rgba(250,204,21,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(0, 0, gr, 0, 6.3); ctx.fill();
+    ctx.strokeStyle = 'rgba(250,204,21,' + (0.55 + pulse * 0.35) + ')';
+    ctx.lineWidth = Math.max(2, 2.6 * S);
+    ctx.beginPath(); ctx.arc(0, 0, r * 1.5, 0, 6.3); ctx.stroke();
+  }
+
+  if (blink) ctx.globalAlpha = 0.4;
+  ctx.rotate(bird.tilt);
+
+  // Stjärt
+  ctx.fillStyle = P.birdDark;
+  ctx.beginPath();
+  ctx.moveTo(-r * 0.75, -r * 0.15);
+  ctx.lineTo(-r * 1.6, -r * 0.55);
+  ctx.lineTo(-r * 1.5, r * 0.35);
+  ctx.closePath(); ctx.fill();
+
+  // Kropp
+  ctx.fillStyle = P.bird;
+  ctx.beginPath(); ctx.ellipse(0, 0, r * 1.18, r, 0, 0, 6.3); ctx.fill();
+  ctx.fillStyle = P.birdBelly;
+  ctx.beginPath(); ctx.ellipse(r * 0.12, r * 0.34, r * 0.72, r * 0.5, 0, 0, 6.3); ctx.fill();
+
+  // Vinge
+  const flapA = reduced() ? -0.25 : Math.sin(wingT * 11) * 0.65 - 0.15;
+  ctx.save();
+  ctx.translate(-r * 0.15, -r * 0.05);
+  ctx.rotate(flapA);
+  ctx.fillStyle = P.birdDark;
+  ctx.beginPath(); ctx.ellipse(0, r * 0.2, r * 0.68, r * 0.38, 0, 0, 6.3); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.22)';
+  ctx.beginPath(); ctx.ellipse(-r * 0.1, r * 0.12, r * 0.4, r * 0.2, 0, 0, 6.3); ctx.fill();
+  ctx.restore();
+
+  // Skyddsglasögon
+  ctx.strokeStyle = P.birdDark;
+  ctx.lineWidth = Math.max(2, 3 * S);
+  ctx.beginPath(); ctx.arc(r * 0.34, -r * 0.3, r * 0.62, 2.4, 4.4); ctx.stroke();
+  ctx.fillStyle = 'rgba(191,232,255,.92)';
+  ctx.beginPath(); ctx.ellipse(r * 0.6, -r * 0.3, r * 0.42, r * 0.36, 0, 0, 6.3); ctx.fill();
+  ctx.strokeStyle = '#1e293b';
+  ctx.lineWidth = Math.max(1.5, 2.2 * S);
+  ctx.stroke();
+  ctx.fillStyle = '#0f172a';
+  ctx.beginPath(); ctx.arc(r * 0.66, -r * 0.28, r * 0.15, 0, 6.3); ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(r * 0.71, -r * 0.34, r * 0.06, 0, 6.3); ctx.fill();
+
+  // Näbb
+  ctx.fillStyle = P.beak;
+  ctx.beginPath();
+  ctx.moveTo(r * 0.98, r * 0.02);
+  ctx.lineTo(r * 1.62, r * 0.2);
+  ctx.lineTo(r * 0.95, r * 0.42);
+  ctx.closePath(); ctx.fill();
+
+  ctx.restore();
+}
+
+function drawPopups(){
+  ctx.save();
+  ctx.font = '700 ' + Math.round(17 * S) + 'px Fredoka, system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  popups.forEach(p => {
+    ctx.globalAlpha = clamp(p.life, 0, 1);
+    ctx.strokeStyle = 'rgba(255,255,255,.85)';
+    ctx.lineWidth = 3 * S;
+    ctx.strokeText(p.text, p.x, p.y);
+    ctx.fillStyle = p.good ? '#16a34a' : '#dc2626';
+    ctx.fillText(p.text, p.x, p.y);
+  });
+  ctx.restore();
+}
+
+function drawHint(P){
+  if (!hintText || state !== ST.READY) return;
+  ctx.save();
+  ctx.globalAlpha = reduced() ? 1 : (0.75 + 0.25 * Math.sin(glowT * 3.4));
+  ctx.font = '600 ' + Math.round(16 * S) + 'px Fredoka, system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  const y = groundY * 0.72;
+  const tw = ctx.measureText(hintText).width;
+  ctx.fillStyle = darkQ.matches ? 'rgba(15,23,42,.9)' : 'rgba(255,255,255,.92)';
+  roundRectPath(W / 2 - tw / 2 - 16 * S, y - 20 * S, tw + 32 * S, 34 * S, 17 * S, 17 * S);
+  ctx.fill();
+  ctx.fillStyle = P.text;
+  ctx.fillText(hintText, W / 2, y + 2 * S);
+  ctx.restore();
+}
+
+function draw(){
+  const P = pal();
+  ctx.save();
+  if (shake > 0) {
+    const m = shake * 12 * S;
+    ctx.translate((Math.random() - .5) * m, (Math.random() - .5) * m);
+  }
+  drawBackground(P);
+  pipes.forEach(p => drawTube(p, P));
+  drawGround(P);
+  if (bird) drawBird(P);
+  drawPopups();
+  drawHint(P);
+  ctx.restore();
+}
+
+// ════════════════════════════════════════════════════════════
+// LOOP — deltatidsbaserad
+// ════════════════════════════════════════════════════════════
+let lastT = 0;
+function loop(ts){
+  if (!lastT) lastT = ts;
+  let dt = (ts - lastT) / 1000;
+  lastT = ts;
+  if (dt > CFG.maxStep) dt = CFG.maxStep;   // efter flikbyte: hoppa inte fram
+  update(dt);
+  draw();
+  requestAnimationFrame(loop);
+}
+
+// ════════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════════
+resize();
+bird = { y: groundY * 0.42, v: 0, tilt: 0 };
+spawnPipe(W * 1.4);
+syncEasyButtons();
+renderHUD();
+requestAnimationFrame(loop);
+
+// Byter eleven flik mitt i flykten: pausa i stället för att dö
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && state === ST.PLAY) { state = ST.READY; hintText = T().tapFly; }
+  lastT = 0;
+});
+</script>
+
+<script src="feedback-widget.js" defer></script>
+<script data-goatcounter="https://johnblixt.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
