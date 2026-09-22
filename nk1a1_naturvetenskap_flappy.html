@@ -102,6 +102,17 @@
   @media (prefers-color-scheme: dark){ #streak-pill{background:#3a1e06;color:#fdba74;border-color:#7c2d12} }
   #hearts{display:flex;gap:3px;font-size:1.05rem;line-height:1}
   .heart.spent{opacity:.24;filter:grayscale(1)}
+  .progress-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .progress-dots{display:flex;gap:4px}
+  .progress-dots .dot{
+    width:8px;height:8px;border-radius:50%;background:transparent;
+    border:1.5px solid var(--muted);transition:background .2s,border-color .2s;
+  }
+  .progress-dots .dot.filled{background:var(--primary);border-color:var(--primary-dark)}
+  .progress-label{
+    font-size:.6rem;color:var(--muted);letter-spacing:.04em;
+    text-transform:uppercase;white-space:nowrap;font-family:'Fredoka',system-ui,sans-serif;
+  }
 
   /* ───────── Toast ───────── */
   #toast{
@@ -173,6 +184,7 @@
   }
   @media (prefers-color-scheme: dark){ .q-tag{color:var(--on-primary)} }
   .q-tag.danger{background:var(--wrong-bg);color:var(--wrong-text)}
+  .q-tag.sentence{text-transform:none;letter-spacing:0;font-size:.82rem;padding:6px 14px;max-width:70%;line-height:1.3}
   #q-text{font-size:1.16rem;line-height:1.45;font-weight:600;margin-bottom:16px}
   .opts{display:flex;flex-direction:column;gap:9px}
   .opt{
@@ -238,6 +250,7 @@
   @media (max-width:420px){
     #hud-left{margin-left:88px}
     #hud-score{font-size:1.25rem}
+    .progress-label{display:none}
     h1{font-size:1.7rem}
     .panel{padding:18px 16px;border-radius:18px}
     #q-text{font-size:1.06rem}
@@ -270,6 +283,10 @@
       <div class="pill-row">
         <span id="streak-pill">🔥 <span id="streak-n">0</span> i rad</span>
         <span id="mult-pill">×2</span>
+      </div>
+      <div class="progress-row">
+        <div class="progress-dots" id="progress-dots"></div>
+        <span class="progress-label">till nästa fråga</span>
       </div>
     </div>
     <div class="hud-box" id="hearts-box"><div id="hearts"></div></div>
@@ -367,7 +384,7 @@ const CFG = {
   groundHeight: 84,
 
   // Frågor
-  askEvery: 1,            // fråga efter så här många passerade rör
+  askEvery: 3,            // fråga efter så här många passerade rör
   answerLockMs: 400,      // knappar låsta efter att något visats
 
   // Liv
@@ -417,6 +434,9 @@ function shuffleArray(array){
   return array;
 }
 const clamp = (v, a, b) => v < a ? a : (v > b ? b : v);
+// Svensk ordningstalsböjning: 1:a, 2:a, 3:e, 4:e … — används för att
+// generera "vart N:e"-texter direkt från CFG.askEvery.
+function ordinal(n){ return n + ':' + ((n === 1 || n === 2) ? 'a' : 'e'); }
 const ss = {
   get(k){ try { return sessionStorage.getItem(k); } catch(e){ return null; } },
   set(k, v){ try { sessionStorage.setItem(k, v); } catch(e){} }
@@ -440,9 +460,9 @@ function mapOpt(origIdx, optStr){
 
 const UI = {
   normal: {
-    lead:'Flyg mellan provrören. Varje rör du passerar ger en fråga – svara rätt och bygg din streak.',
+    lead:'Flyg mellan provrören. Efter vart ' + ordinal(CFG.askEvery) + ' rör kommer en fråga – svara rätt och bygg din streak.',
     start:'Starta spelet',
-    tagPipe:'Fråga', tagDeath:'Andra chansen',
+    tagPipe: CFG.askEvery + ' rör klarade. Svara för poäng', tagDeath:'Andra chansen',
     correct:'Rätt!', wrong:'Fel svar',
     flyOn:'Flyg vidare →', revive:'Tillbaka i luften →',
     tapFly:'Tryck för att flyga vidare', tapStart:'Tryck för att lyfta',
@@ -454,15 +474,15 @@ const UI = {
     noPoints:'Inga poäng den här gången.',
     rules:'<b>Så funkar det</b><ul>' +
       '<li>Tryck, klicka eller tryck mellanslag för att flaxa.</li>' +
-      '<li>Varje passerat provrör ger <b>1 poäng</b> och en fråga.</li>' +
-      '<li>Rätt svar ger <b>10 poäng</b> gånger din multiplikator.</li>' +
+      '<li>Varje passerat provrör ger <b>' + CFG.pointsPerPipe + ' poäng</b>.</li>' +
+      '<li>Efter vart <b>' + ordinal(CFG.askEvery) + '</b> provrör kommer en fråga. Rätt svar ger <b>' + CFG.pointsPerCorrect + ' poäng</b> gånger din multiplikator.</li>' +
       '<li>3 rätt i rad ger ×2, 5 i rad ×3, 7 i rad ×4, 10 i rad ×5.</li>' +
       '<li>Kraschar du får du en fråga: rätt svar ger en andra chans. Du har <b>3 hjärtan</b>.</li></ul>'
   },
   easy: {
-    lead:'Flyg mellan provrören. Efter varje rör kommer en fråga. Svara rätt och få poäng.',
+    lead:'Flyg mellan provrören. Efter vart ' + ordinal(CFG.askEvery) + ' rör kommer en fråga. Svara rätt och få poäng.',
     start:'Börja spela',
-    tagPipe:'Fråga', tagDeath:'Ny chans',
+    tagPipe: CFG.askEvery + ' rör klara! Svara nu', tagDeath:'Ny chans',
     correct:'Rätt!', wrong:'Fel',
     flyOn:'Flyg vidare →', revive:'Flyg igen →',
     tapFly:'Tryck för att flyga', tapStart:'Tryck för att flyga',
@@ -474,8 +494,8 @@ const UI = {
     noPoints:'Du fick inga poäng nu.',
     rules:'<b>Så spelar du</b><ul>' +
       '<li>Tryck på skärmen så flaxar fågeln.</li>' +
-      '<li>Flyg mellan provrören. Varje rör ger <b>1 poäng</b> och en fråga.</li>' +
-      '<li>Svarar du rätt får du <b>10 poäng</b> eller mer.</li>' +
+      '<li>Flyg mellan provrören. Varje rör ger <b>' + CFG.pointsPerPipe + ' poäng</b>.</li>' +
+      '<li>Efter vart <b>' + ordinal(CFG.askEvery) + '</b> rör kommer en fråga. Svarar du rätt får du <b>' + CFG.pointsPerCorrect + ' poäng</b> eller mer.</li>' +
       '<li>Svarar du rätt flera gånger i rad får du extra poäng.</li>' +
       '<li>Krockar du får du en fråga. Svarar du rätt får du flyga vidare. Du har <b>3 hjärtan</b>.</li></ul>'
   }
@@ -607,6 +627,10 @@ function renderHUD(){
   let h = '';
   for (let i = 0; i < CFG.maxLives; i++) h += '<span class="heart' + (i < livesLeft ? '' : ' spent') + '">❤️</span>';
   el('hearts').innerHTML = h;
+
+  let d = '';
+  for (let i = 0; i < CFG.askEvery; i++) d += '<span class="dot' + (i < pipesSinceQ ? ' filled' : '') + '"></span>';
+  el('progress-dots').innerHTML = d;
 }
 
 let toastTimer = null;
@@ -711,6 +735,7 @@ function askQuestion(kind){
   const tag = el('q-tag');
   tag.textContent = kind === 'death' ? T().tagDeath : T().tagPipe;
   tag.classList.toggle('danger', kind === 'death');
+  tag.classList.toggle('sentence', kind !== 'death');
 
   renderQuestionPanel();
   el('q-result').classList.remove('on');

@@ -945,7 +945,7 @@ Flappy-spelet och områdets quiz delar **samma** frågebank. Frågorna ligger al
 ### Frågeflöde
 - Frågor dras **utan upprepning** tills poolen är slut, sedan blandas hela poolen om (`pool` med index, Fisher-Yates)
 - Svarsalternativen blandas per fråga: `order` mappar visad plats → index i `opts`. **Rättningen utgår alltid från `QUESTIONS[i].correct`** — aldrig från visad text
-- Efter varje passerat rör (`CFG.askEvery = 1`) pausas spelet och en fråga visas. Eleven fortsätter med **"Flyg vidare"** och därefter ett tryck — aldrig direkt tillbaka i fritt fall
+- Efter vart `CFG.askEvery`:e passerade rör (**default 3** — täta frågor bröt spelflytet i elevtest) pausas spelet och en fråga visas. Eleven fortsätter med **"Flyg vidare"** och därefter ett tryck — aldrig direkt tillbaka i fritt fall. Räknaren (`pipesSinceQ`) nollställs bara av rörfrågor, aldrig av dödsfrågor — en krasch mellan två rörfrågor ger sin egen dödsfråga utan att påverka rörräkningen. All UI-text som nämner intervallet (startskärmens ledtext/regler, frågerubriken) genereras från `CFG.askEvery` (t.ex. via en `ordinal()`-hjälpare för "vart 3:e"), aldrig hårdkodad, så texterna stämmer om intervallet ändras igen
 - **Krasch ger en fråga:** rätt svar återupplivar (rör nära fågeln rensas, `CFG.invincibleTime` osårbarhet, vänta på tryck), fel svar är game over. Max `CFG.maxLives = 3` andra chanser, visade som ♥ i HUD:en. En lyckad återupplivning förbrukar ett hjärta
 - `expl` visas efter **varje** svar, rätt som fel
 - Tangent **1–4** väljer svar, **Enter/mellanslag** fortsätter. Både svarsknappar och fortsätt-knappen är låsta `CFG.answerLockMs = 400` ms efter att de visats, så att elever som hamrar på mellanslag inte råkar svara eller hoppa över förklaringen
@@ -956,6 +956,7 @@ Flappy-spelet och områdets quiz delar **samma** frågebank. Frågorna ligger al
 - **Streak** = antal rätt svar i rad, räknas **över både rör- och dödsfrågor**. Fel svar nollställer streaken
 - **Multiplikator** styrs av `CFG.tiers` (högsta tröskeln först, så nivåerna är lätta att justera): 3 i rad ×2, 5 i rad ×3, 7 i rad ×4, 10 i rad ×5. Multiplikatorn beräknas på streaken **inklusive** det aktuella svaret
 - **HUD:** poäng + sessionens rekord, streak-pill ("🔥 5 i rad") + multiplikator-pill, hjärtan. Toast när en ny multiplikatornivå nås. Glödande ring runt fågeln vid streak ≥ `CFG.glowStreak` (3)
+- **Progressindikator mot nästa fråga:** `CFG.askEvery` prickar under streak-/multiplikatorpillarna (så HUD:en inte blir trång på mobil), texten "till nästa fråga" bredvid. Fylls en i taget för varje passerat rör, nollställs när en rörfråga triggas — men rörs aldrig av en dödsfråga
 - **Poängrad under förklaringen efter varje svar:** `+30 poäng (10 × 3, 5 i rad)` vid rätt, `Streaken bröts efter 6 i rad` vid fel
 - **Sessionsrekord** i sessionStorage, nyckel `[prefix]_flappy_best`
 - **Slutskärm:** poäng, passerade rör, rätt/totalt, längsta streak, "Nytt rekord" vid sessionsrekord, samt listan **"Frågor att repetera"** med varje missad fråga och dess rätta svar
@@ -970,7 +971,7 @@ Spelet får inte ha magiska tal utspridda i koden. Allt samlas i ett `CFG`-objek
 | Rör | `pipeSpeed` (170), `pipeGap` (200), `pipeSpacing` (268), `pipeWidth` (72), `pipeMargin` (58), `firstPipeDelay` |
 | Fågel | `birdRadius` (16), `birdXFrac` (0.28), `glowStreak` (3) |
 | Mark | `groundHeight` (84) |
-| Frågor | `askEvery` (1), `answerLockMs` (400) |
+| Frågor | `askEvery` (3, default), `answerLockMs` (400) |
 | Liv | `maxLives` (3), `invincibleTime` (1.5), `reviveClearAhead` (300) |
 | Poäng | `pointsPerPipe` (1), `pointsPerCorrect` (10), `tiers` |
 | Lagring | `storeBest`, `storeEasy` |
