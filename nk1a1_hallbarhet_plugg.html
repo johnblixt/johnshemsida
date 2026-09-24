@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pluggmaterial – Hållbar utveckling | NK 1a1</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --p:  #22c55e;
+    --pl: #dcfce7;
+    --pd: #14532d;
+    --p-deep: #15803d;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: 'EB Garamond', serif; font-size: 1.08rem; background:#f8fafc; color:#1e293b; margin:0; }
+  h1,h2,h3,h4,.fredoka { font-family: 'Fredoka', sans-serif; }
+
+  .wrap { max-width: 52rem; margin: 0 auto; padding: 1.6rem 1.25rem 4rem; }
+
+  /* ── Tillbaka ── */
+  .back {
+    display:inline-flex; align-items:center; gap:.35rem; font-family:'Fredoka',sans-serif;
+    font-size:.88rem; color:#94a3b8; text-decoration:none; transition:color .15s;
+  }
+  .back:hover { color: var(--p-deep); }
+
+  /* ── Header ── */
+  .head { text-align:center; margin: 1.8rem 0 1.6rem; }
+  .eyebrow {
+    font-family:'Fredoka',sans-serif; font-size:.72rem; font-weight:600; text-transform:uppercase;
+    letter-spacing:.22em; color:var(--p-deep); margin:0 0 .5rem;
+  }
+  .head h1 {
+    font-size: clamp(2rem, 6vw, 2.9rem); font-weight:700; font-style:italic;
+    color:#0f172a; margin:0; line-height:1.1;
+  }
+  .rule { height:.25rem; width:5rem; border-radius:999px; background:var(--p); margin:.9rem auto 1.1rem; }
+  .lead { font-size:1rem; color:#64748b; max-width:34rem; margin:0 auto; line-height:1.7; }
+  .lead strong { color:var(--p-deep); font-weight:700; }
+
+  /* ── Toggle ── */
+  .pill-toggle {
+    display:flex; gap:.3rem; justify-content:center; background:#fff; border:1px solid #e2e8f0;
+    border-radius:999px; padding:.3rem; width:fit-content; margin:0 auto 1.6rem;
+    box-shadow:0 1px 3px rgba(0,0,0,.05);
+  }
+  .pill-toggle button {
+    padding: .5rem 1.4rem; border-radius: 999px; font-family:'Fredoka',sans-serif;
+    font-weight: 600; font-size: .95rem; transition: all .2s; border: none; cursor: pointer;
+  }
+  .pill-toggle button.active   { background: var(--p); color: #fff; box-shadow:0 2px 8px rgba(34,197,94,.35); }
+  .pill-toggle button.inactive { background: transparent; color: #94a3b8; }
+
+  /* ── Innehållsförteckning ── */
+  .toc {
+    background:#fff; border:1px solid #e2e8f0; border-radius:1.2rem;
+    padding:.9rem 1rem; margin-bottom:1.6rem; box-shadow:0 1px 3px rgba(0,0,0,.05);
+  }
+  .toc-h {
+    font-family:'Fredoka',sans-serif; font-size:.7rem; font-weight:700; text-transform:uppercase;
+    letter-spacing:.14em; color:var(--p-deep); margin:.2rem .3rem .5rem;
+  }
+  .toc a {
+    display:flex; align-items:center; gap:.7rem; padding:.55rem .8rem; border-radius:.75rem;
+    color:#334155; text-decoration:none; transition:background .15s;
+  }
+  .toc a:hover { background: var(--pl); }
+  .toc-n {
+    flex:none; width:1.7rem; height:1.7rem; border-radius:50%; background:var(--pl); color:var(--pd);
+    font-family:'Fredoka',sans-serif; font-weight:700; font-size:.8rem;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .toc-t { flex:1; }
+  .toc-s { flex:none; font-size:.75rem; color:#94a3b8; font-family:'Fredoka',sans-serif; }
+
+  .hint {
+    text-align:center; font-size:.85rem; color:#94a3b8; margin:-.8rem 0 1.2rem;
+    font-family:'Fredoka',sans-serif;
+  }
+
+  /* ── Avsnitt ── */
+  .sec { margin-bottom: 1.4rem; scroll-margin-top: 1rem; }
+  .sec-head {
+    width:100%; display:flex; align-items:center; gap:.9rem; text-align:left;
+    background:#fff; border:none; border-left:8px solid var(--p);
+    border-radius:1rem; padding:1.1rem 1.2rem; cursor:pointer;
+    box-shadow:0 1px 3px rgba(0,0,0,.06);
+  }
+  .sec-emoji { flex:none; font-size:1.6rem; line-height:1; }
+  .sec-titlewrap { flex:1; display:flex; flex-direction:column; gap:.15rem; }
+  .sec-title { font-size:1.35rem; font-weight:600; color:#0f172a; line-height:1.25; font-family:'Fredoka',sans-serif; }
+  .sec-sid { font-size:.78rem; color:#94a3b8; font-family:'Fredoka',sans-serif; }
+  .chev { flex:none; color:var(--p); font-size:1.1rem; transition:transform .25s; }
+  .chev.open { transform: rotate(90deg); }
+
+  /* ── Brödtext ── */
+  .block { padding: .4rem .3rem 0; }
+  .block h3 {
+    font-size:1.12rem; font-weight:600; color:var(--pd);
+    margin:1.6rem 0 .15rem; display:flex; flex-wrap:wrap; align-items:baseline; gap:.5rem;
+  }
+  .block h3 .sid { font-size:.72rem; font-weight:400; color:#94a3b8; }
+  .block p { margin:.5rem 0; line-height:1.85; color:#334155; }
+  .block .term { color:var(--p-deep); font-weight:700; }
+  .block ul { list-style:none; padding:0; margin:.6rem 0; }
+  .block ul li { position:relative; padding:.22rem 0 .22rem 1.5rem; color:#334155; line-height:1.7; }
+  .block ul li::before { content:'→'; position:absolute; left:0; color:var(--p); font-weight:700; }
+
+  .ex {
+    background:#fff; border:1px solid var(--pl); border-left:4px solid var(--p);
+    border-radius:0 .8rem .8rem 0; padding:.7rem 1rem; margin:.8rem 0;
+    font-size:.97rem; color:#3f6212; line-height:1.7;
+  }
+  .ex b { color:var(--p-deep); }
+
+  .viktigt {
+    background:var(--pl); border:2px solid var(--p); border-radius:1.2rem;
+    padding:1.1rem 1.3rem; margin:1.8rem 0 .4rem;
+  }
+  .viktigt-h {
+    font-family:'Fredoka',sans-serif; font-size:1rem; font-weight:700;
+    color:var(--pd); margin-bottom:.5rem;
+  }
+  .viktigt ul { list-style:none; padding:0; margin:0; }
+  .viktigt li { position:relative; padding:.28rem 0 .28rem 1.6rem; color:var(--pd); line-height:1.65; }
+  .viktigt li::before { content:'✓'; position:absolute; left:0; font-weight:700; color:var(--p-deep); }
+  .viktigt .term { font-weight:700; color:var(--p-deep); }
+
+  .to-top { text-align:center; margin:1rem 0 .2rem; }
+  .to-top a { font-family:'Fredoka',sans-serif; font-size:.8rem; color:#94a3b8; text-decoration:none; }
+  .to-top a:hover { color:var(--p-deep); }
+
+  /* ── Figurer ── */
+  .fig {
+    background:#fff; border:1px solid #e2e8f0; border-radius:1.2rem;
+    padding:1.1rem 1.2rem; margin:1.6rem 0; box-shadow:0 1px 3px rgba(0,0,0,.05);
+  }
+  .fig-t {
+    font-family:'Fredoka',sans-serif; font-size:.72rem; font-weight:700;
+    text-transform:uppercase; letter-spacing:.12em; color:var(--p-deep); margin-bottom:.8rem;
+  }
+  .fig-note { font-size:.85rem; color:#64748b; margin:.8rem 0 0; line-height:1.55; }
+  .fig-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+
+  .tbl { border-collapse:collapse; width:100%; font-size:.92rem; }
+  .tbl th, .tbl td { padding:.5rem .6rem; text-align:left; border-bottom:1px solid #e2e8f0; }
+  .tbl th { font-family:'Fredoka',sans-serif; font-size:.72rem; text-transform:uppercase;
+            letter-spacing:.06em; color:var(--pd); background:var(--pl); }
+  .tbl tr:last-child td { border-bottom:none; }
+  .tbl .ctr { text-align:center; font-weight:700; color:var(--p-deep); }
+  .chip {
+    display:inline-block; min-width:2.4rem; text-align:center; padding:.15rem .45rem;
+    border-radius:.5rem; color:#fff; font-family:'Fredoka',sans-serif;
+    font-weight:700; font-size:.78rem;
+  }
+
+  .bar-row { display:flex; align-items:center; gap:.6rem; margin:.35rem 0; }
+  .bar-lbl { flex:none; width:6.6rem; font-size:.88rem; color:#334155; }
+  .bar-track { flex:1; background:#f1f5f9; border-radius:999px; height:1.4rem; overflow:hidden; }
+  .bar-fill { height:100%; border-radius:999px; }
+  .bar-val { flex:none; width:4rem; text-align:right; font-family:'Fredoka',sans-serif;
+             font-weight:600; font-size:.85rem; color:var(--pd); }
+
+  /* Livscykel */
+  .cycle { display:flex; flex-wrap:wrap; align-items:stretch; gap:.4rem; }
+  .cyc-step {
+    flex:1 1 7.5rem; display:flex; flex-direction:column; align-items:center; gap:.3rem;
+    background:var(--pl); border:1px solid var(--p); border-radius:.9rem; padding:.7rem .5rem;
+    text-align:center;
+  }
+  .cyc-num {
+    width:1.6rem; height:1.6rem; border-radius:50%; background:var(--p); color:#fff;
+    font-family:'Fredoka',sans-serif; font-weight:700; font-size:.8rem;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .cyc-txt { font-size:.85rem; color:var(--pd); line-height:1.35; }
+  .cyc-arrow { align-self:center; color:var(--p); font-weight:700; }
+  .cycle-end { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.7rem; }
+  .cyc-leaf, .cyc-dead {
+    flex:1 1 14rem; border-radius:.8rem; padding:.55rem .8rem; font-size:.88rem; line-height:1.5;
+  }
+  .cyc-leaf { background:#f0fdf4; border:1px dashed var(--p); color:var(--p-deep); }
+  .cyc-dead { background:#f8fafc; border:1px dashed #cbd5e1; color:#64748b; }
+
+  /* Ekosystemtjänster */
+  .est-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:.6rem; }
+  .est-card { background:#fff; border:2px solid var(--pl); border-radius:1rem; padding:.85rem 1rem; }
+  .est-i { font-size:1.4rem; line-height:1; margin-bottom:.3rem; }
+  .est-h { font-family:'Fredoka',sans-serif; font-weight:600; color:var(--pd); font-size:.98rem; margin-bottom:.2rem; }
+  .est-d { font-size:.88rem; color:#475569; line-height:1.55; }
+
+  /* Klimatåtgärder */
+  .kol-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.6rem; min-width:34rem; }
+  .kol { background:#fff; border:2px solid var(--pl); border-radius:1rem; padding:.8rem .9rem; }
+  .kol-h {
+    font-family:'Fredoka',sans-serif; font-weight:600; color:var(--pd);
+    font-size:.95rem; margin-bottom:.4rem; display:flex; align-items:center; gap:.35rem;
+  }
+  .kol ul { list-style:none; padding:0; margin:0; }
+  .kol li { position:relative; padding:.2rem 0 .2rem 1rem; font-size:.86rem; color:#475569; line-height:1.5; }
+  .kol li::before { content:'•'; position:absolute; left:0; color:var(--p); font-weight:700; }
+
+  /* Klimaträttvisa */
+  .cg { display:flex; gap:1.5rem; justify-content:center; align-items:flex-end; }
+  .cg-col { flex:0 1 9rem; }
+  .cg-h {
+    font-family:'Fredoka',sans-serif; font-size:.75rem; font-weight:600; color:var(--pd);
+    text-align:center; margin-bottom:.5rem;
+  }
+  .cg-stack { display:flex; flex-direction:column; border-radius:.5rem; overflow:hidden; }
+  .cg-seg {
+    display:flex; align-items:center; justify-content:center; color:#fff;
+    font-family:'Fredoka',sans-serif; font-weight:700; font-size:.82rem;
+  }
+  .cg-legend { display:flex; flex-wrap:wrap; gap:.9rem; justify-content:center; margin-top:.8rem; }
+  .cg-legend span { display:inline-flex; align-items:center; gap:.35rem; font-size:.84rem; color:#475569; }
+  .cg-legend i { width:.8rem; height:.8rem; border-radius:.2rem; display:inline-block; }
+
+  /* ── Footer ── */
+  .foot { text-align:center; margin-top:3rem; color:#94a3b8; font-size:.85rem; line-height:1.7; }
+  .foot .by { font-style:italic; }
+
+  /* ── Mobil ── */
+  @media (max-width: 767px) {
+    body { font-size: 1rem; }
+    .wrap { padding: 1.2rem .9rem 3rem; }
+    .sec-title { font-size: 1.15rem; }
+    .sec-head { padding: .85rem .9rem; gap:.65rem; border-left-width:6px; }
+    .sec-emoji { font-size:1.35rem; }
+    .block h3 { font-size: 1.05rem; }
+    .block p  { line-height: 1.75; }
+    .fig { padding: .85rem .9rem; border-radius:1rem; }
+    .bar-lbl { width: 5.4rem; font-size:.82rem; }
+    .bar-val { width: 3.4rem; font-size:.8rem; }
+    .pill-toggle button { padding:.45rem 1.05rem; font-size:.88rem; }
+    .est-grid { grid-template-columns:1fr; }
+    .toc-s { display:none; }
+    .cg { gap:.9rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<!-- ════════════════════════════════════════════════════════════
+     ALL TEXT LIGGER I EN GEMENSAM DATA-ARRAY: SECTIONS
+     { id, rubrik, sidor, emoji, lattlast[], fordjupning[], viktigt[], figur[] }
+     Block: { h, sidor, p[], lista[], ex }
+     Källa: hallbar_utveckling_och_miljo.md (lärobok s. 103–175)
+     ════════════════════════════════════════════════════════════ -->
+<script>
+var SECTIONS = [
+
+/* ══════════ 1. VAD ÄR HÅLLBAR UTVECKLING? (s. 103–109) ══════════ */
+{
+  id: "hallbar-utveckling",
+  rubrik: "Vad är hållbar utveckling?",
+  sidor: "s. 103–109",
+  emoji: "🌍",
+  figur: ["venn", "fotavtryck"],
+
+  lattlast: [
+    { h: "Vad betyder hållbar utveckling?", sidor: "s. 104", p: [
+      "**Hållbar utveckling** – att leva så att jorden fungerar även i framtiden.",
+      "FN har gjort en känd förklaring. Vi ska kunna leva bra i dag. Men vi får inte förstöra för dem som kommer efter oss.",
+      "För att klara det måste vi spara på jordens **naturresurser**. Naturresurser är sådant vi tar från naturen. Det kan vara skog, vatten, fisk eller metall.",
+      "Vi måste också sluta smutsa ner och förstöra naturen. Då får framtidens barn mat, syre, rent vatten och en natur med många arter."
+    ]},
+    { h: "Tre delar som hänger ihop", sidor: "s. 104", p: [
+      "Hållbar utveckling brukar delas in i tre delar.",
+      "**Ekologisk hållbarhet** handlar om naturen. Den vill ha friska ekosystem, en giftfri miljö och många olika arter.",
+      "**Social hållbarhet** handlar om människor. Den vill ha hälsa, trygghet, utbildning och rättvisa.",
+      "**Ekonomisk hållbarhet** handlar om pengar och arbete. Den vill ha ett hållbart uttag av resurser, rättvisa arbetsvillkor och miljövänlig teknik.",
+      "De tre delarna måste samspela med varandra. Först då blir utvecklingen hållbar."
+    ]},
+    { h: "Vad kan vi göra?", sidor: "s. 104", p: [
+      "Arbetet kan ske på många nivåer. Det gäller dig själv, skolan, företag, kommunen, landet och hela världen.",
+      "Ibland behöver vi ändra hur vi lever. Ibland behöver vi ny teknik. Ofta behövs båda."
+    ], lista: [
+      "Använda mindre naturresurser.",
+      "Återanvända och återvinna mer material.",
+      "Spara energi och sluta använda fossila bränslen.",
+      "Ställa om till en matproduktion som är mer hållbar.",
+      "Skydda ekosystem och hotade arter.",
+      "Laga ekosystem som redan är förstörda.",
+      "Använda färre kemikalier."
+    ]},
+    { h: "Agenda 2030 och de globala målen", sidor: "s. 105", p: [
+      "År 2015 tog världens länder två viktiga beslut.",
+      "De antog **Agenda 2030** med 17 globala mål. De skrev också ett klimatavtal i Paris.",
+      "Alla 193 länder i FN har sagt ja till målen. Målen ska vara uppnådda år 2030.",
+      "Målen ska få slut på extrem fattigdom. De ska också bekämpa orättvisor, främja fred och minska skador på miljön.",
+      "För att se om det går åt rätt håll behövs **hållbarhetsindikatorer**. Det är mått som visar hur arbetet går.",
+      "I Sverige leder regeringen arbetet. Statistiska centralbyrån samlar in siffrorna."
+    ]},
+    { h: "Tre mål handlar bara om miljön", sidor: "s. 105", p: [
+      "Tre av de 17 målen handlar helt om ekologisk hållbarhet."
+    ], lista: [
+      "**Mål 13 – Bekämpa klimatförändringarna.** Vi ska göra något åt klimatet nu. Vi ska införa klimatanpassningar, öka kunskapen, ta fler politiska beslut och stötta fattiga länder.",
+      "**Mål 14 – Hav och marina resurser.** Vi ska använda haven på ett hållbart sätt. Vi ska minska föroreningar, motverka havsförsurning, hindra överfiske och skydda havsområden.",
+      "**Mål 15 – Ekosystem och biologisk mångfald.** Vi ska skydda och återställa naturen på land. Vi ska ha ett hållbart skogsbruk, bekämpa ökenspridning, hejda markförstöring och bevara mångfalden."
+    ]},
+    { h: "Ekologiskt fotavtryck", sidor: "s. 106", p: [
+      "**Ekologiskt fotavtryck** – ett mått på hur stor yta en person eller ett land behöver.",
+      "Måttet visar hur mycket naturresurser vi använder. Det visar också hur mycket avfall vi skapar.",
+      "Vi behöver åkermark, betesmark och havsområden för att få mat. Vi behöver skog till syre och byggmaterial. Skogen tar också upp koldioxid.",
+      "Fotavtrycket mäts i **globala hektar (gha)**. En global hektar är 10 000 m² produktiv mark. Det är ungefär två fotbollsplaner.",
+      "En person i Sverige har 5,5 gha (2019). Snittet i hela världen är 2,6 gha.",
+      "I rika länder kommer en stor del av fotavtrycket från utsläpp av koldioxid."
+    ]},
+    { h: "Jordens produktionsförmåga", sidor: "s. 107", p: [
+      "**Produktionsförmåga** – hur mycket naturen hinner skapa och ta hand om.",
+      "Måttet visar hur mycket förnybara råvaror som kan bildas i ett område. Det visar också hur mycket avfall ekosystemen klarar av.",
+      "Om vi delade all produktiv mark lika skulle var och en få 1,6 gha. Det är ungefär tre fotbollsplaner.",
+      "Blir vi fler människor räcker ytan till mindre per person."
+    ]},
+    { h: "Vi lever över jordens tillgångar", sidor: "s. 108", p: [
+      "En hållbar livsstil betyder att fotavtrycket inte är större än jordens produktionsförmåga.",
+      "Så är det inte i dag. Vi passerade gränsen redan på 1970-talet.",
+      "Det betyder att vi använder resurser snabbare än de hinner bildas. Naturen hinner inte heller ta hand om alla utsläpp.",
+      "I dag skulle världens befolkning behöva 1,7 jordklot för att leva hållbart på sikt."
+    ]}
+  ],
+
+  fordjupning: [
+    { h: "FN:s definition och de tre dimensionerna", sidor: "s. 104", p: [
+      "FN definierar hållbar utveckling som ”en utveckling som tillfredsställer dagens behov utan att äventyra kommande generationers möjligheter att tillfredsställa sina behov”.",
+      "För att det ska vara möjligt krävs två saker samtidigt: att vi hushållar med jordens naturresurser och att vi slutar förorena och förstöra jordens ekosystem. Lyckas vi kommer även framtida generationer kunna leva på en planet som ger dem mat, syre, rent vatten och fungerande ekosystem med hög biologisk mångfald.",
+      "Begreppet definieras utifrån tre dimensioner. **Ekologisk hållbarhet** omfattar välmående ekosystem, giftfri miljö och biologisk mångfald. **Social hållbarhet** omfattar hälsa, trygghet, utbildning och rättvisa. **Ekonomisk hållbarhet** omfattar hållbart resursuttag, rättvisa arbetsvillkor och miljövänlig teknik. Tillsammans bildar de en helhet som, när de samspelar med varandra, förväntas leda till en hållbar utveckling.",
+      "Omställningen kan ske på flera nivåer parallellt: individuellt, inom skolor och företag, samt på kommunal, nationell och global nivå. I förändringsarbetet kan både livsstilsförändringar och användningen av ny teknik komma att vara nödvändiga."
+    ]},
+    { h: "Agenda 2030, indikatorer och ansvar", sidor: "s. 105", p: [
+      "År 2015 tog världens länder två avgörande beslut: dels antogs Agenda 2030 och de globala målen, dels slöts ett globalt klimatavtal i Paris. Enligt avtalet ska den globala temperaturökningen i slutet av århundradet begränsas till max 2 °C, och helst inte över 1,5 °C, jämfört med förindustriella nivåer.",
+      "Agenda 2030 består av sammanlagt 17 globala mål för en ekologiskt, ekonomiskt och socialt hållbar utveckling. Målen har antagits av samtliga 193 länder i FN:s generalförsamling och ambitionen är att de ska uppnås till 2030. Ytterst syftar de till att få slut på extrem fattigdom, bekämpa ojämlikhet och orättvisor, främja fred och rättvisa samt begränsa skadlig miljöpåverkan.",
+      "För att veta om vi rör oss i rätt riktning krävs **hållbarhetsindikatorer** som utvecklingen kan mätas med. FN har tagit fram egna globala indikatorer för att följa upp arbetet med Agenda 2030. I Sverige ansvarar regeringen för och leder arbetet, medan Statistiska centralbyrån har fått i uppdrag att samla in statistik som visar hur arbetet går.",
+      "Tre av målen handlar uteslutande om ekologisk hållbarhet: mål 13 (bekämpa klimatförändringarna), mål 14 (hav och marina resurser) och mål 15 (ekosystem och biologisk mångfald). Vart och ett består av flera delmål som ska vara uppfyllda till år 2030."
+    ]},
+    { h: "Ekologiskt fotavtryck och globala hektar", sidor: "s. 106–107", p: [
+      "Det ekologiska fotavtrycket mäter hur mycket naturresurser som används och hur mycket avfall som genereras av en enskild person eller av invånarna i ett land. Bakom måttet ligger att all mat kräver åkermark, betesmark och havsområden. Utöver det behövs skogar, som dels producerar en stor del av syret vi andas och ger oss timmer som byggnadsmaterial, dels tar upp och lagrar en del av den koldioxid vi släpper ut.",
+      "Måttet anges i **globala hektar (gha)**. En global hektar är en yta på 10 000 m² produktiv mark — motsvarande två fotbollsplaner — som kan producera naturresurser, rena avfall och ta upp koldioxid.",
+      "Fotavtrycket skiljer sig kraftigt åt beroende på livsstil, var i världen vi bor och vilka ekonomiska tillgångar vi har. Det genomsnittliga fotavtrycket i Sverige var 5,5 gha per person 2019, mot ett globalt medelvärde på 2,6 gha. En betydande del av fotavtrycket från rika länder utgörs av de koldioxidutsläpp som vår livsstil och vårt samhälle genererar. För att kompensera för utsläppen skulle stora skogsområden behöva planteras där koldioxiden kan tas upp och lagras."
+    ]},
+    { h: "Produktionsförmåga (biokapacitet)", sidor: "s. 107–108", p: [
+      "Genom att jämföra mänsklighetens samlade ekologiska fotavtryck med jordens totala produktionsförmåga (**biokapacitet**) kan vi ta reda på hur hållbart vi lever med avseende på resursanvändning. Med produktionsförmåga menas hur mycket förnybara råvaror som kan produceras och hur mycket avfall som kan absorberas av ekosystemen inom ett visst område.",
+      "Om all jordens produktiva yta delades rättvist på dagens befolkning skulle det bli 1,6 gha per person, vilket motsvarar omkring tre fotbollsplaner. Om ytan av produktiva ekosystem inte håller jämna steg med befolkningsökningen kommer jordens produktionsförmåga per person framöver att minska.",
+      "Mänsklighetens samlade fotavtryck överskred jordens produktionsförmåga redan på 1970-talet. Att produktionsförmågan är mindre än det ekologiska fotavtrycket innebär att resurser förbrukas snabbare än de återskapas, och att ekosystemen inte hinner ta hand om alla de utsläpp som genereras. I dag hade världens samlade befolkning behövt 1,7 jordklot för att leva hållbart på sikt."
+    ]},
+    { h: "FÖRDJUPNING: Planetära gränser", sidor: "s. 109", p: [
+      "Forskare har identifierat nio **planetära gränser** som mänskligheten behöver hålla sig inom för att förhållandena på jorden ska vara stabila även framöver. Om gränserna överskrids riskerar vi att viktiga system rubbas så mycket att det ger oåterkalleliga skador.",
+      "Vid den kartläggning som gjordes år 2023 bedöms sex gränser ha överskridits:"
+    ], lista: [
+      "**Förlust av biologisk mångfald** – många populationer av vilda djur minskar i antal samtidigt som utdöendet av arter går oroväckande snabbt.",
+      "**Näringsämnenas kretslopp** – ett överskott av näringsämnen orsakar övergödning.",
+      "**Förändrad markanvändning** – stora arealer av naturliga ekosystem har omvandlats till jordbruksmark och urban bebyggelse.",
+      "**Klimatförändring** – koncentrationen av växthusgaser i atmosfären har ökat.",
+      "**Förändring i färskvatten** – många av jordens vattendrag förorenas och överutnyttjas.",
+      "**Nya syntetiska substanser** – vi tillverkar och släpper ut kemiska föreningar som förorenar miljön."
+    ]},
+    { h: "De tre gränser vi fortfarande håller oss inom", sidor: "s. 109", p: [
+      "På global nivå håller vi oss endast inom tre av de nio gränserna:"
+    ], lista: [
+      "**Uttunning av ozonskiktet** – ozonskiktet förhindrar att farlig UV-strålning når jordytan.",
+      "**Försurning av världshaven** – pH-värdet i världshaven sjunker i takt med att mer koldioxid från atmosfären löser sig i vattnet.",
+      "**Ökade koncentrationer av aerosoler** – mängden små partiklar i luften."
+    ], ex: "De planetära gränserna kan, i likhet med ekologiska fotavtryck, användas som en indikator på om vi lever hållbart eller inte. <b>Källa: Azote for Stockholm Resilience Centre, baserat på Richardson m.fl. 2023.</b>" }
+  ],
+
+  viktigt: [
+    "Hållbar utveckling = vi tillfredsställer dagens behov utan att äventyra kommande generationers möjligheter.",
+    "De tre dimensionerna är ekologisk, social och ekonomisk hållbarhet — de måste samspela.",
+    "Agenda 2030 har 17 globala mål, antagna av alla 193 FN-länder. Mål 13, 14 och 15 rör ekologisk hållbarhet.",
+    "Ekologiskt fotavtryck mäts i globala hektar (gha): Sverige 5,5 — globalt medel 2,6 — rättvis andel 1,6.",
+    "Vårt fotavtryck är större än jordens produktionsförmåga. Vi skulle behöva 1,7 jordklot.",
+    "Sex av nio planetära gränser var överskridna vid kartläggningen 2023."
+  ]
+},
+
+/* ══════════ 2. NATURRESURSER OCH PRODUKTERS LIVSCYKEL (s. 111–119) ══════════ */
+{
+  id: "naturresurser",
+  rubrik: "Naturresurser och produkters livscykel",
+  sidor: "s. 111–119",
+  emoji: "♻️",
+  figur: ["livscykel", "transport"],
+
+  lattlast: [
+    { h: "Förnybart och icke-förnybart", sidor: "s. 111", p: [
+      "**Förnybara naturresurser** – resurser som naturen hela tiden bildar på nytt.",
+      "Hit hör sol, vatten, vind, biobränslen, timmer och fisk.",
+      "Men de är bara hållbara om vi tar ut dem lagom fort. Vi får inte ta mer än det som hinner bildas. Vi får inte heller förstöra det ekosystem som skapar resursen.",
+      "**Icke-förnybara naturresurser** – resurser som inte bildas på nytt.",
+      "Hit hör metaller och fossila bränslen. De minskar varje gång vi tar upp dem.",
+      "Uran till kärnkraft är också icke-förnybart. Därför räknas kärnkraft som en icke-förnybar energikälla."
+    ], ex: "<b>Exempel:</b> Rapsolja och råolja kan båda bli drivmedel till bilar. Rapsolja är förnybar, för vi kan odla ny raps varje år. Råolja är icke-förnybar, för oljekällorna töms när vi pumpar upp dem. (s. 111)" },
+    { h: "Livscykelanalys – en produkts hela liv", sidor: "s. 112", p: [
+      "**Livscykelanalys (LCA)** – en undersökning av hur mycket en produkt påverkar miljön under hela sitt liv.",
+      "Företag gör ofta en sådan analys när de vill bli mer hållbara.",
+      "Analysen följer fem steg: utvinning av råvaror, produktion, transport, användning och avfall.",
+      "Det är svårt att få exakta siffror i alla steg. Ändå visar analysen var de största problemen finns. Då kan företaget slösa mindre och bygga bättre produkter."
+    ]},
+    { h: "Steg 1: Utvinning av råvaror", sidor: "s. 113", p: [
+      "Först tar vi råvaror ur naturen. Det kan vara malm, mineral, skog, jordbruksprodukter och fossila bränslen.",
+      "Malm, mineral och kol hämtas i gruvor. Det sker i **dagbrott** på markytan eller i gångar djupt ner i marken.",
+      "Gruvor förstör ofta djurens livsmiljöer på platsen. De kan också förorena naturen. Att rena malmen kräver mycket energi, ofta från fossila bränslen.",
+      "Råolja pumpas upp ur marken. Ofta finns naturgas i samma hål.",
+      "**Fracking** – en metod där man spräcker berggrunden med vatten, sand och kemikalier så att olja och gas frigörs.",
+      "Råolja måste renas i ett raffinaderi. Först då blir den bensin, diesel och asfalt."
+    ]},
+    { h: "Steg 2: Produktion", sidor: "s. 114", p: [
+      "Sedan tillverkas produkten i en fabrik.",
+      "Fabriken kan minska sin påverkan genom att använda förnybart och återvunnet material.",
+      "Tillverkning kräver ofta mycket energi. Kommer energin från fossila bränslen blir utsläppen större.",
+      "En del fabriker använder farliga kemikalier. Släpps de ut kan de förorena mark och vatten. Det skadar både människor och natur.",
+      "Ofta sker produktionen långt bort från oss. Då är det svårt att kontrollera miljön och arbetsvillkoren på plats."
+    ]},
+    { h: "Steg 3: Transport", sidor: "s. 115", p: [
+      "Råvaror körs till fabriker. Färdiga varor körs till lager och affärer.",
+      "I dag skickas varor mellan länder och världsdelar.",
+      "Över långa avstånd är stora fartyg och tåg mest energieffektiva. De största containerfartygen tar upp till 18 000 containrar. Då blir utsläppen små per ton gods.",
+      "Men många fartyg går på tung brännolja. Den förorenar luften och kan ge hälsoproblem.",
+      "Flyg används när det ska gå snabbt. Flyg är både dyrt och ger stora utsläpp.",
+      "Nästan alla varor åker lastbil någon gång. Lastbilar släpper ut koldioxid och **kväveoxider**. Kväveoxider försämrar luften och kan ge övergödning, försurning och smog."
+    ]},
+    { h: "Steg 4: Användning", sidor: "s. 116", p: [
+      "En del produkter påverkar miljön medan vi använder dem. Det gäller sådant som drar energi och ger utsläpp.",
+      "Ibland är det bättre att välja en produkt som är tyngre att tillverka men snällare att använda."
+    ], ex: "<b>Exempel – elbilen:</b> En forskningsrapport från 2021 visar att nya elbilar är klimatsmartare än nya bensinbilar i 95 % av alla länder. I Sverige görs elen utan fossila bränslen, så elbilen är ett bra val här. I de 5 % där det inte lönar sig finns till exempel Polen och Indien. Där laddas bilarna med el från kolkraft. Där körs de också bara korta sträckor innan de skrotas. (s. 116)" },
+    { h: "Steg 5: Avfall och cirkulär ekonomi", sidor: "s. 118", p: [
+      "Förr tänkte industrin **linjärt**. Vi tog nya råvaror, gjorde en vara och slängde den sedan. Det slösar på resurser och smutsar ner.",
+      "**Cirkulär ekonomi** – ett system där varor håller länge och materialet kan användas igen.",
+      "Då behövs färre nya råvaror och det blir mindre avfall.",
+      "Men det finns problem. Återvunnet material är ofta dyrare än nytt. Vissa material kräver dyra maskiner, till exempel metallerna i elbilar.",
+      "Många produkter har flera sorters plast blandat. Plasterna är svåra att skilja åt, så mycket plast bränns i stället.",
+      "Material kan inte heller återvinnas hur många gånger som helst. Därför är en helt cirkulär ekonomi kanske inte möjlig."
+    ]}
+  ],
+
+  fordjupning: [
+    { h: "Förnybara och icke-förnybara naturresurser", sidor: "s. 111", p: [
+      "Naturresurser som kontinuerligt återskapas av naturliga processer i ekosystemen kallas **förnybara naturresurser**. Hit hör bland annat solinstrålning, vatten, vind, biobränslen, timmer och fiskbestånd. För att användningen ska vara hållbar gäller två villkor: uttaget får inte ske snabbare än resursen kan nybildas, och de ekosystem som producerar råvaran får inte förstöras. Först då kan ekosystemen producera resursen även i framtiden.",
+      "**Icke-förnybara naturresurser** kan inte återskapas, åtminstone inte inom en överskådlig framtid. Hit hör metaller och fossila bränslen. Eftersom resurserna inte nybildas minskar de i takt med att de utvinns. Det gäller även det uran som behövs för att driva kärnkraftverk — därför betraktas kärnkraft som en icke-förnybar energikälla.",
+      "Jämförelsen mellan rapsolja och råolja visar skillnaden. Båda kan användas för att framställa drivmedel. Rapsoljan utvinns ur rapsens oljerika frön och är förnybar: vi kan producera den så länge vi har tillgång till sol, vatten och åkerjord. Råoljan är icke-förnybar, eftersom antalet oljefyndigheter är begränsat och de töms i takt med att vi pumpar upp olja."
+    ]},
+    { h: "Livscykelanalysens fem steg", sidor: "s. 112", p: [
+      "Inom företag är det vanligt att göra en **livscykelanalys (LCA)** i arbetet med att bli mer hållbar. Man undersöker då hur stor miljöpåverkan en produkt har under hela sitt ”liv” — från vaggan till graven. Analysen inkluderar utvinning av råvaror, produktion, transport, användning och avfallshantering.",
+      "Livscykelanalyser är ofta svåra att göra, eftersom det inte alltid går att hitta exakta siffror för miljöpåverkan i alla steg. Trots det kan resultatet ge en insikt om var i livscykeln de största miljöproblemen finns, och analysen kan därmed användas för att minska resursslöseri och utveckla mer hållbara alternativ.",
+      "Ju mer av produkten som kan återanvändas eller återvinnas, desto mer ”cirkulär” är produkten. Det sparar på naturresurser och leder till att en mindre mängd avfall hamnar på deponi eller förbränns."
+    ]},
+    { h: "Utvinning och förädling av råvaror", sidor: "s. 113", p: [
+      "Det första steget är att kartlägga miljöpåverkan vid utvinning och förädling av råmaterialet. Råvaror kan vara malm, mineraler, skog, jordbruksprodukter och fossila bränslen (kol, råolja och naturgas). Malm, mineral och kol utvinns genom gruvdrift, antingen på markytan i dagbrott eller i gångar djupt ner i marken. För att utvinna metaller måste malmen först förädlas genom att orenheter tas bort.",
+      "Gruvdriften förstör habitat på platsen och kan dessutom förorena miljön. Vid förädlingen av malm används stora mängder energi, ofta från fossila bränslen.",
+      "Råolja pumpas upp från underjordiska reservoarer, ofta tillsammans med naturgas ur samma borrhål. Vid **fracking** sprutas en blandning av vatten, sand och kemikalier in i berggrunden med högt tryck, så att berggrunden spräcks och oljan och gasen frigörs. Råolja förädlas sedan i ett raffinaderi, där oljan separeras i olika fraktioner genom upphettning, innan den kan säljas som bensin, diesel och asfalt. Utvinningen bidrar till markförstöring, förorening av vatten och utsläpp av växthusgaser."
+    ]},
+    { h: "Produktion och arbetsvillkor", sidor: "s. 114", p: [
+      "Det andra steget är att undersöka miljöeffekterna vid tillverkningen. Ett sätt att minska miljöpåverkan är att så långt det går använda förnybara och återvunna material. Tillverkning kräver ofta stora mängder energi; om den kommer från fossila bränslen leder det till större växthusgasutsläpp än om energin kommer från förnybara energikällor.",
+      "I vissa tillverkningsprocesser används miljöfarliga kemikalier. Släpps de ut i naturen kan de förorena mark och vatten, vilket kan skada både människor och naturmiljö.",
+      "Ofta sker produktionen i tillverkningsländer långt bort från det land där varan konsumeras. Det gör det svårt att kontrollera hur miljön påverkas och hur arbetsvillkoren ser ut. Klädindustrin är en av de mest förorenande branscherna i världen: stora mängder kemikalier används för att färga och behandla tyger, och dåliga arbetsförhållanden gör att arbetarna kan sakna nödvändig skyddsutrustning."
+    ]},
+    { h: "Transport och utsläpp per transportslag", sidor: "s. 115", p: [
+      "I och med att produktionen av varor blivit mer globaliserad är det vanligt att både råvaror och produkter skickas mellan länder och världsdelar. Över långa avstånd är det mest energieffektivt att använda stora fartyg eller tåg, särskilt när tågen drivs av el. De största containerfartygen kan lasta upp till 18 000 containrar, vilket gör koldioxidutsläppen per ton fraktade varor relativt små.",
+      "Samtidigt drivs många fartyg av tung brännolja, vilket förorenar luften och släpper ut ämnen som kan ge hälsoproblem. För snabba leveranser över stora avstånd används främst flyg — dyrt och med stora utsläpp i jämförelse med andra transportmedel.",
+      "Lastbilar som drivs med fossila bränslen bidrar med koldioxidutsläpp och därmed till den globala uppvärmningen. De släpper också ut kväveoxider, som påverkar luftkvaliteten. Kväveoxider kan reagera med andra ämnen i luften och bidra till övergödning, försurning och bildning av smog.",
+      "Transport med tåg är nästan lika effektivt som med båt, men utsläppen är svårare att beräkna eftersom de beror på om tågen drivs med elektricitet eller diesel."
+    ]},
+    { h: "Användningsfasen — exemplet elbilar", sidor: "s. 116", p: [
+      "Vissa produkter påverkar miljön när de används, särskilt de som förbrukar energi och ger utsläpp. Sett till hela livscykeln kan det ibland vara mer hållbart att välja en produkt med små utsläpp under användningsfasen, trots att den kräver mer energi och material att tillverka.",
+      "I en forskningsrapport från 2021 dras slutsatsen att nyproducerade elbilar i nästan samtliga fall (95 % av alla länder) är klimatsmartare än nyproducerade bensinbilar. Det gäller exempelvis i Sverige, där elen framställs utan att vi förbränner fossila bränslen. I de få fall (5 %) där det inte är klimatsmart att köra elbil i dagsläget — exempelvis Polen och Indien — beror det på att bilarna laddas med el från kolkraftverk eller bara körs korta sträckor innan de skrotas.",
+      "Elbilens miljöpåverkan vid användning varierar alltså beroende på hur elen har producerats. Kommer elen från förnybara källor blir växthusgasutsläppen försumbara."
+    ]},
+    { h: "Cirkulär ekonomi — möjligheter och utmaningar", sidor: "s. 118", p: [
+      "Traditionellt har tillverkningsindustrin präglats av ett **linjärt** ekonomiskt synsätt: varor tillverkas av nya naturresurser och kastas sedan som avfall efter användning. Det slösar på jordens resurser och förorenar miljön.",
+      "Ett **cirkulärt** ekonomiskt synsätt innebär i stället att naturresurserna används mer hållbart, genom att vi tillverkar produkter som håller länge och som innehåller material som kan återanvändas och återvinnas. Tanken är att förbrukningen av nya råvaror ska minska och mängden avfall bli mindre.",
+      "Utmaningarna är flera. Återvunnet material är ofta dyrare än nya råvaror. Vissa material kräver nya tekniska lösningar och dyra maskiner för att kunna återvinnas, exempelvis metallerna i elbilar. Ofta finns många olika sorters plaster i en och samma produkt, vilka är svåra att separera i återvinningen — en av anledningarna till att mycket av plasten i soporna i stället bränns. Dessutom finns en gräns för hur många gånger ett material kan återvinnas innan det blir otjänligt. Det gör att en perfekt cirkulär ekonomi kanske inte är möjlig."
+    ]},
+    { h: "FÖRDJUPNING: Tillväxtens dilemma", sidor: "s. 119", p: [
+      "Sedan 1800-talet har det skett en kraftig ekonomisk tillväxt på de flesta håll i världen, och en sjunkande andel lever i fattigdom. Många har fått en förbättrad levnadsstandard i form av sjukvård, utbildning och så vidare — men det har också lett till en ökad belastning på planeten, eftersom den ekonomiska tillväxten historiskt ofta skett på bekostnad av miljön. Konflikten kallas **tillväxtens dilemma**.",
+      "De som förespråkar en **grön tillväxt** menar att ekonomin kan fortsätta växa så länge den kan ”frikopplas” från förbrukningen av resurser. I praktiken innebär det att vi behöver använda förnybar energi och gå över till en cirkulär ekonomi. Ofta finns också en hög tilltro till att teknologiska innovationer ska hjälpa oss att minska utsläppen.",
+      "**Tillväxtkritiker** hävdar i stället att grundproblemet beror på överkonsumtion och ohållbara livsstilar i rika länder. Vissa förespråkar att vi behöver överge tanken om ständig tillväxt och i stället medvetet planera för en ekonomisk **nedväxt**, om vi ska kunna rädda planeten.",
+      "Historiskt har tillväxten i den globala ekonomin (global BNP) gått hand i hand med användningen av naturresurser och utsläpp av koldioxid kopplat till industriella processer."
+    ]}
+  ],
+
+  viktigt: [
+    "Förnybara resurser återskapas av naturen — men bara om uttaget inte går snabbare än nybildningen och ekosystemet inte förstörs.",
+    "Icke-förnybara resurser är metaller, fossila bränslen och uran. Därför räknas kärnkraft som icke-förnybar.",
+    "Livscykelanalysens fem steg: utvinning av råvaror → produktion → transport → användning → avfall.",
+    "Utsläpp per ton och kilometer: fartyg 3 g, lastbil 80 g, flyg 435 g CO₂.",
+    "Cirkulär ekonomi = produkter som håller länge och material som återanvänds eller återvinns.",
+    "Tillväxtens dilemma: grön tillväxt (frikoppling + teknik) kontra nedväxt (minskad konsumtion)."
+  ]
+},
+
+/* ══════════ 3. BIOLOGISK MÅNGFALD (s. 133–142) ══════════ */
+{
+  id: "biologisk-mangfald",
+  rubrik: "Biologisk mångfald",
+  sidor: "s. 133–142",
+  emoji: "🦋",
+  figur: ["ekosystemtjanster", "rodlista"],
+
+  lattlast: [
+    { h: "Vad är biologisk mångfald?", sidor: "s. 133", p: [
+      "**Biologisk mångfald** – variationen av levande organismer på jorden.",
+      "Variationen finns på tre nivåer. Det kan vara olika ekosystem inom ett område. Det kan vara olika arter inom ett ekosystem. Det kan också vara **genetisk mångfald**, alltså variation av arvsanlag inom en art.",
+      "Mångfalden behövs för att ekosystemen ska fortsätta fungera. Olika organismer har olika roller.",
+      "Vissa arter är helt beroende av varandra. Det gäller till exempel pollinerande insekter och vissa växter.",
+      "Är mångfalden hög blir ekosystemet mer stabilt. Då tål det miljöförändringar bättre."
+    ], ex: "<b>Exempel:</b> Bin och humlor pollinerar många av våra viktigaste jordbruksgrödor. De senaste årtiondena har många pollinatörer drabbats hårt. Det beror på moderna jordbruksmetoder och på bekämpningsmedel. (s. 133)" },
+    { h: "De fyra E-argumenten", sidor: "s. 133", p: [
+      "Det finns fyra sorters argument för att bevara mångfalden."
+    ], lista: [
+      "**Etiska argument** – andra organismer har rätt att finnas till. Det spelar ingen roll om de är nyttiga för oss.",
+      "**Estetiska argument** – mindre mångfald gör att vi inte längre kan njuta av naturens skönhet.",
+      "**Ekologiska argument** – arter har roller som ekosystemet behöver. Färre arter kan göra ekosystemet ostabilt. Till slut drabbar det oss själva.",
+      "**Ekonomiska argument** – vår ekonomi bygger på att ekosystemen fungerar. Utan dem får vi ingen mat, inga naturresurser, ingen syrgas och inget rent vatten."
+    ]},
+    { h: "Ekosystemtjänster", sidor: "s. 133–134", p: [
+      "**Ekosystemtjänster** – allt som naturen ger oss gratis och som vi har nytta av.",
+      "De delas in i fyra typer: försörjande, reglerande, stödjande och kulturella.",
+      "Många ekosystem har skadats av miljöförstöring och överutnyttjande. Då blir det också färre ekosystemtjänster.",
+      "Eftersom ekonomin bygger på dessa tjänster drabbas samhället på sikt.",
+      "Forskare har försökt sätta ett pris på tjänsterna. Det visar hur dyrt det vore att ersätta naturen. Priset kan hjälpa politiker att fatta bra beslut."
+    ]},
+    { h: "Hot 1: Livsmiljöer försvinner", sidor: "s. 135", p: [
+      "Det största hotet är att djurens och växternas hem försvinner.",
+      "Orsakerna är snabb befolkningsökning i vissa regioner, ohållbart resursuttag och mer köttätande i världen.",
+      "När befolkningen växer röjs skog till ny jordbruksmark.",
+      "För 1 000 år sedan användes ungefär 4 % av jordens produktiva mark till mat. I dag är siffran 50 %. Djuruppfödning tar störst del.",
+      "På IUCN:s röda lista finns 28 000 hotade organismer. Av dem är 24 000 hotade för att livsmiljöer blivit jordbruksmark."
+    ], ex: "<b>Exempel:</b> I Sydostasien huggs tropisk regnskog ner för palmoljeplantager. Palmoljan finns i kakor, godis och smink. I Sydamerika blir marken betesmark eller sojaplantager. Sojan skickas till andra länder som djurfoder. (s. 135)" },
+    { h: "Hot 2: Överfiske och tjuvjakt", sidor: "s. 136", p: [
+      "**Överexploatering** – att fiska eller jaga en art snabbare än den hinner föröka sig.",
+      "Tigern jagas för sin päls. Noshörningen jagas för hornet, som används i viss naturmedicin.",
+      "Djur i havet är extra utsatta. Det är svårt att styra fisket med lagar.",
+      "Hajar och rockor har minskat snabbt. Fenorna används i mat eller som naturmedicin i vissa länder.",
+      "Flera av världens bestånd av matfisk är också överfiskade."
+    ]},
+    { h: "Hot 3: Klimatförändringar", sidor: "s. 136", p: [
+      "Klimatet är ännu inte det största hotet. Men det väntas bli värre i framtiden.",
+      "Just nu drabbas korallerna hårdast. Det är allvarligt, för många andra arter behöver korallerna.",
+      "Koraller tål inte att havet blir varmare. De tål inte heller försurningen som kommer av mer koldioxid i havet."
+    ]},
+    { h: "Hot 4: Invasiva arter", sidor: "s. 137", p: [
+      "**Invasiva arter** – arter som människan flyttat till en ny plats och som hotar mångfalden.",
+      "Flytten kan vara avsiktlig eller ske av misstag.",
+      "På den nya platsen konkurrerar de om mat och revir. Ibland finns inga rovdjur som äter dem. Då ökar de kraftigt i antal."
+    ], ex: "<b>Exempel:</b> Katten är en invasiv art. Därför bör katter steriliseras om de inte ska användas till avel. Historiskt finns exempel där några få katter utrotat en hel fågelart. (s. 137)" },
+    { h: "Hot 5: Föroreningar", sidor: "s. 137", p: [
+      "Jordbruket använder gifter mot ogräs och skadedjur. Gifterna sprids lätt och skadar andra djur.",
+      "Värst är de gifter som stannar kvar länge i naturen.",
+      "Förlusten av bin verkar bero på insektsgifter.",
+      "Jordbruket använder också konstgödsel. Det ger hög skörd men bidrar till **övergödning** av sjöar och hav.",
+      "Övergödning ger algblomning, bland annat i Östersjön. På hösten dör algerna och sjunker. Nedbrytningen tar vattnets syre. Då blir bottnarna syrefria och döda.",
+      "Ekologisk odling vill därför minska gifterna och satsa på biogödsel."
+    ]},
+    { h: "Skydd: fridlysning, rödlista och CITES", sidor: "s. 138", p: [
+      "**Fridlysning** – man får inte plocka, döda eller störa arten.",
+      "I Sverige är alla orkidéer, groddjur och rovfåglar fridlysta.",
+      "Artdatabanken bedömer hur stor risken är att en art dör ut. De mest hotade hamnar på den svenska **rödlistan**.",
+      "Det är också viktigt att skydda områden med höga naturvärden. Det finns nationalparker, naturreservat, biotopskyddsområden och Natura 2000-områden.",
+      "Sverige har 30 nationalparker och över 5 000 naturreservat. Totalt är 14 % av Sveriges landyta skyddad.",
+      "**CITES** är ett handelsavtal som 183 länder skrivit på. Det förbjuder handel med arter på en särskild lista. Därför får man inte handla med elfenben eller saker från tiger."
+    ]},
+    { h: "Restaurering och återförvildning", sidor: "s. 139", p: [
+      "År 2024 beslutade EU något viktigt. Minst 30 % av livsmiljöerna i dåligt skick ska restaureras senast 2030.",
+      "Det kan vara att återställa våtmarker. Det kan också vara att riva gamla fördämningar i vattendrag.",
+      "**Återförvildning** – att låta naturen läka sig själv genom att ”det vilda” får ta över.",
+      "Ibland behöver man återinföra arter som fanns på platsen förr. Det snabbar på processen."
+    ], ex: "<b>Exempel:</b> Visenten (europeisk bison) utrotades i det vilda 1927. Några individer levde kvar i djurparker. Därför kunde arten återintroduceras några år senare. I dag finns den bland annat i Polen, Ukraina, Litauen och Rumänien. (s. 139)" },
+    { h: "Miljöorganisationer", sidor: "s. 140", p: [
+      "**Naturskyddsföreningen** är störst i Sverige med över 200 000 medlemmar. De ligger bakom märkningen Bra Miljöval.",
+      "**Världsnaturfonden (WWF)** är störst internationellt. De är kända för att skydda hotade arter och har en panda i loggan. Vartannat år ger de ut rapporten Living Planet Report.",
+      "**Greenpeace** ses av många som mer radikala. De gör protestaktioner mot miljöfarlig verksamhet.",
+      "**Sea Shepherd** kommer ur Greenpeace. De vill skydda havet och är kända för radikala metoder."
+    ]}
+  ],
+
+  fordjupning: [
+    { h: "Mångfaldens betydelse för ekosystemens stabilitet", sidor: "s. 133", p: [
+      "Med **biologisk mångfald** menas variationen av levande organismer på jorden. Variationen kan finnas på olika nivåer: variationen av ekosystem inom ett område, variationen av arter inom ett ekosystem eller den genetiska mångfalden inom en art.",
+      "Mångfalden är viktig för att ekosystemen ska fortsätta fungera. Olika organismer har olika roller, och en förlust av några arter hotar att rubba systemet. Förklaringen är att arter genom konkurrens, betande, parasitism och predation reglerar varandras populationsstorlekar. Särskilt drabbade är organismer som lever i ett mutualistiskt förhållande och inte klarar sig utan varandra — exempelvis pollinerande insektsarter och specifika växter.",
+      "Generellt tenderar ekosystem att vara mer stabila och mindre sårbara mot miljöförändringar när den biologiska mångfalden är hög."
+    ]},
+    { h: "De fyra E-argumenten", sidor: "s. 133", p: [
+      "Argumenten för varför den biologiska mångfalden ska bevaras brukar delas in i fyra huvudkategorier.",
+      "**Etiska argument** utgår från att andra organismer har rätt till sin egen existens, oavsett om de gynnar människan eller inte. **Estetiska argument** utgår från att en minskad mångfald berövar oss möjligheten att njuta av skönheten i naturen.",
+      "**Ekologiska argument** utgår från att organismer har olika roller som är viktiga för att upprätthålla ekosystemets funktion; en minskad mångfald riskerar därför hota stabiliteten, vilket i slutändan kan slå tillbaka mot oss själva. **Ekonomiska argument** utgår från att fungerande ekosystem är grunden för vår ekonomi — utan dem hade vi varken fått naturresurser, mat, syrgas eller rent vatten. De direkta och indirekta bidrag ekosystemen ger oss kallas **ekosystemtjänster**."
+    ]},
+    { h: "Ekosystemtjänsternas ekonomiska värde", sidor: "s. 134", p: [
+      "Ekosystemtjänster delas in i fyra typer. **Försörjande tjänster** producerar mat, vatten, byggnadsmaterial och förnybar energi. **Reglerande tjänster** består av pollinering av blommor, rening av luft och vatten samt skydd mot stormar och översvämningar. **Stödjande tjänster** behövs för att de övriga ska fungera — hit räknas fotosyntes och jordmånsbildning. **Kulturella tjänster** är kopplade till friluftsliv, hälsa, inspiration, turism och kultur.",
+      "Genom miljöförstöring och överutnyttjande har många ekosystem påverkats eller förstörts. Förutom att det påverkar organismerna som lever där försämras också naturens kapacitet att förse oss med ekosystemtjänster. Eftersom vår ekonomi i grunden bygger på olika typer av ekosystemtjänster får överutnyttjade och förstörda ekosystem på sikt negativa konsekvenser för både ekonomin och samhället.",
+      "För att vi bättre ska förstå hur värdefulla naturens processer är — och hur dyrt och svårt det vore att ersätta dem på annat sätt — har forskare försökt räkna ut ett pris på olika tjänster. Det kan vara ett viktigt underlag när politiker och andra makthavare fattar beslut. Att restaurera förstörda ekosystem kan öka mängden ekosystemtjänster och på lång sikt gynna ekonomin. Det finns med andra ord en tydlig koppling mellan ekonomisk och ekologisk hållbarhet."
+    ]},
+    { h: "De fem hoten och deras drivkrafter", sidor: "s. 135–137", p: [
+      "Den biologiska mångfalden minskar i allt snabbare takt över hela världen. De fem direkta hoten är förlust av livsmiljöer, överfiske och tjuvjakt, klimatförändringar, införsel av invasiva arter samt föroreningar i miljön. Bakom dem ligger drivkrafter som befolkningsökning, kortsiktiga ekonomiska intressen och överkonsumtion av naturresurser.",
+      "**Förlust av livsmiljöer** är det tyngsta hotet. För 1 000 år sedan uppskattas mänskligheten ha använt omkring 4 % av planetens produktiva mark för matproduktion; i dag uppgår siffran till 50 %, varav djuruppfödning utgör den största andelen. Av de 28 000 hotade organismer som finns på IUCN:s röda lista bedöms 24 000 vara hotade just för att naturliga livsmiljöer omvandlats till jordbruksmark. Orsakerna skiljer sig regionalt: i Sydostasien palmoljeplantager, i afrikanska länder snabb befolkningsökning och småskalig jordbruksproduktion, i Sydamerika betesmarker och sojaplantager där huvuddelen av sojan exporteras som djurfoder.",
+      "**Överexploatering** innebär att bestånden fiskas eller jagas snabbare än de kan förnyas. Marina organismer är särskilt utsatta eftersom de är svårare att reglera med lagstiftning — bestånden av hajar och rockor har minskat snabbt eftersom fenorna används i matlagning eller som naturmedicin.",
+      "**Klimatförändringen** står ännu inte för det största hotet, men konsekvenserna förutspås bli allvarligare. Koraller drabbas hårdast i nuläget, vilket är allvarligt i sig eftersom så många andra arter är beroende av dem: de är känsliga både för ökad havstemperatur och för den försurning som uppstår av ökad koldioxid i havet.",
+      "**Invasiva arter** är organismer som förts in av människan, medvetet eller av misstag. I den nya miljön kan de konkurrera om mat och revir, och saknas rovdjur som kan äta dem ökar de i antal och får allt större påverkan.",
+      "**Föroreningar** kommer både från bekämpningsmedel och från gödningsämnen. Särskilt allvarliga är de gifter som stannar kvar länge i naturen utan att brytas ner — förlusten av bin verkar bero på användandet av insektsgifter. Konstgödsel bidrar till övergödning och algblomningar, bland annat i Östersjön. När algerna dör på hösten och sjunker till botten förbrukar nedbrytningen vattnets syre, vilket leder till syrefria och döda bottnar."
+    ]},
+    { h: "Rödlistan, fridlysning och CITES", sidor: "s. 138", p: [
+      "Det finns både internationella och nationella överenskommelser, lagar och regler för att bevara och skydda arter och naturmiljöer. Bevarandearbetet bedrivs på flera nivåer — från privatpersoner och ideella föreningar till myndighetsorgan och internationella organisationer.",
+      "I Sverige använder Artdatabanken kriterier från IUCN för att bedöma utdöenderisken hos olika arter. De arter som bedöms vara mest hotade hamnar på den svenska **rödlistan**, och bedömningarna är tänkta att fungera som riktlinjer vid olika naturvårdsåtgärder.",
+      "Hotade arter kan skyddas genom **fridlysning**, vilket innebär att man inte får plocka, döda eller på annat sätt störa arten — det gäller exempelvis alla arter av orkidéer, groddjur och rovfåglar i Sverige. Lika viktigt är att skydda områden med höga naturvärden genom nationalparker, naturreservat, biotopskyddsområden och Natura 2000-områden. Sverige har 30 nationalparker och över 5 000 naturreservat, och totalt omfattas 14 % av landytan av någon form av naturskydd.",
+      "Att förbjuda handel med hotade arter är en annan åtgärd. Sammanlagt 183 länder har skrivit på handelsavtalet **CITES**, vilket innebär att de förbjudit handel med de arter som står på en särskild lista. Därför är det exempelvis förbjudet att handla med eller föra in föremål tillverkade av elfenben eller som kommer från tiger."
+    ]},
+    { h: "Restaurering, återförvildning och organisationer", sidor: "s. 139–140", p: [
+      "År 2024 beslutade EU att minst 30 % av de livsmiljöer som är i dåligt skick ska restaureras senast 2030. Det kan handla om att återställa våtmarker och riva gamla fördämningar i vattendrag.",
+      "Flera projekt i Europa arbetar i stället med **återförvildning** (av engelskans *rewilding*). Grundidén är att skadade ekosystem ska få möjlighet att reparera sig själva genom att ”det vilda” tillåts ta över och styra utvecklingen. För att påskynda processen kan det vara nödvändigt att återinföra arter som tidigare funnits på platsen. Visent (europeisk bison) utrotades i det vilda år 1927 men kunde återintroduceras några år senare tack vare överlevande individer i djurparker — arten har en viktig ekologisk funktion och finns nu i bland annat Polen, Ukraina, Litauen, Rumänien, Ryssland, Slovakien och Belarus.",
+      "Organisationerna arbetar på olika sätt. Naturskyddsföreningen är Sveriges största med över 200 000 medlemmar och ligger bakom miljömärkningen Bra Miljöval. Världsnaturfonden (WWF) är den största internationella och ger vartannat år ut Living Planet Report. Greenpeace ses av många som mer radikala och bedriver protestaktioner mot miljöfarliga verksamheter. Sea Shepherd, som sprungit ur Greenpeace, vill skydda havsmiljön och har blivit kända för sina radikala metoder — bland annat har de rammat fiskefartyg, vilket gett dem problem med lagen i många länder."
+    ]},
+    { h: "FÖRDJUPNING: Genetisk mångfald", sidor: "s. 141", p: [
+      "Den genetiska mångfalden är ett mått på hur stor variation av genetiskt material det finns inom en population eller en art. En större variation av genetiskt material leder till att variationen av egenskaper inom arten ökar. Det ökar möjligheten för att vissa individer kommer överleva om miljön drastiskt förändras eller om det sker ett sjukdomsutbrott — arten får därmed större motståndskraft mot utdöende.",
+      "Att den genetiska mångfalden ökar med ökad populationsstorlek beror både på att antalet mutationer ökar och på att fler unika genvarianter kan finnas kvar i populationen. Är populationen liten, eller om det skett mycket inavel, blir den genetiska mångfalden låg.",
+      "Den nuvarande skandinaviska vargpopulationen är drabbad av inavel eftersom den uppskattas ha grundats av bara tre individer på 1980-talet. Individerna inom populationen är nu i snitt lika besläktade med varandra som barn som uppstått från två syskon. Därför är inflödet av individer från Finland och Ryssland viktiga genetiska tillskott."
+    ]},
+    { h: "FÖRDJUPNING: Mångfald av arter och av ekosystem", sidor: "s. 142", p: [
+      "Biologisk mångfald på **artnivå** inkluderar både variationen av arter inom ett område och hur jämnt fördelade arterna är. I ett område med hög mångfald finns många olika arter, och individantalet inom varje art är någorlunda jämnt utan att en enskild art dominerar. Ju högre mångfalden är på artnivå, desto mer motståndskraftigt är ekosystemet mot störningar — bland annat därför att flera olika arter kan ha samma ekologiska funktion och därmed ersätta varandra om en art försvinner.",
+      "Generellt är artmångfalden högst runt ekvatorn och minskar ju närmare polerna vi kommer. Det beror bland annat på att ekosystemen runt ekvatorn har ett varmt och stabilt klimat året om och på att solinstrålningen är starkare, vilket ökar fotosyntesen. Dessutom är ekosystem vid ekvatorn ofta äldre än de vid polerna, eftersom de inte täckts av inlandsis.",
+      "Mångfald av **ekosystem** ökar när det finns flera olika typer av habitat inom ett och samma område. Det skapar en variation av livsmiljöer och ökar chansen att en viss art hittar en plats som passar just den. Variationen skapar också mikroklimat, så att arter med olika krav kan leva på samma plats. Ett område med en mångfald av habitat kan erbjuda olika typer av ekosystemtjänster: produktion av naturresurser, rent vatten, syrgasproduktion, inbindning av koldioxid, mat samt reglering av skadedjur i skogs- och jordbruk.",
+      "Skillnaden syns tydligt mellan en planterad produktionsskog och en naturskog. I produktionsskogen är mångfalden lägre, bland annat för att alla träd är av samma ålder och för att ingen död ved lämnas kvar — något som minskar mångfalden av svampar, lavar, mossor och insekter. Den största delen av Sveriges skogar är produktionsskogar."
+    ]}
+  ],
+
+  viktigt: [
+    "Biologisk mångfald finns på tre nivåer: gener inom en art, arter inom ett ekosystem och ekosystem inom ett område.",
+    "De fyra E-argumenten: etiska, estetiska, ekologiska och ekonomiska.",
+    "Ekosystemtjänsterna är försörjande, reglerande, stödjande och kulturella.",
+    "De fem hoten: förlust av livsmiljöer, överfiske och tjuvjakt, klimatförändringar, invasiva arter och föroreningar.",
+    "24 000 av 28 000 hotade arter på IUCN:s röda lista hotas av att livsmiljöer blivit jordbruksmark.",
+    "Skydd sker genom fridlysning, rödlistan, naturskyddade områden (14 % av Sveriges landyta) och handelsavtalet CITES."
+  ]
+},
+
+/* ══════════ 4. ENERGI (s. 144–152) ══════════ */
+{
+  id: "energi",
+  rubrik: "Energi",
+  sidor: "s. 144–152",
+  emoji: "⚡",
+  figur: ["energiflode"],
+
+  lattlast: [
+    { h: "Energiprincipen", sidor: "s. 144", p: [
+      "Energi är svårt att förklara kort. Ett sätt är att säga att energi är förmågan att utföra ett arbete. Ett annat är att energi är drivkraften i alla förändringar.",
+      "Vi säger ofta att vi ”producerar” och ”förbrukar” energi. Det är en förenkling.",
+      "**Energiprincipen** – energi kan varken skapas eller förintas. Den kan bara omvandlas mellan olika former.",
+      "Det är omvandlingarna som får kroppar att röra sig och turbiner att snurra."
+    ]},
+    { h: "Energikvalitet", sidor: "s. 144", p: [
+      "**Energikvalitet** – hur lätt en energiform kan omvandlas till något annat.",
+      "Energi med hög kvalitet är rörelseenergi, lägesenergi, solenergi, elenergi och kemisk energi. De kan omvandlas utan stora förluster.",
+      "Energi med låg kvalitet är lågtempererad värme. Den kan inte omvandlas alls.",
+      "Omvandlingar går alltid från hög kvalitet till låg kvalitet.",
+      "Solen ger oss ett ständigt flöde av energi. Den kan bli el i solceller. Den kan bli el i vind-, våg- och vattenkraftverk. Den kan också bli kemisk energi i växter genom fotosyntesen.",
+      "Vid varje omvandling blir en del lågtempererad värme. Den strålar till slut ut från jorden."
+    ], ex: "<b>Exempel:</b> En skateboardåkare omvandlar lägesenergi till rörelseenergi. Båda har hög kvalitet. Friktionen mellan hjul och mark gör en del av rörelseenergin till lågtempererad värme — en energiform med låg kvalitet. (s. 144)" },
+    { h: "Vårt energibehov", sidor: "s. 145", p: [
+      "Vi behöver energi till uppvärmning, transporter, industri och elproduktion.",
+      "När levnadsstandarden och befolkningen ökat har energianvändningen också ökat.",
+      "FN räknar med att vi blir cirka 9,8 miljarder människor år 2050. År 2100 väntas vi bli 11,2 miljarder. Då ökar energibehovet ännu mer.",
+      "År 2023 kom 80,3 % av världens energi från icke-förnybara källor. Bara 19,7 % kom från förnybara."
+    ]},
+    { h: "Fossila bränslen", sidor: "s. 146–147", p: [
+      "Fossila bränslen är olja, kol och naturgas.",
+      "De driver motorcyklar, bilar, lastbilar, flyg och fartyg i hela världen. De används också i industrin, för uppvärmning och för elproduktion.",
+      "År 2023 stod fossila bränslen för cirka 60,7 % av världens elproduktion. I Sverige används de nästan inte alls till el. Vid Persiska viken och i Nordafrika är siffran nästan 100 %.",
+      "I ett värmekraftverk kokar man vatten med värmen från förbränningen. Ångan driver turbiner och generatorer. Då bildas el.",
+      "Fossila bränslen används mycket eftersom de historiskt varit billiga. Tillgångarna är fortfarande stora. De tar lite markyta och är lätta att lagra.",
+      "När de förbränns bildas koldioxid. Det är den enskilt största källan till ökade växthusgaser. Koldioxiden ger också havsförsurning.",
+      "Det bildas även **kväveoxider** och ibland **svaveldioxid**. De kan ge surt regn som försurar sjöar och skogar. Kväveoxider ger dessutom övergödning och marknära ozon."
+    ]},
+    { h: "Kärnkraft", sidor: "s. 148", p: [
+      "Kärnkraftverk har använts sedan 1950-talet. I dag finns cirka 400 reaktorer. De ger 3,6 % av världens energiproduktion (2023).",
+      "Bränslet är uran. Uran nybildas inte, så kärnkraft är icke-förnybart.",
+      "**Fission** – atomkärnor av uran klyvs och ger energi samt mindre atomkärnor.",
+      "Neutroner som frigörs klyver fler uranatomer. Det blir en kedjereaktion. Energin värmer vatten och ångan driver turbiner.",
+      "**Fördelar:** inga koldioxidutsläpp i processen, bränslet är lätt att lagra och produktionen beror inte på väder och vind.",
+      "**Nackdelar:** uranet bryts i stora dagbrott som förstör naturmiljöer och förorenar vatten. Restavfallet kan vara radioaktivt i tusentals år. Ingenstans i världen har slutförvaringen börjat på allvar. Avfallet ligger i vattenbassänger som mellanlager."
+    ]},
+    { h: "Sol, vind och vågkraft", sidor: "s. 149", p: [
+      "Förnybara energikällor tar inte slut när vi använder dem. Tillsammans ger de cirka 30 % av världens elproduktion (2023).",
+      "Solens strålning kan värma vatten i solfångare. Den kan också ge el i solceller.",
+      "Vi använder i dag bara en bråkdel av solenergin som når jorden.",
+      "En nackdel är att solceller behöver sällsynta jordartsmetaller. De finns i begränsad mängd och gruvdriften kan förstöra mark och vattendrag.",
+      "Vindkraftverk omvandlar vindens rörelseenergi till el. Våg- och tidvattenkraft använder vattnets rörelser på samma sätt.",
+      "En gemensam nackdel: de fungerar bara när solen lyser, vinden blåser och vågorna går. Vindkraft kritiseras också för att döda fåglar och fladdermöss."
+    ]},
+    { h: "Vattenkraft", sidor: "s. 150", p: [
+      "I ett vattenkraftverk blir vattnets lägesenergi först rörelseenergi i en turbin. Sedan blir den elenergi i en generator.",
+      "Det måste finnas en höjdskillnad mellan vattennivåerna. Ju större höjdskillnad, desto mer energi.",
+      "Kraftverket bildar en fördämning. Uppströms skapas en konstgjord damm. Där kan vatten lagras mellan årstider.",
+      "Vattenkraft ger inga utsläpp. Men den kan påverka lokala ekosystem mycket.",
+      "Dammarna kan översvämma stora landområden. Habitat försvinner och människor kan tvingas flytta.",
+      "Fiskar hindras från att nå sina lekplatser. I dammarna sjunker också sediment till botten. Då kan jordbruket nedströms få sämre skördar."
+    ], ex: "<b>Exempel:</b> Laxen simmar upp till den älv den växt upp i för att leka. Finns det ett vattenkraftverk som dämmer upp älven kommer laxen inte förbi själv. Den behöver en laxtrappa. (s. 150)" },
+    { h: "Bioenergi", sidor: "s. 151–152", p: [
+      "**Biobränsle** – bränsle från organismer som levde för kort tid sedan.",
+      "Fossila bränslen kommer i stället från organismer som levde för mycket länge sedan.",
+      "Energin i biobränslen finns i organiska föreningar som bildats i fotosyntesen.",
+      "Biobränslen kan ersätta fossila bränslen i fordon. De kan också ge el och värme.",
+      "**Koldioxidneutral** – den koldioxid som frigörs vid förbränning motsvarar den som växten bundit in.",
+      "Det kräver att vi använder biobränslen i samma takt som de bildas. Då blir det ingen nettoökning av koldioxid.",
+      "Kritiker ser problem. Att ersätta fossila bränslen kräver enorma odlingsytor. Skogar och andra ekosystem kan trängas undan och mångfalden minska.",
+      "Odling för energi konkurrerar också med odling för mat. Det kan ge matbrist och högre matpriser. Det drabbar de fattigaste hårdast."
+    ]},
+    { h: "Effekter på hälsa", sidor: "s. 152", p: [
+      "Olyckor vid kraftverk och utvinning uppmärksammas mest. Det kan vara kärnkraftsolyckor, olyckor på oljeplattformar och gruvolyckor.",
+      "Men det är inte olyckorna som tar flest liv. Det är föroreningarna från förbränning av framför allt fossila bränslen.",
+      "Sotpartiklar, kväveoxider, ozon och vissa kolväten skadar lungorna direkt. De kan ge astma, lungsjukdom, hjärt-kärlsjukdom, cancer och kortare liv.",
+      "Man jämför energikällor genom att räkna dödsfall per producerad energienhet. Fossila källor sticker ut med oproportionerligt många dödsfall. Värst är kolkraft.",
+      "Varje år dör uppskattningsvis 3–4 miljoner människor av luftföroreningar kopplade till fossila bränslen.",
+      "Det argumentet lyfts ibland av dem som förespråkar kärnkraft. De menar att kärnkraft kan bidra till att rädda liv."
+    ]}
+  ],
+
+  fordjupning: [
+    { h: "Energiprincipen och energikvalitet", sidor: "s. 144", p: [
+      "Ett sätt att förklara energi är att det är förmågan att utföra ett arbete, eller att den är drivkraften i alla förändringar. Till vardags säger vi ofta att vi producerar och förbrukar energi, vilket egentligen är en förenkling: enligt **energiprincipen** kan energi varken skapas eller förintas, bara omvandlas mellan olika former. Det är energiomvandlingarna, och inte energin i sig, som får våra kroppar att röra på sig och turbiner att snurra.",
+      "Energiomvandlingarna går alltid från energiformer med hög kvalitet till energiformer med låg kvalitet. Till de med hög kvalitet hör rörelseenergi, lägesenergi, solenergi, elenergi och kemisk energi — dessa kan omvandlas till andra energiformer utan stora förluster. Till energi med låg kvalitet hör lågtempererad värmeenergi, som inte kan omvandlas alls.",
+      "Från solen tar vi emot ett konstant flöde av energi som kan omvandlas till former vi kan dra nytta av: direkt till elenergi via solceller, via väder och vind till elenergi i vind-, våg- och vattenkraftverk, eller till kemisk energi i växter genom fotosyntesen. I alla omvandlingar blir också en del av energin lågtempererad värme, som så småningom strålar ut från jorden. Egentligen förbrukas alltså ingen energi från det att solenergin når jorden till det att den strålar tillbaka — däremot har energikvaliteten blivit lägre.",
+      "Genom att använda samma energi gång på gång på dess väg från hög till låg kvalitet undviker vi att slösa med energikvalitet. Att först använda elen till att driva industrier och därefter använda spillvärmen till att värma bostäder utnyttjar energikvaliteten bättre än om vi direkt omvandlat elenergi till värme i ett element."
+    ]},
+    { h: "Energibehovets utveckling", sidor: "s. 145–146", p: [
+      "I samhället används energi för uppvärmning, transporter, industriella processer och för att producera elektricitet. Allt eftersom levnadsstandarden och befolkningen ökat har den totala energikonsumtionen i världen ökat. Enligt FN:s prognoser kommer befolkningen fortsätta öka en tid framöver, till runt 9,8 miljarder år 2050 och 11,2 miljarder år 2100 — och i takt med det beräknas också energibehovet öka.",
+      "Av all energi mänskligheten använder varje år kommer den stora merparten från icke-förnybara energikällor. Störst andel utgörs av fossila bränslen (olja, kol och naturgas, även kallad fossilgas), men även en liten del kärnkraft. Vid mätningen 2023 stod icke-förnybara energikällor för 80,3 % av den globala energianvändningen, varav kärnkraft 3,7 %. De förnybara stod för 19,7 %: vattenkraft 6,0 %, ”traditionella” biobränslen 6,1 %, vindkraft 3,3 %, solkraft 2,3 %, ”nya” biobränslen 1,3 % och övrigt 0,9 %.",
+      "Energi från förnybara källor har ofta sitt ursprung i solen — antingen direkt som solenergi eller som bioenergi, där solenergi omvandlas till energirika molekyler i växterna genom fotosyntesen. Solenergin driver också vattnets kretslopp och ger upphov till vindar, vilket utnyttjas i vatten- och vindkraft. **Geotermisk energi** är ett undantag: den utgörs av varmt vatten från jordskorpan och kommer inte från solen, utan alstras när radioaktiva grundämnen sönderfaller i jordens inre."
+    ]},
+    { h: "Fossila bränslen — varför de dominerar och vad de kostar", sidor: "s. 146–147", p: [
+      "Fossila bränslen är det vanligaste energislaget för att driva motorcyklar, bilar, lastbilar, flyg och fartyg världen över, och används dessutom inom tillverkningsindustrin, för uppvärmning och för att producera en stor del av världens el. Totalt stod fossila bränslen för omkring 60,7 % av den globala elproduktionen 2023, men skillnaden mellan länder är stor: i Sverige används de bara i liten utsträckning för elproduktion, medan de i länderna runt Persiska viken och i Nordafrika står för nära 100 %.",
+      "I fossileldade värmekraftverk används energin som frigörs vid förbränningen till att koka vatten; vattenångan driver turbiner och generatorer så att elektricitet kan genereras.",
+      "Anledningarna till den stora användningen är flera: det har historiskt varit en billig energikälla, tillgångarna är fortfarande relativt stora, bränslena tar lite markyta i anspråk och de är lätta att lagra. Det sista innebär att användningen enkelt kan anpassas efter efterfrågan. Eftersom mycket av vår teknik varit anpassad till fossila bränslen har fossilfria alternativ hittills varit dyrare.",
+      "Utvinningen sker genom kolbrytning eller borrning efter olja och naturgas, vilket ofta inneburit att ekosystem förstörts och förorenats — flera olyckor med oljetankfartyg har orsakat miljökatastrofer när oljan läckt ut över stora havsområden. Vid förbränning är det framför allt koldioxidutsläppen som uppmärksammas, eftersom de är den enskilt största källan till ökade växthusgaser i atmosfären; utöver klimatförändring orsakar de också havsförsurning. Dessutom bildas kväveoxider och i vissa fall svaveldioxid, vilka kan leda till surt regn och försurningsskador i sjöar och skogar. Kväveoxider bidrar även till övergödning, och i städer med tät trafik kan de reagera med andra ämnen och bilda den hälsofarliga gasen marknära ozon, som i sin tur kan bilda smog."
+    ]},
+    { h: "Kärnkraft — för- och nackdelar", sidor: "s. 148", p: [
+      "Kärnkraftverk har använts kommersiellt sedan 1950-talet. I dag finns omkring 400 reaktorer som tillsammans producerar 3,6 % av den globala energiproduktionen (2023). I likhet med fossila bränslen är kärnkraft en icke-förnybar energikälla, eftersom bränslet uran är ett grundämne som inte nybildas.",
+      "Energin utvinns genom **fission**: atomkärnor av uran sönderdelas till två eller fler atomkärnor med lägre massa, varvid energi frigörs. I processen frigörs också neutroner som kan få andra uranatomer att sönderdelas, så att det bildas en kedjereaktion. Precis som i fossileldade värmekraftverk används energin för att värma vatten för elproduktion, och eftersom vattenångan behöver kylas för att återgå till vatten ligger de flesta kärnkraftverk nära vatten.",
+      "**Fördelarna** är att processen till skillnad från fossila bränslen inte ger några koldioxidutsläpp, att elproduktionen därmed inte bidrar till klimatförändringen, att kärnbränslet lätt kan lagras och att produktionen inte är beroende av väder och vind.",
+      "**Nackdelarna** är att kärnbränslet bryts i stora dagbrott, vilket förstör naturmiljöer och ger upphov till vattenföroreningar, samt att fissionsprocesserna ger restavfall som kan vara radioaktivt i tusentals år. Det finns långt framskridna planer på slutförvaring, men ännu har den inte börjat på allvar någonstans i världen — avfallet förvaras än så länge i vattenbassänger (mellanlager) på olika platser på jorden."
+    ]},
+    { h: "Förnybar energi: sol, vind, våg och vatten", sidor: "s. 149–150", p: [
+      "Förnybara energikällor förminskas inte i takt med att vi använder dem, eftersom de relativt snabbt återskapas av naturliga processer. Hit räknas solenergi, vindenergi, våg- och tidvattenenergi, vattenkraft, geotermisk energi och bioenergi. Tillsammans står de för omkring 30 % av den globala elproduktionen (2023).",
+      "Solens strålningsenergi kan fångas för att värma vatten i solfångare eller generera el i solceller. En fördel med storskalig elframställning med solceller är att den kan ersätta mycket av dagens användning av fossila bränslen, och vi utnyttjar i dag bara en bråkdel av den tillgängliga solenergin. En begränsning är att tillverkningen kräver sällsynta jordartsmetaller, av vilka många finns i begränsad mängd och vars gruvdrift riskerar förstöra mark och vattendrag. En gemensam begränsning för sol, vind och vågkraft är att de bara fungerar när solen lyser, vinden blåser och vågorna går.",
+      "Vindkraftverk innehåller generatorer som omvandlar rörelseenergin i vinden till elektricitet, på land eller till havs. Havsbaserad vindkraft är dyrare att anlägga men har fördelen att det ofta blåser till havs. Våg- och tidvattenkraft använder på motsvarande sätt rörelser i vattnet. Förutom att det går åt naturresurser att tillverka kraftverken kritiseras vindkraft för att den dödar fåglar och fladdermöss.",
+      "I ett vattenkraftverk omvandlas vattnets lägesenergi först till rörelseenergi i en turbin och sedan till elenergi i en generator. Ju större höjdskillnaden mellan vattennivåerna är, desto mer energi kan omvandlas. Kraftverket utgör en fördämning som skapar en konstgjord damm uppströms, vilket gör att vatten kan lagras mellan årstider och användas när elförbrukningen är som störst. Trots att vattenkraft inte har några utsläpp kan den påverka lokala ekosystem relativt mycket: dammarna kan översvämma stora landområden så att habitat försvinner och människor tvingas flytta, fiskar hindras från att nå sina lekplatser och uppväxtområden, och sediment som sjunker i kraftverksdammarna kan sänka produktiviteten för jordbruk nedströms."
+    ]},
+    { h: "Bioenergi — kontroversen", sidor: "s. 151–152", p: [
+      "Alla biobränslen har sitt ursprung i organismer som bildades för en kort tid sedan, i motsats till fossila bränslen där organismerna levde för länge sedan. Energin finns lagrad i energirika organiska föreningar som bildats i fotosyntesen. Skogsråvara blir ved (och etanol) till värmekraftverk; sockerrör blir etanol som drivmedel; raps och algkultur blir biodiesel; organiskt hushållsavfall och gödsel blir biogas.",
+      "En stor fördel är att bioenergi kan vara **koldioxidneutral**: den koldioxid som frigörs vid förbränningen motsvarar den mängd som bundits in i biomassa via fotosyntesen. Förutsatt att biobränslen används i samma takt som de bildas ger de ingen nettoökning av koldioxid i atmosfären.",
+      "Det pågår en kontrovers om bioenergins roll. Förespråkare menar att biobränslen har en betydelsefull roll i omställningen till ett fossilfritt samhälle. Kritiker pekar på att vi skulle behöva odla upp enorma arealer av biogrödor för att ersätta fossila bränslen, vilket riskerar tränga undan både befintliga skogar och andra landekosystem och leda till ökad förlust av biologisk mångfald. Dessutom konkurrerar odling för bioenergi med jordbruksmark för mat, vilket riskerar leda till matbrist och stigande matpriser — något som skulle göra situationen än svårare för den allra fattigaste delen av jordens befolkning."
+    ]},
+    { h: "Energikällornas effekter på hälsa", sidor: "s. 152", p: [
+      "De energikällor vi använder i dag kan påverka människors hälsa på olika sätt. Mest uppmärksammade är olyckorna vid kraftverk eller vid utvinning av energiråvaran: kärnkraftsolyckor, olyckor på oljeborrplattformar och gruvolyckor. Sett till antalet döda är det dock inte den delen av energiproduktionen som skördar flest liv, utan föroreningarna som släpps ut vid förbränning av främst fossila bränslen.",
+      "Flera av de kemiska föreningar som släpps ut kan orsaka direkta skador på lungorna — sotpartiklar, kväveoxider, ozon och vissa former av kolväten. De kan orsaka astma, lungsjukdom, hjärt-kärlsjukdom, cancer och en förkortad livslängd.",
+      "För att jämföra hur många dödsfall olika energikällor bidrar till räknar man ut antalet dödsfall per producerad energienhet. I sådana jämförelser sticker de fossila energikällorna ut med oproportionerligt många dödsfall, och värst är kolkraft. Beräknat per år dör uppskattningsvis 3–4 miljoner människor på grund av luftföroreningar som har med förbränning av fossila bränslen att göra. Det är ett argument som förespråkare för kärnkraft ibland lyfter fram, för att peka på att användandet av kärnkraft faktiskt kan bidra till att rädda liv."
+    ]}
+  ],
+
+  viktigt: [
+    "Energiprincipen: energi kan varken skapas eller förintas — bara omvandlas. Omvandlingar går från hög till låg energikvalitet.",
+    "År 2023 kom 80,3 % av världens energi från icke-förnybara källor och 19,7 % från förnybara.",
+    "Kärnkraft ger inga koldioxidutsläpp men lämnar avfall som är radioaktivt i tusentals år — slutförvaring har inte börjat någonstans.",
+    "Sol, vind och våg fungerar bara när solen lyser, vinden blåser och vågorna går. Vattenkraft påverkar fiskvandring och sediment.",
+    "Bioenergi kan vara koldioxidneutral, men konkurrerar om mark med både natur och matproduktion.",
+    "3–4 miljoner människor dör varje år av luftföroreningar kopplade till fossila bränslen. Värst är kolkraft."
+  ]
+},
+
+/* ══════════ 5. KLIMATET (s. 157–170) ══════════ */
+{
+  id: "klimatet",
+  rubrik: "Klimatet",
+  sidor: "s. 157–170",
+  emoji: "🌡️",
+  figur: ["klimatatgarder", "klimatrattvisa"],
+
+  lattlast: [
+    { h: "Växthuseffekten", sidor: "s. 157", p: [
+      "Jorden tar hela tiden emot strålning från solen i form av ljus.",
+      "Ungefär 30 % av ljuset studsar direkt tillbaka ut i rymden. Resten, cirka 70 %, tas upp av jorden.",
+      "Energin blir värme och skickas ut som värmestrålning.",
+      "**Växthusgaser** – gaser som släpper igenom synligt ljus men fångar upp värmestrålning.",
+      "Exempel är vattenånga, koldioxid och metan.",
+      "Gaserna strålar ut värmen åt olika håll. En del går tillbaka mot jorden. Det kallas **växthuseffekten**.",
+      "Utan den hade medeltemperaturen varit −18 °C. Nu är den +15 °C.",
+      "**Global uppvärmning** – när mer växthusgaser håller kvar mer värme och jorden blir varmare."
+    ]},
+    { h: "Konsekvens 1: Stigande havsnivåer", sidor: "s. 161", p: [
+      "Havsvattnet sväller ut när det blir varmare. Smältvatten från glaciärer rinner också ut i havet.",
+      "Sedan 1870-talet har havsnivån stigit nästan 20 cm. Takten verkar öka.",
+      "Forskarna räknar med ungefär 1 meters höjning till år 2100.",
+      "Alla länder vid havet drabbas. Värst drabbas önationer som Maldiverna. Länder med låglänta jordbruk eller bebyggelse vid kusten drabbas också hårt."
+    ], ex: "<b>Exempel:</b> Bangladesh är ett fattigt land med hundratals kilometer kust. Nästan hela landet är låglänt. Stiger havet kan miljontals människor tvingas fly. (s. 161)" },
+    { h: "Konsekvens 2: Värmeböljor", sidor: "s. 161", p: [
+      "Värmeböljorna blir fler och mer intensiva när medeltemperaturen stiger.",
+      "Det ger fler skogsbränder. Det kan också bli farligt varmt för oss människor.",
+      "Är luften fuktig och temperaturen nära kroppstemperaturen kan svetten inte avdunsta. Då kyls vi inte längre ner.",
+      "Man kan dö av värmeslag på några timmar. Det spelar ingen roll hur mycket man dricker.",
+      "Effektiva kylsystem i byggnader kan motverka detta en bit."
+    ]},
+    { h: "Konsekvens 3: Kraftigare oväder", sidor: "s. 162", p: [
+      "Vi får räkna med fler oväder och fler översvämningar i vissa regioner.",
+      "Regnmängderna ökar globalt eftersom avdunstningen ökar när det blir varmare.",
+      "Stora regnmängder ger kraftiga skyfall. Det ger översvämningar och jorderosion.",
+      "Varmare ytvatten i haven ger kraftigare orkaner och tyfoner. Skadorna väntas bli stora i östra USA, Centralamerika och Västindien."
+    ]},
+    { h: "Konsekvens 4: Mat och vatten", sidor: "s. 162", p: [
+      "Klimatförändringen kan försämra matproduktionen globalt.",
+      "I vissa nordliga områden kan skördarna öka lite. På de flesta ställen sjunker de i stället.",
+      "Orsaken är främst torka, eftersom avdunstningen från marken ökar.",
+      "Då minskar också tillgången på rent dricksvatten i vissa områden."
+    ], ex: "<b>Exempel:</b> Södra Europas produktion av vete och majs kan minska med hälften till 2050 på grund av torka. Söder om Sahara kan det bli likadant — där är det redan i dag brist på vatten. (s. 162)" },
+    { h: "Konsekvens 5: Minskad mångfald", sidor: "s. 162–163", p: [
+      "Klimatzonerna flyttar sig norrut och söderut. Då påverkas många växter och djur.",
+      "Arter som kan förflytta sig blir **klimatflyktingar**. De tvingas söka nya områden.",
+      "Värst är det för fastsittande arter. Det gäller många växter och de djur som bygger upp korallrev.",
+      "Många arter tvingas också upp på högre höjder, eftersom klimatet är kallare där.",
+      "Korallreven hotas dubbelt. De tål inte varmare havsvatten. Mer koldioxid ger dessutom kolsyra i vattnet, alltså **havsförsurning**."
+    ], ex: "<b>Exempel:</b> Fjällräven får det svårare när temperaturen stiger. Habitatet försvinner och nya arter flyttar in. På många platser i den svenska fjällvärlden konkurreras fjällräven redan ut av rödrävar söderifrån. (s. 162)" },
+    { h: "Konsekvens 6 och 7: Sjukdomar och konflikter", sidor: "s. 163", p: [
+      "När klimatzonerna flyttar sig kan värddjur som bär smittsamma sjukdomar sprida sig till nya områden.",
+      "Det gäller särskilt myggarter som sprider malaria. Redan i dag sprider de sig norrut, söderut och till högre höjder.",
+      "Klimatförändringen kan också göra platser obeboeliga. Miljökatastrofer, svält, vattenbrist och sjukdom kan ge flykt och stora folkförflyttningar.",
+      "Det kan ge politiska spänningar och konflikter mellan länder och befolkningsgrupper.",
+      "Konflikten i Syrien 2011 antas delvis ha föregåtts av flera år av missväxt kopplad till klimatet."
+    ]},
+    { h: "Parisavtalet och tröskelpunkter", sidor: "s. 164", p: [
+      "Växthusgaser sprids globalt. Därför påverkar länder varandra genom sina utsläpp.",
+      "FN har sedan början av 1990-talet hållit möten om gemensamma klimatmål.",
+      "**Parisavtalet** från 2015 har skrivits under av nästan alla världens länder.",
+      "Enligt avtalet ska uppvärmningen i slutet av århundradet stanna under 2 °C. Helst ska den inte överstiga 1,5 °C jämfört med förindustriella nivåer.",
+      "Avtalet har också fått kritik. Länderna sätter sina egna utsläppsmål. Inget tvingar dem att nå målen.",
+      "**Tröskelpunkt** – en gräns där uppvärmningen börjar förstärka sig själv.",
+      "Ett exempel är när glaciärer och havsisar smält så mycket att de reflekterar bort för lite solljus."
+    ]},
+    { h: "Klimatåtgärder", sidor: "s. 165", p: [
+      "**Klimatneutral** – landet har inga utsläpp som ökar växthusgaserna i atmosfären.",
+      "Sverige har som mål att nå balans mellan utsläpp och upptag senast 2045. EU:s mål är 2050.",
+      "Vi behöver både minska utsläppen till ett minimum och ta bort gaser som redan släppts ut.",
+      "Både den offentliga sektorn och näringslivet måste bidra. Se tabellen nedan för exempel."
+    ]},
+    { h: "Vårt individuella klimatavtryck", sidor: "s. 166–167", p: [
+      "**Klimatavtryck** – ett mått på hur stora utsläpp en persons livsstil ger.",
+      "I Sverige är avtrycket ofta mycket högre än det globala snittet.",
+      "**Resor** påverkar mest. Långa flygresor har störst klimatpåverkan för en enskild person. Fossildrivna bilar påverkar också mycket. Elbil, kollektivtrafik, cykel och gång ger mindre.",
+      "**Mat** påverkar mycket. Växtbaserade produkter har ofta mindre påverkan än animaliska. Att inte slänga mat och välja frukt efter säsong hjälper också.",
+      "**Bostad** påverkar genom uppvärmning, kylning och el. I Sverige görs elen nästan helt fossilfritt. El vi inte använder exporteras och kan ersätta kolkraft i andra länder. Vi kan sänka inomhustemperaturen, isolera, välja energieffektiva vitvaror och spara varmvatten.",
+      "**Konsumtion** påverkar eftersom nya varor kräver råvaror, tillverkning och transport. Köp färre saker, välj kvalitet och återanvänd.",
+      "**Avfall** påverkar genom hur mycket vi slänger och hur mycket som återvinns. Källsortering ger nya produkter av materialet. I Sverige bränns mycket hushållsavfall i kraftvärmeverk, och energin blir el och fjärrvärme. Matavfall kan bli biogas."
+    ], ex: "<b>Exempel:</b> Klädproduktionen står för cirka 2–8 % av världens växthusgasutsläpp. Handlar vi second hand får varorna längre liv. Då behöver ingen ny vara tillverkas, och både råvaror och energi sparas. (s. 166)" },
+    { h: "Klimaträttvisa", sidor: "s. 167", p: [
+      "**Klimaträttvisa** – rättvisefrågor kopplade till klimatförändringarna.",
+      "En orättvisa är att vissa fattiga länder knappt har några utsläpp alls. Ändå väntas de drabbas allra hårdast.",
+      "Enligt Parisavtalet ska rikare länder vara ledande i klimatarbetet. De har historiskt stått för majoriteten av utsläppen.",
+      "De rika länderna förväntas också hjälpa fattigare länder med klimatanpassningar och med omställning till hållbar energi.",
+      "Rättvisa handlar också om inkomst. Enligt Oxfam står den rikaste tiondelen för ungefär hälften av jordens konsumtionsbaserade koldioxidutsläpp.",
+      "En rättvis fördelning skulle betyda att den fattigaste delen får öka sina utsläpp. Den rikaste delen skulle behöva minska sina."
+    ]},
+    { h: "Klimatanpassningar", sidor: "s. 168", p: [
+      "**Klimatanpassning** – åtgärder som förbereder samhället på klimatförändringarnas konsekvenser.",
+      "Även om utsläppen minskar drastiskt ger de utsläpp vi redan gjort märkbara förändringar. Det gäller både globalt och i Sverige."
+    ], lista: [
+      "Bygga barriärer och skyddsvallar mot översvämningar.",
+      "Anlägga dammar som tar hand om stora mängder regnvatten vid skyfall.",
+      "Plantera träd som ger skugga och svalka i städer.",
+      "Bygga bostäder som står emot orkaner.",
+      "Bygga avsaltningsanläggningar som gör färskvatten av havsvatten.",
+      "Samla upp och lagra regnvatten till bevattning vid torka.",
+      "Utveckla grödor som tål torka."
+    ]},
+    { h: "Fånga in koldioxid", sidor: "s. 169–170", p: [
+      "Utsläppen måste minska radikalt. Dessutom kan vi behöva ta bort koldioxid från atmosfären. Det ger **negativa koldioxidutsläpp**.",
+      "**Naturbaserade lösningar** bygger på att ekosystem naturligt tar upp och lagrar koldioxid. Då fungerar de som **kolsänkor**.",
+      "Exempel är att plantera träd på avskogade områden, skydda gammal skog och återställa våtmarker och jordbruksmark till naturmark.",
+      "En nackdel är att koldioxiden frigörs igen om träden brinner upp eller förmultnar.",
+      "**Tekniska lösningar** fångar in koldioxid med olika anordningar. Sedan pressas den ner i berggrunden med pumpar. Där kan den reagera med mineraler och bli sten, eller lagras i hålrum.",
+      "**DAC** är koldioxidsugar som fångar koldioxid direkt ur luften. **CCS** fångar i stället koldioxid i rökgaser från till exempel fossileldade kraftvärmeverk.",
+      "**BECCS** kombinerar CCS med biobränslen som ved och flis. Då lagras koldioxid som träden tagit upp i fotosyntesen. Det kan ge negativa utsläpp.",
+      "Kritiker menar att tekniken är dyr och energikrävande. De varnar också för att fokus flyttas från det verkliga problemet: att fasa ut fossila bränslen."
+    ]}
+  ],
+
+  fordjupning: [
+    { h: "Växthuseffekten och den globala uppvärmningen", sidor: "s. 157", p: [
+      "Jorden tar konstant emot mängder av strålningsenergi från solen i form av ljus. Ungefär 30 % av det inkommande ljuset reflekteras omedelbart tillbaka ut i rymden, medan den resterande delen — omkring 70 % — absorberas av jorden. Energin som tas upp omvandlas till värme och avges som värmestrålning.",
+      "I jordens atmosfär finns växthusgaser, exempelvis vattenånga, koldioxid och metan. Växthusgaser har egenskaper som gör att de släpper igenom synligt ljus men absorberar värmestrålning. En stor del av värmestrålningen som lämnar jordytan tas därför upp av växthusgaserna och återutstrålas i olika riktningar. En del skickas tillbaka mot jorden, vilket bidrar till den naturliga process som kallas **växthuseffekten**. Utan den hade den globala medeltemperaturen varit −18 °C i stället för +15 °C.",
+      "I takt med att koncentrationerna av växthusgaser ökar hålls mer värme kvar i atmosfären. Det ger en förstärkt växthuseffekt, som leder till en **global uppvärmning**."
+    ]},
+    { h: "Konsekvenser: hav, värme och väder", sidor: "s. 161–162", p: [
+      "Även om ett par graders temperaturökning kan förefalla som en liten höjning kan den få stora konsekvenser, och trots att det är ett globalt miljöproblem finns stora geografiska skillnader i hur stor ökningen är och vilka effekterna väntas bli.",
+      "**Stigande havsnivåer** beror på två saker: havsvattnet expanderar när temperaturen ökar, och smältvatten från landis såsom glaciärer rinner ut i havet. Sedan 1870-talet har havsnivån redan stigit nästan 20 cm, och ökningstakten verkar accelerera — forskarna räknar med omkring 1 meters höjning till år 2100. Hårdast drabbade blir önationer som Maldiverna, men även länder med låglänta jordbruksområden eller kustnära bebyggelse drabbas hårt.",
+      "**Värmeböljorna** blir fler och mer intensiva. Utöver risken för fler skogsbränder kan det bli så varmt att det blir direkt farligt att vistas där: då temperaturen i fuktig luft närmar sig vår kroppstemperatur har svetten ingenstans att ta vägen och vi kan inte längre kylas av — man kan dö av värmeslag på bara några timmar, oavsett hur mycket man dricker. Effekten kan i viss utsträckning motverkas med effektiva kylsystem i byggnader.",
+      "**Kraftigare oväder** följer av att avdunstningen ökar när temperaturen stiger, vilket globalt ger ökade regnmängder. I vissa regioner ger det kraftiga skyfall med översvämningar och jorderosion som följd. Ökad temperatur i havens ytvatten leder dessutom till kraftigare orkaner och tyfoner, som förväntas kunna orsaka omfattande skador i exempelvis östra USA, Centralamerika och Västindien."
+    ]},
+    { h: "Konsekvenser: mat, mångfald, sjukdom och konflikt", sidor: "s. 162–163", p: [
+      "**Matproduktionen** kan försämras globalt. I vissa nordliga regioner kan avkastningen stiga lite, men på de flesta ställen bedöms den sjunka, främst på grund av att ökad avdunstning från marken leder till torka — vilket i sin tur kan minska tillgången på rent dricksvatten. Södra Europas produktion av vete och majs beräknas kunna minska med hälften till 2050, och söder om Sahara kan situationen bli likartad eftersom det redan i dag är brist på vatten.",
+      "**Den biologiska mångfalden** minskar när klimatzonerna rör sig norr- och söderut. Arter med förmåga att förflytta sig riskerar att bli klimatflyktingar, medan situationen är särskilt allvarlig för fastsittande arter som många växter och de djur som bygger upp korallrev. Många arter tvingas också flytta till högre höjder på berg, eftersom klimatet är kallare där. Korallreven hotas dubbelt: de är extremt känsliga för ökad havstemperatur, och ökade koldioxidhalter i atmosfären gör att det bildas kolsyra i vattnet — havsförsurning. En uppskattning är att en stor del av de tropiska korallreven kommer att vara hotade vid en global uppvärmning.",
+      "**Sjukdomsspridningen** ökar när klimatzonerna förskjuts, eftersom värddjur som bär smittsamma sjukdomar kan vidga sitt utbredningsområde. Det gäller särskilt de myggarter som sprider sjukdomar som malaria; redan i dag sprider sig flera myggarter både norr- och söderut samt till områden på högre höjd över havet.",
+      "**Risken för konflikter** ökar eftersom många platser kan bli obeboeliga. Miljökatastrofer, svält, vattenbrist och sjukdom kan leda till flykt och omfattande folkförflyttningar, vilket riskerar leda till politiska spänningar och ökade motsättningar mellan länder och befolkningsgrupper. Konflikten som startade i Syrien 2011 antas, åtminstone till viss del, ha föregåtts av att klimatförändringen kan ha orsakat flera år av missväxt."
+    ]},
+    { h: "Parisavtalet, kritiken och tröskelpunkterna", sidor: "s. 164", p: [
+      "Eftersom växthusgaser sprids globalt påverkar olika länder varandra genom sina utsläpp, och det är därför viktigt att världens länder samarbetar för att få ner den totala mängden. Sedan början på 1990-talet har FN regelbundet anordnat sammankomster med syfte att hitta gemensamma mål för klimatarbetet.",
+      "**Parisavtalet** från 2015 är en viktig internationell överenskommelse som undertecknats av nästan alla världens länder. Enligt avtalet ska den globala temperaturökningen i slutet av århundradet begränsas till max 2 °C, och helst inte över 1,5 °C, jämfört med förindustriella nivåer.",
+      "Avtalet har också fått kritik. Den handlar bland annat om att länderna själva sätter upp sina nationella utsläppsmål, och att det inte finns något som tvingar dem att uppfylla målen.",
+      "Ju mer vi ökar jordens medeltemperatur, desto större är risken att vi närmar oss en **tröskelpunkt** för klimatet. Om en sådan punkt passeras kan temperaturökningen förstärka sig själv i en ond cirkel — det kan exempelvis vara fallet om glaciärer och havsisar blir så små genom smältning att de reflekterar bort för lite solljus."
+    ]},
+    { h: "Klimatneutralitet och åtgärder på olika nivåer", sidor: "s. 165", p: [
+      "För att nå målen i Parisavtalet har flera länder satt upp egna nationella mål för när de ska bli **klimatneutrala**, vilket innebär att landet inte ska ha utsläpp som ökar växthusgaserna i atmosfären. Sverige har som mål att det ska finnas en balans mellan utsläpp och upptag av växthusgaser senast 2045; motsvarande mål inom EU är år 2050.",
+      "I praktiken innebär det att vi både behöver minska utsläppen av växthusgaser till ett minimum och avlägsna de redan utsläppta gaserna på olika sätt. För att Sverige ska nå sina nationella mål är det viktigt att såväl den offentliga sektorn (staten och kommunen) som näringslivet (företagen) bidrar med olika åtgärder — se tabellen nedan.",
+      "Ett genomgående drag är att nivåerna arbetar med olika verktyg. Staten arbetar med styrmedel, lagar och uppföljning; kommunerna med den fysiska planeringen och den lokala infrastrukturen; företagen med sin egen produktion, produktdesign och sina affärsmodeller."
+    ]},
+    { h: "Det individuella klimatavtryckets fem faktorer", sidor: "s. 166–167", p: [
+      "Det individuella klimatavtrycket är ett mått på hur stora utsläpp av växthusgaser en individ bidrar till genom sin livsstil. I Sverige är klimatavtrycket ofta avsevärt högre än det globala genomsnittet. De fem faktorer som påverkar är resor, mat, bostad, konsumtion och avfall.",
+      "**Resor** är en av de faktorer som påverkar allra mest. Långa resor med flyg har störst klimatpåverkan för en enskild person, och även resor med fossildrivna bilar har stor påverkan. Avtrycket minskar om resorna i stället görs med elbilar och kollektivtrafik, eller om vi går eller cyklar.",
+      "**Mat**: växtbaserade produkter har ofta mindre klimatpåverkan än animaliska. Att inte kasta mat i onödan och att välja frukt och grönsaker efter säsong bidrar också till att minska utsläppen.",
+      "**Bostad**: avtrycket påverkas av hur vi bor, hur bostaden värms upp eller kyls ner och hur elen produceras. Till skillnad från i många andra länder produceras elen i Sverige i stort sett bara med fossilfria energikällor. Eftersom den el vi inte använder exporteras kan den ersätta kolkraft i andra länder — en minskad elanvändning i Sverige kan alltså bidra till minskade utsläpp utomlands. Vi kan sänka inomhustemperaturen, isolera bostaden, använda energieffektiva vitvaror och inte slösa med varmvatten.",
+      "**Konsumtion**: ofta används fossila bränslen när råvaror utvinns och när varor tillverkas och transporteras. Att köpa färre saker, välja kvalitet i stället för kvantitet och återanvända så mycket som möjligt minskar behovet av att tillverka nya varor. Klädproduktionen står för cirka 2–8 % av de globala växthusgasutsläppen, vilket gör second hand till ett effektivt val.",
+      "**Avfall**: genom att källsortera så mycket som möjligt bidrar man till att material återvinns och blir nya produkter, vilket ofta leder till minskad energianvändning och minskat behov av nya råvaror. I Sverige är det vanligt att hushållsavfall samlas in och förbränns i kraftvärmeverk, där energin används till el- och fjärrvärmeproduktion — att energin i avfallet kan ”återvinnas” är en av anledningarna till att det anses bättre att bränna soporna än att lägga dem på deponi. Matavfall som samlas in separat kan användas för att producera biogas, ett biobränsle med liten klimatpåverkan som kan ersätta fossila bränslen i exempelvis stadsbussar."
+    ]},
+    { h: "Klimaträttvisa mellan och inom länder", sidor: "s. 167", p: [
+      "Klimaträttvisa handlar om rättvisefrågor kopplade till klimatförändringarna. Ett exempel på orättvisa är att vissa fattigare länder, som knappt bidragit med några utsläpp alls, är de som förväntas drabbas allra hårdast. Enligt Parisavtalet ska rikare länder, som historiskt stått för majoriteten av utsläppen, därför vara ledande i klimatarbetet — dessutom förväntas de hjälpa fattigare länder med klimatanpassningar och med att ställa om till en hållbar energiproduktion.",
+      "Klimaträttvisa handlar också om att det finns stora skillnader i koldioxidutsläpp beroende på inkomstnivå. Enligt beräkningar gjorda av den globala hjälporganisationen Oxfam står den rikaste tiondelen av befolkningen för omkring hälften av jordens konsumtionsbaserade koldioxidutsläpp, det vill säga de totala utsläppen från både inhemska och importerade produkter.",
+      "Om utsläppen ska fördelas mer rättvist mellan jordens invånare skulle den fattigaste delen av befolkningen tillåtas öka sina utsläpp, medan den rikaste delen skulle behöva minska sina."
+    ]},
+    { h: "Klimatanpassningar", sidor: "s. 168", p: [
+      "Klimatanpassning är åtgärder för att förbereda samhället på att hantera klimatförändringarnas konsekvenser. Även om vi drastiskt lyckas minska framtida utsläpp kommer de utsläpp vi redan gjort leda till märkbara klimatförändringar, både globalt och i Sverige.",
+      "Exempel på klimatanpassningar är att bygga barriärer och skyddsvallar mot översvämningar, anlägga dammar som tar hand om stora mängder regnvatten vid skyfall, plantera träd som ger skugga och svalka i städer, bygga bostäder som står emot orkaner, bygga avsaltningsanläggningar som gör färskvatten av havsvatten, samla upp och lagra regnvatten till bevattning vid torka samt utveckla grödor som tål torka.",
+      "Översvämningsbarriären i inloppet till lagunen där Venedig ligger är ett konkret exempel: den kan fällas upp när det finns risk för översvämning och skydda staden. Den typen av anpassningar kan bli vanligare i takt med att temperaturen stiger."
+    ]},
+    { h: "Koldioxidinfångning: naturbaserat, DAC, CCS och BECCS", sidor: "s. 169–170", p: [
+      "För att begränsa den globala temperaturökningen till max 2 °C, och helst inte över 1,5 °C, behöver utsläppen minska radikalt. Utöver det kan vi också behöva använda metoder för att avlägsna koldioxid från atmosfären, vilket ger **negativa koldioxidutsläpp**. Det kan ske både genom naturbaserade och tekniska lösningar.",
+      "**Naturbaserade lösningar** bygger på att vissa ekosystem naturligt tar upp och lagrar koldioxid och därmed fungerar som naturliga **kolsänkor**. Exempel är att plantera träd på avskogade områden, skydda skogar med gamla träd och återställa våtmarker och jordbruksmarker till naturmarker. Trädplantering kan dessutom förhindra jorderosion och gynna den biologiska mångfalden — men en nackdel är att koldioxiden frigörs igen om träden brinner upp eller förmultnar.",
+      "**Tekniska lösningar** avlägsnar koldioxid från luft och rökgaser. När koldioxiden fångats in pressas den ner i berggrunden med pumpar, där den antingen får reagera med mineraler i vattnet för att bilda sten eller lagras inuti hålrum. Koldioxidsugar (**DAC**) fångar upp koldioxid direkt ur luften, medan andra anordningar i stället fångar upp koldioxid i rökgaserna från exempelvis fossileldade kraftvärmeverk (**CCS**). På Island testas koldioxidsugar som med hjälp av fläktar fångar in koldioxid från luften: luften sugs in, koldioxiden fastnar i ett filter, renad luft släpps ut, koldioxiden blandas med vatten och pressas ner i berggrunden, där den reagerar med mineraler och förvandlas till sten efter ett par år.",
+      "**BECCS** (Bio Energy Carbon Capture and Storage) kombinerar CCS-teknik med biobränslen som ved och flis. Eftersom anläggningarna kan fånga upp och lagra den koldioxid som träden i sin tur fångat upp i fotosyntesen kan det ge negativa koldioxidutsläpp. Möjligheten att bygga ut tekniken i stor skala är dock starkt ifrågasatt, eftersom det skulle behövas stora markarealer för att producera allt det biobränsle som krävs för en märkbart positiv påverkan.",
+      "Det finns flera försöksanläggningar runt om i världen, men det finns fortfarande frågetecken kring hur säker och genomförbar metoden är i stor skala. Kritiker brukar lyfta fram att tekniken är dyr och energikrävande, och att den riskerar flytta fokus till tekniska lösningar i stället för till det verkliga problemet: att begränsa utsläppen genom att fasa ut fossila bränslen."
+    ]}
+  ],
+
+  viktigt: [
+    "Växthuseffekten är naturlig: utan den vore medeltemperaturen −18 °C i stället för +15 °C. Ökade halter ger en förstärkt effekt och global uppvärmning.",
+    "Sju konsekvenser: stigande havsnivåer, värmeböljor, kraftigare oväder, hotad matproduktion och vattenbrist, minskad biologisk mångfald, ökad sjukdomsspridning och ökad risk för konflikter.",
+    "Parisavtalet (2015): max 2 °C, helst under 1,5 °C. Kritiken gäller att länderna sätter egna mål utan tvång.",
+    "Sverige ska vara klimatneutralt senast 2045, EU senast 2050.",
+    "Det individuella klimatavtrycket styrs av fem faktorer: resor, mat, bostad, konsumtion och avfall.",
+    "Klimaträttvisa: de rikaste 10 % står för ungefär hälften av de konsumtionsbaserade koldioxidutsläppen.",
+    "Koldioxid kan fångas in naturbaserat (kolsänkor) eller tekniskt (DAC, CCS, BECCS) — dyrt, energikrävande och ifrågasatt i stor skala."
+  ]
+}
+
+];
+</script>
+
+<script>
+  /* Smart tillbaka-navigering: history.back() inom samma domän,
+     annars fallback till områdessidan (aldrig hårdkodat index.html). */
+  function smartBack(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    try {
+      if (document.referrer &&
+          new URL(document.referrer).hostname === window.location.hostname) {
+        history.back();
+        return;
+      }
+    } catch (err) {}
+    window.location.href = 'nk1a1_hallbarhet.html';
+  }
+</script>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+const P  = '#22c55e';
+const PL = '#dcfce7';
+const PD = '#14532d';
+
+/* ---------- Textformatering: **term** -> markerad fackterm ---------- */
+function fmt(text) {
+  const parts = String(text).split(/\*\*(.+?)\*\*/g);
+  return parts.map((part, i) =>
+    i % 2 === 1
+      ? <strong key={i} className="term">{part}</strong>
+      : <React.Fragment key={i}>{part}</React.Fragment>
+  );
+}
+
+/* ===================== FIGURER ===================== */
+
+function FigWrap({ title, children, scroll }) {
+  return (
+    <div className="fig">
+      <div className="fig-t">{title}</div>
+      <div className={scroll ? 'fig-scroll' : ''}>{children}</div>
+    </div>
+  );
+}
+
+function Bars({ data, max, unit }) {
+  return (
+    <div>
+      {data.map((d, i) => (
+        <div className="bar-row" key={i}>
+          <div className="bar-lbl">{d.l}</div>
+          <div className="bar-track">
+            <div className="bar-fill"
+                 style={{ width: Math.max(2, (d.v / max) * 100) + '%',
+                          background: d.c || P }}></div>
+          </div>
+          <div className="bar-val">{d.t || d.v}</div>
+        </div>
+      ))}
+      {unit && <p className="fig-note">{unit}</p>}
+    </div>
+  );
+}
+
+/* 1. Venndiagram – hållbar utvecklings tre dimensioner (s. 104) */
+function FigVenn() {
+  return (
+    <FigWrap title="Hållbar utveckling – tre dimensioner (s. 104)" scroll>
+      <div style={{ minWidth: '300px' }}>
+        <svg viewBox="0 0 340 250" width="100%" height="auto" role="img"
+             aria-label="Venndiagram med de tre dimensionerna ekologisk, social och ekonomisk hållbarhet som överlappar i mitten">
+          <circle cx="170" cy="92"  r="74" fill="#22c55e" fillOpacity="0.30" stroke="#22c55e" strokeWidth="2"/>
+          <circle cx="122" cy="166" r="74" fill="#0ea5e9" fillOpacity="0.28" stroke="#0ea5e9" strokeWidth="2"/>
+          <circle cx="218" cy="166" r="74" fill="#f59e0b" fillOpacity="0.28" stroke="#f59e0b" strokeWidth="2"/>
+          <text x="170" y="46"  textAnchor="middle" fontSize="14" fontWeight="700" fill="#14532d" fontFamily="Fredoka, sans-serif">EKOLOGISK</text>
+          <text x="170" y="62"  textAnchor="middle" fontSize="10" fill="#14532d">naturens gränser</text>
+          <text x="74"  y="205" textAnchor="middle" fontSize="14" fontWeight="700" fill="#075985" fontFamily="Fredoka, sans-serif">SOCIAL</text>
+          <text x="74"  y="221" textAnchor="middle" fontSize="10" fill="#075985">välbefinnande</text>
+          <text x="266" y="205" textAnchor="middle" fontSize="14" fontWeight="700" fill="#78350f" fontFamily="Fredoka, sans-serif">EKONOMISK</text>
+          <text x="266" y="221" textAnchor="middle" fontSize="10" fill="#78350f">resurshushållning</text>
+          <text x="170" y="142" textAnchor="middle" fontSize="12" fontWeight="700" fill="#1e293b" fontFamily="Fredoka, sans-serif">HÅLLBAR</text>
+          <text x="170" y="157" textAnchor="middle" fontSize="12" fontWeight="700" fill="#1e293b" fontFamily="Fredoka, sans-serif">UTVECKLING</text>
+        </svg>
+      </div>
+      <p className="fig-note">Dimensionerna hänger ihop och påverkar varandra. Hållbar utveckling nås först där alla tre möts.</p>
+    </FigWrap>
+  );
+}
+
+/* 2. Ekologiskt fotavtryck per person (s. 107) */
+function FigFotavtryck() {
+  const data = [
+    { l: 'Qatar',   v: 12.0, t: '12,0' },
+    { l: 'USA',     v: 7.8,  t: '7,8'  },
+    { l: 'Sverige', v: 5.5,  t: '5,5'  },
+    { l: 'Kina',    v: 3.5,  t: '3,5'  },
+    { l: 'Haiti',   v: 0.6,  t: '0,6'  },
+    { l: 'Rwanda',  v: 0.6,  t: '0,6'  }
+  ];
+  return (
+    <FigWrap title="Ekologiskt fotavtryck per person, 2019 (gha)">
+      <Bars data={data} max={12} />
+      <p className="fig-note">
+        gha = globala hektar per person. Källa: National Footprint and Biocapacity Accounts, 2023 (Data Year 2019).
+      </p>
+    </FigWrap>
+  );
+}
+
+/* 3. Livscykelcirkel (s. 111–119) */
+function FigLivscykel() {
+  const steg = [
+    { n: '1', t: 'Utvinning av råvaror' },
+    { n: '2', t: 'Produktion' },
+    { n: '3', t: 'Transport' },
+    { n: '4', t: 'Användning' },
+    { n: '5', t: 'Avfall' }
+  ];
+  return (
+    <FigWrap title="En produkts livscykel">
+      <div className="cycle">
+        {steg.map((s, i) => (
+          <React.Fragment key={s.n}>
+            <div className="cyc-step">
+              <span className="cyc-num">{s.n}</span>
+              <span className="cyc-txt">{s.t}</span>
+            </div>
+            {i < steg.length - 1 && <span className="cyc-arrow">→</span>}
+          </React.Fragment>
+        ))}
+      </div>
+      <div className="cycle-end">
+        <div className="cyc-leaf">↻ Återvinning — materialet går tillbaka till produktionen</div>
+        <div className="cyc-dead">⛔ Deponi eller förbränning — materialet lämnar kretsloppet</div>
+      </div>
+      <p className="fig-note">
+        En livscykelanalys följer produkten genom alla stegen och räknar ihop miljöpåverkan från hela kedjan.
+      </p>
+    </FigWrap>
+  );
+}
+
+/* 4. Koldioxidutsläpp per transportslag (s. 226-området, s. 116) */
+function FigTransport() {
+  const data = [
+    { l: 'Fartyg',  v: 3,   t: '3'   },
+    { l: 'Lastbil', v: 80,  t: '80'  },
+    { l: 'Flyg',    v: 435, t: '435' }
+  ];
+  return (
+    <FigWrap title="Koldioxidutsläpp per transportslag (g CO₂ per ton och km)">
+      <Bars data={data} max={435} />
+      <p className="fig-note">
+        Utsläpp per transporterat ton och kilometer. Källa: IMO GHG Study, 2009 / AP Moller-Maersk, 2014.
+      </p>
+    </FigWrap>
+  );
+}
+
+/* 5. Fyra ekosystemtjänster (s. 134) */
+function FigEkosystemtjanster() {
+  const tj = [
+    { i: '🌾', h: 'Försörjande', d: 'Mat, vatten, byggnadsmaterial och förnybar energi.' },
+    { i: '🐝', h: 'Reglerande',  d: 'Pollinering av blommor, rening av luft och vatten samt skydd mot stormar och översvämningar.' },
+    { i: '🌱', h: 'Stödjande',   d: 'Behövs för att de övriga ska fungera — fotosyntes och jordmånsbildning.' },
+    { i: '🏞️', h: 'Kulturella',  d: 'Friluftsliv, hälsa, inspiration, turism och kultur.' }
+  ];
+  return (
+    <FigWrap title="Fyra typer av ekosystemtjänster (s. 134)">
+      <div className="est-grid">
+        {tj.map((t, i) => (
+          <div className="est-card" key={i}>
+            <div className="est-i">{t.i}</div>
+            <div className="est-h">{t.h}</div>
+            <div className="est-d">{t.d}</div>
+          </div>
+        ))}
+      </div>
+    </FigWrap>
+  );
+}
+
+/* 6. Rödlistan (s. 138) */
+function FigRodlista() {
+  const rows = [
+    { k: 'LC', n: 'Livskraftig',        rod: false, hot: false, c: '#16a34a' },
+    { k: 'DD', n: 'Kunskapsbrist',      rod: true,  hot: false, c: '#94a3b8' },
+    { k: 'NT', n: 'Nära hotad',         rod: true,  hot: false, c: '#facc15' },
+    { k: 'VU', n: 'Sårbar',             rod: true,  hot: true,  c: '#fb923c' },
+    { k: 'EN', n: 'Starkt hotad',       rod: true,  hot: true,  c: '#ef4444' },
+    { k: 'CR', n: 'Akut hotad',         rod: true,  hot: true,  c: '#b91c1c' },
+    { k: 'RE', n: 'Nationellt utdöd',   rod: true,  hot: false, c: '#1e293b' }
+  ];
+  return (
+    <FigWrap title="Rödlistans kategorier (s. 138)" scroll>
+      <table className="tbl" style={{ minWidth: '420px' }}>
+        <thead>
+          <tr><th>Kod</th><th>Kategori</th><th>Rödlistad</th><th>Hotad</th></tr>
+        </thead>
+        <tbody>
+          {rows.map(r => (
+            <tr key={r.k}>
+              <td><span className="chip" style={{ background: r.c }}>{r.k}</span></td>
+              <td>{r.n}</td>
+              <td className="ctr">{r.rod ? '✔' : '–'}</td>
+              <td className="ctr">{r.hot ? '✔' : '–'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p className="fig-note">
+        Artdatabanken använder kriterier från IUCN. Alla kategorier utom Livskraftig räknas som rödlistade,
+        men bara Sårbar, Starkt hotad och Akut hotad räknas som hotade.
+      </p>
+    </FigWrap>
+  );
+}
+
+/* 7. Global energianvändning 2023 (s. 146) */
+function FigEnergiflode() {
+  const data = [
+    { l: 'Fossilt m.m.', v: 76.6, t: '76,6 %', c: '#475569' },
+    { l: 'Kärnkraft',    v: 3.7,  t: '3,7 %',  c: '#7c3aed' },
+    { l: 'Biobränslen',  v: 7.4,  t: '7,4 %',  c: '#65a30d' },
+    { l: 'Vattenkraft',  v: 6.0,  t: '6,0 %',  c: '#0ea5e9' },
+    { l: 'Vindkraft',    v: 3.3,  t: '3,3 %',  c: '#22c55e' },
+    { l: 'Solkraft',     v: 2.3,  t: '2,3 %',  c: '#f59e0b' },
+    { l: 'Övrigt',       v: 0.9,  t: '0,9 %',  c: '#94a3b8' }
+  ];
+  return (
+    <FigWrap title="Global energianvändning 2023">
+      <Bars data={data} max={76.6} />
+      <p className="fig-note">
+        Icke-förnybart 80,3 % (varav kärnkraft 3,7 %) och förnybart 19,7 %.
+        ”Biobränslen” omfattar traditionella biobränslen 6,1 % och ”nya” biobränslen 1,3 %.
+      </p>
+    </FigWrap>
+  );
+}
+
+/* 8. Klimatåtgärder stat / kommun / företag (s. 165) */
+function FigKlimatatgarder() {
+  const kol = [
+    { h: 'Staten', i: '🏛️', p: [
+      'Fastställa nationella utsläppsmål.',
+      'Leva upp till Parisavtalet.',
+      'Använda ekonomiska styrmedel, t.ex. koldioxidskatt och subventioner av förnybar energi.',
+      'Införa lagar och regler.',
+      'Skydda och restaurera naturområden som fungerar som kolsänkor.',
+      'Utvärdera klimatpolitiken.'
+    ]},
+    { h: 'Kommunen', i: '🏘️', p: [
+      'Utveckla kollektivtrafiken.',
+      'Energieffektivisera kommunala bostäder.',
+      'Bygga cykelvägar, parker och grönområden.',
+      'Främja återvinning.',
+      'Anlägga vallar och dagvattendammar.'
+    ]},
+    { h: 'Företagen', i: '🏭', p: [
+      'Ta fram miljöpolicys.',
+      'Effektivisera produktionen.',
+      'Investera i grön teknik och förnybar energi.',
+      'Designa produkter för återanvändning och återvinning.',
+      'Erbjuda tjänster inom cirkulär ekonomi.',
+      'Klimatkompensera, t.ex. genom återplantering av skog.'
+    ]}
+  ];
+  return (
+    <FigWrap title="Klimatåtgärder på olika nivåer (s. 165)" scroll>
+      <div className="kol-grid">
+        {kol.map((k, i) => (
+          <div className="kol" key={i}>
+            <div className="kol-h"><span>{k.i}</span> {k.h}</div>
+            <ul>{k.p.map((t, j) => <li key={j}>{t}</li>)}</ul>
+          </div>
+        ))}
+      </div>
+    </FigWrap>
+  );
+}
+
+/* 9. Klimaträttvisa – champagneglaset (s. 167) */
+function FigKlimatrattvisa() {
+  const rows = [
+    { g: 'Rikaste 10 %',   bef: 10, uts: 50, c: '#b91c1c' },
+    { g: 'Mellersta 40 %', bef: 40, uts: 42, c: '#f59e0b' },
+    { g: 'Fattigaste 50 %',bef: 50, uts: 8,  c: '#0ea5e9' }
+  ];
+  return (
+    <FigWrap title="Klimaträttvisa – andel av befolkningen och av utsläppen (s. 167)" scroll>
+      <div className="cg" style={{ minWidth: '300px' }}>
+        <div className="cg-col">
+          <div className="cg-h">Andel av befolkningen</div>
+          <div className="cg-stack">
+            {rows.map((r, i) => (
+              <div className="cg-seg" key={i}
+                   style={{ height: (r.bef * 2.4) + 'px', background: r.c }}>
+                {r.bef} %
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="cg-col">
+          <div className="cg-h">Andel av utsläppen</div>
+          <div className="cg-stack">
+            {rows.map((r, i) => (
+              <div className="cg-seg" key={i}
+                   style={{ height: (r.uts * 2.4) + 'px', background: r.c }}>
+                {r.uts} %
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="cg-legend">
+        {rows.map((r, i) => (
+          <span key={i}><i style={{ background: r.c }}></i>{r.g}</span>
+        ))}
+      </div>
+      <p className="fig-note">
+        Konsumtionsbaserade koldioxidutsläpp, alltså utsläpp från både inhemska och importerade produkter.
+        Fördelningen brukar kallas ”champagneglasdiagrammet”. Källa: Oxfam och Stockholm Environment Institute.
+      </p>
+    </FigWrap>
+  );
+}
+
+const FIGURES = {
+  venn:              FigVenn,
+  fotavtryck:        FigFotavtryck,
+  livscykel:         FigLivscykel,
+  transport:         FigTransport,
+  ekosystemtjanster: FigEkosystemtjanster,
+  rodlista:          FigRodlista,
+  energiflode:       FigEnergiflode,
+  klimatatgarder:    FigKlimatatgarder,
+  klimatrattvisa:    FigKlimatrattvisa
+};
+
+/* ===================== INNEHÅLLSKOMPONENTER ===================== */
+
+/* Lättläst skrivs som korta meningar, en per rad i datan.
+   Här slås de ihop till max fyra korta stycken per underrubrik. */
+function groupParas(arr, max) {
+  if (!arr || arr.length <= max) return arr || [];
+  const size = Math.ceil(arr.length / max);
+  const out = [];
+  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size).join(' '));
+  return out;
+}
+
+function Block({ b, mode }) {
+  const paras = mode === 'lattlast' ? groupParas(b.p, 4) : (b.p || []);
+  return (
+    <div>
+      <h3>
+        <span>{b.h}</span>
+        <span className="sid">{b.sidor}</span>
+      </h3>
+      {paras.map((t, i) => <p key={i}>{fmt(t)}</p>)}
+      {b.lista && (
+        <ul>
+          {b.lista.map((t, i) => <li key={i}>{fmt(t)}</li>)}
+        </ul>
+      )}
+      {b.ex && <div className="ex" dangerouslySetInnerHTML={{ __html: b.ex }} />}
+    </div>
+  );
+}
+
+function Viktigt({ punkter }) {
+  return (
+    <div className="viktigt">
+      <div className="viktigt-h">💡 Viktigt att komma ihåg</div>
+      <ul>
+        {punkter.map((t, i) => <li key={i}>{fmt(t)}</li>)}
+      </ul>
+    </div>
+  );
+}
+
+function Section({ sec, mode, open, toggle, isMobile }) {
+  const blocks = mode === 'lattlast' ? sec.lattlast : sec.fordjupning;
+  const figurer = sec.figur || [];
+  return (
+    <section id={sec.id} className="sec">
+      <button className="sec-head" onClick={() => toggle(sec.id)}
+              aria-expanded={open} aria-controls={sec.id + '-body'}>
+        <span className="sec-emoji">{sec.emoji}</span>
+        <span className="sec-titlewrap">
+          <span className="sec-title">{sec.rubrik}</span>
+          <span className="sec-sid">{sec.sidor}</span>
+        </span>
+        <span className={'chev' + (open ? ' open' : '')}>▶</span>
+      </button>
+
+      {open && (
+        <div className="block" id={sec.id + '-body'}>
+          {blocks.map((b, i) => <Block b={b} mode={mode} key={i} />)}
+
+          {figurer.map(key => {
+            const F = FIGURES[key];
+            return F ? <F key={key} /> : null;
+          })}
+
+          <Viktigt punkter={sec.viktigt} />
+
+          <div className="to-top">
+            <a href="#toppen" onClick={(e) => {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}>↑ Till toppen</a>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+/* ===================== APP ===================== */
+
+function App() {
+  const [mode, setMode] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('nk1a1_hallbarhet_mode');
+      if (saved === 'lattlast' || saved === 'fordjupning') return saved;
+    } catch (e) {}
+    return 'lattlast';
+  });
+
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth < 768
+  );
+  const [open, setOpen] = useState(() => new Set(SECTIONS.map(s => s.id)));
+
+  useEffect(() => {
+    function onResize() {
+      const m = window.innerWidth < 768;
+      setIsMobile(prev => (prev === m ? prev : m));
+    }
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  useEffect(() => {
+    setOpen(isMobile ? new Set() : new Set(SECTIONS.map(s => s.id)));
+  }, [isMobile]);
+
+  useEffect(() => {
+    try { sessionStorage.setItem('nk1a1_hallbarhet_mode', mode); } catch (e) {}
+  }, [mode]);
+
+  const toggle = (id) => {
+    setOpen(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const goto = (e, id) => {
+    e.preventDefault();
+    setOpen(prev => {
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+    window.setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 60);
+  };
+
+  return (
+    <div className="wrap" id="toppen">
+
+      <a href="nk1a1_hallbarhet.html" className="back" onClick={smartBack}>
+        ← Tillbaka
+      </a>
+
+      <header className="head">
+        <p className="eyebrow">Naturkunskap nivå 1a1</p>
+        <h1>Hållbar utveckling</h1>
+        <div className="rule"></div>
+        <p className="lead">
+          Pluggmaterial i fem avsnitt. Välj <strong>Lättläst</strong> för korta, enkla förklaringar
+          eller <strong>Fördjupning</strong> för sammanhang, orsak och verkan.
+        </p>
+      </header>
+
+      <div className="pill-toggle" role="tablist" aria-label="Välj läge">
+        <button role="tab" aria-selected={mode === 'lattlast'}
+                className={mode === 'lattlast' ? 'active' : 'inactive'}
+                onClick={() => setMode('lattlast')}>Lättläst</button>
+        <button role="tab" aria-selected={mode === 'fordjupning'}
+                className={mode === 'fordjupning' ? 'active' : 'inactive'}
+                onClick={() => setMode('fordjupning')}>Fördjupning</button>
+      </div>
+
+      <nav className="toc" aria-label="Innehåll">
+        <div className="toc-h">Innehåll</div>
+        {SECTIONS.map((s, i) => (
+          <a href={'#' + s.id} key={s.id} onClick={(e) => goto(e, s.id)}>
+            <span className="toc-n">{i + 1}</span>
+            <span className="toc-t">{s.rubrik}</span>
+            <span className="toc-s">{s.sidor}</span>
+          </a>
+        ))}
+      </nav>
+
+      {isMobile && (
+        <p className="hint">Tryck på en rubrik för att öppna avsnittet.</p>
+      )}
+
+      {SECTIONS.map(s => (
+        <Section key={s.id} sec={s} mode={mode}
+                 open={open.has(s.id)} toggle={toggle} isMobile={isMobile} />
+      ))}
+
+      <footer className="foot">
+        <p>Källa: Hållbar utveckling och miljö, s. 103–170.</p>
+        <p className="by">Designad av John</p>
+      </footer>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+
+<script src="feedback-widget.js" defer></script>
+<script data-goatcounter="https://johnblixt.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
