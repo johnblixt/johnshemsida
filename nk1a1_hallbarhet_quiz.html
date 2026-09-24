@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hållbar utveckling – Quiz | NK 1a1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #22c55e;
+      --primary-light: #f0fdf4;
+      --primary-dark: #15803d;
+      --primary-text: #14532d;
+      --correct-bg: #dcfce7;
+      --correct-border: #16a34a;
+      --correct-text: #16a34a;
+      --wrong-bg: #fee2e2;
+      --wrong-border: #dc2626;
+      --wrong-text: #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'EB Garamond', Georgia, serif; background: #f6fdf8; min-height: 100vh; color: #1e293b; }
+
+    a.back-btn {
+      display: inline-block; padding: 8px 16px; color: var(--primary-dark);
+      text-decoration: none; font-size: 0.95rem; position: fixed;
+      top: 14px; left: 14px; z-index: 200; border-radius: 8px;
+      background: rgba(255,255,255,0.9); transition: background 0.2s, color 0.2s;
+    }
+    a.back-btn:hover { background: var(--primary-light); color: var(--primary-dark); }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Startskärm ── */
+    #screen-start { max-width: 560px; margin: 0 auto; padding: 90px 24px 40px; text-align: center; }
+    .badge {
+      display: inline-block; background: var(--primary-light); color: var(--primary-dark);
+      padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;
+      letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 20px;
+    }
+    #screen-start h1 { font-size: 2.4rem; font-weight: 600; font-style: italic; color: #0f172a; margin-bottom: 8px; }
+    #screen-start .subtitle { font-size: 1.05rem; color: #64748b; margin-bottom: 28px; line-height: 1.55; }
+    .info-cards { display: flex; gap: 12px; justify-content: center; margin-bottom: 26px; flex-wrap: wrap; }
+    .info-card {
+      background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 16px 20px; text-align: center; flex: 1; min-width: 96px; max-width: 140px;
+    }
+    .info-card .num { font-size: 1.7rem; font-weight: 600; color: var(--primary-dark); }
+    .info-card .lbl { font-size: 0.78rem; color: #94a3b8; margin-top: 2px; }
+
+    .rank-info {
+      background: white; border: 1px solid #e2e8f0; border-radius: 14px;
+      padding: 16px 18px; margin-bottom: 30px; text-align: left;
+    }
+    .rank-info .rh { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.07em; color: #94a3b8; margin-bottom: 10px; }
+    .rank-scale { display: flex; gap: 8px; flex-wrap: wrap; }
+    .rank-chip {
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      flex: 1; min-width: 54px; background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 10px; padding: 8px 4px;
+    }
+    .rank-chip .rc-r { font-size: 1.1rem; font-weight: 600; color: var(--primary-dark); }
+    .rank-chip .rc-p { font-size: 0.7rem; color: #94a3b8; }
+    .rank-info .rnote { font-size: 0.86rem; color: #64748b; margin-top: 10px; line-height: 1.55; }
+
+    /* ── Quizskärm ── */
+    #screen-quiz { max-width: 700px; margin: 0 auto; padding: 70px 20px 60px; }
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .timer {
+      background: white; border: 1px solid #e2e8f0; border-radius: 20px;
+      padding: 5px 14px; font-size: 0.92rem; color: #475569; font-variant-numeric: tabular-nums;
+    }
+    .score-pill { background: var(--primary-light); color: var(--primary-dark); border-radius: 20px; padding: 5px 14px; font-size: 0.92rem; font-weight: 600; }
+    .progress-wrap { background: #e2e8f0; border-radius: 4px; height: 6px; overflow: hidden; margin-bottom: 8px; }
+    .progress-bar { background: var(--primary); height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+    .q-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 18px; }
+    .q-avsnitt { font-size: 0.8rem; color: var(--primary-dark); background: var(--primary-light); border-radius: 20px; padding: 3px 12px; }
+    .q-counter { font-size: 0.82rem; color: #94a3b8; text-align: right; white-space: nowrap; }
+    .q-text { font-size: 1.25rem; font-weight: 600; line-height: 1.55; color: #0f172a; margin-bottom: 22px; }
+    .opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+    .opt-btn {
+      background: white; border: 2px solid #e2e8f0; border-radius: 12px;
+      padding: 13px 18px; text-align: left; font-size: 1rem; font-family: inherit;
+      cursor: pointer; transition: border-color 0.15s, background 0.15s; line-height: 1.45; color: inherit;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--primary); background: var(--primary-light); }
+    .opt-btn:disabled { cursor: default; }
+    .opt-btn.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); font-weight: 600; }
+    .opt-btn.wrong   { background: var(--wrong-bg);   border-color: var(--wrong-border);   color: var(--wrong-text); }
+    .opt-btn.dimmed  { opacity: 0.4; }
+    .nav-row { display: flex; gap: 12px; align-items: center; }
+    .btn-back { background: white; border: 2px solid #e2e8f0; border-radius: 10px; padding: 10px 20px; font-family: inherit; font-size: 0.9rem; color: #64748b; cursor: pointer; }
+    .btn-back:hover { border-color: #94a3b8; }
+    .btn-next { background: var(--primary); border: none; border-radius: 10px; padding: 10px 28px; font-family: inherit; font-size: 0.9rem; font-weight: 600; color: white; cursor: pointer; margin-left: auto; transition: background 0.15s; }
+    .btn-next:hover { background: var(--primary-dark); }
+
+    /* ── Feedback-modal ── */
+    #modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 500; padding: 20px; }
+    #modal-overlay.hidden { display: none; }
+    .modal-box { background: white; border-radius: 20px; padding: 30px; max-width: 520px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+    .modal-icon    { font-size: 2.6rem; margin-bottom: 10px; }
+    .modal-verdict { font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; }
+    .modal-verdict.c { color: var(--correct-text); }
+    .modal-verdict.w { color: var(--wrong-text); }
+    .modal-answer {
+      background: var(--correct-bg); border-left: 4px solid var(--correct-border);
+      border-radius: 8px; padding: 12px 14px; margin-bottom: 14px;
+      font-size: 0.98rem; line-height: 1.6; color: var(--primary-text);
+    }
+    .modal-answer .lbl { display: block; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--correct-border); margin-bottom: 3px; }
+    .modal-read { font-size: 0.92rem; color: #475569; line-height: 1.6; margin-bottom: 22px; }
+    .modal-read a { color: var(--primary-dark); font-weight: 600; }
+    .modal-read a:hover { text-decoration: none; }
+
+    /* ── Resultatskärm ── */
+    #screen-result { max-width: 700px; margin: 0 auto; padding: 80px 20px 80px; }
+    .res-header { text-align: center; margin-bottom: 26px; }
+    .score-ring { width: 120px; height: 120px; border-radius: 50%; border: 5px solid var(--primary); display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 18px; }
+    .score-ring .rnum { font-size: 2rem; font-weight: 600; color: var(--primary-dark); line-height: 1; }
+    .score-ring .rlbl { font-size: 0.72rem; color: #94a3b8; }
+    .res-title  { font-size: 1.8rem; font-weight: 600; font-style: italic; margin-bottom: 6px; }
+    .res-msg    { font-size: 1rem; color: #64748b; margin-bottom: 4px; }
+    .res-time   { font-size: 0.85rem; color: #94a3b8; }
+
+    .rank-panel {
+      background: white; border: 1px solid #e2e8f0; border-radius: 16px;
+      padding: 20px; margin-bottom: 26px; text-align: center;
+    }
+    .rank-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 64px; height: 64px; border-radius: 50%; margin-bottom: 10px;
+      font-size: 1.9rem; font-weight: 600; color: white; background: var(--primary);
+      box-shadow: 0 6px 18px rgba(34,197,94,0.35);
+    }
+    .rank-badge.none { background: #cbd5e1; box-shadow: none; font-size: 1.4rem; }
+    .rank-label { font-size: 0.95rem; color: #475569; margin-bottom: 6px; line-height: 1.55; }
+    .rank-label strong { color: #0f172a; }
+    .pass-line { font-size: 0.92rem; font-weight: 600; margin-bottom: 12px; }
+    .pass-line.ok   { color: var(--correct-text); }
+    .pass-line.nope { color: #b45309; }
+    .code-box {
+      display: inline-block; background: #0f172a; color: var(--primary-light);
+      border-radius: 10px; padding: 8px 16px; font-size: 0.95rem;
+      letter-spacing: 0.08em; font-variant-numeric: tabular-nums;
+    }
+    .code-note { font-size: 0.78rem; color: #94a3b8; margin-top: 8px; line-height: 1.5; }
+
+    .stats-row  { display: flex; gap: 12px; margin-bottom: 30px; flex-wrap: wrap; }
+    .stat-box   { flex: 1; min-width: 80px; background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; text-align: center; }
+    .stat-box .snum { font-size: 1.6rem; font-weight: 600; }
+    .stat-box .slbl { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
+    .stat-box.cs .snum { color: var(--correct-text); }
+    .stat-box.ws .snum { color: var(--wrong-text); }
+    .section-hd { font-size: 1.05rem; font-weight: 600; color: #0f172a; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; }
+    .missed-section { margin-bottom: 30px; }
+    .missed-item { background: var(--wrong-bg); border-left: 4px solid var(--wrong-border); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-size: 0.92rem; line-height: 1.5; }
+    .facit-item { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
+    .facit-item.fc { border-left: 4px solid var(--correct-border); }
+    .facit-item.fw { border-left: 4px solid var(--wrong-border); }
+    .facit-item.fn { border-left: 4px solid #cbd5e1; }
+    .fi-num { font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .fi-q   { font-size: 0.93rem; font-weight: 600; color: #0f172a; margin-bottom: 8px; line-height: 1.45; }
+    .fi-row { font-size: 0.88rem; padding: 2px 0; line-height: 1.5; }
+    .fi-row .lbl { color: #94a3b8; }
+    .fi-row.ya-ok  { color: var(--correct-text); }
+    .fi-row.ya-bad { color: var(--wrong-text); }
+    .fi-row.ra     { color: var(--correct-text); font-weight: 600; margin-top: 2px; }
+    .fi-read { font-size: 0.82rem; margin-top: 7px; color: #64748b; }
+    .fi-read a { color: var(--primary-dark); }
+
+    .btn-primary { display: inline-block; background: var(--primary); color: white; border: none; border-radius: 12px; padding: 13px 36px; font-size: 1.05rem; font-family: inherit; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+    .btn-primary:active { transform: none; }
+
+    /* ── Mobilläge ── */
+    @media (max-width: 768px) {
+      #screen-start  { padding: 76px 18px 36px; }
+      #screen-quiz   { padding: 64px 16px 48px; }
+      #screen-result { padding: 70px 16px 60px; }
+      #screen-start h1 { font-size: 1.95rem; }
+      #screen-start .subtitle { font-size: 0.98rem; }
+      .q-text { font-size: 1.12rem; }
+      .opt-btn { font-size: 0.96rem; padding: 12px 15px; }
+      .modal-box { padding: 24px 20px; }
+      .btn-primary { padding: 12px 28px; font-size: 1rem; }
+      .rank-scale { gap: 6px; }
+    }
+    @media (max-width: 420px) {
+      #screen-start h1 { font-size: 1.7rem; }
+      .q-text { font-size: 1.05rem; }
+      .opt-btn { font-size: 0.93rem; }
+      .btn-next, .btn-back { padding: 10px 16px; }
+      .info-card { padding: 12px 10px; }
+      .rank-chip { min-width: 46px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; animation: none !important; }
+      .btn-primary:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+<a href="nk1a1_hallbarhet.html" id="backLink" class="back-btn">← Tillbaka till området</a>
+
+<!-- ═══════════ STARTSKÄRM ═══════════ -->
+<div id="screen-start" class="screen active">
+  <div class="badge">Naturkunskap nivå 1a1 · Hållbar utveckling</div>
+  <h1>Quiz</h1>
+  <p class="subtitle">30 frågor på enkel svenska om hållbar utveckling, naturresurser, biologisk mångfald, energi och klimatet.</p>
+  <div class="info-cards">
+    <div class="info-card"><div class="num">30</div><div class="lbl">Frågor</div></div>
+    <div class="info-card"><div class="num">5</div><div class="lbl">Avsnitt</div></div>
+    <div class="info-card"><div class="num">4</div><div class="lbl">Alternativ</div></div>
+  </div>
+
+  <div class="rank-info">
+    <div class="rh">Så får du din rank</div>
+    <div class="rank-scale">
+      <div class="rank-chip"><span class="rc-r">S</span><span class="rc-p">100 %</span></div>
+      <div class="rank-chip"><span class="rc-r">A</span><span class="rc-p">90 %</span></div>
+      <div class="rank-chip"><span class="rc-r">B</span><span class="rc-p">80 %</span></div>
+      <div class="rank-chip"><span class="rc-r">C</span><span class="rc-p">65 %</span></div>
+      <div class="rank-chip"><span class="rc-r">D</span><span class="rc-p">50 %</span></div>
+    </div>
+    <p class="rnote">Du klarar quizet på <strong>80 %</strong>, alltså 24 rätt av 30. Då får du också en kod som du kan visa för din lärare. Koden byts ut varje dag.</p>
+  </div>
+
+  <button class="btn-primary" onclick="startQuiz()">Starta Quiz →</button>
+</div>
+
+<!-- ═══════════ QUIZSKÄRM ═══════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-header">
+    <div class="timer" id="timer">⏱ 0:00</div>
+    <div class="score-pill" id="score-pill">Poäng: 0</div>
+  </div>
+  <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+  <div class="q-meta">
+    <span class="q-avsnitt" id="q-avsnitt"></span>
+    <span class="q-counter" id="q-counter">Fråga 1 av 30</span>
+  </div>
+  <div class="q-text" id="q-text"></div>
+  <div class="opts" id="opts"></div>
+  <div class="nav-row">
+    <button class="btn-back" id="btn-back" onclick="goBack()" style="display:none">← Bakåt</button>
+    <button class="btn-next" id="btn-next" onclick="goNext()" style="display:none">Nästa →</button>
+  </div>
+</div>
+
+<!-- ═══════════ FEEDBACK-MODAL ═══════════ -->
+<div id="modal-overlay" class="hidden" role="dialog" aria-modal="true" aria-labelledby="modal-verdict">
+  <div class="modal-box">
+    <div class="modal-icon"    id="modal-icon"></div>
+    <div class="modal-verdict" id="modal-verdict"></div>
+    <div class="modal-answer"  id="modal-answer"></div>
+    <div class="modal-read"    id="modal-read"></div>
+    <button class="btn-primary" id="modal-next" onclick="closeModal()">Nästa fråga →</button>
+  </div>
+</div>
+
+<!-- ═══════════ RESULTATSKÄRM ═══════════ -->
+<div id="screen-result" class="screen">
+  <div class="res-header">
+    <div class="score-ring">
+      <div class="rnum" id="r-score"></div>
+      <div class="rlbl">poäng</div>
+    </div>
+    <div class="res-title" id="r-title"></div>
+    <div class="res-msg"   id="r-msg"></div>
+    <div class="res-time"  id="r-time"></div>
+  </div>
+
+  <div class="rank-panel">
+    <div class="rank-badge" id="r-rank-badge">–</div>
+    <div class="rank-label" id="r-rank-label"></div>
+    <div class="pass-line"  id="r-pass"></div>
+    <div id="r-code-wrap"></div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-box cs"><div class="snum" id="s-correct">0</div><div class="slbl">Rätt</div></div>
+    <div class="stat-box ws"><div class="snum" id="s-wrong">0</div><div class="slbl">Fel</div></div>
+    <div class="stat-box"><div class="snum" id="s-pct">0%</div><div class="slbl">Andel rätt</div></div>
+  </div>
+
+  <div class="missed-section" id="missed-section"></div>
+  <div class="section-hd">Fullständigt facit</div>
+  <div id="facit-list"></div>
+  <div style="text-align:center;margin-top:32px">
+    <button class="btn-primary" onclick="restartQuiz()">↺ Gör om quizet</button>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════════════════════════
+   FRÅGEDATA — en enda array, inga parallella arrayer.
+   { id, avsnitt, ankare, fraga, ratt, fel: [3], sida }
+   ankare = avsnittets id i nk1a1_hallbarhet_plugg.html
+   Varje rätt svar går att hitta i Lättläst-texten i pluggmaterialet.
+   ════════════════════════════════════════════════════════════ */
+const PLUGG = 'nk1a1_hallbarhet_plugg.html';
+
+const FRAGOR = [
+
+  /* ── Avsnitt 1: Vad är hållbar utveckling? ── */
+  {
+    id: 1, avsnitt: 'Vad är hållbar utveckling?', ankare: 'hallbar-utveckling', sida: 's. 104',
+    fraga: 'Vad betyder hållbar utveckling?',
+    ratt: 'Vi tar hand om våra behov idag. Men vi förstör inte för människor i framtiden.',
+    fel: [
+      'Vi sparar alla naturresurser idag. Sedan får människor i framtiden använda dem.',
+      'Vi låter naturen vara helt i fred. Människor ska inte ta något alls ur den.',
+      'Vi låter ekonomin växa så fort det går. Sedan lagar vi miljön med pengarna.'
+    ]
+  },
+  {
+    id: 2, avsnitt: 'Vad är hållbar utveckling?', ankare: 'hallbar-utveckling', sida: 's. 104',
+    fraga: 'Hållbar utveckling har tre delar. Vilka?',
+    ratt: 'Ekologisk, social och ekonomisk hållbarhet',
+    fel: [
+      'Ekologisk, teknisk och politisk hållbarhet',
+      'Social, kulturell och ekonomisk hållbarhet',
+      'Biologisk, ekonomisk och juridisk hållbarhet'
+    ]
+  },
+  {
+    id: 3, avsnitt: 'Vad är hållbar utveckling?', ankare: 'hallbar-utveckling', sida: 's. 105',
+    fraga: 'Tre av de globala målen handlar om natur och miljö. Vilka?',
+    ratt: 'Mål 13 (klimatet), mål 14 (haven) och mål 15 (natur och djur på land)',
+    fel: [
+      'Mål 1 (fattigdom), mål 2 (hunger) och mål 3 (hälsa och välbefinnande)',
+      'Mål 6 (rent vatten), mål 7 (ren energi) och mål 11 (hållbara städer)',
+      'Mål 12 (konsumtion), mål 16 (fred) och mål 17 (samarbete mellan länder)'
+    ]
+  },
+  {
+    id: 4, avsnitt: 'Vad är hållbar utveckling?', ankare: 'hallbar-utveckling', sida: 's. 106',
+    fraga: 'Vad visar ett ekologiskt fotavtryck?',
+    ratt: 'Hur stor yta på jorden en människa eller ett land behöver',
+    fel: [
+      'Hur många kilo sopor en människa eller ett land slänger varje år',
+      'Hur mycket pengar en människa eller ett land lägger på mat',
+      'Hur många grader varmare en människa eller ett land gör jorden'
+    ]
+  },
+  {
+    id: 5, avsnitt: 'Vad är hållbar utveckling?', ankare: 'hallbar-utveckling', sida: 's. 106',
+    fraga: 'Svenskar har ett större fotavtryck än de flesta i världen. Varför?',
+    ratt: 'Vårt sätt att leva ger mycket utsläpp av koldioxid.',
+    fel: [
+      'Vi har mycket skog som tar upp koldioxid ur luften.',
+      'Vi bor långt norrut där det växer väldigt lite mat.',
+      'Vi är ett litet land med ganska få människor som bor här.'
+    ]
+  },
+  {
+    id: 6, avsnitt: 'Vad är hållbar utveckling?', ankare: 'hallbar-utveckling', sida: 's. 108',
+    fraga: 'Hur många jordklot skulle vi behöva om alla levde som vi?',
+    ratt: '1,7 jordklot',
+    fel: ['1,0 jordklot', '2,6 jordklot', '5,5 jordklot']
+  },
+
+  /* ── Avsnitt 2: Naturresurser och produkters livscykel ── */
+  {
+    id: 7, avsnitt: 'Naturresurser och produkters livscykel', ankare: 'naturresurser', sida: 's. 111',
+    fraga: 'Hur använder vi en förnybar naturresurs på ett hållbart sätt?',
+    ratt: 'Vi tar inte mer än vad som hinner växa upp igen.',
+    fel: [
+      'Vi tar så mycket vi vill, eftersom den ändå kommer tillbaka.',
+      'Vi slutar helt att använda den och låter allting vara kvar.',
+      'Vi tar ut allting på en gång och planterar sedan nytt efteråt.'
+    ]
+  },
+  {
+    id: 8, avsnitt: 'Naturresurser och produkters livscykel', ankare: 'naturresurser', sida: 's. 111',
+    fraga: 'Varför är metaller icke-förnybara?',
+    ratt: 'Det bildas inga nya metaller. De tar slut när vi använder dem.',
+    fel: [
+      'Det går inte att återvinna metaller. De förstörs när vi smälter dem.',
+      'Det bryts ner metaller i naturen. De försvinner efter några hundra år.',
+      'Det finns metaller i bara några länder. De andra länderna får inga alls.'
+    ]
+  },
+  {
+    id: 9, avsnitt: 'Naturresurser och produkters livscykel', ankare: 'naturresurser', sida: 's. 112',
+    fraga: 'En livscykelanalys följer flera steg. Vilka?',
+    ratt: 'Utvinning, produktion, transport, användning och avfall',
+    fel: [
+      'Utvinning, försäljning, reklam, användning och återvinning',
+      'Planering, produktion, transport, reparation och lagring',
+      'Produktion, transport, användning, beskattning och nedbrytning'
+    ]
+  },
+  {
+    id: 10, avsnitt: 'Naturresurser och produkters livscykel', ankare: 'naturresurser', sida: 's. 113',
+    fraga: 'Vad är fracking?',
+    ratt: 'Man sprutar in vatten, sand och kemikalier i marken. Då spricker berget och olja och gas kommer ut.',
+    fel: [
+      'Man gräver ett stort dagbrott rakt ner i marken. Sedan lyfter maskiner upp kol och malm ur hålet.',
+      'Man värmer upp råolja i ett stort raffinaderi. Sedan delas oljan upp i bensin, diesel och asfalt.',
+      'Man borrar ett mycket djupt hål i havsbotten. Sedan pumpar man upp oljan till en plattform.'
+    ]
+  },
+  {
+    id: 11, avsnitt: 'Naturresurser och produkters livscykel', ankare: 'naturresurser', sida: 's. 115',
+    fraga: 'Vilka två sätt att frakta tunga varor långt använder minst energi?',
+    ratt: 'Båt och tåg',
+    fel: ['Flyg och lastbil', 'Lastbil och tåg', 'Båt och flyg']
+  },
+  {
+    id: 12, avsnitt: 'Naturresurser och produkters livscykel', ankare: 'naturresurser', sida: 's. 118',
+    fraga: 'Vad betyder cirkulär ekonomi?',
+    ratt: 'Saker håller länge. Materialet används igen eller återvinns.',
+    fel: [
+      'Saker tillverkas billigt. De slängs så fort de går sönder.',
+      'Saker tillverkas i Sverige. De säljs bara här i landet.',
+      'Saker byggs av nya råvaror. De bränns upp efter användning.'
+    ]
+  },
+
+  /* ── Avsnitt 3: Biologisk mångfald ── */
+  {
+    id: 13, avsnitt: 'Biologisk mångfald', ankare: 'biologisk-mangfald', sida: 's. 133',
+    fraga: 'Vad betyder biologisk mångfald?',
+    ratt: 'Att det finns många olika sorters liv på jorden',
+    fel: [
+      'Att det finns många individer av varje art på jorden',
+      'Att antalet djur i världen ökar för varje år som går',
+      'Att alla arter på jorden har samma sorts arvsanlag'
+    ]
+  },
+  {
+    id: 14, avsnitt: 'Biologisk mångfald', ankare: 'biologisk-mangfald', sida: 's. 133',
+    fraga: 'Det finns fyra skäl att skydda den biologiska mångfalden. Vilka?',
+    ratt: 'Etiska, estetiska, ekologiska och ekonomiska skäl',
+    fel: [
+      'Estetiska, ekologiska, ekonomiska och evolutionära skäl',
+      'Etiska, ekologiska, ekonomiska och empiriska skäl',
+      'Etiska, estetiska, ekologiska och energiska skäl'
+    ]
+  },
+  {
+    id: 15, avsnitt: 'Biologisk mångfald', ankare: 'biologisk-mangfald', sida: 's. 133–134',
+    fraga: 'Vad är en ekosystemtjänst?',
+    ratt: 'Något naturen ger oss människor gratis, till exempel mat, rent vatten eller syre',
+    fel: [
+      'Ett arbete människor gör åt naturen, till exempel att plantera nya träd i en skog',
+      'En skyddad plats ute i naturen, till exempel en nationalpark eller ett naturreservat',
+      'En regel som skyddar naturen åt oss, till exempel förbud mot att fiska i en sjö'
+    ]
+  },
+  {
+    id: 16, avsnitt: 'Biologisk mångfald', ankare: 'biologisk-mangfald', sida: 's. 135',
+    fraga: 'Vad är ett hot mot den biologiska mångfalden?',
+    ratt: 'Djur och växter förlorar platser att leva på.',
+    fel: [
+      'Gamla våtmarker återställs på flera platser i EU.',
+      'Sverige skyddar 14 % av landets yta med reservat.',
+      'Alla orkidéer och rovfåglar är fridlysta i Sverige.'
+    ]
+  },
+  {
+    id: 17, avsnitt: 'Biologisk mångfald', ankare: 'biologisk-mangfald', sida: 's. 137',
+    fraga: 'Varför är invasiva arter ett problem?',
+    ratt: 'De tar mat och plats från andra arter. Ofta finns inga djur som äter dem.',
+    fel: [
+      'De sprider gifter omkring sig i marken. Ofta dör växterna som står i närheten.',
+      'De äter bara växter som redan är hotade. Ofta försvinner växten helt från platsen.',
+      'De klarar inte att leva på den nya platsen. Ofta dör de redan under första vintern.'
+    ]
+  },
+  {
+    id: 18, avsnitt: 'Biologisk mångfald', ankare: 'biologisk-mangfald', sida: 's. 138',
+    fraga: 'Vad betyder det att en art är fridlyst?',
+    ratt: 'Man får inte plocka, döda eller störa den.',
+    fel: [
+      'Man får bara plocka den under vissa månader.',
+      'Man måste söka tillstånd innan man plockar den.',
+      'Man får handla med den bara inom Sverige.'
+    ]
+  },
+  {
+    id: 19, avsnitt: 'Biologisk mångfald', ankare: 'biologisk-mangfald', sida: 's. 139',
+    fraga: 'Vad är återförvildning?',
+    ratt: 'Man låter naturen laga sig själv utan att människor styr.',
+    fel: [
+      'Man planterar nya träd i raka rader och sköter dem varje år.',
+      'Man flyttar vilda djur från naturen in i stora djurparker.',
+      'Man bygger staket runt ett område så att inga djur kommer in.'
+    ]
+  },
+
+  /* ── Avsnitt 4: Energi ── */
+  {
+    id: 20, avsnitt: 'Energi', ankare: 'energi', sida: 's. 146–147',
+    fraga: 'Varför kommer det mesta av vår energi från fossila bränslen?',
+    ratt: 'De är billiga och lätta att lagra. Mycket teknik är byggd för dem.',
+    fel: [
+      'De är förnybara och tar aldrig slut. Naturen bildar hela tiden ny olja.',
+      'De ger inga utsläpp av koldioxid alls. Därför är de snälla mot klimatet.',
+      'De finns i alla länder i hela världen. Därför behöver ingen köpa energi.'
+    ]
+  },
+  {
+    id: 21, avsnitt: 'Energi', ankare: 'energi', sida: 's. 148',
+    fraga: 'Varför gör kärnkraft inte jorden varmare?',
+    ratt: 'Kärnkraft ger inga utsläpp av koldioxid när den gör el.',
+    fel: [
+      'Kärnkraft använder kallt vatten som kyler ner hela jorden.',
+      'Kärnkraft ger mycket mindre el än andra sätt att göra el.',
+      'Kärnkraft bränner uranet så långsamt att värmen försvinner.'
+    ]
+  },
+  {
+    id: 22, avsnitt: 'Energi', ankare: 'energi', sida: 's. 150',
+    fraga: 'Hur blir vatten till el i ett vattenkraftverk?',
+    ratt: 'Vattnet faller och snurrar en turbin. Turbinen driver en generator som gör el.',
+    fel: [
+      'Vattnet värms av solen och blir till ånga. Ångan pressas ihop och blir till el.',
+      'Vattnet delas upp i mycket små droppar. Dropparna laddas och skickas ut som el.',
+      'Vattnet kyler ner en stor magnet i verket. Magneten ger sedan ifrån sig el.'
+    ]
+  },
+  {
+    id: 23, avsnitt: 'Energi', ankare: 'energi', sida: 's. 152',
+    fraga: 'Vad är en nackdel med bioenergi?',
+    ratt: 'Den kräver stora åkrar. Då blir det mindre plats för att odla mat.',
+    fel: [
+      'Den kräver stora gruvor. Då förstörs marken och vattnet i området.',
+      'Den kräver mycket uran. Då blir avfallet farligt i tusentals år.',
+      'Den kräver starka vindar. Då fungerar den bara vissa dagar om året.'
+    ]
+  },
+  {
+    id: 24, avsnitt: 'Energi', ankare: 'energi', sida: 's. 149',
+    fraga: 'Vad är ett problem med sol-, vind- och vågkraft?',
+    ratt: 'De fungerar bara när solen lyser, det blåser eller det finns vågor.',
+    fel: [
+      'De släpper ut mycket koldioxid när de gör el till elnätet.',
+      'De tar slut efter några år eftersom naturen inte bildar nya.',
+      'De ger ifrån sig avfall som är farligt i flera tusen år framåt.'
+    ]
+  },
+
+  /* ── Avsnitt 5: Klimatet ── */
+  {
+    id: 25, avsnitt: 'Klimatet', ankare: 'klimatet', sida: 's. 157',
+    fraga: 'Vad gör en växthusgas?',
+    ratt: 'Den släpper in solljus men håller kvar värmen.',
+    fel: [
+      'Den stoppar solljuset men släpper ut värmen.',
+      'Den kyler ner luften genom att ta upp värme.',
+      'Den gör hål i luftlagret som skyddar jorden.'
+    ]
+  },
+  {
+    id: 26, avsnitt: 'Klimatet', ankare: 'klimatet', sida: 's. 157',
+    fraga: 'Vad är den globala uppvärmningen?',
+    ratt: 'Jorden blir varmare, eftersom det finns mer växthusgaser i luften.',
+    fel: [
+      'Jorden blir varmare, eftersom solen lyser starkare än den gjorde förr.',
+      'Jorden blir varmare, eftersom det bor fler människor på den nu.',
+      'Jorden blir varmare, eftersom isarna vid polerna redan har smält.'
+    ]
+  },
+  {
+    id: 27, avsnitt: 'Klimatet', ankare: 'klimatet', sida: 's. 136, 163',
+    fraga: 'Varför är mer koldioxid dåligt för korallreven?',
+    ratt: 'Havet blir varmare och surare. Det tål korallerna inte.',
+    fel: [
+      'Havet fylls med alger som tar syret. Det kväver korallerna.',
+      'Havet stiger och blir djupare. Då når ljuset inte ner.',
+      'Havet får mindre salt i sig. Då spricker korallernas skal.'
+    ]
+  },
+  {
+    id: 28, avsnitt: 'Klimatet', ankare: 'klimatet', sida: 's. 164',
+    fraga: 'Vad är en tröskeleffekt i klimatet?',
+    ratt: 'Uppvärmningen blir starkare av sig själv. Till exempel smälter isen, och då blir det ännu varmare.',
+    fel: [
+      'Uppvärmningen stannar av sig själv. Till exempel bildas det moln, och då blir det svalare igen.',
+      'Uppvärmningen går upp och ner varje år. Till exempel blir somrarna varma och vintrarna kalla.',
+      'Uppvärmningen syns bara på vissa platser. Till exempel blir det varmare vid polerna än vid ekvatorn.'
+    ]
+  },
+  {
+    id: 29, avsnitt: 'Klimatet', ankare: 'klimatet', sida: 's. 166',
+    fraga: 'Vilka tre saker påverkar klimatavtrycket mest?',
+    ratt: 'Hur man reser, vad man äter och hur man bor',
+    fel: [
+      'Hur man duschar, hur man tvättar och hur man diskar',
+      'Hur man städar, vad man odlar och hur man vattnar',
+      'Hur gammal man är, vad man tjänar och var man jobbar'
+    ]
+  },
+  {
+    id: 30, avsnitt: 'Klimatet', ankare: 'klimatet', sida: 's. 168',
+    fraga: 'Vad är en klimatanpassning?',
+    ratt: 'Något vi gör för att klara ett varmare klimat, till exempel bygga skydd mot översvämning',
+    fel: [
+      'Något vi gör för att minska våra utsläpp, till exempel byta från bil till tåg',
+      'Något naturen gör helt av sig själv, till exempel att arter flyttar sig norrut',
+      'Något länder skriver under tillsammans, till exempel klimatavtalet som slöts i Paris'
+    ]
+  }
+];
+
+/* ════════════════════════════════════════════════════════════
+   FISHER-YATES SHUFFLE
+   ════════════════════════════════════════════════════════════ */
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+/* ════════════════════════════════════════════════════════════
+   RANK OCH DAGLIG VERIFIERINGSKOD
+   Ranken bygger på andelen rätt. 80 % är gränsen för godkänt.
+   Koden räknas fram ur dagens datum + resultat + rank + salt,
+   och byts därför ut varje dygn. Inget sparas, ingen inloggning.
+   ════════════════════════════════════════════════════════════ */
+const PASS_PCT  = 80;
+const RANK_SALT = 'nk1a1hallbarhetsakerhet';
+const RANK_STEPS = [
+  { rank: 'S', min: 100, label: 'Allt rätt – du kan hela området.' },
+  { rank: 'A', min: 90,  label: 'Mycket starkt resultat.' },
+  { rank: 'B', min: 80,  label: 'Godkänt resultat – du klarade gränsen.' },
+  { rank: 'C', min: 65,  label: 'Nästan framme – lite mer repetition.' },
+  { rank: 'D', min: 50,  label: 'Grunden finns, men mer övning behövs.' }
+];
+
+function computeRank(pct) {
+  for (const step of RANK_STEPS) {
+    if (pct >= step.min) return step;
+  }
+  return null;
+}
+
+function computeVerificationCode(score, total, rank) {
+  const d = new Date();
+  const dateStr = '' + d.getFullYear()
+    + String(d.getMonth() + 1).padStart(2, '0')
+    + String(d.getDate()).padStart(2, '0');
+  const input = dateStr + '|' + score + '/' + total + '|' + (rank || '-') + '|' + RANK_SALT;
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) {
+    hash = (hash + input.charCodeAt(i) * (i + 1)) % 1679616; // 36^4
+  }
+  return 'NK1A1HU-' + hash.toString(36).toUpperCase().padStart(4, '0');
+}
+
+/* ════════════════════════════════════════════════════════════
+   TILLSTÅND
+   Blandningen sker EN gång vid quizstart och sparas per fråga,
+   så att bakåtnavigering aldrig ger en ny ordning.
+   ════════════════════════════════════════════════════════════ */
+let qs = [];
+let cur = 0;
+let score = 0;
+let elapsed = 0;
+let timerID = null;
+
+function buildState() {
+  qs = shuffleArray([...FRAGOR]).map(f => {
+    const opts = shuffleArray([f.ratt, ...f.fel]);
+    return {
+      data: f,
+      opts: opts,
+      correct: opts.indexOf(f.ratt),
+      selected: null,   // index i opts, eller null om obesvarad
+      answered: false
+    };
+  });
+}
+
+/* ════════════════════════════════════════════════════════════
+   SKÄRMAR OCH TIMER
+   ════════════════════════════════════════════════════════════ */
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+function fmtTime(s) {
+  return '⏱ ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+}
+function startTimer() {
+  elapsed = 0;
+  document.getElementById('timer').textContent = fmtTime(0);
+  clearInterval(timerID);
+  timerID = setInterval(() => {
+    elapsed++;
+    document.getElementById('timer').textContent = fmtTime(elapsed);
+  }, 1000);
+}
+function stopTimer() { clearInterval(timerID); }
+
+function startQuiz() {
+  buildState();
+  cur = 0;
+  score = 0;
+  document.getElementById('modal-overlay').classList.add('hidden');
+  show('screen-quiz');
+  startTimer();
+  render();
+}
+
+/* ════════════════════════════════════════════════════════════
+   RENDER — återställer alltid frågans sparade tillstånd
+   ════════════════════════════════════════════════════════════ */
+function render() {
+  const q = qs[cur];
+  const total = qs.length;
+
+  document.getElementById('progress-bar').style.width = (cur / total * 100) + '%';
+  document.getElementById('q-counter').textContent = 'Fråga ' + (cur + 1) + ' av ' + total;
+  document.getElementById('q-avsnitt').textContent = q.data.avsnitt;
+  document.getElementById('score-pill').textContent = 'Poäng: ' + score;
+  document.getElementById('q-text').textContent = q.data.fraga;
+
+  const optsEl = document.getElementById('opts');
+  optsEl.innerHTML = '';
+
+  q.opts.forEach((text, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.type = 'button';
+    btn.textContent = text;
+    btn.disabled = q.answered;
+
+    if (q.answered) {
+      if (i === q.correct)       btn.classList.add('correct');
+      else if (i === q.selected) btn.classList.add('wrong');
+      else                       btn.classList.add('dimmed');
+    } else {
+      btn.addEventListener('click', () => handleAnswer(i));
+    }
+    optsEl.appendChild(btn);
+  });
+
+  document.getElementById('btn-back').style.display = cur > 0 ? 'inline-block' : 'none';
+  const nextBtn = document.getElementById('btn-next');
+  nextBtn.style.display = q.answered ? 'inline-block' : 'none';
+  nextBtn.textContent = cur === total - 1 ? 'Se resultat →' : 'Nästa →';
+}
+
+/* ════════════════════════════════════════════════════════════
+   SVAR — poäng räknas exakt en gång per fråga
+   ════════════════════════════════════════════════════════════ */
+function handleAnswer(i) {
+  const q = qs[cur];
+  if (q.answered) return;
+
+  q.answered = true;
+  q.selected = i;
+  const isCorrect = i === q.correct;
+  if (isCorrect) score++;
+
+  document.querySelectorAll('#opts .opt-btn').forEach((btn, j) => {
+    btn.disabled = true;
+    if (j === q.correct) btn.classList.add('correct');
+    else if (j === i)    btn.classList.add('wrong');
+    else                 btn.classList.add('dimmed');
+  });
+
+  const nextBtn = document.getElementById('btn-next');
+  nextBtn.style.display = 'inline-block';
+  nextBtn.textContent = cur === qs.length - 1 ? 'Se resultat →' : 'Nästa →';
+  document.getElementById('score-pill').textContent = 'Poäng: ' + score;
+
+  setTimeout(() => showModal(isCorrect, q), 600);
+}
+
+/* ════════════════════════════════════════════════════════════
+   FEEDBACK-MODAL — rätt/fel + rätt svar + länk till avsnittet
+   ════════════════════════════════════════════════════════════ */
+function lasMerHtml(f) {
+  const href = PLUGG + '#' + f.ankare;
+  return 'Läs mer: <a href="' + href + '" target="_blank" rel="noopener">'
+       + f.avsnitt + '</a> i pluggmaterialet (' + f.sida + ')';
+}
+
+function showModal(isCorrect, q) {
+  document.getElementById('modal-icon').textContent    = isCorrect ? '✅' : '❌';
+  const verdict = document.getElementById('modal-verdict');
+  verdict.textContent = isCorrect ? 'Rätt!' : 'Fel svar';
+  verdict.className   = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
+
+  const ansEl = document.getElementById('modal-answer');
+  ansEl.innerHTML = '<span class="lbl">Rätt svar</span>';
+  ansEl.appendChild(document.createTextNode(q.data.ratt));
+
+  document.getElementById('modal-read').innerHTML = lasMerHtml(q.data);
+  document.getElementById('modal-next').textContent =
+    cur === qs.length - 1 ? 'Se resultat →' : 'Nästa fråga →';
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  goNext();
+}
+
+/* ════════════════════════════════════════════════════════════
+   NAVIGERING — bakåt påverkar aldrig poäng eller blandning
+   ════════════════════════════════════════════════════════════ */
+function goBack() { if (cur > 0) { cur--; render(); } }
+
+function goNext() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  if (cur < qs.length - 1) { cur++; render(); }
+  else showResults();
+}
+
+/* ════════════════════════════════════════════════════════════
+   RESULTATSKÄRM
+   ════════════════════════════════════════════════════════════ */
+function showResults() {
+  stopTimer();
+  show('screen-result');
+
+  const total = qs.length;
+  const wrong = total - score;
+  const pct   = Math.round(score / total * 100);
+
+  document.getElementById('r-score').textContent   = score + '/' + total;
+  document.getElementById('s-correct').textContent = score;
+  document.getElementById('s-wrong').textContent   = wrong;
+  document.getElementById('s-pct').textContent     = pct + '%';
+
+  const m = Math.floor(elapsed / 60), s = String(elapsed % 60).padStart(2, '0');
+  document.getElementById('r-time').textContent = 'Tid: ' + m + ':' + s;
+
+  let title, msg;
+  if (pct >= 90)      { title = '🏆 Utmärkt!';          msg = 'Du kan hållbar utveckling mycket bra.'; }
+  else if (pct >= 80) { title = '✅ Redo för provet!';   msg = 'Bra jobbat – du klarade gränsen på 80 %.'; }
+  else if (pct >= 65) { title = '📖 Öva lite till';      msg = 'Du är nära. Läs om de avsnitt du missade.'; }
+  else                { title = '💡 Fortsätt repetera'; msg = 'Gå igenom pluggmaterialet och gör om quizet.'; }
+  document.getElementById('r-title').textContent = title;
+  document.getElementById('r-msg').textContent   = msg;
+
+  /* ── Rank, godkändgräns och daglig kod ── */
+  const step   = computeRank(pct);
+  const passed = pct >= PASS_PCT;
+
+  const badgeEl = document.getElementById('r-rank-badge');
+  badgeEl.textContent = step ? step.rank : '–';
+  badgeEl.className   = 'rank-badge' + (step ? '' : ' none');
+
+  document.getElementById('r-rank-label').innerHTML = step
+    ? 'Din rank: <strong>' + step.rank + '</strong> · ' + step.label
+    : 'Ingen rank än. Du behöver minst 50 % rätt för rank D.';
+
+  const passEl = document.getElementById('r-pass');
+  passEl.className   = 'pass-line ' + (passed ? 'ok' : 'nope');
+  passEl.textContent = passed
+    ? '✔ Klarat! Du har minst 80 % rätt.'
+    : 'Du behöver ' + Math.ceil(total * PASS_PCT / 100) + ' rätt av ' + total + ' för att klara quizet.';
+
+  const codeWrap = document.getElementById('r-code-wrap');
+  codeWrap.innerHTML = '';
+  if (passed) {
+    const code = document.createElement('div');
+    code.className = 'code-box';
+    code.textContent = computeVerificationCode(score, total, step ? step.rank : '-');
+    const note = document.createElement('p');
+    note.className = 'code-note';
+    note.textContent = 'Visa koden för din lärare. Den byts ut varje dag.';
+    codeWrap.appendChild(code);
+    codeWrap.appendChild(note);
+  }
+
+  /* ── Missade frågor ── */
+  const missedEl = document.getElementById('missed-section');
+  missedEl.innerHTML = '';
+  const missed = qs.filter(q => q.answered && q.selected !== q.correct);
+  if (missed.length) {
+    const hd = document.createElement('div');
+    hd.className = 'section-hd';
+    hd.textContent = 'Missade frågor (' + missed.length + ')';
+    missedEl.appendChild(hd);
+    missed.forEach(q => {
+      const d = document.createElement('div');
+      d.className = 'missed-item';
+      d.textContent = q.data.fraga;
+      missedEl.appendChild(d);
+    });
+  }
+
+  /* ── Fullständigt facit — alla frågor ── */
+  const facitEl = document.getElementById('facit-list');
+  facitEl.innerHTML = '';
+  qs.forEach((q, i) => {
+    const notAnswered = !q.answered;
+    const isCorrect   = q.answered && q.selected === q.correct;
+
+    const div = document.createElement('div');
+    div.className = 'facit-item ' + (notAnswered ? 'fn' : isCorrect ? 'fc' : 'fw');
+
+    const numEl = document.createElement('div');
+    numEl.className = 'fi-num';
+    numEl.textContent = 'Fråga ' + (i + 1) + ' · ' + q.data.avsnitt;
+    div.appendChild(numEl);
+
+    const qEl = document.createElement('div');
+    qEl.className = 'fi-q';
+    qEl.textContent = q.data.fraga;
+    div.appendChild(qEl);
+
+    if (notAnswered) {
+      const r1 = document.createElement('div');
+      r1.className = 'fi-row';
+      r1.innerHTML = '<span class="lbl">Ditt svar: </span>— (inte besvarad)';
+      div.appendChild(r1);
+      const r2 = document.createElement('div');
+      r2.className = 'fi-row ra';
+      r2.innerHTML = '<span class="lbl">Rätt svar: </span>';
+      r2.appendChild(document.createTextNode(q.data.ratt));
+      div.appendChild(r2);
+    } else if (isCorrect) {
+      const r1 = document.createElement('div');
+      r1.className = 'fi-row ya-ok';
+      r1.innerHTML = '✓ <span class="lbl">Ditt svar: </span>';
+      r1.appendChild(document.createTextNode(q.opts[q.selected]));
+      div.appendChild(r1);
+    } else {
+      const r1 = document.createElement('div');
+      r1.className = 'fi-row ya-bad';
+      r1.innerHTML = '✗ <span class="lbl">Ditt svar: </span>';
+      r1.appendChild(document.createTextNode(q.opts[q.selected]));
+      div.appendChild(r1);
+      const r2 = document.createElement('div');
+      r2.className = 'fi-row ra';
+      r2.innerHTML = '<span class="lbl">Rätt svar: </span>';
+      r2.appendChild(document.createTextNode(q.data.ratt));
+      div.appendChild(r2);
+    }
+
+    const read = document.createElement('div');
+    read.className = 'fi-read';
+    read.innerHTML = lasMerHtml(q.data);
+    div.appendChild(read);
+
+    facitEl.appendChild(div);
+  });
+}
+
+/* ── Gör om — blandar om allt igen ── */
+function restartQuiz() {
+  stopTimer();
+  show('screen-start');
+}
+
+/* ════════════════════════════════════════════════════════════
+   SMART TILLBAKA-NAVIGERING
+   history.back() inom samma domän, annars områdessidan.
+   ════════════════════════════════════════════════════════════ */
+(function () {
+  const backLink = document.getElementById('backLink');
+  if (!backLink) return;
+  backLink.addEventListener('click', function (e) {
+    e.preventDefault();
+    try {
+      if (document.referrer &&
+          new URL(document.referrer).hostname === window.location.hostname) {
+        history.back();
+        return;
+      }
+    } catch (err) {}
+    window.location.href = 'nk1a1_hallbarhet.html';
+  });
+})();
+
+/* Escape stänger feedback-modalen och går vidare */
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape' &&
+      !document.getElementById('modal-overlay').classList.contains('hidden')) {
+    closeModal();
+  }
+});
+</script>
+
+<script src="feedback-widget.js" defer></script>
+<script data-goatcounter="https://johnblixt.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
