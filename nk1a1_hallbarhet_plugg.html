@@ -218,6 +218,56 @@
   .cg-legend span { display:inline-flex; align-items:center; gap:.35rem; font-size:.84rem; color:#475569; }
   .cg-legend i { width:.8rem; height:.8rem; border-radius:.2rem; display:inline-block; }
 
+  /* Numrerade steg i brödtext (övergödning) */
+  .block ol.steg { list-style:none; padding:0; margin:.7rem 0; counter-reset:steg; }
+  .block ol.steg li {
+    counter-increment:steg; position:relative; padding:.3rem 0 .3rem 2.2rem;
+    color:#334155; line-height:1.65;
+  }
+  .block ol.steg li::before {
+    content:counter(steg); position:absolute; left:0; top:.32rem;
+    width:1.55rem; height:1.55rem; border-radius:50%; background:var(--p); color:#fff;
+    font-family:'Fredoka',sans-serif; font-weight:700; font-size:.8rem;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  /* Näringskedja */
+  .chain { display:flex; align-items:stretch; gap:.35rem; min-width:36rem; }
+  .ch-step {
+    flex:1 1 0; display:flex; flex-direction:column; align-items:center; gap:.25rem;
+    border:1px solid var(--p); background:var(--pl); border-radius:.9rem;
+    padding:.65rem .4rem; text-align:center;
+  }
+  .ch-i { font-size:1.5rem; line-height:1; }
+  .ch-name { font-family:'Fredoka',sans-serif; font-weight:600; font-size:.88rem; color:var(--pd); line-height:1.25; }
+  .ch-role { font-size:.76rem; color:#475569; line-height:1.3; }
+  .ch-tro {
+    margin-top:auto; font-family:'Fredoka',sans-serif; font-size:.7rem; font-weight:700;
+    background:#fff; color:var(--p-deep); border-radius:999px; padding:.1rem .5rem;
+  }
+  .ch-arrow { align-self:center; color:var(--p); font-weight:700; }
+
+  /* Övergödning – flödesschema */
+  .flow { display:flex; flex-direction:column; align-items:center; }
+  .flow-step {
+    width:100%; max-width:30rem; display:flex; align-items:center; gap:.7rem;
+    background:var(--pl); border:1px solid var(--p); border-radius:.9rem; padding:.55rem .8rem;
+  }
+  .flow-step .cyc-txt { text-align:left; font-size:.92rem; }
+  .flow-step.last { background:#fee2e2; border-color:#dc2626; }
+  .flow-step.last .cyc-num { background:#dc2626; }
+  .flow-step.last .cyc-txt { color:#7f1d1d; font-weight:600; }
+  .flow-arrow { color:var(--p); font-weight:700; line-height:1; padding:.2rem 0; }
+
+  /* Symbios */
+  .sym-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.6rem; }
+  .sym-card { background:#fff; border:2px solid var(--pl); border-radius:1rem; padding:.85rem 1rem; }
+  .sym-h { font-family:'Fredoka',sans-serif; font-weight:600; color:var(--pd); font-size:1rem; margin-bottom:.35rem; }
+  .sym-row { display:flex; justify-content:space-between; gap:.5rem; font-size:.84rem; padding:.18rem 0; color:#334155; }
+  .sym-row b { font-family:'Fredoka',sans-serif; font-weight:600; }
+  .sym-d { font-size:.86rem; color:#475569; line-height:1.5; margin-top:.4rem; }
+  .plus  { color:#16a34a; } .minus { color:#dc2626; } .zero { color:#64748b; }
+
   /* ── Footer ── */
   .foot { text-align:center; margin-top:3rem; color:#94a3b8; font-size:.85rem; line-height:1.7; }
   .foot .by { font-style:italic; }
@@ -238,6 +288,7 @@
     .est-grid { grid-template-columns:1fr; }
     .toc-s { display:none; }
     .cg { gap:.9rem; }
+    .sym-grid { grid-template-columns:1fr; }
   }
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; animation: none !important; }
@@ -254,7 +305,7 @@
 <!-- ════════════════════════════════════════════════════════════
      ALL TEXT LIGGER I EN GEMENSAM DATA-ARRAY: SECTIONS
      { id, rubrik, sidor, emoji, lattlast[], fordjupning[], viktigt[], figur[] }
-     Block: { h, sidor, p[], lista[], ex }
+     Block: { h, sidor, p[], steg[], lista[], ex }  (steg = numrerad lista)
      Källa: hallbar_utveckling_och_miljo.md (lärobok s. 103–175)
      ════════════════════════════════════════════════════════════ -->
 <script>
@@ -503,7 +554,176 @@ var SECTIONS = [
   ]
 },
 
-/* ══════════ 3. BIOLOGISK MÅNGFALD (s. 133–142) ══════════ */
+/* ══════════ 3. EKOLOGI OCH EKOSYSTEM (s. 120–131) ══════════ */
+{
+  id: "ekosystem",
+  rubrik: "Ekologi och ekosystem",
+  sidor: "s. 120–131",
+  emoji: "🌿",
+  figur: ["kretslopp", "naringskedja", "symbios", "energiforlust", "barkraft", "overgodning"],
+
+  lattlast: [
+    { h: "Vad är ett ekosystem?", sidor: "s. 121", p: [
+      "**Ekosystem** – levande varelser och miljön på en plats, och hur de påverkar varandra.",
+      "**Ekologi** – läran om hur allt levande samspelar med varandra och med miljön.",
+      "I ett ekosystem finns två sorters faktorer.",
+      "**Levande (biotiska) faktorer** – allt som lever och hur det påverkar annat liv.",
+      "Hit hör växter och djur. Hit hör också sjukdomar och parasiter.",
+      "**Icke-levande (abiotiska) faktorer** – sådant i miljön som inte lever.",
+      "Det kan vara temperatur, solljus, regn och hur surt vattnet är.",
+      "Faktorerna gör att livet ser olika ut på olika platser."
+    ], ex: "<b>Exempel:</b> En forskare åker ut på en sjö i en båt. Forskaren mäter vattnets temperatur, syrehalt och pH-värde. Det är icke-levande faktorer. De går att mäta med instrument. (s. 121)" },
+    { h: "Producenter, konsumenter och nedbrytare", sidor: "s. 122", p: [
+      "Allt levande behöver energi. Det behöver också byggstenar till sina celler.",
+      "**Producent** – gör egen mat med hjälp av solljus, till exempel växter och alger.",
+      "**Fotosyntes** – växten gör socker av koldioxid och vatten med hjälp av solljus.",
+      "Sockret heter glukos. Samtidigt bildas syre.",
+      "**Konsument** – måste äta andra för att få energi.",
+      "**Herbivorer** – djur som äter växter. **Karnivorer** – djur som äter andra djur.",
+      "**Omnivorer** – allätare, som äter både växter och djur.",
+      "**Nedbrytare** – bryter ner döda växter och djur, till exempel bakterier och svampar."
+    ], ex: "<b>Exempel:</b> En bananväxt tar upp solljus, koldioxid och vatten. Med det gör den sin egen mat. Den är en producent. En apa äter bananerna och får energi. Apan är en konsument. (s. 122)" },
+    { h: "Närsalternas kretslopp", sidor: "s. 123", p: [
+      "**Närsalter** – ämnen som växter behöver för att växa, till exempel kväve och fosfor.",
+      "Växterna tar upp närsalterna ur marken med sina rötter.",
+      "Djur äter växterna. Då följer närsalterna med till djuren.",
+      "När växter och djur dör tar nedbrytarna över. De bryter ner resterna.",
+      "Då kommer närsalterna tillbaka till marken. Växterna kan ta upp dem igen. Det blir ett kretslopp.",
+      "Nedbrytarna ger också tillbaka koldioxid som växterna behöver.",
+      "Ofta finns det för lite kväve och fosfor i marken. Därför gödslar bönder sina åkrar.",
+      "Men för mycket är också skadligt. **Övergödning** – för mycket närsalter i vattnet.",
+      "Övergödning har drabbat stora delar av Östersjön."
+    ], ex: "<b>Exempel:</b> Daggmasken hjälper till att bryta ner döda växtdelar. Då frigörs närsalter som växterna kan ta upp. Masken gräver också gångar. Då blir jorden luckrare. (s. 120)" },
+    { h: "Näringskedjor och näringsvävar", sidor: "s. 124", p: [
+      "**Näringskedja** – visar vem som äter vem.",
+      "Längst ner finns producenterna.",
+      "**Förstahandskonsument** – djuret som äter producenterna, till exempel en växtätare.",
+      "Förstahandskonsumenten äts av en andrahandskonsument. Den äts av en tredjehandskonsument, och så vidare.",
+      "**Toppkonsument** – det stora rovdjuret högst upp i kedjan.",
+      "**Trofinivå** – platsen i näringskedjan.",
+      "Producenterna är trofinivå 1. Förstahandskonsumenterna är trofinivå 2.",
+      "I verkligheten äter de flesta djur mer än en sorts mat.",
+      "**Näringsväv** – en bild av alla vägar maten tar mellan arterna i ett område."
+    ], ex: "<b>Exempel från havet:</b> Planktonalger äts av djurplankton. Djurplankton äts av fisk som äter plankton. Den fisken äts av rovfisk. Rovfisken äts av sälen. Sälen är toppkonsument. (s. 124)" },
+    { h: "Så påverkar organismer varandra", sidor: "s. 125", p: [
+      "Arter påverkar varandra på olika sätt. De kan äta varandra. De kan också tävla med varandra.",
+      "**Konkurrens** – när individer tävlar om samma saker, till exempel mat, plats eller en partner.",
+      "Ibland trängs en art undan helt. Ibland börjar arterna leva på olika sätt i ekosystemet.",
+      "**Symbios** – när två olika arter lever tillsammans.",
+      "Det finns tre sorters symbios.",
+      "**Mutualism** – båda arterna tjänar på att leva tillsammans.",
+      "**Kommensalism** – bara den ena arten tjänar på det. Den andra påverkas inte.",
+      "**Parasitism** – en parasit lever på eller i en annan art. Parasiten tjänar på det. Värden tar skada.",
+      "**Nyckelart** – art som påverkar många andra arter.",
+      "Rovdjur är ofta nyckelarter. De ser till att växtätarna inte blir för många.",
+      "Annars kan växtätarna äta upp för mycket av växterna."
+    ], ex: "<b>Exempel:</b> År 1995 släpptes vargar ut i världens äldsta nationalpark, i USA. Innan dess hade vargens bytesdjur ätit upp mycket av växterna. När vargen kom tillbaka blev det bättre för många andra arter. Växternas rötter håller nämligen kvar jorden. Då blåser eller spolas den inte bort. (s. 125)" },
+    { h: "Energin minskar i näringskedjan", sidor: "s. 126", p: [
+      "Energin i ett ekosystem kommer från solen.",
+      "Producenterna fångar solens energi i fotosyntesen. En del av energin lagras i växten.",
+      "När ett djur äter växten följer en del av energin med.",
+      "**Energiförlust** – bara cirka 10 % av energin går vidare till nästa steg.",
+      "Resten blir värme när organismerna använder energin för att leva.",
+      "Därför finns det få rovdjur i ett ekosystem. Därför är de flesta näringskedjor ganska korta.",
+      "Det förklarar också en sak om vår mat.",
+      "Äter vi grödorna själva behövs mindre åkermark. Blir grödorna djurfoder behövs mer mark."
+    ], ex: "<b>Exempel från savannen:</b> Gräset fångar solljus. Gasellen äter gräset. Lejonet äter gasellen. I varje steg blir det mesta av energin värme. (s. 126)" },
+    { h: "Miljöns bärkraft", sidor: "s. 127–128", p: [
+      "**Bärkraft** – hur många individer miljön kan försörja under lång tid.",
+      "Först ökar antalet djur långsamt. Det finns få djur som kan få ungar.",
+      "Sedan ökar antalet snabbt. Nu finns många djur och gott om mat.",
+      "Till sist slutar antalet att öka. Maten räcker inte till fler.",
+      "Brist på mat, fler sjukdomar och fler rovdjur håller antalet nere.",
+      "För människor är bärkraften svårare att räkna ut.",
+      "Vi lever på olika sätt i olika delar av världen. Därför behöver vi olika mycket natur.",
+      "Människan har också kunnat öka bärkraften. Vi har bekämpat sjukdomar och hittat nya sätt att odla.",
+      "**Den gröna revolutionen** – när matproduktionen ökade kraftigt i mitten av 1900-talet.",
+      "Då började bönder använda konstgödsel, bekämpningsmedel och förädlade grödor."
+    ], ex: "<b>Exempel:</b> Bevattning, konstgödsel, bekämpningsmedel och bättre grödor ger mycket mer mat än förr. (s. 127)" },
+    { h: "Övergödning i Östersjön", sidor: "s. 129–131", p: [
+      "Östersjön har ett stort miljöproblem: övergödning.",
+      "**Algblomning** – så många alger att de täcker vattenytan.",
+      "**Döda bottnar** – havsbotten utan syre där inga djur kan leva.",
+      "Så här går det till, steg för steg:"
+    ], steg: [
+      "Bönder använder konstgödsel. Regn sköljer bort kväve och fosfor.",
+      "Näringen rinner ut i Östersjön.",
+      "Algerna blir jättemånga: algblomning.",
+      "Algerna dör och sjunker till botten.",
+      "Bakterier bryter ner dem och förbrukar syre.",
+      "Syret tar slut: döda bottnar."
+    ], ex: "<b>Den största källan är jordbruket.</b> Så kan bönderna minska läckaget: Gödsla inte mer än nödvändigt. Plantera växter längs bäckar och åar. Växterna fångar upp näringen. Anlägg våtmarker. De fungerar som naturliga filter. (s. 131)" }
+  ],
+
+  fordjupning: [
+    { h: "Vad är ett ekosystem?", sidor: "s. 121, 172", p: [
+      "**Ekologi** handlar om hur organismer samspelar med varandra och med den icke-levande miljön. Ett **ekosystem** är alla organismer som bor på en plats och deras fysiska miljö, samt de olika sätt organismerna påverkar varandra och sin miljö.",
+      "Alla organismer påverkas av omgivande faktorer som temperatur, pH-värde, ljus och tillgången till närsalter. De kallas ekosystemets **icke-levande (abiotiska) faktorer** och ger helt olika förutsättningar för liv på olika platser. Många av dem kan mätas med instrument — exempelvis pH, syrgashalt och temperatur i vatten.",
+      "De olika formerna av liv utgör de **levande (biotiska) faktorerna**. Organismerna påverkar både varandra och den omgivande miljön, till exempel genom att andas, utöva fotosyntes, konkurrera, äta eller själva bli mat åt en annan organism. Vissa organismer är specialiserade på att bryta ner dött organiskt material och har därför en aktiv roll i ämnenas kretslopp."
+    ], lista: [
+      "**Levande faktorer:** producenter, konsumenter, nedbrytare, konkurrens, sjukdomar och parasitism.",
+      "**Icke-levande faktorer:** pH-värde, temperatur, mängden närsalter, halten O₂ och CO₂, mängden solljus och mängden nederbörd."
+    ]},
+    { h: "Producenter, konsumenter och nedbrytare", sidor: "s. 122", p: [
+      "Alla organismer måste förse sina celler med både energi och kemiska byggstenar. Växter, alger och cyanobakterier är **producenter** — de kan själva tillverka ämnena genom **fotosyntes**. Solenergin absorberas av det gröna pigmentet klorofyll och används för att omvandla koldioxid och vatten från omgivningen till den energirika organiska molekylen glukos. Som en biprodukt bildas syrgas.",
+      "Glukosen används antingen som energikälla i producentens egen ämnesomsättning, eller omvandlas till andra ämnen som producenten behöver, exempelvis fetter och aminosyror. För att bilda vissa typer av molekyler behöver växten också närsalter, som tas upp tillsammans med vatten via rötterna.",
+      "**Konsumenter** måste äta andra organismer för att få energi och kemiska byggstenar. De delas ofta in efter vad de äter: **herbivorer** äter växter, **karnivorer** äter andra djur och **omnivorer** är allätare. Konsumenter som specialiserat sig på att utvinna energi ur dött organiskt material kallas **nedbrytare** (destruenter)."
+    ]},
+    { h: "Närsalternas kretslopp", sidor: "s. 120, 123", p: [
+      "Nedbrytarna har en viktig roll i ekosystemen eftersom de återför både närsalter och koldioxid till producenterna. På så sätt bildas kretslopp som är centrala för att upprätthålla liv på jorden. Exempel på nedbrytare är olika ryggradslösa djur, svampar och bakterier. Daggmasken deltar till exempel i nedbrytningen av dött organiskt material, vilket frigör närsalter och koldioxid som växterna kan ta upp — och genom att gräva gångar gör den jorden luckrare.",
+      "**Närsalter** är ett samlingsnamn för oorganiska näringsämnen som växter och andra organismer behöver för att växa och upprätthålla grundläggande biologiska funktioner. Kretsloppet börjar med att växter tar upp närsalter från marken. Allteftersom djur äter växter och varandra rör sig närsalterna uppåt i näringskedjan. När det döda organiska materialet slutligen bryts ner återvänder närsalterna till marken och kretsloppet sluts.",
+      "Brist på ett visst näringsämne kan begränsa tillväxten. Ofta är det kväve- och fosforföreningar som saknas i tillräcklig mängd — därför tillförs de som gödselmedel på odlingsmarker. För höga koncentrationer kan däremot vara skadligt för många organismer och orsaka **övergödning** (eutrofiering), ett miljöproblem som drabbat stora delar av Östersjön."
+    ]},
+    { h: "Näringskedjor och näringsvävar", sidor: "s. 124", p: [
+      "En **näringskedja** beskriver hur näringsämnen och energi överförs mellan organismer när en organism äts av en annan. Längst ner finns producenterna. De äts av förstahandskonsumenter, som växtätare och djurplankton, som i sin tur kan ätas av andrahandskonsumenter, tredjehandskonsumenter och så vidare. De stora rovdjuren högst upp kallas **toppkonsumenter**. Nedbrytare brukar i regel inte visas i näringskedjan.",
+      "Den plats en organism har i näringskedjan kallas **trofinivå**. Producenterna utgör den första trofinivån och förstahandskonsumenterna den andra.",
+      "I verkligheten livnär sig ofta en art på mer än en sorts föda. En mer realistisk bild ges därför av en **näringsväv**, som visar alla kända interaktioner mellan organismerna och hur näring och energi överförs mellan producenter och konsumenter. En organism kan dessutom befinna sig på flera trofinivåer samtidigt — i bokens exempel från havet gäller det knölvalen."
+    ], ex: "<b>Nyckelarten spigg:</b> I bokens näringsväv från havet ingår bland annat alger, djurplankton, kräftdjur, manet, spigg, torsk, lax, måsfågel, knölval, säl och haj. Den planktonätande spiggen är markerad som en <b>nyckelart</b> — antalet spiggar har stor påverkan på övriga arter i näringsväven. (s. 124)" },
+    { h: "Så påverkar organismer varandra", sidor: "s. 125", p: [
+      "Organismer kan påverka varandra genom att äta varandra eller genom **konkurrens**, det vill säga att de tävlar om samma resurser — exempelvis mat, utrymme eller partners. Konkurrens kan ske både mellan individer av samma art och mellan individer av olika arter. Över tid kan det leda till att en art konkurreras ut, eller till att arterna börjar utnyttja olika ekologiska nischer i ekosystemet.",
+      "Arter kan också interagera genom **symbios**, ett samlingsnamn för flera typer av interaktioner där individer av två olika arter lever tillsammans. Vid **mutualism** gynnas båda arterna av samarbetet. Vid **kommensalism** gynnas endast den ena arten, medan den andra varken gynnas eller skadas. Vid **parasitism** lever en parasit på, eller i, en värdorganism — parasiten gynnas medan värden tar skada.",
+      "Att känna till interaktionerna mellan arterna är viktigt för att förstå hur ett ekosystem fungerar och påverkas när miljön förändras. Rovdjur har till exempel en viktig roll för att upprätthålla balansen: de ser till att växtätarna inte blir för många och äter upp för mycket av växterna. Det gäller exempelvis torskar i Östersjön, hajar vid ett korallrev och lejon på en savann. Rovdjur räknas därför ofta som **nyckelarter**."
+    ], ex: "<b>Vargen som nyckelart:</b> När vargen återintroducerades i världens äldsta nationalpark i USA år 1995 fick det positiva följder för en rad andra arter. Tidigare hade vargens bytesdjur kunnat föröka sig fritt och ätit upp en stor del av växtlivet. Växternas rötter är bland annat viktiga för att hålla kvar jord, så att vind och vatten inte eroderar bort den. (s. 125)" },
+    { h: "Energin minskar i näringskedjan", sidor: "s. 126", p: [
+      "Alla organismer i ett ekosystem behöver energi för att leva. Energiflödet börjar med att producenter, exempelvis växter, omvandlar solenergi till kemisk energi (till exempel glukos) i fotosyntesen. En del av den kemiska energin används i växternas egen ämnesomsättning, medan resten lagras som biomassa. När växterna äts av konsumenter överförs en del av energin till nästa organism i näringskedjan.",
+      "Energiförlusterna är stora: i genomsnitt överförs endast omkring **10 %** från en trofinivå till nästa. Resten omvandlas till värme i organismernas egen ämnesomsättning — alla nivåer avger värme, även nedbrytarna.",
+      "Energiförlusterna förklarar tre saker: varför det finns förhållandevis få rovdjur i ett ekosystem, varför de flesta näringskedjor är relativt korta och varför vi behöver använda mindre jordbruksmark om vi äter grödor direkt, jämfört med om de används till djurfoder.",
+      "Bakom detta ligger **energiprincipen**: energi kan aldrig skapas eller förstöras, utan bara omvandlas från en form till en annan. Den energi som lagrats som kemiskt bunden energi i fotosyntesen kommer därför förr eller senare att omvandlas till värme."
+    ]},
+    { h: "Miljöns bärkraft", sidor: "s. 127–128", p: [
+      "Ett ekosystem kan bara försörja ett visst antal individer i en population under en längre tid. Den nivån kallas **miljöns bärkraft** (carrying capacity) — det maximala antal individer av en viss art som varaktigt kan livnära sig av resurserna inom ekosystemet. Om populationen ökar över nivån kommer faktorer som brist på mat eller en ökning av sjukdomar och rovdjur att stabilisera den.",
+      "Populationens tillväxtkurva är S-formad. Först ökar antalet långsamt, eftersom det finns få individer som kan reproducera sig. Sedan ökar det snabbt, när det finns många individer som kan reproducera sig och resurser i överflöd. Till sist balanseras antalet när det blir ont om resurser, och tillväxten avstannar när populationen närmar sig bärkraften.",
+      "Att beräkna bärkraften för människor är svårare än för andra organismer. Dels varierar det ekologiska fotavtrycket beroende på var i världen vi bor och vilken livsstil vi har. Dels har människan flera gånger i historien ökat ekosystemets bärkraft genom att bekämpa smittsamma sjukdomar och tillämpa nya jordbrukstekniker — bevattning, konstgödsel, bekämpningsmedel och växtförädling har effektiviserat matproduktionen flera gånger om.",
+      "Ett exempel är när matproduktionen ökade markant under mitten av 1900-talet. Händelsen kallas **den gröna revolutionen** och har sin grund i att allt fler bönder började använda nya jordbruksmetoder med konstgödsel, bekämpningsmedel och förädlade grödor."
+    ]},
+    { h: "Övergödning i Östersjön – ett känsligt innanhav", sidor: "s. 129", p: [
+      "Östersjön är ett innanhav med en begränsad förbindelse till världshavet. Eftersom sötvatten från floder blandas med saltvatten från haven är vattnet **bräckt**. Salthalten varierar från omkring 1 % i de södra delarna till 0,1 % i de norra. Att vattnet varken är sött eller salt utsätter många arter för fysiologisk stress, vilket gör dem extra känsliga för störningar i ekosystemet.",
+      "De trånga passagerna via Stora Bält, Lilla Bält och Öresund gör att vattenutbytet med världshavet är begränsat, och det tar lång tid för vattnet att bytas ut. Därför blir många föroreningar kvar i Östersjön i stället för att spädas ut. Vattnet har förhållandevis höga halter av miljögifter och ett överskott av näringsämnen i form av kväve- och fosforföreningar — det senare orsakar övergödning och bottendöd.",
+      "Situationen förvärras av att ytvattnet har lägre salthalt och därmed ligger som ett skikt över det saltare bottenvattnet. En skarp gräns i vattenmassan, ett **språngskikt**, skiljer det syrerika ytvattnet från det syrefattiga bottenvattnet. Det gör det svårare för syret att nå bottenvattnet och ökar risken för bottendöd.",
+      "Östersjön har ett stort avrinningsområde som sträcker sig genom 14 länder. Att havet är nästan helt avskilt från världshavet begränsar inflödet av syrerikt saltvatten, något som i kombination med mänskliga utsläpp av näringsämnen orsakar syrebrist på djupa bottnar."
+    ]},
+    { h: "Övergödning i Östersjön – från algblomning till döda bottnar", sidor: "s. 130", p: [
+      "När överskottet av näringsämnen hamnar i Östersjön uppstår **övergödning** (eutrofiering). Det leder till **algblomning**: planktonalgerna i ytvattnet blir så många att de bildar täta skikt. Blåstången skuggas av planktonalgerna och blir övervuxen av trådalger, och antalet planktonätande fiskar (spigg) ökar kraftigt.",
+      "När algerna dör och sjunker till botten bryts de ner av bakterier och andra nedbrytare. I nedbrytningen förbrukas syre, och om det finns riktigt mycket döda alger kan syrenivåerna bli så låga att de bottenlevande organismerna får svårt att överleva.",
+      "Om syret helt tar slut tar **anaeroba bakterier**, specialiserade på att leva i syrefri miljö, över nedbrytarnas roll. I deras nedbrytningsprocess bildas den giftiga gasen **svavelväte** (som luktar ruttna ägg). Under sådana förhållanden kan inga djur leva, och syrebristen leder därför till **döda bottnar**. Övergödningen ger ett rubbat ekosystem och en minskad biologisk mångfald."
+    ]},
+    { h: "Övergödning i Östersjön – källor och åtgärder", sidor: "s. 130–131", p: [
+      "Den största delen av näringsämnena som göder Östersjön kommer från **jordbruket**. Där används både naturgödsel (kompost och stallgödsel) och konstgödsel (industriellt tillverkat gödningsmedel), som är rika på kväve- och fosforföreningar. Konstgödsel kallas också **NPK-gödning** eftersom den innehåller närsalter med grundämnena kväve (N), fosfor (P) och kalium (K). Om åkermarken övergödslas, eller om näringsämnena sköljs bort av regn, kan de hamna i vattendrag som mynnar ut i Östersjön.",
+      "Läckaget från jordbruket kan minskas genom att man undviker att gödsla mer än nödvändigt, planterar växter längs vattendrag som fångar upp näringsämnena innan de når vattnet, och återskapar eller anlägger våtmarker som fungerar som naturliga filter.",
+      "Andra källor är otillräckligt renat avloppsvatten, skogsbruk och industriutsläpp. Även kväveoxider från orenade avgaser, när fossila bränslen förbränns, ger ett tillskott av kväveföreningar. Sådana utsläpp kan minskas genom förbättrad avloppsrening och genom att fordon förses med en **katalysator** som avlägsnar kväveoxiderna ur avgaserna."
+    ]}
+  ],
+
+  viktigt: [
+    "Ett **ekosystem** består av levande (biotiska) och icke-levande (abiotiska) faktorer som påverkar varandra.",
+    "Producenter gör egen mat med solljus. Konsumenter äter andra. Nedbrytare ger närsalter och koldioxid tillbaka till producenterna.",
+    "En näringskedja visar vem som äter vem. Bara cirka 10 % av energin går vidare till nästa trofinivå. Resten blir värme.",
+    "Bärkraft är hur många individer miljön kan försörja under lång tid. Människan har ökat bärkraften, till exempel genom den gröna revolutionen.",
+    "Övergödning: för mycket kväve och fosfor → algblomning → syret tar slut → döda bottnar. Största källan i Östersjön är jordbruket."
+  ]
+},
+
+/* ══════════ 4. BIOLOGISK MÅNGFALD (s. 133–142) ══════════ */
 {
   id: "biologisk-mangfald",
   rubrik: "Biologisk mångfald",
@@ -649,7 +869,7 @@ var SECTIONS = [
   ]
 },
 
-/* ══════════ 4. ENERGI (s. 144–152) ══════════ */
+/* ══════════ 5. ENERGI (s. 144–152) ══════════ */
 {
   id: "energi",
   rubrik: "Energi",
@@ -787,7 +1007,7 @@ var SECTIONS = [
   ]
 },
 
-/* ══════════ 5. KLIMATET (s. 157–170) ══════════ */
+/* ══════════ 6. KLIMATET (s. 157–170) ══════════ */
 {
   id: "klimatet",
   rubrik: "Klimatet",
@@ -1302,7 +1522,211 @@ function FigKlimatrattvisa() {
   );
 }
 
+/* 10. Närsalternas kretslopp på en savann (s. 123) */
+function FigKretslopp() {
+  const box = (x, y, w, title, sub) => (
+    <g>
+      <rect x={x} y={y} width={w} height="56" rx="12" fill="#dcfce7" stroke="#22c55e" strokeWidth="2"/>
+      <text x={x + w / 2} y={y + 24} textAnchor="middle" fontSize="13" fontWeight="700" fill="#14532d" fontFamily="Fredoka, sans-serif">{title}</text>
+      <text x={x + w / 2} y={y + 42} textAnchor="middle" fontSize="11" fill="#14532d">{sub}</text>
+    </g>
+  );
+  return (
+    <FigWrap title="Närsalternas kretslopp (s. 123)" scroll>
+      <div style={{ minWidth: '400px', maxWidth: '640px', margin: '0 auto' }}>
+        <svg viewBox="0 0 420 290" width="100%" height="auto" role="img"
+             aria-label="Kretslopp: gräs äts av gasell som äts av lejon. Döda växtdelar, avföring, urin och döda djur går till nedbrytarna. Närsalterna tas sedan upp av växternas rötter igen.">
+          <defs>
+            <marker id="ah-k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/>
+            </marker>
+            <marker id="ah-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="#64748b"/>
+            </marker>
+          </defs>
+          {box(8, 30, 116, 'Producent', 'gräs')}
+          {box(152, 30, 116, 'Växtätare', 'gasell')}
+          {box(296, 30, 116, 'Köttätare', 'lejon')}
+          <line x1="126" y1="58" x2="148" y2="58" stroke="#16a34a" strokeWidth="2.5" markerEnd="url(#ah-k)"/>
+          <line x1="270" y1="58" x2="292" y2="58" stroke="#16a34a" strokeWidth="2.5" markerEnd="url(#ah-k)"/>
+          <text x="210" y="18" textAnchor="middle" fontSize="11" fill="#15803d" fontStyle="italic">mat med närsalter →</text>
+
+          {/* Döda rester ned till nedbrytarna */}
+          <line x1="66"  y1="88" x2="160" y2="196" stroke="#64748b" strokeWidth="2" strokeDasharray="5 4" markerEnd="url(#ah-g)"/>
+          <line x1="210" y1="88" x2="210" y2="194" stroke="#64748b" strokeWidth="2" strokeDasharray="5 4" markerEnd="url(#ah-g)"/>
+          <line x1="354" y1="88" x2="262" y2="196" stroke="#64748b" strokeWidth="2" strokeDasharray="5 4" markerEnd="url(#ah-g)"/>
+          <rect x="226" y="112" width="150" height="44" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+          <text x="301" y="130" textAnchor="middle" fontSize="10.5" fill="#475569">döda växtdelar, avföring,</text>
+          <text x="301" y="146" textAnchor="middle" fontSize="10.5" fill="#475569">urin och döda djur</text>
+
+          <rect x="130" y="198" width="160" height="56" rx="12" fill="#fef3c7" stroke="#d97706" strokeWidth="2"/>
+          <text x="210" y="222" textAnchor="middle" fontSize="13" fontWeight="700" fill="#78350f" fontFamily="Fredoka, sans-serif">Nedbrytare</text>
+          <text x="210" y="240" textAnchor="middle" fontSize="11" fill="#78350f">bakterier, svampar, maskar</text>
+
+          {/* Tillbaka till växternas rötter */}
+          <path d="M130,226 L26,226 L26,90" fill="none" stroke="#16a34a" strokeWidth="2.5" markerEnd="url(#ah-k)"/>
+          <text x="26" y="276" fontSize="11" fontWeight="700" fill="#15803d">↺ Närsalter tas upp av växternas rötter</text>
+        </svg>
+      </div>
+      <p className="fig-note">Nedbrytarna gör att närsalterna kan användas om och om igen. Utan dem skulle kretsloppet inte slutas.</p>
+    </FigWrap>
+  );
+}
+
+/* 11. Näringskedja i havet (s. 124) */
+function FigNaringskedja() {
+  const steg = [
+    { i: '🌱', n: 'Planktonalger',       r: 'producent',            t: 'Trofinivå 1' },
+    { i: '🦐', n: 'Djurplankton',        r: 'förstahandskonsument', t: 'Trofinivå 2' },
+    { i: '🐟', n: 'Planktonätande fisk', r: 'andrahandskonsument',  t: 'Trofinivå 3' },
+    { i: '🐠', n: 'Rovfisk',             r: 'tredjehandskonsument', t: 'Trofinivå 4' },
+    { i: '🦭', n: 'Säl',                 r: 'toppkonsument',        t: 'Trofinivå 5' }
+  ];
+  return (
+    <FigWrap title="Näringskedja i havet (s. 124)" scroll>
+      <div className="chain">
+        {steg.map((s, i) => (
+          <React.Fragment key={i}>
+            {i > 0 && <span className="ch-arrow">→</span>}
+            <div className="ch-step">
+              <span className="ch-i" aria-hidden="true">{s.i}</span>
+              <span className="ch-name">{s.n}</span>
+              <span className="ch-role">{s.r}</span>
+              <span className="ch-tro">{s.t}</span>
+            </div>
+          </React.Fragment>
+        ))}
+      </div>
+      <p className="fig-note">Pilen betyder ”äts av”. Nedbrytare brukar inte visas i en näringskedja – den slutar med en toppkonsument.</p>
+    </FigWrap>
+  );
+}
+
+/* 12. Tre former av symbios (s. 125) */
+function FigSymbios() {
+  const kort = [
+    { h: 'Mutualism',    a: ['+', 'plus', 'gynnas'], b: ['+', 'plus', 'gynnas'],
+      d: 'Båda arterna gynnas av samarbetet.' },
+    { h: 'Kommensalism', a: ['+', 'plus', 'gynnas'], b: ['0', 'zero', 'påverkas inte'],
+      d: 'Bara den ena arten gynnas. Den andra varken gynnas eller skadas.' },
+    { h: 'Parasitism',   a: ['+', 'plus', 'parasiten gynnas'], b: ['−', 'minus', 'värden skadas'],
+      d: 'En parasit lever på, eller i, en värdorganism.' }
+  ];
+  return (
+    <FigWrap title="Tre former av symbios (s. 125)">
+      <div className="sym-grid">
+        {kort.map((k, i) => (
+          <div className="sym-card" key={i}>
+            <div className="sym-h">{k.h}</div>
+            <div className="sym-row"><span>Art 1</span><b className={k.a[1]}>{k.a[0]} {k.a[2]}</b></div>
+            <div className="sym-row"><span>Art 2</span><b className={k.b[1]}>{k.b[0]} {k.b[2]}</b></div>
+            <div className="sym-d">{k.d}</div>
+          </div>
+        ))}
+      </div>
+      <p className="fig-note">Symbios är ett samlingsnamn för när individer av två olika arter lever tillsammans.</p>
+    </FigWrap>
+  );
+}
+
+/* 13. Energin minskar i näringskedjan (s. 126) */
+function FigEnergiforlust() {
+  const data = [
+    { l: 'Trofinivå 1', v: 100, t: '100' },
+    { l: 'Trofinivå 2', v: 10,  t: '10' },
+    { l: 'Trofinivå 3', v: 1,   t: '1' },
+    { l: 'Trofinivå 4', v: 0.1, t: '0,1' }
+  ];
+  return (
+    <FigWrap title="Energin minskar för varje steg (s. 126)">
+      <Bars data={data} max={100} />
+      <p className="fig-note">
+        <b>Förenklat exempel utifrån 10 %-regeln.</b> Om producenterna har 100 energienheter går
+        i genomsnitt bara omkring 10 % vidare till nästa trofinivå. Resten blir värme.
+      </p>
+    </FigWrap>
+  );
+}
+
+/* 14. Miljöns bärkraft – S-formad tillväxtkurva (s. 127) */
+function FigBarkraft() {
+  const faser = [
+    'Antalet ökar långsamt – det finns få individer som kan föröka sig.',
+    'Antalet ökar snabbt – många individer kan föröka sig och det finns mat i överflöd.',
+    'Antalet balanseras – det blir ont om mat.'
+  ];
+  const nr = (x, y, n) => (
+    <g>
+      <circle cx={x} cy={y} r="11" fill="#22c55e"/>
+      <text x={x} y={y + 4} textAnchor="middle" fontSize="12" fontWeight="700" fill="#fff" fontFamily="Fredoka, sans-serif">{n}</text>
+    </g>
+  );
+  return (
+    <FigWrap title="Miljöns bärkraft (s. 127)" scroll>
+      <div style={{ minWidth: '300px', maxWidth: '560px', margin: '0 auto' }}>
+        <svg viewBox="0 0 360 230" width="100%" height="auto" role="img"
+             aria-label="S-formad kurva: populationen växer först långsamt, sedan snabbt och planar till sist ut vid en streckad linje som visar miljöns bärkraft.">
+          <line x1="44" y1="190" x2="345" y2="190" stroke="#94a3b8" strokeWidth="1.5"/>
+          <line x1="44" y1="190" x2="44"  y2="18"  stroke="#94a3b8" strokeWidth="1.5"/>
+          <text x="194" y="214" textAnchor="middle" fontSize="12" fill="#475569">Tid →</text>
+          <text x="18" y="104" textAnchor="middle" fontSize="12" fill="#475569" transform="rotate(-90 18 104)">Populationsstorlek →</text>
+
+          <line x1="44" y1="54" x2="345" y2="54" stroke="#d97706" strokeWidth="2" strokeDasharray="7 5"/>
+          <text x="340" y="44" textAnchor="end" fontSize="12" fontWeight="700" fill="#b45309" fontFamily="Fredoka, sans-serif">Miljöns bärkraft</text>
+
+          <path d="M46,186 C110,185 130,172 165,124 C200,76 238,58 342,57" fill="none" stroke="#16a34a" strokeWidth="3.5" strokeLinecap="round"/>
+          {nr(98, 165, 1)}
+          {nr(184, 128, 2)}
+          {nr(292, 80, 3)}
+        </svg>
+      </div>
+      <div style={{ marginTop: '.5rem' }}>
+        {faser.map((f, i) => (
+          <p key={i} className="fig-note" style={{ margin: '.3rem 0' }}><b>{i + 1}.</b> {f}</p>
+        ))}
+      </div>
+    </FigWrap>
+  );
+}
+
+/* 15. Övergödning – från gödsel till döda bottnar (s. 129–131) */
+function FigOvergodning() {
+  const steg = [
+    'Bönder gödslar. Regn sköljer bort kväve och fosfor.',
+    'Näringen rinner ut i Östersjön.',
+    'Algerna blir jättemånga: algblomning.',
+    'Algerna dör och sjunker till botten.',
+    'Bakterier bryter ner dem och förbrukar syre.',
+    'Syret tar slut: döda bottnar.'
+  ];
+  return (
+    <FigWrap title="Så uppstår övergödning (s. 129–131)">
+      <div className="flow">
+        {steg.map((s, i) => (
+          <React.Fragment key={i}>
+            {i > 0 && <span className="flow-arrow" aria-hidden="true">↓</span>}
+            <div className={'flow-step' + (i === steg.length - 1 ? ' last' : '')}>
+              <span className="cyc-num">{i + 1}</span>
+              <span className="cyc-txt">{s}</span>
+            </div>
+          </React.Fragment>
+        ))}
+      </div>
+      <div className="cycle-end">
+        <div className="cyc-dead">Största källan är <b>jordbruket</b>. Därefter kommer dåligt renat avloppsvatten och kväveoxider från förbränning av fossila bränslen.</div>
+        <div className="cyc-leaf">Åtgärder: gödsla inte mer än nödvändigt, plantera växter längs vattendrag och anlägg våtmarker som naturliga filter.</div>
+      </div>
+    </FigWrap>
+  );
+}
+
 const FIGURES = {
+  kretslopp:         FigKretslopp,
+  naringskedja:      FigNaringskedja,
+  symbios:           FigSymbios,
+  energiforlust:     FigEnergiforlust,
+  barkraft:          FigBarkraft,
+  overgodning:       FigOvergodning,
   venn:              FigVenn,
   fotavtryck:        FigFotavtryck,
   livscykel:         FigLivscykel,
@@ -1335,6 +1759,11 @@ function Block({ b, mode }) {
         <span className="sid">{b.sidor}</span>
       </h3>
       {paras.map((t, i) => <p key={i}>{fmt(t)}</p>)}
+      {b.steg && (
+        <ol className="steg">
+          {b.steg.map((t, i) => <li key={i}>{fmt(t)}</li>)}
+        </ol>
+      )}
       {b.lista && (
         <ul>
           {b.lista.map((t, i) => <li key={i}>{fmt(t)}</li>)}
@@ -1482,7 +1911,7 @@ function App() {
         <h1>Hållbar utveckling</h1>
         <div className="rule"></div>
         <p className="lead">
-          Pluggmaterial i fem avsnitt. Välj <strong>Lättläst</strong> för korta, enkla förklaringar
+          Pluggmaterial i sex avsnitt. Välj <strong>Lättläst</strong> för korta, enkla förklaringar
           eller <strong>Fördjupning</strong> för sammanhang, orsak och verkan.
         </p>
       </header>

@@ -289,6 +289,205 @@ De som förespråkar en ”grön tillväxt” menar att ekonomin kan fortsätta 
 
 ---
 
+*[s. 120]*
+
+# C3 Ekologi och ekosystem
+
+### Diskutera
+
+Vilka olika funktioner kan djur ha i ett ekosystem?
+
+*Bild: Två händer som håller en näve jord med en daggmask i.*
+
+> *Daggmaskarna har en viktig roll i många ekosystem genom att de gräver gångar och blandar runt jorden så att den blir mer lucker. Daggmaskar deltar också i nedbrytningen av dött organiskt material vilket frigör närsalter och koldioxid som växterna kan ta upp.*
+
+---
+
+*[s. 121]*
+
+## Ekologi – läran om samspelet i naturen
+
+*Ekologi* handlar om hur organismer samspelar med varandra och den icke-levande miljön. Alla organismer påverkas av omgivande faktorer som exempelvis temperatur, pH-värde, ljus och tillgången till närsalter. De kallas för *icke-levande (abiotiska) faktorerna* i ett ekosystem och ger helt olika förutsättningar för liv på olika platser. De olika formerna av liv utgör de *levande (biotiska) faktorerna* i ett ekosystem. De påverkar såväl varandra som den omgivande miljön på olika sätt. Det kan vara genom att andas, utöva fotosyntes, konkurrera, äta eller själv bli mat åt någon annan organism. Vissa organismer är specialiserade på att bryta ner dött organiskt material och har därför en aktiv roll i ämnenas kretslopp.
+
+*Figur: Två rutor med faktorer i ett ekosystem, över en bild av en forskare i en båt som tar prover i en sjö:*
+
+| Levande (biotiska) faktorer | Icke-levande (abiotiska) faktorer |
+|---|---|
+| producenter | pH-värde |
+| konsumenter | temperatur |
+| nedbrytare | mängden närsalter |
+| konkurrens | halten O₂ och CO₂ |
+| sjukdomar | mängden solljus |
+| parasitism | mängden nederbörd |
+
+> *Icke-levande faktorer kan ofta mätas med olika instrument. Exempel är pH, syrgashalt och temperatur i vatten.*
+
+---
+
+*[s. 122]*
+
+## Producenter och konsumenter
+
+Alla organismer måste förse sina celler med såväl energi som olika typer av kemiska byggstenar. Växter, alger och cyanobakterier är *producenter*, vilket innebär att de själva kan tillverka ämnena genom *fotosyntes*. I fotosyntesen absorberas solenergi med hjälp av det gröna pigmentet klorofyll, vilket används för att omvandla koldioxid och vatten från omgivningen till den energirika organiska molekylen glukos. Som en biprodukt bildas även syrgas. Glukosen används antingen som energikälla i producenternas egen ämnesomsättning eller omvandlas till andra ämnen (exempelvis fetter och aminosyror) som producenten behöver.
+
+*Konsumenter* är organismer som måste äta andra organismer för att få energi och kemiska byggstenar. De delas ofta in i olika grupper beroende på vad de äter. Vissa äter växter (herbivorer) medan andra äter andra djur (karnivorer) eller är allätare (omnivorer). De konsumenter som specialiserat sig på att utvinna energi från dött organiskt material kallas för *nedbrytare* (destruenter).
+
+*Figur: En bananväxt och en apa. Solljus når växtens blad (fotosyntes). Koldioxid tas upp av bladen, närsalter och vatten tas upp av rötterna. En pil visar att apan äter bananerna.*
+
+- **Producenter:** Får energi från solen eller från kemiska reaktioner. Tillverkar själva de molekyler de består av.
+- **Konsumenter:** Behöver äta andra organismer för att få energi och kunna tillverka de molekyler de består av.
+
+> *Så länge det finns vatten, koldioxid och ljus kan växten bilda glukos och syrgas genom fotosyntes. Glukosen kan omvandlas till andra kemiska föreningar som växten behöver. För att bilda vissa typer av molekyler behöver växten också använda närsalter som, tillsammans med vatten, tas upp via rötterna.*
+
+---
+
+*[s. 123]*
+
+## Närsalternas kretslopp
+
+Nedbrytare har en viktig roll i ekosystemen eftersom de bidrar till att återföra både närsalter och koldioxid till producenterna. På så sätt bildas kretslopp som är centrala för att upprätthålla liv på jorden. Exempel på organismer som livnär sig på att bryta ner dött organiskt material är olika arter av ryggradslösa djur, svampar och bakterier. *Närsalter* är ett samlingsnamn för oorganiska näringsämnen som växter och andra organismer behöver för att kunna växa och upprätthålla grundläggande biologiska funktioner. Om det är brist på ett visst näringsämne kan det begränsa tillväxten. Ofta är det kväve- och fosforföreningar som saknas i tillräcklig mängd. Det är därför ämnena tillförs som gödselmedel på våra odlingsmarker. För höga koncentrationer kan däremot vara skadligt för många organismer och orsaka ett miljöproblem som heter *övergödning* (eutrofiering). Det är något som drabbat stora delar av Östersjön.
+
+*Figur: Närsalternas kretslopp på en savann. Producent (gräs) → ”Mat med närsalter” → Växtätare (gasell) → ”Mat med närsalter” → Köttätare (lejon). Döda växtdelar, avföring, urin och döda djur leder till Nedbrytare (bakterier, svampar och maskar). Från nedbrytarna går en pil tillbaka: ”Närsalter tas upp av växternas rötter”.*
+
+> *Närsalter i form av kväve- och fosforföreningar bildar kretslopp i ett ekosystem. Det börjar med att växter tar upp närsalter från marken. Allt eftersom djur äter växter och varandra fortsätter närsalterna att röra sig uppåt i näringskedjan. När dött organiskt material slutligen bryts ner av nedbrytare återvänder närsalterna till marken och kretsloppet sluts.*
+
+---
+
+*[s. 124]*
+
+## Näringskedjor och näringsvävar
+
+En *näringskedja* beskriver hur näringsämnen och energi överförs mellan olika organismer när en organism äts av en annan. Längst ner i näringskedjan finns producenterna. De äts upp av förstahandskonsumenter som växtätare och djurplankton. De kan i sin tur bli uppätna av rovdjur, andrahandskonsumenter, tredjehandskonsumenter osv. De stora rovdjur som är högst upp i näringskedjan kallas *toppkonsumenter*. Den plats en organism har i näringskedjan kallas för *trofinivå*. Producenterna utgör den första trofinivån medan förstahandskonsumenterna utgör den andra.
+
+*Figur: Näringskedja i havet: Planktonalger (producent) → Djurplankton (förstahandskonsument) → Planktonätande fisk (andrahandskonsument) → Rovfisk (tredjehandskonsument) → Säl (toppkonsument).*
+
+> *I en näringskedja visas hur näringsämnen och energi överförs mellan olika organismer. Nedbrytare brukar i regel inte visas i näringskedjan utan den avslutas istället med en toppkonsument.*
+
+I verkligheten livnär sig ofta en art på mer än en sorts föda. En mer realistisk bild representeras istället av en *näringsväv*. I den visas alla kända interaktioner mellan organismerna samt hur näring och energi överförs mellan producenter och konsumenter.
+
+*Figur: Näringsväv i havet, uppdelad i kolumner: Producenter, Förstahandskonsumenter, Andrahandskonsumenter, Tredjehandskonsumenter och Toppkonsumenter. Många pilar korsar varandra mellan alger, djurplankton, kräftdjur, manet, spigg, torsk, lax, måsfågel, knölval, säl och haj. Den planktonätande spiggen är markerad med en röd ring.*
+
+> *Exempel på en näringsväv i havet. I exemplet är den planktonätande spiggen (omgiven av en röd ring) en nyckelart. Det innebär att antalet spiggar har en stor påverkan på övriga arter i näringsväven. Lägg också märke till att en organism, i det här fallet knölvalen, kan befinna sig på flera trofiska nivåer samtidigt.*
+
+---
+
+*[s. 125]*
+
+## Interaktioner mellan organismer
+
+Organismer kan påverka varandra på olika sätt. Det kan ske genom att de äter varandra eller påverkar varandra genom konkurrens. Det senare är när organismer tävlar om samma resurser, exempelvis mat, utrymme eller partners. Konkurrens kan både ske mellan individer av samma art eller mellan individer av olika arter. Över tid kan det leda till att en art konkurreras ut eller till att arter börjar utnyttja olika ekologiska nischer i ett ekosystem. Arter kan också interagera med varandra genom olika former av symbios. Det är ett samlingsnamn för flera olika typer av interaktioner där individer av två olika arter lever tillsammans.
+
+Att känna till interaktionen mellan arterna i ett ekosystem kan vara viktigt för att förstå hur ekosystemet fungerar och påverkas om det sker förändringar i miljön. Exempelvis vet vi att rovdjur har en viktig roll för att upprätthålla balans i ekosystem. De ser till att växtätare inte blir för många och äter upp för mycket av växterna. Därför har rovdjur en viktig funktion. Det gäller exempelvis torskar i Östersjön, hajar vid ett korallrev eller lejon på en savann. Rovdjur räknas därför ofta som *nyckelarter* i ett ekosystem.
+
+**Det finns tre olika former av symbios:**
+
+- **Mutualism** innebär att båda arterna gynnas av samarbetet.
+- **Kommensalism** innebär att endast den ena arten gynnas av samarbetet. Den andra varken gynnas eller skadas.
+- **Parasitism** innebär att en parasit lever på, eller i, en värdorganism. I parasitism gynnas parasiten medan värden tar skada.
+
+*Bild: Tre vargar som går i snö.*
+
+> *När vargen återintroducerades i världens äldsta nationalpark i USA år 1995 fick det positiva följder för en rad andra arter i ekosystemet. Tidigare hade vargarnas bytesdjur kunnat föröka sig fritt och ätit upp en stor del av växtlivet. Växternas rötter är bland annat viktiga för att hålla kvar jord så att inte vind och vatten eroderar bort jorden.*
+
+---
+
+*[s. 126]*
+
+## Energiförluster i näringskedjan
+
+Alla organismer i ett ekosystem behöver energi för att leva. Energiflödet börjar med att producenter, exempelvis växter, omvandlar solenergi till kemisk energi (till exempel glukos) i fotosyntesen. En del av den kemiska energin används i växternas egen ämnesomsättning medan den resterande delen lagras som biomassa. I takt med att växterna äts av konsumenter överförs en del av den kemiska energin till nästa organism i näringskedjan. Energiförlusterna är stora och i genomsnitt överförs endast omkring 10 % från en trofinivå till en annan. Den resterande delen omvandlas till värme i organismernas egen ämnesomsättning. Energiförlusterna förklarar varför det finns förhållandevis få rovdjur i ett ekosystem och varför de flesta näringskedjor är relativt korta. Det förklarar också varför vi behöver använda mindre jordbruksmark, om vi äter grödor direkt, jämfört med om de används till djurfoder.
+
+*Figur: Energiflöde på en savann: Solen (ljusenergi) → Producent (gräs) → Växtätare (gasell) → Köttätare (lejon). Alla nivåer, även nedbrytarna (bakterier, svampar och maskar), avger värme. Pilarna är färgkodade:*
+
+- *Ljusenergi*
+- *Kemiskt bunden energi*
+- *Värme*
+
+> *Enligt energiprincipen kan energi aldrig skapas eller förstöras, utan bara omvandlas från en form till en annan. Det innebär att energi som lagrats som kemiskt bunden energi i fotosyntesen, förr eller senare kommer att omvandlas till värme.*
+
+---
+
+*[s. 127]*
+
+## Miljöns bärkraft
+
+Ett ekosystem kommer bara kunna försörja ett visst antal individer i en population under en längre tid. Den här nivån utgör *miljöns bärkraft* (carrying capacity). Om populationen ökar över nivån kommer faktorer som exempelvis brist på mat eller en ökning av sjukdomar och rovdjur att stabilisera populationen.
+
+Att beräkna bärkraften för människor inom ett område är svårare än vad det är för andra organismer. Det beror dels på att det ekologiska fotavtrycket varierar beroende på var i världen vi bor och på vilken livsstil vi har. Det har också flera gånger i historien visat sig att människan kunnat öka ekosystemets bärkraft genom att bekämpa smittsamma sjukdomar och tillämpa nya jordbrukstekniker. Exempelvis har bevattning, konstgödsel, bekämpningsmedel och växtförädling effektiviserat matproduktionen flera gånger om.
+
+*Figur: S-formad tillväxtkurva (y-axel: Populationsstorlek, x-axel: Tid) med en streckad horisontell linje som visar ”Miljöns bärkraft”. Tre bilder med kaniner visar kurvans faser:*
+
+1. *Antalet individer ökar långsamt när det finns få individer som kan reproducera sig.*
+2. *Antalet individer ökar snabbt när det finns många individer som kan reproducera sig och resurser (mat) i överflöd.*
+3. *Antalet individer balanseras när det blir ont om resurser (mat).*
+
+> *Miljöns bärkraft är det maximala antal individer av en viss art som varaktigt kan livnära sig av resurserna inom ett ekosystem. Kurvan visar att en population slutar tillväxa när antalet individer närmar sig nivån för miljöns bärkraft.*
+
+---
+
+*[s. 128]*
+
+*Bild: En lantbrukare står i ett vetefält vid solnedgång med en surfplatta i handen.*
+
+> *Människan kan själv påverka ekosystemets bärkraft. Ett exempel på det är när matproduktionen ökade markant under mitten av 1900-talet. Händelsen har kommit att kallas ”den gröna revolutionen” och har sin grund i att allt fler bönder började använda nya jordbruksmetoder med konstgödsel, bekämpningsmedel och förädlade grödor.*
+
+### Testa dig själv
+
+1. Ge exempel på en icke-levande miljöfaktor som kan påverka ett ekosystem.
+2. Varifrån kommer energin som producenter använder för att tillverka energirika organiska molekyler genom fotosyntes?
+3. Varifrån kommer koldioxiden som växter använder i fotosyntesen?
+4. Varför skulle inte närsalternas kretslopp fungera utan nedbrytarna?
+5. Vad menas med begreppet ”trofinivå”?
+6. Vad menas med att ett rovdjur är en toppkonsument?
+7. Vad menas med ekosystemets bärkraft?
+
+---
+
+*[s. 129]*
+
+## FÖRDJUPNING: Övergödning i Östersjön
+
+Östersjön är ett innanhav med en begränsad förbindelse till världshavet. Eftersom sötvatten från floder blandas med saltvatten från haven är vattnet bräckt. Salthalten varierar från omkring 1 % i de södra delarna, till 0,1 % i de norra. Att vattnet varken är sött eller salt utsätter många arter för fysiologisk stress, vilket gör dem extra känsliga för störningar i ekosystemet.
+
+De trånga passagerna via Stora Bält, Lilla Bält och Öresund gör att vattenutbytet mellan Östersjön och världshavet är begränsat. Det leder till att det tar lång tid för vattnet att bytas ut. Som en konsekvens av det blir många föroreningar kvar i Östersjön istället för att spädas ut i världshavet. Det gör att vattnet i Östersjön har förhållandevis höga halter av miljögifter och ett överskott av näringsämnen i form av kväve- och fosforföreningar. Det senare är något som orsakar övergödning och bottendöd. Situationen förvärras av att ytvattnet har lägre salthalt och därmed ligger som ett skikt över det saltare bottenvattnet. Det gör det svårare för syret att nå bottenvattnet och ökar risken för bottendöd.
+
+*Bild: Satellitbild över Östersjön och omgivande land.*
+
+> *Östersjön har ett stort avrinningsområde som sträcker sig genom 14 länder. Östersjön är nästan helt avskilt från världshavet, vilket begränsar inflödet av syrarikt saltvatten. Det är något som i kombination med mänskliga utsläpp av näringsämnen orsakar syrebrist på djupa bottnar.*
+
+---
+
+*[s. 130]*
+
+## Övergödning i Östersjön forts.
+
+När överskottet av näringsämnen hamnar i Östersjön orsakar det ett miljöproblem som kallas *övergödning* eller *eutrofiering*. Det leder till algblomning, det vill säga att planktonalgerna i ytvattnet blir så många att de bildar täta skikt. När algerna senare dör och sjunker till botten bryts de ner av bakterier och andra nedbrytare. I nedbrytningen förbrukas syre och om det är riktigt med döda alger kan syrenivåerna bli så låga att de bottenlevande organismerna får svårt att överleva. Om syret helt tar slut kommer anaeroba bakterier, specialiserade på att leva i en syrefri miljö, ta över nedbrytarnas roll. I deras nedbrytningsprocess bildas den giftiga gasen svavelväte (luktar ruttna ägg). Under sådana förhållanden kan inga djur leva och syrebristen leder därför till *döda bottnar*.
+
+*Figur: Tvärsnitt av Östersjön, jämförelse mellan ”Övergödning” (vänster) och ”Ingen övergödning” (höger). Tillförsel: kväve- och fosforföreningar från jordbruk och avlopp samt luftburna kväveföreningar. Ingående delar: planktonalger, blåstång, rovfisk (torsk), språngskikt och bottenlevande djur. Fyra steg markeras vid övergödning:*
+
+1. *Blåstång skuggas av planktonalger och blir övervuxen av trådalger.*
+2. *En ökad mängd näringsämnen leder till algblomning.*
+3. *En kraftig ökning av planktonätande fisk (spigg).*
+4. *Syret vid botten förbrukas vid nedbrytning av organiskt material. (Döda planktonalger sjunker till botten, syrebrist.)*
+
+> *När ett överskott av näringsämnen i form av kväve- och fosforföreningar hamnar i Östersjön orsakar det övergödning. De största utsläppskällorna är jordbruket följt av utsläpp från dåligt renat eller orenat avloppsvatten. Även förbränning av fossila bränslen bidrar, eftersom luftburna utsläpp av kväveoxider kan omvandlas till näringsämnen som göder Östersjön. Övergödningen leder till ett rubbat ekosystem och en minskad biologisk mångfald. Det finns en skarp gräns i Östersjöns vattenmassa (ett språngskikt) som separerar det syrerika ytvattnet från det syrefattiga bottenvattnet.*
+
+---
+
+*[s. 131]*
+
+## FÖRDJUPNING: Övergödning i Östersjön (forts.)
+
+Den största delen av de näringsämnen som göder Östersjön kommer från jordbruket. Det beror på att man inom jordbruket använder både naturgödsel (kompost och stallgödsel) och konstgödsel (industriellt tillverkat gödningsmedel) som är rika på både kväve- och fosforföreningar. Om åkermarken övergödslas, eller om näringsämnena sköljs bort av regn, kan de hamna i vattendrag som mynnar ut i Östersjön. Det finns flera effektiva åtgärder för att minska läckaget av näringsämnen från jordbruket. Man kan exempelvis undvika att gödsla mer än nödvändigt och plantera växter längs vattendrag som fångar upp näringsämnena innan de når vattnet. Man kan också återskapa eller anlägga våtmarker som fungerar som naturliga filter.
+
+Andra faktorer som bidrar till att göda Östersjön är otillräckligt renat avloppsvatten, skogsbruk och industriutsläpp. Även kväveoxider från orenade avgaser från förbränning av fossila bränslen ger ett tillskott av kväveföreningar. Den här typen av utsläpp kan minskas med hjälp av förbättrad avloppsrening och genom att man förser fordon med en katalysator som avlägsnar kväveoxiderna från avgaserna.
+
+*Bild: En traktor sprider konstgödsel på ett fält.*
+
+> *En traktor sprider konstgödsel på ett fält för att öka växtproduktionen i jordbruket. Industriellt tillverkade gödselmedel kallas också för NPK-gödning eftersom de innehåller närsalter med grundämnena kväve (N), fosfor (P) och kalium (K). Speciellt kväve- och fosforföreningar som läcker från åkermark skapar problem eftersom de göder Östersjön.*
+
+---
+
 *[s. 133]*
 
 ## Biologisk mångfald
