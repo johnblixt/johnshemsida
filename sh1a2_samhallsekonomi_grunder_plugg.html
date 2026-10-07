@@ -17,7 +17,7 @@
   body { font-family: 'EB Garamond', serif; font-size: 1.08rem; background:#f8fafc; color:#1e293b; margin:0; }
   h1,h2,h3,h4,.fredoka { font-family: 'Fredoka', sans-serif; }
 
-  .wrap { max-width: 52rem; margin: 0 auto; padding: 1.6rem 1.25rem 4rem; }
+  .wrap { max-width: 74rem; margin: 0 auto; padding: 1.6rem 1.25rem 4rem; }
 
   /* ── Tillbaka ── */
   .back {
@@ -57,48 +57,77 @@
     margin:0 0 1.6rem;
   }
 
-  /* ── Innehållsförteckning ── */
+  /* ── Layout: sticky innehållsförteckning + innehåll ── */
+  .layout { display:grid; grid-template-columns: 15.5rem minmax(0,1fr); gap:2rem; align-items:start; }
   .toc {
+    position:sticky; top:1rem; max-height:calc(100vh - 2rem); overflow-y:auto;
     background:#fff; border:1px solid #e2e8f0; border-radius:1.2rem;
-    padding:.9rem 1rem; margin-bottom:1.6rem; box-shadow:0 1px 3px rgba(0,0,0,.05);
+    padding:.9rem .8rem; box-shadow:0 1px 3px rgba(0,0,0,.05);
   }
   .toc-h {
     font-family:'Fredoka',sans-serif; font-size:.7rem; font-weight:700; text-transform:uppercase;
     letter-spacing:.14em; color:var(--p-deep); margin:.2rem .3rem .5rem;
   }
-  .toc a {
-    display:flex; align-items:center; gap:.7rem; padding:.55rem .8rem; border-radius:.75rem;
-    color:#334155; text-decoration:none; transition:background .15s;
+  .toc-btn { display:none; }
+  .toc-list a {
+    display:flex; align-items:center; gap:.6rem; padding:.5rem .6rem; border-radius:.75rem;
+    color:#334155; text-decoration:none; transition:background .15s; line-height:1.3; font-size:.98rem;
   }
-  .toc a:hover { background: var(--pl); }
+  .toc-list a:hover { background: var(--pl); }
+  .toc-list a.active { background: var(--pl); color:var(--pd); font-weight:700; }
   .toc-n {
-    flex:none; width:1.7rem; height:1.7rem; border-radius:50%; background:var(--pl); color:var(--pd);
-    font-family:'Fredoka',sans-serif; font-weight:700; font-size:.8rem;
+    flex:none; width:1.6rem; height:1.6rem; border-radius:50%; background:var(--pl); color:var(--pd);
+    font-family:'Fredoka',sans-serif; font-weight:700; font-size:.78rem;
     display:flex; align-items:center; justify-content:center;
   }
+  .toc-list a.active .toc-n { background:var(--p); }
   .toc-t { flex:1; }
 
-  .hint {
-    text-align:center; font-size:.85rem; color:#94a3b8; margin:-.8rem 0 1.2rem;
-    font-family:'Fredoka',sans-serif;
-  }
-
   /* ── Avsnitt ── */
-  .sec { margin-bottom: 1.4rem; scroll-margin-top: 1rem; }
+  .sec { margin-bottom: 2.4rem; scroll-margin-top: 1rem; }
   .sec-head {
-    width:100%; display:flex; align-items:center; gap:.9rem; text-align:left;
-    background:#fff; border:none; border-left:8px solid var(--p);
-    border-radius:1rem; padding:1.1rem 1.2rem; cursor:pointer;
-    box-shadow:0 1px 3px rgba(0,0,0,.06);
+    display:flex; align-items:center; gap:.9rem;
+    background:#fff; border-left:8px solid var(--p);
+    border-radius:1rem; padding:1.1rem 1.2rem; box-shadow:0 1px 3px rgba(0,0,0,.06);
   }
   .sec-emoji { flex:none; font-size:1.6rem; line-height:1; }
-  .sec-titlewrap { flex:1; display:flex; flex-direction:column; gap:.15rem; }
-  .sec-title { font-size:1.35rem; font-weight:600; color:#0f172a; line-height:1.25; font-family:'Fredoka',sans-serif; }
-  .chev { flex:none; color:var(--p); font-size:1.1rem; transition:transform .25s; }
-  .chev.open { transform: rotate(90deg); }
+  .sec-title { font-size:1.45rem; font-weight:600; color:#0f172a; line-height:1.25; margin:0; }
+  .ingress {
+    margin:.9rem .3rem 0; padding:.7rem 1rem; background:#fff; border:1px solid #fed7aa;
+    border-radius:.9rem; color:#475569; line-height:1.65; font-size:1rem;
+  }
+  .ingress b { font-family:'Fredoka',sans-serif; color:var(--p-deep); font-weight:600; font-size:.78rem;
+               text-transform:uppercase; letter-spacing:.1em; display:block; margin-bottom:.15rem; }
+
+  /* ── Citat ur källan ── */
+  .citat {
+    margin:1.2rem 0; padding:1rem 1.2rem 1rem 3rem; background:#fff; border-radius:1rem;
+    border:1px solid #e2e8f0; position:relative; color:#1e293b; font-style:italic; line-height:1.75;
+  }
+  .citat::before { content:'\201D'; position:absolute; left:.8rem; top:.2rem; font-size:3rem;
+                   color:var(--p); font-family:Georgia,serif; font-style:normal; line-height:1; }
+  .citat-k { display:block; margin-top:.4rem; font-style:normal; font-family:'Fredoka',sans-serif;
+             font-size:.78rem; color:#64748b; }
+
+  /* ── Inbyggda diagram (SVG) ── */
+  .diagram { margin:1.4rem 0; background:#fff; border:1px solid #e2e8f0; border-radius:1.2rem; padding:1rem 1rem .8rem; }
+  .diagram svg { display:block; width:100%; height:auto; max-width:40rem; margin:0 auto; }
+  .diagram svg text { font-family:'Fredoka',sans-serif; }
+  .diagram figcaption { font-size:.92rem; color:#475569; line-height:1.6; margin-top:.6rem; text-align:center; }
+  .diagram figcaption b { font-family:'Fredoka',sans-serif; color:var(--pd); }
+
+  /* ── Siffror ur källan ── */
+  .stat {
+    margin:1rem 0; padding:.8rem 1rem; background:#fff7ed; border:1px solid #fed7aa; border-radius:.9rem;
+    color:#7c2d12; line-height:1.65; font-size:.97rem;
+  }
+  .stat-h { font-family:'Fredoka',sans-serif; font-weight:700; font-size:.78rem; text-transform:uppercase;
+            letter-spacing:.1em; color:var(--p-deep); margin-bottom:.2rem; }
+  .stat ul { list-style:none; padding:0; margin:.3rem 0 0; }
+  .stat li { padding:.1rem 0; }
 
   /* ── Brödtext ── */
-  .block { padding: .4rem .3rem 0; }
+  .block { padding: .2rem .3rem 0; }
   .block h3 {
     font-size:1.12rem; font-weight:600; color:var(--pd);
     margin:1.6rem 0 .15rem;
@@ -184,7 +213,19 @@
   @media (max-width: 767px) {
     body { font-size: 1rem; }
     .wrap { padding: 1.2rem .9rem 3rem; }
-    .sec-title { font-size: 1.15rem; }
+    .layout { display:block; }
+    .toc { position:sticky; top:0; z-index:30; max-height:none; overflow:visible;
+           border-radius:0 0 1rem 1rem; margin:0 -.9rem 1.4rem; padding:.5rem .9rem;
+           border-top:none; border-left:none; border-right:none; }
+    .toc-h { display:none; }
+    .toc-btn { display:flex; width:100%; align-items:center; justify-content:space-between; gap:.6rem;
+               background:var(--pl); color:var(--pd); border:none; border-radius:.8rem; padding:.6rem .9rem;
+               font-family:'Fredoka',sans-serif; font-weight:600; font-size:.95rem; cursor:pointer; text-align:left; }
+    .toc-btn-t { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .toc-list { display:none; max-height:60vh; overflow-y:auto; padding-top:.4rem; }
+    .toc.open .toc-list { display:block; }
+    .sec { scroll-margin-top: 4.2rem; }
+    .sec-title { font-size: 1.2rem; }
     .sec-head { padding: .85rem .9rem; gap:.65rem; border-left-width:6px; }
     .sec-emoji { font-size:1.35rem; }
     .block h3 { font-size: 1.05rem; }
@@ -193,6 +234,9 @@
     .next-grid { grid-template-columns:1fr; }
     .bildplats { padding:.85rem .9rem; }
     .tbl { font-size:.88rem; }
+    .citat { padding:.9rem 1rem .9rem 2.4rem; }
+    .citat::before { left:.5rem; font-size:2.4rem; }
+    .diagram { padding:.7rem .4rem .6rem; }
   }
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; animation: none !important; }
@@ -207,15 +251,20 @@
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
 <!-- ════════════════════════════════════════════════════════════
-     ALL TEXT LIGGER I EN GEMENSAM DATA-ARRAY: SECTIONS
-     { id, rubrik, emoji, lattlast[], fordjupning[], bild[], fundera, komihag[] }
-     Block: { h, p[], lista[], ex, tabell:{huvud[], rader[[]]} }
-     Samma rubriker (h) i båda lägena – bara texten skiljer sig.
-     [BILDPLATS] = plats för bild/diagram som ska läggas in senare.
+     ALL TEXT LIGGER I EN GEMENSAM DATA-ARRAY: SECTIONS – ett objekt per ##-avsnitt i källan
+     { id, rubrik, emoji, ingress, lattlast[], fordjupning[], extra{}, komihag[] }
+     Block: { h, p[], lista[], ex, stat:{h, lista[]}, tabell:{huvud[], rader[[]]} }
+       h = källans ###-rubrik (null = avsnittets inledning). Samma rubriker i båda lägena.
+     extra[h] visas efter blocket i BÅDA lägena: { citat[], diagram, bild[], fundera[] }
+       citat:   { text, kalla } – ordagrant ur källan
+       diagram: 'konjunktur' | 'utbud' | 'kretslopp' (inbyggd SVG, se DIAGRAMS)
+       bild:    { titel, text } – [BILDPLATS] för bild som ska läggas in senare
+       fundera: källans "! Fundera"-frågor, ordagrant
      ════════════════════════════════════════════════════════════ -->
 <script>
 /* Källa: samhallsekonomins_grunder_material.md
    (Ekonomi kapitel 1, "Samhällsekonomins grunder", s. 86–120).
+   Ett objekt per ##-avsnitt; blockens h = källans ###-rubriker.
    Källan anger bara sidspannet för hela kapitlet – inga sidor per avsnitt. */
 var PAGE = {
   eyebrow: "Samhällskunskap Sa1a2 · Samhällsekonomi · Del 1",
@@ -232,766 +281,265 @@ var SECTIONS = [
   id: "vad-ar-ekonomi",
   rubrik: "Vad är ekonomi?",
   emoji: "⚖️",
+  ingress: "ska du kunna förklara vad behov och resurser är, varför vi måste prioritera och hur ekonomi kan definieras.",
   lattlast: [
-    { h: "Behov och resurser", p: [
-      "All ekonomi börjar med våra **behov**. Ett behov är något vi måste ha eller gärna vill ha.",
+    { h: null, p2: [
+      "All **ekonomi** börjar med våra **behov**. Ett behov är något vi måste ha eller gärna vill ha.",
       "Vissa behov handlar om kroppen. Vi behöver mat, kläder och någonstans att bo.",
-      "Andra behov handlar om känslor. Vi behöver trygghet, kärlek och vänner.",
-      "För att fylla behoven behövs **resurser**. Resurser är det vi har att använda, till exempel pengar, tid, råvaror och arbete.",
-      "Det finns nästan aldrig tillräckligt med resurser till allt vi vill ha. Därför måste vi välja."
+      "Andra behov handlar om känslor. Vi behöver trygghet, kärlek och gemenskap.",
+      "För att fylla behoven behövs **resurser**. Resurser är det vi har att använda.",
+      "Av vissa resurser finns det mycket, till exempel luften vi andas. Men de flesta resurser räcker inte till allt. Och det krävs arbete för att kunna använda dem."
     ]},
+    { h: "Behov och resurser", p: [
+      "Tänk om allt fanns gratis. Då kunde du bara hämta mat i affären. Men så är det sällan.",
+      "Våra behov är nästan alltid större än resurserna. Tänk dig en gungbräda. På ena sidan ligger alla behov – de väger tungt. På andra sidan ligger resurserna.",
+      "Därför måste vi **hushålla**. Det betyder att använda resurserna så klokt som möjligt.",
+      "Målet är vår **försörjning**: att vi får mat, kläder och bostad.",
+      "Vi måste hela tiden välja. Och när vi väljer en sak, avstår vi från en annan. Det är ekonomins grundproblem."
+    ], ex: "Exempel: Du har 300 kronor kvar av månadspengen. Köper du nya hörlurar har du inte råd med bio med kompisar. Att välja betyder att avstå från något." },
     { h: "En definition", p: [
-      "Ordet ekonomi kommer från grekiskan och betyder **hushållning**. Att hushålla betyder att använda det man har på ett klokt sätt.",
-      "Boken förklarar ekonomi så här: ”Ekonomi är att hushålla med begränsade tillgångar i syfte att tillgodose olika mänskliga behov och önskemål.”",
-      "Exempel: Du har 300 kronor kvar av månadspengen. Köper du nya hörlurar har du inte råd med bio med kompisar. Att välja innebär att avstå från något.",
-      "Jordens resurser tar också slut till slut. Därför måste ekonomin vara **hållbar** – vi får inte leva över våra tillgångar."
+      "Ordet ekonomi kommer från grekiskan. Det betyder hushållning.",
+      "Du, din familj och hela Sverige måste varje dag välja hur resurserna ska användas.",
+      "Ekonomi handlar om att överleva och klara sig. Men också om sådant som gör livet bättre, och om hur människor påverkar varandra när de väljer.",
+      "En definition av ekonomi kan låta så här:"
+    ], p2: [
+      "Jordens resurser räcker inte hur länge som helst. Därför måste ekonomin vara **hållbar**. Vi får inte leva över våra tillgångar."
     ]}
   ],
   fordjupning: [
+    { h: null, p2: [
+      "All **ekonomi** har sin utgångspunkt i våra **behov** och önskemål. En del behov är kroppsliga och handlar om vår direkta överlevnad – mat i magen, kläder på kroppen och tak över huvudet. Andra är mer psykologiska, som behoven av trygghet, kärlek och gemenskap. Tillsammans ligger dessa behov bakom den ekonomiska aktiviteten i ett samhälle.",
+      "För att behoven ska tillgodoses krävs **resurser**. En del finns det rikligt av, som luften vi andas, men de allra flesta resurser är begränsade och kräver en arbetsinsats för att kunna användas."
+    ]},
     { h: "Behov och resurser", p: [
-      "All **ekonomi** har sin utgångspunkt i våra **behov** och önskemål. En del behov är kroppsliga och handlar om vår direkta överlevnad – mat, kläder och tak över huvudet. Andra är psykologiska, som behoven av trygghet, kärlek och gemenskap. Tillsammans ligger dessa behov bakom all ekonomisk aktivitet i ett samhälle.",
-      "För att behoven ska tillgodoses krävs **resurser**. En del finns det gott om, som luften vi andas, men de flesta resurser är begränsade och kräver en arbetsinsats för att kunna användas.",
-      "Boken beskriver detta som en gungbräda: på ena sidan ligger alla våra behov, som väger tungt, och på den andra samhällets begränsade resurser. Eftersom resurserna inte räcker till allt måste vi hushålla med dem för att klara vår **försörjning** – att förse oss med livets nödvändigheter.",
-      "Detta *försörjningsproblem* löses genom ständiga prioriteringar. Att vara ekonomisk är att välja, och att välja innebär alltid att avstå från något. Hur resurserna används och fördelas är därför ekonomins grundproblem."
-    ], ex: "”Det finns tillräckligt med resurser för att mätta allas behov, men inte för att mätta allas begär.” – Mahatma Gandhi" },
+      "Om det fanns ett överflöd av allt vi önskar skulle den hungrige hämta sin mat i affären och den som ville ha en bil få den gratis. Tyvärr är det sällan så: i de flesta fall är resurserna långt mindre än det vi önskar eller behöver.",
+      "Det kan illustreras med en gungbräda. På ena sidan finns alla våra behov, som väger tungt; på den andra samhällets samlade resurser (tillgångar). Eftersom resurserna är begränsade måste vi hushålla med dem och se till att de används på bästa möjliga sätt – allt för att klara vår **försörjning** och förse oss med livets nödvändigheter som mat, kläder och bostad.",
+      "För att lösa detta *försörjningsproblem* måste vi ständigt prioritera och göra avvägningar. Att vara ekonomisk är att välja – och att välja innebär alltid att avstå från något. Prioriteringarna av resursernas användning och fördelning är ekonomins grundproblem."
+    ]},
     { h: "En definition", p: [
-      "Ordet ekonomi kommer från det grekiska ordet för hushållning. Både du, din familj och hela Sverige ställs varje dag inför val om hur resurserna bäst ska användas. Ytterst handlar ekonomi om överlevnad och försörjning, men också om sådant som inte är livsnödvändigt men som gör livet bättre – och om hur människor samspelar med varandra och samhället när de gör sina val.",
-      "Definitionen lyder: ”Ekonomi är att hushålla med begränsade tillgångar i syfte att tillgodose olika mänskliga behov och önskemål.”",
-      "I dag är vi också mer medvetna om att jordens resurser är begränsade. Därför måste vi ta ansvar för att inte leva över våra tillgångar, så att ekonomin blir hållbar på längre sikt. Ju fler som konkurrerar om samma begränsade resurser, desto viktigare blir prioriteringarna."
+      "Ordet ekonomi kommer ursprungligen från det grekiska ordet för hushållning. Du, din familj och hela landet Sverige ställs varje dag inför val om hur vi bäst hushåller med de resurser vi har. Ytterst handlar ekonomi om vår överlevnad och hur vi ordnar vår försörjning – men också om sådant som inte är direkt livsnödvändigt men som kan göra livet bättre, och om hur människor interagerar med varandra och med samhället när de gör sina val.",
+      "En definition av vad ekonomi är kan låta så här:"
+    ], p2: [
+      "I dag har vi också blivit allt mer medvetna om att jordens resurser är begränsade. Vi behöver därför ta ansvar för att inte leva över våra tillgångar och se till att ekonomin är hållbar på längre sikt."
     ]}
   ],
-  bild: [
-    { titel: "Gungbrädan", text: "Gungbräda med ”behov” på ena sidan (väger tungt) och ”resurser/tillgångar” på andra sidan – visar att resurserna inte räcker till alla behov." }
-  ],
+  extra: {
+    "": {
+      citat: [{ text: "”Många tycker att ekonomi är svårt. Begreppen kan kännas krångliga och sambanden komplicerade. Men bakom de abstrakta teorierna och de matematiska modellerna ligger ofta ganska enkla resonemang. I grund och botten handlar det om att använda tillgängliga resurser på bästa möjliga sätt och om att inte leva över sina tillgångar. Svårare än så behöver inte ekonomi vara.”", kalla: "Kapitlets inledning" }]
+    },
+    "Behov och resurser": {
+      citat: [{ text: "”Det finns tillräckligt med resurser för att mätta allas behov, men inte för att mätta allas begär.”", kalla: "Mahatma Gandhi" }],
+      bild: [{ titel: "Gungbrädan", text: "Gungbräda med ”behov” på ena sidan (väger tungt) och ”resurser/tillgångar” på den andra – visar att resurserna inte räcker till alla behov." }]
+    },
+    "En definition": {
+      citat: [{ text: "”Ekonomi är att hushålla med begränsade tillgångar i syfte att tillgodose olika mänskliga behov och önskemål.”", kalla: "Definition av ekonomi" }]
+    }
+  },
   komihag: [
     "**Ekonomi** = att hushålla med begränsade tillgångar för att tillgodose människors behov och önskemål.",
-    "Resurserna räcker inte till allt – därför måste vi prioritera. Att välja är att avstå.",
-    "Ekonomin behöver vara **hållbar** så att vi inte lever över jordens tillgångar."
+    "Resurserna räcker inte till alla behov – därför måste vi prioritera. Att välja är att avstå (**försörjningsproblemet**).",
+    "Ekonomin behöver vara **hållbar**, så att vi inte lever över jordens tillgångar."
   ]
 },
 
-/* ══════════ 2. HUSHÅLL, FÖRETAG OCH MARKNADEN ══════════ */
+/* ══════════ 2. HUSHÅLL OCH FÖRETAG ══════════ */
 {
-  id: "hushall-foretag",
-  rubrik: "Hushåll, företag och marknaden",
+  id: "hushall-och-foretag",
+  rubrik: "Hushåll och företag",
   emoji: "🏠",
+  ingress: "ska du kunna beskriva hur hushåll och företag samspelar på marknaden, vad produktion, BNP och utrikeshandel är och hur näringslivet har förändrats över tid.",
   lattlast: [
-    { h: "Hushåll och företag", p: [
-      "För att förstå ekonomin kan man förenkla. Då finns det två huvudpersoner: hushåll och företag.",
-      "Ett **hushåll** är de som bor ihop, till exempel du och din familj. Alla människor tillhör ett hushåll. I Sverige finns nästan fem miljoner hushåll.",
-      "Hushållen får pengar genom lön, ränta och bidrag. Pengarna används till mat, kläder, resor och appar.",
-      "Hushållen jobbar också på företagen. De är företagens arbetskraft.",
-      "Ett **företag** tillverkar varor och tjänster. Företaget måste få in mer pengar än det betalar ut. Annars måste det till slut läggas ned."
+    { h: null, p: [
+      "Ekonomin kan kännas krånglig. Därför är det bra att börja enkelt. Då finns det två huvudpersoner:"
+    ], lista: [
+      "**Hushåll** – alla människor tillhör ett hushåll, till exempel du och din familj. I Sverige finns nästan fem miljoner hushåll. Nästan hälften är personer som bor ensamma. Hushållen får pengar genom lön, ränta och bidrag. De köper mat, kläder, resor och appar. Hushållen jobbar också på företagen.",
+      "**Företag** – tillverkar varor och tjänster. Företaget måste få in minst lika mycket pengar som det betalar ut, helst mer. Går det med förlust länge måste det läggas ned."
     ]},
-    { h: "Utbud och efterfrågan möts på marknaden", p: [
-      "**Efterfrågan** är hur mycket människor vill köpa av något.",
-      "**Utbud** är hur mycket företagen säljer av något.",
-      "Platsen där köpare och säljare möts kallas **marknaden**. Det kan vara en butik, en webbshop eller ett torg.",
-      "Utbud och efterfrågan bör passa ihop. Annars blir det brist och köer – eller saker som ingen köper."
-    ]},
-    { h: "Produktion och produktionsfaktorer", p: [
-      "Inget kommer av sig självt. Någon måste baka brödet du äter till frukost. Det kallas **produktion**.",
+    { h: "Hushåll och företag möts på marknaden", p: [
+      "**Efterfrågan** är vad hushållen vill köpa.",
+      "**Utbud** är vad företagen tillverkar och säljer.",
+      "Efterfrågan visar företagen vad de ska tillverka. Utbud och efterfrågan bör passa ihop. Annars blir det brist eller köer.",
+      "Platsen där köpare och säljare möts kallas **marknaden**. Där kommer de överens om köp och försäljning."
+    ], ex: "Exempel: Om många vill köpa en ny spelkonsol märker butikerna det. Då beställer de fler konsoler från företaget som tillverkar dem." },
+    { h: "Produktion", p: [
+      "Inget kommer av sig självt. Vattnet i kranen måste renas. Brödet du äter till frukost måste bakas. Det kallas **produktion**.",
       "Det som behövs för att tillverka något kallas **produktionsfaktorer**. Det finns tre sorter:"
     ], lista: [
-      "**Naturresurser** – det vi tar från naturen, till exempel skog, metaller och olja. Även stål och plast räknas hit.",
-      "**Arbete** – det människor gör med sina kunskaper och sin kraft. Det vi kan och vet kallas **humankapital**.",
+      "**Naturresurser** – det vi tar från naturen, till exempel skog, metaller och olja. Även **halvfabrikat**, som stål och plast, räknas hit.",
+      "**Arbete** – det människor gör med sina kunskaper. Det vi kan och vet kallas **humankapital**.",
       "**Realkapital** – maskiner, verktyg och byggnader, från en spade till en robot."
-    ], ex: "Exempel: En målare målar om ditt rum. Målaren står för **arbetet**, penseln är **realkapital** och färgen är en **naturresurs**. Produkten blir ett nymålat rum." }
-  ],
-  fordjupning: [
-    { h: "Hushåll och företag", p: [
-      "Ekonomin är svår att överblicka, så det är bra att börja med en förenkling där samhällsekonomin består av två aktörer.",
-      "**Hushållen** är samhällsekonomins motor. Alla medborgare tillhör ett hushåll – i Sverige finns nästan fem miljoner, och knappt hälften är ensamhushåll. Hushållen har behov som gör att de vill köpa saker, och de är samtidigt företagens arbetskraft. Inkomsterna kommer från löner, räntor och bidrag och används till allt från mat och kläder till resor och digitala tjänster.",
-      "**Företagen** är samhällsekonomins verkstad och producerar varor och tjänster. Intäkter och kostnader måste gå ihop, helst med vinst. Ett företag som går med förlust under en längre tid måste sannolikt läggas ned."
-    ]},
-    { h: "Utbud och efterfrågan möts på marknaden", p: [
-      "Hushållens behov och önskemål samlas till en **efterfrågan** på olika produkter. Efterfrågan talar om för företagen vad de ska producera – vilket **utbud** de ska framställa. För att undvika brist eller köer bör utbud och efterfrågan motsvara varandra.",
-      "Mötesplatsen där hushåll (konsumenter) och företag (producenter) kommer överens om köp och försäljning kallas **marknaden**. Sambandet går alltså i båda riktningar: hushållens konsumtion styr företagens produktion, och företagens produktion ger hushållen både varor och inkomster."
-    ]},
-    { h: "Produktion och produktionsfaktorer", p: [
-      "För att resurserna ska kunna användas måste produktion sättas i gång – dricksvattnet måste renas och transporteras, brödet måste bakas. De resurser som behövs kallas **produktionsfaktorer** (ibland produktionsmedel). Det finns tre typer:"
-    ], lista: [
-      "**Naturresurser** – *råvaror* som förädlas till färdiga produkter: jord, skog, mineraler och metaller, men också *energiresurser* som kol, olja och vattenkraft. Även **halvfabrikat** som stål och plast räknas hit.",
-      "**Arbete** – människors kunskaper och färdigheter. Förr betydde kroppsstyrkan mycket, men med maskinkraftens intåg har ”hjärnkraften” blivit allt viktigare. Människors intellektuella och sociala förmågor räknas därför som en egen ekonomisk tillgång, **humankapital**.",
-      "**Realkapital** – maskiner och redskap, från stege och spade till industrirobotar och datorsystem, men också fabriksbyggnader och transportsystem."
-    ], ex: "Produktionen kommer i gång först när alla tre faktorerna finns samlade i ett företag: målaren (arbete) stryker penseln (realkapital) med målarfärg (naturresurs) över väggen, och resultatet blir ett nymålat rum. Att producera är alltså att kombinera arbetskraft, naturresurser och realkapital till **produkter** i form av varor och tjänster." }
-  ],
-  bild: [
-    { titel: "Hushåll – marknad – företag", text: "Modell där hushållen (behov, konsumtion) skickar efterfrågan (e) till marknaden och företagen (resurser, produktion) skickar utbud (u) dit. Används som enkel bild av ekonomins kretslopp." }
-  ],
-  komihag: [
-    "**Hushållen** konsumerar och är arbetskraft. **Företagen** producerar varor och tjänster.",
-    "**Efterfrågan** (vad vi vill köpa) och **utbud** (vad som säljs) möts på **marknaden**.",
-    "De tre **produktionsfaktorerna** är naturresurser, arbete och realkapital."
-  ]
-},
-
-/* ══════════ 3. KONSUMTION, INVESTERING OCH CIRKULÄR EKONOMI ══════════ */
-{
-  id: "resursanvandning",
-  rubrik: "Konsumtion, investering och cirkulär ekonomi",
-  emoji: "♻️",
-  lattlast: [
-    { h: "Konsumtion och investering", p: [
-      "En potatisodlare har skördat 100 säckar potatis. Hon måste välja vad hon gör med dem.",
-      "Hon kan äta eller sälja 80 säckar. Det är **konsumtion** – att använda något direkt.",
-      "Hon kan spara 20 säckar och sätta dem i jorden. Då växer det ny potatis nästa år. Det är en **investering** – att avstå något nu för att få mer senare.",
-      "Samma sak gäller hela samhället. Ska vi göra saker vi använder nu, som mat och kläder? Eller ska vi bygga fabriker, vägar och elnät som hjälper oss i framtiden?",
-      "Exempel från vardagen: Du kan lägga pengar på godis i dag. Eller så sparar du till ett körkort som ger dig mer frihet sedan."
-    ]},
+    ], ex: "Exempel: En målare målar om ditt rum. Målaren står för arbetet, penseln är realkapital och färgen är en naturresurs. Produkten blir ett nymålat rum." },
+    { h: "Resursanvändning", p: [
+      "En potatisodlare har skördat 100 säckar potatis. Hen måste välja vad hen gör med dem.",
+      "80 säckar blir matpotatis. Det är **konsumtion** – att använda något direkt.",
+      "20 säckar sätts i jorden. Då växer ny potatis nästa år. Det är en **investering** – att avstå något nu för att få mer senare.",
+      "Samma val gäller hela samhället. Ska vi göra saker vi använder nu, som mat och kläder? De kallas **konsumtionsvaror**. Eller ska vi bygga fabriker, vägar och elnät? De kallas **investeringsvaror**."
+    ], ex: "Exempel: Du kan lägga pengar på godis i dag. Eller så sparar du till ett körkort som ger dig mer frihet sedan." },
     { h: "Cirkulär ekonomi", p: [
-      "Förr tänkte man: tillverka – använd – släng. Det kallas linjär ekonomi.",
+      "Länge har man tänkt: tillverka – använd – släng. Det kallas **linjär ekonomi**.",
       "I en **cirkulär ekonomi** används saker om och om igen. Ett annat ord är **kretsloppsekonomi**.",
       "Second hand är ett bra exempel. När du köper en begagnad jacka får jackan ett längre liv. Det sparar resurser och ger mindre sopor.",
       "Saker som inte går att använda längre kan återvinnas. Delarna blir då nya produkter."
-    ]}
-  ],
-  fordjupning: [
-    { h: "Konsumtion och investering", p: [
-      "Det som produceras kan användas på två sätt. **Konsumtion** är att omedelbart förbruka något. En **investering** är att avstå från konsumtion i dag för att säkra eller till och med öka konsumtionen i morgon.",
-      "Bokens exempel: en potatisodlare med en skörd på 100 säckar kan lägga undan 20 säckar som sättpotatis och använda 80 som matpotatis. De 20 säckarna är en investering i nästa års skörd – men ju mer hon investerar, desto mindre kan hon äta nu.",
-      "I samhällsekonomin handlar det om att fördela resurserna mellan *konsumtionsvaror* (mat, kläder, bilar) och *investeringsvaror* som underhåller och bygger ut produktionsapparaten (fabriker, vägar, elnät). Investerar vi för lite blir framtidens produktion mindre; investerar vi för mycket får vi avstå nytta i dag. Väl avvägda beslut ger balans mellan omedelbar nytta och framtida möjligheter.",
-      "Flödesmodellen i boken visar att alla produkter inte hamnar hos hushållen. Produktionen delar sig i två strömmar: konsumtionsvaror till hushållen och investeringsvaror som ersätter eller bygger ut produktionsapparaten – till exempel en maskin, en kontorsbyggnad eller ett järnvägsspår."
     ]},
-    { h: "Cirkulär ekonomi", p: [
-      "För att bli mer hållbar behöver samhällsekonomin organiseras så att resurser inte överutnyttjas och miljön inte förstörs. Biologiskt material ska kunna brytas ned naturligt, medan övriga produkter ska utformas för att kunna återanvändas.",
-      "En ekonomi byggd på återvinning och återbruk kallas **cirkulär ekonomi** eller **kretsloppsekonomi**. Den är raka motsatsen till den linjära ekonomin som dominerat sedan industrialiseringen: producera – konsumera – släng.",
-      "Den växande second hand-marknaden är ett konkret exempel. När en produkt får en ny ägare förlängs dess livslängd, vilket sparar resurser och minskar avfallet. Produkter som inte längre går att använda kan återvinnas, så att komponenter eller kemiska beståndsdelar blir delar av nya produkter.",
-      "Sambandet är tydligt: ju längre resurserna stannar i kretsloppet, desto mindre nya råvaror behöver tas ut och desto mindre blir miljöpåverkan. Därför kopplar boken cirkulär ekonomi till ett mer hållbart och rättvist samhälle."
-    ]}
-  ],
-  bild: [
-    { titel: "Flödesmodell: konsumtion och investeringar", text: "Företagens produktionsresultat (arbete + naturresurser + realkapital) delas i två strömmar: konsumtionsvaror till hushållen och investeringsvaror tillbaka till företagens produktionsapparat." },
-    { titel: "Linjär vs cirkulär ekonomi", text: "Jämförelse mellan en rak pil (producera → konsumera → släng) och ett kretslopp (producera → använda → återbruka/återvinna → producera)." }
-  ],
-  komihag: [
-    "**Konsumtion** = förbruka nu. **Investering** = avstå nu för att få mer i framtiden.",
-    "Samhället måste välja mellan konsumtionsvaror och investeringsvaror.",
-    "**Cirkulär ekonomi** (kretsloppsekonomi) bygger på återbruk och återvinning – motsatsen till ”producera–konsumera–släng”."
-  ]
-},
-
-/* ══════════ 4. BNP OCH NÄRINGSLIVET ══════════ */
-{
-  id: "bnp-naringslivet",
-  rubrik: "BNP och näringslivet",
-  emoji: "🏭",
-  lattlast: [
     { h: "Bruttonationalprodukten", p: [
       "Ett land vill veta hur mycket det producerar. Då används måttet **BNP**. Det betyder **bruttonationalprodukt**.",
       "BNP är värdet av alla färdiga varor och tjänster som ett land producerar under ett år.",
-      "Värdet är priset som någon betalar för produkten. En mobil har ett pris på prislappen.",
-      "Men vad kostar sjukvård eller försvaret? Det kan man inte köpa i en butik. Då räknar man i stället vad det kostar att göra, till exempel löner och lokaler.",
-      "I Sverige är ungefär 70 procent av BNP tjänster och 30 procent varor."
-    ]},
+      "Värdet är priset som någon betalar. En mobil har ett pris på prislappen.",
+      "Men vad kostar sjukvården eller försvaret? Det kan man inte köpa i en butik. Då räknar man i stället vad det kostar att göra, till exempel löner och lokaler."
+    ], stat: { h: "Vem bakar BNP-tårtan? (SCB)", lista: [
+      "Naturbruk 2 %", "Industri 28 %", "Offentliga tjänster 20 %", "Privata tjänster 50 %",
+      "Varor totalt 30 % · Tjänster totalt 70 %"
+    ]}},
     { h: "Näringslivet", p: [
-      "**Näringslivet** är alla företag i landet. Det är samhällets verkstad.",
-      "För länge sedan arbetade nästan alla med jord och skog. I början av 1800-talet gällde det nio av tio svenskar.",
-      "Sedan kom industrierna. Där fanns de nya jobben."
-    ]},
-    { h: "Dagens svenska näringsliv", p: [
-      "De flesta företag ägs av vanliga människor. De bildar det **privata näringslivet**. Nästan alla varor görs där.",
-      "Tjänster görs både av privata företag och av det offentliga. Taxi och restauranger är privata. Skola och vård sköts oftast av det offentliga.",
-      "Vissa företag ägs gemensamt av sina medlemmar. Det kallas **kooperation**. Coop är ett exempel.",
-      "Staten äger också några bolag, till exempel Systembolaget, Vattenfall och Svenska Spel."
-    ]}
-  ],
-  fordjupning: [
-    { h: "Bruttonationalprodukten", p: [
-      "För att veta om produktionen ökar eller minskar, och hur landet ligger till jämfört med andra, behövs ett mått. Det är **bruttonationalprodukten (BNP)**: värdet av alla färdiga varor och tjänster som produceras i ett land under ett år. Värdet är det pris som betalas när produkten säljs.",
-      "En vara är lätt att värdera – priset står på prislappen. Offentliga tjänster som sjukvård och försvar säljs däremot inte i butik. Där utgår man i stället från vad tjänsten kostar att framställa: löner, lokalhyror, datorer och annan utrustning.",
-      "Näringslivet brukar delas in i tre produktionssektorer: naturbruk, industri och tjänster. Enligt SCB fördelas BNP-”tårtan” ungefär så här: naturbruk 2 %, industri 28 %, offentliga tjänster 20 % och privata tjänster 50 %. Varor utgör alltså cirka 30 % och tjänster cirka 70 %."
-    ]},
-    { h: "Näringslivet", p: [
-      "Förr dominerades näringslivet av naturbruk. Vid 1800-talets början fick nio av tio svenskar sin försörjning från jord- och skogsbruk, jakt och fiske. Industrialiseringen flyttade tyngdpunkten till tillverkningsindustrin, eftersom det var där de nya arbetstillfällena fanns.",
-      "**Näringslivet** är samhällsekonomins verkstad: alla företag som producerar varor och tjänster för landets invånare och för den globala marknaden – från små enskilda firmor till stora exportföretag."
-    ]},
-    { h: "Dagens svenska näringsliv", p: [
-      "Det svenska näringslivet delas i tre delar:"
+      "**Näringslivet** är alla företag som tillverkar varor och tjänster. Det är samhällets verkstad.",
+      "I början av 1800-talet arbetade nio av tio svenskar med jord, skog, jakt och fiske. Sedan kom industrierna. Där fanns de nya jobben.",
+      "I dag delas näringslivet i tre delar:"
     ], lista: [
-      "**Privat näringsliv** – företag som ägs av privatpersoner och drivs som aktiebolag, handelsbolag eller enskilda firmor. Härifrån kommer nästan all varuproduktion. Tjänsteproduktionen delas ungefär lika mellan privat och offentlig sektor. Sedan mitten av 1990-talet utförs många offentliga tjänster av privata företag finansierade med skattemedel, till exempel friskolor och vårdbolag.",
-      "**Kooperation** – ekonomiska föreningar som ägs och drivs gemensamt av medlemmarna, antingen producenter (t.ex. LRF) eller konsumenter (t.ex. KF, som äger Coop).",
-      "**Statliga och kommunala bolag** – bedriver affärsmässig verksamhet på en marknad. På 1990-talet tog ”bolagisering” och ”privatisering” fart: Posten blev aktiebolag (i dag PostNord AB) och stora delar av Televerket privatiserades (i dag Telia Company AB). Staten har behållit basnäringar som LKAB och Sveaskog, och äger bolag man av olika skäl inte vill privatisera: Systembolaget, Vattenfall och Svenska Spel."
-    ]}
-  ],
-  bild: [
-    { titel: "Vem bakar BNP-tårtan?", text: "Tårtdiagram över BNP: naturbruk 2 %, industri 28 %, offentliga tjänster 20 %, privata tjänster 50 % (varor 30 %, tjänster 70 %). Källa: SCB." }
-  ],
-  komihag: [
-    "**BNP** = värdet av alla färdiga varor och tjänster som produceras i ett land under ett år.",
-    "Ungefär 70 % av Sveriges BNP är tjänster och 30 % varor.",
-    "Näringslivet består av privat näringsliv, kooperation samt statliga och kommunala bolag."
-  ]
-},
-
-/* ══════════ 5. UTRIKESHANDELN ══════════ */
-{
-  id: "utrikeshandeln",
-  rubrik: "Utrikeshandeln",
-  emoji: "🚢",
-  lattlast: [
-    { h: "Vårt utlandsberoende", p: [
-      "Du kan beställa en tröja från en webbshop i USA eller Sydkorea. Handel över gränser är vanligt i dag.",
-      "**Export** betyder att sälja varor och tjänster till ett annat land.",
-      "**Import** betyder att köpa varor och tjänster från ett annat land.",
+      "**Privat näringsliv** – företag som ägs av vanliga människor. Nästan alla varor görs här. Taxi, restauranger och mataffärer är privata. Skola och vård sköts oftast av det offentliga, men ibland av privata företag, till exempel friskolor.",
+      "**Kooperation** – företag som ägs gemensamt av sina medlemmar. Coop är ett exempel.",
+      "**Statliga och kommunala bolag** – företag som staten eller kommunen äger, till exempel LKAB, Systembolaget, Vattenfall och Svenska Spel."
+    ]},
+    { h: "Utrikeshandeln", p: [
+      "Du kan beställa en tröja från en webbshop i USA eller Sydkorea. Handel över gränser är vanligt.",
+      "**Export** betyder att sälja varor och tjänster till ett annat land. **Import** betyder att köpa från ett annat land.",
       "Sverige är ett litet land. Vi måste exportera mycket för att ha råd att importera det vi behöver.",
       "Exporten är över hälften av Sveriges BNP. Företag som Ericsson, Electrolux och SKF säljer mest utomlands.",
-      "Handeln ger oss fler saker att välja mellan och bättre priser."
-    ]},
-    { h: "Vilka handlar vi med – och med vad?", p: [
-      "Förr sålde Sverige mest råvaror, som järn och trä.",
-      "I dag säljer vi mest maskiner, fordon och elektronik.",
-      "Vi handlar mest med våra grannar i Europa, särskilt Tyskland och de nordiska länderna.",
-      "Utanför Europa är USA vår största handelspartner. Handeln med Asien växer snabbt."
-    ]}
-  ],
-  fordjupning: [
-    { h: "Vårt utlandsberoende", p: [
-      "Den som utvecklar en app i dag tänker inte i första hand på att sälja den i Sverige utan i så många länder som möjligt. Många svenska företag, som Ericsson, Electrolux, SKF och Atlas Copco, har länge haft sina viktigaste marknader utomlands.",
-      "Att **exportera** är att sälja varor och tjänster till ett annat land. Sedan andra världskriget har Sveriges export ökat markant och utgör i dag över hälften av BNP. Sverige är en liten öppen ekonomi, beroende av export och internationella leverantörskedjor.",
-      "Orsaken är storleken: små länder är generellt mer beroende av *utrikeshandel* än stora. Med begränsade resurser och liten folkmängd måste Sverige exportera mycket för att ha råd med **import** – att köpa från utlandet. I stora länder som USA och Japan sker i stället det mesta av handeln inom landet. Den svenska ekonomin är nästan fem gånger mer beroende av utrikeshandel än USA:s.",
-      "Utrikeshandeln gör att svenska företag kan sälja på större marknader, och att vi som kunder får mer att välja på och bättre priser."
-    ]},
-    { h: "Vilka handlar vi med – och med vad?", p: [
-      "Tidigare exporterade Sverige främst råvaror som järn, stål och trä. I dag utgörs exporten till stor del av verkstadsprodukter – maskiner, fordon och elektronik – och produkterna blir allt mer avancerade. Råvaruexporten är fortfarande viktig, särskilt bearbetade råvaror som specialstål, trävaror och pappersprodukter. Staten får till exempel stora inkomster från järnmalmsexporten genom det statliga gruvbolaget LKAB.",
-      "Vi handlar mest med grannländerna: omkring 75 % av exporten och 85 % av importen sker till och från övriga Europa, med Tyskland och de skandinaviska länderna som största partner. Utanför Europa är USA störst, men handeln med Asien har vuxit snabbt.",
-      "Enligt SCB (2022) är verkstadsprodukter den största varugruppen både i exporten (36 %) och importen (35 %)."
-    ]}
-  ],
-  bild: [
-    { titel: "Sveriges utrikeshandel", text: "Karta eller stapeldiagram: varuexporten går till 54 % till EU (Tyskland 10 %, Danmark 8 %, Finland 7 %), 20 % övriga Europa, 12 % Asien, 9 % Nordamerika. Importen kommer till 64 % från EU. Källa: SCB 2022." }
-  ],
-  komihag: [
-    "**Export** = sälja till utlandet. **Import** = köpa från utlandet.",
-    "Sverige är en liten, öppen ekonomi – exporten är över hälften av BNP.",
-    "Vi handlar mest med Europa (särskilt Tyskland och Norden) och säljer mest verkstadsprodukter."
-  ]
-},
-
-/* ══════════ 6. NÄRINGSLIV I FÖRÄNDRING ══════════ */
-{
-  id: "naringsliv-forandring",
-  rubrik: "Näringsliv i förändring",
-  emoji: "📱",
-  lattlast: [
-    { h: "Ny teknik förändrar jobben", p: [
-      "Industrin är fortfarande viktig i Sverige. Men företagen måste hela tiden bli mer effektiva för att klara konkurrensen.",
-      "Datorer, robotar och **artificiell intelligens** (AI) förändrar hur saker görs och hur vi jobbar.",
-      "Miljön och klimatet driver också på förändringen."
-    ]},
-    { h: "Plattformsekonomin", p: [
-      "**Plattformsekonomi** betyder att jobb och tjänster förmedlas via appar.",
-      "Du kanske har sett cykelbud från Foodora. De får korta uppdrag via en app. Det kallas **gigekonomi**. Ett ”gig” är ett engångsuppdrag.",
-      "I **delningsekonomin** delar människor saker med varandra. Man kan hyra ut sin lägenhet på Airbnb eller låna en borrmaskin av grannen via Hygglo.",
+      "Handeln ger oss fler saker att välja mellan och bättre priser.",
+      "Förr sålde Sverige mest råvaror, som järn och trä. I dag säljer vi mest maskiner, fordon och elektronik.",
+      "Vi handlar mest med andra länder i Europa, särskilt Tyskland och de skandinaviska länderna. Utanför Europa är USA störst. Handeln med Asien växer snabbt."
+    ], stat: { h: "Sveriges utrikeshandel (SCB 2022)", lista: [
+      "Omkring 75 % av exporten och 85 % av importen sker med övriga Europa",
+      "Varuexport: 54 % till EU (bl.a. Tyskland 10 %, Danmark 8 %, Finland 7 %)",
+      "Största varugrupp: verkstadsprodukter – 36 % av exporten och 35 % av importen"
+    ]}},
+    { h: "Näringsliv i förändring", p: [
+      "Industrin är fortfarande viktig. Men företagen måste hela tiden bli mer effektiva för att klara konkurrensen.",
+      "Datorer, robotar och **artificiell intelligens** (AI) förändrar hur saker görs och hur vi jobbar. Miljön och klimatet driver också på förändringen.",
+      "**Plattformsekonomi** betyder att jobb och tjänster förmedlas via appar. Matbud från Foodora får korta uppdrag via en app. Det kallas **gigekonomi**. Ett ”gig” är ett engångsuppdrag.",
+      "I **delningsekonomin** delar människor saker med varandra. Man kan hyra ut sin bostad via Airbnb eller låna verktyg av grannen via Hygglo.",
       "Fördelar: nya jobb, fria arbetstider och saker som annars står oanvända kommer till nytta.",
-      "Nackdelar: jobben kan vara otrygga, arbetsmiljön kan vara dålig och det finns risk för skattefusk."
+      "Nackdelar: jobben kan vara otrygga, arbetsmiljön kan vara dålig och det finns risk för skattefusk. Taxibolag och hotell kan förlora kunder.",
+      "Många företag vill också bli bättre för miljön. IKEA gör möbler av återvunnet material. Vattenfall gör el från sol och vind.",
+      "Stål görs med kol, och det ger mycket koldioxid. Om man använder vätgas i stället bildas vatten i stället för koldioxid."
     ]},
-    { h: "Grön teknik", p: [
-      "Många företag vill bli bättre för miljön. Det kallas **grön teknik**.",
-      "Kunderna vill ha miljövänliga saker. Därför lönar det sig också för företagen.",
-      "IKEA gör möbler av återvunnet material. Vattenfall gör el från sol och vind.",
-      "Stål görs i dag med kol, och det ger mycket koldioxid. Projektet **Hybrit** vill göra stål med vätgas i stället. Då blir det vatten i stället för koldioxid."
-    ]}
-  ],
-  fordjupning: [
-    { h: "Ny teknik förändrar jobben", p: [
-      "Även om vi lämnat industrisamhället skapas fortfarande stora värden i den *traditionella industrin*. För att stå emot konkurrensen har företagen genomfört rationaliseringar: gamla metoder har ersatts med ny teknik och arbetsorganisationen har förändrats.",
-      "Samtidigt pågår en stor omvandling av näringslivet. Den *digitala revolutionen* spelar en central roll – automatisering, *artificiell intelligens* och *dataanalys* förändrar både produktion och arbetsliv. Även ökad miljömedvetenhet och behovet av åtgärder mot klimathotet driver på."
-    ]},
-    { h: "Plattformsekonomin", p: [
-      "**Plattformsekonomin** bygger på digitala plattformar och appar där individer kan hitta kortvariga, tillfälliga och ofta frilansbaserade uppdrag, som att köra personer (Uber) eller leverera mat (Foodora). Detta kallas **gigekonomi** – ”gig” betyder engångsuppdrag.",
-      "I **delningsekonomin** delar människor via plattformar med sig av sina tillgångar genom att hyra ut, låna ut eller dela – till exempel boende (Airbnb) eller verktyg (Hygglo). Det ger möjlighet att tjäna pengar på det man redan äger.",
-      "Fördelarna är nya jobbmöjligheter, särskilt för dem som vill ha flexibla tider eller deltid, högre effektivitet genom att oanvända resurser kommer till användning, samt ökad tillväxt genom nya marknader.",
-      "Baksidorna är otrygga anställningsförhållanden, bristfälliga arbetsmiljöer och skattefusk. Dessutom riskerar traditionella företag som taxibolag och hotell att tappa marknadsandelar och tvingas minska personalen eller lägga ned. Samma förändring kan alltså skapa jobb på ett ställe och ta bort dem på ett annat."
-    ]},
-    { h: "Grön teknik", p: [
-      "Många företag försöker bli mer *klimatneutrala* och *resurssnåla*. Drivkraften är inte bara omsorg om miljön, utan också konsumenternas förväntningar och behovet av att behålla konkurrenskraften och stärka varumärket. Hållbarhet har alltså blivit både en trend och en nödvändighet.",
-      "Exempel: IKEA investerar i möbler av återvunnet material och erbjuder solpaneler till konsumenter. Vattenfall arbetar med energilagring och el från förnybara källor som sol och vind.",
-      "Stålindustrin är en av de mest energikrävande industrierna med stora koldioxidutsläpp. Genom att byta ut kol mot vätgas bildas vatten i stället för koldioxid. Satsningen **Hybrit** (Hydrogen Breakthrough Ironmaking Technology) görs av SSAB, LKAB och Vattenfall för att ta fram fossilfritt stål."
-    ]}
-  ],
-  komihag: [
-    "Digitalisering, AI och klimatomställning förändrar näringslivet.",
-    "**Plattformsekonomi** = jobb och tjänster via appar. **Gigekonomi** = korta engångsuppdrag. **Delningsekonomi** = dela/hyra ut det man äger.",
-    "**Grön teknik**, t.ex. fossilfritt stål (Hybrit), drivs både av miljöhänsyn och av konkurrens."
-  ]
-},
-
-/* ══════════ 7. FRÅN JORDBRUKSEKONOMI TILL TJÄNSTESAMHÄLLE ══════════ */
-{
-  id: "jordbruk-till-tjanstesamhalle",
-  rubrik: "Från jordbruksekonomi till tjänstesamhälle",
-  emoji: "🕰️",
-  lattlast: [
-    { h: "En utvecklingsmodell", p: [
+    { h: "Från jordbruksekonomi till tjänstesamhälle", p: [
       "Sverige har gått från att vara ett bondesamhälle till ett samhälle där de flesta jobbar med tjänster.",
-      "Forskaren **Lennart Schön** förklarar det med ny teknik.",
-      "Ungefär vart 40–50:e år kommer en ny stor uppfinning. Den gör att ekonomin växer snabbt.",
-      "Till slut blir tekniken gammal. Då blir det en **strukturkris**. Gamla jobb försvinner och nya behövs.",
-      "Sedan tar en ny teknik över – och allt börjar om."
-    ]},
-    { h: "Tidig industrialisering", p: [
-      "I slutet av 1700-talet kom **ångmaskinen**. Fabriker, sågverk och järnvägar började byggas.",
-      "I slutet av 1800-talet kom **elektriciteten**. Stora företag som Ericsson och SKF startade.",
-      "På 1920-talet kom bilar, radio och det ”löpande bandet” i fabrikerna. Nu jobbade fler i industrin än i jordbruket."
-    ]},
-    { h: "Industrisamhällets höjdpunkt", p: [
-      "Efter andra världskriget fick många råd med bil, kylskåp och teve.",
-      "Städerna växte. Många nya bostäder byggdes, till exempel i ”miljonprogrammet”.",
-      "Inkomsterna blev två eller tre gånger högre."
-    ]},
-    { h: "Tjänstesamhällets genombrott", p: [
-      "På 1970-talet blev oljan dyr. Många fabriker flyttade till länder med lägre löner.",
-      "Nu blev **IT** och datorer det viktiga. Mobiler, datorer och läkemedel blev stora produkter.",
-      "Sverige gick in i **tjänstesamhället**. De flesta jobbar nu med tjänster, inte med att tillverka saker."
+      "Forskaren **Lennart Schön** förklarar det med ny teknik. Ungefär vart 40–50:e år kommer en ny stor uppfinning. Den gör att ekonomin växer snabbt.",
+      "Till slut blir tekniken gammal. Då blir det en **strukturkris**. Gamla jobb försvinner och nya behövs. Sedan tar en ny teknik över.",
+      "Slutet av 1700-talet: **ångmaskinen**. Senare kom fabriker, sågverk och järnvägar.",
+      "Slutet av 1800-talet: **elektriciteten**. Stora företag som Ericsson och SKF startade.",
+      "1920-talet: bilar, radio och det ”löpande bandet”. Nu jobbade fler i industrin än i jordbruket.",
+      "Efter andra världskriget: **bilen**. Många fick råd med bil, kylskåp och teve. Inkomsterna blev två eller tre gånger högre.",
+      "1970-talet: oljan blev dyr och många fabriker flyttade till länder med lägre löner. **IT** och datorer blev det viktiga. Sverige gick in i **tjänstesamhället**."
     ]}
   ],
   fordjupning: [
-    { h: "En utvecklingsmodell", p: [
-      "Hur kunde Sverige så snabbt gå från jordbrukssamhälle till tjänstesamhälle? Professorn i ekonomisk historia *Lennart Schön* menar att det främst var den teknologiska utvecklingen som flyttade produktionen från åkrarna till industrierna och sedan till tjänstesektorn.",
-      "Enligt teorien genomgår näringslivet regelbundet perioder på 40–50 år av kraftig tillväxt, drivna av olika teknologiska uppfinningar. Mot slutet av varje period uppstår en *strukturkris*, eftersom den rådande tekniken blivit föråldrad och ska ersättas av en ny. Strukturkriserna förändrar arbetsmarknaden och hela näringslivsstrukturen, och varje ny fas kräver nya kompetenser.",
-      "Tillämpad på Sverige stämmer teorin rätt väl: vägen från jordbruksekonomi till tjänstesamhälle har gått genom fem perioder, var och en koncentrerad kring en teknisk uppfinning."
-    ]},
-    { h: "Tidig industrialisering", p: [
-      "Mot slutet av 1700-talet uppfanns ångmaskinen, men eftersom industrierna var få och små fick ångkraften begränsad betydelse. Efter en strukturkris vid mitten av 1800-talet gick textilproduktionen över till fabrikstillverkning, sågverk med ångsågar fick en storhetstid och järnvägar knöt samman landet. Industrialiseringen var inledd.",
-      "Genombrottet kom i slutet av 1800-talet med elektriciteten. En rad stora industriföretag grundades, flera på svenska uppfinningar – LM Ericsson, Asea, SKF, Separator, AGA och Nobel – och elektrifieringen revolutionerade produktionen av järn, stål och papper.",
-      "På 1920-talet kom en ny våg av innovationer: bilar, radio, aluminiumprodukter och konstfibrer. Det ”löpande bandet” gjorde fabrikerna mer automatiska, och industrin passerade jordbruket i antal sysselsatta."
-    ], ex: "Svenska uppfinningar: säkerhetständstickan (1844), skiftnyckeln (1892) och det självjusterande sfäriska kullagret (1907), som blev grunden till SKF – som i sin tur grundade Volvo." },
-    { h: "Industrisamhällets höjdpunkt", p: [
-      "Efter andra världskriget satte bilen Sverige på hjul, och hemmen fylldes av kylskåp, dammsugare, radio och så småningom teve. Flygindustrin fick sitt genombrott och storstäderna växte med förorter, med kulmen under miljonprogrammet i slutet av 1960-talet.",
-      "Under dessa rekordår deltog svenska företag i återuppbyggnaden av krigshärjade länder, världshandeln växte som aldrig förr och inkomsterna två- eller tredubblades i praktiskt taget alla industriländer."
-    ]},
-    { h: "Tjänstesamhällets genombrott", p: [
-      "I mitten av 1970-talet bidrog kraftigt höjda oljepriser och hårdare internationell konkurrens till att gamla basnäringar – textil-, gruv- och varvsindustri – flyttade till låglöneländer. Inflationen och underskotten i statsbudgeten steg, och den ökande arbetslösheten fångades upp av en växande offentlig sektor.",
-      "Mikroprocessorn och IT blev tillväxtmotorn i den nya perioden. Industrin automatiserades med robotar och datorsystem, och kunskapsintensiva produkter som datorer, mobiltelefoner och läkemedel blev allt viktigare. Utvecklingen bidrog till globalisering, vilket i sin tur ledde till att den svenska ekonomin avreglerades och arbetsmarknaden decentraliserades."
-    ]}
-  ],
-  bild: [
-    { titel: "Tidslinje: Schöns utvecklingsfaser", text: "Tidslinje ca 1790–2020: Jordbrukets omvandling → Tidig industrialisering (järnvägen) → Industrisamhällets genombrott (elektriciteten) → Industrisamhällets höjdpunkt (bilen) → Tjänstesamhällets genombrott (IT), med en strukturkris mellan varje fas." }
-  ],
-  fundera: "Enligt strukturteorin borde det snart vara dags för nästa strukturkris. Vilken teknisk innovation tror du kommer att ersätta IT? Blir det AI eller kanske nanoteknik?",
-  komihag: [
-    "Enligt **Lennart Schön** driver ny teknik långa tillväxtperioder på 40–50 år.",
-    "När tekniken blir föråldrad kommer en **strukturkris** och en ny teknik tar över.",
-    "Ordningen: ångkraft/järnväg → elektricitet → bilen → IT."
-  ]
-},
-
-/* ══════════ 8. ARBETSMARKNADENS SPELREGLER ══════════ */
-{
-  id: "arbetslivet",
-  rubrik: "Arbetslivet och dess spelregler",
-  emoji: "🤝",
-  lattlast: [
-    { h: "Arbetsmarknaden", p: [
-      "På **arbetsmarknaden** möts de som jobbar och de som anställer.",
-      "De som jobbar har ofta ett **fackförbund**. Facket hjälper de anställda.",
-      "Arbetsgivarna har ett **arbetsgivarförbund**."
-    ]},
-    { h: "Spelregler", p: [
-      "Staten bestämmer de stora reglerna genom **arbetsmarknadslagar**.",
-      "Inom lagarna förhandlar facket och arbetsgivarna om lön och villkor.",
-      "Det de kommer överens om skrivs i ett **kollektivavtal**.",
-      "Att mycket bestäms i kollektivavtal kallas **den svenska modellen**.",
-      "När ett kollektivavtal gäller är det **fredsplikt**. Då får ingen strejka eller stänga ute de anställda."
-    ]},
-    { h: "De stora fackliga organisationerna", lista: [
-      "**LO** – till exempel Byggnads, Kommunal, IF Metall och Handels.",
-      "**TCO** – till exempel Unionen och Vision.",
-      "**SACO** – för dem som har läst på universitet, till exempel läkare och lärare."
-    ]}
-  ],
-  fordjupning: [
-    { h: "Arbetsmarknaden", p: [
-      "På **arbetsmarknaden** möts arbetstagare (löntagare) och näringslivet (arbetsgivare). Deras skilda intressen kanaliseras genom organisationer: löntagarna företräds av **fackförbund** och arbetsgivarna av **arbetsgivarförbund**. Förbunden är i sin tur anslutna till huvudorganisationer."
-    ]},
-    { h: "Spelregler", p: [
-      "Organisationerna har funnits i över hundra år. I början präglades relationen av motsättningar och konflikter, men med tiden växte en modell fram med fasta spelregler och ett visst mått av samförstånd.",
-      "Staten fastställer ramarna genom **arbetsmarknadslagar**. Inom dem förhandlar arbetsmarknadens parter om löner och arbetsvillkor, som fastställs i avtal. Störst betydelse har **kollektivavtalen** mellan fack- och arbetsgivarförbund. Att så många frågor avgörs genom kollektivavtal kallas *den svenska modellen*.",
-      "Förr förhandlade de centrala huvudorganisationerna, men i dag sker förhandlingarna på förbundsnivå. I vissa frågor, som pensioner, samverkar flera förbund i samverkansorganisationer: PTK för privatanställda och OFR för offentligt anställda.",
-      "Under en avtalsperiod råder **fredsplikt**: varken anställda eller arbetsgivare får vidta stridsåtgärder som strejk eller lockout. Fredsplikten syftar till arbetsfred medan avtalet gäller – parterna byter alltså rätten till konflikt mot förutsägbarhet."
-    ]},
-    { h: "De stora fackliga organisationerna", lista: [
-      "**LO – Landsorganisationen** (13 förbund): t.ex. Byggnads, Kommunal, Seko, IF Metall och Handels.",
-      "**TCO – Tjänstemännens Centralorganisation** (12 förbund): t.ex. Unionen (tjänstepersoner i privat näringsliv) och Vision (tjänstepersoner med anknytning till kommun, region eller kyrka).",
-      "**SACO – Sveriges Akademikers Centralorganisation** (21 förbund): t.ex. Akavia, Sveriges läkarförbund, Sveriges lärare, Officersförbundet och Sveriges Arkitekter."
-    ], ex: "På arbetsgivarsidan finns bland annat Svenskt Näringsliv för privata arbetsgivare, och Arbetsgivarverket samt Sveriges Kommuner och Regioner för offentliga arbetsgivare." }
-  ],
-  bild: [
-    { titel: "Arbetslivets spelregler", text: "Schema: Staten (arbetsmarknadslagar) sätter ramarna. Inom dem möts löntagarorganisationer (SACO, TCO, LO) och arbetsgivarorganisationer (Svenskt Näringsliv, Arbetsgivarverket, SKR) och sluter avtal, delvis via samverkansorganisationer (PTK, OFR)." }
-  ],
-  komihag: [
-    "Staten stiftar **arbetsmarknadslagar** – facket och arbetsgivarna förhandlar inom dem.",
-    "**Kollektivavtal** mellan fack- och arbetsgivarförbund är kärnan i **den svenska modellen**.",
-    "**Fredsplikt** = inga strejker eller lockouter medan avtalet gäller."
-  ]
-},
-
-/* ══════════ 9. RÄTTIGHETER OCH SKYLDIGHETER I ARBETSLIVET ══════════ */
-{
-  id: "rattigheter-arbetslivet",
-  rubrik: "Rättigheter och skyldigheter i arbetslivet",
-  emoji: "📝",
-  lattlast: [
-    { h: "Lagar", p: [
-      "Många ungdomar börjar jobba på ett sommarjobb. Då är det bra att veta vilka regler som gäller.",
-      "Om du inte är med i en **fackförening** står du ganska ensam om något går fel på jobbet.",
-      "Riksdagen har stiftat flera lagar om arbetslivet. De viktigaste är:"
+    { h: null, p: [
+      "Ekonomi kan vara komplicerat och sammanhangen svåra att överblicka. För att förstå hur allt hänger ihop kan det vara bra att börja med att förenkla till två aktörer:"
     ], lista: [
-      "**MBL** (medbestämmandelagen) – arbetsgivaren måste berätta för facket om viktiga förändringar och förhandla med facket.",
-      "**LAS** (lagen om anställningsskydd) – regler om anställning och uppsägning.",
-      "**Arbetsmiljölagen** – jobbet ska vara säkert. På arbetsplatser med minst fem anställda ska det finnas ett **skyddsombud**.",
-      "**Diskrimineringslagen** – ingen får behandlas sämre på grund av till exempel kön, religion, etnisk tillhörighet, funktionsnedsättning, sexuell läggning eller ålder."
+      "**Hushåll.** Alla medborgare tillhör ett hushåll. I Sverige finns nästan fem miljoner hushåll, och knappt hälften är ensamhushåll. Hushållen är samhällsekonomins motor eftersom de har behov som gör att de vill köpa saker, och det är från hushållen som företagen får sin arbetskraft. Inkomsterna – löner, räntor och bidrag – används till allt från mat och kläder till resor och digitala tjänster.",
+      "**Företag.** Företagen är samhällsekonomins verkstad och producerar varor och tjänster. Intäkter och kostnader måste gå ihop, helst med vinst. Går ett företag med förlust under en längre tid måste det sannolikt läggas ned."
     ]},
-    { h: "Anställningsformer enligt LAS", p: [
-      "Det finns bara två sorters anställning enligt lagen.",
-      "**Tillsvidareanställning** – det som folk kallar ”fast jobb”. Den gäller tills någon säger upp den.",
-      "**Tidsbegränsad anställning** – en anställning som tar slut ett visst datum, till exempel ett sommarvikariat."
-    ], tabell: {
-      huvud: ["Tillsvidareanställning", "Tidsbegränsade anställningar"],
-      rader: [
-        ["”Fast” anställning som gäller tills vidare", "Vikariat – högst 2 år"],
-        ["", "Säsongsanställning – så länge säsongen varar"],
-        ["", "Provanställning – oftast högst 6 månader"],
-        ["", "Särskild visstidsanställning – högst 12 månader"]
+    { h: "Hushåll och företag möts på marknaden", p: [
+      "Hushållens behov och önskemål samlas till en **efterfrågan** på olika produkter. Efterfrågan talar om för företagen vad de ska rikta in produktionen på – vilket **utbud** de ska framställa. För att undvika brist eller köer bör utbud och efterfrågan motsvara varandra.",
+      "För att samspelet ska fungera behöver hushåll och företag en mötesplats: **marknaden**. Här kommer hushåll (konsumenter) och företag (producenter) överens om köp och försäljning. Sambandet går åt båda håll: hushållen är både köpare av företagens produkter och företagens arbetskraft."
+    ]},
+    { h: "Produktion", p: [
+      "Vill du ha drickbart vatten i kranen måste vattnet först ha renats och transporterats dit; vill du ha bröd till frukost måste någon ha bakat det. För att kunna nyttja resurserna måste vi alltså sätta i gång en produktion.",
+      "De resurser som behövs kallas **produktionsfaktorer** (ibland produktionsmedel). Det finns tre typer:"
+    ], lista: [
+      "**Naturresurser** – *råvaror* som förädlas till färdiga produkter: jord, skog, mineraler och metaller, men också *energiresurser* som kol, olja och vattenkraft. Även **halvfabrikat** som stål och plast räknas hit.",
+      "**Arbete** – människors kunskaper och färdigheter. Förr betydde kroppsstyrkan mycket, men med maskinkraftens intåg har ”hjärnkraften” fått allt större betydelse. Människors intellektuella och sociala förmågor räknas därför som en särskild ekonomisk tillgång, **humankapital**.",
+      "**Realkapital** – maskiner och redskap, från stege och spade till industrirobotar och datorsystem, men också fabriksbyggnader och transportsystem."
+    ], p2: [
+      "Produktionen kommer i gång när faktorerna finns samlade i ett företag: målaren stryker (arbete) penseln (realkapital) med målarfärg (naturresurs) över väggen, och produkten blir ett nymålat rum. Att producera är att använda arbetskraften, naturresurserna och realkapitalet till att framställa **produkter** i form av varor och tjänster."
+    ]},
+    { h: "Resursanvändning", p: [
+      "En potatisodlare har fått en årsskörd på 100 säckar. Hur mycket ska bli matpotatis, och hur mycket ska sättas tillbaka i jorden för att ge nya potatisar nästa år? Lägger odlaren undan 20 säckar som sättpotatis och använder 80 som matpotatis, investerar hen 20 säckar i framtida skörd.",
+      "Det som produceras kan alltså användas på två sätt. **Konsumtion** är att omedelbart förbruka något. En **investering** är att avstå från konsumtion i dag för att säkra eller till och med öka konsumtionen i morgon. Avvägningen innebär att välja mellan att förbruka något nu eller i framtiden.",
+      "I verkligheten handlar det om att prioritera vad vi ska producera: varor och tjänster som direkt uppfyller människors behov, som mat, kläder och bilar – eller underhåll och utbyggnad av själva produktionsapparaten, som fabriker, vägar och elnät. Det är en fördelning mellan *konsumtionsvaror* och *investeringsvaror*. Väl avvägda beslut ger balans mellan omedelbar nytta och framtida möjligheter, och det gäller att tänka långsiktigt för att uppnå hållbarhet.",
+      "Följer man flödet av varor från företagen ser man att alla produkter inte hamnar hos hushållen – en del slutar som en maskin, en kontorsbyggnad eller ett järnvägsspår. Produktionen delar sig i två strömmar: konsumtionsvaror till hushållen och investeringsvaror som ersätter eller bygger ut produktionsapparaten."
+    ]},
+    { h: "Cirkulär ekonomi", p: [
+      "För att bli mer hållbar behöver samhällsekonomin organiseras så att resurser inte överutnyttjas och miljön inte förstörs. Resurserna bör ses som något värdefullt som kan användas om och om igen: biologiskt material ska kunna brytas ned naturligt, medan övriga produkter ska utformas för att kunna återanvändas.",
+      "En samhällsekonomi byggd på återvinning och återbruk kallas **cirkulär ekonomi** eller **kretsloppsekonomi**. Den är raka motsatsen till den linjära ekonomin som dominerat sedan industrialiseringen: producera – konsumera – släng.",
+      "Den växande second hand-marknaden är ett konkret exempel. När en produkt får en ny ägare förlängs dess livslängd, vilket sparar resurser och minskar avfallet. Produkter som inte längre går att använda kan återvinnas, så att komponenter eller kemiska beståndsdelar används i nya produkter.",
+      "Genom att främja cirkulär ekonomi kan vi hushålla bättre med de begränsade resurserna, minska miljöpåverkan och skapa ett mer hållbart och rättvist samhälle."
+    ]},
+    { h: "Bruttonationalprodukten", p: [
+      "Hur mycket produceras i ett land? Ökar eller minskar produktionen, och hur ligger landet till jämfört med andra? För att svara behövs ett mått: **bruttonationalprodukten (BNP)**, som anger värdet av alla färdiga varor och tjänster som produceras i ett land under ett år. Värdet är det pris som betalas när produkten säljs.",
+      "En vara är lätt att värdera – priset står på prislappen. Offentliga tjänster som sjukvård och försvar går däremot inte att köpa i en butik. Där utgår man i stället från vad tjänsten kostar att framställa: löner, lokalhyror, datorer och annan utrustning.",
+      "Näringslivet brukar delas in i tre produktionssektorer: naturbruk, industri och tjänster."
+    ], stat: { h: "Vem bakar BNP-tårtan? (SCB)", lista: [
+      "Naturbruk 2 %", "Industri 28 %", "Offentliga tjänster 20 %", "Privata tjänster 50 %",
+      "Varor totalt 30 % · Tjänster totalt 70 %"
+    ]}},
+    { h: "Näringslivet", p: [
+      "För inte så länge sedan dominerades näringslivet av naturbruk. Vid 1800-talets början fick nio av tio svenskar sin försörjning från jord- och skogsbruk, jakt och fiske. Med industrialiseringen flyttades tyngdpunkten till tillverkningsindustrin, där de nya arbetstillfällena fanns.",
+      "**Näringslivet** är samhällsekonomins verkstad: alla företag som producerar varor och tjänster för landets invånare och för den globala marknaden – från små enskilda firmor till stora exportföretag. Dagens svenska näringsliv delas i tre delar:"
+    ], lista: [
+      "**Privat näringsliv** – företag som ägs av privatpersoner och drivs som aktiebolag, handelsbolag eller enskilda firmor. Härifrån kommer nästan all varuproduktion. Tjänsteproduktionen kommer till hälften från privata näringslivet (t.ex. taxibolag, restauranger, livsmedelsaffärer) och till hälften från den offentliga sektorn (vård, skola, omsorg). Sedan mitten av 1990-talet utförs dock många offentliga tjänster av privata företag finansierade av skattemedel, till exempel friskolor och vårdbolag.",
+      "**Kooperation** – ekonomiska föreningar som ägs och drivs gemensamt av medlemmarna, antingen producenter (t.ex. LRF, Lantbrukarnas Riksförbund) eller konsumenter (t.ex. KF, Kooperativa Förbundet, som äger Coop).",
+      "**Statliga och kommunala bolag** – bedriver affärsmässig verksamhet på en marknad. På 1990-talet tog ”bolagisering” och ”privatisering” fart: Posten blev aktiebolag (i dag PostNord AB) och stora delar av Televerket privatiserades (i dag Telia Company AB). Staten har behållit basnäringar som LKAB (gruvor) och Sveaskog (skog), och äger bolag man av olika skäl inte vill privatisera: Systembolaget, Vattenfall och Svenska Spel."
+    ]},
+    { h: "Utrikeshandeln", p: [
+      "Den som i dag utvecklar en app tänker inte i första hand på att sälja den i Sverige utan i så många länder som möjligt. Många svenska företag, som Ericsson, Electrolux, SKF och Atlas Copco, har sedan länge haft sina viktigaste marknader utanför Sverige.",
+      "Att **exportera** är att sälja varor och tjänster till ett annat land. Sedan andra världskriget har Sveriges **export** ökat markant och utgör i dag över hälften av BNP. Sverige är en liten öppen ekonomi, beroende av export och internationella leverantörskedjor.",
+      "Små länder är överlag mer beroende av *utrikeshandel* än stora. Med begränsade resurser och liten folkmängd måste Sverige exportera mycket för att ha råd med **import** – att köpa från utlandet. I stora länder som USA och Japan sker i stället det mesta av handeln inom landet. Den svenska ekonomin är nästan fem gånger mer beroende av utrikeshandel än USA:s. Handeln gör att svenska företag kan sälja på större marknader och att vi som kunder får mer att välja på och bättre priser.",
+      "Tidigare exporterade Sverige främst råvaror som järn, stål och trä. I dag utgörs exporten till stor del av verkstadsprodukter – maskiner, fordon och elektronik – och produkterna blir allt mer avancerade. Råvaruexporten är fortfarande viktig, särskilt bearbetade råvaror som specialstål, trävaror och pappersprodukter; staten får till exempel stora inkomster från järnmalmsexporten genom LKAB.",
+      "Vi handlar mest med grannländerna. Tyskland och de skandinaviska länderna är de största handelspartnerna i Europa, och utanför Europa är USA störst – men handelsutbytet med Asien har vuxit snabbt."
+    ], stat: { h: "Sveriges utrikeshandel (SCB 2022)", lista: [
+      "Omkring 75 % av exporten och 85 % av importen sker till och från övriga Europa",
+      "Varuexport: 54 % EU (bl.a. Tyskland 10 %, Danmark 8 %, Finland 7 %, Nederländerna 5 %, Frankrike 4 %), 20 % övriga Europa, 12 % Asien, 9 % Nordamerika, 2 % Latinamerika, 2 % Afrika, 1 % Oceanien",
+      "Varuimport: 64 % EU (bl.a. Tyskland 15 %, Nederländerna 11 %, Danmark 6 %), 19 % övriga Europa, 11,5 % Asien, 4 % Nordamerika",
+      "Viktigaste exportvaror: verkstadsprodukter 36 %, bearbetade råvaror 17 %, kemivaror 14 %, energivaror 11 %",
+      "Viktigaste importvaror: verkstadsprodukter 35 %, energivaror 14 %, bearbetade råvaror 14 %, färdiga varor 14 %"
+    ]}},
+    { h: "Näringsliv i förändring", p: [
+      "Trots att vi för länge sedan lämnat industrisamhället skapas fortfarande stora värden i den *traditionella industrin*. För att stå emot konkurrensen har företagen genomfört rationaliseringar: gamla metoder har ersatts med ny teknik och arbetsorganisationen har förändrats. Samtidigt pågår en omvandling av näringslivet där den *digitala revolutionen* – automatisering, *artificiell intelligens* och *dataanalys* – förändrar både produktion och arbetsliv, och där miljömedvetenhet och klimathotet driver på.",
+      "**Plattformsekonomin** bygger på digitala plattformar och appar där individer kan hitta kortvariga, tillfälliga och ofta frilansbaserade uppdrag, som att transportera personer (Uber) eller leverera mat (Foodora). Detta kallas **gigekonomi** – ”gig” betyder engångsuppdrag. I **delningsekonomin** delar människor via plattformar med sig av sina tillgångar, till exempel boende (Airbnb) eller redskap och verktyg (Hygglo).",
+      "Fördelarna är nya jobbmöjligheter, särskilt för dem som vill ha flexibla tider eller deltid, högre effektivitet när oanvända resurser kommer till nytta, och tillväxt genom nya marknader. Baksidorna är otrygga anställningsförhållanden, bristfälliga arbetsmiljöer och skattefusk – och traditionella företag som taxibolag och hotell riskerar att tappa marknadsandelar och tvingas minska personalen eller lägga ned. Samma förändring kan alltså skapa jobb på ett ställe och ta bort dem på ett annat.",
+      "**Grön teknik:** många företag försöker bli mer *klimatneutrala* och *resurssnåla* – inte bara av omsorg om miljön, utan också för att möta konsumenternas förväntningar, behålla konkurrenskraften och stärka varumärket. IKEA investerar i möbler av återvunnet material och erbjuder solpaneler; Vattenfall arbetar med energilagring och el från sol och vind. Stålindustrin, en av de mest energikrävande industrierna, satsar på att byta kol mot vätgas – då bildas vatten i stället för koldioxid."
+    ]},
+    { h: "Från jordbruksekonomi till tjänstesamhälle", p: [
+      "Hur kunde Sverige så snabbt omvandlas från jordbrukssamhälle till tjänstesamhälle? Professorn i ekonomisk historia *Lennart Schön* menar att det främst var den teknologiska utvecklingen som flyttade produktionen från åkrarna till industrierna och senare till tjänstesektorn. Näringslivet genomgår regelbundet perioder på omkring 40–50 år av kraftig tillväxt, drivna av teknologiska uppfinningar. Mot slutet av varje period uppstår en *strukturkris*, eftersom den rådande tekniken blivit föråldrad och ersätts av en ny. Kriserna förändrar arbetsmarknaden och hela näringslivsstrukturen, och varje ny fas kräver nya kompetenser. I Sverige har vägen gått genom fem perioder, var och en koncentrerad kring en teknisk uppfinning.",
+      "**Tidig industrialisering.** Ångmaskinen började användas i fabrikerna mot slutet av 1700-talet, men fick begränsad betydelse eftersom industrierna var få och små. Efter en strukturkris vid mitten av 1800-talet gick textilproduktionen över till fabrikstillverkning, sågverk med ångsågar fick en storhetstid och järnvägar knöt samman nationen. Genombrottet kom mot slutet av 1800-talet med elektriciteten: stora industriföretag grundades, flera på svenska uppfinningar – LM Ericsson, Asea, SKF, Separator, AGA och Nobel – och elektrifieringen revolutionerade produktionen av järn, stål och papper. På 1920-talet kom bilar, radio, aluminiumprodukter och konstfibrer; det ”löpande bandet” gjorde fabrikerna mer automatiska och industrin passerade jordbruket i antal sysselsatta.",
+      "**Industrisamhällets höjdpunkt.** Efter andra världskriget satte bilen Sverige på hjul och hemmen fylldes med kylskåp, dammsugare, grammofoner, radio och så småningom teve. Flygindustrin fick sitt genombrott och storstäderna växte med förorter, med kulmen under miljonprogrammet i slutet av 1960-talet. Svenska företag deltog i uppbyggnaden av krigshärjade länder, världshandeln växte som aldrig förr och inkomsterna två- eller tredubblades i praktiskt taget alla industriländer.",
+      "**Tjänstesamhällets genombrott.** I mitten av 1970-talet bidrog kraftigt höjda oljepriser och hårdare internationell konkurrens till att gamla basnäringar – textil-, gruv- och varvsindustri – flyttade till låglöneländer. Inflationen och budgetunderskotten steg, och den ökande arbetslösheten fångades upp av en växande offentlig sektor. Mikroprocessorn och IT blev tillväxtmotorn: industrin automatiserades med robotar och datorsystem, och kunskapsintensiva produkter som datorer, mobiltelefoner och läkemedel blev allt viktigare. Utvecklingen bidrog till globaliseringen, vilket ledde till att den svenska ekonomin avreglerades och arbetsmarknaden decentraliserades."
+    ], ex: "Svenska uppfinningar: säkerhetständstickan (1844), skiftnyckeln (1892) och det självjusterande sfäriska kullagret (1907), som blev grunden till SKF – som i sin tur grundade Volvo." }
+  ],
+  extra: {
+    "Hushåll och företag möts på marknaden": { diagram: "kretslopp" },
+    "Resursanvändning": {
+      bild: [{ titel: "Flödesmodell: konsumtion och investeringar", text: "Företagens produktionsresultat (arbete + naturresurser + realkapital) delas i två strömmar: konsumtionsvaror till hushållen och investeringsvaror tillbaka till företagens produktionsapparat." }]
+    },
+    "Bruttonationalprodukten": {
+      bild: [{ titel: "Vem bakar BNP-tårtan?", text: "Tårtdiagram över BNP: naturbruk 2 %, industri 28 %, offentliga tjänster 20 %, privata tjänster 50 % (varor 30 %, tjänster 70 %). Källa: SCB." }]
+    },
+    "Näringslivet": {
+      bild: [{ titel: "Det svenska näringslivet", text: "Schema som delar näringslivet i tre delar: privat näringsliv, kooperation samt statliga och kommunala bolag." }]
+    },
+    "Utrikeshandeln": {
+      bild: [
+        { titel: "Utrikeshandelns betydelse i olika länder", text: "Stapeldiagram: export i % av BNP (Världsbanken 2022) – Nederländerna högst, Sverige i övre halvan, USA och Pakistan lägst. Visar att små länder är mer beroende av utrikeshandel." },
+        { titel: "Sveriges utrikeshandel", text: "Karta eller diagram över varuexport och varuimport per region samt viktigaste export- och importvaror. Källa: SCB 2022." }
       ]
-    }},
-    { h: "Uppsägning", p: [
-      "Arbetsgivaren får inte säga upp dig hur som helst. Det måste finnas **saklig grund** – ett riktigt skäl.",
-      "Det kan vara **personliga skäl**: du sköter inte jobbet.",
-      "Det kan vara **arbetsbrist**: det finns inte tillräckligt med jobb att göra."
-    ]},
-    { h: "Avtal", p: [
-      "Ett **kollektivavtal** bestämmer lön, semester, arbetstid och övertid för alla på jobbet.",
-      "Saknas kollektivavtal måste du själv skriva in allt i ditt eget **anställningsavtal**.",
-      "Kolla särskilt **tjänstepensionen**. Den är pengar till din pension som arbetsgivaren betalar. Utan kollektivavtal ingår den inte alltid."
-    ]},
-    { h: "Utanför lagar och avtal", p: [
-      "**Svartjobb** betyder att du jobbar utan avtal och att ingen skatt betalas.",
-      "Det är olagligt. Du har inget skydd om något går fel.",
-      "Du får ingen pension för jobbet och kan behöva betala skatt i efterhand. Du kan heller inte vara säker på att få din lön."
-    ]}
-  ],
-  fordjupning: [
-    { h: "Lagar", p: [
-      "Många tar sina första steg i arbetslivet via sommar- eller extrajobb och vet då lite om sina rättigheter. Ofta märker man det först när villkoren är dåliga eller lönen för låg – och utan medlemskap i en **fackförening** står man ensam mot arbetsgivaren. Fackliga representanter hjälper medlemmar som har problem med sin arbetsgivare.",
-      "Trots att parterna länge samarbetat kring arbete och löner har riksdagen stiftat lagar som reglerar rättigheter och skyldigheter. De viktigaste *arbetsmarknadslagarna* är:"
-    ], lista: [
-      "**MBL (medbestämmandelagen)** stärker löntagarnas inflytande: arbetsgivaren måste informera facken om företagets ekonomi och framtidsplaner, förhandla om viktiga förändringar som omorganisationer eller större personalförändringar, och parterna förutsätts sluta kollektivavtal om löner och medbestämmande. Facken har rätt att förhandla om arbetsförhållanden även när arbetsgivaren inte anser att det behövs.",
-      "**LAS (lagen om anställningsskydd)** reglerar förhållandet mellan arbetsgivare och arbetstagare. Huvudregeln är att en anställning gäller tills vidare; den kan inledas med en provanställning.",
-      "**Arbetsmiljölagen**: arbetsgivaren har huvudansvaret och ska planera och leda arbetsmiljöarbetet. Med fem anställda eller fler ska det finnas ett **skyddsombud**, normalt utsett av facket, som bevakar den fysiska och psykiska arbetsmiljön och kan avbryta arbete som bedöms farligt för liv eller hälsa.",
-      "**Diskrimineringslagen** förbjuder diskriminering på grund av kön, könsöverskridande identitet eller uttryck, etnisk tillhörighet, religion eller annan trosuppfattning, funktionsnedsättning, sexuell läggning eller ålder – bland annat vid anställning, lönesättning, befordran och uppsägning."
-    ]},
-    { h: "Anställningsformer enligt LAS", p: [
-      "Enligt LAS finns bara två anställningsformer: *tillsvidareanställning* och *tidsbegränsad anställning* (visstidsanställning). Det vardagliga ”fast jobb” heter juridiskt tillsvidareanställning. Den är vanligast, saknar tidsgräns och ger anställningsskydd genom att lagen reglerar vad som kan vara skäl för uppsägning.",
-      "Vikariat innebär att man ersätter någon annan under en begränsad tid. Säsongsanställning beror på en säsong, till exempel bärplockning, snöskottning eller turism. Vid särskild visstidsanställning behöver arbetsgivaren inte ange något skäl. Timanställning och projektanställning är inte anställningsformer i lagens mening, utan vardagliga beskrivningar av tjänsten eller lönesättningen."
-    ], tabell: {
-      huvud: ["Tillsvidareanställning", "Tidsbegränsade anställningar"],
-      rader: [
-        ["En ”fast” anställning som gäller tills vidare, dvs. fram till en eventuell uppsägning.", "Vikariat – max 2 år"],
-        ["", "Säsongsanställning – så länge säsongen varar"],
-        ["", "Provanställning – oftast max 6 mån"],
-        ["", "Särskild visstidsanställning – max 12 månader"],
-        ["", "För personer fyllda 69 år – ingen tidsbegränsning"]
-      ]
-    }, ex: "Bemanningsföretag: arbetstagare anställs av ett bemanningsföretag och hyrs ut till andra företag, som då inte behöver ta hänsyn till LAS för den personalen. Vissa uppskattar variationen och tryggheten i anställningen; kritiker menar att företagen köper sig fria från ansvar och att de inhyrda ofta har sämre villkor." },
-    { h: "Uppsägning", p: [
-      "Enligt LAS måste uppsägningar och avsked ha *saklig grund*. För uppsägning finns två sakliga grunder:"
-    ], lista: [
-      "**Personliga förhållanden** – den anställde sköter inte jobbet eller klarar av någon annan anledning inte längre arbetet.",
-      "**Arbetsbrist** – arbetsgivaren har inte längre arbetsuppgifter åt den anställde. Arbetsgivaren måste då förhandla med facken, och den anställde har rätt till uppsägningstid och uppsägningslön."
-    ]},
-    { h: "Avtal", p: [
-      "Störst betydelse har de *kollektivavtal* som sluts på central nivå. De reglerar lön, semester, arbetstid, övertidsersättning, tjänstepension, arbetsmiljö och kompetensutveckling. Vissa avtal anger bara ramar, och då fastställs villkoren individuellt på arbetsplatsen.",
-      "Kollektivavtalen kompletterar lagstiftningen och gör individuella avtal med alla anställda onödiga. Arbetstagarna vet vilka spelregler som gäller, vilket skapar trygghet; arbetsgivarna får stabilitet eftersom alla omfattas av samma regler och fredsplikt råder.",
-      "Saknas kollektivavtal måste allt anges i ett *individuellt anställningsavtal*. Det ställer stora krav på arbetstagaren – och den som är glad över sitt första jobb vill sällan vara ”besvärlig”. Ett råd är att kontakta det fackförbund som representerar yrket.",
-      "Särskilt viktig är **tjänstepensionen**, som inte självklart ingår utan kollektivavtal. Eftersom pensionen beräknas på hela yrkeslivet kan en längre period utan inbetalningar göra stor skillnad. Pensionsprognosverktyg på nätet kan visa hur mycket."
-    ]},
-    { h: "Utanför lagar och avtal", p: [
-      "**Svartjobb** innebär att inget anställningsavtal skrivs och att inga skatter eller avgifter betalas in. Utöver att det är olagligt saknar arbetstagaren helt skydd vid konflikt, får ingen pensionsgrundande inkomst eller anställningstrygghet, kan bli skyldig att betala skatt i efterhand och kan inte vara säker på att få den överenskomna lönen. Den kortsiktiga vinsten kan alltså bli en långsiktig förlust."
-    ]}
-  ],
+    },
+    "Näringsliv i förändring": {
+      citat: [{ text: "”Hybrit står för Hydrogen Breakthrough Ironmaking Technology. Det är en satsning som SSAB, LKAB och Vattenfall gör för att ta fram fossilfritt stål.”", kalla: "Faktaruta" }]
+    },
+    "Från jordbruksekonomi till tjänstesamhälle": {
+      bild: [
+        { titel: "Kobratelefonen", text: "Foto av Kobratelefonen, som LM Ericsson lanserade 1958 med en för tiden mycket modern och unik design." },
+        { titel: "Tidslinje: utvecklingsfaserna", text: "Tidslinje ca 1790–2020: Jordbrukets omvandling → Tidig industrialisering (järnvägen) → Industrisamhällets genombrott (elektriciteten) → Industrisamhällets höjdpunkt (bilen) → Tjänstesamhällets genombrott (IT), med en strukturkris mellan varje fas." }
+      ],
+      fundera: ["Enligt denna strukturteori borde det snart vara dags för nästa strukturkris. Vilken teknisk innovation tror du kommer att ersätta IT? Blir det AI eller kanske nanoteknik?"]
+    }
+  },
   komihag: [
-    "Viktiga lagar: **MBL** (medbestämmande), **LAS** (anställningsskydd), **arbetsmiljölagen** och **diskrimineringslagen**.",
-    "Två anställningsformer: **tillsvidareanställning** och **tidsbegränsad anställning**. Uppsägning kräver **saklig grund**.",
-    "Utan kollektivavtal saknas ofta **tjänstepension** – och **svartjobb** ger inget skydd alls."
-  ]
-},
-
-/* ══════════ 10. JÄMLIKHET OCH JÄMSTÄLLDHET I ARBETSLIVET ══════════ */
-{
-  id: "jamstalldhet",
-  rubrik: "Jämlikhet och jämställdhet i arbetslivet",
-  emoji: "⚖️",
-  lattlast: [
-    { h: "Två ord som ofta blandas ihop", p: [
-      "**Jämlikhet** betyder att alla människor ska ha samma rättigheter och chanser. Det gäller oavsett kön, ålder, religion eller bakgrund.",
-      "**Jämställdhet** handlar om kvinnor och män. De ska ha samma rättigheter och chanser i hemmet, i skolan och på jobbet.",
-      "Jämställdhet är alltså en del av jämlikhet."
-    ]},
-    { h: "Viktiga jämställdhetsreformer", p: [
-      "I Sverige finns förskola och betald **föräldraledighet**. Både mammor och pappor kan vara hemma med sina barn.",
-      "Med **VAB** (vård av barn) kan föräldrar vara hemma när barnet är sjukt och få betalt.",
-      "Trots det är arbetslivet inte helt jämställt än."
-    ]},
-    { h: "Löneskillnader", p: [
-      "Kvinnor tjänar i genomsnitt ungefär 10 procent mindre än män (2023).",
-      "En orsak är att kvinnor oftare jobbar i yrken med lägre lön. En annan är att kvinnor tar ut mer föräldraledighet och jobbar mer deltid.",
-      "Lägre lön ger lägre pension. De flesta fattiga pensionärer är kvinnor."
-    ]},
-    { h: "Brister i jämlikheten och arbetsmiljön", p: [
-      "Personer med utländsk bakgrund kan ha svårare att få jobb och kan möta rasism.",
-      "Personer med funktionsnedsättning kan stoppas av att arbetsplatsen inte är anpassad.",
-      "Äldre kan behandlas som mindre duktiga. Det kallas åldersdiskriminering.",
-      "Män skadas oftare av buller och olyckor. Kvinnor drabbas oftare av utmattning och sexuella trakasserier."
-    ]},
-    { h: "Ojämn könsfördelning på chefsjobb", p: [
-      "Bara en av tio VD:ar är kvinna.",
-      "**Glastak** betyder osynliga hinder som stoppar kvinnor från att bli chefer, fast inga regler förbjuder det.",
-      "**Könskvotering** betyder att ett visst antal platser måste gå till kvinnor. Norge har en sådan lag för styrelser sedan 2006."
-    ]}
-  ],
-  fordjupning: [
-    { h: "Två ord som ofta blandas ihop", p: [
-      "**Jämlikhet** betyder att alla har samma rättigheter och möjligheter oberoende av kön, ålder, religion, funktionsvariation eller annan bakgrund – i ett jämlikt arbetsliv ska alla ha lika möjlighet att lyckas. **Jämställdhet** fokuserar på kvinnor och män och deras lika rättigheter och möjligheter inom livets alla områden: lika lön för samma arbete, samma karriärmöjligheter och samma möjlighet att vara hemma med barnen. Jämställdhet är därför en viktig jämlikhetsfråga."
-    ]},
-    { h: "Viktiga jämställdhetsreformer", p: [
-      "Tack vare väl utbyggd barnomsorg och betald föräldraledighet för både kvinnor och män har svenska föräldrar bättre möjligheter att delta i arbetslivet än i många andra länder. Rätten till *vård av barn (VAB)* ger ersättning upp till 80 % av arbetsinkomsten när barnet är sjukt.",
-      "Jämställdhetslagen infördes 1980 och är sedan 2009 integrerad i diskrimineringslagen. Trots framstegen finns mycket kvar innan arbetslivet är helt jämställt."
-    ]},
-    { h: "Löneskillnader", p: [
-      "Enligt Medlingsinstitutet är den genomsnittliga löneskillnaden mellan kvinnor och män omkring 10 % (2023) – trots att kvinnor ofta har likvärdig eller högre utbildning.",
-      "En del förklaras av att kvinnor och män arbetar i olika sektorer, där kvinnodominerade sektorer har lägre löner. Men även inom samma yrke och position skiljer det omkring 4 % till mäns fördel – den ”oförklarliga löneskillnaden”. Gapet är störst i privat näringsliv (6,5 %) och minst i kommunerna (0,3 %).",
-      "Skillnaden beror också på att kvinnor tar ut mer föräldraledighet och arbetar mer deltid. Över ett 40-årigt arbetsliv blir skillnaden mer än 90 000 kronor per år, eller över 3,6 miljoner kronor. Effekten följer med livet ut: lägre lön ger lägre pension, och majoriteten av fattigpensionärer är kvinnor."
-    ]},
-    { h: "Brister i jämlikheten och arbetsmiljön", p: [
-      "Personer med utländsk bakgrund kan ha svårt att få jobb, löneförhöjningar eller karriär och kan mötas av fördomar och rasism. Personer med funktionsnedsättning kan hindras av otillräcklig anpassning, utrustning eller stöd. Äldre kan behandlas som mindre kompetenta och utsättas för åldersdiskriminering.",
-      "Arbetsmiljön har förbättrats, delvis tack vare striktare lagstiftning – arbetsgivare måste arbeta aktivt med både den fysiska och den psykosociala miljön. Men skillnader kvarstår: män drabbas mer av buller, olyckor och dödsfall, medan kvinnor oftare lider av sömnproblem, huvudvärk och utmattning och är mer utsatta för våld och sexuella trakasserier."
-    ]},
-    { h: "Ojämn könsfördelning på chefsjobb", p: [
-      "Kvinnor är underrepresenterade i högre positioner i näringslivet: bara en av fyra i företagsledningar och en av tio VD:ar är kvinna, och män innehar över 90 % av börsbolagens ordförandeposter och 66 % av styrelseplatserna.",
-      "*Glastak* beskriver de osynliga hinder (maktstrukturer) kvinnor möter trots att inga formella regler stoppar dem. I offentlig sektor har taket krossats – 70 % av cheferna i kommuner och regioner är kvinnor – men obalansen kvarstår i privat sektor.",
-      "**Könskvotering** är ett sätt att rätta till obalansen. Norge införde 2006 en lag om minst 40 % kvinnor i styrelserna, vilket snabbt gav effekt. Kritiker menar att positioner då tillsätts efter kön snarare än kompetens. Boken betonar att kvotering inte ersätter arbetet mot de bakomliggande orsakerna: traditionella könsroller, könsmaktsordningen och de ekonomiska begränsningarna kring att vara hemma med barn."
-    ]}
-  ],
-  bild: [
-    { titel: "Andel kvinnor i börsbolagen", text: "Linjediagram 2002–2024: andelen kvinnor i börsbolagens styrelser ökar från cirka 8–12 % till knappt 40 %, och i ledningsgrupper till drygt 30 %. Källa: Kvinnoindex, Andra AP-fonden." }
-  ],
-  komihag: [
-    "**Jämlikhet** gäller alla människor; **jämställdhet** gäller kvinnor och män.",
-    "Kvinnor tjänar i snitt cirka 10 % mindre än män (2023) – det ger också lägre pension.",
-    "**Glastak** = osynliga hinder mot chefsjobb. **Könskvotering** är en omdiskuterad lösning."
-  ]
-},
-
-/* ══════════ 11. PENGAR ══════════ */
-{
-  id: "pengar",
-  rubrik: "Vad är pengar?",
-  emoji: "💳",
-  lattlast: [
-    { h: "Från byteshandel till pengar", p: [
-      "Förr bytte människor saker med varandra. En ko kunde bytas mot något annat.",
-      "Det var krångligt. Ingen vill bära med sig en ko för att köpa bröd.",
-      "Därför började man använda **pengar** som bytesmedel.",
-      "I dag är nästan alla pengar digitala. De finns på bankkonton. När du swishar eller betalar med kort flyttas digitala pengar."
-    ]},
-    { h: "Pengarnas tre uppgifter", lista: [
-      "**Värdemätare** – pengar visar vad saker är värda. Då kan vi jämföra priser.",
-      "**Värdebevarare** – pengar kan sparas. Lönen från sommarjobbet kan du använda i höst.",
-      "**Betalningsmedel** – vi kan betala med pengar. Alla måste lita på dem och ta emot dem."
-    ]},
-    { h: "Förtroende", p: [
-      "Pengar fungerar bara om alla litar på dem.",
-      "Om ingen litade på pengar skulle vi behöva gå tillbaka till byteshandel. Då skulle ekonomin gå mycket långsammare."
-    ]},
-    { h: "Hur mycket pengar finns det?", p: [
-      "**Riksbanken** håller koll på hur mycket pengar som finns i Sverige. Det kallas **penningmängd**.",
-      "Hit räknas kontanter och pengar på vanliga bankkonton – pengar som du kan använda direkt.",
-      "Pengar som är låsta i ett långt sparande räknas inte med."
-    ]}
-  ],
-  fordjupning: [
-    { h: "Från byteshandel till pengar", p: [
-      "Under lång tid klarade sig människor utan **pengar** och bytte i stället varor med varandra. När handeln utvecklades behövde bytena förenklas – att ta med sig en ko för att köpa bröd hade sina praktiska problem. Lösningen var ett bytesmedel: pengar.",
-      "Förr tänkte vi på pengar som sedlar och mynt, men i dag är bara en bråkdel något vi kan hålla i handen. Resten är digitala värden på bankkonton som flyttas när vi betalar räkningar eller får lön."
-    ]},
-    { h: "Pengarnas tre uppgifter", p: [
-      "Pengar gör det möjligt att handla, spara och investera. För att fungera väl bör de ha tre egenskaper:"
-    ], lista: [
-      "**Värdemätare** – pengar gör det möjligt att sätta pris på allt och jämföra värden. Om pärlor vore pengar och ett kilo potatis kostade tio pärlor, kunde allt annat jämföras med det.",
-      "**Värdebevarare** – pengar bevarar värden. En bonde som säljer sin mjölk behåller värdet – pengar surnar inte – och lönen sparar din köpkraft tills du vill använda den.",
-      "**Betalningsmedel** – med pengar betalar vi och får betalt. Det som används måste vara allmänt accepterat; utan ett pålitligt betalningsmedel försvåras handel och investeringar, vilket hämmar tillväxten."
-    ]},
-    { h: "Förtroende", p: [
-      "Dagens digitala pengar bygger helt på allmänhetens förtroende. Vi måste kunna lita på att de behåller sitt värde och går att betala med – annars tar vi snabbt ut våra tillgångar och växlar till något säkrare.",
-      "Om förtroendet försvann helt skulle vi tvingas tillbaka till självhushållning med en begränsad bytesekonomi. Produktion och handel skulle minska och de ekonomiska hjulen snurra betydligt långsammare."
-    ]},
-    { h: "Hur mycket pengar finns det?", p: [
-      "Riksbanken håller reda på *penningmängden* – alla pengar som direkt kan användas som betalningsmedel, som kontanter och pengar på betalkonton. Dessa har hög *likviditet* (betalningsförmåga) eftersom de kan användas omgående.",
-      "Pengar som inte ska användas den närmaste tiden placeras ofta i sparande som obligationer eller pensionsförsäkringar. Den som lovar banken att låta pengarna stå länge kan få högre ränta och avkastning. Eftersom pengarna då är låsta räknas de inte in i penningmängden."
-    ]}
-  ],
-  komihag: [
-    "Pengar är ett bytesmedel som ersatte byteshandeln. I dag är nästan alla pengar digitala.",
-    "Pengarnas tre uppgifter: **värdemätare**, **värdebevarare** och **betalningsmedel**.",
-    "Pengar fungerar bara om vi har **förtroende** för dem. **Penningmängden** = pengar som kan användas direkt."
-  ]
-},
-
-/* ══════════ 12. PRISBILDNING ══════════ */
-{
-  id: "prisbildning",
-  rubrik: "Prisbildning – utbud och efterfrågan",
-  emoji: "🍓",
-  lattlast: [
-    { h: "Prismekanismen", p: [
-      "Hur vet bagaren hur många bullar hon ska baka? Svaret är **priset**.",
-      "Priset visar företaget om det går att tjäna pengar. Priset visar kunden var det är billigast.",
-      "Tänk dig att många blir vegetarianer. Då köps mindre kött. Köttet måste säljas billigare.",
-      "Samtidigt köps fler grönsaker. Då kan grönsakerna bli dyrare, och fler börjar odla.",
-      "När fler odlar finns det mer grönsaker. Då sjunker priset igen.",
-      "Att priset styr så här kallas **prismekanismen**."
-    ]},
-    { h: "Utbuds- och efterfrågemodellen", p: [
-      "Köpare och säljare tänker olika.",
-      "Köparen vill ha så mycket **nytta** som möjligt för pengarna.",
-      "Säljaren vill ha så mycket **vinst** som möjligt.",
-      "En affär blir av först när båda är överens."
-    ]},
-    { h: "Vad tar ni för jordgubbarna?", p: [
-      "Ju lägre pris på jordgubbar, desto fler vill köpa. Det visar **efterfrågekurvan**. Den lutar nedåt.",
-      "Ju högre pris, desto fler vill sälja. Det visar **utbudskurvan**. Den lutar uppåt.",
-      "Om priset är för högt blir jordgubbar över. Då måste säljaren sänka priset.",
-      "Om priset är för lågt tar jordgubbarna slut och det blir kö. Då kan säljaren höja priset.",
-      "Där kurvorna korsar varandra finns **jämviktspriset**. Då säljs alla jordgubbar och alla som vill köpa får köpa."
-    ]}
-  ],
-  fordjupning: [
-    { h: "Prismekanismen", p: [
-      "Marknaderna samordnar miljontals beslut – hur många bullar bagaren ska baka, vilka resurser företagen ska kombinera. För det krävs något att rätta sig efter, och i en modern ekonomi är det priset. Det talar om för företagaren om det går att tjäna pengar på en produkt, och för hushållen var det är billigast att köpa.",
-      "Bokens exempel: om många blev vegetarianer skulle efterfrågan på kött minska. Uppfödarna måste sänka priset, vinsterna sjunker och många upphör med verksamheten. Efterfrågan på grönsaker ökar i stället, priset kan höjas, odlarnas vinster stiger och fler söker sig dit. Då ökar utbudet, vilket så småningom sänker priset igen.",
-      "Kedjan visar hur **prismekanismen** fungerar som ett automatiskt styrsystem: förändrad efterfrågan → nytt pris → ändrad vinst → resurser flyttas → nytt utbud → nytt pris."
-    ]},
-    { h: "Utbuds- och efterfrågemodellen", p: [
-      "För att förklara **prisbildningen** använder nationalekonomer en förenklad modell: **prisbildningsmodellen**, eller **utbuds- och efterfrågemodellen**. Den visar att hushåll och företag resonerar olika.",
-      "Konsumenterna efterfrågar det som ger störst *nytta*: de jämför priser, kontrollerar kvalitet och överväger alternativ. Men de påverkas också av känslor, trender och marknadsföring. Det som styr efterfrågan är bland annat behov, pris, inkomst, kvalitet, smak och marknadsföring.",
-      "Producenterna vill sälja till ett pris som täcker kostnaderna och ger största möjliga *vinst*. Utbudet styrs av bland annat kalkylerat försäljningspris, kostnader, teknik och skatter.",
-      "Hushållen drivs alltså ytterst av nyttan och företagen av vinsten. En affär kommer till stånd först när båda är överens – och på så sätt styr prisbildningen hur resurserna används och fördelas."
-    ]},
-    { h: "Vad tar ni för jordgubbarna?", p: [
-      "Jordgubbspriset är högt i början av sommaren och sjunker under högsäsongen när utbudet ökar. I ett diagram anger y-axeln priset och x-axeln mängden.",
-      "**Efterfrågekurvan (e)** visar hur mycket alla konsumenter vill köpa vid olika priser. Ju lägre pris, desto större efterfrågan – kurvan lutar nedåt från högt pris/liten mängd till lågt pris/stor mängd.",
-      "**Utbudskurvan (u)** visar hur odlarna resonerar: de satsar bara om de kan göra en förtjänst, och ju högre pris, desto mer vill de producera. Kurvan lutar uppåt.",
-      "Är priset för högt vill många sälja men få köpa – ett överskott uppstår och säljarna måste sänka priset. Är priset för lågt uppstår brist och köer, och säljarna kan höja priset. Där kurvorna skär varandra råder balans och alla jordgubbar blir sålda: **jämviktspriset** eller **marknadspriset**.",
-      "Med fri konkurrens anpassas priserna upp och ned tills jämvikt nås. Jämviktspriset anses ”rätt” eftersom samhällets resurser då används på bästa sätt: odlarna går med vinst och konsumenterna får sina jordgubbar."
-    ]}
-  ],
-  bild: [
-    { titel: "Utbud och efterfrågan", text: "Diagram med pris på y-axeln och mängd på x-axeln: en nedåtlutande efterfrågekurva (e) och en uppåtlutande utbudskurva (u). Skärningspunkten markeras som jämviktspris. Gärna med markering för överskott (pris för högt) och brist (pris för lågt)." },
-    { titel: "Vad styr utbud och efterfrågan?", text: "Modell: hushållens efterfrågan styrs av behov, pris, inkomst, kvalitet, smak och marknadsföring (→ nytta). Företagens utbud styrs av försäljningspris, kostnader, teknik och skatter (→ vinst). De möts på marknaden." }
-  ],
-  komihag: [
-    "**Prismekanismen**: priset styr vad som produceras och köps.",
-    "Efterfrågekurvan lutar nedåt (lägre pris → fler köper). Utbudskurvan lutar uppåt (högre pris → fler säljer).",
-    "**Jämviktspris** (marknadspris) = där utbud och efterfrågan möts."
-  ]
-},
-
-/* ══════════ 13. VAD KRÄVS FÖR ATT MARKNADSEKONOMIN SKA FUNGERA? ══════════ */
-{
-  id: "marknadsekonomi",
-  rubrik: "Vad krävs för att marknadsekonomin ska fungera?",
-  emoji: "🏪",
-  lattlast: [
-    { h: "Sju förutsättningar", p: [
-      "Vissa marknader har tusentals säljare, som grönsaker. Andra har bara några få, som banker.",
-      "För att marknaden ska fungera bra behövs:"
-    ], lista: [
-      "**Näringsfrihet** – alla får starta ett företag.",
-      "**Fri konkurrens** – företagen tävlar mot varandra och samarbetar inte om priserna.",
-      "**Många aktörer** – så många köpare och säljare att ingen ensam kan bestämma priset.",
-      "**Privat ägande** – människor får äga företag. Annars vill ingen ta risker.",
-      "**Fasta spelregler** – tydliga lagar så att man vågar göra affärer.",
-      "**God information** – köpare och säljare vet om priser och kvalitet.",
-      "**Laissez-faire** (”låt vara”) – staten lägger sig inte i marknaden för mycket."
-    ]}
-  ],
-  fordjupning: [
-    { h: "Sju förutsättningar", p: [
-      "Marknader fungerar olika beroende på konkurrensen. Grönsaksmarknaden har tusentals producenter, medan marknaderna för byggmaterial och banktjänster kontrolleras av ett fåtal företag – och vissa marknader har bara en aktör. För att marknaderna ska kunna samordna miljontals beslut krävs några viktiga förutsättningar:"
-    ], lista: [
-      "**Näringsfrihet** – vem som helst ska kunna starta och driva företag och ha fritt tillträde till marknaden.",
-      "**Fri konkurrens** – ingen samverkan mellan företagen; de ska tävla mot varandra.",
-      "**Många aktörer** – så många köpare och säljare att ingen enskild aktör kan påverka priset.",
-      "**Privat ägande** – utan privat äganderätt vill ingen göra långsiktiga investeringar eller ta risken att utveckla en idé med lånade pengar.",
-      "**Fasta spelregler** – tydliga lagar; utan dem vågar ingen ingå avtal om köp och försäljning.",
-      "**God information** – aktörerna behöver veta om pris och kvalitet för att fatta kloka beslut.",
-      "**Laissez-faire** (”låt vara”) – för mycket statlig inblandning rubbar marknadsmekanismen, så staten bör så långt som möjligt lämna marknaden i fred."
-    ], ex: "Tänk på sambandet med förra avsnittet: prismekanismen kan bara styra produktionen om förutsättningarna finns. Saknas till exempel fri konkurrens eller många aktörer kan enskilda aktörer påverka priset." }
-  ],
-  komihag: [
-    "Marknadsekonomin kräver bland annat **näringsfrihet**, **fri konkurrens** och **många aktörer**.",
-    "Också **privat ägande**, **fasta spelregler** och **god information** behövs.",
-    "**Laissez-faire** = staten ska lägga sig i marknaden så lite som möjligt."
-  ]
-},
-
-/* ══════════ 14. INFLATION ══════════ */
-{
-  id: "inflation",
-  rubrik: "När priserna ökar – inflation",
-  emoji: "🎈",
-  lattlast: [
-    { h: "Vad är inflation?", p: [
-      "**Inflation** betyder att priserna i samhället stiger. Ordet betyder ”blåsa upp”.",
-      "**SCB** mäter inflationen. Varje månad ”köper” de en korg med vanliga saker, till exempel mat, hyra, kläder och bensin.",
-      "De jämför priset med vad samma korg kostade ett år tidigare. Måttet kallas **KPI** (konsumentprisindex)."
-    ]},
-    { h: "Inflation och köpkraft", p: [
-      "Det är normalt att priserna stiger lite.",
-      "Om priserna stiger mer än 5–6 procent om året blir det ett problem.",
-      "**Reallön** är vad din lön är värd när man räknat bort prisökningarna.",
-      "Exempel: Du får 3 procent högre lön. Men priserna har stigit 5 procent. Då kan du köpa mindre än förut. Din **köpkraft** har minskat."
-    ]},
-    { h: "Hyperinflation", p: [
-      "**Hyperinflation** betyder att priserna stiger extremt snabbt.",
-      "I Tyskland 1922 tryckte staten massor av nya sedlar. Pengarna blev nästan värdelösa.",
-      "En restaurangmiddag kunde kosta över en miljard mark."
-    ]},
-    { h: "Deflation", p: [
-      "**Deflation** betyder att priserna sjunker.",
-      "Det låter bra, men det är farligt. Människor väntar med att köpa, eftersom allt blir billigare sedan.",
-      "Då säljer företagen mindre och måste säga upp folk. Fler blir arbetslösa och köper ännu mindre."
-    ]}
-  ],
-  fordjupning: [
-    { h: "Vad är inflation?", p: [
-      "Gamla priser som ”en kola kostade 5 öre” säger lite om pengarnas värde. Intressant blir det först när priset jämförs med hur länge man måste arbeta för det: om restaurangbesöket för 1:50 på 1860-talet motsvarade en hel dagslön, var det inte billigt.",
-      "**Inflation** är en allmän prisökning i samhällsekonomin (ordet betyder ”blåsa upp”). Statistiska centralbyrån (SCB) ”köper” varje månad en korg med varor och tjänster – livsmedel, hyror, kläder, bensin, taxiresor och restaurangbesök – och jämför priset med samma korg året innan. Förändringen i procent kallas **konsumentprisindex (KPI)**."
-    ]},
-    { h: "Inflation och köpkraft", p: [
-      "Att priser stiger är naturligt. Problemen börjar när ökningarna blir stora, över 5–6 % om året. Då stiger också lönerna, vilket ökar företagens kostnader och tvingar fram nya prishöjningar, som i sin tur leder till krav på högre löner. Löneökningarna äts då upp av prisökningarna.",
-      "Därför används begreppet **reallön**: skillnaden mellan den nominella lönen (lönen i kronor) och inflationen. Det är reallönen som avgör vår *köpkraft* – hur mycket vi kan köpa för pengarna.",
-      "Minskar köpkraften kraftigt kan förtroendet för pengarna skadas, och många byter då till något med fastare värde, som guld eller fastigheter. Försvinner förtroendet helt blir pengarna värdelösa, prismekanismen slutar fungera och både produktion och handel drabbas. Det är därför hög inflation är så skadlig."
-    ]},
-    { h: "Hyperinflation", p: [
-      "1922 hamnade den tyska valutan i en *hyperinflation*. Regeringen hade betalat sina krigsskulder genom att trycka fler sedlar, vilket gjorde att pengarnas värde sjönk och inflationen nådde rekordnivåer. En måltid i Berlin kunde kosta en och en halv miljard mark plus 400 miljoner i dricks.",
-      "Hyperinflationen blev ett skrämmande exempel på en ekonomi ur kontroll och ledde till allvarliga ekonomiska och sociala spänningar med långvariga konsekvenser för landet. Sambandet är tydligt: fler pengar utan fler varor sänker varje krones (marks) värde."
-    ]},
-    { h: "Deflation", p: [
-      "**Deflation** är en allmän sänkning av priserna. Om allt blir billigare i morgon väljer många att spara i stället för att handla. Efterfrågan minskar, företagen drar ned på produktionen och arbetslösheten ökar – vilket minskar efterfrågan ytterligare.",
-      "Resultatet kan bli en negativ spiral med minskad ekonomisk aktivitet, som är mycket svår att ta sig ur. Det har bland annat drabbat Japan och flera länder i Europa."
-    ]}
-  ],
-  bild: [
-    { titel: "Varukorgen och KPI", text: "Illustration av SCB:s varukorg (livsmedel, hyra, kläder, bensin, taxi, restaurang) som jämförs med samma korg ett år tidigare – prisförändringen i procent = KPI." },
-    { titel: "Deflationsspiralen", text: "Cirkel: priserna sjunker → hushållen väntar med att köpa → efterfrågan minskar → företagen minskar produktionen → arbetslösheten ökar → efterfrågan minskar ytterligare." }
-  ],
-  komihag: [
-    "**Inflation** = allmän prisökning. Den mäts med **KPI** av SCB.",
-    "**Reallön** = lönen minus inflationen – den avgör din **köpkraft**.",
-    "**Hyperinflation** gör pengarna värdelösa. **Deflation** (sjunkande priser) kan ge en negativ spiral."
+    "**Hushållen** efterfrågar och är arbetskraft, **företagen** producerar – de möts på **marknaden**. Produktion kräver **naturresurser**, **arbete** och **realkapital**.",
+    "**BNP** = värdet av alla färdiga varor och tjänster i ett land under ett år (ca 70 % tjänster). Exporten är över hälften av Sveriges BNP.",
+    "Ny teknik driver långa tillväxtperioder som slutar i **strukturkriser** (Lennart Schön): ångkraft → elektricitet → bilen → IT."
   ]
 }
 
@@ -1030,19 +578,181 @@ function fmt(text) {
   });
 }
 
+/* ===================== INBYGGDA DIAGRAM (SVG) ===================== */
+
+const C = { p: '#fb923c', pd: '#7c2d12', deep: '#c2410c', ax: '#334155', mute: '#94a3b8', blue: '#0369a1' };
+
+function Arrowheads() {
+  return (
+    <defs>
+      <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill={C.ax} />
+      </marker>
+      <marker id="ahp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill={C.deep} />
+      </marker>
+      <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill={C.blue} />
+      </marker>
+    </defs>
+  );
+}
+
+/* Konjunkturcykel: vågrörelse kring en stigande tillväxttrend. */
+function KonjunkturSVG() {
+  const x0 = 70, x1 = 580, yA = 250, yB = 95, amp = 40, cykler = 2.25;
+  const trend = x => yA - (x - x0) * (yA - yB) / (x1 - x0);
+  const fas = x => (x - x0) / (x1 - x0) * cykler * 2 * Math.PI;
+  const pts = [];
+  for (let x = x0; x <= x1; x += 4) pts.push([x, trend(x) - amp * Math.sin(fas(x))]);
+  const d = 'M' + pts.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' L');
+  const xAt = k => x0 + k / (cykler * 2) * (x1 - x0);   // k i halvperioder
+  const toppar = [0.5, 2.5].map(xAt), dalar = [1.5, 3.5].map(xAt);
+  return (
+    <svg viewBox="0 0 620 330" role="img" aria-labelledby="kj-t kj-d">
+      <title id="kj-t">Konjunkturcykeln</title>
+      <desc id="kj-d">BNP växer längs en stigande tillväxttrend. Den verkliga produktionen svänger i vågor runt trenden: topparna är högkonjunktur och dalarna lågkonjunktur.</desc>
+      <Arrowheads />
+      <line x1={x0} y1="290" x2={x0} y2="28" stroke={C.ax} strokeWidth="2" markerEnd="url(#ah)" />
+      <line x1={x0} y1="290" x2="600" y2="290" stroke={C.ax} strokeWidth="2" markerEnd="url(#ah)" />
+      <text x="22" y="160" fontSize="14" fill={C.ax} transform="rotate(-90 22 160)" textAnchor="middle">BNP (produktion)</text>
+      <text x="596" y="314" fontSize="14" fill={C.ax} textAnchor="end">Tid</text>
+      <line x1={x0} y1={yA} x2={x1} y2={yB} stroke={C.mute} strokeWidth="2.5" strokeDasharray="8 6" />
+      <text x={x1 - 4} y={yB - 50} fontSize="14" fill="#475569" textAnchor="end">Tillväxttrend</text>
+      <line x1={x1 - 40} y1={yB - 44} x2={x1 - 8} y2={trend(x1 - 8) - 4} stroke={C.mute} strokeWidth="1.2" />
+      <path d={d} fill="none" stroke={C.p} strokeWidth="4" strokeLinecap="round" />
+      {toppar.map((x, i) => (
+        <g key={'t' + i}>
+          <circle cx={x} cy={trend(x) - amp} r="5" fill={C.deep} />
+          <text x={x} y={trend(x) - amp - 14} fontSize="14" fontWeight="600" fill={C.deep} textAnchor="middle">Högkonjunktur</text>
+        </g>
+      ))}
+      {dalar.map((x, i) => (
+        <g key={'d' + i}>
+          <circle cx={x} cy={trend(x) + amp} r="5" fill={C.blue} />
+          <text x={x} y={trend(x) + amp + 24} fontSize="14" fontWeight="600" fill={C.blue} textAnchor="middle">Lågkonjunktur</text>
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+/* Utbud och efterfrågan: jordgubbsmarknaden med jämviktspris, överskott och brist. */
+function UtbudSVG() {
+  const O = [80, 320];                                   // origo
+  const e = [[120, 60], [540, 290]], u = [[120, 290], [540, 60]];
+  const xOn = (L, y) => L[0][0] + (y - L[0][1]) * (L[1][0] - L[0][0]) / (L[1][1] - L[0][1]);
+  const J = [330, 175];                                  // skärningspunkt
+  const yHog = 100, yLag = 250;
+  return (
+    <svg viewBox="0 0 620 370" role="img" aria-labelledby="ue-t ue-d">
+      <title id="ue-t">Utbud och efterfrågan på jordgubbar</title>
+      <desc id="ue-d">Efterfrågekurvan e lutar nedåt och utbudskurvan u lutar uppåt. Där de korsas finns jämviktspriset. Vid ett för högt pris blir det överskott, vid ett för lågt pris blir det brist.</desc>
+      <Arrowheads />
+      <line x1={O[0]} y1={O[1]} x2={O[0]} y2="28" stroke={C.ax} strokeWidth="2" markerEnd="url(#ah)" />
+      <line x1={O[0]} y1={O[1]} x2="600" y2={O[1]} stroke={C.ax} strokeWidth="2" markerEnd="url(#ah)" />
+      <text x="30" y="40" fontSize="15" fontWeight="600" fill={C.ax}>Pris</text>
+      <text x="596" y="350" fontSize="15" fontWeight="600" fill={C.ax} textAnchor="end">Mängd jordgubbar</text>
+
+      {/* Överskott vid för högt pris */}
+      <line x1={xOn(e, yHog)} y1={yHog} x2={xOn(u, yHog)} y2={yHog} stroke={C.deep} strokeWidth="2" strokeDasharray="5 4" />
+      <text x={(xOn(e, yHog) + xOn(u, yHog)) / 2} y={yHog - 8} fontSize="13" fill={C.deep} textAnchor="middle">För högt pris → överskott</text>
+      {/* Brist vid för lågt pris */}
+      <line x1={xOn(u, yLag)} y1={yLag} x2={xOn(e, yLag)} y2={yLag} stroke={C.blue} strokeWidth="2" strokeDasharray="5 4" />
+      <text x={(xOn(u, yLag) + xOn(e, yLag)) / 2} y={yLag + 20} fontSize="13" fill={C.blue} textAnchor="middle">För lågt pris → brist och köer</text>
+
+      <line x1={e[0][0]} y1={e[0][1]} x2={e[1][0]} y2={e[1][1]} stroke={C.blue} strokeWidth="4" strokeLinecap="round" />
+      <line x1={u[0][0]} y1={u[0][1]} x2={u[1][0]} y2={u[1][1]} stroke={C.p} strokeWidth="4" strokeLinecap="round" />
+      <text x={e[1][0] + 8} y={e[1][1] + 5} fontSize="18" fontWeight="700" fill={C.blue}>e</text>
+      <text x={u[1][0] + 8} y={u[1][1] + 5} fontSize="18" fontWeight="700" fill={C.deep}>u</text>
+
+      <line x1={O[0]} y1={J[1]} x2={J[0]} y2={J[1]} stroke={C.mute} strokeWidth="1.5" strokeDasharray="4 4" />
+      <line x1={J[0]} y1={J[1]} x2={J[0]} y2={O[1]} stroke={C.mute} strokeWidth="1.5" strokeDasharray="4 4" />
+      <circle cx={J[0]} cy={J[1]} r="7" fill="#fff" stroke={C.pd} strokeWidth="3" />
+      <text x={J[0] + 14} y={J[1] + 5} fontSize="14" fontWeight="600" fill={C.pd}>Jämvikt</text>
+      <text x={O[0] - 6} y={J[1] - 6} fontSize="12" fill={C.pd} textAnchor="end">Jämvikts-</text>
+      <text x={O[0] - 6} y={J[1] + 9} fontSize="12" fill={C.pd} textAnchor="end">pris</text>
+    </svg>
+  );
+}
+
+/* Det ekonomiska kretsloppet: hushåll och företag möts på marknaden. */
+function KretsloppSVG() {
+  const box = (x, y, w, h, fill, stroke, rubrik, rad) => (
+    <g>
+      <rect x={x} y={y} width={w} height={h} rx="16" fill={fill} stroke={stroke} strokeWidth="2.5" />
+      <text x={x + w / 2} y={y + h / 2 - 4} fontSize="17" fontWeight="700" fill={C.pd} textAnchor="middle">{rubrik}</text>
+      <text x={x + w / 2} y={y + h / 2 + 16} fontSize="12" fill="#475569" textAnchor="middle">{rad}</text>
+    </g>
+  );
+  return (
+    <svg viewBox="0 0 620 340" role="img" aria-labelledby="kl-t kl-d">
+      <title id="kl-t">Det ekonomiska kretsloppet mellan hushåll och företag</title>
+      <desc id="kl-d">Hushållen ger företagen arbetskraft och får löner tillbaka. Hushållens efterfrågan och företagens utbud möts på marknaden.</desc>
+      <Arrowheads />
+      {box(20, 120, 150, 90, '#fff7ed', C.p, 'Hushåll', 'behov · konsumtion')}
+      {box(450, 120, 150, 90, '#fff7ed', C.p, 'Företag', 'resurser · produktion')}
+      {box(245, 128, 130, 74, '#ffedd5', C.deep, 'Marknaden', 'här möts e och u')}
+
+      {/* Mitten: efterfrågan och utbud möts på marknaden */}
+      <line x1="172" y1="165" x2="241" y2="165" stroke={C.blue} strokeWidth="3" markerEnd="url(#ahb)" />
+      <text x="206" y="155" fontSize="13" fontWeight="600" fill={C.blue} textAnchor="middle">efterfrågan (e)</text>
+      <line x1="448" y1="165" x2="379" y2="165" stroke={C.deep} strokeWidth="3" markerEnd="url(#ahp)" />
+      <text x="414" y="155" fontSize="13" fontWeight="600" fill={C.deep} textAnchor="middle">utbud (u)</text>
+
+      {/* Övre båge: arbetskraft från hushåll till företag */}
+      <path d="M95,118 C95,30 525,30 525,116" fill="none" stroke={C.ax} strokeWidth="2.5" markerEnd="url(#ah)" />
+      <text x="310" y="46" fontSize="14" fontWeight="600" fill={C.ax} textAnchor="middle">Arbetskraft</text>
+      {/* Nedre båge: löner från företag till hushåll */}
+      <path d="M525,212 C525,305 95,305 95,214" fill="none" stroke={C.ax} strokeWidth="2.5" markerEnd="url(#ah)" />
+      <text x="310" y="300" fontSize="14" fontWeight="600" fill={C.ax} textAnchor="middle">Löner (inkomster)</text>
+    </svg>
+  );
+}
+
+const DIAGRAMS = {
+  konjunktur: { Comp: KonjunkturSVG, cap: '**Konjunkturcykeln.** Den streckade linjen är **tillväxttrenden** – den stadiga ökningen av BNP. Den orange kurvan är den verkliga produktionen, som svänger mellan **högkonjunktur** och **lågkonjunktur** runt trenden.' },
+  utbud:      { Comp: UtbudSVG,      cap: '**Jordgubbsmarknaden.** Efterfrågekurvan (**e**) lutar nedåt: ju lägre pris, desto mer vill konsumenterna köpa. Utbudskurvan (**u**) lutar uppåt: ju högre pris, desto mer vill odlarna sälja. Där kurvorna möts finns **jämviktspriset**.' },
+  kretslopp:  { Comp: KretsloppSVG,  cap: '**Hushåll och företag.** Hushållen ger företagen arbetskraft och får löner. Hushållens **efterfrågan** och företagens **utbud** möts på **marknaden**.' }
+};
+
+function Diagram({ id }) {
+  const d = DIAGRAMS[id];
+  if (!d) return null;
+  return (
+    <figure className="diagram">
+      <d.Comp />
+      <figcaption>{fmt(d.cap)}</figcaption>
+    </figure>
+  );
+}
+
 /* ===================== INNEHÅLLSKOMPONENTER ===================== */
 
-/* Lättläst: en tanke per stycke – varje rad i p[] blir ett eget stycke. */
-function Block({ b }) {
+/* Citat (extra.citat) placeras direkt efter blockets första stycken, som i källan,
+   så att texten som kommenterar citatet hamnar efter det. */
+function Citat({ list }) {
+  return (list || []).map((c, i) => (
+    <blockquote className="citat" key={"c" + i}>
+      {c.text}
+      {c.kalla && <span className="citat-k">— {c.kalla}</span>}
+    </blockquote>
+  ));
+}
+
+function Block({ b, x }) {
   return (
     <div>
-      <h3>{b.h}</h3>
+      {b.h && <h3>{b.h}</h3>}
       {(b.p || []).map((t, i) => <p key={i}>{fmt(t)}</p>)}
+      <Citat list={x && x.citat} />
+      {(b.mellan || []).map((t, i) => <p key={"m" + i}>{fmt(t)}</p>)}
       {b.lista && (
         <ul>
           {b.lista.map((t, i) => <li key={i}>{fmt(t)}</li>)}
         </ul>
       )}
+      {(b.p2 || []).map((t, i) => <p key={'p2' + i}>{fmt(t)}</p>)}
       {b.tabell && (
         <div className="tbl-wrap">
           <table className="tbl">
@@ -1055,70 +765,72 @@ function Block({ b }) {
           </table>
         </div>
       )}
+      {b.stat && (
+        <div className="stat">
+          <div className="stat-h">📊 {b.stat.h}</div>
+          <ul>{b.stat.lista.map((t, i) => <li key={i}>{fmt(t)}</li>)}</ul>
+        </div>
+      )}
       {b.ex && <div className="ex">{fmt(b.ex)}</div>}
     </div>
   );
 }
 
-function Bildplats({ titel, text }) {
+function Extra({ x }) {
+  if (!x) return null;
   return (
-    <div className="bildplats" role="note">
-      <span className="bildplats-i" aria-hidden="true">🖼️</span>
-      <div>
-        <div className="bildplats-t">[BILDPLATS] {titel}</div>
-        <div className="bildplats-d">{text}</div>
-      </div>
-    </div>
-  );
-}
-
-function KomIhag({ punkter }) {
-  return (
-    <div className="komihag">
-      <div className="komihag-h">💡 Kom ihåg</div>
-      <ul>
-        {punkter.map((t, i) => <li key={i}>{fmt(t)}</li>)}
-      </ul>
-    </div>
-  );
-}
-
-function Section({ sec, mode, open, toggle }) {
-  const blocks = mode === 'lattlast' ? sec.lattlast : sec.fordjupning;
-  return (
-    <section id={sec.id} className="sec">
-      <button className="sec-head" onClick={() => toggle(sec.id)}
-              aria-expanded={open} aria-controls={sec.id + '-body'}>
-        <span className="sec-emoji">{sec.emoji}</span>
-        <span className="sec-titlewrap">
-          <span className="sec-title">{sec.rubrik}</span>
-        </span>
-        <span className={'chev' + (open ? ' open' : '')}>▶</span>
-      </button>
-
-      {open && (
-        <div className="block" id={sec.id + '-body'}>
-          {blocks.map((b, i) => <Block b={b} key={i} />)}
-
-          {(sec.bild || []).map((bp, i) => <Bildplats key={i} titel={bp.titel} text={bp.text} />)}
-
-          {sec.fundera && (
-            <div className="fundera">
-              <div className="fundera-h">🤔 Fundera</div>
-              {fmt(sec.fundera)}
-            </div>
-          )}
-
-          <KomIhag punkter={sec.komihag} />
-
-          <div className="to-top">
-            <a href="#toppen" onClick={(e) => {
-              e.preventDefault();
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}>↑ Till toppen</a>
+    <>
+      {x.diagram && <Diagram id={x.diagram} />}
+      {(x.bild || []).map((bp, i) => (
+        <div className="bildplats" role="note" key={'b' + i}>
+          <span className="bildplats-i" aria-hidden="true">🖼️</span>
+          <div>
+            <div className="bildplats-t">[BILDPLATS] {bp.titel}</div>
+            <div className="bildplats-d">{bp.text}</div>
           </div>
         </div>
-      )}
+      ))}
+      {(x.fundera || []).map((f, i) => (
+        <div className="fundera" key={'f' + i}>
+          <div className="fundera-h">🤔 Fundera</div>
+          {f}
+        </div>
+      ))}
+    </>
+  );
+}
+
+function Section({ sec, mode, nr }) {
+  const blocks = mode === 'lattlast' ? sec.lattlast : sec.fordjupning;
+  const extra = sec.extra || {};
+  return (
+    <section id={sec.id} className="sec">
+      <div className="sec-head">
+        <span className="sec-emoji" aria-hidden="true">{sec.emoji}</span>
+        <h2 className="sec-title">{nr}. {sec.rubrik}</h2>
+      </div>
+      <p className="ingress"><b>Efter det här avsnittet</b>{fmt(sec.ingress)}</p>
+
+      <div className="block">
+        {blocks.map((b, i) => (
+          <React.Fragment key={i}>
+            <Block b={b} x={extra[b.h || ""]} />
+            <Extra x={extra[b.h || '']} />
+          </React.Fragment>
+        ))}
+
+        <div className="komihag">
+          <div className="komihag-h">💡 Kom ihåg</div>
+          <ul>{sec.komihag.map((t, i) => <li key={i}>{fmt(t)}</li>)}</ul>
+        </div>
+
+        <div className="to-top">
+          <a href="#toppen" onClick={(e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}>↑ Till toppen</a>
+        </div>
+      </div>
     </section>
   );
 }
@@ -1126,6 +838,7 @@ function Section({ sec, mode, open, toggle }) {
 /* ===================== APP ===================== */
 
 function App() {
+  /* Läget sparas bara i sessionStorage under egen nyckel – påverkar inget annat. */
   const [mode, setMode] = useState(() => {
     try {
       const saved = sessionStorage.getItem(PAGE.storeKey);
@@ -1133,69 +846,44 @@ function App() {
     } catch (e) {}
     return 'lattlast';
   });
-
-  const [isMobile, setIsMobile] = useState(
-    () => typeof window !== 'undefined' && window.innerWidth < 768
-  );
-  const [open, setOpen] = useState(() => new Set(SECTIONS.map(s => s.id)));
-
-  useEffect(() => {
-    function onResize() {
-      const m = window.innerWidth < 768;
-      setIsMobile(prev => (prev === m ? prev : m));
-    }
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, []);
-
-  useEffect(() => {
-    setOpen(isMobile ? new Set() : new Set(SECTIONS.map(s => s.id)));
-  }, [isMobile]);
+  const [active, setActive] = useState(SECTIONS[0].id);
+  const [tocOpen, setTocOpen] = useState(false);
 
   useEffect(() => {
     try { sessionStorage.setItem(PAGE.storeKey, mode); } catch (e) {}
   }, [mode]);
 
-  /* Djuplänk: öppnar och scrollar till avsnittet i URL:ens hash. */
+  /* Markera aktuellt avsnitt i innehållsförteckningen. */
   useEffect(() => {
-    function openFromHash() {
-      const id = decodeURIComponent((window.location.hash || '').replace('#', ''));
-      if (!id || !SECTIONS.some(sec => sec.id === id)) return;
-      setOpen(prev => {
-        const next = new Set(prev);
-        next.add(id);
-        return next;
-      });
-      window.setTimeout(() => {
-        const el = document.getElementById(id);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 120);
-    }
-    openFromHash();
-    window.addEventListener('hashchange', openFromHash);
-    return () => window.removeEventListener('hashchange', openFromHash);
-  }, [isMobile]);
+    if (!('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver(entries => {
+      const vis = entries.filter(en => en.isIntersecting)
+                         .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+      if (vis.length) setActive(vis[0].target.id);
+    }, { rootMargin: '-15% 0px -70% 0px' });
+    SECTIONS.forEach(s => { const el = document.getElementById(s.id); if (el) io.observe(el); });
+    return () => io.disconnect();
+  }, []);
 
-  const toggle = (id) => {
-    setOpen(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
-      return next;
-    });
-  };
+  /* Djuplänk: scrolla till avsnittet i URL:ens hash när sidan laddats. */
+  useEffect(() => {
+    const id = decodeURIComponent((window.location.hash || '').replace('#', ''));
+    if (!id) return;
+    window.setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ block: 'start' });
+    }, 150);
+  }, []);
 
   const goto = (e, id) => {
     e.preventDefault();
-    setOpen(prev => {
-      const next = new Set(prev);
-      next.add(id);
-      return next;
-    });
-    window.setTimeout(() => {
-      const el = document.getElementById(id);
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 60);
+    setTocOpen(false);
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    try { history.replaceState(null, '', '#' + id); } catch (err) {}
   };
+
+  const activeIdx = Math.max(0, SECTIONS.findIndex(s => s.id === active));
 
   return (
     <div className="wrap" id="toppen">
@@ -1209,8 +897,8 @@ function App() {
         <h1>{PAGE.titel}</h1>
         <div className="rule"></div>
         <p className="lead">
-          Pluggmaterial i {SECTIONS.length} avsnitt. Välj <strong>Lättläst</strong> för korta, enkla förklaringar
-          eller <strong>Fördjupning</strong> för resonemang, samband och orsak–verkan.
+          Pluggmaterial i {SECTIONS.length} avsnitt. Välj <strong>Lättläst</strong> för korta meningar och exempel
+          från vardagen, eller <strong>Fördjupning</strong> för resonemang, orsak–verkan och samband.
         </p>
       </header>
 
@@ -1224,43 +912,47 @@ function App() {
       </div>
       <p className="mode-note">
         {mode === 'lattlast'
-          ? 'Lättläst: korta meningar och exempel från vardagen.'
-          : 'Fördjupning: samma rubriker, men med fler samband och exempel.'}
+          ? 'Lättläst: korta meningar, en tanke i taget och exempel från vardagen.'
+          : 'Fördjupning: samma rubriker, men med resonemang, orsak–verkan och samband.'}
       </p>
 
-      <nav className="toc" aria-label="Innehåll">
-        <div className="toc-h">Innehåll</div>
-        {SECTIONS.map((s, i) => (
-          <a href={'#' + s.id} key={s.id} onClick={(e) => goto(e, s.id)}>
-            <span className="toc-n">{i + 1}</span>
-            <span className="toc-t">{s.rubrik}</span>
-          </a>
-        ))}
-      </nav>
+      <div className="layout">
+        <nav className={'toc' + (tocOpen ? ' open' : '')} aria-label="Innehåll">
+          <button className="toc-btn" onClick={() => setTocOpen(o => !o)} aria-expanded={tocOpen}>
+            <span className="toc-btn-t">☰ {activeIdx + 1}. {SECTIONS[activeIdx].rubrik}</span>
+            <span aria-hidden="true">{tocOpen ? '▲' : '▼'}</span>
+          </button>
+          <div className="toc-h">Innehåll</div>
+          <div className="toc-list">
+            {SECTIONS.map((s, i) => (
+              <a href={'#' + s.id} key={s.id} onClick={(e) => goto(e, s.id)}
+                 className={s.id === active ? 'active' : ''}>
+                <span className="toc-n">{i + 1}</span>
+                <span className="toc-t">{s.rubrik}</span>
+              </a>
+            ))}
+          </div>
+        </nav>
 
-      {isMobile && (
-        <p className="hint">Tryck på en rubrik för att öppna avsnittet.</p>
-      )}
+        <main>
+          {SECTIONS.map((s, i) => <Section key={s.id} sec={s} mode={mode} nr={i + 1} />)}
 
-      {SECTIONS.map(s => (
-        <Section key={s.id} sec={s} mode={mode}
-                 open={open.has(s.id)} toggle={toggle} />
-      ))}
+          <section className="next" aria-label="Öva vidare">
+            <h2>Öva vidare</h2>
+            <p>Har du läst klart? Testa dig själv på områdets begrepp och quiz.</p>
+            <div className="next-grid">
+              <a className="next-btn ghost" href="sh_ekonomibegrepp.html">📖 Öva på begrepp</a>
+              <a className="next-btn primary" href="sh_ekonomi.html">🎯 Starta quizet</a>
+              <a className="next-btn ghost wide" href={PAGE.andra.href}>📚 {PAGE.andra.label}</a>
+            </div>
+          </section>
 
-      <section className="next" aria-label="Öva vidare">
-        <h2>Öva vidare</h2>
-        <p>Har du läst klart? Testa dig själv på områdets begrepp och quiz.</p>
-        <div className="next-grid">
-          <a className="next-btn ghost" href="sh_ekonomibegrepp.html">📖 Öva på begrepp</a>
-          <a className="next-btn primary" href="sh_ekonomi.html">🎯 Starta quizet</a>
-          <a className="next-btn ghost wide" href={PAGE.andra.href}>📚 {PAGE.andra.label}</a>
-        </div>
-      </section>
-
-      <footer className="foot">
-        <p>Källa: {PAGE.kalla}</p>
-        <p className="by">Designad av John</p>
-      </footer>
+          <footer className="foot">
+            <p>Källa: {PAGE.kalla}</p>
+            <p className="by">Designad av John</p>
+          </footer>
+        </main>
+      </div>
     </div>
   );
 }
