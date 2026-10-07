@@ -17,7 +17,7 @@
   body { font-family: 'EB Garamond', serif; font-size: 1.08rem; background:#f8fafc; color:#1e293b; margin:0; }
   h1,h2,h3,h4,.fredoka { font-family: 'Fredoka', sans-serif; }
 
-  .wrap { max-width: 52rem; margin: 0 auto; padding: 1.6rem 1.25rem 4rem; }
+  .wrap { max-width: 74rem; margin: 0 auto; padding: 1.6rem 1.25rem 4rem; }
 
   /* ── Tillbaka ── */
   .back {
@@ -57,48 +57,77 @@
     margin:0 0 1.6rem;
   }
 
-  /* ── Innehållsförteckning ── */
+  /* ── Layout: sticky innehållsförteckning + innehåll ── */
+  .layout { display:grid; grid-template-columns: 15.5rem minmax(0,1fr); gap:2rem; align-items:start; }
   .toc {
+    position:sticky; top:1rem; max-height:calc(100vh - 2rem); overflow-y:auto;
     background:#fff; border:1px solid #e2e8f0; border-radius:1.2rem;
-    padding:.9rem 1rem; margin-bottom:1.6rem; box-shadow:0 1px 3px rgba(0,0,0,.05);
+    padding:.9rem .8rem; box-shadow:0 1px 3px rgba(0,0,0,.05);
   }
   .toc-h {
     font-family:'Fredoka',sans-serif; font-size:.7rem; font-weight:700; text-transform:uppercase;
     letter-spacing:.14em; color:var(--p-deep); margin:.2rem .3rem .5rem;
   }
-  .toc a {
-    display:flex; align-items:center; gap:.7rem; padding:.55rem .8rem; border-radius:.75rem;
-    color:#334155; text-decoration:none; transition:background .15s;
+  .toc-btn { display:none; }
+  .toc-list a {
+    display:flex; align-items:center; gap:.6rem; padding:.5rem .6rem; border-radius:.75rem;
+    color:#334155; text-decoration:none; transition:background .15s; line-height:1.3; font-size:.98rem;
   }
-  .toc a:hover { background: var(--pl); }
+  .toc-list a:hover { background: var(--pl); }
+  .toc-list a.active { background: var(--pl); color:var(--pd); font-weight:700; }
   .toc-n {
-    flex:none; width:1.7rem; height:1.7rem; border-radius:50%; background:var(--pl); color:var(--pd);
-    font-family:'Fredoka',sans-serif; font-weight:700; font-size:.8rem;
+    flex:none; width:1.6rem; height:1.6rem; border-radius:50%; background:var(--pl); color:var(--pd);
+    font-family:'Fredoka',sans-serif; font-weight:700; font-size:.78rem;
     display:flex; align-items:center; justify-content:center;
   }
+  .toc-list a.active .toc-n { background:var(--p); }
   .toc-t { flex:1; }
 
-  .hint {
-    text-align:center; font-size:.85rem; color:#94a3b8; margin:-.8rem 0 1.2rem;
-    font-family:'Fredoka',sans-serif;
-  }
-
   /* ── Avsnitt ── */
-  .sec { margin-bottom: 1.4rem; scroll-margin-top: 1rem; }
+  .sec { margin-bottom: 2.4rem; scroll-margin-top: 1rem; }
   .sec-head {
-    width:100%; display:flex; align-items:center; gap:.9rem; text-align:left;
-    background:#fff; border:none; border-left:8px solid var(--p);
-    border-radius:1rem; padding:1.1rem 1.2rem; cursor:pointer;
-    box-shadow:0 1px 3px rgba(0,0,0,.06);
+    display:flex; align-items:center; gap:.9rem;
+    background:#fff; border-left:8px solid var(--p);
+    border-radius:1rem; padding:1.1rem 1.2rem; box-shadow:0 1px 3px rgba(0,0,0,.06);
   }
   .sec-emoji { flex:none; font-size:1.6rem; line-height:1; }
-  .sec-titlewrap { flex:1; display:flex; flex-direction:column; gap:.15rem; }
-  .sec-title { font-size:1.35rem; font-weight:600; color:#0f172a; line-height:1.25; font-family:'Fredoka',sans-serif; }
-  .chev { flex:none; color:var(--p); font-size:1.1rem; transition:transform .25s; }
-  .chev.open { transform: rotate(90deg); }
+  .sec-title { font-size:1.45rem; font-weight:600; color:#0f172a; line-height:1.25; margin:0; }
+  .ingress {
+    margin:.9rem .3rem 0; padding:.7rem 1rem; background:#fff; border:1px solid #fed7aa;
+    border-radius:.9rem; color:#475569; line-height:1.65; font-size:1rem;
+  }
+  .ingress b { font-family:'Fredoka',sans-serif; color:var(--p-deep); font-weight:600; font-size:.78rem;
+               text-transform:uppercase; letter-spacing:.1em; display:block; margin-bottom:.15rem; }
+
+  /* ── Citat ur källan ── */
+  .citat {
+    margin:1.2rem 0; padding:1rem 1.2rem 1rem 3rem; background:#fff; border-radius:1rem;
+    border:1px solid #e2e8f0; position:relative; color:#1e293b; font-style:italic; line-height:1.75;
+  }
+  .citat::before { content:'\201D'; position:absolute; left:.8rem; top:.2rem; font-size:3rem;
+                   color:var(--p); font-family:Georgia,serif; font-style:normal; line-height:1; }
+  .citat-k { display:block; margin-top:.4rem; font-style:normal; font-family:'Fredoka',sans-serif;
+             font-size:.78rem; color:#64748b; }
+
+  /* ── Inbyggda diagram (SVG) ── */
+  .diagram { margin:1.4rem 0; background:#fff; border:1px solid #e2e8f0; border-radius:1.2rem; padding:1rem 1rem .8rem; }
+  .diagram svg { display:block; width:100%; height:auto; max-width:40rem; margin:0 auto; }
+  .diagram svg text { font-family:'Fredoka',sans-serif; }
+  .diagram figcaption { font-size:.92rem; color:#475569; line-height:1.6; margin-top:.6rem; text-align:center; }
+  .diagram figcaption b { font-family:'Fredoka',sans-serif; color:var(--pd); }
+
+  /* ── Siffror ur källan ── */
+  .stat {
+    margin:1rem 0; padding:.8rem 1rem; background:#fff7ed; border:1px solid #fed7aa; border-radius:.9rem;
+    color:#7c2d12; line-height:1.65; font-size:.97rem;
+  }
+  .stat-h { font-family:'Fredoka',sans-serif; font-weight:700; font-size:.78rem; text-transform:uppercase;
+            letter-spacing:.1em; color:var(--p-deep); margin-bottom:.2rem; }
+  .stat ul { list-style:none; padding:0; margin:.3rem 0 0; }
+  .stat li { padding:.1rem 0; }
 
   /* ── Brödtext ── */
-  .block { padding: .4rem .3rem 0; }
+  .block { padding: .2rem .3rem 0; }
   .block h3 {
     font-size:1.12rem; font-weight:600; color:var(--pd);
     margin:1.6rem 0 .15rem;
@@ -184,7 +213,19 @@
   @media (max-width: 767px) {
     body { font-size: 1rem; }
     .wrap { padding: 1.2rem .9rem 3rem; }
-    .sec-title { font-size: 1.15rem; }
+    .layout { display:block; }
+    .toc { position:sticky; top:0; z-index:30; max-height:none; overflow:visible;
+           border-radius:0 0 1rem 1rem; margin:0 -.9rem 1.4rem; padding:.5rem .9rem;
+           border-top:none; border-left:none; border-right:none; }
+    .toc-h { display:none; }
+    .toc-btn { display:flex; width:100%; align-items:center; justify-content:space-between; gap:.6rem;
+               background:var(--pl); color:var(--pd); border:none; border-radius:.8rem; padding:.6rem .9rem;
+               font-family:'Fredoka',sans-serif; font-weight:600; font-size:.95rem; cursor:pointer; text-align:left; }
+    .toc-btn-t { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .toc-list { display:none; max-height:60vh; overflow-y:auto; padding-top:.4rem; }
+    .toc.open .toc-list { display:block; }
+    .sec { scroll-margin-top: 4.2rem; }
+    .sec-title { font-size: 1.2rem; }
     .sec-head { padding: .85rem .9rem; gap:.65rem; border-left-width:6px; }
     .sec-emoji { font-size:1.35rem; }
     .block h3 { font-size: 1.05rem; }
@@ -193,6 +234,9 @@
     .next-grid { grid-template-columns:1fr; }
     .bildplats { padding:.85rem .9rem; }
     .tbl { font-size:.88rem; }
+    .citat { padding:.9rem 1rem .9rem 2.4rem; }
+    .citat::before { left:.5rem; font-size:2.4rem; }
+    .diagram { padding:.7rem .4rem .6rem; }
   }
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; animation: none !important; }
@@ -207,569 +251,543 @@
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
 <!-- ════════════════════════════════════════════════════════════
-     ALL TEXT LIGGER I EN GEMENSAM DATA-ARRAY: SECTIONS
-     { id, rubrik, emoji, lattlast[], fordjupning[], bild[], fundera, komihag[] }
-     Block: { h, p[], lista[], ex, tabell:{huvud[], rader[[]]} }
-     Samma rubriker (h) i båda lägena – bara texten skiljer sig.
-     [BILDPLATS] = plats för bild/diagram som ska läggas in senare.
+     ALL TEXT LIGGER I EN GEMENSAM DATA-ARRAY: SECTIONS – ett objekt per ##-avsnitt i källan
+     { id, rubrik, emoji, ingress, lattlast[], fordjupning[], extra{}, komihag[] }
+     Block: { h, p[], lista[], ex, stat:{h, lista[]}, tabell:{huvud[], rader[[]]} }
+       h = källans ###-rubrik (null = avsnittets inledning). Samma rubriker i båda lägena.
+     extra[h] visas efter blocket i BÅDA lägena: { citat[], diagram, bild[], fundera[] }
+       citat:   { text, kalla } – ordagrant ur källan
+       diagram: 'konjunktur' | 'utbud' | 'kretslopp' (inbyggd SVG, se DIAGRAMS)
+       bild:    { titel, text } – [BILDPLATS] för bild som ska läggas in senare
+       fundera: källans "! Fundera"-frågor, ordagrant
      ════════════════════════════════════════════════════════════ -->
 <script>
 /* Källa: Ekonomisk_politik_material.md ("2. Ekonomisk politik").
-   Källan anger inga sidnummer – varken för kapitlet eller för avsnitten. */
+   Ett objekt per ##-avsnitt; blockens h = källans ###-rubriker.
+   Källan anger inga sidnummer. */
 var PAGE = {
   eyebrow: "Samhällskunskap Sa1a2 · Samhällsekonomi · Del 2",
   titel: "Ekonomisk politik",
   storeKey: "sh1a2_ekonomi_politik_mode",
-  kalla: "Ekonomi, kapitel 2, ”Ekonomisk politik” (sidnummer saknas i källmaterialet).",
-  andra: { href: "sh1a2_samhallsekonomi_grunder_plugg.html", label: "Tillbaka till Del 1 – Samhällsekonomins grunder" }
+  kalla: "Ekonomi, ”2. Ekonomisk politik” (källmaterialet anger inga sidnummer).",
+  andra: { href: "sh1a2_samhallsekonomi_grunder_plugg.html", label: "Del 1 – Samhällsekonomins grunder" }
 };
 
 var SECTIONS = [
 
 /* ══════════ 1. TILLVÄXT OCH KONJUNKTURER ══════════ */
 {
-  id: "tillvaxt-konjunkturer",
+  id: "tillvaxt-och-konjunkturer",
   rubrik: "Tillväxt och konjunkturer",
   emoji: "📈",
+  ingress: "ska du kunna förklara vad ekonomisk tillväxt och konjunkturer är, vad som händer i hög- och lågkonjunktur och vad som driver tillväxten.",
   lattlast: [
-    { h: "Vad är ekonomisk politik?", p: [
+    { h: null, p: [
       "Ekonomin har ofta problem. Ibland blir många arbetslösa. Ibland används naturen för hårt. Ibland blir skillnaden mellan rika och fattiga för stor.",
-      "Det staten gör för att ekonomin ska fungera bra kallas **ekonomisk politik**."
-    ]},
-    { h: "Tillväxt och konjunkturer", p: [
-      "**Ekonomisk tillväxt** betyder att landet producerar mer än förut.",
-      "Man räknar ut det genom att jämföra BNP ett år med BNP året innan.",
+      "Det staten gör för att ekonomin ska fungera bra kallas **ekonomisk politik**.",
+      "**Ekonomisk tillväxt** betyder att landet producerar mer än förut. Man jämför BNP ett år med BNP ett annat år.",
       "Oftast ökar BNP lite varje år. Den jämna ökningen kallas **tillväxttrend**.",
-      "Men ekonomin går i vågor. Ibland går det snabbt uppåt, ibland långsamt eller nedåt. Vågorna kallas **konjunkturer**.",
-      "En våg är ofta ungefär fem år lång."
+      "Men ekonomin går i vågor. Ibland går det snabbt uppåt. Ibland går det långsamt eller till och med nedåt. Vågorna kallas **konjunkturer**.",
+      "En sådan våg är ofta ungefär fem år lång."
     ]},
     { h: "Högkonjunktur", p: [
       "**Högkonjunktur** betyder att ekonomin växer snabbt.",
       "Människor handlar mycket. Företagen tillverkar mer och anställer fler.",
-      "Fler får jobb och tjänar pengar. Då handlar de ännu mer.",
+      "Fler får jobb och lön. Då handlar de ännu mer.",
       "Till slut hinner företagen inte med. Det kan saknas personal eller material.",
-      "Några företag höjer priserna. När allt blir dyrt har folk inte råd att köpa lika mycket. Ekonomin är ”överhettad”."
-    ]},
+      "Några företag höjer priserna. Att priserna stiger kallas **inflation**. Till slut har folk inte råd att köpa lika mycket. Man säger att ekonomin är ”överhettad”."
+    ], ex: "Exempel: Ett café har kö hela dagen. Ägaren anställer fler. Till slut höjer caféet priset på kaffet, eftersom så många vill köpa." },
     { h: "Lågkonjunktur", p: [
       "**Lågkonjunktur** betyder att ekonomin växer långsamt.",
       "Människor köper mindre. Företagen har mindre att göra och säger upp personal.",
       "Fler blir arbetslösa. Då har de mindre pengar och köper ännu mindre.",
-      "Till slut vänder det. Andra länder köper mer av våra varor igen. Det blir billigare att låna pengar.",
-      "Företagen anställer igen och folk handlar mer. En ny högkonjunktur börjar."
-    ]}
-  ],
-  fordjupning: [
-    { h: "Vad är ekonomisk politik?", p: [
-      "Samhällsekonomin drabbas ständigt av utmaningar: svängningar i konjunkturen påverkar sysselsättningen, naturresurser överutnyttjas och marknadsmekanismen leder ibland till orimliga skillnader i inkomster och levnadsvillkor. För att ekonomin ska växa på ett stabilt, rättvist och hållbart sätt krävs politisk styrning. De åtgärder staten vidtar för att samhällsekonomin ska fungera väl kallas **ekonomisk politik**."
+      "Till slut vänder det. Andra länder börjar köpa mer av våra varor. Räntorna kan ha sjunkit, så det blir billigare att låna.",
+      "Företagen anställer igen och folk handlar mer. En ny uppgång börjar."
     ]},
-    { h: "Tillväxt och konjunkturer", p: [
-      "**Ekonomisk tillväxt** innebär att den totala produktionen i ett land ökar under en viss period. Tillväxten räknas fram genom att jämföra BNP mellan olika år och anges som BNP-förändringen i procent, ofta med inflationen borträknad.",
-      "Produktionen ökar vanligtvis en aning varje år – en stadig ökning som kallas **tillväxttrend**. Men tillväxten går i vågor: ibland växer ekonomin kraftigt, ibland måttligt, och ibland stannar den upp eller går tillbaka. Dessa kortvariga upp- och nedgångar kring tillväxttrenden kallas **konjunkturer** och varar ofta omkring fem år."
-    ]},
-    { h: "Högkonjunktur", p: [
-      "Under en **högkonjunktur** växer ekonomin kraftigt. Det finns mycket pengar i omlopp och många vill handla. Företagen ökar produktionen och anställer fler, fler får jobb, inkomsterna stiger och människor får råd att köpa ännu mer – en självförstärkande uppgång.",
-      "Så småningom blir ekonomin ”överhettad”. Företagen hinner inte producera i takt med efterfrågan, eftersom det uppstår brist på resurser som arbetskraft eller råvaror. Vissa företag passar dessutom på att höja priserna när efterfrågan är hög. Stigande priser (inflation) gör att kunderna inte längre har råd att köpa lika mycket – och uppgången mattas av."
-    ]},
-    { h: "Lågkonjunktur", p: [
-      "Minskad efterfrågan för ekonomin in i en **lågkonjunktur**. Företagen får mindre att göra och säger upp anställda. Arbetslösheten ökar, vilket försämrar hushållens ekonomi och minskar efterfrågan ytterligare – en självförstärkande nedgång. Den lägre efterfrågan dämpar samtidigt prisökningarna.",
-      "Så småningom vänder konjunkturen. En vanlig orsak är att den internationella ekonomin återhämtar sig och efterfrågar mer av landets produkter. Räntorna kan också ha sjunkit, vilket gör det billigare att låna till konsumtion och investeringar. Företagen ökar produktionen, arbetslösheten minskar, hushållens inkomster stiger och köpkraften driver upp efterfrågan ytterligare. En ny uppgång är på väg."
-    ], ex: "Orsak–verkan i en mening: efterfrågan → produktion → sysselsättning → inkomster → efterfrågan. Kedjan förstärker sig själv både uppåt (högkonjunktur) och nedåt (lågkonjunktur)." }
-  ],
-  bild: [
-    { titel: "Konjunkturcykeln", text: "Diagram med tid på x-axeln och BNP på y-axeln: en svagt stigande rak linje (tillväxttrend) och en vågformad kurva runt den, med topparna märkta ”högkonjunktur” och dalarna ”lågkonjunktur”." }
-  ],
-  fundera: "Vilka typer av hushåll påverkas mest av ekonomiska svängningar?",
-  komihag: [
-    "**Ekonomisk tillväxt** = produktionen (BNP) ökar. Den jämna ökningen kallas **tillväxttrend**.",
-    "**Konjunkturer** är upp- och nedgångar kring trenden, ofta ca fem år långa.",
-    "**Högkonjunktur**: fler jobb men risk för överhettning och inflation. **Lågkonjunktur**: mindre efterfrågan och fler arbetslösa."
-  ]
-},
-
-/* ══════════ 2. TILLVÄXTENS DRIVKRAFTER ══════════ */
-{
-  id: "tillvaxtens-drivkrafter",
-  rubrik: "Tillväxtens drivkrafter och välfärd",
-  emoji: "⚙️",
-  lattlast: [
     { h: "Tillväxtens drivkrafter", p: [
       "Det finns två sätt att producera mer.",
       "Man kan använda mer råvaror, mer arbete och fler maskiner.",
-      "Eller så kan man använda det man har smartare. Det kallas att öka **produktiviteten**.",
-      "Exempel: Ett café kan anställa en person till. Eller så köper de en snabbare kaffemaskin så att samma personal hinner göra fler koppar.",
+      "Eller så kan man använda det man har smartare. Det kallas att öka **produktiviteten**: samma insats ger fler varor och tjänster.",
       "Tre saker är extra viktiga för produktiviteten:"
     ], lista: [
-      "**Investeringar** – nya maskiner, vägar och utbildning. Man satsar nu för att få mer senare.",
-      "**Innovationer** – nya uppfinningar och smartare sätt att arbeta.",
-      "**Institutioner** – lagar, regler och myndigheter som gör att man kan lita på varandra."
-    ]},
+      "**Investeringar** – man satsar pengar nu för att tjäna mer senare. Till exempel nya maskiner, vägar eller utbildning. Det människor kan kallas **humankapital**.",
+      "**Innovationer** – nya uppfinningar och nya, smartare sätt att tillverka saker.",
+      "**Institutioner** – lagar, regler, myndigheter och traditioner som gör att ekonomin fungerar."
+    ], ex: "Exempel: Ett café kan anställa en person till. Eller så köper det en snabbare kaffemaskin, så att samma personal hinner göra fler koppar. Det andra sättet är högre produktivitet." },
     { h: "Tillväxt och välfärd", p: [
-      "När produktiviteten ökar tjänar samhället mer. Pengarna kan användas på olika sätt.",
-      "Man kan höja lönerna. Man kan jobba färre timmar. Man kan satsa mer på skola och vård.",
-      "En del pengar bör investeras igen, så att det går ännu bättre i framtiden.",
-      "Tillväxt betyder inte att alla får det bättre. I vissa länder går pengarna mest till de rika."
+      "När produktiviteten ökar tjänar samhället mer pengar. Pengarna kan användas på olika sätt.",
+      "Man kan höja lönerna. Man kan jobba färre timmar. Man kan satsa mer på skola, vård och omsorg.",
+      "En del pengar bör investeras igen. Då kan det gå ännu bättre i framtiden.",
+      "Tillväxt betyder inte att *alla* får det bättre. I många länder går pengarna mest till de rika."
     ]}
   ],
   fordjupning: [
+    { h: null, p: [
+      "Samhällsekonomin drabbas ständigt av utmaningar: svängningar i konjunkturen påverkar sysselsättningen, naturresurser överutnyttjas och marknadsmekanismen leder ibland till orimliga skillnader i inkomster och levnadsvillkor. För att ekonomin ska växa på ett stabilt, rättvist och hållbart sätt krävs politisk styrning. De åtgärder staten vidtar för att samhällsekonomin ska fungera väl kallas **ekonomisk politik**.",
+      "**Ekonomisk tillväxt** innebär att den totala produktionen i ett land ökar under en viss period. Tillväxten räknas fram genom att jämföra BNP mellan olika år och anges som BNP-förändringen i procent, ofta med inflationen borträknad.",
+      "Produktionen ökar vanligtvis en aning varje år – en stadig ökning som kallas **tillväxttrend**. Men tillväxten går i vågor: ibland växer ekonomin kraftigt, ibland måttligt, och ibland stannar den upp eller går tillbaka. Dessa kortvariga upp- och nedgångar kring tillväxttrenden kallas **konjunkturer**. Längden varierar, men ligger ofta på omkring fem år."
+    ]},
+    { h: "Högkonjunktur", p: [
+      "Under en **högkonjunktur** växer ekonomin kraftigt. Det finns mycket pengar i omlopp och många vill handla. Företagen ökar produktionen och anställer fler; fler får jobb, inkomsterna stiger och människor får råd att köpa ännu mer. Uppgången förstärker alltså sig själv.",
+      "Så småningom blir ekonomin ”överhettad”. Företagen hinner inte producera i takt med den ökade efterfrågan, eftersom det uppstår brist på resurser som arbetskraft eller råvaror. Vissa företag passar dessutom på att höja priserna när efterfrågan är hög. Stigande priser (inflation) gör att kunderna inte längre har råd att köpa lika mycket – och högkonjunkturen mattas av."
+    ]},
+    { h: "Lågkonjunktur", p: [
+      "Minskad efterfrågan för ekonomin in i en **lågkonjunktur** med lägre tillväxt. Företagen får mindre att göra och säger upp anställda. Arbetslösheten ökar, vilket försämrar hushållens ekonomi och minskar efterfrågan ytterligare – nedgången förstärker sig själv. Den lägre efterfrågan dämpar samtidigt prisökningarna.",
+      "Så småningom vänder konjunkturen. En vanlig orsak är att den internationella ekonomin återhämtar sig och efterfrågar mer av landets produkter. Räntorna kan också ha sjunkit, vilket gör det billigare för hushåll och företag att låna till konsumtion och investeringar. Företagen ökar produktionen, arbetslösheten minskar, hushållens inkomster stiger och den ökade köpkraften driver upp efterfrågan ytterligare."
+    ], ex: "Samband: efterfrågan → produktion → sysselsättning → inkomster → efterfrågan. Kedjan verkar både uppåt (högkonjunktur) och nedåt (lågkonjunktur) – därför blir svängningarna självförstärkande." },
     { h: "Tillväxtens drivkrafter", p: [
-      "Produktionen kan öka på två sätt: genom att öka mängden råvaror, arbete och kapital – eller genom att använda resurserna effektivare. Det senare kallas att höja **produktiviteten**: med samma insats får man fram fler varor och tjänster. Det är just produktivitetshöjningen som är så viktig för tillväxten, och tre faktorer spelar en särskild roll:"
+      "Produktionen kan öka på två sätt: genom att öka mängden råvaror, arbete och kapital – eller genom att använda resurserna effektivare. Det senare kallas att höja **produktiviteten**: med samma insats av arbete, råvaror och kapital får man fram fler varor och tjänster. Det är just produktivitetshöjningen som är så viktig för tillväxten, och tre faktorer spelar en särskild roll:"
     ], lista: [
-      "**Investeringar** – satsningar som förnyar, förbättrar och utökar realkapitalet. Förr låg fokus på redskap, maskiner och infrastruktur; i dag satsar man allt mer på *humankapital* genom utbildning och kompetensutveckling. En investering är en uppoffring i nutid som senare ska ge tillväxt och högre inkomster.",
-      "**Innovationer** – produktionsfaktorerna kombineras på nya och effektivare sätt, ofta tack vare forskning och utveckling. Ny produktionsteknik ger nya varor och tjänster; många av dagens produkter fanns inte när industrialiseringen tog fart.",
-      "**Institutioner** – de strukturer som omger och stöder ekonomin: traditioner och sedvänjor, men också lagar, myndigheter och regler. Länder med hög tillväxt är ofta fria och öppna ekonomier med stabila institutioner, hög utbildningsnivå, ett företagsvänligt klimat och god förmåga att anpassa sig till snabba förändringar."
+      "**Investeringar** – satsningar som förnyar, förbättrar och utökar realkapitalet. Förr låg fokus på redskap, maskiner och infrastruktur; i dag satsar man allt mer på människans förmågor, *humankapital*, genom utbildning och kompetensutveckling. En investering är en uppoffring i nutid som senare ska skapa tillväxt och ökade inkomster.",
+      "**Innovationer** – produktionsfaktorerna kombineras på nya och effektivare sätt, ofta tack vare forskning och utveckling. Ny produktionsteknik ger nya varor och tjänster; många av dagens produkter fanns inte när industrialiseringen fick fart.",
+      "**Institutioner** – strukturerna som omger och stöder ekonomin: traditioner och sedvänjor men också lagar, myndigheter och regler. Länder med hög tillväxttakt är ofta fria och öppna ekonomier med stabila institutioner, hög utbildningsnivå, ett företagsvänligt klimat och god förmåga att anpassa sig till snabba förändringar."
     ]},
     { h: "Tillväxt och välfärd", p: [
-      "Intäkterna från ökad produktivitet kan användas på flera sätt: högre löner förbättrar den materiella levnadsstandarden, kortare arbetstid påverkar livskvaliteten, och förbättringar inom skola, vård och omsorg höjer välfärden. Kanske viktigast är att en del av vinsten återinvesteras för att möjliggöra framtida produktivitetshöjningar – som i alla ekonomiska frågor handlar det om prioriteringar.",
-      "Tillväxt gör att fler kan få det bättre, så att olika behov inte längre behöver ställas mot varandra. Men tillväxt är ingen garanti för att *alla* får det bättre: i många länder går de ökade inkomsterna rakt ner i de rikas fickor i stället för att höja levnadsnivån för alla. Hur tillväxten fördelas är alltså en politisk fråga."
+      "Intäkterna från ökad produktivitet kan användas på flera sätt: högre löner förbättrar den materiella levnadsstandarden, kortare arbetstid påverkar livskvaliteten och satsningar inom skola, vård och omsorg förbättrar välfärden. Kanske viktigast är att en del av vinsten återinvesteras i produktionen, så att produktiviteten kan fortsätta att höjas. Som i alla ekonomiska frågor handlar det om prioriteringar.",
+      "Tillväxt gör att fler kan få det bättre, så att olika behov inte längre behöver ställas mot varandra. Men tillväxt är ingen garanti för att *alla* får det bättre: i många länder går de ökade inkomsterna rakt ner i de rikas fickor i stället för att höja levnadsnivån för alla."
     ]}
   ],
+  extra: {
+    "": {
+      diagram: "konjunktur",
+      fundera: ["Vilka typer av hushåll påverkas mest av ekonomiska svängningar?"]
+    }
+  },
   komihag: [
-    "Ökad **produktivitet** = mer produktion med samma insats – det viktigaste för tillväxten.",
-    "Tre drivkrafter: **investeringar**, **innovationer** och **institutioner**.",
-    "Tillväxt kan ge högre lön, kortare arbetstid eller bättre välfärd – men garanterar inte att alla får det bättre."
+    "**Ekonomisk tillväxt** = produktionen (BNP) ökar. Den jämna ökningen kallas **tillväxttrend**; svängningarna runt den kallas **konjunkturer** (ofta ca fem år).",
+    "**Högkonjunktur**: fler jobb men risk för överhettning och inflation. **Lågkonjunktur**: lägre efterfrågan och fler arbetslösa.",
+    "Högre **produktivitet** driver tillväxten – genom **investeringar**, **innovationer** och **institutioner**."
   ]
 },
 
-/* ══════════ 3. HÅLLBAR UTVECKLING ══════════ */
+/* ══════════ 2. HÅLLBAR UTVECKLING ══════════ */
 {
   id: "hallbar-utveckling",
   rubrik: "Hållbar utveckling",
   emoji: "🌍",
+  ingress: "ska du kunna förklara vad hållbar utveckling betyder, beskriva debatten om tillväxt och miljö och nämna hållbarhetens tre dimensioner.",
   lattlast: [
-    { h: "Tillväxt och miljö", p: [
+    { h: null, p: [
       "Många menar att de rika länderna konsumerar för mycket. Man köper, använder och slänger. Det sliter på jordens resurser.",
       "Fattigare länder vill också växa snabbt. Det ökar trycket på naturen ännu mer.",
       "Klimatkrisen har gjort oss oroliga. Därför pratar vi mer om **hållbar utveckling**.",
-      "Hållbar utveckling betyder att vi tar hand om våra behov i dag utan att förstöra för dem som lever i framtiden. FN började använda ordet på 1980-talet."
-    ]},
+      "Hållbar utveckling betyder att vi tar hand om våra behov i dag utan att förstöra för dem som lever i framtiden. FN började använda begreppet på 1980-talet."
+    ], ex: "Exempel: Om du köper en ny mobil varje år och slänger den gamla, går det åt mycket metaller och energi. Det är ett exempel på slit-och-släng." },
     { h: "Går tillväxt och hållbar utveckling att kombinera?", p: [
-      "Det finns två olika åsikter.",
-      "Vissa tycker att tillväxten måste minska. Annars förstörs naturen för våra barn och barnbarn.",
+      "Det finns olika åsikter.",
+      "Vissa tycker att tillväxten är ett för stort tryck på jorden. Annars förstörs naturen för våra barn och barnbarn.",
       "Andra tycker att tillväxt och miljö går att kombinera. Rikare länder blir ofta fredligare och mer demokratiska.",
-      "Ny teknik, priser och lagar kan hjälpa. Om något som håller på att ta slut blir dyrt, letar man efter något annat. Staten kan också förbjuda sådant som skadar miljön."
+      "De menar att ny teknik, marknaden och lagar kan lösa miljöproblemen. Om något som håller på att ta slut blir dyrt, letar man efter något annat. Staten kan också beskatta eller förbjuda sådant som skadar miljön."
     ]},
     { h: "Tre dimensioner av hållbarhet", p: [
-      "**Hållbarhet** handlar om hur vi ska göra i dag. Den brukar delas i tre delar:"
+      "**Hållbarhet** handlar om hur vi gör och bestämmer i dag. Hållbar utveckling handlar mer om framtiden.",
+      "Hållbarhet brukar delas i tre delar:"
     ], lista: [
-      "**Miljömässig hållbarhet** – skydda naturen, till exempel med sol- och vindkraft och återvinning.",
-      "**Social hållbarhet** – alla människor ska ha goda livsvillkor och få vara med i samhället.",
-      "**Ekonomisk hållbarhet** – ekonomin ska växa på ett sätt som minskar skillnaden mellan rika och fattiga."
-    ], ex: "De tre delarna hänger ihop. Man måste hitta en balans mellan dem." }
+      "**Miljömässig hållbarhet** – skydda naturen. Till exempel förnybar energi, återvinning och skydd av djur och växter.",
+      "**Social hållbarhet** – alla människor ska ha goda livsvillkor. Till exempel jämställdhet och att alla får vara med i samhället.",
+      "**Ekonomisk hållbarhet** – ekonomin ska växa på ett sätt som också minskar skillnaden mellan rika och fattiga."
+    ], p2: ["De tre delarna hänger ihop. Man måste hitta en balans mellan dem."] }
   ],
   fordjupning: [
-    { h: "Tillväxt och miljö", p: [
-      "Många menar att de rika ländernas ohämmade tillväxt är ett av de största hoten mot planeten. Den konsumtionsdrivna slit-och-släng-kulturen belastar jordens resurser på ett ohållbart sätt, samtidigt som fattigare länder strävar efter snabb utveckling, ofta med mindre fokus på miljön – vilket ökar trycket ytterligare.",
+    { h: null, p: [
+      "Många menar att de rika ländernas ohämmade tillväxt är ett av de största hoten mot planeten. Den konsumtionsdrivna slit-och-släng-kulturen belastar jordens resurser på ett ohållbart sätt, samtidigt som fattigare länder strävar efter snabb utveckling, ofta med mindre fokus på miljömedvetenhet – vilket ökar trycket ytterligare.",
       "Effekterna av den globala uppvärmningen och klimatkrisen har gjort att vi i dag talar mer om **hållbar utveckling** än enbart om tillväxt. Begreppet lanserades av FN på 1980-talet och innebär en utveckling som tillgodoser dagens behov utan att äventyra kommande generationers möjligheter att tillgodose sina."
     ]},
     { h: "Går tillväxt och hållbar utveckling att kombinera?", p: [
-      "Enligt vissa innebär fortsatt tillväxt ett alltför stort tryck på jordens resurser. Vi behöver en ekonomisk utveckling som tar bättre hänsyn till naturmiljön och de begränsade resurserna – annars riskerar vi att försämra livsvillkoren för kommande generationer och förstöra viktiga ekosystem.",
-      "Andra ser ingen motsättning. Ökad välfärd gör världen fredligare, eftersom krig och förtryck ofta har sitt ursprung i resursbrist, och rikare samhällen ger fler möjligheter till demokrati och fredliga relationer.",
-      "Enligt detta synsätt kan en kombination av teknologiska innovationer, marknadslösningar och statliga regleringar bemästra miljöproblemen. Stiger priset på resurser som håller på att ta slut, skyndas utvecklingen av alternativ på; staten kan dessutom beskatta och förbjuda miljöfarlig produktion.",
-      "Debatten visar att synen på tillväxt blivit mer nyanserad. I grunden gäller frågan hur tillväxt kan förenas med planetens ekologiska gränser – och hur tillväxtens fördelar kan användas för en mer hållbar och rättvis värld."
+      "Enligt vissa innebär fortsatt tillväxt ett alltför stort tryck på jordens resurser. Vi behöver en utveckling som tar bättre hänsyn till den känsliga naturmiljön och de begränsade resurserna – annars riskerar vi att försämra livsvillkoren för kommande generationer och förstöra viktiga ekosystem.",
+      "Andra ser ingen motsättning. Ökad välfärd gör världen fredligare, eftersom krig och förtryck ofta har sitt ursprung i bristande resurser, och rikare samhällen ger fler möjligheter till demokrati och fredliga relationer.",
+      "Enligt detta synsätt kan en kombination av teknologiska innovationer, marknadslösningar och statliga regleringar bemästra miljöproblemen. Stiger priset på resurser som håller på att ta slut sätter det fart på utvecklingen av alternativ, och staten kan genom lagstiftning beskatta och förbjuda miljöfarlig produktion.",
+      "Debatten visar att synen på tillväxt blivit mer nyanserad. I grunden gäller frågan hur tillväxt kan förenas med planetens ekologiska gränser: finns det en gräns för hur mycket tillväxt vi kan tillåta, och hur kan tillväxtens fördelar användas för en mer hållbar och rättvis värld?"
     ]},
     { h: "Tre dimensioner av hållbarhet", p: [
       "**Hållbarhet** är mer inriktat på hur vi handlar och fattar beslut i samtiden, medan hållbar utveckling är en strategi inför framtiden. Hållbarhet brukar delas i tre dimensioner:"
     ], lista: [
-      "**Miljömässig hållbarhet** – skydda naturen genom att minska miljöpåverkan, hushålla med resurser och begränsa klimatförändringarna, till exempel med förnybar energi, återvinning och skydd av biologisk mångfald.",
-      "**Social hållbarhet** – människors livsvillkor med utgångspunkt i de mänskliga rättigheterna: jämställdhet, möjlighet att delta i samhällslivet och förutsättningar för självbestämmande.",
+      "**Miljömässig hållbarhet** – skydda naturen genom att minska miljöpåverkan, hushålla med resurserna och begränsa klimatförändringarna, till exempel med förnybar energi, återvinning och skydd av biologisk mångfald.",
+      "**Social hållbarhet** – människors livsvillkor med utgångspunkt i de mänskliga rättigheterna: jämställdhet mellan kvinnor och män, möjlighet att delta i samhällslivet och förutsättningar för självbestämmande.",
       "**Ekonomisk hållbarhet** – en hållbar tillväxt som också minskar klyftorna mellan rika och fattiga, till exempel genom stöd till miljövänliga företag, gröna teknologier och smartare resursanvändning som återvinning och cirkulär ekonomi."
-    ], ex: "Dimensionerna är nära sammankopplade: en åtgärd för miljön kan påverka jobb och inkomster, och tvärtom. Därför behövs balans mellan ekologisk, social och ekonomisk hållbarhet i både tanke och handling." }
+    ], p2: ["Dimensionerna är nära sammankopplade, och det gäller att hitta en balans mellan ekologisk, social och ekonomisk hållbarhet i både tanke och handling."] }
   ],
-  bild: [
-    { titel: "Hållbarhetens tre dimensioner", text: "Tre överlappande cirklar (miljömässig, social och ekonomisk hållbarhet) med ”hållbar utveckling” i mitten där alla tre möts." }
-  ],
-  fundera: "En del anser att de rika ländernas ohämmade ekonomiska tillväxt är det största hotet mot vår jord. Vad tycker du?",
+  extra: {
+    "": { fundera: ["En del anser att de rika ländernas ohämmade ekonomiska tillväxt är det största hotet mot vår jord. Vad tycker du?"] },
+    "Tre dimensioner av hållbarhet": {
+      bild: [{ titel: "Hållbarhetens tre dimensioner", text: "Tre överlappande cirklar – miljömässig, social och ekonomisk hållbarhet – som visar att dimensionerna hänger ihop." }]
+    }
+  },
   komihag: [
-    "**Hållbar utveckling** = tillgodose dagens behov utan att äventyra kommande generationers.",
-    "Debatten: vissa ser en konflikt mellan tillväxt och miljö, andra menar att teknik, marknad och regler kan lösa den.",
+    "**Hållbar utveckling** = tillgodose dagens behov utan att äventyra kommande generationers möjligheter (FN, 1980-talet).",
+    "Debatten: vissa ser en konflikt mellan tillväxt och miljö, andra menar att teknik, marknad och regleringar kan lösa den.",
     "Tre dimensioner: **miljömässig**, **social** och **ekonomisk** hållbarhet."
   ]
 },
 
-/* ══════════ 4. OFFENTLIGA SEKTORN ══════════ */
+/* ══════════ 3. OFFENTLIGA SEKTORN ══════════ */
 {
   id: "offentliga-sektorn",
   rubrik: "Offentliga sektorn",
   emoji: "🏛️",
+  ingress: "ska du kunna beskriva vad den offentliga sektorn gör, vilka skatter vi betalar och hur statsbudgeten och statsskulden fungerar.",
   lattlast: [
-    { h: "Vad är den offentliga sektorn?", p: [
-      "Vi behöver vägar, brandkår, polis och domstolar. Det sköts av den **offentliga sektorn**.",
-      "Den offentliga sektorn tar hand om det som är gemensamt för alla.",
-      "Den har tre delar:"
+    { h: null, p: [
+      "Vi behöver vägar och övergångsställen. Vi behöver renhållning, brandförsvar, polis, domstolar och försvar.",
+      "Allt det sköts av den **offentliga sektorn**. Det är den del av samhället som sköter det som är gemensamt för alla."
+    ]},
+    { h: "Vad är den offentliga sektorn – och vad gör den?", p: [
+      "Den offentliga sektorn kallas ibland den gemensamma sektorn. Den har tre delar:"
     ], lista: [
       "**Staten** – frågor som gäller hela landet.",
-      "**Regionerna** – frågor i en del av landet.",
+      "**Regionerna** – gemensamma frågor i en region.",
       "**Kommunerna** – frågor som ligger närmast dig."
-    ], ex: "En del tjänster utförs i dag av privata företag, till exempel friskolor och vårdbolag. Men de betalas med skattepengar." },
-    { h: "Vad gör den offentliga sektorn?", p: [
-      "Den offentliga sektorn har två stora uppgifter."
+    ], p2: [
+      "En del tjänster sköts i dag av privata företag, till exempel friskolor och vårdbolag.",
+      "Den offentliga sektorn har två stora uppgifter:",
+      "1. **Den utför tjänster.** Vissa är till för alla, även om man inte själv använder dem: försvaret, polisen och domstolarna. De kallas **kollektiva nyttigheter**. Andra är till för en person i taget: skola, vård och omsorg. De kallas **individuella nyttigheter**.",
+      "2. **Den omfördelar pengar.** Den tar in skatt och betalar ut bidrag till dem som saknar inkomst, till exempel för att de är sjuka, arbetslösa, har en funktionsnedsättning, är barn eller gamla. Det liknar Robin Hood: ta från de rika och ge till de fattiga."
+    ], ex: "**Robin Hood:** Legendarisk gestalt i litteraturen som anses ha verklighetsbakgrund." },
+    { h: "Skatterna", p: [
+      "För att betala för allt detta behövs **skatter** och **avgifter**.",
+      "En **skatt** går rakt in i det gemensamma. En **avgift** betalar du när du använder en tjänst, till exempel när du åker buss eller går till läkaren.",
+      "I Sverige finns fyra typer av skatter:"
     ], lista: [
-      "**Utför tjänster.** Vissa tjänster är till för alla samtidigt, som polisen och försvaret. De kallas **kollektiva nyttigheter**. Andra är till för en person i taget, som skola och vård. De kallas **individuella nyttigheter**.",
-      "**Omfördelar pengar.** Staten tar in skatt och betalar ut bidrag till dem som inte kan jobba, till exempel sjuka, arbetslösa, barn och äldre. Det liknar Robin Hood: ta från de rika och ge till de fattiga."
-    ]}
-  ],
-  fordjupning: [
-    { h: "Vad är den offentliga sektorn?", p: [
-      "Vägar, övergångsställen, renhållning, brandförsvar, miljövård, polis, domstolar och försvar – allt detta sköts av den **offentliga sektorn**. Den spelar en central roll i samhällsekonomin och är särskilt viktig för att ge människor möjligheter till ett bra liv.",
-      "Den offentliga sektorn sköter samhällets gemensamma frågor och kallas därför ibland den gemensamma sektorn. Den består av tre delar: *staten* (frågor som berör hela befolkningen), *regionerna* (gemensamma frågor inom en region) och *kommunerna* (uppgifter närmast medborgarna). Indelningen ska göra arbetet effektivare och föra besluten närmare dem som berörs.",
-      "Den offentliga sektorn har fortfarande många anställda, men många tjänster utförs i dag av privata företag, till exempel friskolor och vårdbolag."
-    ]},
-    { h: "Vad gör den offentliga sektorn?", p: [
-      "Verksamheten har två huvuduppgifter, som var för sig utgör ungefär hälften:"
-    ], lista: [
-      "**Utföra offentliga tjänster.** En del är till för alla oavsett om man använder dem eller inte – *kollektiva nyttigheter* som försvar, polis och domstolar. Andra riktar sig till personliga behov, som skola, vård och omsorg – *individuella nyttigheter*.",
-      "**Omfördela pengar.** Principen är densamma som Robin Hoods: att ta från de rika och ge till de fattiga. Skatter och avgifter tas in från medborgarna och betalas ut som bidrag till dem som saknar inkomst, till exempel på grund av sjukdom, arbetslöshet, funktionsnedsättning, barndom eller ålderdom."
-    ] }
-  ],
-  fundera: "Har samhället rätt att ta skatter från de som arbetar och sedan omfördela dessa som bidrag till de som t.ex. är arbetslösa, äldre eller sjuka? Vad talar för och vad talar emot?",
-  komihag: [
-    "Den **offentliga sektorn** = staten, regionerna och kommunerna.",
-    "Den **utför tjänster** – **kollektiva nyttigheter** (polis, försvar) och **individuella nyttigheter** (skola, vård).",
-    "Den **omfördelar pengar** genom skatter och bidrag – som Robin Hood."
-  ]
-},
-
-/* ══════════ 5. SKATTERNA ══════════ */
-{
-  id: "skatterna",
-  rubrik: "Skatterna",
-  emoji: "🧾",
-  lattlast: [
-    { h: "Skatter och avgifter", p: [
-      "För att betala för skola, vård och polis behövs pengar. De kommer från **skatter** och **avgifter**.",
-      "En **skatt** betalar alla. Pengarna går till det gemensamma.",
-      "En **avgift** betalar du när du använder en tjänst, till exempel när du åker buss eller går till läkaren."
-    ]},
-    { h: "Fyra typer av skatter", lista: [
-      "**Inkomstskatt** – skatt på lönen. De flesta betalar ungefär 32 procent. Den går mest till kommunen.",
-      "**Konsumtionsskatt** – skatt som finns i priset när du köper något. **Moms** är oftast 25 procent och står på kvittot. **Punktskatt** finns på till exempel alkohol, tobak och bensin.",
-      "**Sociala avgifter** – betalas av arbetsgivaren och går till pension och sjukpenning. De kallas också **arbetsgivaravgifter**.",
-      "**Kapitalskatt** – skatt när du tjänar pengar på sparande, aktier eller när du säljer en bostad. Den är 30 procent."
-    ]},
+      "**Inkomstskatt** – skatt på lönen. Den går mest till kommunen. De flesta betalar ungefär 32 procent. Bara de som tjänar mycket betalar också till staten.",
+      "**Konsumtionsskatt** – skatt som finns med i priset när du köper något. **Moms** är oftast 25 procent och står på kvittot. **Punktskatt** finns på till exempel alkohol, tobak och bensin.",
+      "**Sociala avgifter** – går till pension och sjukpenning. Arbetsgivaren betalar dem, därför heter de också **arbetsgivaravgifter**. Har man eget företag betalar man **egenavgifter**.",
+      "**Kapitalskatt** – skatt när du tjänar pengar på sparande, aktier eller när du säljer en bostad. Den är 30 procent av det man tjänat."
+    ], stat: { h: "Offentliga sektorns skatteintäkter 2023", lista: [
+      "Inkomstskatter 30 %", "Sociala avgifter 28 %", "Konsumtionsskatter 28 %", "Kapitalskatt 13 %", "Övrigt 1 %"
+    ]}},
     { h: "Direkt och indirekt skatt", p: [
-      "**Direkt skatt** tas direkt från din lön. Den beror på vad du tjänar.",
-      "Exempel: Har du sommarjobb drar arbetsgivaren skatt från din lön innan du får den.",
-      "**Indirekt skatt** finns i priset när du handlar. Den beror på vad du köper. Momsen är ett exempel."
-    ]},
+      "**Direkt skatt** beror på vad du tjänar. Inkomstskatten är en direkt skatt.",
+      "**Indirekt skatt** beror på vad du köper. Momsen är en indirekt skatt."
+    ], ex: "Exempel: Har du ett sommarjobb drar arbetsgivaren skatt från lönen innan du får den – det är direkt skatt. Köper du en tröja för 200 kronor finns momsen redan med i priset – det är indirekt skatt." },
     { h: "Hur mycket betalar vi i skatt?", p: [
-      "Hela den offentliga sektorn får in nästan 2 600 miljarder kronor i skatt på ett år (2023).",
-      "Det är drygt 40 procent av BNP.",
-      "Hur stor del av BNP som är skatt kallas **skattekvot** eller **skattetryck**. Sverige ligger runt åttonde plats i världen."
-    ]}
-  ],
-  fordjupning: [
-    { h: "Skatter och avgifter", p: [
-      "För att den offentliga sektorn ska kunna utföra sina uppgifter betalar hushåll och företag **skatter** och **avgifter**. Skatter går rakt ned i den offentliga sektorns kassakista, medan avgifter betalas när vi utnyttjar en tjänst, till exempel bussresor eller läkarbesök."
+      "Hela den offentliga sektorn fick in nästan 2 600 miljarder kronor i skatt under ett år (2023).",
+      "Det var drygt 40 procent av BNP, alltså värdet av allt som produceras i Sverige.",
+      "Pengarna används till bland annat skola, sjukvård och försvar.",
+      "Hur stor del av BNP som är skatt kallas **skattekvot** eller **skattetryck**. År 2023 hade Frankrike och Norge högst skattekvot i världen. Sverige låg runt åttonde plats."
     ]},
-    { h: "Fyra typer av skatter", lista: [
-      "**Inkomstskatt** – skatt på lönen som i första hand går till kommunen. Bara de med höga inkomster betalar även statlig inkomstskatt. De flesta betalar omkring 32 procent.",
-      "**Konsumtionsskatt** – ingår i priset och betalas in till staten av försäljaren. *Moms* (mervärdesskatt) läggs på alla varor och tjänster, oftast 25 procent. *Punktskatt* läggs på vissa varor som alkohol, tobak och bensin, främst för att minska konsumtionen av skadliga produkter och betala de samhällskostnader de orsakar.",
-      "**Sociala avgifter** – finansierar socialförsäkringar som pensioner och sjukpenning. De betalas in av arbetsgivaren och kallas därför *arbetsgivaravgifter*; den som driver eget företag betalar själv *egenavgifter*.",
-      "**Kapitalskatt** – betalas på inkomster från förmögenhet, till exempel ränta på sparpengar eller vinst vid försäljning av aktier eller bostad. Den är 30 procent av vinsten."
-    ], ex: "Offentliga sektorns skatteintäkter 2023: inkomstskatter 30 %, sociala avgifter 28 %, konsumtionsskatter 28 %, kapitalskatt 13 %, övrigt 1 %." },
-    { h: "Direkt och indirekt skatt", p: [
-      "Skatter som tas ut direkt från individer och företag beroende på inkomsten – som inkomstskatten – kallas *direkt skatt*. Har du ett sommarjobb drar arbetsgivaren av en del av lönen.",
-      "Skatter som läggs på priset och betalas in av försäljaren – som momsen – kallas *indirekt skatt*. Kort sagt: den direkta skatten baseras på vad du tjänar, den indirekta på vad du köper."
-    ]},
-    { h: "Hur mycket betalar vi i skatt?", p: [
-      "Hela den offentliga sektorn – staten, kommunerna och regionerna – fick 2023 in nästan 2 600 miljarder kronor i skatter, drygt 40 procent av BNP. Pengarna finansierar verksamheter som skola, sjukvård och försvar.",
-      "Andelen skatt i förhållande till BNP kallas **skattekvoten** eller **skattetrycket**. Frankrike och Norge hade de högsta skattekvoterna 2023, medan Sverige låg runt åttonde plats."
-    ]}
-  ],
-  bild: [
-    { titel: "Vart går skatten?", text: "Flödesschema: hushållen betalar inkomst- och kapitalskatt samt konsumtionsskatt (moms) via näringslivet; näringslivet betalar sociala avgifter, kapitalskatt och moms. Pengarna går till kommuner (kommunalskatt), regioner (regionskatt), staten (skatt på högre inkomster, kapitalskatt) och socialförsäkringarna (pension, sjukförsäkring)." },
-    { titel: "Offentliga sektorns skatteintäkter 2023", text: "Tårtdiagram: inkomstskatter 30 %, sociala avgifter 28 %, konsumtionsskatter 28 %, kapitalskatt 13 %, övrigt 1 %." }
-  ],
-  komihag: [
-    "Fyra skatter: **inkomstskatt**, **konsumtionsskatt** (moms, punktskatt), **sociala avgifter** och **kapitalskatt**.",
-    "**Direkt skatt** beror på vad du tjänar, **indirekt skatt** på vad du köper.",
-    "**Skattekvot** = skatternas andel av BNP – i Sverige drygt 40 %."
-  ]
-},
-
-/* ══════════ 6. STATENS FINANSER ══════════ */
-{
-  id: "statens-finanser",
-  rubrik: "Statens finanser",
-  emoji: "💼",
-  lattlast: [
-    { h: "Vem bestämmer över statens pengar?", p: [
-      "I Sverige är det **riksdagen** som bestämmer om skatter och vad statens pengar ska användas till. Det står i grundlagen.",
+    { h: "Statens finanser", p: [
+      "I Sverige har folket länge fått bestämma över skatterna. I grundlagen **Regeringsformen** står det:"
+    ], p2: [
+      "Det betyder att **riksdagen** bestämmer om skatter och vad statens pengar ska användas till.",
       "Riksdagen väljs av folket. Därför bestämmer ytterst medborgarna.",
-      "Riksdagen låter **regeringen** ta fram förslagen."
+      "Riksdagen låter **regeringen** sköta arbetet med statens pengar."
     ]},
     { h: "Budgetarbetet", p: [
-      "Två gånger om året lämnar finansministern ett förslag till riksdagen. Hen promenerar då från finansdepartementet till riksdagshuset.",
-      "På våren kommer **vårpropositionen**. Där säger regeringen hur ekonomin ser ut och vad den vill göra.",
-      "På hösten kommer **budgetpropositionen**. Där står exakt vad staten ska få in och betala ut nästa år.",
-      "Riksdagen diskuterar förslaget och röstar. Sedan gäller **statsbudgeten** i ett år."
+      "Två gånger om året lämnar finansministern regeringens förslag till riksdagen. Hen går då en promenad från finansdepartementet till riksdagshuset.",
+      "På våren kommer **vårpropositionen**. Där säger regeringen hur ekonomin ser ut och vad den vill göra de närmaste åren.",
+      "På hösten kommer **budgetpropositionen**. Där står vad staten ska få in och betala ut nästa år.",
+      "Riksdagen granskar, debatterar och beslutar. Sedan gäller **statsbudgeten** som plan för året."
     ]},
     { h: "Statsbudgeten", p: [
       "**Statsbudgeten** är en plan för statens inkomster och utgifter under ett år.",
-      "Inkomsterna är mest skatter. Utgifterna delas in i 27 områden, till exempel försvaret.",
-      "Om utgifterna är större än inkomsterna blir det ett **underskott**. Då är budgeten **underbalanserad**.",
-      "Om inkomsterna är större blir det ett **överskott**. Då är budgeten **överbalanserad**.",
-      "Det är som din egen ekonomi: handlar du för mer än du tjänar måste du låna."
-    ]},
+      "Inkomsterna är mest skatter och avgifter. Utgifterna delas in i 27 områden, till exempel arbetsmarknaden och försvaret.",
+      "Är utgifterna större än inkomsterna blir det **underskott**. Då är budgeten **underbalanserad**, och staten får låna.",
+      "Är inkomsterna större blir det **överskott**. Då är budgeten **överbalanserad**, och staten kan spara."
+    ], stat: { h: "Statsbudgeten 2024", lista: [
+      "Inkomster: 1 324 miljarder kronor",
+      "Utgifter: 1 331 miljarder kronor"
+    ]}, ex: "Exempel: Det fungerar som din egen ekonomi. Handlar du för mer än du tjänar en månad, måste du låna eller ta av dina sparpengar." },
     { h: "Statsskulden", p: [
-      "Vid underskott måste staten låna pengar. Det sköts av myndigheten **Riksgälden**.",
-      "Staten lånar mest av svenska banker och företag.",
-      "Allt staten har lånat kallas **statsskulden**. Den är ungefär 1 000 miljarder kronor (2024).",
-      "Det är lågt jämfört med andra länder i EU."
+      "När staten har underskott lånar den pengar. Det sköts av myndigheten **Riksgälden**.",
+      "Staten lånar mest av svenska banker och företag. De köper statens skuldebrev, som kallas obligationer och växlar.",
+      "Allt staten har lånat kallas **statsskulden**. År 2024 var den cirka 1 000 miljarder kronor. Det är ungefär en sjättedel av BNP.",
+      "Sverige har en av de lägsta statsskulderna i EU."
     ]}
   ],
   fordjupning: [
-    { h: "Vem bestämmer över statens pengar?", p: [
-      "Sedan medeltiden har det varit viktigt att folket har inflytande över beskattningen. I Regeringsformen står att ”riksdagen stiftar lag, beslutar om skatt till staten och bestämmer hur statens medel ska användas.” Det är alltså riksdagen – och ytterst medborgarna – som bestämmer över statens finanser. Riksdagen har överlämnat denna finansmakt till regeringen som ett särskilt ansvarsområde."
+    { h: null, p: [
+      "Vägar och övergångsställen, renhållning, brandförsvar och miljövård, polis, domstolar och försvar – för att sköta sådana uppgifter behövs en **offentlig sektor**. Den spelar en central roll i samhällsekonomin och är särskilt viktig för att ge människor möjligheter till ett bra liv."
+    ]},
+    { h: "Vad är den offentliga sektorn – och vad gör den?", p: [
+      "Den offentliga sektorn sköter samhällets gemensamma frågor och kallas därför ibland den gemensamma sektorn. Den består av tre delar: *staten* (frågor som berör hela befolkningen), *regionerna* (gemensamma frågor inom en region) och *kommunerna* (uppgifter närmast medborgarna). Indelningen ska göra arbetet effektivare och föra besluten närmare dem som berörs.",
+      "Den offentliga sektorn har fortfarande många anställda, men många tjänster utförs i dag av privata företag, till exempel friskolor och vårdbolag. Verksamheten har två huvuduppgifter, som var för sig utgör ungefär hälften:"
+    ], lista: [
+      "**Utföra offentliga tjänster.** En del är till för alla oavsett om man utnyttjar dem eller inte – *kollektiva nyttigheter* som försvar, polis och domstolar. Andra riktar sig till personliga behov, som skola, vård och omsorg – *individuella nyttigheter*.",
+      "**Omfördela pengar.** Principen är densamma som Robin Hoods: att ta från de rika och ge till de fattiga. Skatter och avgifter tas in från medborgarna och betalas ut som bidrag till dem som saknar inkomst på grund av till exempel sjukdom, arbetslöshet, funktionsnedsättning, barndom eller ålderdom."
+    ], ex: "**Robin Hood:** Legendarisk gestalt i litteraturen som anses ha verklighetsbakgrund." },
+    { h: "Skatterna", p: [
+      "För att den offentliga sektorn ska kunna sköta sina uppgifter betalar hushåll och företag **skatter** och **avgifter**. Skatter går rakt ner i den offentliga sektorns kassakista, medan avgifter betalas när vi utnyttjar en tjänst, till exempel en bussresa eller ett läkarbesök. I Sverige finns fyra typer av skatter:"
+    ], lista: [
+      "**Inkomstskatt** – skatt på lönen som i första hand går till kommunen. Bara de som tjänar mycket betalar även inkomstskatt till staten. De flesta betalar omkring 32 procent av lönen.",
+      "**Konsumtionsskatt** – ingår i priset och betalas in till staten av försäljaren. *Moms* (mervärdesskatt) läggs på alla varor och tjänster som säljs, i de flesta fall 25 procent av priset. *Punktskatt* läggs på vissa varor som alkohol, tobak och bensin, främst för att minska konsumtionen av skadliga produkter och betala de kostnader de orsakar samhället.",
+      "**Sociala avgifter** – finansierar socialförsäkringar som pensioner och sjukpenning. De dras från lönen och betalas in av arbetsgivaren, därför kallas de *arbetsgivaravgifter*; den som driver eget företag betalar själv *egenavgifter*.",
+      "**Kapitalskatt** – betalas på inkomster från förmögenhet, till exempel ränta på sparpengar eller vinst vid försäljning av aktier eller bostad. Den ligger på 30 procent av det man tjänat."
+    ], stat: { h: "Offentliga sektorns skatteintäkter 2023", lista: [
+      "Inkomstskatter 30 %", "Sociala avgifter 28 %", "Konsumtionsskatter 28 %", "Kapitalskatt 13 %", "Övrigt 1 %"
+    ]}},
+    { h: "Direkt och indirekt skatt", p: [
+      "Skatter som tas ut direkt från individer och företag beroende på inkomsten – som inkomstskatten – kallas *direkt skatt*. Har du ett sommarjobb drar arbetsgivaren av en del av lönen. Skatter som läggs på priset och betalas in av försäljaren – som momsen – kallas *indirekt skatt*.",
+      "Kort sagt: den direkta skatten baseras på vad du tjänar, den indirekta på vad du köper. Det innebär att den direkta skatten följer inkomsten, medan den indirekta följer konsumtionen."
+    ]},
+    { h: "Hur mycket betalar vi i skatt?", p: [
+      "Hela den offentliga sektorn – staten, kommunerna och regionerna – fick 2023 in nästan 2 600 miljarder kronor i skatter. Det motsvarade drygt 40 procent av värdet på den svenska produktionen (BNP). Pengarna finansierar verksamhet som skola, sjukvård och försvar.",
+      "Andelen skatt i förhållande till BNP kallas **skattekvoten** eller **skattetrycket**. Frankrike och Norge hade de högsta skattekvoterna i världen 2023, medan Sverige låg runt åttonde plats."
+    ]},
+    { h: "Statens finanser", p: [
+      "I Sverige har det sedan medeltiden varit viktigt att folket har inflytande över beskattningen. I dagens Regeringsform står att:"
+    ], p2: [
+      "Det är alltså riksdagen – och ytterst medborgarna – som bestämmer över statens finanser. Riksdagen har sedan överlämnat denna finansmakt till regeringen som ett särskilt ansvarsområde."
     ]},
     { h: "Budgetarbetet", p: [
-      "Två gånger om året lämnar finansministern regeringens förslag om statens finanser till riksdagen. Den symboliska promenaden från finansdepartementet till riksdagshuset markerar att förslaget lämnas till folkets representanter. Bakom förslagen ligger ett omfattande arbete där olika intressen jämkats ihop.",
-      "I den *ekonomiska vårpropositionen* beskriver regeringen hur den ser på det ekonomiska läget och vilken politik den vill driva de närmaste åren. Syftet är att ge riktlinjer och ramar inför höstens budgetarbete.",
-      "Höstens **budgetproposition** är mer detaljerad och innehåller statens planerade inkomster och utgifter för nästa år. Efter granskning och debatt beslutar riksdagen om statsbudgeten, som sedan gäller som ekonomisk plan för statens verksamhet det kommande året."
+      "Två gånger om året lämnar finansministern regeringens förslag om statens finanser till riksdagen. Den symboliska promenaden från finansdepartementet till riksdagshuset markerar att regeringen överlämnar förslaget till folkets representanter. Bakom förslagen ligger mycket arbete på finansdepartementet, där olika intressen har jämkats ihop.",
+      "I den *ekonomiska vårpropositionen* beskriver regeringen hur den ser på det ekonomiska läget och vilken ekonomisk politik den vill driva de närmaste åren. Syftet är att ge riktlinjer och ramar inför höstens budgetarbete.",
+      "Höstens **budgetproposition** är mer detaljerad och innehåller en uppställning över statens planerade inkomster och utgifter för nästa år. Efter granskning och debatt fattar riksdagen beslut om statsbudgeten, som sedan gäller som ekonomisk plan för statens verksamhet det kommande året."
     ]},
     { h: "Statsbudgeten", p: [
-      "*Statsbudgeten* är en sammanställning av statens planerade inkomster och utgifter för det närmaste kalenderåret. Inkomsterna är främst skatter och avgifter, som moms, punktskatter och kapitalskatt. Utgifterna är fördelade på 27 utgiftsområden, till exempel arbetsmarknad och försvar.",
-      "Blir utgifterna större än inkomsterna uppstår ett budgetunderskott – budgeten är *underbalanserad* och underskottet måste täckas, till exempel med lån. Blir inkomsterna större är budgeten *överbalanserad*, och överskottet kan sparas för att längre fram kunna tillåta ett underskott."
-    ], ex: "Statsbudgeten 2024: inkomster 1 324 mdr kr (skatt på arbete, kapital och konsumtion samt övriga inkomster som överskott från statliga bolag och EU-bidrag) och utgifter 1 331 mdr kr (räntor och investeringar, tjänster som försvar, polis och forskning, samt transfereringar som sjukpenning, arbetslöshetsersättning, barnbidrag och bistånd). Budgeten var alltså svagt underbalanserad." },
+      "*Statsbudgeten* är en sammanställning över statens planerade inkomster och utgifter under det närmaste kalenderåret. Inkomsterna består i huvudsak av skatter och avgifter, till exempel moms, punktskatter och skatt på kapital. Utgifterna är sammanställda i 27 utgiftsområden som motsvarar olika sektorer i samhället, till exempel arbetsmarknaden eller försvaret.",
+      "Blir utgifterna större än inkomsterna uppstår ett budgetunderskott – budgeten är *underbalanserad*. Vågskålen är inte i balans och underskottet får täckas av till exempel lån. Blir inkomsterna större lutar vågskålen åt andra hållet och budgeten är *överbalanserad*; överskottet kan sparas för att staten längre fram ska kunna ha ett underskott."
+    ], stat: { h: "Statsbudgeten 2024 (miljarder kronor)", lista: [
+      "**Inkomster: 1 324 mdr** – skatt på arbete (inkomstskatt, löneskatt), skatt på kapital, skatt på konsumtion (moms, energi och miljö, alkohol och tobak) samt övriga inkomster (överskott från statliga bolag, EU-bidrag).",
+      "**Utgifter: 1 331 mdr** – räntor och investeringar, tjänster (t.ex. försvar, polis, forskning, förvaltning) och transfereringar (t.ex. aktivitets- och sjukersättning, arbetslöshetsersättning, sjukpenning, barnbidrag, bistånd)."
+    ]}},
     { h: "Statsskulden", p: [
-      "Vid budgetunderskott lånar staten genom att ge ut obligationer och växlar – en form av skuldebrev. Uppgiften sköts av myndigheten **Riksgälden**. Det är främst svenska banker och företag som köper statspapperen och därmed lånar ut pengar till staten; bara en mindre del lånas från utlandet.",
-      "Allt staten lånar läggs till **statsskulden**, som 2024 låg på cirka 1 000 miljarder kronor – ungefär en sjättedel av BNP. Sverige har en av de lägsta statsskulderna bland EU:s medlemsländer."
+      "Vid budgetunderskott lånar staten genom att ge ut obligationer och växlar, en form av skuldebrev. Uppgiften sköts av myndigheten **Riksgälden**. Vanligtvis är det svenska banker och företag som köper statspapperen och därmed lånar ut pengar till staten; bara en mindre del av underskottet finansieras med lån från utlandet.",
+      "Allt staten lånar läggs till **statsskulden**, som år 2024 låg på cirka 1 000 miljarder kronor – ungefär en sjättedel av Sveriges BNP. Sverige har en av de lägsta statsskulderna bland EU:s medlemsländer."
     ]}
   ],
-  bild: [
-    { titel: "Statsbudgeten som en våg", text: "Våg med inkomster (1 324 mdr kr) i ena vågskålen och utgifter (1 331 mdr kr) i den andra, år 2024. Visar begreppen underbalanserad (utgifter tyngst) och överbalanserad (inkomster tyngst) budget." }
-  ],
+  extra: {
+    "Vad är den offentliga sektorn – och vad gör den?": {
+      fundera: ["Har samhället rätt att ta skatter från de som arbetar och sedan omfördela dessa som bidrag till de som t.ex. är arbetslösa, äldre eller sjuka? Vad talar för och vad talar emot?"]
+    },
+    "Skatterna": {
+      bild: [{ titel: "Skatteintäkterna 2023", text: "Tårtdiagram över offentliga sektorns skatteintäkter 2023: inkomstskatter 30 %, sociala avgifter 28 %, konsumtionsskatter 28 %, kapitalskatt 13 %, övrigt 1 %." }]
+    },
+    "Direkt och indirekt skatt": {
+      bild: [{ titel: "Vart går skatten?", text: "Flödesschema: hushåll och näringsliv betalar skatter; pengarna går till kommuner (kommunalskatt), regioner (regionskatt), staten (skatt på högre inkomster, kapitalskatt) och socialförsäkringarna (pension, sjukförsäkring)." }]
+    },
+    "Statens finanser": {
+      citat: [{ text: "”riksdagen stiftar lag, beslutar om skatt till staten och bestämmer hur statens medel ska användas.”", kalla: "Regeringsformen" }]
+    },
+    "Budgetarbetet": {
+      bild: [{ titel: "Budgetpromenaden", text: "Foto: finansminister Elisabeth Svantesson på budgetpromenad hösten 2022, från finansdepartementet till riksdagshuset." }]
+    },
+    "Statsbudgeten": {
+      bild: [{ titel: "Statsbudgetens uppbyggnad", text: "Våg med statsbudgetens inkomster (1 324 mdr kr) och utgifter (1 331 mdr kr) år 2024, uppdelade i sina delar – visar under- och överbalanserad budget." }]
+    }
+  },
   komihag: [
-    "**Riksdagen** beslutar om skatter och statens utgifter. Regeringen lägger fram **vårpropositionen** och **budgetpropositionen**.",
-    "**Statsbudgeten**: underskott = **underbalanserad**, överskott = **överbalanserad**.",
-    "Underskott lånas via **Riksgälden** och läggs till **statsskulden** (ca 1 000 mdr kr 2024)."
+    "Den **offentliga sektorn** (stat, regioner, kommuner) utför tjänster – **kollektiva** och **individuella nyttigheter** – och omfördelar pengar.",
+    "Fyra skatter: **inkomstskatt**, **konsumtionsskatt**, **sociala avgifter** och **kapitalskatt**. **Direkt skatt** beror på vad du tjänar, **indirekt** på vad du köper.",
+    "Riksdagen beslutar om **statsbudgeten**. Underskott lånas via **Riksgälden** och läggs till **statsskulden** (ca 1 000 mdr kr år 2024)."
   ]
 },
 
-/* ══════════ 7. KREDITMARKNADEN OCH RIKSBANKEN ══════════ */
+/* ══════════ 4. KREDITMARKNADEN OCH RIKSBANKEN ══════════ */
 {
-  id: "kreditmarknaden-riksbanken",
+  id: "kreditmarknaden-och-riksbanken",
   rubrik: "Kreditmarknaden och Riksbanken",
   emoji: "🏦",
+  ingress: "ska du kunna förklara vad kreditmarknaden och räntan är och vilka uppdrag Riksbanken har.",
   lattlast: [
-    { h: "Priset på pengar", p: [
-      "Företag behöver ofta låna pengar för att köpa maskiner eller bygga nytt.",
-      "Banker tar emot pengar som folk sparar. Sedan lånar de ut pengarna till andra. Det kallas **kreditmarknaden**.",
-      "**Räntan** är priset på pengar.",
-      "När räntan är låg är det billigt att låna. Då lånar folk mer och handlar mer.",
-      "När räntan är låg lönar det sig mindre att spara."
+    { h: null, p: [
+      "Företag och staten tillverkar det mesta vi behöver. För det behövs ofta pengar till investeringar.",
+      "Pengarna måste finnas på rätt plats vid rätt tid."
     ]},
+    { h: "Priset på pengar", p: [
+      "Banker tar emot pengar som folk sparar. Sedan lånar de ut pengarna till andra. Ett lån kallas också **kredit**.",
+      "Banker och andra finansföretag kallas **finanssektorn**. Platsen där sparande blir lån kallas **kreditmarknaden**.",
+      "**Räntan** är priset på pengar.",
+      "Låg ränta: billigt att låna och mindre lönt att spara. Då köper folk och företag mer."
+    ], ex: "Exempel: Du sparar 1 000 kronor på banken. Banken kan låna ut dem till någon som vill köpa en bil. Du får sparränta, och den som lånar betalar låneränta." },
     { h: "Sveriges riksbank", p: [
-      "**Riksbanken** är Sveriges centralbank. Den är den viktigaste banken i landet.",
-      "Riksbanken ligger under riksdagen, men politikerna får inte bestämma över den. Den är självständig.",
-      "Den leds av sex personer. Riksbankschefen är ordförande."
+      "**Riksbanken** är Sveriges **centralbank**. Det är den viktigaste banken i landet.",
+      "Den ska se till att bank- och betalsystemet fungerar säkert.",
+      "Riksbanken ligger under riksdagen. Men politikerna får inte styra den. Den är självständig.",
+      "Den leds av sex personer, som oftast är ekonomer. Riksbankschefen är ordförande."
     ]},
     { h: "Vad gör Riksbanken?", p: [
-      "Riksbanken har två viktiga uppdrag."
+      "Riksbanken har två viktiga uppdrag:"
     ], lista: [
-      "**Säkra betalningar** – vi ska kunna lita på att betalningar fungerar, till exempel när du swishar. Bara Riksbanken får ge ut svenska pengar.",
-      "**Stabila priser** – pengarna ska behålla sitt värde. Inflationen ska vara ungefär två procent per år. Det sköter Riksbanken genom att ändra räntan. Det kallas **penningpolitik**."
+      "**Säkra betalningar.** Vi ska kunna lita på att betalningar fungerar, till exempel när du swishar. En vanlig dag flyttas omkring 600 miljarder kronor i ekonomin. Bara Riksbanken får ge ut svenska pengar.",
+      "**Stabilt penningvärde.** Pengarna ska behålla sitt värde. Inflationen ska vara ungefär två procent per år. Riksbanken styr det genom räntan. Det kallas **penningpolitik**."
     ]}
   ],
   fordjupning: [
+    { h: null, p: [
+      "Näringslivet och den offentliga sektorn står för produktionen av det mesta vi behöver – allt från varor till välfärdstjänster. För att det ska fungera måste olika investeringar kunna finansieras: pengar behöver hamna på rätt plats vid rätt tidpunkt, så att samhällets resurser används effektivt."
+    ]},
     { h: "Priset på pengar", p: [
-      "Näringslivet och den offentliga sektorn står för det mesta av produktionen. För att det ska fungera måste olika investeringar kunna finansieras – pengar behöver hamna på rätt plats vid rätt tidpunkt så att resurserna används effektivt.",
-      "Här kommer **finanssektorn** in: banker och andra finansinstitut som samlar in sparandet i samhällsekonomin och omvandlar det till lån (krediter) på **kreditmarknaden**. **Räntan** styr hur mycket som lånas ut och sparas, och balanserar därmed utbud och efterfrågan på krediter.",
-      "Räntan kan ses som priset på pengar. Låg ränta gör det billigt att låna och mindre lönsamt att spara – mer pengar går till inköp och investeringar, vilket stimulerar ekonomin. Hög ränta verkar åt motsatt håll."
+      "Här kommer **finanssektorn** in – banker och andra finansinstitut som samlar in sparandet i samhällsekonomin (kapitalöverskottet) och omvandlar det till lån (krediter). Det sker på **kreditmarknaden**. **Räntan** styr hur mycket som lånas ut och hur mycket som sparas, och hjälper därmed till att balansera utbud och efterfrågan på krediter.",
+      "Räntan kan ses som priset på pengar. En låg ränta gör det billigt att låna och mindre lönsamt att spara; då används mer pengar till inköp och investeringar, vilket stimulerar ekonomin."
     ]},
     { h: "Sveriges riksbank", p: [
-      "Den viktigaste aktören på kreditmarknaden är **Riksbanken**, Sveriges centralbank, med övergripande ansvar för att det finansiella systemet fungerar säkert och effektivt.",
-      "Riksbanken ligger under riksdagen men är självständig gentemot politikerna. Den leds av en direktion med sex ledamöter – i första hand nationalekonomer – med riksbankschefen som ordförande."
-    ], ex: "Riksbankshuset ritades av arkitekten Peter Celsing, som klädde fasaden i svart granit för att byggnaden skulle se ointaglig ut." },
+      "Den allra viktigaste aktören på kreditmarknaden är **Riksbanken**, Sveriges centralbank, med övergripande ansvar för att det finansiella systemet fungerar säkert och effektivt.",
+      "Riksbanken ligger under riksdagen men är självständig i förhållande till politikerna. Den leds av en direktion med sex ledamöter – i första hand nationalekonomer – med riksbankschefen som ordförande."
+    ]},
     { h: "Vad gör Riksbanken?", p: [
       "Trots sin självständighet har Riksbanken fått två tydliga uppdrag av politikerna:"
     ], lista: [
-      "**Att främja ett säkert och effektivt betalningssystem.** En genomsnittlig dag strömmar omkring 600 miljarder kronor genom samhällsekonomin, och en kris i det finansiella systemet skulle bli mycket kostsam för samhället. Riksbanken har dessutom ensamrätt att ge ut svenska pengar, vilket ger den en nyckelroll för stabiliteten.",
-      "**Att upprätthålla ett stabilt penningvärde.** Pengarna ska behålla sitt värde, så Riksbanken ska se till att inflationen ligger omkring två procent per år. Genom att styra räntenivån påverkar den inflationstakten – detta kallas **penningpolitik**."
+      "**Att främja ett säkert och effektivt betalningssystem.** Vi måste kunna lita på att pengarna går att använda som betalningsmedel. En genomsnittlig dag strömmar omkring 600 miljarder kronor genom samhällsekonomin, och en kris i det finansiella systemet skulle orsaka mycket stora kostnader för samhället. Riksbanken har dessutom ensamrätt att ge ut svenska pengar, vilket ger den en viktig roll för stabiliteten.",
+      "**Att upprätthålla ett stabilt penningvärde.** Pengarna ska behålla sitt värde, så Riksbanken ska se till att inflationen håller sig omkring två procent per år. Genom att styra räntenivån påverkar Riksbanken inflationstakten – detta kallas **penningpolitik**."
     ]}
   ],
-  bild: [
-    { titel: "Kreditmarknaden", text: "Kretslopp: sparmedel går in till bankerna (sparränta) och ut som krediter/lån (låneränta) till hushåll och företag, i ett kretslopp med samhällsekonomin." }
-  ],
+  extra: {
+    "Priset på pengar": {
+      bild: [{ titel: "Kreditmarknaden", text: "Schema: sparmedel går in till finanssektorn via sparränta och ut som krediter via låneränta, i ett kretslopp med samhällsekonomin." }]
+    },
+    "Sveriges riksbank": {
+      bild: [{ titel: "Riksbankshuset", text: "Foto av Riksbankshuset. Arkitekten Peter Celsing ville att byggnaden skulle se ointaglig ut, därför kläddes fasaden med svart granit." }]
+    }
+  },
   komihag: [
-    "På **kreditmarknaden** blir sparande till lån. **Räntan** är priset på pengar.",
-    "**Riksbanken** är Sveriges självständiga centralbank och har ensamrätt att ge ut pengar.",
-    "Riksbankens uppdrag: säkert betalningssystem och stabilt penningvärde (inflation ca 2 %)."
+    "På **kreditmarknaden** blir sparande till lån (krediter). **Räntan** är priset på pengar.",
+    "**Riksbanken** är Sveriges självständiga centralbank och har ensamrätt att ge ut svenska pengar.",
+    "Två uppdrag: ett **säkert betalningssystem** och ett **stabilt penningvärde** (inflation omkring 2 %) – via **penningpolitik**."
   ]
 },
 
-/* ══════════ 8. MÅLEN OCH DEN EKONOMISKA POLITIKEN ══════════ */
+/* ══════════ 5. ATT STYRA EKONOMIN ══════════ */
 {
-  id: "mal-ekonomisk-politik",
-  rubrik: "Mål och medel i den ekonomiska politiken",
+  id: "att-styra-ekonomin",
+  rubrik: "Att styra ekonomin",
   emoji: "🎯",
+  ingress: "ska du kunna nämna de tre samhällsekonomiska målen och verktygen, förklara hur finans- och penningpolitik fungerar och varför inflation uppstår.",
   lattlast: [
-    { h: "Varför behöver ekonomin styras?", p: [
+    { h: null, p: [
       "Ekonomin får ofta problem. Det kan bli inflation eller arbetslöshet. Naturen kan användas för hårt. Skillnaden mellan rika och fattiga kan bli för stor.",
       "Därför behöver politikerna styra ekonomin."
     ]},
     { h: "Målen för samhällsekonomin", p: [
-      "I grundlagen står att alla ska ha det bra. Alla ska ha rätt till arbete, bostad och utbildning. Samhället ska också vara hållbart.",
-      "Därför har politikerna tre mål för ekonomin:"
+      "Ekonomin finns för att vi ska få det vi behöver. Det stora målet är att ekonomin ska växa så att alla får det tryggare och bättre.",
+      "I grundlagen står det:"
+    ], mellan: [
+      "Kort sagt: alla ska ha det bra. Samhället ska skydda rätten till arbete, bostad och utbildning. Det ska också vara hållbart för framtiden.",
+      "Därför har politikerna tre **samhällsekonomiska mål**:"
     ], lista: [
-      "**Hållbar tillväxt** – ekonomin ska växa länge utan att förstöra naturen.",
-      "**Samhällsekonomisk balans** – låg och jämn inflation och låg arbetslöshet.",
-      "**Rättvis inkomstfördelning** – inte för stora skillnader mellan rika och fattiga."
-    ], ex: "Om ingen styr ekonomin kan det gå riktigt illa. Exempel är krisen på 1930-talet, krisen i Sverige på 1990-talet och finanskrisen 2007–2010." },
-    { h: "Tre verktyg", p: [
-      "Det staten gör kallas **ekonomisk politik**. Det finns tre verktyg:"
-    ], lista: [
-      "**Tillväxtpolitik** – för lång tid framåt. Till exempel pengar till forskning eller nya vägar och järnvägar.",
-      "**Stabiliseringspolitik** – för kortare tid. Den ska göra vågorna i ekonomin mindre.",
-      "**Fördelningspolitik** – den jämnar ut skillnader med skatter och bidrag."
-    ]}
-  ],
-  fordjupning: [
-    { h: "Varför behöver ekonomin styras?", p: [
-      "Samhällsekonomin utsätts ständigt för störningar: konjunkturväxlingar kan leda till både inflation och arbetslöshet, naturresurser överutnyttjas och marknadsekonomin leder ibland till orimliga skillnader i inkomster och levnadsvillkor. Ekonomin tycks behöva ständig tillsyn och skötsel – och det kräver politisk styrning."
+      "**Hållbar tillväxt** – ekonomin ska växa länge, utan att slösa med resurserna.",
+      "**Samhällsekonomisk balans** – små svängningar, låg och jämn inflation och låg arbetslöshet.",
+      "**Rättvis inkomstfördelning** – rättvisare fördelning än marknaden ger av sig själv."
+    ], p2: [
+      "Om ingen styr ekonomin kan det gå illa. Exempel är krisen på 1930-talet, krisen i Sverige på 1990-talet och finanskrisen 2007–2010."
     ]},
-    { h: "Målen för samhällsekonomin", p: [
-      "Ytterst syftar ekonomin till att producera och fördela det som tillgodoser våra behov, och det övergripande målet är att ekonomin ska växa så att trygghet och välfärd ökar. Regeringsformen (1 kap. 2 §) slår fast att den enskildes personliga, ekonomiska och kulturella välfärd ska vara grundläggande mål för den offentliga verksamheten, att det allmänna särskilt ska trygga rätten till arbete, bostad och utbildning, och att det ska främja en hållbar utveckling för nuvarande och kommande generationer.",
-      "Utifrån detta har politikerna formulerat tre övergripande **samhällsekonomiska mål**:"
+    { h: "Ekonomisk politik", p: [
+      "Det staten gör för att ekonomin ska växa kallas **ekonomisk politik**. Det finns tre verktyg:"
     ], lista: [
-      "**Hållbar tillväxt** – att få ekonomin att växa på lång sikt genom att utnyttja resurserna så effektivt och hållbart som möjligt.",
-      "**Samhällsekonomisk balans** – att dämpa konjunktursvängningarna för att uppnå låg och jämn inflation och låg arbetslöshet.",
-      "**Rättvis inkomstfördelning** – en mer rättvis fördelning av samhällets resurser än den marknadsmekanismen åstadkommer på egen hand."
-    ], ex: "Lämnas ekonomin helt i fred tenderar den att missa målen. Depressionen på 1930-talet, 1990-talskrisen i Sverige och den globala finanskrisen 2007–2010 är exempel på det." },
-    { h: "Tre verktyg", p: [
-      "De politiska insatser staten gör för att få ekonomin att växa och välfärden att öka kallas **ekonomisk politik**. Den har tre verktyg – ett för varje mål:"
-    ], lista: [
-      "**Tillväxtpolitik** → hållbar tillväxt. Långt tidsperspektiv: stöd till forskning om miljövänlig produktion, utbyggda kommunikationer, fungerande konkurrens, möjligheter att leva och arbeta i glesbygd och miljöavgifter som begränsar överutnyttjande av känsliga naturtillgångar.",
-      "**Stabiliseringspolitik** → samhällsekonomisk balans. Kortare tidsperspektiv: dämpa inflationen i högkonjunktur och bekämpa arbetslösheten i lågkonjunktur.",
-      "**Fördelningspolitik** → rättvis inkomstfördelning. Utjämnar de största skillnaderna i livsvillkor, främst genom skatte- och socialförsäkringssystemen som överför inkomster mellan individer och grupper."
-    ]}
-  ],
-  fundera: "Vilka anser du vara Sveriges största ekonomiska problem just nu? Vad skulle kunna göras åt dessa problem?",
-  komihag: [
-    "Tre mål: **hållbar tillväxt**, **samhällsekonomisk balans** och **rättvis inkomstfördelning**.",
-    "Tre verktyg: **tillväxtpolitik**, **stabiliseringspolitik** och **fördelningspolitik**.",
-    "Utan styrning kan ekonomin hamna i kris – t.ex. 1930-talet, 1990-talet och 2007–2010."
-  ]
-},
-
-/* ══════════ 9. STABILISERINGSPOLITIK ══════════ */
-{
-  id: "stabiliseringspolitik",
-  rubrik: "Stabiliseringspolitik – finans- och penningpolitik",
-  emoji: "🚦",
-  lattlast: [
-    { h: "Gasa och bromsa", p: [
-      "**Stabiliseringspolitik** betyder att staten försöker göra ekonomins vågor mindre.",
+      "**Tillväxtpolitik** – för lång tid framåt. Till exempel pengar till forskning, nya vägar och regler så att företagen konkurrerar.",
+      "**Stabiliseringspolitik** – för kortare tid. Den ska göra ekonomins vågor mindre.",
+      "**Fördelningspolitik** – jämnar ut skillnader mellan människor med skatter och bidrag."
+    ]},
+    { h: "Hur fungerar stabiliseringspolitiken?", p: [
       "I lågkonjunktur ”gasar” staten. Den försöker få fart på ekonomin.",
       "I högkonjunktur ”bromsar” staten. Den försöker lugna ner ekonomin så att priserna inte stiger för mycket.",
-      "Staten gör alltså tvärtom mot hur ekonomin rör sig. Det kallas **kontracyklisk** politik."
-    ]},
-    { h: "Keynes idéer", p: [
-      "Idén kom från ekonomen **John Maynard Keynes** under krisen på 1930-talet.",
-      "Han sa att kriser beror på att folk köper för lite.",
-      "I en lågkonjunktur kan staten sänka skatterna och bygga till exempel vägar. Då får folk mer pengar och köper mer. Företagen anställer igen.",
+      "Staten gör alltså tvärtom mot hur ekonomin rör sig. Det kallas att politiken är **kontracyklisk**. *Kontra* betyder mot.",
+      "Idén kom under krisen på 1930-talet. Den mest kända personen bakom den var den brittiske ekonomen **John Maynard Keynes**.",
+      "Keynes sa att kriser beror på att folk köper för lite. I en lågkonjunktur kan staten sänka skatterna och bygga till exempel vägar. Då får folk mer pengar och köper mer. Företagen anställer igen.",
       "I en högkonjunktur ska staten göra tvärtom: höja skatterna eller spendera mindre."
     ]},
-    { h: "Två verktyg", p: [
+    { h: "Stabiliseringspolitiska verktyg", p: [
+      "Ekonomin är i balans när det folk vill köpa ungefär motsvarar det som produceras. Annars ökar arbetslösheten eller inflationen.",
       "Staten har två verktyg för att gasa och bromsa:"
     ], lista: [
-      "**Penningpolitik** – Riksbanken ändrar räntan. Höjd ränta gör det dyrare att låna. Då handlar folk mindre och priserna stiger långsammare. Den kallas också **räntepolitik**.",
-      "**Finanspolitik** – regeringen ändrar skatter och statens utgifter. I lågkonjunktur kan den sänka skatter, höja bidrag eller skapa fler ungdomsjobb. Den kallas också **budgetpolitik**."
+      "**Penningpolitik** – Riksbanken ändrar räntan. Höjd ränta gör det dyrare att låna och mer lönt att spara. Då köper folk mindre och priserna stiger långsammare. Det kallas också **räntepolitik**.",
+      "**Finanspolitik** – regeringen ändrar skatter och statens utgifter. I lågkonjunktur kan den till exempel sänka skatter, höja bidrag eller satsa på fler ungdomsjobb. Det kallas också **budgetpolitik**."
+    ]},
+    { h: "Inflationsmål", p: [
+      "I början av 1990-talet hade Sverige en ekonomisk kris.",
+      "Efter krisen fick Sverige ett **inflationsmål** på två procent. Priserna ska alltså öka med ungefär två procent per år.",
+      "Sedan dess är räntan, alltså penningpolitiken, statens viktigaste verktyg för att jämna ut ekonomin.",
+      "Under de senaste 25 åren har inflationen hållits nere. Därför har de flesta svenskar kunnat köpa mer för sina pengar."
+    ]},
+    { h: "Inflationens orsaker", p: [
+      "Priserna kan stiga av tre skäl:"
+    ], lista: [
+      "**Efterfrågeinflation** – folk har mycket pengar och vill köpa mer än vad som finns. Då höjer företagen priserna.",
+      "**Kostnadsinflation** – det blir dyrare för företagen, till exempel med högre löner eller dyrare lokaler. Då höjer de priserna.",
+      "**Pris- och lönespiral** – folk tror att priserna ska stiga och vill ha högre lön. Då höjer företagen priserna igen. Löner och priser driver upp varandra."
+    ], ex: "Exempel: Om alla vill köpa samma nya sneakers men det finns för få par, kan butiken ta mer betalt. Det liknar efterfrågeinflation." },
+    { h: "Riksbankens räntestyrning", p: [
+      "Riksbanken är bankernas bank. Alla stora banker har konton där.",
+      "När du betalar med kort eller swishar, syns det på bankernas konton hos Riksbanken.",
+      "Varje kväll räknar Riksbanken ihop bankernas pengar.",
+      "En bank som har för lite pengar får låna av Riksbanken över natten. Den betalar **utlåningsränta**.",
+      "En bank som har för mycket pengar kan sätta in dem hos Riksbanken. Den får **inlåningsränta**.",
+      "Riksbankens räntor kallas **styrränta**. Den påverkar alla andra räntor.",
+      "Höjd styrränta: dyrare att låna → folk köper mindre → inflationen sjunker.",
+      "Sänkt styrränta: billigare att låna → folk köper mer → inflationen stiger."
     ]}
   ],
   fordjupning: [
-    { h: "Gasa och bromsa", p: [
-      "**Stabiliseringspolitik** går ut på att dämpa ekonomin vid högkonjunkturer och stimulera den under lågkonjunkturer. Den är *kontracyklisk* – den motverkar (kontra) svängningarna (cyklerna) – och syftar till att jämna ut svängningarna för en stabilare ekonomi.",
-      "Stabiliseringspolitikens främsta syfte är samhällsekonomisk balans: den totala efterfrågan (penningmängden) ska balansera det totala utbudet (produktionen). Rubbas balansen märks det främst på att arbetslösheten eller inflationen ökar – ibland båda samtidigt."
+    { h: null, p: [
+      "Samhällsekonomin utsätts ständigt för störningar och problem: konjunkturväxlingar kan leda till både inflation och arbetslöshet, naturresurser överutnyttjas och marknadsekonomin leder ibland till orimliga skillnader i inkomster och levnadsvillkor. Ekonomin tycks behöva ständig tillsyn och skötsel för att fungera väl – och det kräver politisk styrning."
     ]},
-    { h: "Keynes idéer", p: [
-      "Idén om en aktiv stabiliseringspolitik växte fram under 1930-talets depression, och mest känd för den var den brittiske nationalekonomen **John Maynard Keynes**.",
-      "Keynes menade att ekonomiska nedgångar i grunden beror på för låg efterfrågan. Sänker staten skatterna och ökar sina utgifter i en lågkonjunktur – till exempel genom investeringar i infrastruktur – förbättras hushållens köpkraft. Det ökar efterfrågan, som stimulerar produktionen och minskar arbetslösheten.",
-      "I en högkonjunktur bör staten göra tvärtom och strama åt efterfrågan genom lägre utgifter eller högre skatter, för att undvika en ”överhettning” som leder till inflation."
-    ]},
-    { h: "Två verktyg", p: [
-      "Staten har två stabiliseringspolitiska verktyg, som verkar genom olika aktörer:"
+    { h: "Målen för samhällsekonomin", p: [
+      "Ekonomi är något vi alla är beroende av, och därför en angelägenhet för alla i ett samhälle. Ytterst syftar den ekonomiska verksamheten till att producera och fördela produkter som tillgodoser våra behov och önskemål. Det övergripande målet är att få samhällsekonomin att växa för att tryggheten och välfärden ska öka. I den svenska grundlagen står att:"
+    ], mellan: [
+      "Utifrån dessa ambitioner har politikerna formulerat tre övergripande **samhällsekonomiska mål**:"
     ], lista: [
-      "**Penningpolitik** (**räntepolitik**) – styr inflationstakten mot en stabil nivå, vanligtvis runt två procent. I Sverige ansvarar Riksbanken. Ökar inflationen i en högkonjunktur höjer Riksbanken räntan: det blir mer attraktivt att spara och dyrare att låna, efterfrågan dämpas och inflationen minskar.",
+      "**Hållbar tillväxt** – att få ekonomin att växa på lång sikt genom att utnyttja resurserna så effektivt och hållbart som möjligt.",
+      "**Samhällsekonomisk balans** – att dämpa konjunktursvängningarna för att uppnå en låg och jämn inflation och låg arbetslöshet.",
+      "**Rättvis inkomstfördelning** – att skapa en mer rättvis fördelning av samhällets resurser än den som marknadsmekanismen åstadkommer på egen hand."
+    ], p2: [
+      "För att rikta in ekonomin mot målen behövs politisk styrning. Lämnas ekonomin helt i fred tenderar den att missa målen, vilket kan leda till ekonomiska problem – den ekonomiska depressionen på 1930-talet, 1990-talskrisen i Sverige och den globala finanskrisen 2007–2010 är exempel på detta."
+    ]},
+    { h: "Ekonomisk politik", p: [
+      "De politiska insatser staten gör för att få ekonomin att växa och välfärden att öka kallas **ekonomisk politik**. Den består av tre ekonomisk-politiska medel – och varje medel hör ihop med ett av målen:"
+    ], lista: [
+      "**Tillväxtpolitik** → hållbar tillväxt. Långt tidsperspektiv: stöd till forskning om miljövänlig produktion, utbyggda kommunikationer, fungerande konkurrens mellan företagen, möjligheter att arbeta och leva i glesbygd och miljöavgifter som begränsar överutnyttjandet av känsliga naturtillgångar.",
+      "**Stabiliseringspolitik** → samhällsekonomisk balans. Kortare tidsperspektiv: dämpa inflationen under en högkonjunktur och bekämpa arbetslöshet i tider av lågkonjunktur.",
+      "**Fördelningspolitik** → rättvis inkomstfördelning. Utjämnar de största skillnaderna i livsvillkor, främst genom skatte- och socialförsäkringssystemen där staten överför inkomster mellan individer och grupper."
+    ], p2: ["Med dessa styrmedel försöker staten få samhällsekonomin att utvecklas hållbart och stabilt och inkomsterna att fördelas så rättvist som möjligt – det är målet för den ekonomiska politiken."] },
+    { h: "Hur fungerar stabiliseringspolitiken?", p: [
+      "**Stabiliseringspolitik** går ut på att dämpa ekonomin vid högkonjunkturer och stimulera den under lågkonjunkturer. Den är *kontracyklisk* – den motverkar (kontra) svängningarna (cyklerna) i konjunkturerna – och syftar till att jämna ut svängningarna för en stabilare samhällsekonomi.",
+      "Idén om en aktiv stabiliseringspolitik växte fram under 1930-talets depression. Mest känd för de nya idéerna var den brittiske nationalekonomen **John Maynard Keynes**. Han menade att ekonomiska nedgångar i grunden beror på för låg efterfrågan. Om staten i en lågkonjunktur sänker skatterna och ökar sina utgifter, till exempel genom investeringar i infrastruktur, förbättras hushållens köpkraft. Det ökar efterfrågan, som i sin tur stimulerar produktionen och minskar arbetslösheten.",
+      "I en högkonjunktur bör staten göra tvärtom och strama åt efterfrågan genom att minska sina utgifter eller höja skatterna. Syftet är att undvika en ”överhettning” som kan leda till inflation."
+    ]},
+    { h: "Stabiliseringspolitiska verktyg", p: [
+      "Stabiliseringspolitikens främsta syfte är samhällsekonomisk balans: den totala efterfrågan (penningmängden) i samhället ska balansera det totala utbudet (produktionen). Rubbas balansen märks det främst på att arbetslösheten eller inflationen ökar – ibland båda samtidigt. Staten har två stabiliseringspolitiska verktyg:"
+    ], lista: [
+      "**Penningpolitik** (**räntepolitik**) – styr inflationstakten mot en stabil nivå, vanligtvis runt två procent. Det sköts av centralbankerna, i Sverige Riksbanken. Ökar inflationen i en högkonjunktur brukar Riksbanken höja räntan: det blir mer attraktivt att spara och dyrare att låna, efterfrågan dämpas och inflationen minskar.",
       "**Finanspolitik** (**budgetpolitik**) – staten använder sina utgifter och inkomster (finanser) för att stabilisera ekonomin: gasa i lågkonjunktur och bromsa i högkonjunktur, till exempel genom högre bidrag, sänkta skatter eller fler ungdomsjobb. Ansvaret ligger hos regeringen, finansdepartementet och finansministern, och statsbudgeten är styrmedlet."
     ], tabell: {
       huvud: ["", "Penningpolitik", "Finanspolitik"],
       rader: [
-        ["Vem ansvarar?", "Riksbanken", "Regeringen / finansministern"],
-        ["Verktyg", "Räntan (styrräntan)", "Statsbudgeten: skatter och utgifter"],
-        ["Bromsa (högkonjunktur)", "Höja räntan", "Höja skatter, minska utgifter"],
-        ["Gasa (lågkonjunktur)", "Sänka räntan", "Sänka skatter, öka utgifter/bidrag"],
-        ["Annat namn", "Räntepolitik", "Budgetpolitik"]
+        ["Vem ansvarar?", "Riksbanken", "Regeringen, finansdepartementet och finansministern"],
+        ["Styrmedel", "Räntan", "Statsbudgeten: skatter och utgifter"],
+        ["Bromsa i högkonjunktur", "Höja räntan", "Minska utgifter, höja skatter"],
+        ["Gasa i lågkonjunktur", "Sänka räntan", "Sänka skatter, öka utgifter och bidrag"],
+        ["Kallas också", "Räntepolitik", "Budgetpolitik"]
       ]
-    }}
-  ],
-  bild: [
-    { titel: "Gasa och bromsa", text: "Konjunkturkurva där staten ”gasar” i dalarna (lågkonjunktur) och ”bromsar” på topparna (högkonjunktur), så att svängningarna blir mindre och utvecklingen jämnare." },
-    { titel: "Stabiliseringspolitikens aktörer", text: "Schema: riksdagen/regeringen (statsbudgeten) och Riksbanken (räntan) påverkar inkomster, pengar och utgifter hos hushåll, näringsliv och finanssektor – för att balansera total efterfrågan mot totalt utbud." }
-  ],
-  fundera: "Under vilken del av en konjunkturcykel skulle du rekommendera staten att satsa extra på till exempel brobyggen? Vilken effekt skulle det få på samhällsekonomin?",
-  komihag: [
-    "**Stabiliseringspolitik** är **kontracyklisk**: gasa i lågkonjunktur, bromsa i högkonjunktur.",
-    "**Keynes**: kriser beror på för låg efterfrågan – staten kan öka efterfrågan.",
-    "**Penningpolitik** = Riksbanken och räntan. **Finanspolitik** = regeringen, skatter och utgifter."
-  ]
-},
-
-/* ══════════ 10. INFLATIONSMÅL OCH RÄNTESTYRNING ══════════ */
-{
-  id: "inflationsmal-rantestyrning",
-  rubrik: "Inflationsmål och Riksbankens räntestyrning",
-  emoji: "🎚️",
-  lattlast: [
-    { h: "Inflationsmålet", p: [
-      "I början av 1990-talet hade Sverige en stor ekonomisk kris.",
-      "Efter krisen fick Sverige ett **inflationsmål** på två procent.",
-      "Sedan dess är penningpolitiken, alltså räntan, det viktigaste verktyget för att jämna ut ekonomin.",
-      "Låg inflation har gjort att de flesta svenskar kan köpa mer för sin lön än förut."
+    }},
+    { h: "Inflationsmål", p: [
+      "Efter krisen i början av 1990-talet införde Sverige ett **inflationsmål** på två procent. Sedan dess har penningpolitiken varit statens viktigaste stabiliseringspolitiska verktyg, medan den aktiva finanspolitiken och arbetslöshetsbekämpningen hamnat i bakgrunden. Finanspolitiken används i dag främst för långsiktiga syften, som att öka landets hållbara tillväxt eller förbättra människors välfärd och levnadsvillkor.",
+      "Staten och arbetsmarknadens parter har under de senaste 25 åren aktivt arbetat för att hålla inflationen nere. Resultatet är att de flesta svenskar under perioden fått ökad köpkraft, vilket märkts inte minst i hushållens konsumtion."
     ]},
     { h: "Inflationens orsaker", p: [
-      "Priserna kan stiga av tre skäl."
+      "Inflation kan uppstå på olika sätt, och orsakerna kan förstärka varandra:"
     ], lista: [
-      "**Efterfrågeinflation** – folk har mycket pengar och vill köpa mer än vad som finns. Då höjer företagen priserna.",
-      "**Kostnadsinflation** – det blir dyrare för företagen, till exempel med högre löner eller hyror. Då höjer de priserna.",
-      "**Pris- och lönespiral** – priserna stiger, så de anställda vill ha högre lön. Då höjer företagen priserna igen. Det blir en spiral."
+      "**Efterfrågeinflation** – det finns för mycket pengar i omlopp i förhållande till det som går att köpa för dem. Efterfrågan blir större än utbudet och företagen passar på att höja priserna.",
+      "**Kostnadsinflation** – företagens kostnader ökar, till exempel genom högre löner eller dyrare lokaler, och de tvingas höja priserna för att täcka kostnaderna.",
+      "**Pris- och lönespiral** – när priserna förväntas stiga vill löntagarna ha högre löner som kompensation; företagen svarar med högre priser för att täcka kostnaderna, och löner och priser driver upp varandra."
     ]},
     { h: "Riksbankens räntestyrning", p: [
-      "Riksbanken är bankernas bank. Alla stora banker har konton där.",
-      "Varje kväll räknar Riksbanken ihop bankernas pengar.",
-      "En bank som har för lite pengar får låna av Riksbanken över natten. Den betalar ränta.",
-      "En bank som har för mycket pengar kan sätta in dem hos Riksbanken och få ränta.",
-      "Riksbankens ränta kallas **styrränta**. Den påverkar alla andra räntor.",
-      "Höjd styrränta: dyrare att låna, folk köper mindre, inflationen sjunker.",
-      "Sänkt styrränta: billigare att låna, folk köper mer, inflationen stiger."
+      "Utgångspunkten är att Riksbanken är bankernas bank och har ensamrätt på att ge ut pengar. Alla större banker är ”kunder” hos Riksbanken och kan låna nya pengar eller sätta in befintliga allt eftersom allmänhetens behov varierar. När någon betalar med kort eller swishar registreras det på bankernas konton i Riksbanken.",
+      "Mot slutet av dagen gör Riksbanken en avstämning. Banker med underskott kan låna över natten till den *utlåningsränta* Riksbanken bestämmer; banker med överskott kan placera pengarna hos Riksbanken och få *inlåningsränta*. Dessa räntor fungerar som en **styrränta** som påverkar räntenivån i hela samhällsekonomin.",
+      "Höjer Riksbanken styrräntan blir det dyrare för bankerna att låna. Det syftar till att minska utlåningen och göra sparande mer attraktivt, vilket på sikt sänker inflationen. Sänks räntan blir det billigare att låna och mindre attraktivt att spara – efterfrågan och den ekonomiska aktiviteten ökar, och därmed inflationen. Det är huvudprincipen bakom räntestyrningen."
     ]}
   ],
-  fordjupning: [
-    { h: "Inflationsmålet", p: [
-      "Efter krisen i början av 1990-talet införde Sverige ett **inflationsmål** på två procent. Sedan dess har penningpolitiken varit statens viktigaste stabiliseringspolitiska verktyg, medan den aktiva finanspolitiken och arbetslöshetsbekämpningen hamnat i bakgrunden. Finanspolitiken används i dag främst för långsiktiga syften, som att öka den hållbara tillväxten eller förbättra välfärden och levnadsvillkoren.",
-      "Staten och arbetsmarknadens parter har under de senaste 25 åren aktivt arbetat för att hålla inflationen nere. Resultatet är att de flesta svenskar fått ökad köpkraft, vilket märkts inte minst i hushållens konsumtion."
-    ]},
-    { h: "Inflationens orsaker", p: [
-      "Inflation kan uppstå på flera sätt:"
-    ], lista: [
-      "**Efterfrågeinflation** – det finns för mycket pengar i omlopp i förhållande till vad som går att köpa. Efterfrågan blir större än utbudet och företagen höjer priserna.",
-      "**Kostnadsinflation** – företagens kostnader stiger, till exempel genom högre löner eller dyrare lokaler, och de höjer priserna för att täcka kostnaderna.",
-      "**Pris- och lönespiral** – när priserna förväntas stiga kräver löntagarna högre löner som kompensation; företagen svarar med högre priser för att täcka kostnaderna, och löner och priser driver upp varandra."
-    ], ex: "Lägg märke till att pris- och lönespiralen bygger på förväntningar: när priserna *förväntas* stiga kräver löntagarna högre löner – och då stiger priserna." },
-    { h: "Riksbankens räntestyrning", p: [
-      "Utgångspunkten är att Riksbanken är bankernas bank och har ensamrätt på att ge ut pengar. Alla större banker är ”kunder” hos Riksbanken och kan låna eller sätta in pengar allt eftersom allmänhetens behov varierar. När någon betalar med kort eller swishar registreras det på bankernas konton i Riksbanken.",
-      "Mot slutet av dagen gör Riksbanken en avstämning. Banker med underskott kan låna över natten till Riksbankens *utlåningsränta*; banker med överskott kan placera pengarna hos Riksbanken och få *inlåningsränta*. Dessa räntor fungerar som en **styrränta** som påverkar räntenivån i hela samhällsekonomin.",
-      "Höjer Riksbanken styrräntan blir det dyrare för bankerna att låna. Deras utlåning minskar och sparande blir mer attraktivt, vilket på sikt sänker inflationen. Sänks räntan blir det billigare att låna och mindre attraktivt att spara – efterfrågan och den ekonomiska aktiviteten ökar, och därmed inflationen. Det är huvudprincipen bakom räntestyrningen."
-    ]}
-  ],
-  bild: [
-    { titel: "Inflationen i Sverige", text: "Linjediagram över inflationen i procent från 1953 till 2020-talet, med Riksbankens inflationsmål på 2 % markerat som en vågrät linje. Källa: SCB." },
-    { titel: "Räntestyrningen steg för steg", text: "Pilkedja: Riksbanken höjer styrräntan → bankernas lån blir dyrare → högre räntor för hushåll och företag → mindre lån, mer sparande → lägre efterfrågan → lägre inflation (och omvänt vid sänkt ränta)." }
-  ],
+  extra: {
+    "": { fundera: ["Vilka anser du vara Sveriges största ekonomiska problem just nu? Vad skulle kunna göras åt dessa problem?"] },
+    "Målen för samhällsekonomin": {
+      citat: [{ text: "”Den enskildes personliga, ekonomiska och kulturella välfärd ska vara grundläggande mål för den offentliga verksamheten. Särskilt ska det allmänna trygga rätten till arbete, bostad och utbildning samt verka för social omsorg och trygghet och för goda förutsättningar för hälsa. Det allmänna ska främja en hållbar utveckling som leder till en god miljö för nuvarande och kommande generationer.”", kalla: "Regeringsformen (RF 2 §)" }]
+    },
+    "Hur fungerar stabiliseringspolitiken?": {
+      bild: [{ titel: "Gasa och bromsa", text: "Konjunkturkurva där staten ”gasar” i lågkonjunktur och ”bromsar” i högkonjunktur, så att svängningarna dämpas och utvecklingen blir stabilare." }],
+      fundera: ["Under vilken del av en konjunkturcykel skulle du rekommendera staten att satsa extra på till exempel brobyggen? Vilken effekt skulle det få på samhällsekonomin?"]
+    },
+    "Stabiliseringspolitiska verktyg": {
+      bild: [{ titel: "Stabiliseringspolitikens aktörer", text: "Schema: riksdagen/regeringen (statsbudgeten) och Riksbanken (räntan) påverkar inkomster, pengar och utgifter hos finanssektorn, hushåll och näringsliv – mot total efterfrågan och totalt utbud." }]
+    },
+    "Inflationsmål": {
+      bild: [{ titel: "Inflationen i Sverige", text: "Linjediagram över inflationen i procent från 1953 till 2020-talet, med Riksbankens inflationsmål på 2 % markerat. Källa: SCB." }]
+    },
+    "Riksbankens räntestyrning": {
+      bild: [{ titel: "Riksbankens räntestyrning", text: "Schema: bankernas konton i Riksbanken – underskott lånas över natten till utlåningsränta, överskott placeras till inlåningsränta – och hur höjd eller sänkt styrränta påverkar utlåning, sparande och inflation." }]
+    }
+  },
   komihag: [
-    "Sverige har ett **inflationsmål** på 2 % sedan 1990-talskrisen.",
-    "Orsaker till inflation: **efterfrågeinflation**, **kostnadsinflation** och **pris- och lönespiral**.",
-    "Höjd **styrränta** → dyrare lån → lägre efterfrågan → lägre inflation."
+    "Tre mål: **hållbar tillväxt**, **samhällsekonomisk balans** och **rättvis inkomstfördelning** – med **tillväxt-**, **stabiliserings-** och **fördelningspolitik** som verktyg.",
+    "Stabiliseringspolitiken är **kontracyklisk**: **penningpolitik** (Riksbanken, räntan) och **finanspolitik** (regeringen, statsbudgeten).",
+    "**Inflationsmålet** är 2 %. Höjd **styrränta** → dyrare lån → lägre efterfrågan → lägre inflation."
   ]
 }
 
@@ -808,19 +826,181 @@ function fmt(text) {
   });
 }
 
+/* ===================== INBYGGDA DIAGRAM (SVG) ===================== */
+
+const C = { p: '#fb923c', pd: '#7c2d12', deep: '#c2410c', ax: '#334155', mute: '#94a3b8', blue: '#0369a1' };
+
+function Arrowheads() {
+  return (
+    <defs>
+      <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill={C.ax} />
+      </marker>
+      <marker id="ahp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill={C.deep} />
+      </marker>
+      <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill={C.blue} />
+      </marker>
+    </defs>
+  );
+}
+
+/* Konjunkturcykel: vågrörelse kring en stigande tillväxttrend. */
+function KonjunkturSVG() {
+  const x0 = 70, x1 = 580, yA = 250, yB = 95, amp = 40, cykler = 2.25;
+  const trend = x => yA - (x - x0) * (yA - yB) / (x1 - x0);
+  const fas = x => (x - x0) / (x1 - x0) * cykler * 2 * Math.PI;
+  const pts = [];
+  for (let x = x0; x <= x1; x += 4) pts.push([x, trend(x) - amp * Math.sin(fas(x))]);
+  const d = 'M' + pts.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' L');
+  const xAt = k => x0 + k / (cykler * 2) * (x1 - x0);   // k i halvperioder
+  const toppar = [0.5, 2.5].map(xAt), dalar = [1.5, 3.5].map(xAt);
+  return (
+    <svg viewBox="0 0 620 330" role="img" aria-labelledby="kj-t kj-d">
+      <title id="kj-t">Konjunkturcykeln</title>
+      <desc id="kj-d">BNP växer längs en stigande tillväxttrend. Den verkliga produktionen svänger i vågor runt trenden: topparna är högkonjunktur och dalarna lågkonjunktur.</desc>
+      <Arrowheads />
+      <line x1={x0} y1="290" x2={x0} y2="28" stroke={C.ax} strokeWidth="2" markerEnd="url(#ah)" />
+      <line x1={x0} y1="290" x2="600" y2="290" stroke={C.ax} strokeWidth="2" markerEnd="url(#ah)" />
+      <text x="22" y="160" fontSize="14" fill={C.ax} transform="rotate(-90 22 160)" textAnchor="middle">BNP (produktion)</text>
+      <text x="596" y="314" fontSize="14" fill={C.ax} textAnchor="end">Tid</text>
+      <line x1={x0} y1={yA} x2={x1} y2={yB} stroke={C.mute} strokeWidth="2.5" strokeDasharray="8 6" />
+      <text x={x1 - 4} y={yB - 50} fontSize="14" fill="#475569" textAnchor="end">Tillväxttrend</text>
+      <line x1={x1 - 40} y1={yB - 44} x2={x1 - 8} y2={trend(x1 - 8) - 4} stroke={C.mute} strokeWidth="1.2" />
+      <path d={d} fill="none" stroke={C.p} strokeWidth="4" strokeLinecap="round" />
+      {toppar.map((x, i) => (
+        <g key={'t' + i}>
+          <circle cx={x} cy={trend(x) - amp} r="5" fill={C.deep} />
+          <text x={x} y={trend(x) - amp - 14} fontSize="14" fontWeight="600" fill={C.deep} textAnchor="middle">Högkonjunktur</text>
+        </g>
+      ))}
+      {dalar.map((x, i) => (
+        <g key={'d' + i}>
+          <circle cx={x} cy={trend(x) + amp} r="5" fill={C.blue} />
+          <text x={x} y={trend(x) + amp + 24} fontSize="14" fontWeight="600" fill={C.blue} textAnchor="middle">Lågkonjunktur</text>
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+/* Utbud och efterfrågan: jordgubbsmarknaden med jämviktspris, överskott och brist. */
+function UtbudSVG() {
+  const O = [80, 320];                                   // origo
+  const e = [[120, 60], [540, 290]], u = [[120, 290], [540, 60]];
+  const xOn = (L, y) => L[0][0] + (y - L[0][1]) * (L[1][0] - L[0][0]) / (L[1][1] - L[0][1]);
+  const J = [330, 175];                                  // skärningspunkt
+  const yHog = 100, yLag = 250;
+  return (
+    <svg viewBox="0 0 620 370" role="img" aria-labelledby="ue-t ue-d">
+      <title id="ue-t">Utbud och efterfrågan på jordgubbar</title>
+      <desc id="ue-d">Efterfrågekurvan e lutar nedåt och utbudskurvan u lutar uppåt. Där de korsas finns jämviktspriset. Vid ett för högt pris blir det överskott, vid ett för lågt pris blir det brist.</desc>
+      <Arrowheads />
+      <line x1={O[0]} y1={O[1]} x2={O[0]} y2="28" stroke={C.ax} strokeWidth="2" markerEnd="url(#ah)" />
+      <line x1={O[0]} y1={O[1]} x2="600" y2={O[1]} stroke={C.ax} strokeWidth="2" markerEnd="url(#ah)" />
+      <text x="30" y="40" fontSize="15" fontWeight="600" fill={C.ax}>Pris</text>
+      <text x="596" y="350" fontSize="15" fontWeight="600" fill={C.ax} textAnchor="end">Mängd jordgubbar</text>
+
+      {/* Överskott vid för högt pris */}
+      <line x1={xOn(e, yHog)} y1={yHog} x2={xOn(u, yHog)} y2={yHog} stroke={C.deep} strokeWidth="2" strokeDasharray="5 4" />
+      <text x={(xOn(e, yHog) + xOn(u, yHog)) / 2} y={yHog - 8} fontSize="13" fill={C.deep} textAnchor="middle">För högt pris → överskott</text>
+      {/* Brist vid för lågt pris */}
+      <line x1={xOn(u, yLag)} y1={yLag} x2={xOn(e, yLag)} y2={yLag} stroke={C.blue} strokeWidth="2" strokeDasharray="5 4" />
+      <text x={(xOn(u, yLag) + xOn(e, yLag)) / 2} y={yLag + 20} fontSize="13" fill={C.blue} textAnchor="middle">För lågt pris → brist och köer</text>
+
+      <line x1={e[0][0]} y1={e[0][1]} x2={e[1][0]} y2={e[1][1]} stroke={C.blue} strokeWidth="4" strokeLinecap="round" />
+      <line x1={u[0][0]} y1={u[0][1]} x2={u[1][0]} y2={u[1][1]} stroke={C.p} strokeWidth="4" strokeLinecap="round" />
+      <text x={e[1][0] + 8} y={e[1][1] + 5} fontSize="18" fontWeight="700" fill={C.blue}>e</text>
+      <text x={u[1][0] + 8} y={u[1][1] + 5} fontSize="18" fontWeight="700" fill={C.deep}>u</text>
+
+      <line x1={O[0]} y1={J[1]} x2={J[0]} y2={J[1]} stroke={C.mute} strokeWidth="1.5" strokeDasharray="4 4" />
+      <line x1={J[0]} y1={J[1]} x2={J[0]} y2={O[1]} stroke={C.mute} strokeWidth="1.5" strokeDasharray="4 4" />
+      <circle cx={J[0]} cy={J[1]} r="7" fill="#fff" stroke={C.pd} strokeWidth="3" />
+      <text x={J[0] + 14} y={J[1] + 5} fontSize="14" fontWeight="600" fill={C.pd}>Jämvikt</text>
+      <text x={O[0] - 6} y={J[1] - 6} fontSize="12" fill={C.pd} textAnchor="end">Jämvikts-</text>
+      <text x={O[0] - 6} y={J[1] + 9} fontSize="12" fill={C.pd} textAnchor="end">pris</text>
+    </svg>
+  );
+}
+
+/* Det ekonomiska kretsloppet: hushåll och företag möts på marknaden. */
+function KretsloppSVG() {
+  const box = (x, y, w, h, fill, stroke, rubrik, rad) => (
+    <g>
+      <rect x={x} y={y} width={w} height={h} rx="16" fill={fill} stroke={stroke} strokeWidth="2.5" />
+      <text x={x + w / 2} y={y + h / 2 - 4} fontSize="17" fontWeight="700" fill={C.pd} textAnchor="middle">{rubrik}</text>
+      <text x={x + w / 2} y={y + h / 2 + 16} fontSize="12" fill="#475569" textAnchor="middle">{rad}</text>
+    </g>
+  );
+  return (
+    <svg viewBox="0 0 620 340" role="img" aria-labelledby="kl-t kl-d">
+      <title id="kl-t">Det ekonomiska kretsloppet mellan hushåll och företag</title>
+      <desc id="kl-d">Hushållen ger företagen arbetskraft och får löner tillbaka. Hushållens efterfrågan och företagens utbud möts på marknaden.</desc>
+      <Arrowheads />
+      {box(20, 120, 150, 90, '#fff7ed', C.p, 'Hushåll', 'behov · konsumtion')}
+      {box(450, 120, 150, 90, '#fff7ed', C.p, 'Företag', 'resurser · produktion')}
+      {box(245, 128, 130, 74, '#ffedd5', C.deep, 'Marknaden', 'här möts e och u')}
+
+      {/* Mitten: efterfrågan och utbud möts på marknaden */}
+      <line x1="172" y1="165" x2="241" y2="165" stroke={C.blue} strokeWidth="3" markerEnd="url(#ahb)" />
+      <text x="206" y="155" fontSize="13" fontWeight="600" fill={C.blue} textAnchor="middle">efterfrågan (e)</text>
+      <line x1="448" y1="165" x2="379" y2="165" stroke={C.deep} strokeWidth="3" markerEnd="url(#ahp)" />
+      <text x="414" y="155" fontSize="13" fontWeight="600" fill={C.deep} textAnchor="middle">utbud (u)</text>
+
+      {/* Övre båge: arbetskraft från hushåll till företag */}
+      <path d="M95,118 C95,30 525,30 525,116" fill="none" stroke={C.ax} strokeWidth="2.5" markerEnd="url(#ah)" />
+      <text x="310" y="46" fontSize="14" fontWeight="600" fill={C.ax} textAnchor="middle">Arbetskraft</text>
+      {/* Nedre båge: löner från företag till hushåll */}
+      <path d="M525,212 C525,305 95,305 95,214" fill="none" stroke={C.ax} strokeWidth="2.5" markerEnd="url(#ah)" />
+      <text x="310" y="300" fontSize="14" fontWeight="600" fill={C.ax} textAnchor="middle">Löner (inkomster)</text>
+    </svg>
+  );
+}
+
+const DIAGRAMS = {
+  konjunktur: { Comp: KonjunkturSVG, cap: '**Konjunkturcykeln.** Den streckade linjen är **tillväxttrenden** – den stadiga ökningen av BNP. Den orange kurvan är den verkliga produktionen, som svänger mellan **högkonjunktur** och **lågkonjunktur** runt trenden.' },
+  utbud:      { Comp: UtbudSVG,      cap: '**Jordgubbsmarknaden.** Efterfrågekurvan (**e**) lutar nedåt: ju lägre pris, desto mer vill konsumenterna köpa. Utbudskurvan (**u**) lutar uppåt: ju högre pris, desto mer vill odlarna sälja. Där kurvorna möts finns **jämviktspriset**.' },
+  kretslopp:  { Comp: KretsloppSVG,  cap: '**Hushåll och företag.** Hushållen ger företagen arbetskraft och får löner. Hushållens **efterfrågan** och företagens **utbud** möts på **marknaden**.' }
+};
+
+function Diagram({ id }) {
+  const d = DIAGRAMS[id];
+  if (!d) return null;
+  return (
+    <figure className="diagram">
+      <d.Comp />
+      <figcaption>{fmt(d.cap)}</figcaption>
+    </figure>
+  );
+}
+
 /* ===================== INNEHÅLLSKOMPONENTER ===================== */
 
-/* Lättläst: en tanke per stycke – varje rad i p[] blir ett eget stycke. */
-function Block({ b }) {
+/* Citat (extra.citat) placeras direkt efter blockets första stycken, som i källan,
+   så att texten som kommenterar citatet hamnar efter det. */
+function Citat({ list }) {
+  return (list || []).map((c, i) => (
+    <blockquote className="citat" key={"c" + i}>
+      {c.text}
+      {c.kalla && <span className="citat-k">— {c.kalla}</span>}
+    </blockquote>
+  ));
+}
+
+function Block({ b, x }) {
   return (
     <div>
-      <h3>{b.h}</h3>
+      {b.h && <h3>{b.h}</h3>}
       {(b.p || []).map((t, i) => <p key={i}>{fmt(t)}</p>)}
+      <Citat list={x && x.citat} />
+      {(b.mellan || []).map((t, i) => <p key={"m" + i}>{fmt(t)}</p>)}
       {b.lista && (
         <ul>
           {b.lista.map((t, i) => <li key={i}>{fmt(t)}</li>)}
         </ul>
       )}
+      {(b.p2 || []).map((t, i) => <p key={'p2' + i}>{fmt(t)}</p>)}
       {b.tabell && (
         <div className="tbl-wrap">
           <table className="tbl">
@@ -833,70 +1013,72 @@ function Block({ b }) {
           </table>
         </div>
       )}
+      {b.stat && (
+        <div className="stat">
+          <div className="stat-h">📊 {b.stat.h}</div>
+          <ul>{b.stat.lista.map((t, i) => <li key={i}>{fmt(t)}</li>)}</ul>
+        </div>
+      )}
       {b.ex && <div className="ex">{fmt(b.ex)}</div>}
     </div>
   );
 }
 
-function Bildplats({ titel, text }) {
+function Extra({ x }) {
+  if (!x) return null;
   return (
-    <div className="bildplats" role="note">
-      <span className="bildplats-i" aria-hidden="true">🖼️</span>
-      <div>
-        <div className="bildplats-t">[BILDPLATS] {titel}</div>
-        <div className="bildplats-d">{text}</div>
-      </div>
-    </div>
-  );
-}
-
-function KomIhag({ punkter }) {
-  return (
-    <div className="komihag">
-      <div className="komihag-h">💡 Kom ihåg</div>
-      <ul>
-        {punkter.map((t, i) => <li key={i}>{fmt(t)}</li>)}
-      </ul>
-    </div>
-  );
-}
-
-function Section({ sec, mode, open, toggle }) {
-  const blocks = mode === 'lattlast' ? sec.lattlast : sec.fordjupning;
-  return (
-    <section id={sec.id} className="sec">
-      <button className="sec-head" onClick={() => toggle(sec.id)}
-              aria-expanded={open} aria-controls={sec.id + '-body'}>
-        <span className="sec-emoji">{sec.emoji}</span>
-        <span className="sec-titlewrap">
-          <span className="sec-title">{sec.rubrik}</span>
-        </span>
-        <span className={'chev' + (open ? ' open' : '')}>▶</span>
-      </button>
-
-      {open && (
-        <div className="block" id={sec.id + '-body'}>
-          {blocks.map((b, i) => <Block b={b} key={i} />)}
-
-          {(sec.bild || []).map((bp, i) => <Bildplats key={i} titel={bp.titel} text={bp.text} />)}
-
-          {sec.fundera && (
-            <div className="fundera">
-              <div className="fundera-h">🤔 Fundera</div>
-              {fmt(sec.fundera)}
-            </div>
-          )}
-
-          <KomIhag punkter={sec.komihag} />
-
-          <div className="to-top">
-            <a href="#toppen" onClick={(e) => {
-              e.preventDefault();
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}>↑ Till toppen</a>
+    <>
+      {x.diagram && <Diagram id={x.diagram} />}
+      {(x.bild || []).map((bp, i) => (
+        <div className="bildplats" role="note" key={'b' + i}>
+          <span className="bildplats-i" aria-hidden="true">🖼️</span>
+          <div>
+            <div className="bildplats-t">[BILDPLATS] {bp.titel}</div>
+            <div className="bildplats-d">{bp.text}</div>
           </div>
         </div>
-      )}
+      ))}
+      {(x.fundera || []).map((f, i) => (
+        <div className="fundera" key={'f' + i}>
+          <div className="fundera-h">🤔 Fundera</div>
+          {f}
+        </div>
+      ))}
+    </>
+  );
+}
+
+function Section({ sec, mode, nr }) {
+  const blocks = mode === 'lattlast' ? sec.lattlast : sec.fordjupning;
+  const extra = sec.extra || {};
+  return (
+    <section id={sec.id} className="sec">
+      <div className="sec-head">
+        <span className="sec-emoji" aria-hidden="true">{sec.emoji}</span>
+        <h2 className="sec-title">{nr}. {sec.rubrik}</h2>
+      </div>
+      <p className="ingress"><b>Efter det här avsnittet</b>{fmt(sec.ingress)}</p>
+
+      <div className="block">
+        {blocks.map((b, i) => (
+          <React.Fragment key={i}>
+            <Block b={b} x={extra[b.h || ""]} />
+            <Extra x={extra[b.h || '']} />
+          </React.Fragment>
+        ))}
+
+        <div className="komihag">
+          <div className="komihag-h">💡 Kom ihåg</div>
+          <ul>{sec.komihag.map((t, i) => <li key={i}>{fmt(t)}</li>)}</ul>
+        </div>
+
+        <div className="to-top">
+          <a href="#toppen" onClick={(e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}>↑ Till toppen</a>
+        </div>
+      </div>
     </section>
   );
 }
@@ -904,6 +1086,7 @@ function Section({ sec, mode, open, toggle }) {
 /* ===================== APP ===================== */
 
 function App() {
+  /* Läget sparas bara i sessionStorage under egen nyckel – påverkar inget annat. */
   const [mode, setMode] = useState(() => {
     try {
       const saved = sessionStorage.getItem(PAGE.storeKey);
@@ -911,69 +1094,44 @@ function App() {
     } catch (e) {}
     return 'lattlast';
   });
-
-  const [isMobile, setIsMobile] = useState(
-    () => typeof window !== 'undefined' && window.innerWidth < 768
-  );
-  const [open, setOpen] = useState(() => new Set(SECTIONS.map(s => s.id)));
-
-  useEffect(() => {
-    function onResize() {
-      const m = window.innerWidth < 768;
-      setIsMobile(prev => (prev === m ? prev : m));
-    }
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, []);
-
-  useEffect(() => {
-    setOpen(isMobile ? new Set() : new Set(SECTIONS.map(s => s.id)));
-  }, [isMobile]);
+  const [active, setActive] = useState(SECTIONS[0].id);
+  const [tocOpen, setTocOpen] = useState(false);
 
   useEffect(() => {
     try { sessionStorage.setItem(PAGE.storeKey, mode); } catch (e) {}
   }, [mode]);
 
-  /* Djuplänk: öppnar och scrollar till avsnittet i URL:ens hash. */
+  /* Markera aktuellt avsnitt i innehållsförteckningen. */
   useEffect(() => {
-    function openFromHash() {
-      const id = decodeURIComponent((window.location.hash || '').replace('#', ''));
-      if (!id || !SECTIONS.some(sec => sec.id === id)) return;
-      setOpen(prev => {
-        const next = new Set(prev);
-        next.add(id);
-        return next;
-      });
-      window.setTimeout(() => {
-        const el = document.getElementById(id);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 120);
-    }
-    openFromHash();
-    window.addEventListener('hashchange', openFromHash);
-    return () => window.removeEventListener('hashchange', openFromHash);
-  }, [isMobile]);
+    if (!('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver(entries => {
+      const vis = entries.filter(en => en.isIntersecting)
+                         .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+      if (vis.length) setActive(vis[0].target.id);
+    }, { rootMargin: '-15% 0px -70% 0px' });
+    SECTIONS.forEach(s => { const el = document.getElementById(s.id); if (el) io.observe(el); });
+    return () => io.disconnect();
+  }, []);
 
-  const toggle = (id) => {
-    setOpen(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
-      return next;
-    });
-  };
+  /* Djuplänk: scrolla till avsnittet i URL:ens hash när sidan laddats. */
+  useEffect(() => {
+    const id = decodeURIComponent((window.location.hash || '').replace('#', ''));
+    if (!id) return;
+    window.setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ block: 'start' });
+    }, 150);
+  }, []);
 
   const goto = (e, id) => {
     e.preventDefault();
-    setOpen(prev => {
-      const next = new Set(prev);
-      next.add(id);
-      return next;
-    });
-    window.setTimeout(() => {
-      const el = document.getElementById(id);
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 60);
+    setTocOpen(false);
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    try { history.replaceState(null, '', '#' + id); } catch (err) {}
   };
+
+  const activeIdx = Math.max(0, SECTIONS.findIndex(s => s.id === active));
 
   return (
     <div className="wrap" id="toppen">
@@ -987,8 +1145,8 @@ function App() {
         <h1>{PAGE.titel}</h1>
         <div className="rule"></div>
         <p className="lead">
-          Pluggmaterial i {SECTIONS.length} avsnitt. Välj <strong>Lättläst</strong> för korta, enkla förklaringar
-          eller <strong>Fördjupning</strong> för resonemang, samband och orsak–verkan.
+          Pluggmaterial i {SECTIONS.length} avsnitt. Välj <strong>Lättläst</strong> för korta meningar och exempel
+          från vardagen, eller <strong>Fördjupning</strong> för resonemang, orsak–verkan och samband.
         </p>
       </header>
 
@@ -1002,43 +1160,47 @@ function App() {
       </div>
       <p className="mode-note">
         {mode === 'lattlast'
-          ? 'Lättläst: korta meningar och exempel från vardagen.'
-          : 'Fördjupning: samma rubriker, men med fler samband och exempel.'}
+          ? 'Lättläst: korta meningar, en tanke i taget och exempel från vardagen.'
+          : 'Fördjupning: samma rubriker, men med resonemang, orsak–verkan och samband.'}
       </p>
 
-      <nav className="toc" aria-label="Innehåll">
-        <div className="toc-h">Innehåll</div>
-        {SECTIONS.map((s, i) => (
-          <a href={'#' + s.id} key={s.id} onClick={(e) => goto(e, s.id)}>
-            <span className="toc-n">{i + 1}</span>
-            <span className="toc-t">{s.rubrik}</span>
-          </a>
-        ))}
-      </nav>
+      <div className="layout">
+        <nav className={'toc' + (tocOpen ? ' open' : '')} aria-label="Innehåll">
+          <button className="toc-btn" onClick={() => setTocOpen(o => !o)} aria-expanded={tocOpen}>
+            <span className="toc-btn-t">☰ {activeIdx + 1}. {SECTIONS[activeIdx].rubrik}</span>
+            <span aria-hidden="true">{tocOpen ? '▲' : '▼'}</span>
+          </button>
+          <div className="toc-h">Innehåll</div>
+          <div className="toc-list">
+            {SECTIONS.map((s, i) => (
+              <a href={'#' + s.id} key={s.id} onClick={(e) => goto(e, s.id)}
+                 className={s.id === active ? 'active' : ''}>
+                <span className="toc-n">{i + 1}</span>
+                <span className="toc-t">{s.rubrik}</span>
+              </a>
+            ))}
+          </div>
+        </nav>
 
-      {isMobile && (
-        <p className="hint">Tryck på en rubrik för att öppna avsnittet.</p>
-      )}
+        <main>
+          {SECTIONS.map((s, i) => <Section key={s.id} sec={s} mode={mode} nr={i + 1} />)}
 
-      {SECTIONS.map(s => (
-        <Section key={s.id} sec={s} mode={mode}
-                 open={open.has(s.id)} toggle={toggle} />
-      ))}
+          <section className="next" aria-label="Öva vidare">
+            <h2>Öva vidare</h2>
+            <p>Har du läst klart? Testa dig själv på områdets begrepp och quiz.</p>
+            <div className="next-grid">
+              <a className="next-btn ghost" href="sh_ekonomibegrepp.html">📖 Öva på begrepp</a>
+              <a className="next-btn primary" href="sh_ekonomi.html">🎯 Starta quizet</a>
+              <a className="next-btn ghost wide" href={PAGE.andra.href}>📚 {PAGE.andra.label}</a>
+            </div>
+          </section>
 
-      <section className="next" aria-label="Öva vidare">
-        <h2>Öva vidare</h2>
-        <p>Har du läst klart? Testa dig själv på områdets begrepp och quiz.</p>
-        <div className="next-grid">
-          <a className="next-btn ghost" href="sh_ekonomibegrepp.html">📖 Öva på begrepp</a>
-          <a className="next-btn primary" href="sh_ekonomi.html">🎯 Starta quizet</a>
-          <a className="next-btn ghost wide" href={PAGE.andra.href}>📚 {PAGE.andra.label}</a>
-        </div>
-      </section>
-
-      <footer className="foot">
-        <p>Källa: {PAGE.kalla}</p>
-        <p className="by">Designad av John</p>
-      </footer>
+          <footer className="foot">
+            <p>Källa: {PAGE.kalla}</p>
+            <p className="by">Designad av John</p>
+          </footer>
+        </main>
+      </div>
     </div>
   );
 }
