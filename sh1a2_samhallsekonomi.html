@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Samhällskunskap Sa1a2 – Samhällsekonomi</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'EB Garamond', serif; }
+    .area-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .area-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(251,146,60,0.18); }
+    .card-btn { background:#fb923c; color:#7c2d12; }
+    .card-btn:hover { background:#f97316; }
+    @media (prefers-reduced-motion: reduce) {
+      .area-card { transition: none; }
+      .area-card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800">
+
+  <a href="index.html" id="backLink" class="fixed top-4 left-4 z-50 text-sm font-medium text-slate-500 hover:text-orange-700 bg-white/90 px-3 py-2 rounded-xl shadow-sm transition-colors">← Tillbaka till startsidan</a>
+
+  <div class="max-w-xl mx-auto px-6 py-20">
+
+    <div class="text-center mb-14">
+      <p class="text-xs font-bold uppercase tracking-[0.2em] text-orange-600 mb-3">Samhällskunskap Sa1a2</p>
+      <h1 class="text-4xl md:text-5xl font-black italic text-slate-900 mb-5">💰 Samhällsekonomi</h1>
+      <div class="h-1 w-20 rounded-full mx-auto" style="background:#fb923c;"></div>
+    </div>
+
+    <div id="cards" class="flex flex-col gap-5"></div>
+  </div>
+
+  <script>
+    /* Områdets kort – ordning: material → begrepp → quiz (→ jeopardy → flappy → miljonär).
+       Lägg till nya kort här; href: null visar "Kommer snart". */
+    var CARDS = [
+      { emoji: '📚', title: 'Pluggmaterial – Del 1: Samhällsekonomins grunder',
+        text: 'Ekonomins grundfrågor, hushåll och företag, BNP, utrikeshandel, arbetslivets spelregler, pengar, prisbildning och inflation. Välj <strong>Lättläst</strong> eller <strong>Fördjupning</strong>.',
+        href: 'sh1a2_samhallsekonomi_grunder_plugg.html', btn: 'Öppna del 1' },
+      { emoji: '📚', title: 'Pluggmaterial – Del 2: Ekonomisk politik',
+        text: 'Konjunkturer och tillväxt, hållbar utveckling, offentliga sektorn och skatterna, statsbudgeten, Riksbanken samt finans- och penningpolitik. Välj <strong>Lättläst</strong> eller <strong>Fördjupning</strong>.',
+        href: 'sh1a2_samhallsekonomi_ekonomiskpolitik_plugg.html', btn: 'Öppna del 2' },
+      { emoji: '📖', title: 'Öva på centrala begrepp',
+        text: 'Begreppslista, flashcards och övningar för att befästa områdets nyckelbegrepp.',
+        href: 'sh_ekonomibegrepp.html', btn: 'Öva på begreppen' },
+      { emoji: '🎯', title: 'Quiz',
+        text: 'Testa dig själv med flervalsfrågor och få en förklaring efter varje svar.',
+        href: 'sh_ekonomi.html', btn: 'Starta quizet' },
+      { emoji: '🎧', title: 'Text, video och ljud',
+        text: 'Det tidigare materialet för området – läs, titta eller lyssna.',
+        href: 'sh_ekonomi_material.html', btn: 'Öppna materialet' }
+    ];
+
+    (function () {
+      var root = document.getElementById('cards');
+      root.innerHTML = CARDS.map(function (c) {
+        var action = c.href
+          ? '<a href="' + c.href + '" class="card-btn block w-full py-3 rounded-2xl font-bold text-center uppercase tracking-wide text-sm transition-colors">' + c.btn + ' →</a>'
+          : '<div class="border-2 border-dashed rounded-2xl py-4 text-center font-bold text-sm uppercase tracking-wide" style="background:#ffedd5; border-color:#fed7aa; color:#c2410c;">Kommer snart</div>';
+        return '<div class="area-card bg-white rounded-3xl shadow-sm border-t-8 p-7" style="border-color:#fb923c;">' +
+                 '<div class="flex items-center gap-4 mb-3">' +
+                   '<span class="text-4xl">' + c.emoji + '</span>' +
+                   '<h2 class="text-2xl font-bold">' + c.title + '</h2>' +
+                 '</div>' +
+                 '<p class="text-slate-500 leading-relaxed mb-6">' + c.text + '</p>' +
+                 action +
+               '</div>';
+      }).join('');
+    })();
+
+    /* Smart tillbaka-navigering: history.back() inom samma domän,
+       annars fallback till startsidan (områdessidans egen förälder). */
+    (function () {
+      var backLink = document.getElementById('backLink');
+      if (!backLink) return;
+      backLink.addEventListener('click', function (e) {
+        e.preventDefault();
+        try {
+          if (document.referrer &&
+              new URL(document.referrer).hostname === window.location.hostname) {
+            history.back();
+            return;
+          }
+        } catch (err) {}
+        window.location.href = 'index.html';
+      });
+    })();
+  </script>
+
+  <script src="feedback-widget.js" defer></script>
+  <script data-goatcounter="https://johnblixt.goatcounter.com/count"
+          async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
