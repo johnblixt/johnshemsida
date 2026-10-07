@@ -132,6 +132,7 @@
     font-size:1.12rem; font-weight:600; color:var(--pd);
     margin:1.6rem 0 .15rem;
   }
+  .block h4 { font-size:1rem; font-weight:600; color:var(--p-deep); margin:1.1rem 0 .1rem; }
   .block p { margin:.5rem 0; line-height:1.85; color:#334155; }
   .block .term { color:var(--p-deep); font-weight:700; }
   .block ul { list-style:none; padding:0; margin:.6rem 0; }
@@ -988,10 +989,10 @@ function Citat({ list }) {
   ));
 }
 
-function Block({ b, x }) {
+function Block({ b, x, sub }) {
   return (
     <div>
-      {b.h && <h3>{b.h}</h3>}
+      {b.h && (sub ? <h4>{b.h}</h4> : <h3>{b.h}</h3>)}
       {(b.p || []).map((t, i) => <p key={i}>{fmt(t)}</p>)}
       <Citat list={x && x.citat} />
       {(b.mellan || []).map((t, i) => <p key={"m" + i}>{fmt(t)}</p>)}
@@ -1019,7 +1020,9 @@ function Block({ b, x }) {
           <ul>{b.stat.lista.map((t, i) => <li key={i}>{fmt(t)}</li>)}</ul>
         </div>
       )}
+      {(b.p3 || []).map((t, i) => <p key={'p3' + i}>{fmt(t)}</p>)}
       {b.ex && <div className="ex">{fmt(b.ex)}</div>}
+      {(b.under || []).map((u, i) => <Block key={'u' + i} b={u} sub />)}
     </div>
   );
 }
