@@ -28,6 +28,17 @@
     }
     a.back-btn:hover { background: var(--primary-light); }
 
+    .easy-toggle {
+      position: fixed; top: 14px; right: 14px; z-index: 200;
+      background: white; border: 2px solid #16a34a; color: #16a34a;
+      padding: 7px 16px; border-radius: 999px; font-family: inherit;
+      font-size: 0.88rem; font-weight: 600; cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .easy-toggle:hover { background: #dcfce7; }
+    .easy-toggle[aria-pressed="true"] { background: #16a34a; color: white; }
+    .easy-toggle[aria-pressed="true"]:hover { background: #15803d; }
+
     .screen { display: none; }
     .screen.active { display: block; }
 
@@ -160,6 +171,12 @@
     .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
     .btn-primary:active { transform: none; }
 
+    @media (max-width: 768px) {
+      a.back-btn { top: 10px; left: 8px; padding: 6px 10px; font-size: 0.88rem; }
+      .easy-toggle { top: 10px; right: 8px; padding: 6px 12px; font-size: 0.8rem; }
+      #screen-quiz, #screen-result { padding-left: 16px; padding-right: 16px; }
+      .modal-box { padding: 24px 20px; max-height: 90vh; overflow-y: auto; }
+    }
     @media (max-width: 500px) {
       #screen-start h1 { font-size: 1.85rem; }
       .q-text { font-size: 1.1rem; }
@@ -169,6 +186,7 @@
 <body>
 
 <a href="politik.html" class="back-btn">← Tillbaka</a>
+<button class="easy-toggle" id="btn-easy" type="button" aria-pressed="false" onclick="toggleEasy()">📖 Enkel svenska</button>
 
 <!-- ═══════════ START ═══════════ -->
 <div id="screen-start" class="screen active">
@@ -205,7 +223,7 @@
     <div class="modal-icon"    id="modal-icon"></div>
     <div class="modal-verdict" id="modal-verdict"></div>
     <div class="modal-expl"    id="modal-expl"></div>
-    <button class="btn-primary" onclick="closeModal()">Nästa fråga →</button>
+    <button class="btn-primary" id="modal-next" onclick="closeModal()">Nästa fråga →</button>
   </div>
 </div>
 
@@ -226,10 +244,10 @@
     <div class="stat-box"><div class="snum" id="s-pct">0%</div><div class="slbl">Andel rätt</div></div>
   </div>
   <div class="missed-section" id="missed-section"></div>
-  <div class="section-hd">Fullständigt facit</div>
+  <div class="section-hd" id="facit-hd">Fullständigt facit</div>
   <div id="facit-list"></div>
   <div style="text-align:center;margin-top:32px">
-    <button class="btn-primary" onclick="restartQuiz()">↺ Gör om quizet</button>
+    <button class="btn-primary" id="btn-restart" onclick="restartQuiz()">↺ Gör om quizet</button>
   </div>
 </div>
 
@@ -244,7 +262,15 @@ const QUESTIONS = [
       'De gäller bara vuxna personer som är myndiga'
     ],
     correct: 'De gäller alla människor, överallt och i alla tider, oavsett kultur, religion eller landets lagar',
-    expl: 'Universalitet är en grundprincip för mänskliga rättigheter – de gäller alla människor bara för att de är människor, oavsett nationalitet, religion, kön eller politisk åsikt.'
+    expl: 'Universalitet är en grundprincip för mänskliga rättigheter – de gäller alla människor bara för att de är människor, oavsett nationalitet, religion, kön eller politisk åsikt.',
+    qEnkel: 'Mänskliga rättigheter är universella. Vad betyder det?',
+    optsEnkel: [
+      'De gäller alla människor, i alla länder och i alla tider',
+      'De gäller bara de som är medborgare i en demokrati',
+      'De gäller bara i de 193 länder som är med i FN',
+      'De gäller bara vuxna, alltså de som är myndiga'
+    ],
+    expEnkel: 'Universell betyder att något gäller alla. Mänskliga rättigheter gäller alla människor. Det spelar ingen roll vilket land du kommer från. Det spelar heller ingen roll vilken religion, vilket kön eller vilka åsikter du har.'
   },
   {
     q: 'I vilka tre huvudkategorier brukar mänskliga rättigheter delas in?',
@@ -255,7 +281,15 @@ const QUESTIONS = [
       'Barnens, kvinnornas och äldres rättigheter'
     ],
     correct: 'Personliga, politiska samt ekonomiska, sociala och kulturella rättigheter',
-    expl: 'Mänskliga rättigheter brukar delas in i tre kategorier: personliga rättigheter (t.ex. rätt till liv), politiska rättigheter (t.ex. rösträtt) samt ekonomiska, sociala och kulturella rättigheter (t.ex. rätt till utbildning och arbete).'
+    expl: 'Mänskliga rättigheter brukar delas in i tre kategorier: personliga rättigheter (t.ex. rätt till liv), politiska rättigheter (t.ex. rösträtt) samt ekonomiska, sociala och kulturella rättigheter (t.ex. rätt till utbildning och arbete).',
+    qEnkel: 'Mänskliga rättigheter delas ofta in i tre grupper. Vilka är de?',
+    optsEnkel: [
+      'Personliga, politiska samt ekonomiska, sociala och kulturella rättigheter',
+      'Civila, militära och religiösa rättigheter för alla människor',
+      'Nationella, regionala och lokala rättigheter i varje land',
+      'Barnens rättigheter, kvinnornas rättigheter och de äldres rättigheter'
+    ],
+    expEnkel: 'Det finns tre grupper. Personliga rättigheter, till exempel rätten att leva. Politiska rättigheter, till exempel rätten att rösta. Ekonomiska, sociala och kulturella rättigheter, till exempel rätten att gå i skolan och att arbeta.'
   },
   {
     q: 'Vilken 1600-talsfilosof formulerade idén om att alla människor föds med naturliga rättigheter till liv, frihet och egendom?',
@@ -266,7 +300,15 @@ const QUESTIONS = [
       'Immanuel Kant'
     ],
     correct: 'John Locke',
-    expl: 'John Locke var en brittisk filosof som hävdade att alla människor föds med naturliga rättigheter: rätt till liv, frihet och egendom. Hans idéer lade grunden för moderna mänskliga rättigheter och påverkade bland annat den amerikanska självständighetsförklaringen.'
+    expl: 'John Locke var en brittisk filosof som hävdade att alla människor föds med naturliga rättigheter: rätt till liv, frihet och egendom. Hans idéer lade grunden för moderna mänskliga rättigheter och påverkade bland annat den amerikanska självständighetsförklaringen.',
+    qEnkel: 'En filosof på 1600-talet sa att alla föds med naturliga rättigheter: rätt till liv, frihet och egendom. Vem var det?',
+    optsEnkel: [
+      'John Locke',
+      'Thomas Hobbes',
+      'Jean-Jacques Rousseau',
+      'Immanuel Kant'
+    ],
+    expEnkel: 'John Locke var en filosof från England. Han sa att alla människor föds med rätt till liv, frihet och egendom (saker man äger). Hans idéer blev en grund för dagens mänskliga rättigheter. De påverkade också USA:s självständighetsförklaring.'
   },
   {
     q: 'Vad var Kyroskylindren, skapad ca 539 f.v.t.?',
@@ -277,25 +319,57 @@ const QUESTIONS = [
       'Det äldsta kända handelsdokumentet från Persien'
     ],
     correct: 'En rättighetsförklaring som bl.a. befriade slavar och garanterade religionsfrihet',
-    expl: 'Kyroskylindren skapades av perserkungen Kyros den store och anses av många vara världens första rättighetsförklaring. Den befriade slavar och garanterade religionsfrihet för dem som levde i imperiet.'
+    expl: 'Kyroskylindren skapades av perserkungen Kyros den store och anses av många vara världens första rättighetsförklaring. Den befriade slavar och garanterade religionsfrihet för dem som levde i imperiet.',
+    qEnkel: 'Kyroskylindren gjordes ungefär år 539 f.v.t. (före vår tideräkning). Vad var den?',
+    optsEnkel: [
+      'En text om rättigheter som bland annat gjorde slavar fria och gav religionsfrihet',
+      'Det första moderna passet, som man använde för att resa mellan olika länder',
+      'En lag för armén som sa att man fick ta över länderna runt omkring',
+      'Den äldsta text vi känner till om handel, och den kommer från Persien'
+    ],
+    expEnkel: 'Kyroskylindren gjordes av Kyros den store. Han var kung i Persien. Många ser den som världens första rättighetsförklaring. Den gjorde slavar fria. Den gav också alla i riket rätt att ha sin egen religion.'
   },
   {
     q: 'Vilket år grundades Förenta nationerna (FN)?',
     opts: ['1945', '1919', '1948', '1939'],
     correct: '1945',
-    expl: 'FN grundades 1945 efter andra världskriget, för att förhindra framtida krig och kränkningar av mänskliga rättigheter. San Francisco-stadgan undertecknades av de 51 ursprungsländerna.'
+    expl: 'FN grundades 1945 efter andra världskriget, för att förhindra framtida krig och kränkningar av mänskliga rättigheter. San Francisco-stadgan undertecknades av de 51 ursprungsländerna.',
+    qEnkel: 'Vilket år bildades Förenta nationerna (FN)?',
+    optsEnkel: [
+      '1945',
+      '1919',
+      '1948',
+      '1939'
+    ],
+    expEnkel: 'FN bildades 1945, direkt efter andra världskriget. Målet var att stoppa nya krig och skydda människors rättigheter. 51 länder skrev under FN-stadgan i San Francisco.'
   },
   {
     q: 'Hur många länder grundade FN år 1945?',
     opts: ['51 länder', '16 länder', '100 länder', '193 länder'],
     correct: '51 länder',
-    expl: 'FN grundades 1945 av 51 länder. Idag har organisationen 193 medlemsstater och arbetar med fred, säkerhet, humanitärt bistånd och mänskliga rättigheter.'
+    expl: 'FN grundades 1945 av 51 länder. Idag har organisationen 193 medlemsstater och arbetar med fred, säkerhet, humanitärt bistånd och mänskliga rättigheter.',
+    qEnkel: 'Hur många länder var med och bildade FN år 1945?',
+    optsEnkel: [
+      '51 länder',
+      '16 länder',
+      '100 länder',
+      '193 länder'
+    ],
+    expEnkel: 'FN bildades 1945 av 51 länder. I dag är 193 länder med i FN. FN arbetar för fred och säkerhet. FN hjälper människor i nöd och arbetar för mänskliga rättigheter.'
   },
   {
     q: 'Hur många artiklar innehåller FN:s allmänna förklaring om de mänskliga rättigheterna, antagen 1948?',
     opts: ['30 artiklar', '50 artiklar', '10 artiklar', '100 artiklar'],
     correct: '30 artiklar',
-    expl: 'FN:s allmänna förklaring om de mänskliga rättigheterna antogs den 10 december 1948 och innehåller 30 artiklar som täcker allt från rätten till liv och frihet till rätten till utbildning och arbete.'
+    expl: 'FN:s allmänna förklaring om de mänskliga rättigheterna antogs den 10 december 1948 och innehåller 30 artiklar som täcker allt från rätten till liv och frihet till rätten till utbildning och arbete.',
+    qEnkel: 'FN:s allmänna förklaring om de mänskliga rättigheterna kom 1948. Hur många artiklar (delar) har den?',
+    optsEnkel: [
+      '30 artiklar',
+      '50 artiklar',
+      '10 artiklar',
+      '100 artiklar'
+    ],
+    expEnkel: 'FN:s allmänna förklaring om de mänskliga rättigheterna antogs den 10 december 1948. Den har 30 artiklar. De handlar till exempel om rätten att leva och vara fri, och om rätten till skola och arbete.'
   },
   {
     q: 'Är FN:s allmänna förklaring om de mänskliga rättigheterna från 1948 juridiskt bindande för länder?',
@@ -306,7 +380,15 @@ const QUESTIONS = [
       'Ja, men bara för EU-länder'
     ],
     correct: 'Nej, den är inte juridiskt bindande',
-    expl: 'FN:s allmänna förklaring är en deklaration, inte ett bindande avtal. Den är ett politiskt och moraliskt dokument. Konventionerna däremot är juridiskt bindande för de länder som ratificerar dem.'
+    expl: 'FN:s allmänna förklaring är en deklaration, inte ett bindande avtal. Den är ett politiskt och moraliskt dokument. Konventionerna däremot är juridiskt bindande för de länder som ratificerar dem.',
+    qEnkel: 'FN:s allmänna förklaring om de mänskliga rättigheterna kom 1948. Är den juridiskt bindande (måste länderna följa den enligt lag)?',
+    optsEnkel: [
+      'Nej, den är inte juridiskt bindande för något land',
+      'Ja, alla länder måste följa den, annars får de straff',
+      'Ja, men bara för de fasta medlemmarna i FN:s säkerhetsråd',
+      'Ja, men bara för de länder som är medlemmar i EU'
+    ],
+    expEnkel: 'FN:s allmänna förklaring är en deklaration. En deklaration är inte ett bindande avtal. Den visar vad som är rätt och viktigt, men ingen lag tvingar länderna att följa den. Konventioner är annorlunda. De är juridiskt bindande för de länder som har ratificerat dem (godkänt dem).'
   },
   {
     q: 'Vad är skillnaden mellan en deklaration och en konvention inom mänskliga rättigheter?',
@@ -317,13 +399,29 @@ const QUESTIONS = [
       'Det finns ingen principiell skillnad mellan deklarationer och konventioner'
     ],
     correct: 'Konventioner är juridiskt bindande för stater som skriver under; deklarationen är det inte',
-    expl: 'En deklaration (som FN:s från 1948) är ett politiskt och moraliskt ställningstagande, men inte juridiskt bindande. En konvention är ett avtal som de länder som skriver under och ratificerar är juridiskt skyldiga att följa.'
+    expl: 'En deklaration (som FN:s från 1948) är ett politiskt och moraliskt ställningstagande, men inte juridiskt bindande. En konvention är ett avtal som de länder som skriver under och ratificerar är juridiskt skyldiga att följa.',
+    qEnkel: 'Vad är skillnaden mellan en deklaration och en konvention om mänskliga rättigheter?',
+    optsEnkel: [
+      'En konvention är juridiskt bindande för länder som skriver under. En deklaration är det inte.',
+      'En deklaration är juridiskt bindande. En konvention är bara ett råd till länderna.',
+      'En deklaration gäller enskilda människor. En konvention gäller bara länder.',
+      'Det finns ingen viktig skillnad mellan en deklaration och en konvention.'
+    ],
+    expEnkel: 'En deklaration, som FN:s från 1948, visar vad länderna tycker är rätt. Men den är inte juridiskt bindande. En konvention är ett avtal. Länder som skriver under och ratificerar den måste följa den enligt lag.'
   },
   {
     q: 'Vilket år antogs de två viktigaste FN-konventionerna om mänskliga rättigheter – de s.k. kärnkonventionerna?',
     opts: ['1966', '1948', '1945', '1989'],
     correct: '1966',
-    expl: 'År 1966 antogs FN:s konvention om medborgerliga och politiska rättigheter samt konventionen om ekonomiska, sociala och kulturella rättigheter – de två kärnkonventionerna som är juridiskt bindande för de stater som ratificerat dem.'
+    expl: 'År 1966 antogs FN:s konvention om medborgerliga och politiska rättigheter samt konventionen om ekonomiska, sociala och kulturella rättigheter – de två kärnkonventionerna som är juridiskt bindande för de stater som ratificerat dem.',
+    qEnkel: 'FN har två viktiga konventioner om mänskliga rättigheter. De kallas kärnkonventionerna. Vilket år antogs de?',
+    optsEnkel: [
+      '1966',
+      '1948',
+      '1945',
+      '1989'
+    ],
+    expEnkel: 'År 1966 antogs två konventioner. Den ena handlar om medborgerliga och politiska rättigheter. Den andra handlar om ekonomiska, sociala och kulturella rättigheter. De är juridiskt bindande för de länder som har ratificerat dem.'
   },
   {
     q: 'Vilken FN-konvention ger barn under 18 år specifika rättigheter som rätt till skydd, utbildning och deltagande?',
@@ -334,7 +432,15 @@ const QUESTIONS = [
       'Konventionen mot tortyr'
     ],
     correct: 'Barnkonventionen',
-    expl: 'Barnkonventionen antogs av FN 1989 och ger barn under 18 år specifika rättigheter, bland annat rätt till skydd, utbildning, lek och deltagande. Den är ratificerad av nästan alla världens länder.'
+    expl: 'Barnkonventionen antogs av FN 1989 och ger barn under 18 år specifika rättigheter, bland annat rätt till skydd, utbildning, lek och deltagande. Den är ratificerad av nästan alla världens länder.',
+    qEnkel: 'Vilken FN-konvention ger barn under 18 år egna rättigheter, till exempel rätt till skydd, skola och att få vara med och bestämma?',
+    optsEnkel: [
+      'Barnkonventionen',
+      'Flyktingkonventionen',
+      'Europakonventionen',
+      'Konventionen mot tortyr'
+    ],
+    expEnkel: 'Barnkonventionen antogs av FN 1989. Den ger barn under 18 år egna rättigheter. Barn har till exempel rätt till skydd, skola, lek och att få säga vad de tycker. Nästan alla länder i världen har ratificerat den.'
   },
   {
     q: 'Vilken rättslig status har Europakonventionen om de mänskliga rättigheterna i Sverige?',
@@ -345,13 +451,29 @@ const QUESTIONS = [
       'Den gäller enbart i brottmål, inte i civila tvister'
     ],
     correct: 'Den är gällande lag i Sverige',
-    expl: 'Europakonventionen inkorporerades i svensk rätt 1995 och är sedan dess gällande lag i Sverige. Det innebär att den kan åberopas direkt i svenska domstolar.'
+    expl: 'Europakonventionen inkorporerades i svensk rätt 1995 och är sedan dess gällande lag i Sverige. Det innebär att den kan åberopas direkt i svenska domstolar.',
+    qEnkel: 'Vad gäller för Europakonventionen om de mänskliga rättigheterna i Sverige?',
+    optsEnkel: [
+      'Den gäller som lag i Sverige, precis som andra lagar',
+      'Den är bara ett råd och ingen lag i Sverige',
+      'Den gäller bara EU-medborgare som bor i Sverige',
+      'Den gäller bara i brottmål, inte i andra rättegångar'
+    ],
+    expEnkel: 'Europakonventionen blev svensk lag år 1995. Sedan dess gäller den som lag i Sverige. Det betyder att man kan hänvisa till den direkt i en svensk domstol.'
   },
   {
     q: 'Vilket år bildades Europarådet?',
     opts: ['1949', '1957', '1945', '1995'],
     correct: '1949',
-    expl: 'Europarådet bildades 1949 som ett svar på andra världskrigets fasor. Det är en separat organisation från EU och fokuserar på mänskliga rättigheter, demokrati och rättsstatsprincipen. Idag har det 46 medlemsstater.'
+    expl: 'Europarådet bildades 1949 som ett svar på andra världskrigets fasor. Det är en separat organisation från EU och fokuserar på mänskliga rättigheter, demokrati och rättsstatsprincipen. Idag har det 46 medlemsstater.',
+    qEnkel: 'Vilket år bildades Europarådet?',
+    optsEnkel: [
+      '1949',
+      '1957',
+      '1945',
+      '1995'
+    ],
+    expEnkel: 'Europarådet bildades 1949, efter det hemska andra världskriget. Europarådet är inte samma sak som EU. Europarådet arbetar för mänskliga rättigheter, demokrati och rättsstatsprincipen (att alla måste följa lagen, även staten). I dag är 46 länder med.'
   },
   {
     q: 'Vad kan Europadomstolen för de mänskliga rättigheterna göra med stater som kränker sina medborgares rättigheter?',
@@ -362,13 +484,29 @@ const QUESTIONS = [
       'Fängsla statsledarna personligen'
     ],
     correct: 'Döma dem för brott mot sina medborgares rättigheter',
-    expl: 'Europadomstolen kan döma stater som kränker europakonventionens bestämmelser. Den kan döma länder att betala skadestånd till kränkta individer och kräva att lagar ändras.'
+    expl: 'Europadomstolen kan döma stater som kränker europakonventionens bestämmelser. Den kan döma länder att betala skadestånd till kränkta individer och kräva att lagar ändras.',
+    qEnkel: 'Ett land kränker sina medborgares rättigheter. Vad kan Europadomstolen för de mänskliga rättigheterna göra?',
+    optsEnkel: [
+      'Döma landet för brott mot medborgarnas rättigheter',
+      'Bestämma att landet inte längre får vara medlem i FN',
+      'Kräva att andra länder skickar sin militär mot landet',
+      'Sätta landets ledare i fängelse, som straff för dem själva'
+    ],
+    expEnkel: 'Europadomstolen kan döma länder som bryter mot Europakonventionen. Domstolen kan bestämma att landet ska betala skadestånd (pengar) till den som drabbats. Den kan också kräva att landet ändrar sina lagar.'
   },
   {
     q: 'Under vilken organisation lyder Europadomstolen för de mänskliga rättigheterna?',
     opts: ['Europarådet', 'Europeiska unionen (EU)', 'FN:s säkerhetsråd', 'NATO'],
     correct: 'Europarådet',
-    expl: 'Europadomstolen är Europarådets domstol – inte EU:s. Europarådet grundades 1949 och har 46 medlemsstater, vilket är fler än EU:s 27.'
+    expl: 'Europadomstolen är Europarådets domstol – inte EU:s. Europarådet grundades 1949 och har 46 medlemsstater, vilket är fler än EU:s 27.',
+    qEnkel: 'Vilken organisation hör Europadomstolen för de mänskliga rättigheterna till?',
+    optsEnkel: [
+      'Europarådet',
+      'Europeiska unionen (EU)',
+      'FN:s säkerhetsråd',
+      'NATO'
+    ],
+    expEnkel: 'Europadomstolen är Europarådets domstol. Den hör inte till EU. Europarådet bildades 1949. Det har 46 medlemsländer. EU har 27.'
   },
   {
     q: 'Vad innebär kollektiva rättigheter?',
@@ -379,13 +517,29 @@ const QUESTIONS = [
       'Rättigheter som gäller hela familjer snarare än enskilda individer'
     ],
     correct: 'En folkgrupps rätt att bevara sitt språk och sin kultur och ha ett visst självbestämmande',
-    expl: 'Kollektiva rättigheter gäller grupper av människor, t.ex. folkgrupper och urfolk, snarare än individer. De inkluderar rätten till kulturell identitet, språk, religion och i vissa fall politiskt självbestämmande.'
+    expl: 'Kollektiva rättigheter gäller grupper av människor, t.ex. folkgrupper och urfolk, snarare än individer. De inkluderar rätten till kulturell identitet, språk, religion och i vissa fall politiskt självbestämmande.',
+    qEnkel: 'Vad är kollektiva rättigheter?',
+    optsEnkel: [
+      'En folkgrupps rätt att behålla sitt språk, sin kultur och visst självbestämmande',
+      'Rätten för alla människor att träffas och vara tillsammans i en grupp',
+      'Rättigheter som alla som är medborgare i ett EU-land har tillsammans',
+      'Rättigheter som gäller för en hel familj i stället för en enda person'
+    ],
+    expEnkel: 'Kollektiva rättigheter gäller en grupp, inte en enskild person. Det kan till exempel vara en folkgrupp eller ett urfolk. Gruppen har rätt till sin kultur, sitt språk och sin religion. Ibland har gruppen också rätt att bestämma över vissa saker själv.'
   },
   {
     q: 'Vilket folk erkänns som urfolk i Sverige?',
     opts: ['Samerna', 'Tornedalingarna', 'Romer', 'Sverigefinnar'],
     correct: 'Samerna',
-    expl: 'Samerna är det enda folk som erkänns som urfolk i Sverige. De har levt i området länge innan nationsgränserna drogs och har speciella rättigheter kopplade till bl.a. renskötseln och sitt språk.'
+    expl: 'Samerna är det enda folk som erkänns som urfolk i Sverige. De har levt i området länge innan nationsgränserna drogs och har speciella rättigheter kopplade till bl.a. renskötseln och sitt språk.',
+    qEnkel: 'Vilket folk räknas som urfolk i Sverige?',
+    optsEnkel: [
+      'Samerna',
+      'Tornedalingarna',
+      'Romer',
+      'Sverigefinnar'
+    ],
+    expEnkel: 'Samerna är det enda urfolket i Sverige. Ett urfolk har bott på en plats länge, långt innan länderna fick sina gränser. Samerna har särskilda rättigheter, till exempel när det gäller renskötsel och samiska språket.'
   },
   {
     q: 'Vilka grupper räknas som nationella minoriteter i Sverige, förutom samerna?',
@@ -396,19 +550,43 @@ const QUESTIONS = [
       'Katoliker, muslimer, hinduer och buddhister'
     ],
     correct: 'Judar, romer, tornedalingar och sverigefinnar',
-    expl: 'Sverige har fem erkända nationella minoriteter: samer (även urfolk), judar, romer, tornedalingar och sverigefinnar. Dessa grupper har funnits i Sverige länge och har lagstadgade rättigheter.'
+    expl: 'Sverige har fem erkända nationella minoriteter: samer (även urfolk), judar, romer, tornedalingar och sverigefinnar. Dessa grupper har funnits i Sverige länge och har lagstadgade rättigheter.',
+    qEnkel: 'Sverige har nationella minoriteter. Vilka grupper är det, förutom samerna?',
+    optsEnkel: [
+      'Judar, romer, tornedalingar och sverigefinnar',
+      'Somalier, irakier, syrier och afghaner',
+      'Danskar, norrmän, tyskar och polacker',
+      'Katoliker, muslimer, hinduer och buddhister'
+    ],
+    expEnkel: 'Sverige har fem nationella minoriteter: samer, judar, romer, tornedalingar och sverigefinnar. Samerna är också ett urfolk. Alla fem grupperna har bott i Sverige länge. De har rättigheter som står i lagen.'
   },
   {
     q: 'Vilket år antog FN deklarationen om urfolks rättigheter?',
     opts: ['2007', '1948', '1966', '1989'],
     correct: '2007',
-    expl: 'FN:s deklaration om urfolks rättigheter antogs 2007 och erkänner urfolkens rätt till land, kultur, språk och självbestämmande. Det är en deklaration, inte en juridiskt bindande konvention.'
+    expl: 'FN:s deklaration om urfolks rättigheter antogs 2007 och erkänner urfolkens rätt till land, kultur, språk och självbestämmande. Det är en deklaration, inte en juridiskt bindande konvention.',
+    qEnkel: 'Vilket år antog FN deklarationen om urfolks rättigheter?',
+    optsEnkel: [
+      '2007',
+      '1948',
+      '1966',
+      '1989'
+    ],
+    expEnkel: 'FN antog deklarationen om urfolks rättigheter 2007. Den säger att urfolk har rätt till sin mark, sin kultur, sitt språk och att bestämma själva. Det är en deklaration. Den är alltså inte juridiskt bindande.'
   },
   {
     q: 'Hur många suveräna stater finns det ungefär i världen?',
     opts: ['Omkring 195 stater', 'Omkring 50 stater', 'Omkring 500 stater', 'Exakt 100 stater'],
     correct: 'Omkring 195 stater',
-    expl: 'Det finns ungefär 195 suveräna stater i världen, varav 193 är FN-medlemmar. En suverän stat är ett land med eget territorium, befolkning och regering som inte är underordnad en annan stats styre.'
+    expl: 'Det finns ungefär 195 suveräna stater i världen, varav 193 är FN-medlemmar. En suverän stat är ett land med eget territorium, befolkning och regering som inte är underordnad en annan stats styre.',
+    qEnkel: 'Ungefär hur många suveräna stater (självständiga länder) finns det i världen?',
+    optsEnkel: [
+      'Ungefär 195 stater',
+      'Ungefär 50 stater',
+      'Ungefär 500 stater',
+      'Exakt 100 stater'
+    ],
+    expEnkel: 'Det finns ungefär 195 suveräna stater i världen. 193 av dem är med i FN. En suverän stat är ett land som har egen mark, eget folk och egen regering. Inget annat land bestämmer över det.'
   },
   {
     q: 'Vad hände Rosa Parks när hon år 1955 vägrade ge upp sin bussplats för en vit passagerare i Alabama?',
@@ -419,7 +597,15 @@ const QUESTIONS = [
       'Hon fick sparken från sitt arbete och utvisades'
     ],
     correct: 'Hon arresterades och dömdes senare till böter',
-    expl: 'Rosa Parks arresterades för att ha brutit mot raslagarna. Händelsen utlöste en 381 dagar lång bussbojkott i Montgomery och stärkte medborgarrättsrörelsen i USA.'
+    expl: 'Rosa Parks arresterades för att ha brutit mot raslagarna. Händelsen utlöste en 381 dagar lång bussbojkott i Montgomery och stärkte medborgarrättsrörelsen i USA.',
+    qEnkel: 'År 1955 vägrade Rosa Parks att ge sin plats på bussen till en vit person. Det hände i Alabama. Vad hände sedan med henne?',
+    optsEnkel: [
+      'Polisen grep henne, och senare fick hon böter',
+      'Hon fick nobelpriset för att hon protesterade',
+      'Ingenting, för busschaufförerna hade ingen lag att följa',
+      'Hon fick sparken från jobbet och fick lämna landet'
+    ],
+    expEnkel: 'Rosa Parks greps av polisen, för att hon bröt mot lagar som skilde svarta och vita åt. Efter det slutade många att åka buss i Montgomery i 381 dagar. Det kallas bussbojkotten. Den gjorde medborgarrättsrörelsen i USA starkare.'
   },
   {
     q: 'Vilket historiskt genombrott nådde medborgarrättsrörelsen i USA år 1964?',
@@ -430,7 +616,15 @@ const QUESTIONS = [
       'Alabama fick en ny grundlag med lika rättigheter för alla'
     ],
     correct: 'En lag som förbjöd rasåtskillnad och gav alla USA:s medborgare samma rättigheter',
-    expl: 'Civil Rights Act 1964 förbjöd diskriminering baserad på ras, hudfärg, religion, kön eller nationellt ursprung och gav alla medborgare lika rättigheter. Det var ett historiskt genombrott för medborgarrättsrörelsen.'
+    expl: 'Civil Rights Act 1964 förbjöd diskriminering baserad på ras, hudfärg, religion, kön eller nationellt ursprung och gav alla medborgare lika rättigheter. Det var ett historiskt genombrott för medborgarrättsrörelsen.',
+    qEnkel: 'Medborgarrättsrörelsen i USA vann en stor seger år 1964. Vilken?',
+    optsEnkel: [
+      'En lag förbjöd rasåtskillnad och gav alla medborgare i USA samma rättigheter',
+      'Slaveriet blev förbjudet i USA, och alla slavar blev fria människor',
+      'Barack Obama vann valet och blev den nya presidenten i USA',
+      'Alabama fick en ny grundlag där alla människor fick samma rättigheter'
+    ],
+    expEnkel: 'År 1964 kom lagen Civil Rights Act. Den förbjöd diskriminering (orättvis behandling) på grund av ras, hudfärg, religion, kön eller vilket land man kommer från. Alla medborgare fick samma rättigheter. Det var en stor seger för medborgarrättsrörelsen.'
   },
   {
     q: 'Vad betyder ordet apartheid?',
@@ -441,13 +635,29 @@ const QUESTIONS = [
       'Politisk exil'
     ],
     correct: 'Rasåtskillnad',
-    expl: 'Apartheid är ett afrikaans-ord som betyder "åtskillnad" eller rasåtskillnad. Det syftar på det sydafrikanska systemet av institutionell rasåtskillnad 1948–1994 som förtryckte den svarta befolkningsmajoriteten.'
+    expl: 'Apartheid är ett afrikaans-ord som betyder "åtskillnad" eller rasåtskillnad. Det syftar på det sydafrikanska systemet av institutionell rasåtskillnad 1948–1994 som förtryckte den svarta befolkningsmajoriteten.',
+    qEnkel: 'Vad betyder ordet apartheid?',
+    optsEnkel: [
+      'Rasåtskillnad (att hålla isär människor efter ras)',
+      'Folkförtryck (att makten förtrycker hela folket)',
+      'Ett namn som inte går att översätta till svenska',
+      'Politisk exil (att tvingas fly från sitt land)'
+    ],
+    expEnkel: 'Apartheid är ett ord på afrikaans. Det betyder "åtskillnad", alltså rasåtskillnad. I Sydafrika fanns apartheid 1948–1994. Svarta och vita hölls isär genom lagar. Den svarta majoriteten blev förtryckt.'
   },
   {
     q: 'Vem ledde motståndet mot apartheid i Sydafrika och valdes 1994 till landets president?',
     opts: ['Nelson Mandela', 'Desmond Tutu', 'Steve Biko', 'F.W. de Klerk'],
     correct: 'Nelson Mandela',
-    expl: 'Nelson Mandela tillbringade 27 år i fängelse för sin kamp mot apartheid. Han släpptes 1990, och 1994 valdes han till Sydafrikas första svarta president i det första demokratiska valet som tillät alla raser att rösta.'
+    expl: 'Nelson Mandela tillbringade 27 år i fängelse för sin kamp mot apartheid. Han släpptes 1990, och 1994 valdes han till Sydafrikas första svarta president i det första demokratiska valet som tillät alla raser att rösta.',
+    qEnkel: 'Vem ledde kampen mot apartheid i Sydafrika och blev landets president 1994?',
+    optsEnkel: [
+      'Nelson Mandela',
+      'Desmond Tutu',
+      'Steve Biko',
+      'F.W. de Klerk'
+    ],
+    expEnkel: 'Nelson Mandela satt 27 år i fängelse för sin kamp mot apartheid. Han släpptes 1990. År 1994 blev han Sydafrikas första svarta president. Det var det första valet där alla fick rösta, oavsett hudfärg.'
   },
   {
     q: 'Vilka tre organisationer arbetar med att bevaka och rapportera om kränkningar av mänskliga rättigheter?',
@@ -458,7 +668,15 @@ const QUESTIONS = [
       'Greenpeace, WWF och Transparency International'
     ],
     correct: 'Amnesty, Human Rights Watch och Reportrar utan gränser',
-    expl: 'Amnesty International, Human Rights Watch och Reportrar utan gränser är tre välkända människorättsorganisationer. De dokumenterar kränkningar, lobbar hos regeringar och informerar allmänheten om situationen i världen.'
+    expl: 'Amnesty International, Human Rights Watch och Reportrar utan gränser är tre välkända människorättsorganisationer. De dokumenterar kränkningar, lobbar hos regeringar och informerar allmänheten om situationen i världen.',
+    qEnkel: 'Vilka tre organisationer håller koll på kränkningar av mänskliga rättigheter och berättar om dem?',
+    optsEnkel: [
+      'Amnesty, Human Rights Watch och Reportrar utan gränser',
+      'WHO, UNICEF och UNESCO',
+      'Röda korset, Läkare utan gränser och Save the Children',
+      'Greenpeace, WWF och Transparency International'
+    ],
+    expEnkel: 'Amnesty International, Human Rights Watch och Reportrar utan gränser är kända organisationer för mänskliga rättigheter. De tar reda på och skriver ner kränkningar. De försöker påverka regeringar. De berättar för alla hur det ser ut i världen.'
   },
   {
     q: 'Vad menas med en kränkning av mänskliga rättigheter?',
@@ -469,7 +687,15 @@ const QUESTIONS = [
       'Att vägra skriva under ett internationellt avtal'
     ],
     correct: 'Att behandla en person nedsättande i ord eller handling, eller göra ingrepp i någons rättigheter',
-    expl: 'En kränkning innebär att någons mänskliga rättigheter åsidosätts – t.ex. att tortyr används, att press censureras, att någon diskrimineras eller behandlas nedsättande. Det är ofta stater som är ansvariga för sådana kränkningar.'
+    expl: 'En kränkning innebär att någons mänskliga rättigheter åsidosätts – t.ex. att tortyr används, att press censureras, att någon diskrimineras eller behandlas nedsättande. Det är ofta stater som är ansvariga för sådana kränkningar.',
+    qEnkel: 'Vad är en kränkning av mänskliga rättigheter?',
+    optsEnkel: [
+      'Att behandla någon illa med ord eller handling, eller ta ifrån någon rättigheter',
+      'Att tycka annorlunda än vad som står i ett lands lagar om vad som gäller',
+      'Att offentligt säga att en ledare för ett land har fattat ett dåligt beslut',
+      'Att ett land säger nej till att skriva under ett avtal mellan flera länder'
+    ],
+    expEnkel: 'En kränkning betyder att någons mänskliga rättigheter inte respekteras. Det kan vara tortyr. Det kan vara att tidningar inte får skriva fritt (censur). Det kan också vara diskriminering. Ofta är det stater som står bakom kränkningarna.'
   },
   {
     q: 'Vad är ett hatbrott?',
@@ -480,7 +706,15 @@ const QUESTIONS = [
       'Brott som begås i krig mot civila'
     ],
     correct: 'Brott som begås p.g.a. att gärningsmannen har fördomar mot en annan grupp i samhället',
-    expl: 'Hatbrott motiveras av fördomar mot en grupps ras, etnicitet, religion, sexuella läggning eller funktionsnedsättning. De är extra allvarliga för att de riktar sig mot en person just för att de tillhör en viss grupp.'
+    expl: 'Hatbrott motiveras av fördomar mot en grupps ras, etnicitet, religion, sexuella läggning eller funktionsnedsättning. De är extra allvarliga för att de riktar sig mot en person just för att de tillhör en viss grupp.',
+    qEnkel: 'Vad är ett hatbrott?',
+    optsEnkel: [
+      'Ett brott som görs för att brottslingen har fördomar mot en grupp i samhället',
+      'Ett brott med väldigt mycket våld mot personer som råkar vara på platsen',
+      'Ett brott som riktas mot diplomater, alltså de som representerar andra länder',
+      'Ett brott som görs mot civila (de som inte är soldater) under ett krig'
+    ],
+    expEnkel: 'Ett hatbrott görs på grund av fördomar mot en grupp. Det kan handla om ras, etnicitet, religion, sexuell läggning eller funktionsnedsättning. Hatbrott är extra allvarliga. Offret blir utsatt just för att hen tillhör en viss grupp.'
   },
   {
     q: 'Hur heter det brott i Sverige som innebär att man sprider uttalanden som hotar eller uttrycker förakt mot en folkgrupp?',
@@ -491,7 +725,15 @@ const QUESTIONS = [
       'Folkförtryck'
     ],
     correct: 'Hets mot folkgrupp',
-    expl: 'Hets mot folkgrupp är ett brott i Sverige som innebär att man sprider uttalanden eller meddelanden som hotar, uttrycker förakt för eller kränker en folkgrupp baserat på exempelvis ras, etnicitet, religion eller sexuell läggning.'
+    expl: 'Hets mot folkgrupp är ett brott i Sverige som innebär att man sprider uttalanden eller meddelanden som hotar, uttrycker förakt för eller kränker en folkgrupp baserat på exempelvis ras, etnicitet, religion eller sexuell läggning.',
+    qEnkel: 'I Sverige är det ett brott att sprida ord som hotar en folkgrupp eller visar förakt mot den. Vad heter brottet?',
+    optsEnkel: [
+      'Hets mot folkgrupp',
+      'Rasistbrott',
+      'Diskrimineringsbrott',
+      'Folkförtryck'
+    ],
+    expEnkel: 'Hets mot folkgrupp är ett brott i Sverige. Det betyder att man sprider ord eller meddelanden som hotar, visar förakt för eller kränker en folkgrupp. Det kan gälla till exempel ras, etnicitet, religion eller sexuell läggning.'
   },
   {
     q: 'Vilka länder verkställer flest dödsstraff i världen, enligt Amnesty International?',
@@ -502,7 +744,15 @@ const QUESTIONS = [
       'Somalia, Sudan, Etiopien, Jemen och Afghanistan'
     ],
     correct: 'Kina, Iran, Saudiarabien, Egypten och USA',
-    expl: 'Kina avrättar fler än alla andra länder kombinerat. Bland de länder som verkställer flest dödsstraff finns Iran, Saudiarabien, Egypten och USA. Dödsstraff anses av Amnesty och FN strida mot rätten till liv.'
+    expl: 'Kina avrättar fler än alla andra länder kombinerat. Bland de länder som verkställer flest dödsstraff finns Iran, Saudiarabien, Egypten och USA. Dödsstraff anses av Amnesty och FN strida mot rätten till liv.',
+    qEnkel: 'Enligt Amnesty International: vilka länder genomför flest dödsstraff i världen?',
+    optsEnkel: [
+      'Kina, Iran, Saudiarabien, Egypten och USA',
+      'Ryssland, Nordkorea, Kuba, Venezuela och Zimbabwe',
+      'USA, Australien, Kanada, Japan och Israel',
+      'Somalia, Sudan, Etiopien, Jemen och Afghanistan'
+    ],
+    expEnkel: 'Kina avrättar fler människor än alla andra länder tillsammans. Andra länder med många dödsstraff är Iran, Saudiarabien, Egypten och USA. Amnesty och FN menar att dödsstraff bryter mot rätten till liv.'
   },
   {
     q: 'Vad menas med naturrätt i sammanhanget mänskliga rättigheter?',
@@ -513,17 +763,99 @@ const QUESTIONS = [
       'En princip om att stater äger alla naturresurser inom sina gränser'
     ],
     correct: 'Att människan har rättigheter som inte ens demokratiskt valda politiker får kränka',
-    expl: 'Naturrätten är en filosofisk teori om att det finns rättigheter inbyggda i den mänskliga naturen – de existerar oberoende av vad lagar säger. Mänskliga rättigheter bygger delvis på naturrätten: ingen stat, inte ens en demokrati, kan legitimt kränka dem.'
+    expl: 'Naturrätten är en filosofisk teori om att det finns rättigheter inbyggda i den mänskliga naturen – de existerar oberoende av vad lagar säger. Mänskliga rättigheter bygger delvis på naturrätten: ingen stat, inte ens en demokrati, kan legitimt kränka dem.',
+    qEnkel: 'Vad betyder naturrätt när man pratar om mänskliga rättigheter?',
+    optsEnkel: [
+      'Att människan har rättigheter som inte ens politiker valda av folket får kränka',
+      'En lag som säger att alla får använda naturen och det som finns i den fritt',
+      'Regler som bestämmer vilka rättigheter de vilda djuren har ute i naturen',
+      'En regel som säger att staten äger allt i naturen inom landets gränser'
+    ],
+    expEnkel: 'Naturrätten är en idé inom filosofin. Den säger att människan har rättigheter bara för att hon är människa. Rättigheterna finns även om ingen lag skriver om dem. Därför får ingen stat kränka dem. Inte ens en demokrati får det.'
   }
 ];
 
+// ── Enkel svenska – UI-texter ──────────────────────────────
+const UI_ENKEL = {
+  missedHd:         'Frågor du svarade fel på',
+  facitHd:          'Alla frågor och svar',
+  yourAnswerLbl:    'Du svarade: ',
+  correctAnswerLbl: 'Rätt svar: ',
+  notAnswered:      '– (du svarade inte)',
+  backBtn:          '← Tillbaka',
+  nextBtn:          'Nästa →',
+  modalNextBtn:     'Nästa fråga →',
+  restartBtn:       '↺ Gör om'
+};
+const UI_ORIG = {
+  missedHd:         'Frågor du missade',
+  facitHd:          'Fullständigt facit',
+  yourAnswerLbl:    'Ditt svar: ',
+  correctAnswerLbl: 'Rätt svar: ',
+  notAnswered:      '–',
+  backBtn:          '← Bakåt',
+  nextBtn:          'Nästa →',
+  modalNextBtn:     'Nästa fråga →',
+  restartBtn:       '↺ Gör om quizet'
+};
+
 // ── State ──────────────────────────────────────────────────
+// Blandning sker på INDEX: order[] = visad plats → index i q.opts/q.optsEnkel.
+// chosen/correct är index i q.opts, så rättningen är oberoende av språkläge.
 let shuffled = [];
-let states   = []; // { opts:[], chosen:string|null, correct:string, answered:bool }
+let states   = []; // { order:number[], chosen:number|null, correct:number, answered:bool }
 let cur      = 0;
 let score    = 0;
 let timerInterval = null;
 let startTime = 0;
+let elapsedMs = 0;
+let modalOpen = false;
+
+// ── Enkel svenska – läge, lagring och texthjälpare ─────────
+const EASY_KEY = 'mr_quiz_enkelsvenska';
+let easyMode = false;
+try { easyMode = sessionStorage.getItem(EASY_KEY) === '1'; } catch (e) {}
+
+const warned = new Set();
+function warnMissing(q, field) {
+  const key = QUESTIONS.indexOf(q) + ':' + field;
+  if (warned.has(key)) return;
+  warned.add(key);
+  console.warn('Enkel svenska saknas (' + field + ') för fråga: ' + q.q + ' – visar originalet.');
+}
+function ui(key) { return (easyMode ? UI_ENKEL : UI_ORIG)[key]; }
+function qText(q) {
+  if (!easyMode) return q.q;
+  if (q.qEnkel) return q.qEnkel;
+  warnMissing(q, 'qEnkel'); return q.q;
+}
+function optText(q, i) {
+  if (!easyMode) return q.opts[i];
+  if (q.optsEnkel && q.optsEnkel.length === q.opts.length && q.optsEnkel[i]) return q.optsEnkel[i];
+  warnMissing(q, 'optsEnkel'); return q.opts[i];
+}
+function explText(q) {
+  if (!easyMode) return q.expl;
+  if (q.expEnkel) return q.expEnkel;
+  warnMissing(q, 'expEnkel'); return q.expl;
+}
+
+function updateEasyButton() {
+  document.getElementById('btn-easy').setAttribute('aria-pressed', easyMode ? 'true' : 'false');
+}
+updateEasyButton();
+
+// Byter bara texten – poäng, timer, aktuell fråga, svar och blandning rörs inte.
+function toggleEasy() {
+  easyMode = !easyMode;
+  try { sessionStorage.setItem(EASY_KEY, easyMode ? '1' : '0'); } catch (e) {}
+  updateEasyButton();
+  if (document.getElementById('screen-quiz').classList.contains('active')) {
+    renderQuestion();
+    if (modalOpen) renderModal();
+  }
+  if (document.getElementById('screen-result').classList.contains('active')) renderResult();
+}
 
 // ── Helpers ────────────────────────────────────────────────
 function shuffle(arr) {
@@ -549,14 +881,17 @@ function show(id) {
 function startQuiz() {
   shuffled = shuffle(QUESTIONS);
   states   = shuffled.map(q => ({
-    opts:     shuffle(q.opts),
+    order:    shuffle(q.opts.map((_, i) => i)),
     chosen:   null,
-    correct:  q.correct,
+    correct:  q.opts.indexOf(q.correct),
     answered: false
   }));
   cur   = 0;
   score = 0;
+  modalOpen = false;
+  clearInterval(timerInterval);
   startTime = Date.now();
+  document.getElementById('timer').textContent = '⏱ 0:00';
   timerInterval = setInterval(() => {
     document.getElementById('timer').textContent = '⏱ ' + fmtTime(Date.now() - startTime);
   }, 500);
@@ -571,80 +906,83 @@ function renderQuestion() {
   const n  = shuffled.length;
 
   document.getElementById('q-counter').textContent = 'Fråga ' + (cur + 1) + ' av ' + n;
-  document.getElementById('q-text').textContent    = q.q;
+  document.getElementById('q-text').textContent    = qText(q);
   document.getElementById('progress-bar').style.width = ((cur / n) * 100) + '%';
   document.getElementById('score-pill').textContent   = 'Poäng: ' + score;
 
   const container = document.getElementById('opts');
   container.innerHTML = '';
-  st.opts.forEach(opt => {
+  st.order.forEach(origIdx => {
     const btn = document.createElement('button');
     btn.className = 'opt-btn';
-    btn.textContent = opt;
+    btn.textContent = optText(q, origIdx);
     if (st.answered) {
       btn.disabled = true;
-      if (opt === st.correct) {
+      if (origIdx === st.correct) {
         btn.classList.add('correct');
-      } else if (opt === st.chosen) {
+      } else if (origIdx === st.chosen) {
         btn.classList.add('wrong');
       } else {
         btn.classList.add('dimmed');
       }
     } else {
-      btn.onclick = () => answerQuestion(opt);
+      btn.onclick = () => answerQuestion(origIdx);
     }
     container.appendChild(btn);
   });
 
-  document.getElementById('btn-back').style.display = cur > 0 ? 'block' : 'none';
-  document.getElementById('btn-next').style.display = st.answered ? 'block' : 'none';
+  const back = document.getElementById('btn-back');
+  const next = document.getElementById('btn-next');
+  back.textContent = ui('backBtn');
+  next.textContent = ui('nextBtn');
+  back.style.display = cur > 0 ? 'block' : 'none';
+  next.style.display = st.answered ? 'block' : 'none';
 }
 
 // ── Answer ─────────────────────────────────────────────────
-function answerQuestion(chosen) {
+function answerQuestion(chosenIdx) {
   const st = states[cur];
   if (st.answered) return;
 
-  const isCorrect = chosen === st.correct;
-  st.chosen   = chosen;
+  const isCorrect = chosenIdx === st.correct;
+  st.chosen   = chosenIdx;
   st.answered = true;
   if (isCorrect) score++;
 
-  const btns = document.querySelectorAll('#opts .opt-btn');
-  btns.forEach(btn => {
-    btn.disabled = true;
-    if (btn.textContent === st.correct) {
-      btn.classList.add('correct');
-    } else if (btn.textContent === chosen) {
-      btn.classList.add('wrong');
-    } else {
-      btn.classList.add('dimmed');
-    }
-  });
+  renderQuestion();
 
-  document.getElementById('score-pill').textContent = 'Poäng: ' + score;
-  document.getElementById('btn-next').style.display = 'block';
-
+  const answeredAt = cur;
   setTimeout(() => {
-    const icon    = document.getElementById('modal-icon');
-    const verdict = document.getElementById('modal-verdict');
-    icon.textContent    = isCorrect ? '✅' : '❌';
-    verdict.textContent = isCorrect ? 'Rätt!' : 'Fel!';
-    verdict.className   = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
-    document.getElementById('modal-expl').textContent = shuffled[cur].expl;
+    if (cur !== answeredAt || !document.getElementById('screen-quiz').classList.contains('active')) return;
+    modalOpen = true;
+    renderModal();
     document.getElementById('modal-overlay').classList.remove('hidden');
   }, 600);
+}
+
+function renderModal() {
+  const st = states[cur];
+  const isCorrect = st.chosen === st.correct;
+  const icon    = document.getElementById('modal-icon');
+  const verdict = document.getElementById('modal-verdict');
+  icon.textContent    = isCorrect ? '✅' : '❌';
+  verdict.textContent = isCorrect ? 'Rätt!' : 'Fel!';
+  verdict.className   = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
+  document.getElementById('modal-expl').textContent = explText(shuffled[cur]);
+  document.getElementById('modal-next').textContent = ui('modalNextBtn');
 }
 
 // ── Modal close → next ─────────────────────────────────────
 function closeModal() {
   document.getElementById('modal-overlay').classList.add('hidden');
+  modalOpen = false;
   goNext();
 }
 
 // ── Navigation ─────────────────────────────────────────────
 function goNext() {
   document.getElementById('modal-overlay').classList.add('hidden');
+  modalOpen = false;
   if (cur < shuffled.length - 1) {
     cur++;
     renderQuestion();
@@ -663,11 +1001,15 @@ function goBack() {
 // ── End quiz ───────────────────────────────────────────────
 function endQuiz() {
   clearInterval(timerInterval);
-  const elapsed = fmtTime(Date.now() - startTime);
+  elapsedMs = Date.now() - startTime;
+  show('screen-result');
+  renderResult();
+}
+
+function renderResult() {
+  const elapsed = fmtTime(elapsedMs);
   const n       = shuffled.length;
   const pct     = Math.round((score / n) * 100);
-
-  show('screen-result');
 
   document.getElementById('r-score').textContent   = score + '/' + n;
   document.getElementById('s-correct').textContent = score;
@@ -685,20 +1027,25 @@ function endQuiz() {
   document.getElementById('r-msg').textContent   = msg;
 
   // Missed questions
-  const missed  = states.filter(st => st.chosen !== st.correct);
   const missedEl = document.getElementById('missed-section');
-  if (missed.length > 0) {
-    missedEl.innerHTML = '<div class="section-hd">Frågor du missade (' + missed.length + ')</div>';
-    missed.forEach(st => {
-      const idx  = states.indexOf(st);
+  missedEl.innerHTML = '';
+  const missedIdx = states.map((st, i) => i).filter(i => states[i].chosen !== states[i].correct);
+  if (missedIdx.length > 0) {
+    const hd = document.createElement('div');
+    hd.className = 'section-hd';
+    hd.textContent = ui('missedHd') + ' (' + missedIdx.length + ')';
+    missedEl.appendChild(hd);
+    missedIdx.forEach(idx => {
       const item = document.createElement('div');
       item.className = 'missed-item';
-      item.textContent = (idx + 1) + '. ' + shuffled[idx].q;
+      item.textContent = (idx + 1) + '. ' + qText(shuffled[idx]);
       missedEl.appendChild(item);
     });
   }
 
   // Full facit
+  document.getElementById('facit-hd').textContent    = ui('facitHd');
+  document.getElementById('btn-restart').textContent = ui('restartBtn');
   const facitEl = document.getElementById('facit-list');
   facitEl.innerHTML = '';
   states.forEach((st, i) => {
@@ -713,11 +1060,16 @@ function endQuiz() {
 
     const qEl = document.createElement('div');
     qEl.className = 'fi-q';
-    qEl.textContent = q.q;
+    qEl.textContent = qText(q);
 
     const ya = document.createElement('div');
     ya.className = 'fi-row ' + (ok ? 'ya-ok' : 'ya-bad');
-    ya.innerHTML = '<span class="lbl">Ditt svar: </span>' + (st.chosen || '–') + (ok ? ' ✓' : ' ✗');
+    const yaLbl = document.createElement('span');
+    yaLbl.className = 'lbl';
+    yaLbl.textContent = ui('yourAnswerLbl');
+    ya.appendChild(yaLbl);
+    ya.appendChild(document.createTextNode(
+      (st.chosen === null ? ui('notAnswered') : optText(q, st.chosen)) + (ok ? ' ✓' : ' ✗')));
 
     item.appendChild(num);
     item.appendChild(qEl);
@@ -726,7 +1078,11 @@ function endQuiz() {
     if (!ok) {
       const ra = document.createElement('div');
       ra.className = 'fi-row ra';
-      ra.innerHTML = '<span class="lbl">Rätt svar: </span>' + st.correct;
+      const raLbl = document.createElement('span');
+      raLbl.className = 'lbl';
+      raLbl.textContent = ui('correctAnswerLbl');
+      ra.appendChild(raLbl);
+      ra.appendChild(document.createTextNode(optText(q, st.correct)));
       item.appendChild(ra);
     }
 
@@ -735,6 +1091,7 @@ function endQuiz() {
 }
 
 // ── Restart ────────────────────────────────────────────────
+// Enkel svenska-läget ligger kvar (sessionStorage), allt annat nollställs vid start.
 function restartQuiz() {
   clearInterval(timerInterval);
   show('screen-start');
