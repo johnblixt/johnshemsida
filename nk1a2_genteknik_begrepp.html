@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cellen, DNA och genteknik – Begrepp | Naturkunskap 1a2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Fredoka:wght@300..700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: 'EB Garamond', serif; background: #f0fdf4; }
+    .font-fredoka { font-family: 'Fredoka', sans-serif; }
+    .flip-card { perspective: 1000px; height: 350px; width: 100%; max-width: 400px; cursor: pointer; }
+    .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+    .flipped-classes { transform: rotateY(180deg); }
+    .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+    .flip-card-back { transform: rotateY(180deg); }
+    .view-tabs::-webkit-scrollbar { display: none; }
+    @media (max-width: 768px) {
+      .view-tabs { flex-wrap: nowrap !important; justify-content: flex-start !important; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+      .view-tabs button { padding: 0.45rem 0.85rem; font-size: 0.8rem; }
+      .page-title { font-size: 1.6rem; line-height: 1.15; }
+      .flip-card { height: 320px; }
+      .flip-card-front, .flip-card-back { padding: 1.25rem 1rem 3rem; }
+      .card-def { font-size: 1.05rem; }
+      .card-term { font-size: 1.6rem; }
+      .del-chips button { padding: 0.35rem 0.75rem; font-size: 0.8rem; }
+      .list-card { padding: 1rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; animation: none !important; }
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+<div id="root"></div>
+
+<script>
+function shuffleArray(array) {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function smartBack(fallbackUrl) {
+  try {
+    if (document.referrer && new URL(document.referrer).hostname === window.location.hostname) {
+      history.back();
+      return;
+    }
+  } catch (e) {}
+  window.location.href = fallbackUrl;
+}
+</script>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+// Naturkunskap 1a2 — kursfärg från MOB_SUBJECTS (id: 'nk_1a2')
+const PRIMARY = '#4ade80';
+const PRIMARY_LIGHT = '#f0fdf4';
+const PRIMARY_TEXT = '#14532d';
+const BACK_FALLBACK = 'index.html';
+
+const DELAR = {
+  1: 'DNA, gener och proteiner',
+  2: 'Mutationer, evolution och avel',
+  3: 'Genmodifiering och genterapi',
+};
+
+// ════════════════════════════════════════════════════════════
+// BEGREPP — term, def, ex och sida ordagrant från
+// nk1a2_genteknik_kallmaterial.md, DEL A. Definitionerna är medvetet
+// skrivna på enkel svenska och får inte ändras.
+// exEnkel = samma exempel med vardagligare ord (visas med 📖 Enkel svenska).
+// Övningsfält (bygger bara på fakta i källmaterialet):
+//   lucktext      – mening med _____ där termen ska stå (påverkas aldrig av Enkel svenska)
+//   scenario      – situation som beskriver begreppet utan att nämna termen (Test 1)
+//   scenarioEnkel – samma situation med vardagliga ord (📖 Enkel svenska)
+//   ickeExempel   – fälla som liknar begreppet men inte är det (Test 2)
+// ════════════════════════════════════════════════════════════
+const concepts = [
+  // Del 1 – DNA, gener och proteiner (s. 50–70)
+  { id: 1, del: 1, term: 'DNA', def: 'Molekylen som bär arvsanlagen. Den ser ut som en vriden repstege.', ex: 'DNA finns i cellkärnan.', exEnkel: 'DNA ligger i mitten av cellen. Den delen heter cellkärnan.', sida: '51',
+    lucktext: 'I cellkärnan finns _____, som ser ut som en vriden repstege.',
+    scenario: 'Två syskon jämför vad de har ärvt från sina föräldrar. Anlagen sitter i en lång molekyl som liknar en vriden repstege. Bara enäggstvillingar har exakt samma ordning i den.',
+    scenarioEnkel: 'Två syskon vill veta vad de har fått från mamma och pappa. Det sitter i en lång molekyl som ser ut som en snurrad stege. Bara tvillingar som är helt lika har samma.',
+    ickeExempel: 'Molekylen som kopierar en gen. Den har U i stället för T.' },
+  { id: 2, del: 1, term: 'kvävebas', def: 'En av fyra byggstenar i DNA: A, T, C och G.', ex: 'A bildar par med T.', exEnkel: 'Bokstaven A sitter alltid ihop med bokstaven T.', sida: '51',
+    lucktext: 'Bokstaven C i DNA är en _____ som bildar par med G.',
+    scenario: 'På en lektion bygger eleverna en modell av DNA-stegen. De har fyra sorters bitar: A, T, C och G. A passar bara ihop med T, och C bara med G.',
+    scenarioEnkel: 'Eleverna bygger en stege av papper. Stegen har fyra sorters bitar: A, T, C och G. A sitter alltid ihop med T, och C med G.',
+    ickeExempel: 'En av tjugo byggstenar som sätts ihop till ett protein.' },
+  { id: 3, del: 1, term: 'kromosom', def: 'DNA som är tätt packat. Den syns när cellen delar sig.', ex: 'Människan har 46 kromosomer.', exEnkel: 'En människa har 46 sådana paket med DNA.', sida: '52',
+    lucktext: 'När cellen delar sig syns varje _____ som ett tätt paket av DNA.',
+    scenario: 'En forskare färgar in celler som håller på att dela sig. I mikroskopet syns 46 täta paket av DNA. De ligger i 23 par, hälften från mamma och hälften från pappa.',
+    scenarioEnkel: 'En forskare färgar celler som delar sig. I mikroskopet syns 46 små paket. Hälften kommer från mamma och hälften från pappa.',
+    ickeExempel: 'Proteiner som DNA är rullat kring i cellkärnan.' },
+  { id: 4, del: 1, term: 'gen', def: 'En del av DNA med receptet på ett protein.', ex: 'Vi har ungefär 20 000 gener.', exEnkel: 'En människa har ungefär 20 000 sådana recept.', sida: '63',
+    lucktext: 'Varje _____ är en bit av DNA med receptet på ett protein.',
+    scenario: 'Du har ärvt två kopior av samma recept, en från mamma och en från pappa. Receptet är en bit av DNA. Cellen använder det för att bygga ett protein.',
+    scenarioEnkel: 'Du har fått samma recept två gånger, ett från mamma och ett från pappa. Receptet sitter i DNA. Cellen följer det när den bygger något den behöver.',
+    ickeExempel: 'Hela DNA-molekylen när den är tätt packad i cellen.' },
+  { id: 5, del: 1, term: 'dominant anlag', def: 'Ett anlag som syns när du har det från en förälder.', ex: 'Brun päls hos kaniner är dominant.', exEnkel: 'En kanin får brun päls redan om en förälder ger den anlaget.', sida: '55',
+    lucktext: 'Brun päls hos kaniner är ett _____, så det räcker att få det från en förälder.',
+    scenario: 'En kaninunge har en brun och en vit förälder. Ungen får ett anlag från var och en men blir ändå brun. Det bruna anlaget räcker från en förälder.',
+    scenarioEnkel: 'En kaninunge har en brun och en vit förälder. Ungen blir brun. Det räcker att en förälder ger anlaget för brun päls.',
+    ickeExempel: 'Ett anlag som syns bara om båda föräldrarna har gett det.' },
+  { id: 6, del: 1, term: 'recessivt anlag', def: 'Ett anlag som bara syns när du har det från båda föräldrarna.', ex: 'Albinism hos kaniner är recessivt.', exEnkel: 'En kanin blir albino bara om båda föräldrarna ger den anlaget.', sida: '55',
+    lucktext: 'Albinism hos kaniner är ett _____, så ungen måste få det från båda föräldrarna.',
+    scenario: 'Två bruna kaniner får en vit albinounge. Båda föräldrarna bar på anlaget utan att det syntes. Ungen fick det från dem båda.',
+    scenarioEnkel: 'Två bruna kaniner får en helt vit unge. Föräldrarna hade anlaget, men det syntes inte på dem. Ungen fick det från båda.',
+    ickeExempel: 'Ett anlag som syns redan när du har det från en förälder.' },
+  { id: 7, del: 1, term: 'protein', def: 'En molekyl som kroppen bygger av aminosyror. Den har många uppgifter.', ex: 'Hår och naglar består av proteinet keratin.', exEnkel: 'Ditt hår och dina naglar är gjorda av ett protein. Det heter keratin.', sida: '63–64',
+    lucktext: 'Hår och naglar består av keratin, som är ett _____.',
+    scenario: 'På en frisörutbildning lär sig eleverna vad hår och naglar består av. Ämnet byggs av aminosyror i en lång kedja som veckas. Kroppen har många olika sorter med olika uppgifter.',
+    scenarioEnkel: 'Frisörelever lär sig vad hår och naglar är gjorda av. Det byggs av små bitar i en lång kedja. Kroppen gör många sorter av det.',
+    ickeExempel: 'En av fyra byggstenar i DNA, till exempel A eller G.' },
+  { id: 8, del: 1, term: 'mRNA', def: 'En budbärare som kopierar en gen och tar den till ribosomen.', ex: 'mRNA lämnar cellkärnan.', exEnkel: 'mRNA går ut ur cellkärnan och bär med sig kopian.', sida: '64',
+    lucktext: 'Kopian av genen kallas _____ och lämnar cellkärnan genom en por.',
+    scenario: 'En kock får inte ta med den fina kokboken ut ur biblioteket. Därför skriver kocken av ett recept på en lapp och tar lappen till köket. I cellen gör en budbärare samma sak med en gen.',
+    scenarioEnkel: 'En kock får inte låna hem den fina kokboken. Kocken skriver av ett recept på en lapp och tar den till köket. I cellen finns en sådan lapp för generna.',
+    ickeExempel: 'Molekylen som hämtar aminosyror till ribosomen.' },
+  { id: 9, del: 1, term: 'transkription', def: 'Steg 1 i proteinsyntesen: genen kopieras till mRNA i cellkärnan.', ex: 'Transkriptionen sker i cellkärnan.', exEnkel: 'Kopian av genen görs inne i cellkärnan.', sida: '66',
+    lucktext: 'Under _____ kopieras genen till mRNA inne i cellkärnan.',
+    scenario: 'Det här är steg 1 i proteinsyntesen. Inne i cellkärnan öppnar ett enzym DNA vid en gen. Genen skrivs av till en budbärare som sedan lämnar kärnan.',
+    scenarioEnkel: 'Det här är första steget när cellen bygger något. Inne i cellens mitt görs en kopia av ett recept. Sedan åker kopian ut.',
+    ickeExempel: 'Att hela DNA-molekylen kopieras i cellkärnan innan cellen delar sig.' },
+  { id: 10, del: 1, term: 'translation', def: 'Steg 2: mRNA översätts till en kedja av aminosyror vid ribosomen.', ex: 'tRNA hämtar aminosyror vid translationen.', exEnkel: 'tRNA hämtar byggstenarna när kedjan byggs.', sida: '67',
+    lucktext: 'Under _____ hämtar tRNA aminosyror till ribosomen.',
+    scenario: 'Budbäraren har lämnat cellkärnan och fäst vid en ribosom. Där läses den tre baser i taget. Aminosyror hämtas och sätts ihop till en kedja.',
+    scenarioEnkel: 'Kopian av receptet har kommit ut ur cellens mitt. Nu läses den tre bokstäver åt gången. Små bitar hämtas och sätts ihop till en lång kedja.',
+    ickeExempel: 'Steg 1, när genen kopieras till mRNA i cellkärnan.' },
+
+  // Del 2 – Mutationer, evolution och avel (s. 71–81)
+  { id: 11, del: 2, term: 'mutation', def: 'En förändring i DNA.', ex: 'Sphynxkatten saknar päls på grund av en mutation.', exEnkel: 'Sphynxkatten har ingen päls. Det beror på en ändring i dess DNA.', sida: '72',
+    lucktext: 'Sphynxkatten saknar päls på grund av en _____.',
+    scenario: 'En kattägare undrar varför sphynxkatten saknar päls. Veterinären förklarar att något har ändrats i kattens DNA.',
+    scenarioEnkel: 'En katt har ingen päls alls. Veterinären säger att något har ändrats i kattens DNA.',
+    ickeExempel: 'En förändring i miljön.' },
+  { id: 12, del: 2, term: 'punktmutation', def: 'En mutation där bara en kvävebas ändras.', ex: 'Ett C sätts in där det borde vara ett T.', exEnkel: 'En enda bokstav blir fel: det står C där det skulle stå T.', sida: '72–73',
+    lucktext: 'Vid en _____ byts bara en enda kvävebas ut.',
+    scenario: 'En forskare jämför två DNA-sekvenser bokstav för bokstav. Allt är likadant utom på ett enda ställe. Där står ett C i stället för ett T.',
+    scenarioEnkel: 'En forskare jämför två långa rader med bokstäver. Allt är lika utom en enda bokstav. Där står C i stället för T.',
+    ickeExempel: 'En mutation där långa DNA-sträckor går förlorade.' },
+  { id: 13, del: 2, term: 'tyst mutation', def: 'En mutation som inte ändrar proteinet.', ex: 'GAA ändras till GAG. Båda ger samma aminosyra.', exEnkel: 'GAA blir GAG. Men proteinet blir precis likadant.', sida: '73',
+    lucktext: 'GAA ändras till GAG men ger samma aminosyra. Det är en _____.',
+    scenario: 'Ett labb hittar en förändring i en persons DNA. Men proteinet som genen styr blir precis likadant som förut. Förändringen får alltså ingen följd.',
+    scenarioEnkel: 'Något har ändrats i en persons DNA. Men det som cellen bygger blir precis som förut. Ändringen gör ingenting.',
+    ickeExempel: 'En mutation som gör att proteinet blir ändrat.' },
+  { id: 14, del: 2, term: 'kroppscell', def: 'En cell som bygger upp kroppens organ och vävnader.', ex: 'En mutation i en kroppscell förs inte vidare till barnen.', exEnkel: 'Om DNA ändras i en sådan cell får dina barn inte ändringen.', sida: '54, 74',
+    lucktext: 'En mutation i en _____, till exempel i huden, förs inte vidare till barnen.',
+    scenario: 'En person har fått en skada i DNA i en cell i huden efter mycket UV-strålning. Cellen kan dö eller bli cancer. Personens framtida barn får inte skadan.',
+    scenarioEnkel: 'En person har solat för mycket. DNA i en cell i huden har skadats. Personens barn kommer inte att få skadan.',
+    ickeExempel: 'En spermie eller äggcell som förs vidare till barnen.' },
+  { id: 15, del: 2, term: 'könscell', def: 'Spermie eller äggcell. Den förs vidare till barnen.', ex: 'Mutationer i könsceller kan ge evolution.', exEnkel: 'Ändringar i spermier och ägg kan gå vidare till barnen. Så kan arter förändras.', sida: '54, 74',
+    lucktext: 'En mutation i en _____ kan finnas i alla celler hos barnet.',
+    scenario: 'En mutation uppstår i en spermie. Spermien befruktar ett ägg. Alla celler i barnet som växer fram bär på mutationen.',
+    scenarioEnkel: 'Något ändras i DNA i en spermie. Spermien befruktar ett ägg. Hela barnet får ändringen i alla sina celler.',
+    ickeExempel: 'En cell i levern som bygger upp ett av kroppens organ.' },
+  { id: 16, del: 2, term: 'naturligt urval', def: 'De som är bäst anpassade till miljön överlever och får fler ungar.', ex: 'Vita kaniner syns dåligt i snö. De överlever oftare.', exEnkel: 'En vit kanin är svår att se i snön. Därför klarar den sig oftare.', sida: '75',
+    lucktext: 'Vita kaniner syns dåligt i snön och överlever oftare. Det är ett exempel på _____.',
+    scenario: 'På ett snöigt fjäll lever både bruna och vita kaniner. Fiender ser de bruna lättare och tar dem oftare. De vita överlever och får fler ungar.',
+    scenarioEnkel: 'Bruna och vita kaniner bor där det är mycket snö. Fiender ser de bruna lättare. De vita klarar sig och får fler ungar.',
+    ickeExempel: 'Människan väljer ut vilka djur och växter som får föröka sig.' },
+  { id: 17, del: 2, term: 'evolution', def: 'Ärftliga egenskaper hos en population förändras över tid.', ex: 'Björkmätare blev svarta när träden blev sotiga.', exEnkel: 'Träden blev svarta av sot. Med tiden blev fjärilen björkmätare också svart.', sida: '75–76',
+    lucktext: 'När ärftliga egenskaper i en hel population förändras över tid kallas det _____.',
+    scenario: 'År 1848 sågs en första helsvart björkmätare i ett område. I slutet av 1800-talet var alla björkmätare där svarta. Hela populationens färg hade förändrats.',
+    scenarioEnkel: 'Förr var nästan alla björkmätare ljusa. Mot slutet av 1800-talet var alla svarta. Hela gruppen av fjärilar hade ändrats.',
+    ickeExempel: 'En förändring i DNA som sker hos en enda individ.' },
+  { id: 18, del: 2, term: 'selektivt urval', def: 'Människan väljer vilka djur eller växter som får ungar.', ex: 'Hunden avlades fram från vargen.', exEnkel: 'Människor valde vilka vargar som fick ungar. Till slut blev det hundar.', sida: '78',
+    lucktext: 'Hunden avlades fram från vargen genom _____.',
+    scenario: 'En bonde låter bara korna som ger mest mjölk få kalvar. Generation efter generation ökar mjölken. I vissa länder ger en ko nu över 10 000 liter per år.',
+    scenarioEnkel: 'En bonde låter bara de kor som ger mest mjölk få kalvar. Efter lång tid ger korna mycket mer mjölk.',
+    ickeExempel: 'Miljön avgör vilka djur som överlever och får ungar.' },
+  { id: 19, del: 2, term: 'lantras', def: 'En gammal, ursprunglig husdjursras.', ex: 'Linderödssvinet är en lantras.', exEnkel: 'Linderödssvinet är en gammal sorts gris.', sida: '81',
+    lucktext: 'En bonde föder upp Linderödssvin, som är en _____.',
+    scenario: 'En gård föder upp en gammal och ursprunglig sorts gris. Djuren är härdiga. Ägarna vill bevara anlag som kan behövas i framtiden.',
+    scenarioEnkel: 'En bondgård har en gammal sorts grisar. Grisarna tål mycket. Bonden vill spara dem för framtiden.',
+    ickeExempel: 'En ny ras som har fått ändrat DNA i ett labb.' },
+  { id: 20, del: 2, term: 'genbank', def: 'En plats som sparar frön från gamla kulturväxter.', ex: 'Fröbanken på Svalbard är en genbank.', exEnkel: 'På Svalbard finns ett stort förråd där man sparar frön.', sida: '81',
+    lucktext: 'På Svalbard finns en _____ med över 860 000 fröprover.',
+    scenario: 'Forskare sparar frön från gamla kulturväxter i ett stort förråd. Där finns över 860 000 fröprover. Ingen vet vilka anlag vi behöver i framtiden.',
+    scenarioEnkel: 'Forskare sparar frön från gamla växter i ett stort förråd. Där finns väldigt många sorters frön. Vi kan behöva dem i framtiden.',
+    ickeExempel: 'En gård som föder upp gamla, ursprungliga husdjursraser.' },
+
+  // Del 3 – Genmodifiering och genterapi (s. 82–97)
+  { id: 21, del: 3, term: 'genmodifiera', def: 'Att ändra en organisms DNA med flit.', ex: 'Bakterier har genmodifierats så att de tillverkar insulin.', exEnkel: 'Forskare har ändrat bakteriers DNA. Nu gör bakterierna insulin.', sida: '83',
+    lucktext: 'Forskare kan _____ en bakterie så att den tillverkar insulin.',
+    scenario: 'Forskare stänger av en gen med en riktad mutation. De kan också byta ut gener eller föra in främmande DNA. De ändrar DNA med flit i stället för att vänta på slumpen.',
+    scenarioEnkel: 'Forskare ändrar en växts eller ett djurs DNA. De gör det med flit. De väntar inte på att det ska hända av en slump.',
+    ickeExempel: 'Att avla på de djur som har bäst egenskaper.' },
+  { id: 22, del: 3, term: 'transgen organism', def: 'En organism som har fått DNA från en annan art.', ex: 'Bakterien med människans insulingen är transgen.', exEnkel: 'Bakterien har fått en gen från människan. Genen gör insulin.', sida: '83',
+    lucktext: 'En bakterie som har fått människans insulingen är en _____.',
+    scenario: 'En bakterie har fått en gen från människan. Nu tillverkar den mänskligt tillväxthormon. Bakterien bär alltså DNA från en annan art.',
+    scenarioEnkel: 'En bakterie har fått en gen från en människa. Nu bär bakterien DNA från två sorters liv.',
+    ickeExempel: 'En organism vars egen gen har stängts av i ett labb.' },
+  { id: 23, del: 3, term: 'insulin', def: 'Ett hormon som diabetiker behöver. Det tillverkas i dag av transgena bakterier.', ex: 'Förr kom insulin från grisar och kor.', exEnkel: 'Förr tog man insulin från grisar och kor.', sida: '84',
+    lucktext: 'Förr tog man _____ från grisar och kor, men det kunde ge allergi.',
+    scenario: 'En person med diabetes behöver ett visst hormon. Förr togs hormonet från grisar och kor, och det kunde ge allergi. I dag tillverkas nästan allt av bakterier.',
+    scenarioEnkel: 'En person har diabetes och behöver ett visst ämne. Förr kom ämnet från grisar och kor. Nu görs det av bakterier.',
+    ickeExempel: 'Ett hormon som förr togs från avlidna människor och gav risk för smitta.' },
+  { id: 24, del: 3, term: 'knockoutmus', def: 'En mus där en gen har slagits ut (stängts av).', ex: 'Knockoutmöss används för att ta reda på vad en gen gör.', exEnkel: 'Forskare stänger av en gen i en mus. Sedan ser de vad som händer.', sida: '86',
+    lucktext: 'För att se vad en gen gör stänger forskarna av den i en _____.',
+    scenario: 'Forskare vill veta vad en viss gen gör. De stänger av genen i ett litet försöksdjur och ser vad som händer. Så har de studerat bland annat diabetes och fetma.',
+    scenarioEnkel: 'Forskare vill veta vad en gen gör. De stänger av genen i ett litet djur. Sedan tittar de på vad som händer.',
+    ickeExempel: 'En mus som har fått en gen från en manet.' },
+  { id: 25, del: 3, term: 'GM-gröda', def: 'En gröda med ändrat DNA. GM betyder genetiskt modifierad.', ex: 'Soja, majs, bomull och raps är vanliga GM-grödor.', exEnkel: 'Soja, majs, bomull och raps har ofta fått ändrat DNA.', sida: '87–88',
+    lucktext: 'En majsplanta på ett fält som har fått ändrat DNA kallas en _____.',
+    scenario: 'En bonde i USA odlar majs och soja med ändrat DNA. Sådana växter odlades 2019 på mer än 13 % av världens odlingsareal. I EU odlas nästan inga.',
+    scenarioEnkel: 'En bonde i USA odlar majs med ändrat DNA. Sådan majs odlas mycket i USA. I EU odlas nästan ingen.',
+    ickeExempel: 'En gammal kulturväxt vars frön sparas i en genbank.' },
+  { id: 26, del: 3, term: 'herbicidtolerans (HT)', def: 'Växten tål ett ogräsmedel.', ex: 'Fältet besprutas. Ogräset dör men grödan överlever.', exEnkel: 'Man sprutar gift på fältet. Ogräset dör, men grödan klarar sig.', sida: '88',
+    lucktext: 'Tack vare _____ dör ogräset men inte grödan när fältet besprutas.',
+    scenario: 'En bonde besprutar sitt sojafält med ogräsmedel. Ogräset dör, men sojan klarar sig. Växten har fått en egenskap som gör att den tål medlet.',
+    scenarioEnkel: 'En bonde sprutar gift mot ogräs på fältet. Ogräset dör, men sojan klarar sig.',
+    ickeExempel: 'Växten tillverkar själv ett insektsgift.' },
+  { id: 27, del: 3, term: 'insektsresistens (IR)', def: 'Växten tillverkar själv ett insektsgift.', ex: 'Växten har fått en gen från en bakterie.', exEnkel: 'Växten har fått en gen från en bakterie. Därför gör den eget gift.', sida: '88',
+    lucktext: 'Majs med _____ gör ett eget gift mot insekter.',
+    scenario: 'En majsplanta har fått en gen från en bakterie. Nu tillverkar plantan själv ett gift mot insekter. Bonden behöver spruta mindre insektsmedel.',
+    scenarioEnkel: 'En majsplanta har fått en gen från en bakterie. Nu gör plantan eget gift mot insekter.',
+    ickeExempel: 'Växten tål att besprutas med ogräsmedel.' },
+  { id: 28, del: 3, term: 'genterapi', def: 'Att byta ut en defekt gen mot en fungerande gen.', ex: 'Genterapi kan förhindra svåra genetiska sjukdomar.', exEnkel: 'Det kan stoppa svåra sjukdomar som sitter i generna.', sida: '92',
+    lucktext: 'Med _____ byter läkare ut en defekt gen mot en fungerande.',
+    scenario: 'Läkare vill hjälpa barn som föds utan immunförsvar. De försöker byta ut barnets trasiga gen mot en som fungerar. På 2000-talet botades flera barn på det sättet.',
+    scenarioEnkel: 'Ett barn är sjukt på grund av ett fel i en gen. Läkare försöker byta ut den trasiga genen mot en hel.',
+    ickeExempel: 'Att välja bort embryon med anlag för allvarlig sjukdom.' },
+  { id: 29, del: 3, term: 'gensaxen CRISPR/Cas9', def: 'Ett verktyg som klipper DNA på en bestämd plats.', ex: 'Den påminner om "sök och ersätt" i ett textdokument.', exEnkel: 'Det liknar när du letar upp ett ord i en text och byter ut det.', sida: '93',
+    lucktext: 'Med _____ kan forskare klippa DNA på exakt rätt ställe.',
+    scenario: 'Du letar upp ett ord i ett textdokument och byter ut det mot ett annat. Forskare kan göra nästan samma sak i DNA. Verktyget upptäcktes 2012 och gav Nobelpriset 2020.',
+    scenarioEnkel: 'Du letar upp ett ord i en text och byter det mot ett annat. Forskare kan göra så med DNA.',
+    ickeExempel: 'Ett virus som för in en gen på en slumpmässig plats.' },
+  { id: 30, del: 3, term: 'det sluttande planet', def: 'Risken att vi börjar med svåra sjukdomar och sedan går vidare till att "designa" barn.', ex: 'Först bota allvarliga sjukdomar, sedan välja utseende?', exEnkel: 'Först botar vi svåra sjukdomar. Sen väljer vi kanske hur barn ska se ut?', sida: '94',
+    lucktext: 'Kritiker varnar för _____: först botar vi sjukdomar, sedan väljer vi barnens utseende.',
+    scenario: 'I en debatt säger en politiker att det är bra att bota svåra ärftliga sjukdomar. En annan varnar för att nästa steg kan bli att välja barnens utseende. Gränsen kan flyttas lite i taget.',
+    scenarioEnkel: 'Två personer pratar om gener. En säger att det är bra att bota svåra sjukdomar. Den andra är rädd att vi sen vill bestämma hur barn ska se ut.',
+    ickeExempel: 'Risken att GM-grödor sprider sina gener till vilda växter och ger superogräs.' },
+];
+
+// ════════════════════════════════════════════════════════════
+// PROGRESS- OCH RANK-SYSTEM (sessionStorage, ingen backend)
+// Interna nycklar 'Scenario'/'Icke-ex.' behålls — eleven ser VIEW_LABELS.
+// ════════════════════════════════════════════════════════════
+const VIEWS = ['Lista', 'Flashcards', 'Lucktext', 'Scenario', 'Icke-ex.'];
+const VIEW_LABELS = { 'Scenario': 'Test 1', 'Icke-ex.': 'Test 2' };
+const ACTIVE_VIEWS = { 'Lista': true, 'Flashcards': true, 'Lucktext': true, 'Scenario': true, 'Icke-ex.': true };
+const SCORE_VIEWS = ['Lucktext', 'Scenario', 'Icke-ex.'];
+const PROGRESS_KEY = 'nk1a2_genteknik_begrepp_progress';
+const EASY_KEY = 'nk1a2_genteknik_begrepp_easy';
+const RANK_SALT = 'nk1a2gentekniksaltgron4ade';
+const RANK_ORDER = { D: 1, C: 2, B: 3, A: 4, S: 5 };
+
+function loadProgress() {
+  try {
+    const raw = sessionStorage.getItem(PROGRESS_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return { completed: {}, best: {} };
+}
+
+function saveProgress(progress) {
+  try {
+    sessionStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+  } catch (e) {}
+}
+
+function loadEasy() {
+  try { return sessionStorage.getItem(EASY_KEY) === '1'; } catch (e) { return false; }
+}
+
+function saveEasy(on) {
+  try { sessionStorage.setItem(EASY_KEY, on ? '1' : '0'); } catch (e) {}
+}
+
+function computeRank(progress) {
+  const completedCount = VIEWS.filter(v => progress.completed[v]).length;
+  if (completedCount === 0) return null;
+  if (completedCount === 5) {
+    const allPerfect = SCORE_VIEWS.every(v => (progress.best[v] || 0) >= 100);
+    return allPerfect ? 'S' : 'A';
+  }
+  if (completedCount === 4) return 'A';
+  if (completedCount === 3) return 'B';
+  if (completedCount === 2) return 'C';
+  return 'D';
+}
+
+function computeVerificationCode(progress, rank) {
+  const d = new Date();
+  const dateStr = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+  const completedViews = VIEWS.filter(v => progress.completed[v]).sort().join(',');
+  const input = dateStr + '|' + completedViews + '|' + (rank || '-') + '|' + RANK_SALT;
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) {
+    hash = (hash + input.charCodeAt(i) * (i + 1)) % 1679616; // 36^4
+  }
+  return 'NK2G-' + hash.toString(36).toUpperCase().padStart(4, '0');
+}
+
+// ════════════════════════════════════════════════════════════
+// GEMENSAMMA KOMPONENTER
+// ════════════════════════════════════════════════════════════
+const DEL_FILTERS = ['alla', 1, 2, 3];
+
+function filterByDel(del) {
+  return del === 'alla' ? concepts : concepts.filter(c => c.del === del);
+}
+
+function DelFilter({ value, onChange }) {
+  return (
+    <div className="del-chips flex flex-wrap gap-2 mb-2 font-fredoka text-sm">
+      {DEL_FILTERS.map(d => {
+        const active = value === d;
+        return (
+          <button
+            key={d}
+            onClick={() => onChange(d)}
+            className={'px-4 py-1.5 rounded-full font-bold border-2 transition-colors ' + (active ? '' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300')}
+            style={active ? { background: PRIMARY, borderColor: PRIMARY, color: PRIMARY_TEXT } : {}}
+          >
+            {d === 'alla' ? 'Alla' : `Del ${d}`}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function DelCaption({ del }) {
+  return (
+    <p className="text-sm text-slate-500 mb-5 font-fredoka">
+      {del === 'alla' ? 'Alla tre delarna · 30 begrepp' : `Del ${del} – ${DELAR[del]}`}
+    </p>
+  );
+}
+
+function Example({ c, easy, className = '' }) {
+  return (
+    <div className={className}>
+      <p className="italic text-slate-600">{c.ex}</p>
+      {easy && (
+        <p className="text-slate-600 mt-1 font-fredoka text-[0.95em]">📖 {c.exEnkel}</p>
+      )}
+    </div>
+  );
+}
+
+// "Aldrig samma kort två gånger i rad" även mellan rundor
+function shuffleDeck(cards, lastId) {
+  const d = shuffleArray(cards);
+  if (d.length > 1 && d[0].id === lastId) [d[0], d[1]] = [d[1], d[0]];
+  return d;
+}
+
+function getFeedback(score, total) {
+  const p = total ? score / total : 0;
+  if (p >= 0.9) return 'Redo för provet! Fantastiskt bra!';
+  if (p >= 0.7) return 'Bra jobbat! Öva lite till på de du missade.';
+  if (p >= 0.5) return 'Halvvägs! Fortsätt träna.';
+  return 'Öva lite till – du är på rätt väg!';
+}
+
+// Begrepp som överlappar (t.ex. är varje punktmutation också en mutation) får
+// aldrig vara distraktorer för varandra — då skulle två alternativ vara rätt.
+const OVERLAP = [
+  [1, 3], [11, 12], [11, 13], [12, 13], [16, 17], [17, 18],
+  [21, 22], [21, 24], [21, 25], [21, 26], [21, 27], [22, 25], [22, 26], [22, 27], [25, 26], [25, 27],
+];
+const overlaps = (a, b) => OVERLAP.some(([x, y]) => (x === a && y === b) || (x === b && y === a));
+
+// Delad hjälpare för Test 1: tar det visade begreppet och den BLANDADE arrayen.
+// Rätt svar först, tre distraktorer ur samma del (bland de fem som ligger närmast
+// i längd, så alternativen blir ungefär lika långa), hela listan blandas sist.
+function buildOptions(target, items) {
+  const candidates = items.filter(c => c.id !== target.id && c.del === target.del && !overlaps(c.id, target.id));
+  const byLength = shuffleArray(candidates).sort(
+    (a, b) => Math.abs(a.term.length - target.term.length) - Math.abs(b.term.length - target.term.length)
+  );
+  const distractors = shuffleArray(byLength.slice(0, 5)).slice(0, 3);
+  return shuffleArray([target, ...distractors]);
+}
+
+// Lucktext: exakt stavning (skiftläge och mellanslag spelar ingen roll).
+// Några termer har en etikett inom parentes eller ett längre namn — kortformen godkänns också.
+const ALT_ANSWERS = {
+  26: ['herbicidtolerans', 'ht'],
+  27: ['insektsresistens', 'ir'],
+  29: ['crispr/cas9', 'gensaxen', 'crispr'],
+};
+const normalizeAnswer = s => s.trim().toLowerCase().replace(/\s+/g, ' ');
+const isAcceptedAnswer = (c, value) => {
+  const v = normalizeAnswer(value);
+  return v === normalizeAnswer(c.term) || (ALT_ANSWERS[c.id] || []).includes(v);
+};
+
+function ResultBox({ score, total, onRestart }) {
+  return (
+    <div className="bg-white border-2 rounded-3xl p-8 text-center w-full max-w-sm shadow-sm mx-auto" style={{ borderColor: PRIMARY }}>
+      <p className="text-2xl font-bold" style={{ color: PRIMARY_TEXT }}>{score} / {total} rätt</p>
+      <p className="text-slate-500 mt-2 font-fredoka">{getFeedback(score, total)}</p>
+      {onRestart && (
+        <button onClick={onRestart} className="w-full mt-6 px-8 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY, color: PRIMARY_TEXT }}>
+          Börja om
+        </button>
+      )}
+    </div>
+  );
+}
+
+function ProgressTop({ label, current, total, score }) {
+  return (
+    <div className="w-full max-w-lg mb-4">
+      <div className="flex justify-between text-xs text-slate-400 font-fredoka mb-1">
+        <span>{label} {current + 1} av {total}</span>
+        <span>Poäng: {score}</span>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-1.5">
+        <div className="h-1.5 rounded-full transition-all" style={{ width: `${(current / total) * 100}%`, background: PRIMARY }} />
+      </div>
+    </div>
+  );
+}
+
+const CompletionHint = ({ del }) => del === 'alla' ? null : (
+  <p className="text-xs text-slate-400 font-fredoka mb-4">Välj ”Alla” för att avsnittet ska räknas i din progress.</p>
+);
+
+// ════════════════════════════════════════════════════════════
+// VYER
+// ════════════════════════════════════════════════════════════
+function ListView({ onComplete, easy }) {
+  const [query, setQuery] = useState('');
+  const [del, setDel] = useState('alla');
+  const sentinelRef = useRef(null);
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) onComplete();
+    }, { threshold: 1.0 });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [onComplete]);
+
+  const q = query.trim().toLowerCase();
+  const filtered = filterByDel(del).filter(c =>
+    !q ||
+    c.term.toLowerCase().includes(q) ||
+    c.def.toLowerCase().includes(q) ||
+    c.ex.toLowerCase().includes(q) ||
+    (easy && c.exEnkel.toLowerCase().includes(q))
+  );
+
+  return (
+    <div>
+      <input
+        type="search"
+        value={query}
+        onChange={e => setQuery(e.target.value)}
+        placeholder="🔍 Sök begrepp, definition eller exempel..."
+        className="w-full mb-4 px-5 py-3 rounded-2xl border border-slate-200 shadow-sm focus:outline-none focus:ring-2 text-lg"
+        style={{ '--tw-ring-color': PRIMARY }}
+      />
+      <DelFilter value={del} onChange={setDel} />
+      <DelCaption del={del} />
+
+      <div className="flex flex-col gap-3">
+        {filtered.map((c, i) => (
+          <React.Fragment key={c.id}>
+            {del === 'alla' && (i === 0 || filtered[i - 1].del !== c.del) && (
+              <h2 className="font-fredoka font-bold text-sm uppercase tracking-wide mt-4 first:mt-0" style={{ color: PRIMARY_TEXT }}>
+                Del {c.del} – {DELAR[c.del]}
+              </h2>
+            )}
+            <div
+              className="list-card bg-white rounded-2xl shadow-sm p-5 border-l-8 hover:shadow-md transition-shadow"
+              style={{ borderColor: PRIMARY }}
+            >
+              <div className="flex items-start gap-3">
+                <span
+                  className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold font-fredoka mt-0.5"
+                  style={{ background: '#dcfce7', color: PRIMARY_TEXT }}
+                >
+                  {c.id}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="font-bold text-lg text-slate-800 break-words">{c.term}</p>
+                    <span className="flex-shrink-0 text-xs font-fredoka text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full mt-1 whitespace-nowrap">s. {c.sida}</span>
+                  </div>
+                  <p className="text-slate-500 mt-1 leading-relaxed">{c.def}</p>
+                  <Example c={c} easy={easy} className="mt-2 pl-3 border-l-2 border-slate-200" />
+                </div>
+              </div>
+            </div>
+          </React.Fragment>
+        ))}
+        {filtered.length === 0 && (
+          <p className="text-center text-slate-400 mt-8">Inga begrepp matchade sökningen.</p>
+        )}
+      </div>
+      <div ref={sentinelRef} style={{ height: 1 }} />
+    </div>
+  );
+}
+
+// Kort som sorterats minst en gång (oavsett filter) — Flashcards klar när alla 30 sorterats
+const flashSorted = new Set();
+
+function FlashcardView({ onComplete, easy }) {
+  const [del, setDel] = useState('alla');
+  const pool = filterByDel(del);
+  const total = pool.length;
+  const [deck, setDeck] = useState(() => shuffleDeck(concepts));
+  const [deckIdx, setDeckIdx] = useState(0);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [kudeInte, setKudeInte] = useState([]);
+  const [kunde, setKunde] = useState([]);
+  const [phase, setPhase] = useState('playing'); // 'playing' | 'roundEnd' | 'allDone'
+
+  const resetWith = (cards) => {
+    setDeck(shuffleDeck(cards));
+    setDeckIdx(0);
+    setIsFlipped(false);
+    setKudeInte([]);
+    setKunde([]);
+    setPhase('playing');
+  };
+
+  const restartAll = () => resetWith(pool);
+
+  const changeDel = (d) => {
+    setDel(d);
+    resetWith(filterByDel(d));
+  };
+
+  const sort = (pile) => {
+    const card = deck[deckIdx];
+    const newKudeInte = pile === 'kudeInte' ? [...kudeInte, card] : kudeInte;
+    const newKunde    = pile === 'kunde'    ? [...kunde, card]    : kunde;
+    const nextIdx = deckIdx + 1;
+    setKudeInte(newKudeInte);
+    setKunde(newKunde);
+    setIsFlipped(false);
+    flashSorted.add(card.id);
+    if (flashSorted.size >= concepts.length) onComplete();
+    if (nextIdx >= deck.length) {
+      setDeckIdx(nextIdx);
+      setPhase(newKudeInte.length === 0 ? 'allDone' : 'roundEnd');
+    } else {
+      setDeckIdx(nextIdx);
+    }
+  };
+
+  const nextRound = () => {
+    const last = deck[deck.length - 1];
+    setDeck(shuffleDeck(kudeInte, last && last.id));
+    setDeckIdx(0);
+    setIsFlipped(false);
+    setKudeInte([]);
+    setPhase('playing');
+  };
+
+  const header = (
+    <div className="w-full">
+      <DelFilter value={del} onChange={changeDel} />
+      <DelCaption del={del} />
+    </div>
+  );
+
+  if (phase === 'allDone') return (
+    <div className="flex flex-col items-center gap-6">
+      {header}
+      <div className="bg-green-50 border-2 border-green-400 rounded-3xl p-8 text-center w-full max-w-sm">
+        <div className="text-5xl mb-4">🎉</div>
+        <p className="text-2xl font-bold text-green-700 mb-2">Alla kort klarade!</p>
+        <p className="text-slate-600 mb-6">Du kan <span className="font-bold text-green-700">{kunde.length} av {total}</span> begrepp!</p>
+        <button onClick={restartAll} className="w-full px-8 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY, color: PRIMARY_TEXT }}>
+          Börja om med alla
+        </button>
+      </div>
+    </div>
+  );
+
+  if (phase === 'roundEnd') return (
+    <div className="flex flex-col items-center gap-6">
+      {header}
+      <div className="bg-white border-2 border-slate-200 rounded-3xl p-8 text-center w-full max-w-sm shadow-sm">
+        <p className="text-lg font-bold text-slate-700 mb-4">Runda klar!</p>
+        <div className="flex justify-center gap-8 mb-6">
+          <div className="text-center">
+            <p className="text-3xl font-bold text-green-600">{kunde.length}</p>
+            <p className="text-xs text-slate-400 uppercase tracking-wide mt-1 font-fredoka">Kunde</p>
+          </div>
+          <div className="text-center">
+            <p className="text-3xl font-bold text-red-500">{kudeInte.length}</p>
+            <p className="text-xs text-slate-400 uppercase tracking-wide mt-1 font-fredoka">Kunde inte</p>
+          </div>
+        </div>
+        <div className="flex flex-col gap-3">
+          <button onClick={nextRound} className="w-full bg-slate-900 text-white px-8 py-3 rounded-2xl font-bold font-fredoka hover:bg-slate-800 transition-colors">
+            Öva på Kunde inte ({kudeInte.length} kort) →
+          </button>
+          <button onClick={restartAll} className="w-full px-8 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY, color: PRIMARY_TEXT }}>
+            Börja om med alla
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const card = deck[deckIdx];
+  const remaining = deck.length - deckIdx;
+
+  return (
+    <div className="flex flex-col items-center">
+      {header}
+      <div className="flex gap-3 mb-5 w-full max-w-sm">
+        <div className="flex-1 bg-red-50 border border-red-200 rounded-xl p-2 text-center">
+          <p className="text-xl font-bold text-red-500">{kudeInte.length}</p>
+          <p className="text-[10px] text-red-400 uppercase tracking-wide font-bold font-fredoka">Kunde inte</p>
+        </div>
+        <div className="flex-1 bg-slate-100 border border-slate-200 rounded-xl p-2 text-center">
+          <p className="text-xl font-bold text-slate-400">{remaining}</p>
+          <p className="text-[10px] text-slate-400 uppercase tracking-wide font-bold font-fredoka">Kvar</p>
+        </div>
+        <div className="flex-1 bg-green-50 border border-green-200 rounded-xl p-2 text-center">
+          <p className="text-xl font-bold text-green-500">{kunde.length}</p>
+          <p className="text-[10px] text-green-400 uppercase tracking-wide font-bold font-fredoka">Kunde</p>
+        </div>
+      </div>
+      <div className="flip-card mb-5" onClick={() => setIsFlipped(!isFlipped)}>
+        <div className={`flip-card-inner ${isFlipped ? 'flipped-classes' : ''}`}>
+          <div className="flip-card-front" style={{ background: PRIMARY }}>
+            <span className="absolute top-5 text-[10px] uppercase tracking-[0.2em] font-bold font-fredoka opacity-70" style={{ color: PRIMARY_TEXT }}>Del {card.del}</span>
+            <h2 className="card-term text-3xl font-bold text-center px-4 break-words" style={{ color: PRIMARY_TEXT }}>{card.term}</h2>
+            <div className="absolute bottom-6 animate-pulse">
+              <span className="text-[10px] uppercase tracking-[0.2em] font-bold opacity-70 font-fredoka" style={{ color: PRIMARY_TEXT }}>Klicka för svar</span>
+            </div>
+          </div>
+          <div className="flip-card-back bg-white" style={{ border: `2px solid ${PRIMARY}` }}>
+            <p className="card-def text-xl leading-relaxed text-slate-800 font-medium px-2">{card.def}</p>
+            <Example c={card} easy={easy} className="mt-3 px-2 text-base leading-snug" />
+            <div className="absolute bottom-6">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold font-fredoka">Klicka för att vända</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {isFlipped && (
+        <div className="flex gap-3 w-full max-w-sm mb-4">
+          <button onClick={() => sort('kudeInte')} className="flex-1 bg-red-100 text-red-700 border-2 border-red-300 font-bold font-fredoka py-3 rounded-2xl hover:bg-red-200 active:scale-95 transition-all">
+            ✗ Kunde inte
+          </button>
+          <button onClick={() => sort('kunde')} className="flex-1 bg-green-100 text-green-700 border-2 border-green-300 font-bold font-fredoka py-3 rounded-2xl hover:bg-green-200 active:scale-95 transition-all">
+            ✓ Kunde
+          </button>
+        </div>
+      )}
+      <div className="flex flex-col items-center gap-2 mt-1">
+        <p className="text-slate-500 font-medium bg-slate-200 px-4 py-1 rounded-full text-xs font-fredoka">{deckIdx + 1} av {deck.length}</p>
+        <button onClick={restartAll} className="text-slate-400 text-xs hover:text-slate-600 transition-colors underline font-fredoka">↺ Börja om med alla</button>
+      </div>
+    </div>
+  );
+}
+
+// Lucktext påverkas aldrig av Enkel svenska — därför tar vyn inte emot `easy`.
+function LucktextView({ onComplete }) {
+  const [del, setDel] = useState('alla');
+  const [items, setItems] = useState(() => shuffleArray(concepts));
+  const [inputs, setInputs] = useState({});
+  const [statuses, setStatuses] = useState({}); // id → 'correct' | 'wrong1' | 'wrong2' | 'final'
+  const [checked, setChecked] = useState(false);
+
+  const resetWith = (d) => {
+    setItems(shuffleArray(filterByDel(d)));
+    setInputs({});
+    setStatuses({});
+    setChecked(false);
+  };
+  const changeDel = (d) => { setDel(d); resetWith(d); };
+
+  const submit = (c) => {
+    if (checked || statuses[c.id] === 'correct') return;
+    const val = inputs[c.id] || '';
+    if (!val.trim()) return;
+    if (isAcceptedAnswer(c, val)) setStatuses(p => ({ ...p, [c.id]: 'correct' }));
+    else setStatuses(p => ({ ...p, [c.id]: p[c.id] ? 'wrong2' : 'wrong1' }));
+  };
+
+  const rattaAlla = () => {
+    setStatuses(p => {
+      const next = {};
+      items.forEach(c => {
+        next[c.id] = p[c.id] === 'correct' || isAcceptedAnswer(c, inputs[c.id] || '') ? 'correct' : 'final';
+      });
+      return next;
+    });
+    setChecked(true);
+  };
+
+  const total = items.length;
+  const score = items.filter(c => statuses[c.id] === 'correct').length;
+  const finished = checked || score === total;
+  const bank = [...items].sort((a, b) => a.term.localeCompare(b.term, 'sv'));
+
+  useEffect(() => {
+    if (finished && del === 'alla') onComplete(Math.round((score / total) * 100));
+  }, [finished, del]);
+
+  return (
+    <div>
+      <DelFilter value={del} onChange={changeDel} />
+      <DelCaption del={del} />
+      <CompletionHint del={del} />
+
+      <div className="bg-white rounded-2xl shadow-sm p-4 mb-6 border border-slate-200">
+        <p className="text-xs uppercase tracking-wide text-slate-400 font-fredoka font-bold mb-2">Begreppsbank</p>
+        <div className="flex flex-wrap gap-2">
+          {bank.map(c => (
+            <span
+              key={c.id}
+              className={'px-3 py-1 rounded-full text-sm border border-slate-200 bg-slate-50 ' + (statuses[c.id] === 'correct' ? 'line-through text-slate-300' : 'text-slate-600')}
+            >
+              {c.term}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        {items.map((c, i) => {
+          const [before, after] = c.lucktext.split('_____');
+          const status = statuses[c.id];
+          const locked = status === 'correct' || status === 'final';
+          const boxStyle =
+            status === 'correct' ? { background: '#dcfce7', borderColor: '#16a34a' }
+            : status === 'wrong2' || status === 'final' ? { background: '#fee2e2', borderColor: '#dc2626' }
+            : { borderColor: '#e2e8f0' };
+          return (
+            <div key={c.id} className="rounded-2xl p-4 border-2 bg-white transition-colors" style={boxStyle}>
+              <p className="text-slate-700 leading-relaxed text-lg">
+                <span className="font-bold font-fredoka text-slate-400 mr-1">{i + 1}.</span>
+                {before}
+                <input
+                  type="text"
+                  value={inputs[c.id] || ''}
+                  disabled={locked}
+                  autoComplete="off"
+                  autoCapitalize="off"
+                  spellCheck={false}
+                  enterKeyHint="done"
+                  onChange={e => { const v = e.target.value; setInputs(p => ({ ...p, [c.id]: v })); }}
+                  onKeyDown={e => { if (e.key === 'Enter') submit(c); }}
+                  className="inline-block mx-1 px-2 py-1 w-44 max-w-full rounded-lg border border-slate-300 focus:outline-none focus:ring-2 text-slate-800 disabled:bg-transparent disabled:border-transparent disabled:font-bold align-middle"
+                  style={{ '--tw-ring-color': PRIMARY }}
+                />
+                {after}
+              </p>
+              {status === 'wrong1' && (
+                <p className="text-orange-500 text-sm font-fredoka mt-1">Är du säker att du stavat rätt?</p>
+              )}
+              {status === 'wrong2' && (
+                <p className="text-sm font-fredoka mt-1" style={{ color: '#dc2626' }}>Fel. Försök igen eller tryck ”Rätta alla”.</p>
+              )}
+              {status === 'correct' && (
+                <p className="text-sm mt-1" style={{ color: '#16a34a' }}>✓ Rätt! {c.def}</p>
+              )}
+              {status === 'final' && (
+                <p className="text-sm mt-1" style={{ color: '#dc2626' }}>Rätt svar: <span className="font-bold">{c.term}</span> — {c.def}</p>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="flex flex-col items-center gap-4 mt-6">
+        {!finished && (
+          <button onClick={rattaAlla} className="bg-slate-900 text-white px-8 py-3 rounded-2xl font-bold font-fredoka hover:bg-slate-800 transition-colors">
+            Rätta alla
+          </button>
+        )}
+        {finished && <ResultBox score={score} total={total} />}
+        <button onClick={() => resetWith(del)} className="text-slate-400 text-xs hover:text-slate-600 transition-colors underline font-fredoka">↺ Börja om</button>
+      </div>
+    </div>
+  );
+}
+
+// Test 1 (intern nyckel 'Scenario'). Enkel svenska påverkar scenariotexten, aldrig termerna.
+function ScenarioView({ onComplete, easy }) {
+  const [del, setDel] = useState('alla');
+  const [items, setItems] = useState(() => shuffleArray(concepts));
+  const [options, setOptions] = useState(() => buildOptions(items[0], items));
+  const [current, setCurrent] = useState(0);
+  const [selectedId, setSelectedId] = useState(null);
+  const [score, setScore] = useState(0);
+  const [done, setDone] = useState(false);
+
+  const resetWith = (pool) => {
+    const next = shuffleArray(pool);
+    setItems(next);
+    setOptions(buildOptions(next[0], next));
+    setCurrent(0);
+    setSelectedId(null);
+    setScore(0);
+    setDone(false);
+  };
+  const changeDel = (d) => { setDel(d); resetWith(filterByDel(d)); };
+
+  const concept = items[current];
+  const answered = selectedId !== null;
+
+  const handleSelect = (id) => {
+    if (answered) return;
+    setSelectedId(id);
+    if (id === concept.id) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    const n = current + 1;
+    if (n >= items.length) { setDone(true); return; }
+    setOptions(buildOptions(items[n], items));
+    setCurrent(n);
+    setSelectedId(null);
+  };
+
+  useEffect(() => {
+    if (done && del === 'alla') onComplete(Math.round((score / items.length) * 100));
+  }, [done]);
+
+  const header = (
+    <div className="w-full">
+      <DelFilter value={del} onChange={changeDel} />
+      <DelCaption del={del} />
+      <CompletionHint del={del} />
+    </div>
+  );
+
+  if (done) return (
+    <div>
+      {header}
+      <ResultBox score={score} total={items.length} onRestart={() => resetWith(filterByDel(del))} />
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col items-center">
+      {header}
+      <ProgressTop label="Fråga" current={current} total={items.length} score={score} />
+
+      <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 w-full max-w-lg">
+        <p className="text-slate-800 text-lg leading-relaxed">{concept.scenario}</p>
+        {easy && <p className="text-slate-600 mt-2 font-fredoka leading-relaxed">📖 {concept.scenarioEnkel}</p>}
+        <p className="text-xs uppercase tracking-wide text-slate-400 font-fredoka font-bold mt-5 mb-3">Vilket begrepp beskrivs?</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {options.map((opt) => {
+            const isCorrect = opt.id === concept.id;
+            let optStyle = { borderColor: '#e2e8f0' };
+            if (answered && isCorrect) optStyle = { background: '#dcfce7', borderColor: '#16a34a', color: '#16a34a' };
+            else if (answered && opt.id === selectedId) optStyle = { background: '#fee2e2', borderColor: '#dc2626', color: '#dc2626' };
+            else if (answered) optStyle = { borderColor: '#e2e8f0', opacity: 0.5 };
+            return (
+              <button
+                key={opt.id}
+                onClick={() => handleSelect(opt.id)}
+                disabled={answered}
+                className="text-left px-4 py-3 rounded-2xl border-2 font-bold text-slate-700 transition-colors break-words"
+                style={optStyle}
+              >
+                {opt.term}
+              </button>
+            );
+          })}
+        </div>
+        {answered && (
+          <div className="mt-5 p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <p className="text-sm text-slate-600 leading-relaxed">
+              <span className="font-bold" style={{ color: PRIMARY_TEXT }}>{concept.term}:</span> {concept.def}
+            </p>
+            <Example c={concept} easy={easy} className="mt-2 text-sm" />
+            <button onClick={next} className="w-full mt-4 px-6 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY, color: PRIMARY_TEXT }}>
+              {current + 1 >= items.length ? 'Se resultat →' : 'Nästa →'}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Test 2 (intern nyckel 'Icke-ex.'): definitionen mot en trovärdig fälla — eleven pekar ut fällan.
+function IckeExempelView({ onComplete, easy }) {
+  const makeOpts = (c) => shuffleArray([
+    { text: c.def, isTrap: false },
+    { text: c.ickeExempel, isTrap: true },
+  ]);
+  const fresh = (pool) => {
+    const items = shuffleArray(pool);
+    return { items, cur: 0, opts: makeOpts(items[0]), selIdx: null, score: 0, done: false };
+  };
+
+  const [del, setDel] = useState('alla');
+  const [s, setS] = useState(() => fresh(concepts));
+  const changeDel = (d) => { setDel(d); setS(fresh(filterByDel(d))); };
+
+  const total = s.items.length;
+  const concept = s.items[s.cur];
+  const answered = s.selIdx !== null;
+  const gotIt = answered && s.opts[s.selIdx].isTrap;
+
+  const handleSelect = (idx) => {
+    if (answered) return;
+    setS(p => ({ ...p, selIdx: idx, score: p.opts[idx].isTrap ? p.score + 1 : p.score }));
+  };
+
+  const next = () => setS(p => {
+    const n = p.cur + 1;
+    if (n >= p.items.length) return { ...p, done: true };
+    return { ...p, cur: n, opts: makeOpts(p.items[n]), selIdx: null };
+  });
+
+  useEffect(() => {
+    if (s.done && del === 'alla') onComplete(Math.round((s.score / total) * 100));
+  }, [s.done]);
+
+  const header = (
+    <div className="w-full">
+      <DelFilter value={del} onChange={changeDel} />
+      <DelCaption del={del} />
+      <CompletionHint del={del} />
+    </div>
+  );
+
+  if (s.done) return (
+    <div>
+      {header}
+      <ResultBox score={s.score} total={total} onRestart={() => setS(fresh(filterByDel(del)))} />
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col items-center">
+      {header}
+      <ProgressTop label="Begrepp" current={s.cur} total={total} score={s.score} />
+
+      <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 w-full max-w-lg">
+        <p className="text-xs uppercase tracking-wide text-slate-400 font-fredoka font-bold mb-2">Vilken beskrivning stämmer INTE på</p>
+        <p className="text-2xl font-bold mb-5 break-words" style={{ color: PRIMARY_TEXT }}>{concept.term}?</p>
+        <div className="flex flex-col gap-3">
+          {s.opts.map((opt, idx) => {
+            let optStyle = { borderColor: '#e2e8f0' };
+            if (answered && opt.isTrap) optStyle = { background: '#dcfce7', borderColor: '#16a34a' };
+            else if (answered && idx === s.selIdx) optStyle = { background: '#fee2e2', borderColor: '#dc2626' };
+            return (
+              <button
+                key={idx}
+                onClick={() => handleSelect(idx)}
+                disabled={answered}
+                className="text-left px-4 py-3 rounded-2xl border-2 text-slate-700 leading-relaxed transition-colors"
+                style={optStyle}
+              >
+                <span className="font-bold font-fredoka mr-2">{idx === 0 ? 'A' : 'B'}</span>{opt.text}
+              </button>
+            );
+          })}
+        </div>
+        {answered && (
+          <div className="mt-5 p-4 rounded-2xl bg-slate-50 border border-slate-200 text-sm text-slate-600 leading-relaxed">
+            <p className="font-bold font-fredoka mb-1" style={{ color: gotIt ? '#16a34a' : '#dc2626' }}>
+              {gotIt ? '✓ Rätt! Det där är inte ' + concept.term + '.' : '✗ Fel – det du valde är definitionen av ' + concept.term + '.'}
+            </p>
+            <p>Fällan: ”{concept.ickeExempel}” Det beskriver något annat.</p>
+            <p className="mt-2"><span className="font-bold" style={{ color: PRIMARY_TEXT }}>{concept.term}:</span> {concept.def}</p>
+            <Example c={concept} easy={easy} className="mt-2" />
+            <button onClick={next} className="w-full mt-4 px-6 py-3 rounded-2xl font-bold font-fredoka transition-colors" style={{ background: PRIMARY, color: PRIMARY_TEXT }}>
+              {s.cur + 1 >= total ? 'Se resultat →' : 'Nästa →'}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════
+// HEADER + NAVIGERING
+// ════════════════════════════════════════════════════════════
+function Header({ activeView, setActiveView, progress, rank, completedCount, code, easy, toggleEasy }) {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6 gap-2">
+        <a
+          href={BACK_FALLBACK}
+          onClick={(e) => { e.preventDefault(); smartBack(BACK_FALLBACK); }}
+          className="text-sm font-semibold transition-colors text-slate-500 hover:text-green-700"
+        >
+          ← Tillbaka till startsidan
+        </a>
+        <button
+          onClick={toggleEasy}
+          aria-pressed={easy}
+          className={'text-sm font-bold font-fredoka px-3 py-1.5 rounded-full border-2 transition-colors whitespace-nowrap ' + (easy ? '' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300')}
+          style={easy ? { background: PRIMARY, borderColor: PRIMARY, color: PRIMARY_TEXT } : {}}
+          title="Visar exempel och scenarier med enklare ord. Begrepp, definitioner och lucktext ändras inte."
+        >
+          📖 Enkel svenska
+        </button>
+      </div>
+
+      <h1 className="page-title text-3xl md:text-4xl font-bold italic text-center uppercase tracking-wide mb-1" style={{ color: PRIMARY_TEXT }}>
+        Cellen, DNA och genteknik
+      </h1>
+      <p className="text-center text-slate-400 text-sm mb-6 font-fredoka">Naturkunskap 1a2 — Begrepp</p>
+
+      {/* Progress + rank */}
+      <div className="mb-4">
+        <div className="flex items-center justify-between mb-1.5 flex-wrap gap-2">
+          <span className="text-sm font-semibold text-slate-600 font-fredoka">{completedCount}/5 avsnitt klara</span>
+          {rank && (
+            <span
+              className="text-xs font-bold px-2.5 py-1 rounded-full font-fredoka"
+              style={{ background: '#dcfce7', color: PRIMARY_TEXT }}
+            >
+              Rank: {rank} · Kod: {code}
+            </span>
+          )}
+        </div>
+        <div className="w-full bg-slate-200 rounded-full h-1.5">
+          <div className="h-1.5 rounded-full transition-all" style={{ width: `${(completedCount / 5) * 100}%`, background: PRIMARY }} />
+        </div>
+      </div>
+
+      {/* Toggle */}
+      <div className="view-tabs flex flex-wrap justify-center gap-1 bg-white rounded-full p-1 shadow-sm border border-slate-200 mb-6 font-fredoka text-sm max-w-full">
+        {VIEWS.map((view) => {
+          const active = ACTIVE_VIEWS[view];
+          return (
+            <button
+              key={view}
+              disabled={!active}
+              onClick={() => active && setActiveView(view)}
+              title={!active ? 'Kommer snart' : undefined}
+              className={
+                'flex-shrink-0 px-4 py-2 rounded-full font-bold transition-colors whitespace-nowrap ' +
+                (!active
+                  ? 'text-slate-300 cursor-not-allowed'
+                  : activeView === view
+                    ? ''
+                    : 'text-slate-500 hover:text-slate-700')
+              }
+              style={activeView === view && active ? { background: PRIMARY, color: PRIMARY_TEXT } : {}}
+            >
+              {VIEW_LABELS[view] || view}
+              {progress.completed[view] && (
+                <span className="ml-1" style={{ color: activeView === view ? PRIMARY_TEXT : '#16a34a' }}>✓</span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════
+// APP
+// ════════════════════════════════════════════════════════════
+function App() {
+  const [activeView, setActiveView] = useState('Lista');
+  const [progress, setProgress] = useState(loadProgress);
+  const [easy, setEasy] = useState(loadEasy);
+  const [celebrateRank, setCelebrateRank] = useState(null);
+  const prevRankRef = useRef(computeRank(loadProgress()));
+
+  useEffect(() => {
+    saveProgress(progress);
+  }, [progress]);
+
+  const toggleEasy = () => setEasy(prev => { saveEasy(!prev); return !prev; });
+
+  const markComplete = useCallback((view, pct) => {
+    setProgress(prev => {
+      const nextCompleted = { ...prev.completed };
+      const nextBest = { ...prev.best };
+      let changed = false;
+
+      if (typeof pct === 'number' && !(nextBest[view] >= pct)) {
+        nextBest[view] = pct;
+        changed = true;
+      }
+
+      const thresholdMet = typeof pct === 'number' ? pct >= 80 : true;
+      if (thresholdMet && !nextCompleted[view]) {
+        nextCompleted[view] = true;
+        changed = true;
+      }
+
+      return changed ? { completed: nextCompleted, best: nextBest } : prev;
+    });
+  }, []);
+
+  const completeLista = useCallback(() => markComplete('Lista'), [markComplete]);
+  const completeFlashcards = useCallback(() => markComplete('Flashcards'), [markComplete]);
+  const completeLucktext = useCallback((pct) => markComplete('Lucktext', pct), [markComplete]);
+  const completeScenario = useCallback((pct) => markComplete('Scenario', pct), [markComplete]);
+  const completeIckeEx = useCallback((pct) => markComplete('Icke-ex.', pct), [markComplete]);
+
+  const rank = computeRank(progress);
+  const completedCount = VIEWS.filter(v => progress.completed[v]).length;
+  const code = computeVerificationCode(progress, rank);
+
+  useEffect(() => {
+    const prevOrder = prevRankRef.current ? RANK_ORDER[prevRankRef.current] : 0;
+    const newOrder = rank ? RANK_ORDER[rank] : 0;
+    if (newOrder > prevOrder) {
+      setCelebrateRank(rank);
+      const t = setTimeout(() => setCelebrateRank(null), 2500);
+      prevRankRef.current = rank;
+      return () => clearTimeout(t);
+    }
+    prevRankRef.current = rank;
+  }, [rank]);
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 py-6">
+      <Header
+        activeView={activeView}
+        setActiveView={setActiveView}
+        progress={progress}
+        rank={rank}
+        completedCount={completedCount}
+        code={code}
+        easy={easy}
+        toggleEasy={toggleEasy}
+      />
+
+      <div className="pb-16">
+        {activeView === 'Lista' && <ListView onComplete={completeLista} easy={easy} />}
+        {activeView === 'Flashcards' && <FlashcardView key="flashcards" onComplete={completeFlashcards} easy={easy} />}
+        {activeView === 'Lucktext' && <LucktextView onComplete={completeLucktext} />}
+        {activeView === 'Scenario' && <ScenarioView onComplete={completeScenario} easy={easy} />}
+        {activeView === 'Icke-ex.' && <IckeExempelView onComplete={completeIckeEx} easy={easy} />}
+      </div>
+
+      <footer className="text-center text-slate-400 italic text-sm pb-8">
+        Källa: Naturkunskap 1a2 — Cellen, DNA och genteknik, begreppslista
+        <br />Designad av John
+      </footer>
+
+      {/* Rank celebration overlay */}
+      {celebrateRank && (
+        <div
+          className="fixed inset-0 flex items-center justify-center z-50 px-4"
+          style={{ background: 'rgba(15, 23, 42, 0.55)' }}
+          onClick={() => setCelebrateRank(null)}
+        >
+          <div className="bg-white rounded-3xl px-10 py-8 text-center shadow-2xl">
+            <div className="text-5xl mb-3">{celebrateRank === 'S' ? '🎉🏆🎉' : '🎉'}</div>
+            <p className="text-3xl font-bold" style={{ color: PRIMARY_TEXT }}>{celebrateRank}-RANK!</p>
+            <p className="text-slate-400 text-sm mt-2">Ny rank uppnådd</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+    <script src="feedback-widget.js" defer></script>
+    <script data-goatcounter="https://johnblixt.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
