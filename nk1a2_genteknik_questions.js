@@ -1,0 +1,413 @@
+// ═══════════════════════════════════════════════════════════════════
+// Naturkunskap 1a2 · Cellen, DNA och genteknik – frågebank (30 frågor)
+// Källa: nk1a2_genteknik_kallmaterial.md, DEL C (läxförhöret L10).
+// q / opts / correct är ORDAGRANT från DEL C – ändra dem inte.
+// opts står i originalordning A–D, correct = index i opts (0 = A).
+// Blandning sker i runtime. Används av nk1a2_genteknik_quiz.html,
+// nk1a2_genteknik_quiz_facit.html och validate_nk1a2_genteknik_quiz.js.
+// Arabiskan (qAr/optsAr/expAr) översätter den enkla svenska versionen.
+// ═══════════════════════════════════════════════════════════════════
+
+const DELAR = {
+  1: 'DNA, gener och proteiner',
+  2: 'Mutationer, evolution och avel',
+  3: 'Genmodifiering och genterapi'
+};
+
+const QUESTIONS = [
+  // ─────────────── Del 1 – DNA, gener och proteiner ───────────────
+  {
+    id: '1.1', del: 1, kalla: 's. 51', niva: 'fakta',
+    q: 'Vilka två baspar bildar kvävebaserna i DNA?',
+    opts: ['A–C och T–G', 'A–T och C–G', 'A–G och C–T', 'A–A och T–T'],
+    correct: 1,
+    expl: 'I DNA passar A bara ihop med T, och C passar bara ihop med G. Därför bildar kvävebaserna alltid paren A–T och C–G – som stegpinnarna i en vriden repstege.',
+    qEnkel: 'DNA har fyra baser: A, T, C och G. Vilka baser sitter ihop i par?',
+    optsEnkel: ['A med C, och T med G', 'A med T, och C med G', 'A med G, och C med T', 'A med A, och T med T'],
+    expEnkel: 'I DNA sitter A alltid ihop med T. C sitter alltid ihop med G. Paren är som stegpinnar i en stege.',
+    qAr: 'يحتوي الحمض النووي (DNA) على أربع قواعد: A وT وC وG. أي القواعد ترتبط معًا في أزواج؟',
+    optsAr: ['A مع C، وT مع G', 'A مع T، وC مع G', 'A مع G، وC مع T', 'A مع A، وT مع T'],
+    expAr: 'في الحمض النووي ترتبط A دائمًا مع T، وترتبط C دائمًا مع G. هذه الأزواج تشبه درجات السلّم.'
+  },
+  {
+    id: '1.2', del: 1, kalla: 's. 52', niva: 'fakta',
+    q: 'Hur många kromosomer har en människas kroppsceller vanligen?',
+    opts: ['23 kromosomer', '44 kromosomer', '46 kromosomer', '92 kromosomer'],
+    correct: 2,
+    expl: 'Kroppsceller har 46 kromosomer i 23 par – hälften från mamma och hälften från pappa. Könsceller (ägg och spermier) har 23, och vid befruktningen blir 23 + 23 = 46.',
+    qEnkel: 'Hur många kromosomer finns i en vanlig cell i kroppen?',
+    optsEnkel: ['23 stycken', '44 stycken', '46 stycken', '92 stycken'],
+    expEnkel: 'En vanlig cell i kroppen har 46 kromosomer. De sitter i 23 par. Hälften kommer från mamma och hälften från pappa. Ägg och spermier har bara 23.',
+    qAr: 'كم عدد الكروموسومات في خلية عادية من خلايا الجسم؟',
+    optsAr: ['23 كروموسومًا', '44 كروموسومًا', '46 كروموسومًا', '92 كروموسومًا'],
+    expAr: 'في خلية الجسم العادية 46 كروموسومًا، مرتبة في 23 زوجًا. نصفها من الأم ونصفها من الأب. أما البويضة والحيوان المنوي ففي كل منهما 23 فقط.'
+  },
+  {
+    id: '1.3', del: 1, kalla: 's. 51', niva: 'fakta',
+    q: 'Vad består en nukleotid av?',
+    opts: ['Socker, fosfat och en kvävebas', 'Aminosyra, socker och fosfat', 'Protein, fett och en kvävebas', 'Enzym, fosfat och en aminosyra'],
+    correct: 0,
+    expl: 'En nukleotid är DNA:s byggsten och består av tre delar: ett socker (deoxiribos), fosfat och en kvävebas (A, T, C eller G). Aminosyror och protein hör till proteinsyntesen, inte till nukleotiden.',
+    qEnkel: 'En nukleotid är en liten byggsten i DNA. Vilka tre delar har den?',
+    optsEnkel: ['Socker, fosfat och en bas', 'Aminosyra, socker och fosfat', 'Protein, fett och en bas', 'Enzym, fosfat och en aminosyra'],
+    expEnkel: 'DNA byggs av små bitar som heter nukleotider. Varje bit har tre delar: ett socker, ett fosfat och en bas (A, T, C eller G).',
+    qAr: 'النيوكليوتيد وحدة بناء صغيرة في الحمض النووي. ما هي أجزاؤه الثلاثة؟',
+    optsAr: ['سكر وفوسفات وقاعدة', 'حمض أميني وسكر وفوسفات', 'بروتين ودهون وقاعدة', 'إنزيم وفوسفات وحمض أميني'],
+    expAr: 'يُبنى الحمض النووي من قطع صغيرة تُسمّى النيوكليوتيدات. لكل قطعة ثلاثة أجزاء: سكر وفوسفات وقاعدة (A أو T أو C أو G).'
+  },
+  {
+    id: '1.4', del: 1, kalla: 's. 52', niva: 'fakta',
+    q: 'Vad kallas DNA och histoner tillsammans?',
+    opts: ['Nukleotid', 'Triplett', 'Ribosom', 'Kromatin'],
+    correct: 3,
+    expl: 'DNA är rullat kring proteiner som kallas histoner. DNA och histoner tillsammans kallas kromatin. När cellen delar sig packas kromatinet extra tätt, och då syns kromosomerna i mikroskop.',
+    qEnkel: 'DNA är lindat runt små proteiner som heter histoner. Vad heter DNA och histoner tillsammans?',
+    optsEnkel: ['Nukleotid', 'Triplett', 'Ribosom', 'Kromatin'],
+    expEnkel: 'DNA är lindat runt små proteiner som heter histoner, som tråd runt en spole. DNA och histoner tillsammans kallas kromatin.',
+    qAr: 'الحمض النووي ملفوف حول بروتينات صغيرة تُسمّى الهستونات. ماذا يُسمّى الحمض النووي والهستونات معًا؟',
+    optsAr: ['نيوكليوتيد', 'ثلاثية (كودون)', 'ريبوسوم', 'كروماتين'],
+    expAr: 'الحمض النووي ملفوف حول بروتينات صغيرة اسمها الهستونات، مثل خيط حول بكرة. الحمض النووي والهستونات معًا يُسمّيان الكروماتين.'
+  },
+  {
+    id: '1.5', del: 1, kalla: 's. 63', niva: 'fakta',
+    q: 'Vad är en gen?',
+    opts: ['En del av cellkärnan som styr celldelningen', 'En del av DNA med receptet på ett protein', 'En kedja av aminosyror som bygger kroppen', 'En molekyl som transporterar budskap ut ur cellen'],
+    correct: 1,
+    expl: 'En gen är en bit av DNA som fungerar som ett recept på ett protein. Människan har ungefär 20 000 gener. Kedjan av aminosyror är själva proteinet – inte genen.',
+    qEnkel: 'Vad är en gen?',
+    optsEnkel: ['En del av cellen som styr när cellen delar sig', 'En bit av DNA som är ett recept på ett protein', 'En kedja av små byggstenar som bygger kroppen', 'En molekyl som bär meddelanden ut ur cellen'],
+    expEnkel: 'En gen är en bit av DNA. Genen är som ett recept. Receptet talar om hur cellen ska bygga ett protein. Människan har ungefär 20 000 gener.',
+    qAr: 'ما هو الجين؟',
+    optsAr: ['جزء من الخلية يتحكم في وقت انقسامها', 'قطعة من الحمض النووي هي وصفة لصنع بروتين', 'سلسلة من وحدات بناء صغيرة تبني الجسم', 'جزيء يحمل رسائل إلى خارج الخلية'],
+    expAr: 'الجين قطعة من الحمض النووي. الجين يشبه الوصفة. الوصفة تخبر الخلية كيف تصنع بروتينًا. لدى الإنسان نحو 20 000 جين.'
+  },
+  {
+    id: '1.6', del: 1, kalla: 's. 55', niva: 'förklara',
+    q: 'När syns ett recessivt anlag?',
+    opts: ['När personen har ärvt det från en av föräldrarna', 'När personen också har ärvt ett dominant anlag', 'När personen har ärvt det från båda föräldrarna', 'När personen är man och inte kvinna'],
+    correct: 2,
+    expl: 'Du har två kopior av varje gen, en från varje förälder. Ett recessivt anlag (a) syns bara när båda kopiorna är recessiva (aa). Finns ett dominant anlag (A) döljer det det recessiva – personen är då bärare.',
+    qEnkel: 'Ett recessivt anlag är ett "svagt" anlag. När syns det på en person?',
+    optsEnkel: ['När personen har fått det från en av föräldrarna', 'När personen också har fått ett starkt anlag', 'När personen har fått det från båda föräldrarna', 'När personen är en man och inte en kvinna'],
+    expEnkel: 'Du får två kopior av varje gen, en från mamma och en från pappa. Ett svagt (recessivt) anlag syns bara om du fått det från båda. Har du också ett starkt (dominant) anlag, så döljs det svaga.',
+    qAr: 'الصفة المتنحية صفة «ضعيفة». متى تظهر على الشخص؟',
+    optsAr: ['عندما يرثها الشخص من أحد الوالدين', 'عندما يرث الشخص أيضًا صفة قوية', 'عندما يرثها الشخص من كلا الوالدين', 'عندما يكون الشخص رجلًا وليس امرأة'],
+    expAr: 'تحصل على نسختين من كل جين، واحدة من الأم وواحدة من الأب. الصفة الضعيفة (المتنحية) تظهر فقط إذا ورثتها من كليهما. وإذا كانت لديك أيضًا صفة قوية (سائدة) فإنها تُخفي الصفة الضعيفة.'
+  },
+  {
+    id: '1.7', del: 1, kalla: 's. 56, 60', niva: 'tillämpa',
+    q: 'Två personer är bärare av samma recessiva sjukdomsanlag. Hur stor är risken att deras barn blir sjukt?',
+    opts: ['0 %', '25 %', '50 %', '100 %'],
+    correct: 1,
+    expl: 'Båda föräldrarna är Aa. Korsningsschemat Aa × Aa ger AA, Aa, Aa och aa. Bara aa blir sjukt – 1 av 4, alltså 25 %. Två av fyra (50 %) blir bärare precis som föräldrarna.',
+    qEnkel: 'Två föräldrar bär båda på samma dolda sjukdomsanlag. De är själva friska. Hur stor är risken att barnet blir sjukt?',
+    optsEnkel: ['0 %', '25 %', '50 %', '100 %'],
+    expEnkel: 'Varje förälder har ett friskt anlag (A) och ett sjukt anlag (a). Barnet kan få AA, Aa, Aa eller aa. Bara aa blir sjukt. Det är 1 av 4, alltså 25 %.',
+    qAr: 'يحمل كلا الوالدين الصفة المرضية المخفية نفسها، وهما سليمان. ما احتمال أن يمرض الطفل؟',
+    optsAr: ['0 %', '25 %', '50 %', '100 %'],
+    expAr: 'لدى كل والد صفة سليمة (A) وصفة مرضية (a). يمكن أن يحصل الطفل على AA أو Aa أو Aa أو aa. فقط aa يمرض. أي 1 من 4، وهذا يساوي 25 %.'
+  },
+  {
+    id: '1.8', del: 1, kalla: 's. 64, 66', niva: 'fakta',
+    q: 'Var sker transkriptionen hos människan?',
+    opts: ['I cellkärnan', 'I ribosomen', 'I cytoplasman', 'I cellmembranet'],
+    correct: 0,
+    expl: 'Transkription är proteinsyntesens första steg: genen kopieras till mRNA inne i cellkärnan. Sedan lämnar mRNA kärnan genom en por och fäster vid en ribosom, där translationen sker.',
+    qEnkel: 'Cellen bygger proteiner i två steg. Först kopieras genen till mRNA. Var händer det?',
+    optsEnkel: ['Inne i cellkärnan', 'Inne i ribosomen', 'I vätskan i cellen', 'I cellens yttre hinna'],
+    expEnkel: 'Steg 1 kallas transkription. Då kopieras genen till mRNA. Det händer inne i cellkärnan. Sedan åker mRNA ut till en ribosom. Där sker steg 2.',
+    qAr: 'تصنع الخلية البروتينات على خطوتين. أولًا يُنسخ الجين إلى mRNA. أين يحدث ذلك؟',
+    optsAr: ['داخل نواة الخلية', 'داخل الريبوسوم', 'في سائل الخلية', 'في الغشاء الخارجي للخلية'],
+    expAr: 'الخطوة الأولى تُسمّى النسخ. فيها يُنسخ الجين إلى mRNA. يحدث ذلك داخل نواة الخلية. بعد ذلك يخرج mRNA إلى ريبوسوم، وهناك تحدث الخطوة الثانية.'
+  },
+  {
+    id: '1.9', del: 1, kalla: 's. 67', niva: 'förklara',
+    q: 'Vilken uppgift har tRNA i proteinsyntesen?',
+    opts: ['Det kopierar genen i cellkärnan', 'Det klipper upp DNA-molekylen', 'Det skiljer DNA-strängarna åt', 'Det transporterar aminosyror till ribosomen'],
+    correct: 3,
+    expl: 'Vid translationen hämtar tRNA aminosyror och transporterar dem till ribosomen, där de fogas ihop till en kedja som veckas till ett protein. Att kopiera genen gör RNA-polymeras, och att skilja DNA-strängarna åt gör enzymet helikas.',
+    qEnkel: 'tRNA är en liten molekyl i cellen. Vad gör tRNA när cellen bygger ett protein?',
+    optsEnkel: ['Det gör en kopia av genen inne i cellkärnan', 'Det klipper sönder hela DNA-molekylen', 'Det drar isär de två strängarna i DNA', 'Det bär byggstenar (aminosyror) till ribosomen'],
+    expEnkel: 'Ett protein byggs av små byggstenar som heter aminosyror. tRNA hämtar aminosyrorna och bär dem till ribosomen. Där sätts de ihop till en lång kedja. Kedjan blir ett protein.',
+    qAr: 'tRNA جزيء صغير في الخلية. ماذا يفعل tRNA عندما تصنع الخلية بروتينًا؟',
+    optsAr: ['يصنع نسخة من الجين داخل النواة', 'يقطع جزيء الحمض النووي كله', 'يفصل شريطي الحمض النووي عن بعضهما', 'يحمل الأحماض الأمينية إلى الريبوسوم'],
+    expAr: 'يُبنى البروتين من وحدات صغيرة تُسمّى الأحماض الأمينية. يجلب tRNA الأحماض الأمينية ويحملها إلى الريبوسوم. هناك تُربط معًا في سلسلة طويلة، وتصبح السلسلة بروتينًا.'
+  },
+  {
+    id: '1.10', del: 1, kalla: 's. 57', niva: 'analysera',
+    q: 'Varför kan resultat från gentester för hemmabruk vara ett problem?',
+    opts: ['De ändrar personens DNA för all framtid', 'De får inte säljas alls i Sverige', 'De kan vara svåra att tolka och göra människor oroliga', 'De kan bara göras av läkare på sjukhus'],
+    correct: 2,
+    expl: 'Svaret från ett hemtest kan vara svårt att tolka på egen hand, och man kan bli rädd i onödan. Sjukvården kan då belastas i onödan. Kritiker menar att tester av sjukdomsanlag bara ska göras av sjukvården, där man får hjälp att tolka svaret.',
+    qEnkel: 'Man kan köpa gentester och göra dem hemma. Varför kan det vara ett problem?',
+    optsEnkel: ['Testet ändrar ditt DNA för resten av livet', 'Testerna är helt förbjudna att sälja i Sverige', 'Svaret är svårt att förstå och kan göra dig rädd', 'Bara en läkare på ett sjukhus får göra testet'],
+    expEnkel: 'Svaret från ett hemtest kan vara svårt att förstå själv. Du kan bli rädd i onödan. Då kanske du söker vård fast du inte behöver. I vården får du hjälp att förstå svaret.',
+    qAr: 'يمكن شراء اختبارات جينية وإجراؤها في المنزل. لماذا قد يكون ذلك مشكلة؟',
+    optsAr: ['الاختبار يغيّر حمضك النووي لبقية حياتك', 'بيع هذه الاختبارات ممنوع تمامًا في السويد', 'النتيجة صعبة الفهم وقد تجعلك خائفًا', 'الطبيب في المستشفى فقط يُسمح له بإجراء الاختبار'],
+    expAr: 'قد يكون من الصعب فهم نتيجة الاختبار المنزلي وحدك. قد تخاف دون داعٍ، وقد تطلب الرعاية الصحية مع أنك لا تحتاجها. في الرعاية الصحية تحصل على مساعدة لفهم النتيجة.'
+  },
+
+  // ─────────────── Del 2 – Mutationer, evolution och avel ───────────────
+  {
+    id: '2.1', del: 2, kalla: 's. 72', niva: 'fakta',
+    q: 'Vad är en mutation?',
+    opts: ['En förändring i miljön', 'En förändring i DNA', 'En kopia av en kromosom', 'En ny sorts aminosyra'],
+    correct: 1,
+    expl: 'En mutation är en förändring i DNA. Den kan bero på slumpen – till exempel ett "tryckfel" när DNA kopieras – eller på cancerframkallande ämnen, tumörvirus och energirik strålning. En förändring i miljön är ingen mutation.',
+    qEnkel: 'Vad är en mutation?',
+    optsEnkel: ['En ändring i naturen omkring oss', 'En ändring i cellens DNA', 'En extra kopia av en kromosom', 'En ny sorts byggsten i ett protein'],
+    expEnkel: 'En mutation är en ändring i DNA. Det kan vara ett litet fel när DNA kopieras. Det kan också bero på till exempel strålning eller farliga ämnen.',
+    qAr: 'ما هي الطفرة؟',
+    optsAr: ['تغيّر في الطبيعة من حولنا', 'تغيّر في الحمض النووي للخلية', 'نسخة إضافية من كروموسوم', 'نوع جديد من وحدات بناء البروتين'],
+    expAr: 'الطفرة تغيّر في الحمض النووي. قد تكون خطأً صغيرًا عند نسخ الحمض النووي. وقد تحدث أيضًا بسبب الإشعاع أو مواد خطرة مثلًا.'
+  },
+  {
+    id: '2.2', del: 2, kalla: 's. 72', niva: 'fakta',
+    q: 'Vad menas med en punktmutation?',
+    opts: ['Bara en kvävebas förändras', 'Långa DNA-sträckor går förlorade', 'Två kromosomer byter plats', 'En hel gen kopieras dubbelt'],
+    correct: 0,
+    expl: 'Vid en punktmutation ändras bara en enda kvävebas. När långa DNA-sträckor går förlorade, vänds eller byter plats kallas det i stället blockmutation.',
+    qEnkel: 'Vad är en punktmutation?',
+    optsEnkel: ['Bara en enda bas i DNA ändras', 'Långa bitar av DNA försvinner', 'Två kromosomer byter plats', 'En hel gen kopieras två gånger'],
+    expEnkel: 'I en punktmutation ändras bara en bas, alltså en enda bokstav i DNA. Om långa bitar av DNA försvinner eller flyttas kallas det blockmutation.',
+    qAr: 'ما هي الطفرة النقطية؟',
+    optsAr: ['تتغيّر قاعدة واحدة فقط في الحمض النووي', 'تختفي قطع طويلة من الحمض النووي', 'يتبادل كروموسومان مكانيهما', 'يُنسخ جين كامل مرتين'],
+    expAr: 'في الطفرة النقطية تتغيّر قاعدة واحدة فقط، أي حرف واحد في الحمض النووي. وإذا اختفت قطع طويلة من الحمض النووي أو انتقلت فإن ذلك يُسمّى طفرة كتلية.'
+  },
+  {
+    id: '2.3', del: 2, kalla: 's. 72', niva: 'fakta',
+    q: 'Vilken av dessa kan öka risken för mutationer?',
+    opts: ['Låg luftfuktighet', 'Fysisk träning', 'Hög vattenhalt', 'Energirik strålning'],
+    correct: 3,
+    expl: 'Energirik strålning, till exempel UV-strålning, kan skada DNA och ge mutationer. Andra orsaker är cancerframkallande ämnen, tumörvirus och slumpmässiga fel när DNA kopieras.',
+    qEnkel: 'Vad kan göra att det blir fler mutationer?',
+    optsEnkel: ['Torr luft', 'Mycket träning', 'Mycket vatten', 'Stark strålning'],
+    expEnkel: 'Stark strålning kan skada DNA. Ett exempel är UV-strålning från solen. Även farliga ämnen och vissa virus kan ge mutationer.',
+    qAr: 'ما الذي قد يزيد عدد الطفرات؟',
+    optsAr: ['الهواء الجاف', 'الرياضة الكثيرة', 'الماء الكثير', 'الإشعاع القوي'],
+    expAr: 'الإشعاع القوي قد يُتلف الحمض النووي. مثال على ذلك الأشعة فوق البنفسجية من الشمس. كما أن المواد الخطرة وبعض الفيروسات قد تسبب طفرات.'
+  },
+  {
+    id: '2.4', del: 2, kalla: 's. 73', niva: 'förklara',
+    q: 'Varför påverkar en tyst mutation inte proteinet?',
+    opts: ['Mutationen sker alltid i en kroppscell', 'Cellen reparerar alltid skadan direkt', 'Flera baskombinationer kodar för samma aminosyra', 'Mutationen sker bara i könsceller'],
+    correct: 2,
+    expl: 'Flera olika tripletter kodar för samma aminosyra. Ändras till exempel GAA till GAG blir aminosyran ändå densamma, så proteinet påverkas inte. Det kallas en tyst mutation.',
+    qEnkel: 'En tyst mutation ändrar inte proteinet. Varför?',
+    optsEnkel: ['Den händer alltid i en vanlig cell i kroppen', 'Cellen lagar alltid skadan med en gång', 'Flera olika koder i DNA ger samma byggsten', 'Den händer bara i ägg och spermier'],
+    expEnkel: 'Cellen läser DNA tre bokstäver i taget. Flera olika koder betyder samma byggsten. Exempel: GAA och GAG ger samma byggsten. Därför blir proteinet likadant.',
+    qAr: 'الطفرة الصامتة لا تغيّر البروتين. لماذا؟',
+    optsAr: ['تحدث دائمًا في خلية عادية من خلايا الجسم', 'الخلية تُصلح الضرر دائمًا على الفور', 'عدة رموز مختلفة في الحمض النووي تعطي وحدة البناء نفسها', 'تحدث فقط في البويضات والحيوانات المنوية'],
+    expAr: 'تقرأ الخلية الحمض النووي ثلاثة أحرف في كل مرة. عدة رموز مختلفة تعني وحدة البناء نفسها. مثال: GAA وGAG يعطيان وحدة البناء نفسها. لذلك يبقى البروتين كما هو.'
+  },
+  {
+    id: '2.5', del: 2, kalla: 's. 74', niva: 'tillämpa',
+    q: 'Vilken mutation kan föras vidare till barnen?',
+    opts: ['En mutation i en levercell', 'En mutation i en könscell', 'En mutation i en hudcell', 'En mutation i en hjärtcell'],
+    correct: 1,
+    expl: 'Bara mutationer i könsceller (ägg eller spermie) förs vidare. Alla barnets celler kommer från den befruktade äggcellen, så då bär hela barnet på mutationen. Mutationer i lever-, hud- eller hjärtceller är kroppscellsmutationer och ärvs inte.',
+    qEnkel: 'En mutation kan hända i olika celler. I vilken cell kan den ärvas av barnen?',
+    optsEnkel: ['I en cell inne i levern', 'I ett ägg eller en spermie', 'I en cell i huden på kroppen', 'I en cell inne i hjärtat'],
+    expEnkel: 'Barnet växer fram ur ett ägg och en spermie. Om mutationen finns där, får alla barnets celler den. En mutation i levern, huden eller hjärtat ärvs inte.',
+    qAr: 'قد تحدث الطفرة في خلايا مختلفة. في أي خلية يمكن أن يرثها الأطفال؟',
+    optsAr: ['في خلية من الكبد', 'في بويضة أو حيوان منوي', 'في خلية من الجلد', 'في خلية من القلب'],
+    expAr: 'ينمو الطفل من بويضة وحيوان منوي. إذا كانت الطفرة موجودة هناك فإن كل خلايا الطفل تحملها. أما الطفرة في الكبد أو الجلد أو القلب فلا تُورَّث.'
+  },
+  {
+    id: '2.6', del: 2, kalla: 's. 75', niva: 'fakta',
+    q: 'Vad menas med naturligt urval?',
+    opts: ['Människan väljer vilka individer som får ungar', 'Alla individer har lika stor chans att överleva', 'Mutationer uppstår därför att miljön kräver det', 'De bäst anpassade individerna överlever och får fler ungar'],
+    correct: 3,
+    expl: 'Vid naturligt urval är det miljön som "väljer": de individer som är bäst anpassade överlever och får fler ungar, så deras anlag blir vanligare. När människan väljer kallas det selektivt urval. Mutationer uppstår av slumpen, inte för att miljön kräver det.',
+    qEnkel: 'Vad är naturligt urval?',
+    optsEnkel: ['Människor väljer vilka djur som får ungar', 'Alla djur har samma chans att leva vidare', 'Djuren ändras för att naturen kräver det', 'De som passar bäst i naturen får flest ungar'],
+    expEnkel: 'I naturen klarar sig vissa djur bättre än andra. De som passar bäst överlever och får fler ungar. Då blir deras anlag vanligare. Det kallas naturligt urval.',
+    qAr: 'ما هو الانتقاء الطبيعي؟',
+    optsAr: ['البشر يختارون أي الحيوانات تنجب صغارًا', 'كل الحيوانات لها الفرصة نفسها للبقاء', 'الحيوانات تتغيّر لأن الطبيعة تتطلب ذلك', 'الأكثر ملاءمة للطبيعة ينجبون أكثر الصغار'],
+    expAr: 'في الطبيعة تنجح بعض الحيوانات أكثر من غيرها. الأكثر ملاءمة تبقى على قيد الحياة وتنجب صغارًا أكثر. وهكذا تصبح صفاتها أكثر شيوعًا. هذا يُسمّى الانتقاء الطبيعي.'
+  },
+  {
+    id: '2.7', del: 2, kalla: 's. 76', niva: 'tillämpa',
+    q: 'Varför blev björkmätarna i Manchester svarta?',
+    opts: ['Mörka fjärilar syntes dåligt på sotiga trädstammar och överlevde oftare', 'Fjärilarna färgades svarta direkt av luftföroreningarna', 'Fjärilarna anpassade sig medvetet till den nya miljön', 'Ljusa fjärilar flyttade bort från hela regionen'],
+    correct: 0,
+    expl: 'Sot gjorde trädstammarna svarta. Svarta björkmätare, som uppstått genom en mutation, syntes dåligt och överlevde oftare, så anlaget blev vanligare. Fjärilarna färgades inte av sotet och anpassade sig inte medvetet – det var naturligt urval.',
+    qEnkel: 'Fjärilen björkmätare var vit. I staden Manchester blev nästan alla svarta. Varför?',
+    optsEnkel: ['Svarta fjärilar syntes dåligt på sotiga träd och överlevde', 'Smutsen i luften färgade vingarna på fjärilarna svarta', 'Fjärilarna bestämde själva att bli mörkare för att gömma sig', 'De vita fjärilarna flyttade bort till ett helt annat område'],
+    expEnkel: 'Sot gjorde trädstammarna svarta. Svarta fjärilar syntes dåligt där. De överlevde oftare och fick fler ungar. Till slut var nästan alla svarta.',
+    qAr: 'كانت فراشة «عُثّة البتولا» بيضاء. في مدينة مانشستر أصبحت كلها تقريبًا سوداء. لماذا؟',
+    optsAr: ['الفراشات السوداء لم تُرَ جيدًا على الأشجار المغطاة بالسخام فبقيت حية', 'الأوساخ في الهواء لوّنت أجنحة الفراشات بالأسود', 'الفراشات قرّرت بنفسها أن تصبح أغمق لتختبئ', 'الفراشات البيضاء انتقلت إلى منطقة أخرى تمامًا'],
+    expAr: 'السخام جعل جذوع الأشجار سوداء. الفراشات السوداء لم تكن تُرى جيدًا هناك، فبقيت حية أكثر وأنجبت صغارًا أكثر. وفي النهاية أصبحت كلها تقريبًا سوداء.'
+  },
+  {
+    id: '2.8', del: 2, kalla: 's. 79', niva: 'förklara',
+    q: 'Vad skiljer selektivt urval från naturligt urval?',
+    opts: ['Vid selektivt urval väljer miljön vilka som överlever', 'Selektivt urval leder aldrig till evolution', 'Vid selektivt urval väljer människan vilka som får ungar', 'Selektivt urval sker bara hos växter'],
+    correct: 2,
+    expl: 'Vid naturligt urval är det miljön som väljer. Vid selektivt urval väljer människan ut djur och växter med önskade egenskaper som får ungar eller frön. Båda leder till evolution – hunden kommer till exempel från vargen.',
+    qEnkel: 'Vad är skillnaden mellan selektivt urval och naturligt urval?',
+    optsEnkel: ['Vid selektivt urval är det naturen som väljer', 'Selektivt urval kan aldrig ändra en art', 'Vid selektivt urval är det människan som väljer', 'Selektivt urval görs bara med växter'],
+    expEnkel: 'Vid naturligt urval väljer naturen. Vid selektivt urval väljer människan vilka djur eller växter som får ungar eller frön. Hunden kommer från vargen på det sättet.',
+    qAr: 'ما الفرق بين الانتقاء الاصطناعي والانتقاء الطبيعي؟',
+    optsAr: ['في الانتقاء الاصطناعي الطبيعة هي التي تختار', 'الانتقاء الاصطناعي لا يمكنه أبدًا تغيير نوع', 'في الانتقاء الاصطناعي الإنسان هو الذي يختار', 'الانتقاء الاصطناعي يُجرى على النباتات فقط'],
+    expAr: 'في الانتقاء الطبيعي تختار الطبيعة. في الانتقاء الاصطناعي يختار الإنسان أي الحيوانات أو النباتات تنجب صغارًا أو بذورًا. وبهذه الطريقة جاء الكلب من الذئب.'
+  },
+  {
+    id: '2.9', del: 2, kalla: 's. 79', niva: 'fakta',
+    q: 'Vad är insemination?',
+    opts: ['Att flytta embryon till en surrogatmor', 'Konstgjord befruktning där spermier förs in hos honan', 'Att öka mutationstakten hos frön', 'Att spara frön i en genbank'],
+    correct: 1,
+    expl: 'Insemination är konstgjord befruktning: spermier förs in hos honan. Så kan många honor befruktas med spermier från få hanar. Att flytta embryon till en surrogatmor är en annan metod inom aveln.',
+    qEnkel: 'Inom djuravel används insemination. Vad är det?',
+    optsEnkel: ['Man flyttar ett foster till en annan mamma', 'Man för in spermier i honan utan parning', 'Man ökar antalet mutationer i frön', 'Man sparar frön i en bank för frön'],
+    expEnkel: 'Insemination betyder att människan för in spermier i honan. Djuren behöver inte para sig. Då kan en hane bli pappa till många ungar.',
+    qAr: 'يُستخدم التلقيح الاصطناعي في تربية الحيوانات. ما هو؟',
+    optsAr: ['نقل جنين إلى أم أخرى', 'إدخال حيوانات منوية في الأنثى دون تزاوج', 'زيادة عدد الطفرات في البذور', 'حفظ البذور في بنك للبذور'],
+    expAr: 'التلقيح الاصطناعي يعني أن الإنسان يُدخل الحيوانات المنوية في الأنثى. لا تحتاج الحيوانات إلى التزاوج. وهكذا يمكن لذكر واحد أن يصبح أبًا لصغار كثيرين.'
+  },
+  {
+    id: '2.10', del: 2, kalla: 's. 81', niva: 'analysera',
+    q: 'Varför vill man bevara lantraser och gamla kulturväxter?',
+    opts: ['De ger alltid större skördar än nya sorter', 'De kräver mer konstgödsel än nya sorter', 'De har helt samma anlag som nya sorter', 'Ingen vet vilka anlag som behövs i framtiden'],
+    correct: 3,
+    expl: 'Lantraser och gamla kulturväxter är ofta härdiga och kan vara resistenta mot sjukdomar – de är en genetisk råvara. Eftersom ingen vet vilka anlag vi behöver i framtiden sparas de i genbanker, till exempel fröbanken på Svalbard.',
+    qEnkel: 'Varför vill man spara gamla sorters djur och växter?',
+    optsEnkel: ['De ger alltid mer mat än nya sorter', 'De behöver mer gödsel än nya sorter', 'De har precis samma anlag som nya sorter', 'Vi vet inte vilka anlag vi behöver sedan'],
+    expEnkel: 'Gamla sorter är ofta tåliga. Vissa blir inte sjuka så lätt. Vi vet inte vilka egenskaper vi behöver i framtiden. Därför sparas frön i stora banker för frön.',
+    qAr: 'لماذا نريد الحفاظ على الأنواع القديمة من الحيوانات والنباتات؟',
+    optsAr: ['تعطي دائمًا طعامًا أكثر من الأنواع الجديدة', 'تحتاج سمادًا أكثر من الأنواع الجديدة', 'لها الصفات الوراثية نفسها مثل الأنواع الجديدة', 'لا نعرف أي صفات وراثية سنحتاجها لاحقًا'],
+    expAr: 'الأنواع القديمة غالبًا ما تكون قوية التحمّل، وبعضها لا يمرض بسهولة. لا نعرف أي صفات سنحتاجها في المستقبل. لذلك تُحفظ البذور في بنوك بذور كبيرة.'
+  },
+
+  // ─────────────── Del 3 – Genmodifiering och genterapi ───────────────
+  {
+    id: '3.1', del: 3, kalla: 's. 83', niva: 'fakta',
+    q: 'Vad är en transgen organism?',
+    opts: ['En organism som har förlorat en gen genom mutation', 'En organism som har fått DNA från en annan art', 'En organism som har fler kromosomer än normalt', 'En organism som avlats fram genom selektivt urval'],
+    correct: 1,
+    expl: 'En transgen organism har fått DNA från en annan art, till exempel en bakterie med en mänsklig insulingen. Det går eftersom den genetiska koden är lika för allt liv.',
+    qEnkel: 'Vad är en transgen organism?',
+    optsEnkel: ['En levande varelse som har tappat en gen', 'En levande varelse som fått DNA från en annan art', 'En levande varelse med fler kromosomer än vanligt', 'En levande varelse som har tagits fram genom avel'],
+    expEnkel: 'Transgen betyder att man har flyttat DNA från en art till en annan. Exempel: en bakterie som har fått en gen från människan.',
+    qAr: 'ما هو الكائن المحوَّر جينيًا (transgen)؟',
+    optsAr: ['كائن حي فقد جينًا', 'كائن حي حصل على حمض نووي من نوع آخر', 'كائن حي لديه كروموسومات أكثر من المعتاد', 'كائن حي نشأ عن طريق التربية والانتقاء'],
+    expAr: '«محوَّر جينيًا» يعني أننا نقلنا حمضًا نوويًا من نوع من الكائنات إلى نوع آخر. مثال: بكتيريا حصلت على جين من الإنسان.'
+  },
+  {
+    id: '3.2', del: 3, kalla: 's. 83–84', niva: 'förklara',
+    q: 'Varför kan en bakterie tillverka mänskligt insulin?',
+    opts: ['Den genetiska koden är lika för allt liv', 'Bakterier har samma kromosomer som människor', 'Insulin är ett enzym som alla celler har', 'Bakterien lär sig det när den odlas i en bioreaktor'],
+    correct: 0,
+    expl: 'Den genetiska koden är lika för allt liv. En bakterie som fått den mänskliga insulingenen kan därför läsa receptet och tillverka mänskligt insulin. Bakterier har inte människans kromosomer, och insulin är ett hormon.',
+    qEnkel: 'En bakterie kan tillverka samma insulin som människor har. Hur kan det gå?',
+    optsEnkel: ['Allt levande läser DNA på samma sätt', 'Bakterier har samma kromosomer som vi', 'Insulin finns redan i alla celler', 'Bakterien lär sig det när den växer i en tank'],
+    expEnkel: 'Allt levande läser DNA på samma sätt. Därför kan en bakterie läsa en gen från människan. Bakterien följer receptet och gör insulin.',
+    qAr: 'يمكن للبكتيريا أن تصنع الإنسولين نفسه الموجود لدى البشر. كيف يمكن ذلك؟',
+    optsAr: ['كل الكائنات الحية تقرأ الحمض النووي بالطريقة نفسها', 'البكتيريا لها الكروموسومات نفسها مثلنا', 'الإنسولين موجود أصلًا في كل الخلايا', 'البكتيريا تتعلّم ذلك عندما تنمو في خزان'],
+    expAr: 'كل الكائنات الحية تقرأ الحمض النووي بالطريقة نفسها. لذلك تستطيع البكتيريا أن تقرأ جينًا من الإنسان. تتبع البكتيريا الوصفة وتصنع الإنسولين.'
+  },
+  {
+    id: '3.3', del: 3, kalla: 's. 84', niva: 'fakta',
+    q: 'Varför ersattes insulin från grisar och kor?',
+    opts: ['Det var för svagt för att fungera', 'Det innehöll virus som gav cancer', 'Det kunde ge allergiska reaktioner', 'Det var förbjudet i hela världen'],
+    correct: 2,
+    expl: 'Insulin från grisar och kor kunde ge allergiska reaktioner. I dag tillverkas nästan allt insulin av transgena bakterier med den mänskliga insulingenen.',
+    qEnkel: 'Förr tog man insulin från grisar och kor. Varför slutade man med det?',
+    optsEnkel: ['Det var för svagt för att hjälpa', 'Det hade virus som gav cancer', 'Vissa blev allergiska mot det', 'Det blev förbjudet i alla länder'],
+    expEnkel: 'Insulin från grisar och kor kunde göra människor allergiska. Nu gör bakterier nästan allt insulin.',
+    qAr: 'في الماضي كان الإنسولين يؤخذ من الخنازير والأبقار. لماذا توقّفوا عن ذلك؟',
+    optsAr: ['كان ضعيفًا جدًا ولا يساعد', 'كان فيه فيروسات تسبب السرطان', 'بعض الناس أُصيبوا بحساسية منه', 'أصبح ممنوعًا في كل البلدان'],
+    expAr: 'الإنسولين من الخنازير والأبقار قد يسبب حساسية لدى البشر. اليوم تصنع البكتيريا تقريبًا كل الإنسولين.'
+  },
+  {
+    id: '3.4', del: 3, kalla: 's. 86', niva: 'fakta',
+    q: 'Vad är en knockoutmus?',
+    opts: ['En mus som har fått en gen från en manet', 'En mus som är steril av födseln', 'En mus som föds upp för kött', 'En mus där en viss gen har stängts av'],
+    correct: 3,
+    expl: 'I en knockoutmus har forskarna stängt av en viss gen. Då kan de se vad genen gör. Knockoutmöss har använts för att studera bland annat diabetes, fetma och Parkinsons.',
+    qEnkel: 'Forskare använder knockoutmöss. Vad är en knockoutmus?',
+    optsEnkel: ['En mus som fått en gen från en manet', 'En mus som inte kan få några ungar', 'En mus som föds upp för att bli mat', 'En mus där en gen har stängts av'],
+    expEnkel: 'I en knockoutmus har forskarna stängt av en gen. Sedan tittar de på vad som händer med musen. Då kan de förstå vad genen gör i kroppen.',
+    qAr: 'يستخدم الباحثون فئران «النوك آوت» (knockout). ما هو فأر النوك آوت؟',
+    optsAr: ['فأر حصل على جين من قنديل البحر', 'فأر لا يستطيع أن ينجب صغارًا', 'فأر يُربّى ليصبح طعامًا', 'فأر تمّ إيقاف أحد جيناته'],
+    expAr: 'في هذا الفأر أوقف الباحثون جينًا واحدًا. ثم يراقبون ما يحدث للفأر. وهكذا يفهمون ماذا يفعل هذا الجين في الجسم.'
+  },
+  {
+    id: '3.5', del: 3, kalla: 's. 88', niva: 'fakta',
+    q: 'Vilka grödor dominerar odlingen av GM-grödor i världen?',
+    opts: ['Vete, havre, korn och råg', 'Soja, majs, bomull och raps', 'Potatis, morot, lök och kål', 'Ris, bönor, ärtor och linser'],
+    correct: 1,
+    expl: 'De vanligaste GM-grödorna är soja, majs, bomull och raps. GM-grödor odlas mest i USA – i EU odlas nästan inga.',
+    qEnkel: 'Vissa växter har fått ändrade gener. De kallas GM-grödor. Vilka odlas mest i världen?',
+    optsEnkel: ['Vete, havre, korn och råg', 'Soja, majs, bomull och raps', 'Potatis, morot, lök och kål', 'Ris, bönor, ärtor och linser'],
+    expEnkel: 'De vanligaste GM-grödorna är soja, majs, bomull och raps. De odlas mest i USA. I EU odlas nästan inga.',
+    qAr: 'بعض النباتات عُدّلت جيناتها، وتُسمّى المحاصيل المعدّلة وراثيًا. أيها يُزرع أكثر في العالم؟',
+    optsAr: ['القمح والشوفان والشعير والجاودار', 'الصويا والذرة والقطن واللفت الزيتي', 'البطاطس والجزر والبصل والملفوف', 'الأرز والفاصولياء والبازلاء والعدس'],
+    expAr: 'أكثر المحاصيل المعدّلة وراثيًا شيوعًا هي الصويا والذرة والقطن واللفت الزيتي. وتُزرع غالبًا في الولايات المتحدة. وفي الاتحاد الأوروبي لا يُزرع منها تقريبًا شيء.'
+  },
+  {
+    id: '3.6', del: 3, kalla: 's. 88', niva: 'fakta',
+    q: 'Vad betyder herbicidtolerans (HT)?',
+    opts: ['Växten tål ett visst ogräsmedel', 'Växten gör själv ett insektsgift', 'Växten klarar torka och värme', 'Växten kan inte få mutationer'],
+    correct: 0,
+    expl: 'HT betyder att växten tål ett visst ogräsmedel (herbicid). Bonden kan bespruta åkern så att ogräset dör men grödan klarar sig. En växt som gör eget insektsgift har i stället insektsresistens (IR).',
+    qEnkel: 'Vissa GM-växter har HT. Vad betyder det?',
+    optsEnkel: ['Växten tål ett gift mot ogräs', 'Växten gör ett eget gift mot insekter', 'Växten klarar torka och värme', 'Växten kan inte få några mutationer'],
+    expEnkel: 'HT betyder att växten tål ett gift mot ogräs. Bonden kan spruta giftet på åkern. Ogräset dör men växten klarar sig.',
+    qAr: 'بعض النباتات المعدّلة وراثيًا لديها خاصية HT. ماذا يعني ذلك؟',
+    optsAr: ['النبات يتحمّل مبيدًا للأعشاب الضارة', 'النبات يصنع بنفسه سمًّا ضد الحشرات', 'النبات يتحمّل الجفاف والحرارة', 'النبات لا يمكن أن تحدث فيه أي طفرات'],
+    expAr: 'HT تعني أن النبات يتحمّل مبيدًا للأعشاب الضارة. يستطيع المزارع رشّ المبيد على الحقل، فتموت الأعشاب الضارة ويبقى النبات سليمًا.'
+  },
+  {
+    id: '3.7', del: 3, kalla: 's. 90', niva: 'förklara',
+    q: 'Vad har odling av HT-grödor lett till?',
+    opts: ['Minskad användning av ogräsmedel', 'Oförändrad användning av ogräsmedel', 'Ökad användning av ogräsmedel', 'Att alla ogräsmedel har förbjudits'],
+    correct: 2,
+    expl: 'HT-grödor tål ogräsmedel, och odlingen av dem har gett ökad användning av ogräsmedel. För IR-grödor är det tvärtom – de har gett minskad användning av insektsmedel. Det är lätt att blanda ihop de två.',
+    qEnkel: 'Bönder odlar HT-växter. Hur har det påverkat hur mycket gift mot ogräs de använder?',
+    optsEnkel: ['De använder mindre gift mot ogräs', 'De använder lika mycket gift som förut', 'De använder mer gift mot ogräs', 'Alla gifter mot ogräs har förbjudits'],
+    expEnkel: 'HT-växter tål gift mot ogräs. Därför används mer gift mot ogräs. Med IR-växter är det tvärtom: där används mindre gift mot insekter.',
+    qAr: 'يزرع المزارعون نباتات HT. كيف أثّر ذلك على كمية مبيد الأعشاب التي يستخدمونها؟',
+    optsAr: ['يستخدمون مبيدًا أقل للأعشاب', 'يستخدمون الكمية نفسها كما في السابق', 'يستخدمون مبيدًا أكثر للأعشاب', 'مُنعت كل مبيدات الأعشاب'],
+    expAr: 'نباتات HT تتحمّل مبيد الأعشاب، لذلك يُستخدم منه أكثر. أما مع نباتات IR فالأمر عكس ذلك: يُستخدم فيها مبيد حشرات أقل.'
+  },
+  {
+    id: '3.8', del: 3, kalla: 's. 93', niva: 'fakta',
+    q: 'Vad kan gensaxen CRISPR/Cas9 göra?',
+    opts: ['Kopiera hela kromosomer utan några fel', 'Användas enbart på bakterier i laboratorier', 'Ersätta behovet av gener i cellen helt', 'Söka upp och klippa ut bestämda DNA-sekvenser'],
+    correct: 3,
+    expl: 'Gensaxen CRISPR/Cas9 kan söka upp en bestämd plats i DNA och klippa just där – ungefär som "sök och ersätt" i ett textdokument. Den upptäcktes 2012 av Charpentier och Doudna, som fick Nobelpriset i kemi 2020.',
+    qEnkel: 'Gensaxen CRISPR/Cas9 är ett verktyg. Vad kan den göra?',
+    optsEnkel: ['Kopiera hela kromosomer helt utan fel', 'Bara användas på bakterier i ett labb', 'Göra så att cellen inte behöver gener', 'Hitta och klippa på ett visst ställe i DNA'],
+    expEnkel: 'Gensaxen letar upp ett bestämt ställe i DNA och klipper där. Det liknar "sök och ersätt" i ett dokument på datorn.',
+    qAr: 'المقص الجيني CRISPR/Cas9 أداة. ماذا يمكنه أن يفعل؟',
+    optsAr: ['ينسخ كروموسومات كاملة دون أي خطأ', 'يُستخدم فقط على البكتيريا في المختبر', 'يجعل الخلية لا تحتاج إلى جينات', 'يجد مكانًا محددًا في الحمض النووي ويقصّه'],
+    expAr: 'يبحث المقص الجيني عن مكان محدد في الحمض النووي ويقصّ هناك. وهذا يشبه خاصية «البحث والاستبدال» في مستند على الحاسوب.'
+  },
+  {
+    id: '3.9', del: 3, kalla: 's. 92', niva: 'analysera',
+    q: 'Varför var de första genterapiförsöken med virus problematiska?',
+    opts: ['Virusen kunde inte ta sig in i cellerna', 'Forskarna kunde inte styra var genen hamnade', 'Genen förstördes direkt i patienternas blod', 'Patienterna fick för få fungerande gener'],
+    correct: 1,
+    expl: 'I de första försöken fördes den friska genen in med virus, men forskarna kunde inte styra var i DNA genen hamnade. Det gav allvarliga följder: i början av 1990-talet dog en patient, och på 2000-talet fick flera behandlade barn leukemi.',
+    qEnkel: 'De första försöken att ge sjuka människor nya gener gjordes med virus. Varför blev det problem?',
+    optsEnkel: ['Viruset kom inte in i cellerna', 'Forskarna kunde inte styra var genen hamnade', 'Genen gick sönder direkt i blodet', 'Patienterna fick för få friska gener'],
+    expEnkel: 'Viruset bar in en frisk gen i cellerna. Men forskarna kunde inte bestämma var i DNA genen hamnade. Det gjorde vissa patienter mycket sjuka.',
+    qAr: 'أولى محاولات إعطاء المرضى جينات جديدة تمّت باستخدام الفيروسات. لماذا حدثت مشكلات؟',
+    optsAr: ['الفيروس لم يستطع دخول الخلايا', 'الباحثون لم يستطيعوا التحكم في مكان الجين', 'الجين تلف فورًا في الدم', 'المرضى حصلوا على جينات سليمة قليلة جدًا'],
+    expAr: 'حمل الفيروس جينًا سليمًا إلى داخل الخلايا. لكن الباحثين لم يستطيعوا تحديد المكان الذي يصل إليه الجين في الحمض النووي. وهذا جعل بعض المرضى مرضى جدًا.'
+  },
+  {
+    id: '3.10', del: 3, kalla: 's. 94', niva: 'analysera',
+    q: 'Vad menas med det sluttande planet?',
+    opts: ['Behandling av svåra sjukdomar kan öppna dörren för att designa barn', 'GM-grödor ger lägre skörd för varje år som går', 'Gensaxen klipper alltid fel på DNA-molekylen', 'Forskare får aldrig testa nya metoder på djur'],
+    correct: 0,
+    expl: 'Det sluttande planet betyder att ett första steg kan leda vidare: vi kanske börjar med att behandla svåra sjukdomar och slutar med att designa barn. Det väcker frågan var gränsen ska gå – och hur urval av egenskaper passar med att alla människor har lika värde.',
+    qEnkel: 'När man pratar om gensaxen nämns "det sluttande planet". Vad menas?',
+    optsEnkel: ['Först botar vi sjukdomar, sedan väljer vi barns egenskaper', 'GM-växter ger lite mindre skörd för varje år som går', 'Gensaxen klipper alltid på fel ställe i vårt DNA', 'Forskare får aldrig någonsin testa nya metoder på djur'],
+    expEnkel: 'Det sluttande planet betyder att ett litet steg kan leda till nästa. Först använder vi gensaxen mot svåra sjukdomar. Sedan kanske vi börjar välja hur barn ska se ut eller vara.',
+    qAr: 'عند الحديث عن المقص الجيني يُذكر «المنحدر الزلق». ماذا يعني ذلك؟',
+    optsAr: ['نبدأ بعلاج الأمراض ثم نختار صفات الأطفال', 'النباتات المعدّلة وراثيًا تعطي محصولًا أقل كل عام', 'المقص الجيني يقصّ دائمًا في المكان الخطأ', 'لا يُسمح للباحثين أبدًا بتجربة طرق جديدة على الحيوانات'],
+    expAr: '«المنحدر الزلق» يعني أن خطوة صغيرة قد تقود إلى الخطوة التالية. في البداية نستخدم المقص الجيني ضد الأمراض الخطيرة. ثم قد نبدأ في اختيار شكل الأطفال أو صفاتهم.'
+  }
+];

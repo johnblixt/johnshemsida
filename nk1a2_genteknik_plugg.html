@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pluggmaterial – Genteknik | Naturkunskap 1a2</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --p:  #4ade80;
+    --pl: #f0fdf4;
+    --pd: #14532d;
+    --p-deep: #15803d;
+    --p-badge: #dcfce7;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: 'EB Garamond', serif; font-size: 1.08rem; background:#f8fafc; color:#1e293b; margin:0; }
+  h1,h2,h3,h4,.fredoka { font-family: 'Fredoka', sans-serif; }
+
+  .wrap { max-width: 74rem; margin: 0 auto; padding: 1.6rem 1.25rem 4rem; }
+
+  /* ── Tillbaka ── */
+  .back {
+    display:inline-flex; align-items:center; gap:.35rem; font-family:'Fredoka',sans-serif;
+    font-size:.88rem; color:#94a3b8; text-decoration:none; transition:color .15s;
+  }
+  .back:hover { color: var(--p-deep); }
+
+  /* ── Header ── */
+  .head { text-align:center; margin: 1.8rem 0 1.6rem; }
+  .eyebrow {
+    font-family:'Fredoka',sans-serif; font-size:.72rem; font-weight:600; text-transform:uppercase;
+    letter-spacing:.22em; color:var(--p-deep); margin:0 0 .5rem;
+  }
+  .head h1 {
+    font-size: clamp(2rem, 6vw, 2.9rem); font-weight:700; font-style:italic;
+    color:#0f172a; margin:0; line-height:1.1;
+  }
+  .rule { height:.25rem; width:5rem; border-radius:999px; background:var(--p); margin:.9rem auto 1.1rem; }
+  .lead { font-size:1rem; color:#64748b; max-width:34rem; margin:0 auto; line-height:1.7; }
+  .lead strong { color:var(--p-deep); font-weight:700; }
+
+  /* ── Toggle ── */
+  .pill-toggle {
+    display:flex; gap:.3rem; justify-content:center; background:#fff; border:1px solid #e2e8f0;
+    border-radius:999px; padding:.3rem; width:fit-content; margin:0 auto .6rem;
+    box-shadow:0 1px 3px rgba(0,0,0,.05);
+  }
+  .pill-toggle button {
+    padding: .5rem 1.4rem; border-radius: 999px; font-family:'Fredoka',sans-serif;
+    font-weight: 600; font-size: .95rem; transition: all .2s; border: none; cursor: pointer;
+  }
+  .pill-toggle button.active   { background: var(--p); color: var(--pd); box-shadow:0 2px 8px rgba(74,222,128,.4); }
+  .pill-toggle button.inactive { background: transparent; color: #94a3b8; }
+  .mode-note {
+    text-align:center; font-family:'Fredoka',sans-serif; font-size:.82rem; color:#94a3b8;
+    margin:0 0 1rem;
+  }
+
+  /* ── Färgkoder: ämnesord = gult, bindeord = grönt ── */
+  .amne  { background:#fef08a; color:#713f12; font-weight:700; padding:0 .2em; border-radius:.3em;
+           -webkit-box-decoration-break:clone; box-decoration-break:clone; }
+  .binde { background:#bbf7d0; color:#14532d; font-weight:700; padding:0 .2em; border-radius:.3em;
+           -webkit-box-decoration-break:clone; box-decoration-break:clone; }
+  .legend {
+    display:flex; flex-wrap:wrap; gap:.5rem 1.2rem; justify-content:center; align-items:center;
+    font-family:'Fredoka',sans-serif; font-size:.85rem; color:#64748b; margin:0 auto 1.8rem;
+  }
+  .legend .amne, .legend .binde { font-weight:600; }
+
+  /* ── Layout: sticky innehållsförteckning + innehåll ── */
+  .layout { display:grid; grid-template-columns: 16.5rem minmax(0,1fr); gap:2rem; align-items:start; }
+  .toc {
+    position:sticky; top:1rem; max-height:calc(100vh - 2rem); overflow-y:auto;
+    background:#fff; border:1px solid #e2e8f0; border-radius:1.2rem;
+    padding:.9rem .8rem; box-shadow:0 1px 3px rgba(0,0,0,.05);
+  }
+  .toc-h {
+    font-family:'Fredoka',sans-serif; font-size:.7rem; font-weight:700; text-transform:uppercase;
+    letter-spacing:.14em; color:var(--p-deep); margin:.2rem .3rem .5rem;
+  }
+  .toc-del {
+    font-family:'Fredoka',sans-serif; font-size:.74rem; font-weight:600; color:#64748b;
+    margin:.8rem .4rem .25rem; line-height:1.35;
+  }
+  .toc-del:first-child { margin-top:.2rem; }
+  .toc-btn { display:none; }
+  .toc-list a {
+    display:flex; align-items:center; gap:.6rem; padding:.45rem .6rem; border-radius:.75rem;
+    color:#334155; text-decoration:none; transition:background .15s; line-height:1.3; font-size:.98rem;
+  }
+  .toc-list a:hover { background: var(--pl); }
+  .toc-list a.active { background: var(--p-badge); color:var(--pd); font-weight:700; }
+  .toc-n {
+    flex:none; min-width:2.1rem; height:1.6rem; padding:0 .35rem; border-radius:999px; background:var(--p-badge); color:var(--pd);
+    font-family:'Fredoka',sans-serif; font-weight:700; font-size:.78rem;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .toc-list a.active .toc-n { background:var(--p); }
+  .toc-t { flex:1; }
+
+  /* ── Delar och avsnitt ── */
+  .del-head {
+    font-size:1.05rem; font-weight:700; text-transform:uppercase; letter-spacing:.12em;
+    color:var(--p-deep); margin:2.6rem 0 1rem; padding-bottom:.4rem; border-bottom:2px solid var(--p-badge);
+    scroll-margin-top:1rem;
+  }
+  .del-head:first-child { margin-top:0; }
+  .sec { margin-bottom: 2.4rem; scroll-margin-top: 1rem; }
+  .sec-head {
+    display:flex; align-items:center; gap:.9rem; flex-wrap:wrap;
+    background:#fff; border-left:8px solid var(--p);
+    border-radius:1rem; padding:1.1rem 1.2rem; box-shadow:0 1px 3px rgba(0,0,0,.06);
+  }
+  .sec-nr {
+    flex:none; background:var(--p-badge); color:var(--pd); font-family:'Fredoka',sans-serif;
+    font-weight:700; font-size:.95rem; border-radius:999px; padding:.2rem .65rem;
+  }
+  .sec-title { flex:1; font-size:1.45rem; font-weight:600; color:#0f172a; line-height:1.25; margin:0; }
+  .sec-sida { flex:none; font-family:'Fredoka',sans-serif; font-size:.8rem; color:#64748b;
+              background:#f1f5f9; border-radius:999px; padding:.2rem .7rem; }
+
+  /* ── Brödtext ── */
+  .block { padding: .2rem .3rem 0; }
+  .block p.ll { margin:1rem 0 .5rem; line-height:1.95; color:#334155; font-size:1.12rem; }
+
+  .fdj {
+    background:#fff; border:1px solid var(--p-badge); border-left:4px solid var(--p);
+    border-radius:0 1rem 1rem 0; padding:.9rem 1.1rem .7rem; margin:1.2rem 0;
+  }
+  .fdj-h { font-family:'Fredoka',sans-serif; font-weight:700; color:var(--p-deep); font-size:.85rem;
+           text-transform:uppercase; letter-spacing:.1em; margin-bottom:.3rem; }
+  .fdj ul { list-style:none; padding:0; margin:0; }
+  .fdj li { position:relative; padding:.3rem 0 .3rem 1.5rem; color:#334155; line-height:1.8; }
+  .fdj li::before { content:'→'; position:absolute; left:0; color:var(--p-deep); font-weight:700; }
+
+  /* ── Inbyggda diagram (SVG) ── */
+  .diagram { margin:1.4rem 0; background:#fff; border:1px solid #e2e8f0; border-radius:1.2rem; padding:1rem 1rem .8rem; }
+  .diagram svg { display:block; width:100%; height:auto; max-width:30rem; margin:0 auto; }
+  .diagram svg text { font-family:'Fredoka',sans-serif; }
+  .diagram figcaption { font-size:.95rem; color:#475569; line-height:1.6; margin-top:.6rem; text-align:center; }
+  .diagram figcaption b { font-family:'Fredoka',sans-serif; color:var(--pd); }
+
+  .to-top { text-align:center; margin:1rem 0 .2rem; }
+  .to-top a { font-family:'Fredoka',sans-serif; font-size:.8rem; color:#94a3b8; text-decoration:none; }
+  .to-top a:hover { color:var(--p-deep); }
+
+  /* ── Öva vidare ── */
+  .next {
+    background:#fff; border-top:8px solid var(--p); border-radius:1.5rem;
+    padding:1.4rem 1.4rem 1.5rem; margin-top:2.4rem; box-shadow:0 1px 3px rgba(0,0,0,.06);
+  }
+  .next h2 { font-size:1.3rem; font-weight:600; margin:0 0 .3rem; color:#0f172a; }
+  .next p { margin:0 0 1rem; color:#64748b; line-height:1.6; }
+  .next-btn {
+    display:flex; align-items:center; gap:.6rem; padding:.85rem 1rem; border-radius:1rem;
+    font-family:'Fredoka',sans-serif; font-weight:600; text-decoration:none; transition:transform .15s;
+    background:var(--p); color:var(--pd);
+  }
+  .next-btn:hover { transform:translateY(-2px); }
+
+  /* ── Footer ── */
+  .foot { text-align:center; margin-top:3rem; color:#94a3b8; font-size:.85rem; line-height:1.7; }
+  .foot .by { font-style:italic; }
+
+  /* ── Mobil ── */
+  @media (max-width: 767px) {
+    body { font-size: 1rem; }
+    .wrap { padding: 1.2rem .9rem 3rem; }
+    .layout { display:block; }
+    .toc { position:sticky; top:0; z-index:30; max-height:none; overflow:visible;
+           border-radius:0 0 1rem 1rem; margin:0 -.9rem 1.4rem; padding:.5rem .9rem;
+           border-top:none; border-left:none; border-right:none; }
+    .toc-h { display:none; }
+    .toc-btn { display:flex; width:100%; align-items:center; justify-content:space-between; gap:.6rem;
+               background:var(--p-badge); color:var(--pd); border:none; border-radius:.8rem; padding:.6rem .9rem;
+               font-family:'Fredoka',sans-serif; font-weight:600; font-size:.95rem; cursor:pointer; text-align:left; }
+    .toc-btn-t { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .toc-list { display:none; max-height:60vh; overflow-y:auto; padding-top:.4rem; }
+    .toc.open .toc-list { display:block; }
+    .sec, .del-head { scroll-margin-top: 4.2rem; }
+    .sec-title { font-size: 1.2rem; }
+    .sec-head { padding: .85rem .9rem; gap:.5rem .65rem; border-left-width:6px; }
+    .block p.ll { font-size:1.05rem; line-height:1.85; }
+    .pill-toggle button { padding:.45rem 1.05rem; font-size:.88rem; }
+    .fdj { padding:.8rem .85rem .6rem; }
+    .diagram { padding:.7rem .4rem .6rem; }
+    .legend { font-size:.8rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; scroll-behavior:auto !important; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<!-- ════════════════════════════════════════════════════════════
+     ALL TEXT LIGGER I DELAR: { titel, avsnitt[] }
+     Avsnitt: { id, nr, rubrik, sida, lattlast, fordjupning[], diagram[] }
+       lattlast    = texten under **Lättläst:** i källan, ordagrant
+       fordjupning = punktlistan under **Fördjupning:** i källan, ordagrant
+       diagram     = nycklar i DIAGRAMS (inbyggd SVG), visas i båda lägena
+     Färgkod i texten: **ord** = ämnesord (gult), __ord__ = bindeord (grönt).
+     Markeringarna ändrar aldrig ordalydelsen.
+     ════════════════════════════════════════════════════════════ -->
+<script>
+/* Källa: nk1a2_genteknik_kallmaterial.md, DEL B – Pluggmaterial.
+   Sidhänvisningarna gäller läroboken. Inga fakta utöver källan. */
+var PAGE = {
+  eyebrow: "Naturkunskap 1a2 · Genteknik",
+  titel: "Genteknik",
+  storeKey: "nk1a2_genteknik_plugg_mode",
+  kalla: "Pluggmaterial Genteknik, Naturkunskap 1a2. Sidhänvisningarna gäller läroboken (s. 51–97)."
+};
+
+var DELAR = [
+
+/* ══════════ DEL 1 ══════════ */
+{
+  titel: "Del 1 – DNA, gener och proteiner",
+  avsnitt: [
+  {
+    id: "dna-och-kromosomer", nr: "1.1", rubrik: "DNA och kromosomer", sida: "s. 51–54",
+    lattlast: "**DNA** är cellens ritning. Det är en **dubbelspiral**, som en vriden repstege. DNA har fyra **kvävebaser**: A, T, C och G. A passar bara ihop med T. C passar bara ihop med G. DNA är packat i **kromosomer**. Människan har 46 kromosomer i 23 par. Hälften kommer från mamma och hälften från pappa. **Kroppsceller** har 46 kromosomer. **Könsceller** (spermie och ägg) har 23.",
+    fordjupning: [
+      "En **nukleotid** består av tre delar: socker (deoxiribos), fosfat och en kvävebas (s. 51).",
+      "Ordningen på kvävebaserna är unik för varje person, __utom__ för enäggstvillingar. Människor är i genomsnitt 99,5 % lika. Mellan människa och schimpans skiljer 1 av 50 kvävebaser (s. 51).",
+      "DNA är rullat kring proteiner som kallas **histoner**. DNA och histoner kallas **kromatin**. Kromatinet är tätast packat __när__ cellen delar sig. __Då__ syns kromosomerna i ljusmikroskop efter infärgning (s. 52).",
+      "De första 22 kromosomparen är **autosomala**. Par 23 är **könskromosomer**: XX ger vanligen kvinna, XY ger vanligen man (s. 52).",
+      "**Kromosomavvikelse**: för många __eller__ för få kromosomer. Downs syndrom beror på tre kopior av kromosom 21 (s. 53).",
+      "Kroppsceller delar sig genom vanlig celldelning (**mitos**). Könsceller bildas genom reduktionsdelning (**meios**). Vid befruktningen blir 23 + 23 = 46 (s. 54)."
+    ],
+    diagram: ["dna", "kromosomer"]
+  },
+  {
+    id: "gener-och-arftlighet", nr: "1.2", rubrik: "Gener och ärftlighet", sida: "s. 54–56, 59–60",
+    lattlast: "En **gen** är en del av DNA. Genen är ett recept på ett **protein**. Du har två kopior av varje gen. En kommer från mamma och en från pappa. Ett **dominant** anlag syns __när__ du har det från en förälder. Ett **recessivt** anlag syns bara __när__ du har det från båda. En **bärare** har ett recessivt sjukdomsanlag __men__ är oftast frisk. __Om__ båda föräldrarna är bärare är risken 25 % att barnet blir sjukt.",
+    fordjupning: [
+      "**Monogena** egenskaper styrs av en gen (t.ex. blodgrupp). **Polygena** egenskaper styrs av flera gener (t.ex. kroppslängd, hudfärg) (s. 54).",
+      "Ett dominant anlag skrivs med stor bokstav (A). Ett recessivt anlag skrivs med liten bokstav (a). Exempel: brun päls (A) och albino (a) hos kaniner (s. 55).",
+      "Generna ger ramarna. **Miljön** kan förstärka __eller__ försvaga egenskaperna. **Epigenetik** studerar hur livsstil och miljö påverkar vilka gener som är aktiva (s. 55).",
+      "Monogena sjukdomar beror på en gen. **Cystisk fibros** (CF) är recessiv. I Sverige bär ungefär 1 av 35 på anlaget (s. 56).",
+      "**Multifaktoriella** sjukdomar styrs av flera gener tillsammans med miljön, t.ex. hjärt-kärlsjukdom, högt blodtryck och typ 2-diabetes (s. 56).",
+      "**Mendel** (1860-talet) korsade ärtplantor och upptäckte dominanta och recessiva anlag (s. 59). Ett **korsningsschema** Aa × Aa ger AA, Aa, Aa och aa: 3 av 4 bruna och 1 av 4 vit (s. 60)."
+    ],
+    diagram: ["korsning"]
+  },
+  {
+    id: "proteinsyntesen", nr: "1.3", rubrik: "Proteinsyntesen", sida: "s. 62–67",
+    lattlast: "Gener är recept på **proteiner**. Proteiner bygger kroppen. Några proteiner är **enzymer**. Några är **hormoner**, __till exempel__ insulin. **Proteinsyntesen** har två steg. Steg 1 är **transkription**. Genen kopieras till **mRNA** i **cellkärnan**. __Sedan__ lämnar mRNA cellkärnan och fäster vid en **ribosom**. Steg 2 är **translation**. **tRNA** hämtar **aminosyror**. Aminosyrorna sätts ihop till en kedja. Kedjan veckas och blir ett protein.",
+    fordjupning: [
+      "**Replikation**: före en celldelning kopieras DNA. Enzymet **helikas** skiljer strängarna åt. Enzymet **DNA-polymeras** kopplar fast nukleotider. Det blir två identiska DNA-molekyler (s. 63).",
+      "Människan har ungefär 20 000 gener. Bara en del av DNA innehåller gener (s. 63).",
+      "mRNA är enkelsträngat och har kvävebasen U (**uracil**) __i stället för__ T (s. 64).",
+      "Transkription: enzymet **RNA-polymeras** öppnar DNA vid en gen. RNA-nukleotider fäster. mRNA lossnar och går ut genom en por i cellkärnan (s. 66).",
+      "Translation: tRNA transporterar aminosyror till ribosomen. Det finns 20 sorters aminosyror (s. 67).",
+      "Den **genetiska koden**: en **triplett** (tre baser) på mRNA motsvarar en aminosyra __eller__ en stoppsignal. AUG är startsekvens. UAA, UAG och UGA är stoppsekvenser. Koden är nästan lika i alla levande organismer (s. 68)."
+    ],
+    diagram: ["protein"]
+  },
+  {
+    id: "gentester", nr: "1.4", rubrik: "Gentester", sida: "s. 56–57",
+    lattlast: "Sjukvården gör **gentester**. De bekräftar en misstänkt sjukdom. De ger __också__ råd till dem som vill ha barn. Företag säljer __även__ gentester för hemmabruk. Argument för: man kan anpassa sin livsstil efter **riskgener**. Argument emot: resultaten är svåra att tolka själv. Man kan bli rädd. Sjukvården kan belastas i onödan.",
+    fordjupning: [
+      "**Hemtester** används för släktforskning och för att hitta riskgener för multifaktoriella sjukdomar. Kritiker menar att tester av sjukdomsanlag bara ska göras av sjukvården, __där__ man får hjälp att tolka svaret (s. 57).",
+      "**Fosterdiagnostik** är alla undersökningar av fostret under graviditeten, t.ex. ultraljud och blodprov. Den gravida bestämmer själv vad hon vill göra med svaret (s. 57).",
+      "Vid **provrörsbefruktning** kan embryon med anlag för allvarlig sjukdom väljas bort. I Sverige är det bara tillåtet __om__ föräldrarna bär på anlag för allvarliga ärftliga sjukdomar (s. 57)."
+    ],
+    diagram: []
+  }
+  ]
+},
+
+/* ══════════ DEL 2 ══════════ */
+{
+  titel: "Del 2 – Mutationer, evolution och avel",
+  avsnitt: [
+  {
+    id: "mutationer", nr: "2.1", rubrik: "Mutationer", sida: "s. 72–73",
+    lattlast: "En **mutation** är en förändring i DNA. Ibland ändras bara en kvävebas. Det kallas **punktmutation**. Mutationer kan bero på slumpen, __till exempel__ ett tryckfel __när__ DNA kopieras. De kan __också__ bero på cancerframkallande ämnen, tumörvirus och **energirik strålning**. Cellen kan ofta reparera skadan. Ibland blir det ingen följd. Ibland ändras proteinet. En **tyst mutation** ändrar inte proteinet.",
+    fordjupning: [
+      "**Blockmutation**: långa DNA-sträckor går förlorade, vänds __eller__ byter plats (s. 72).",
+      "Fel vid kopiering inträffar ungefär på en av tio miljoner kvävebaser. **Reparationsenzymer** letar upp och byter ut skadat DNA (s. 72).",
+      "Rökning orsakar ungefär 8 000 cancerfall per år i Sverige. Andra riskfaktorer: hög alkoholkonsumtion, ohälsosam kost och UV-strålning (s. 72).",
+      "Det mesta av vårt DNA saknar funktion __eller__ har annan funktion än proteinsyntes. __Då__ händer oftast ingenting (s. 73).",
+      "Tyst mutation: GAA ändras till GAG. Båda kodar för samma aminosyra (s. 73)."
+    ],
+    diagram: []
+  },
+  {
+    id: "kroppsceller-och-konsceller", nr: "2.2", rubrik: "Kroppsceller och könsceller", sida: "s. 74",
+    lattlast: "En mutation i en **kroppscell** förs inte vidare till barnen. Cellen kan skadas och dö. Ibland blir det **cancer**. En mutation i en **könscell** förs vidare till barnen. Alla barnets celler får mutationen. Bara mutationer i könsceller kan ge **evolution**.",
+    fordjupning: [
+      "Alla kroppens celler utvecklas från en och samma cell, den **befruktade äggcellen**. __Därför__ bär hela barnet på mutationen __om__ den fanns i spermien __eller__ ägget (s. 74).",
+      "Mutationer är oftast till nackdel. Ibland ger de en **evolutionär fördel** (s. 74)."
+    ],
+    diagram: []
+  },
+  {
+    id: "naturligt-urval", nr: "2.3", rubrik: "Naturligt urval och evolution", sida: "s. 75–76",
+    lattlast: "Mutationer skapar **variation**. Individer som är bäst **anpassade** till miljön överlever och får fler ungar. Det kallas **naturligt urval**. Bra anlag blir vanligare. **Populationen** förändras över tid. Det kallas **evolution**. Exempel: **Björkmätare** är fjärilar som var vita. Sot gjorde trädstammarna svarta. Svarta fjärilar syntes dåligt och överlevde oftare. __Till slut__ var nästan alla svarta.",
+    fordjupning: [
+      "Evolution betyder att de ärftliga egenskaperna hos en population förändras över tid (s. 75).",
+      "Kaniner i snö: vit päls ger **kamouflage**, __så__ vita kaniner överlever oftare och för anlaget vidare (s. 75).",
+      "Björkmätare: en helsvart björkmätare med mutation observerades 1848. I slutet av 1800-talet var alla björkmätare i regionen svarta. __När__ sotet försvann på 1900-talet gynnades ljusa individer igen (s. 76)."
+    ],
+    diagram: ["bjorkmatare"]
+  },
+  {
+    id: "foradling-och-avel", nr: "2.4", rubrik: "Förädling och avel", sida: "s. 78–81",
+    lattlast: "Människan väljer ut djur och växter med bra egenskaper. De får ungar __eller__ frön. Det kallas **selektivt urval**. Hunden kommer från vargen. Vid **naturligt urval** väljer miljön. Vid selektivt urval väljer människan. Båda ger evolution. **Avel** kan ge hälsoproblem. Gamla **lantraser** och **kulturväxter** bevaras i **genbanker**, __för__ vi vet inte vilka anlag vi behöver i framtiden.",
+    fordjupning: [
+      "Inom **växtförädling** kan man öka mutationstakten med mutagena kemikalier __eller__ energirik strålning (s. 79).",
+      "**Insemination**: konstgjord befruktning av många honor med spermier från få hanar. Embryon kan __också__ flyttas till **surrogatmödrar** (s. 79).",
+      "Mjölkproduktionen har i vissa länder ökat från omkring 2 000 till över 10 000 liter per ko och år (s. 78).",
+      "Belgisk blå har en mutation som hämmar muskeltillväxten. Kalvarna kan behöva födas med kejsarsnitt. Vissa trubbnosiga hundraser får hälsoproblem (s. 80).",
+      "Lantraser är ofta härdiga. Äldre sorter kan vara resistenta mot sjukdomar och är en **genetisk råvara**. Fröbanken på Svalbard har över 860 000 fröprover (s. 81)."
+    ],
+    diagram: []
+  }
+  ]
+},
+
+/* ══════════ DEL 3 ══════════ */
+{
+  titel: "Del 3 – Genmodifiering och genterapi",
+  avsnitt: [
+  {
+    id: "genmodifiering-och-bakterier", nr: "3.1", rubrik: "Genmodifiering och bakterier", sida: "s. 83–85",
+    lattlast: "Att **genmodifiera** är att ändra en organisms DNA med flit. Den **genetiska koden** är lika för allt liv. __Därför__ kan gener flyttas mellan arter. En organism med DNA från en annan art är **transgen**. Bakterier med en mänsklig **insulingen** tillverkar mänskligt **insulin**. Förr kom insulin från grisar och kor och kunde ge allergi. Nu görs nästan allt insulin av transgena bakterier.",
+    fordjupning: [
+      "Genmodifiering gör att vi inte bara kan använda egenskaper som uppstått av slumpen. Man kan stänga av en gen med en **riktad mutation**, byta ut gener __eller__ föra in främmande DNA (s. 83).",
+      "Insulin i sex steg: **plasmid** klipps upp, insulingen isoleras, genen klistras in, bakterien odlas i en **bioreaktor**, insulinet utvinns, insulinet är klart (s. 84).",
+      "År 1982 förklarade USA:s läkemedelsmyndighet att insulin från transgena bakterier är säkert (s. 84).",
+      "Mänskligt **tillväxthormon** tillverkas __också__ av transgena bakterier. Förr togs det från avlidna människor, __vilket__ var dyrt och gav risk för smitta (s. 85)."
+    ],
+    diagram: ["insulin"]
+  },
+  {
+    id: "genmodifierade-djur", nr: "3.2", rubrik: "Genmodifierade djur", sida: "s. 86, 89",
+    lattlast: "Nästan inga **genmodifierade djur** används i maten. Undantaget är en lax som får säljas i USA och Kanada sedan 2016. Djur används mest i forskning, ofta möss. En **knockoutmus** är en mus __där__ en gen är avstängd. __Då__ kan forskarna se vad genen gör.",
+    fordjupning: [
+      "Djur genmodifieras genom att man sprutar in DNA i ett befruktat ägg, __eller__ med **gensaxen** (s. 86).",
+      "Knockoutmöss har använts för att studera hjärt-kärlsjukdomar, diabetes, fetma och Parkinsons (s. 86).",
+      "**GM-laxen** växer snabbare och behöver mindre foder. Oron är att den rymmer och fortplantar sig med vild lax. __Därför__ är de flesta laxarna **sterila** (s. 89)."
+    ],
+    diagram: []
+  },
+  {
+    id: "gm-grodor", nr: "3.3", rubrik: "GM-grödor", sida: "s. 87–88, 90",
+    lattlast: "**GM-grödor** är växter med främmande DNA. De vanligaste är soja, majs, bomull och raps. De har oftast **herbicidtolerans** (HT) __eller__ **insektsresistens** (IR). HT betyder att växten tål ogräsmedel. IR betyder att växten gör eget insektsgift. Skördarna blir större. HT ger mer ogräsmedel. IR ger mindre insektsmedel. GM-grödor odlas mest i USA. I EU odlas nästan inga.",
+    fordjupning: [
+      "År 2019 odlades GM-grödor på mer än 13 % av världens odlingsareal (s. 87).",
+      "IR-växter har fått en gen från en bakterie som gör ett insektsgift (s. 88).",
+      "Skördarna har ökat med 9 % för HT och 25 % för IR. Det betyder effektivare **markanvändning** (s. 90).",
+      "Risker som diskuteras: **genspridning** till vilda växter (bedöms ge litet 'superogräs'-hot), makt hos få stora företag, **patent** som tvingar bönder att köpa nya frön varje år (s. 90).",
+      "Det finns inget som tyder på att någon har blivit sjuk av att äta GM-grödor (s. 90)."
+    ],
+    diagram: []
+  },
+  {
+    id: "genterapi-och-gensaxen", nr: "3.4", rubrik: "Genterapi och gensaxen", sida: "s. 92–97",
+    lattlast: "**Genterapi** betyder att man byter en defekt gen mot en fungerande. Det kan förhindra svåra sjukdomar. De första försöken med virus gick dåligt. Forskarna kunde inte styra var genen hamnade. År 2012 upptäcktes **gensaxen** **CRISPR/Cas9**. Den klipper DNA på en bestämd plats. __Om__ den används på könsceller blir förändringen **ärftlig**. Riskerna är stora. **Det sluttande planet** betyder att vi kanske börjar med svåra sjukdomar och slutar med att designa barn.",
+    fordjupning: [
+      "**Sicklecellanemi**: en kvävebas A har ersatts av T. Det ändrar röda blodkroppars form (s. 92).",
+      "Tidiga försök i 1990-talets början: en patient dog. På 2000-talet botades barn utan immunförsvar, __men__ flera fick leukemi (s. 92).",
+      "Gensaxen: Charpentier och Doudna 2012, Nobelpriset i kemi 2020. Liknar 'sök och ersätt' i ett textdokument (s. 93, 96).",
+      "Frågor: var ska gränsen gå för vilka sjukdomar som ska behandlas? Uppfattningen om sjukt och friskt skiftar mellan tider och kulturer (s. 94).",
+      "Urval av egenskaper passar inte med att alla människor har lika värde. Toleransen mot 'oönskade' egenskaper kan minska (s. 94).",
+      "**Flödesschemat** (s. 95): använder vi tekniken och den fungerar finns risker som **kapprustning** och **ökade klyftor**. Använder vi den inte föds fortfarande barn med svåra sjukdomar.",
+      "Fördjupning: 2018 meddelade He Jiankui i Kina att han genmodifierat två embryon. Det var otillåtet och kritiserades hårt (s. 97)."
+    ],
+    diagram: ["flodesschema"]
+  }
+  ]
+}
+];
+</script>
+
+<script>
+  /* Smart tillbaka-navigering: history.back() inom samma domän, annars fallback.
+     Fallback: portalens Nak 1a2-del (index.html#kurs=nk_1a2). */
+  function smartBack(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    try {
+      if (document.referrer &&
+          new URL(document.referrer).hostname === window.location.hostname) {
+        history.back();
+        return;
+      }
+    } catch (err) {}
+    window.location.href = 'index.html#kurs=nk_1a2'; // portalens Nak 1a2-del
+  }
+</script>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const ALLA = DELAR.flatMap(d => d.avsnitt);
+
+/* ---------- Textformatering: **ord** -> ämnesord (gult), __ord__ -> bindeord (grönt) ---------- */
+function fmt(text) {
+  const parts = String(text).split(/(\*\*.+?\*\*|__.+?__)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**') && part.length > 4)
+      return <mark key={i} className="amne">{part.slice(2, -2)}</mark>;
+    if (part.startsWith('__') && part.endsWith('__') && part.length > 4)
+      return <mark key={i} className="binde">{part.slice(2, -2)}</mark>;
+    return <React.Fragment key={i}>{part}</React.Fragment>;
+  });
+}
+
+/* ===================== INBYGGDA DIAGRAM (SVG) ===================== */
+
+const C = {
+  ax: '#334155', mute: '#64748b', line: '#cbd5e1',
+  green: '#16a34a', greenL: '#dcfce7', dark: '#14532d',
+  A: '#dc2626', T: '#2563eb', Cb: '#d97706', G: '#7c3aed',
+  mamma: '#db2777', pappa: '#2563eb',
+  red: '#dc2626', redL: '#fee2e2'
+};
+
+/* Flera textrader i SVG. */
+function Lines({ x, y, lines, size = 18, lh = 1.25, anchor = 'start', weight = 500, fill = C.ax }) {
+  return (
+    <text x={x} y={y} fontSize={size} textAnchor={anchor} fontWeight={weight} fill={fill}>
+      {lines.map((t, i) => <tspan key={i} x={x} dy={i === 0 ? 0 : size * lh}>{t}</tspan>)}
+    </text>
+  );
+}
+
+function Arrow({ id, color }) {
+  return (
+    <marker id={id} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill={color} />
+    </marker>
+  );
+}
+
+/* (1) DNA-stegen med baspar A–T och C–G */
+function DnaSVG() {
+  const par = [['A','T'],['C','G'],['G','C'],['T','A'],['A','T'],['G','C']];
+  const col = { A: C.A, T: C.T, C: C.Cb, G: C.G };
+  return (
+    <svg viewBox="0 0 440 470" role="img" aria-labelledby="dna-t dna-d">
+      <title id="dna-t">DNA-stegen med baspar</title>
+      <desc id="dna-d">DNA ritat som en repstege. Stegpinnarna är baspar. A sitter alltid ihop med T och C sitter alltid ihop med G.</desc>
+      <text x="220" y="30" fontSize="20" fontWeight="700" textAnchor="middle" fill={C.dark}>DNA – en vriden repstege</text>
+      <rect x="92" y="52" width="16" height="320" rx="8" fill="#94a3b8" />
+      <rect x="332" y="52" width="16" height="320" rx="8" fill="#94a3b8" />
+      {par.map(([l, r], i) => {
+        const y = 66 + i * 50;
+        return (
+          <g key={i}>
+            <rect x="108" y={y} width="112" height="36" rx="6" fill={col[l]} />
+            <rect x="220" y={y} width="112" height="36" rx="6" fill={col[r]} />
+            <line x1="220" y1={y} x2="220" y2={y + 36} stroke="#fff" strokeWidth="3" strokeDasharray="4 3" />
+            <text x="164" y={y + 26} fontSize="22" fontWeight="700" textAnchor="middle" fill="#fff">{l}</text>
+            <text x="276" y={y + 26} fontSize="22" fontWeight="700" textAnchor="middle" fill="#fff">{r}</text>
+          </g>
+        );
+      })}
+      <g>
+        <rect x="40" y="398" width="34" height="28" rx="5" fill={C.A} />
+        <text x="57" y="419" fontSize="18" fontWeight="700" textAnchor="middle" fill="#fff">A</text>
+        <rect x="74" y="398" width="34" height="28" rx="5" fill={C.T} />
+        <text x="91" y="419" fontSize="18" fontWeight="700" textAnchor="middle" fill="#fff">T</text>
+        <text x="118" y="419" fontSize="17" fill={C.ax}>A passar bara ihop med T</text>
+        <rect x="40" y="434" width="34" height="28" rx="5" fill={C.Cb} />
+        <text x="57" y="455" fontSize="18" fontWeight="700" textAnchor="middle" fill="#fff">C</text>
+        <rect x="74" y="434" width="34" height="28" rx="5" fill={C.G} />
+        <text x="91" y="455" fontSize="18" fontWeight="700" textAnchor="middle" fill="#fff">G</text>
+        <text x="118" y="455" fontSize="17" fill={C.ax}>C passar bara ihop med G</text>
+      </g>
+    </svg>
+  );
+}
+
+/* (2) Kromosomer: 46 = 23 par */
+function KromosomerSVG() {
+  const pairs = Array.from({ length: 23 }, (_, i) => i + 1);
+  return (
+    <svg viewBox="0 0 440 440" role="img" aria-labelledby="kr-t kr-d">
+      <title id="kr-t">46 kromosomer i 23 par</title>
+      <desc id="kr-d">Människans 46 kromosomer ritade som 23 par. I varje par kommer en kromosom från mamma och en från pappa. Par 23 är könskromosomerna. Kroppsceller har 46 kromosomer och könsceller har 23.</desc>
+      <text x="220" y="30" fontSize="20" fontWeight="700" textAnchor="middle" fill={C.dark}>46 kromosomer = 23 par</text>
+      {pairs.map((n, i) => {
+        const cx = 42 + (i % 6) * 71, y = 52 + Math.floor(i / 6) * 76;
+        const sex = n === 23;
+        return (
+          <g key={n}>
+            {sex && <rect x={cx - 30} y={y - 6} width="60" height="74" rx="10" fill="none" stroke={C.green} strokeWidth="2.5" strokeDasharray="5 4" />}
+            <rect x={cx - 14} y={y} width="12" height="46" rx="6" fill={C.mamma} />
+            <rect x={cx + 2} y={y} width="12" height="46" rx="6" fill={C.pappa} />
+            <text x={cx} y={y + 64} fontSize="15" fontWeight="600" textAnchor="middle" fill={sex ? C.green : C.mute}>{n}</text>
+          </g>
+        );
+      })}
+      <Lines x={364} y={296} lines={['par 23 =', 'köns-', 'kromo-', 'somer']} size={14} fill={C.green} weight={600} />
+      <rect x="40" y="356" width="18" height="18" rx="4" fill={C.mamma} />
+      <text x="66" y="371" fontSize="17" fill={C.ax}>från mamma (23)</text>
+      <rect x="240" y="356" width="18" height="18" rx="4" fill={C.pappa} />
+      <text x="266" y="371" fontSize="17" fill={C.ax}>från pappa (23)</text>
+      <rect x="40" y="390" width="360" height="38" rx="10" fill={C.greenL} />
+      <text x="220" y="415" fontSize="17" fontWeight="600" textAnchor="middle" fill={C.dark}>Kroppscell: 46   ·   Könscell: 23</text>
+    </svg>
+  );
+}
+
+/* (3) Korsningsschema Aa × Aa */
+function KorsningSVG() {
+  const brun = '#92400e';
+  const cell = (x, y, g, b) => (
+    <g key={g + x + y}>
+      <rect x={x} y={y} width="120" height="86" rx="10" fill={b ? brun : '#fff'} stroke={b ? brun : C.ax} strokeWidth="2.5" />
+      <text x={x + 60} y={y + 40} fontSize="26" fontWeight="700" textAnchor="middle" fill={b ? '#fff' : C.ax}>{g}</text>
+      <text x={x + 60} y={y + 66} fontSize="16" textAnchor="middle" fill={b ? '#fde68a' : C.mute}>{b ? 'brun' : 'vit'}</text>
+    </g>
+  );
+  return (
+    <svg viewBox="0 0 440 420" role="img" aria-labelledby="ko-t ko-d">
+      <title id="ko-t">Korsningsschema Aa gånger Aa</title>
+      <desc id="ko-d">Två föräldrar med anlagen Aa. Stort A är brun päls och är dominant. Litet a är albino och är recessivt. Barnen kan få AA, Aa, Aa eller aa. Tre av fyra blir bruna och en av fyra blir vit.</desc>
+      <text x="220" y="30" fontSize="20" fontWeight="700" textAnchor="middle" fill={C.dark}>Korsning Aa × Aa</text>
+      <text x="280" y="66" fontSize="16" textAnchor="middle" fill={C.mute}>Förälder 1: Aa</text>
+      <text x="220" y="96" fontSize="24" fontWeight="700" textAnchor="middle" fill={C.ax}>A</text>
+      <text x="340" y="96" fontSize="24" fontWeight="700" textAnchor="middle" fill={C.ax}>a</text>
+      <text x="58" y="210" fontSize="16" textAnchor="middle" fill={C.mute} transform="rotate(-90 58 210)">Förälder 2: Aa</text>
+      <text x="128" y="160" fontSize="24" fontWeight="700" textAnchor="middle" fill={C.ax}>A</text>
+      <text x="128" y="246" fontSize="24" fontWeight="700" textAnchor="middle" fill={C.ax}>a</text>
+      {cell(160, 110, 'AA', true)}
+      {cell(282, 110, 'Aa', true)}
+      {cell(160, 198, 'Aa', true)}
+      {cell(282, 198, 'aa', false)}
+      <text x="220" y="320" fontSize="16" textAnchor="middle" fill={C.ax}>A = brun päls (dominant) · a = albino (recessiv)</text>
+      <rect x="40" y="340" width="360" height="62" rx="10" fill={C.greenL} />
+      <text x="220" y="366" fontSize="18" fontWeight="700" textAnchor="middle" fill={C.dark}>3 av 4 bruna · 1 av 4 vit</text>
+      <text x="220" y="390" fontSize="15" textAnchor="middle" fill={C.dark}>Båda föräldrarna är bärare → risken är 25 %</text>
+    </svg>
+  );
+}
+
+/* (4) Proteinsyntesen: cellkärna → mRNA → ribosom → protein */
+function ProteinSVG() {
+  const beads = ['#f87171', '#fbbf24', '#34d399', '#60a5fa', '#a78bfa', '#f472b6'];
+  return (
+    <svg viewBox="0 0 440 600" role="img" aria-labelledby="pr-t pr-d">
+      <title id="pr-t">Proteinsyntesen i två steg</title>
+      <desc id="pr-d">Steg 1, transkription: i cellkärnan kopieras genen till mRNA. mRNA lämnar cellkärnan och fäster vid en ribosom. Steg 2, translation: tRNA hämtar aminosyror. Aminosyrorna sätts ihop till en kedja. Kedjan veckas och blir ett protein.</desc>
+      <defs><Arrow id="pr-a" color={C.ax} /></defs>
+      <rect x="14" y="14" width="412" height="186" rx="24" fill="#eff6ff" stroke="#3b82f6" strokeWidth="2.5" strokeDasharray="7 5" />
+      <text x="34" y="44" fontSize="17" fontWeight="700" fill="#1d4ed8">CELLKÄRNA</text>
+      <text x="406" y="44" fontSize="16" fontWeight="700" textAnchor="end" fill={C.green}>Steg 1 · Transkription</text>
+      <rect x="34" y="66" width="150" height="96" rx="14" fill="#ede9fe" stroke={C.G} strokeWidth="2" />
+      <text x="109" y="108" fontSize="22" fontWeight="700" textAnchor="middle" fill={C.G}>Gen</text>
+      <text x="109" y="134" fontSize="15" textAnchor="middle" fill={C.ax}>(en del av DNA)</text>
+      <line x1="188" y1="114" x2="246" y2="114" stroke={C.ax} strokeWidth="3" markerEnd="url(#pr-a)" />
+      <text x="217" y="102" fontSize="13" textAnchor="middle" fill={C.mute}>kopieras</text>
+      <rect x="252" y="66" width="154" height="96" rx="14" fill="#fef3c7" stroke={C.Cb} strokeWidth="2" />
+      <text x="329" y="120" fontSize="24" fontWeight="700" textAnchor="middle" fill="#92400e">mRNA</text>
+      <line x1="329" y1="164" x2="329" y2="246" stroke={C.ax} strokeWidth="3" markerEnd="url(#pr-a)" />
+      <Lines x={316} y={216} lines={['mRNA lämnar', 'cellkärnan']} size={15} anchor="end" fill={C.mute} />
+      <rect x="168" y="252" width="258" height="104" rx="18" fill={C.greenL} stroke={C.green} strokeWidth="2" />
+      <text x="297" y="292" fontSize="24" fontWeight="700" textAnchor="middle" fill={C.dark}>Ribosom</text>
+      <text x="297" y="322" fontSize="15" textAnchor="middle" fill={C.ax}>tRNA hämtar aminosyror</text>
+      <Lines x={24} y={292} lines={['Steg 2 ·', 'Translation']} size={16} weight={700} fill={C.green} />
+      <line x1="297" y1="358" x2="297" y2="400" stroke={C.ax} strokeWidth="3" markerEnd="url(#pr-a)" />
+      <rect x="40" y="406" width="360" height="80" rx="14" fill="#fff" stroke={C.line} strokeWidth="2" />
+      {beads.map((c, i) => (
+        <g key={i}>
+          {i > 0 && <line x1={110 + (i - 1) * 44} y1="434" x2={110 + i * 44} y2="434" stroke={C.ax} strokeWidth="3" />}
+          <circle cx={110 + i * 44} cy="434" r="15" fill={c} stroke={C.ax} strokeWidth="1.5" />
+        </g>
+      ))}
+      <text x="220" y="474" fontSize="15" textAnchor="middle" fill={C.ax}>Aminosyrorna sätts ihop till en kedja</text>
+      <line x1="220" y1="488" x2="220" y2="522" stroke={C.ax} strokeWidth="3" markerEnd="url(#pr-a)" />
+      <text x="232" y="510" fontSize="14" fill={C.mute}>kedjan veckas</text>
+      <rect x="120" y="528" width="200" height="60" rx="30" fill={C.green} />
+      <text x="220" y="566" fontSize="24" fontWeight="700" textAnchor="middle" fill="#fff">Protein</text>
+    </svg>
+  );
+}
+
+/* (5) Naturligt urval: björkmätare */
+function Moth({ x, y, dark }) {
+  const f = dark ? '#111827' : '#ffffff', s = dark ? '#111827' : '#64748b';
+  return (
+    <g transform={`translate(${x} ${y})`}>
+      <ellipse cx="-8" cy="0" rx="10" ry="6.5" fill={f} stroke={s} strokeWidth="1.5" transform="rotate(-25 -8 0)" />
+      <ellipse cx="8" cy="0" rx="10" ry="6.5" fill={f} stroke={s} strokeWidth="1.5" transform="rotate(25 8 0)" />
+      <ellipse cx="0" cy="1" rx="2.6" ry="7" fill={dark ? '#374151' : '#94a3b8'} />
+    </g>
+  );
+}
+function BjorkmatareSVG() {
+  const light = '#e7e5e4', soot = '#3f3f46';
+  const rows = [
+    { trunk: light, moths: [0, 0, 0, 0], text: ['Björkmätarna var vita.'] },
+    { trunk: soot,  moths: [0, 0, 1, 0], text: ['Sot gör stammarna svarta.', '1848: en helsvart björkmätare', 'med mutation observeras.'] },
+    { trunk: soot,  moths: [1, 1, 1, 1], text: ['Svarta syns dåligt och', 'överlever oftare. Slutet av', '1800-talet: alla svarta.'] },
+    { trunk: light, moths: [1, 0, 1, 0], text: ['1900-talet: sotet försvinner.', 'Ljusa gynnas igen.'] }
+  ];
+  const pos = [[50, 24], [94, 40], [52, 66], [96, 80]];
+  return (
+    <svg viewBox="0 0 440 500" role="img" aria-labelledby="bj-t bj-d">
+      <title id="bj-t">Naturligt urval hos björkmätare</title>
+      <desc id="bj-d">Fyra bilder i tidsordning. Först är björkmätarna vita på ljusa trädstammar. Sot gör stammarna svarta och 1848 ses en helsvart björkmätare med mutation. Svarta fjärilar syns dåligt på sotiga stammar och överlever oftare, i slutet av 1800-talet är alla svarta. På 1900-talet försvinner sotet och ljusa fjärilar gynnas igen.</desc>
+      <defs><Arrow id="bj-a" color={C.mute} /></defs>
+      <text x="220" y="28" fontSize="20" fontWeight="700" textAnchor="middle" fill={C.dark}>Björkmätare – naturligt urval</text>
+      {rows.map((r, i) => {
+        const y = 48 + i * 112;
+        return (
+          <g key={i}>
+            <rect x="24" y={y} width="96" height="96" rx="12" fill={r.trunk} />
+            {r.moths.map((d, k) => <Moth key={k} x={pos[k][0]} y={y + pos[k][1]} dark={d === 1} />)}
+            <Lines x={140} y={y + 34 - (r.text.length - 1) * 9} lines={r.text} size={17} />
+            {i < 3 && <line x1="72" y1={y + 98} x2="72" y2={y + 110} stroke={C.mute} strokeWidth="2.5" markerEnd="url(#bj-a)" />}
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+/* (6) Insulin i sex steg */
+function InsulinSVG() {
+  const steg = ['Plasmid klipps upp', 'Insulingen isoleras', 'Genen klistras in', 'Bakterien odlas i en bioreaktor', 'Insulinet utvinns', 'Insulinet är klart'];
+  const icon = (i, cx, cy) => {
+    if (i === 0) return <path d={`M${cx + 14} ${cy - 10} A18 18 0 1 1 ${cx + 14} ${cy + 10}`} fill="none" stroke={C.T} strokeWidth="5" strokeLinecap="round" />;
+    if (i === 1) return <rect x={cx - 16} y={cy - 5} width="32" height="10" rx="5" fill={C.red} />;
+    if (i === 2) return (
+      <g>
+        <circle cx={cx} cy={cy} r="18" fill="none" stroke={C.T} strokeWidth="5" />
+        <path d={`M${cx + 14} ${cy - 11} A18 18 0 0 1 ${cx + 14} ${cy + 11}`} fill="none" stroke={C.red} strokeWidth="6" />
+      </g>
+    );
+    if (i === 3) return (
+      <g>
+        <rect x={cx - 15} y={cy - 18} width="30" height="36" rx="6" fill="#e0f2fe" stroke="#0369a1" strokeWidth="2.5" />
+        <rect x={cx - 15} y={cy - 2} width="30" height="20" rx="6" fill="#7dd3fc" />
+        <circle cx={cx - 5} cy={cy + 6} r="2.5" fill="#0369a1" /><circle cx={cx + 6} cy={cy + 10} r="2.5" fill="#0369a1" />
+      </g>
+    );
+    if (i === 4) return <path d={`M${cx} ${cy - 18} C${cx + 14} ${cy}, ${cx + 14} ${cy + 16}, ${cx} ${cy + 16} C${cx - 14} ${cy + 16}, ${cx - 14} ${cy}, ${cx} ${cy - 18} z`} fill="#fbbf24" stroke="#b45309" strokeWidth="2" />;
+    return <path d={`M${cx - 14} ${cy} l9 10 l19 -20`} fill="none" stroke={C.green} strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />;
+  };
+  return (
+    <svg viewBox="0 0 440 540" role="img" aria-labelledby="in-t in-d">
+      <title id="in-t">Insulin i sex steg</title>
+      <desc id="in-d">Så tillverkar bakterier mänskligt insulin. Steg 1: plasmid klipps upp. Steg 2: insulingen isoleras. Steg 3: genen klistras in. Steg 4: bakterien odlas i en bioreaktor. Steg 5: insulinet utvinns. Steg 6: insulinet är klart.</desc>
+      <defs><Arrow id="in-a" color={C.mute} /></defs>
+      <text x="220" y="28" fontSize="20" fontWeight="700" textAnchor="middle" fill={C.dark}>Insulin i sex steg</text>
+      {steg.map((t, i) => {
+        const y = 46 + i * 82;
+        const last = i === steg.length - 1;
+        return (
+          <g key={i}>
+            <rect x="20" y={y} width="400" height="62" rx="14" fill={last ? C.greenL : '#fff'} stroke={last ? C.green : C.line} strokeWidth="2" />
+            <circle cx="52" cy={y + 31} r="18" fill={C.green} />
+            <text x="52" y={y + 38} fontSize="19" fontWeight="700" textAnchor="middle" fill="#fff">{i + 1}</text>
+            <text x="82" y={y + 38} fontSize="18" fontWeight="600" fill={C.ax}>{t}</text>
+            {icon(i, 384, y + 31)}
+            {!last && <line x1="52" y1={y + 64} x2="52" y2={y + 80} stroke={C.mute} strokeWidth="2.5" markerEnd="url(#in-a)" />}
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+/* (7) Flödesschema för genterapi (s. 95) */
+function FlodesschemaSVG() {
+  return (
+    <svg viewBox="0 0 440 430" role="img" aria-labelledby="fl-t fl-d">
+      <title id="fl-t">Flödesschema för genterapi</title>
+      <desc id="fl-d">Flödesschemat på sidan 95. Om vi använder tekniken och den fungerar finns risker som kapprustning och ökade klyftor. Om vi inte använder den föds fortfarande barn med svåra sjukdomar.</desc>
+      <defs><Arrow id="fl-a" color={C.ax} /></defs>
+      <rect x="90" y="16" width="260" height="62" rx="16" fill={C.greenL} stroke={C.green} strokeWidth="2.5" />
+      <text x="220" y="54" fontSize="19" fontWeight="700" textAnchor="middle" fill={C.dark}>Använder vi tekniken?</text>
+      <path d="M160 80 L110 128" stroke={C.ax} strokeWidth="3" fill="none" markerEnd="url(#fl-a)" />
+      <path d="M280 80 L330 128" stroke={C.ax} strokeWidth="3" fill="none" markerEnd="url(#fl-a)" />
+      <text x="116" y="102" fontSize="17" fontWeight="700" textAnchor="end" fill={C.green}>Ja</text>
+      <text x="324" y="102" fontSize="17" fontWeight="700" fill={C.red}>Nej</text>
+      <rect x="16" y="134" width="196" height="62" rx="14" fill="#fff" stroke={C.line} strokeWidth="2" />
+      <text x="114" y="171" fontSize="17" fontWeight="600" textAnchor="middle" fill={C.ax}>… och den fungerar</text>
+      <line x1="114" y1="198" x2="114" y2="240" stroke={C.ax} strokeWidth="3" markerEnd="url(#fl-a)" />
+      <rect x="16" y="246" width="196" height="150" rx="14" fill={C.redL} stroke={C.red} strokeWidth="2" />
+      <text x="114" y="280" fontSize="17" fontWeight="700" textAnchor="middle" fill={C.red}>Risker:</text>
+      <Lines x={114} y={316} lines={['kapprustning', 'ökade klyftor']} size={18} lh={1.6} anchor="middle" weight={600} />
+      <rect x="228" y="134" width="196" height="150" rx="14" fill={C.redL} stroke={C.red} strokeWidth="2" />
+      <Lines x={326} y={176} lines={['Barn med svåra', 'sjukdomar föds', 'fortfarande']} size={18} lh={1.4} anchor="middle" weight={600} />
+    </svg>
+  );
+}
+
+const DIAGRAMS = {
+  dna:          { Comp: DnaSVG,          cap: '**DNA** är en dubbelspiral, som en vriden repstege. A passar bara ihop med T. C passar bara ihop med G.' },
+  kromosomer:   { Comp: KromosomerSVG,   cap: 'Människan har **46 kromosomer i 23 par**. Hälften kommer från mamma och hälften från pappa. Kroppsceller har 46 kromosomer, könsceller har 23.' },
+  korsning:     { Comp: KorsningSVG,     cap: '**Korsningsschema Aa × Aa** (s. 60): AA, Aa, Aa och aa. 3 av 4 bruna och 1 av 4 vit. Om båda föräldrarna är bärare är risken 25 % att barnet blir sjukt.' },
+  protein:      { Comp: ProteinSVG,      cap: '**Proteinsyntesen** i två steg: transkription i cellkärnan, translation vid ribosomen.' },
+  bjorkmatare:  { Comp: BjorkmatareSVG,  cap: '**Naturligt urval** hos björkmätare (s. 76). Svarta fjärilar syntes dåligt och överlevde oftare.' },
+  insulin:      { Comp: InsulinSVG,      cap: '**Insulin i sex steg** (s. 84). Nu görs nästan allt insulin av transgena bakterier.' },
+  flodesschema: { Comp: FlodesschemaSVG, cap: '**Flödesschemat** (s. 95): använder vi tekniken och den fungerar finns risker som kapprustning och ökade klyftor. Använder vi den inte föds fortfarande barn med svåra sjukdomar.' }
+};
+
+function Diagram({ id }) {
+  const d = DIAGRAMS[id];
+  if (!d) return null;
+  return (
+    <figure className="diagram">
+      <d.Comp />
+      <figcaption>{fmt(d.cap)}</figcaption>
+    </figure>
+  );
+}
+
+/* ===================== AVSNITT ===================== */
+
+function Section({ sec, mode }) {
+  return (
+    <section id={sec.id} className="sec">
+      <div className="sec-head">
+        <span className="sec-nr">{sec.nr}</span>
+        <h3 className="sec-title">{sec.rubrik}</h3>
+        <span className="sec-sida">{sec.sida}</span>
+      </div>
+
+      <div className="block">
+        <p className="ll">{fmt(sec.lattlast)}</p>
+
+        {sec.diagram.map(id => <Diagram key={id} id={id} />)}
+
+        {mode === 'fordjupning' && (
+          <div className="fdj">
+            <div className="fdj-h">🔬 Fördjupning</div>
+            <ul>{sec.fordjupning.map((t, i) => <li key={i}>{fmt(t)}</li>)}</ul>
+          </div>
+        )}
+
+        <div className="to-top">
+          <a href="#toppen" onClick={(e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}>↑ Till toppen</a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ===================== APP ===================== */
+
+function App() {
+  /* Läget sparas bara i sessionStorage under egen nyckel – påverkar inget annat. */
+  const [mode, setMode] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem(PAGE.storeKey);
+      if (saved === 'lattlast' || saved === 'fordjupning') return saved;
+    } catch (e) {}
+    return 'lattlast';
+  });
+  const [active, setActive] = useState(ALLA[0].id);
+  const [tocOpen, setTocOpen] = useState(false);
+
+  useEffect(() => {
+    try { sessionStorage.setItem(PAGE.storeKey, mode); } catch (e) {}
+  }, [mode]);
+
+  /* Markera aktuellt avsnitt i innehållsförteckningen. */
+  useEffect(() => {
+    if (!('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver(entries => {
+      const vis = entries.filter(en => en.isIntersecting)
+                         .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+      if (vis.length) setActive(vis[0].target.id);
+    }, { rootMargin: '-15% 0px -70% 0px' });
+    ALLA.forEach(s => { const el = document.getElementById(s.id); if (el) io.observe(el); });
+    return () => io.disconnect();
+  }, []);
+
+  /* Djuplänk: scrolla till avsnittet i URL:ens hash när sidan laddats. */
+  useEffect(() => {
+    const id = decodeURIComponent((window.location.hash || '').replace('#', ''));
+    if (!id) return;
+    window.setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ block: 'start' });
+    }, 150);
+  }, []);
+
+  const goto = (e, id) => {
+    e.preventDefault();
+    setTocOpen(false);
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    try { history.replaceState(null, '', '#' + id); } catch (err) {}
+  };
+
+  const activeSec = ALLA.find(s => s.id === active) || ALLA[0];
+
+  return (
+    <div className="wrap" id="toppen">
+
+      <a href="index.html#kurs=nk_1a2" className="back" onClick={smartBack}>
+        ← Tillbaka till startsidan
+      </a>
+
+      <header className="head">
+        <p className="eyebrow">{PAGE.eyebrow}</p>
+        <h1>{PAGE.titel}</h1>
+        <div className="rule"></div>
+        <p className="lead">
+          Pluggmaterial i {DELAR.length} delar och {ALLA.length} avsnitt. <strong>Lättläst</strong> visar grundtexten.
+          {' '}<strong>Fördjupning</strong> visar samma text plus extra fakta för dig som vill veta mer.
+        </p>
+      </header>
+
+      <div className="pill-toggle" role="tablist" aria-label="Välj läge">
+        <button role="tab" aria-selected={mode === 'lattlast'}
+                className={mode === 'lattlast' ? 'active' : 'inactive'}
+                onClick={() => setMode('lattlast')}>Lättläst</button>
+        <button role="tab" aria-selected={mode === 'fordjupning'}
+                className={mode === 'fordjupning' ? 'active' : 'inactive'}
+                onClick={() => setMode('fordjupning')}>Fördjupning</button>
+      </div>
+      <p className="mode-note">
+        {mode === 'lattlast'
+          ? 'Lättläst: grundtexten för varje avsnitt.'
+          : 'Fördjupning: grundtexten + en punktlista med extra fakta och sidhänvisningar.'}
+      </p>
+
+      <div className="legend" aria-label="Färgkoder i texten">
+        <span><mark className="amne">gult</mark> = ämnesord</span>
+        <span><mark className="binde">grönt</mark> = bindeord</span>
+      </div>
+
+      <div className="layout">
+        <nav className={'toc' + (tocOpen ? ' open' : '')} aria-label="Innehåll">
+          <button className="toc-btn" onClick={() => setTocOpen(o => !o)} aria-expanded={tocOpen}>
+            <span className="toc-btn-t">☰ {activeSec.nr} {activeSec.rubrik}</span>
+            <span aria-hidden="true">{tocOpen ? '▲' : '▼'}</span>
+          </button>
+          <div className="toc-h">Innehåll</div>
+          <div className="toc-list">
+            {DELAR.map(d => (
+              <React.Fragment key={d.titel}>
+                <div className="toc-del">{d.titel}</div>
+                {d.avsnitt.map(s => (
+                  <a href={'#' + s.id} key={s.id} onClick={(e) => goto(e, s.id)}
+                     className={s.id === active ? 'active' : ''}>
+                    <span className="toc-n">{s.nr}</span>
+                    <span className="toc-t">{s.rubrik}</span>
+                  </a>
+                ))}
+              </React.Fragment>
+            ))}
+          </div>
+        </nav>
+
+        <main>
+          {DELAR.map(d => (
+            <React.Fragment key={d.titel}>
+              <h2 className="del-head">{d.titel}</h2>
+              {d.avsnitt.map(s => <Section key={s.id} sec={s} mode={mode} />)}
+            </React.Fragment>
+          ))}
+
+          <section className="next" aria-label="Öva vidare">
+            <h2>Öva vidare</h2>
+            <p>Har du läst klart? Testa dig själv på områdets begrepp.</p>
+            <a className="next-btn" href="nk1a2_genteknik_begrepp.html">📖 Öva på begrepp</a>
+          </section>
+
+          <footer className="foot">
+            <p>Källa: {PAGE.kalla}</p>
+            <p className="by">Designad av John</p>
+          </footer>
+        </main>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+
+<script src="feedback-widget.js" defer></script>
+<script data-goatcounter="https://johnblixt.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

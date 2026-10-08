@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cellen, DNA och genteknik – Quiz | Naturkunskap 1a2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Fredoka:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary:       #4ade80;
+      --primary-light: #f0fdf4;
+      --primary-mid:   #bbf7d0;
+      --primary-ink:   #14532d;
+      --primary-deep:  #15803d;
+      --correct-bg:    #dcfce7;
+      --correct-border:#16a34a;
+      --correct-text:  #16a34a;
+      --wrong-bg:      #fee2e2;
+      --wrong-border:  #dc2626;
+      --wrong-text:    #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'EB Garamond', Georgia, serif; background: var(--primary-light); min-height: 100vh; color: #1e293b; }
+    .fredoka { font-family: 'Fredoka', sans-serif; }
+
+    a.back-btn {
+      display: inline-block; padding: 8px 16px; color: var(--primary-deep);
+      text-decoration: none; font-size: 0.95rem; position: fixed;
+      top: 14px; left: 14px; z-index: 200; border-radius: 8px; transition: background 0.2s;
+    }
+    a.back-btn:hover { background: var(--primary-mid); color: var(--primary-ink); }
+
+    /* Toppkontroller: textläge (Svenska / 📖 Enkel svenska) + separat på/av för arabiskt stöd */
+    .top-controls {
+      position: fixed; top: 14px; right: 14px; z-index: 200;
+      display: flex; gap: 8px; align-items: center;
+    }
+    .lang-switch {
+      display: flex; gap: 2px; background: white; border: 2px solid #16a34a;
+      border-radius: 999px; padding: 2px;
+    }
+    .easy-toggle {
+      background: transparent; border: none; color: #16a34a;
+      padding: 5px 14px; border-radius: 999px; font-family: inherit;
+      font-size: 0.88rem; font-weight: 600; cursor: pointer; white-space: nowrap;
+      transition: background 0.15s, color 0.15s;
+    }
+    .easy-toggle:hover { background: #dcfce7; }
+    .easy-toggle[aria-pressed="true"] { background: #16a34a; color: white; }
+    .easy-toggle[aria-pressed="true"]:hover { background: #15803d; }
+    .ar-toggle {
+      display: flex; align-items: center; gap: 7px; background: white;
+      border: 2px solid #16a34a; border-radius: 999px; padding: 3px 12px 3px 6px;
+      color: #16a34a; font-weight: 600; cursor: pointer; white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .ar-toggle:hover { background: #dcfce7; }
+    .ar-toggle [lang="ar"] { font-size: 0.95rem; line-height: 1.3; }
+    .ar-toggle .sw {
+      position: relative; width: 28px; height: 16px; border-radius: 999px;
+      background: #cbd5e1; transition: background 0.15s; flex-shrink: 0;
+    }
+    .ar-toggle .sw::after {
+      content: ''; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px;
+      border-radius: 50%; background: white; transition: left 0.15s;
+    }
+    .ar-toggle[aria-checked="true"] .sw { background: #16a34a; }
+    .ar-toggle[aria-checked="true"] .sw::after { left: 14px; }
+
+    /* ── Arabiskt stöd: underordnad rad under den svenska texten ── */
+    [lang="ar"] {
+      font-family: 'Noto Naskh Arabic', 'Noto Sans Arabic', 'Segoe UI', Tahoma, 'Arial', serif;
+      line-height: 1.85;
+    }
+    .ar-sub {
+      display: block; direction: rtl; text-align: right;
+      font-size: 0.9em; font-weight: 400; color: #475569;
+      margin-top: 6px; padding-top: 6px; border-top: 1px solid #e2e8f0;
+    }
+    .opt-btn .ar-sub     { border-top-color: rgba(100,116,139,0.25); }
+    .opt-btn.correct .ar-sub { color: #166534; }
+    .opt-btn.wrong .ar-sub   { color: #991b1b; }
+    .fi-row .ar-sub      { margin-top: 3px; padding-top: 3px; }
+    .fi-row.ya-ok .ar-sub, .fi-row.ra .ar-sub { color: #166534; }
+    .fi-row.ya-bad .ar-sub { color: #991b1b; }
+    .missed-item .ar-sub { color: #7f1d1d; border-top-color: rgba(220,38,38,0.2); }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Start screen ── */
+    #screen-start { max-width: 620px; margin: 0 auto; padding: 90px 24px 40px; text-align: center; }
+    .badge {
+      display: inline-block; background: var(--primary-mid); color: var(--primary-ink);
+      padding: 4px 14px; border-radius: 20px; font-size: 0.82rem; font-family: 'Fredoka', sans-serif;
+      letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 20px;
+    }
+    #screen-start h1 {
+      font-size: 2.4rem; font-weight: 600; font-style: italic;
+      color: #0f172a; margin-bottom: 8px;
+    }
+    #screen-start .subtitle { font-size: 1.05rem; color: #64748b; margin-bottom: 26px; }
+    .choose-hd { font-family: 'Fredoka', sans-serif; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; color: #64748b; margin-bottom: 12px; }
+    .del-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 22px; text-align: start; }
+    .del-card {
+      background: white; border: 2px solid #e2e8f0; border-top: 6px solid var(--primary);
+      border-radius: 18px; padding: 16px 18px; cursor: pointer; font-family: inherit;
+      text-align: start; color: #0f172a; transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .del-card:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(20,83,45,0.12); border-color: var(--primary); }
+    .del-card .dk { font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 0.8rem; color: var(--primary-deep); text-transform: uppercase; letter-spacing: 0.06em; }
+    .del-card .dt { font-size: 1.12rem; font-weight: 600; line-height: 1.3; }
+    .del-card .dn { font-family: 'Fredoka', sans-serif; font-size: 0.82rem; color: #64748b; }
+    .del-card.all { grid-column: 1 / -1; background: var(--primary); border-color: var(--primary); border-top-color: var(--primary-deep); color: var(--primary-ink); }
+    .del-card.all .dk, .del-card.all .dn { color: var(--primary-ink); }
+    .del-card.all:hover { background: #22c55e; }
+    .start-info { font-size: 0.92rem; color: #64748b; line-height: 1.55; }
+
+    /* ── Quiz screen ── */
+    #screen-quiz { max-width: 700px; margin: 0 auto; padding: 70px 20px 60px; }
+    .quiz-sel { font-family: 'Fredoka', sans-serif; font-size: 0.8rem; color: var(--primary-deep); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+    .pill {
+      font-family: 'Fredoka', sans-serif; border-radius: 20px; padding: 5px 14px;
+      font-size: 0.9rem; font-variant-numeric: tabular-nums;
+    }
+    .timer { background: white; border: 1px solid #e2e8f0; color: #475569; }
+    .pills-right { display: flex; gap: 8px; }
+    .streak-pill { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; font-weight: 600; transition: transform 0.2s; }
+    .streak-pill.off { background: white; color: #94a3b8; border-color: #e2e8f0; font-weight: 400; }
+    .streak-pill.bump { transform: scale(1.15); }
+    .score-pill { background: var(--primary-mid); color: var(--primary-ink); font-weight: 600; }
+    .progress-wrap { background: #e2e8f0; border-radius: 4px; height: 8px; overflow: hidden; margin-bottom: 6px; }
+    .progress-bar { background: var(--primary); height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+    .q-counter { font-family: 'Fredoka', sans-serif; font-size: 0.82rem; color: #94a3b8; text-align: right; margin-bottom: 22px; }
+    .q-text { font-size: 1.3rem; font-weight: 600; line-height: 1.55; color: #0f172a; margin-bottom: 22px; }
+    .opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+    .opt-btn {
+      background: white; border: 2px solid #e2e8f0; border-radius: 12px;
+      padding: 13px 18px; text-align: start; font-size: 1.05rem; font-family: inherit;
+      cursor: pointer; transition: border-color 0.15s, background 0.15s; line-height: 1.45; color: #1e293b;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--primary); background: var(--primary-light); }
+    .opt-btn:disabled { cursor: default; }
+    .opt-btn.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); font-weight: 600; }
+    .opt-btn.wrong   { background: var(--wrong-bg);   border-color: var(--wrong-border);   color: var(--wrong-text); }
+    .opt-btn.dimmed  { opacity: 0.4; }
+    .nav-row { display: flex; gap: 12px; align-items: center; }
+    .btn-back {
+      background: white; border: 2px solid #e2e8f0; border-radius: 10px;
+      padding: 10px 20px; font-family: inherit; font-size: 0.95rem; color: #64748b; cursor: pointer;
+    }
+    .btn-back:hover { border-color: #94a3b8; }
+    .btn-next {
+      background: var(--primary); border: none; border-radius: 10px;
+      padding: 10px 28px; font-family: inherit; font-size: 0.95rem; font-weight: 700;
+      color: var(--primary-ink); cursor: pointer; margin-inline-start: auto; transition: background 0.15s;
+    }
+    .btn-next:hover { background: #22c55e; }
+
+    /* ── Modal ── */
+    #modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 500; padding: 20px;
+    }
+    #modal-overlay.hidden { display: none; }
+    .modal-box {
+      background: white; border-radius: 20px; padding: 32px;
+      max-width: 520px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .modal-icon  { font-size: 2.6rem; margin-bottom: 10px; }
+    .modal-verdict { font-family: 'Fredoka', sans-serif; font-size: 1.3rem; font-weight: 600; margin-bottom: 4px; }
+    .modal-verdict.c { color: var(--correct-text); }
+    .modal-verdict.w { color: var(--wrong-text); }
+    .modal-streak { font-family: 'Fredoka', sans-serif; font-size: 0.88rem; color: #c2410c; margin-bottom: 10px; min-height: 1.2em; }
+    .modal-expl { font-size: 1.02rem; color: #475569; line-height: 1.7; margin-bottom: 10px; }
+    .modal-src { font-family: 'Fredoka', sans-serif; font-size: 0.78rem; color: #94a3b8; margin-bottom: 22px; }
+
+    /* ── Result screen ── */
+    #screen-result { max-width: 700px; margin: 0 auto; padding: 80px 20px 80px; }
+    .res-header { text-align: center; margin-bottom: 26px; }
+    .res-sel { font-family: 'Fredoka', sans-serif; font-size: 0.82rem; color: var(--primary-deep); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 14px; }
+    .rank-wrap { display: flex; align-items: center; justify-content: center; gap: 18px; margin-bottom: 16px; }
+    .score-ring {
+      width: 116px; height: 116px; border-radius: 50%; background: white;
+      border: 5px solid var(--primary); display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+    .score-ring .rnum { font-family: 'Fredoka', sans-serif; font-size: 1.9rem; font-weight: 600; color: var(--primary-deep); line-height: 1; }
+    .score-ring .rlbl { font-size: 0.72rem; color: #94a3b8; }
+    .rank-badge {
+      width: 116px; height: 116px; border-radius: 28px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; color: white; box-shadow: 0 8px 22px rgba(0,0,0,0.15);
+    }
+    .rank-badge .rk { font-family: 'Fredoka', sans-serif; font-size: 3.2rem; font-weight: 700; line-height: 1; }
+    .rank-badge .rl { font-family: 'Fredoka', sans-serif; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.9; }
+    .rank-S { background: linear-gradient(135deg, #f59e0b, #facc15); }
+    .rank-A { background: linear-gradient(135deg, #16a34a, #4ade80); }
+    .rank-B { background: linear-gradient(135deg, #0d9488, #2dd4bf); }
+    .rank-C { background: linear-gradient(135deg, #64748b, #94a3b8); }
+    .rank-D { background: linear-gradient(135deg, #475569, #64748b); }
+    .pass-pill { display: inline-block; font-family: 'Fredoka', sans-serif; font-size: 0.85rem; font-weight: 600; padding: 4px 14px; border-radius: 999px; margin-bottom: 10px; }
+    .pass-pill.ok  { background: var(--correct-bg); color: #166534; }
+    .pass-pill.not { background: #fef3c7; color: #92400e; }
+    .res-title  { font-size: 1.8rem; font-weight: 600; font-style: italic; margin-bottom: 6px; }
+    .res-msg    { font-size: 1.02rem; color: #64748b; margin-bottom: 4px; }
+    .res-time   { font-family: 'Fredoka', sans-serif; font-size: 0.85rem; color: #94a3b8; }
+    .code-box {
+      background: white; border: 2px dashed var(--primary); border-radius: 14px;
+      padding: 12px 16px; text-align: center; margin: 0 auto 26px; max-width: 360px;
+    }
+    .code-box .cl { font-family: 'Fredoka', sans-serif; font-size: 0.72rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.08em; }
+    .code-box .cv { font-family: 'Fredoka', sans-serif; font-size: 1.6rem; font-weight: 700; color: var(--primary-ink); letter-spacing: 0.08em; }
+    .code-box .cs { font-size: 0.8rem; color: #94a3b8; }
+    .stats-row  { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+    .stat-box {
+      flex: 1; min-width: 80px; background: white; border: 1px solid #e2e8f0;
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .stat-box .snum { font-family: 'Fredoka', sans-serif; font-size: 1.6rem; font-weight: 600; }
+    .stat-box .slbl { font-size: 0.78rem; color: #94a3b8; margin-top: 2px; }
+    .stat-box.cs .snum { color: var(--correct-text); }
+    .stat-box.ws .snum { color: var(--wrong-text); }
+    .stat-box.ss .snum { color: #c2410c; }
+    .section-hd {
+      font-size: 1.1rem; font-weight: 600; color: #0f172a;
+      margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0;
+    }
+    .missed-section { margin-bottom: 32px; }
+    .missed-item {
+      background: var(--wrong-bg); border-inline-start: 4px solid var(--wrong-border);
+      border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-size: 0.95rem;
+    }
+    .facit-item {
+      background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 14px 16px; margin-bottom: 10px;
+    }
+    .facit-item.fc { border-inline-start: 4px solid var(--correct-border); }
+    .facit-item.fw { border-inline-start: 4px solid var(--wrong-border); }
+    .fi-num { font-family: 'Fredoka', sans-serif; font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .fi-q   { font-size: 0.98rem; font-weight: 600; color: #0f172a; margin-bottom: 8px; line-height: 1.4; }
+    .fi-row { font-size: 0.93rem; padding: 2px 0; }
+    .fi-row .lbl { color: #94a3b8; }
+    .fi-row.ya-ok  { color: var(--correct-text); }
+    .fi-row.ya-bad { color: var(--wrong-text); }
+    .fi-row.ra     { color: var(--correct-text); font-weight: 600; margin-top: 2px; }
+    .fi-row.src    { font-family: 'Fredoka', sans-serif; font-size: 0.78rem; color: #94a3b8; margin-top: 4px; }
+
+    .btn-primary {
+      display: inline-block; background: var(--primary); color: var(--primary-ink); border: none;
+      border-radius: 12px; padding: 13px 32px; font-size: 1.05rem; font-family: inherit;
+      font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.1s;
+    }
+    .btn-primary:hover { background: #22c55e; transform: translateY(-1px); }
+    .btn-primary:active { transform: none; }
+    .btn-secondary {
+      display: inline-block; background: white; color: var(--primary-ink); border: 2px solid var(--primary);
+      border-radius: 12px; padding: 11px 26px; font-size: 1rem; font-family: inherit;
+      font-weight: 600; cursor: pointer; transition: background 0.2s;
+    }
+    .btn-secondary:hover { background: var(--primary-mid); }
+    .end-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 32px; }
+    footer { text-align: center; font-style: italic; color: #94a3b8; font-size: 0.85rem; padding: 0 0 28px; }
+
+    @media (max-width: 768px) {
+      a.back-btn { top: 10px; left: 8px; padding: 6px 10px; font-size: 0.88rem; }
+      .top-controls { top: 10px; right: 8px; gap: 6px; }
+      .easy-toggle { padding: 5px 10px; font-size: 0.8rem; }
+      .ar-toggle { padding: 3px 10px 3px 5px; gap: 5px; }
+      #screen-quiz, #screen-result { padding-left: 16px; padding-right: 16px; }
+      .modal-box { padding: 24px 20px; max-height: 90vh; overflow-y: auto; }
+    }
+    /* Smal skärm: kontrollerna flyttas till en egen rad under tillbaka-länken */
+    @media (max-width: 640px) {
+      .top-controls { top: 46px; left: 50%; right: auto; transform: translateX(-50%); }
+      .lang-switch, .ar-toggle { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+      #screen-start  { padding: 110px 16px 32px; }
+      #screen-quiz   { padding-top: 100px; }
+      #screen-result { padding-top: 110px; }
+      .del-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 500px) {
+      #screen-start h1 { font-size: 1.85rem; }
+      .q-text { font-size: 1.12rem; }
+      .rank-wrap { gap: 12px; }
+      .score-ring, .rank-badge { width: 100px; height: 100px; }
+    }
+    @media (max-width: 380px) {
+      .top-controls { gap: 4px; }
+      .easy-toggle { padding: 5px 8px; font-size: 0.76rem; }
+      .ar-toggle { padding: 3px 8px 3px 4px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<a href="index.html#kurs=nk_1a2" class="back-btn" id="back-link" onclick="smartBack(event)">← Tillbaka</a>
+<div class="top-controls">
+  <div class="lang-switch" role="group" aria-label="Textläge">
+    <button class="easy-toggle" type="button" data-mode="sv"   aria-pressed="true"  onclick="setMode('sv')">Svenska</button>
+    <button class="easy-toggle" type="button" data-mode="easy" aria-pressed="false" onclick="setMode('easy')" id="btn-easy">📖 Enkel svenska</button>
+  </div>
+  <button class="ar-toggle" type="button" role="switch" aria-checked="false" id="btn-ar"
+          onclick="toggleArSupport()" title="Arabiskt stöd: visa arabisk översättning under den svenska texten">
+    <span class="sw" aria-hidden="true"></span><span lang="ar" dir="rtl">العربية</span>
+  </button>
+</div>
+
+<!-- ═══════════ START ═══════════ -->
+<div id="screen-start" class="screen active">
+  <div class="badge">Naturkunskap 1a2 · Genteknik</div>
+  <h1>🧬 Cellen, DNA och genteknik</h1>
+  <p class="subtitle">Quiz inför läxförhöret – 30 frågor i tre delar</p>
+  <div class="choose-hd" id="choose-hd">Välj vad du vill öva på</div>
+  <div class="del-grid" id="del-grid"></div>
+  <p class="start-info" id="start-info">Frågorna och svarsalternativen blandas varje gång. Du kan gå tillbaka till frågor du redan svarat på.<br>Klarar du minst 80 % får du rank B eller högre.</p>
+</div>
+
+<!-- ═══════════ QUIZ ═══════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-sel" id="quiz-sel"></div>
+  <div class="quiz-header">
+    <div class="pill timer" id="timer">⏱ 0:00</div>
+    <div class="pills-right">
+      <div class="pill streak-pill off" id="streak-pill">🔥 0 i rad</div>
+      <div class="pill score-pill" id="score-pill">Poäng: 0</div>
+    </div>
+  </div>
+  <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+  <div class="q-counter" id="q-counter">Fråga 1 av 30</div>
+  <div class="q-text" id="q-text"></div>
+  <div class="opts" id="opts"></div>
+  <div class="nav-row">
+    <button class="btn-back" id="btn-back" onclick="goBack()" style="display:none">← Bakåt</button>
+    <button class="btn-next" id="btn-next" onclick="goNext()" style="display:none">Nästa →</button>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL ═══════════ -->
+<div id="modal-overlay" class="hidden">
+  <div class="modal-box" id="modal-box">
+    <div class="modal-icon"    id="modal-icon"></div>
+    <div class="modal-verdict" id="modal-verdict"></div>
+    <div class="modal-streak"  id="modal-streak"></div>
+    <div class="modal-expl"    id="modal-expl"></div>
+    <div class="modal-src"     id="modal-src"></div>
+    <button class="btn-primary" id="modal-next" onclick="closeModal()">Nästa fråga →</button>
+  </div>
+</div>
+
+<!-- ═══════════ RESULT ═══════════ -->
+<div id="screen-result" class="screen">
+  <div class="res-header">
+    <div class="res-sel" id="r-sel"></div>
+    <div class="rank-wrap">
+      <div class="score-ring">
+        <div class="rnum" id="r-score"></div>
+        <div class="rlbl">poäng</div>
+      </div>
+      <div class="rank-badge" id="r-rank"><div class="rk" id="r-rank-letter"></div><div class="rl">Rank</div></div>
+    </div>
+    <div class="pass-pill" id="r-pass"></div>
+    <div class="res-title" id="r-title"></div>
+    <div class="res-msg"   id="r-msg"></div>
+    <div class="res-time"  id="r-time"></div>
+  </div>
+  <div class="code-box">
+    <div class="cl">Dagens kod</div>
+    <div class="cv" id="r-code"></div>
+    <div class="cs" id="r-code-sub">Visa för läraren – koden ändras varje dag</div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-box cs"><div class="snum" id="s-correct">0</div><div class="slbl">Rätt</div></div>
+    <div class="stat-box ws"><div class="snum" id="s-wrong">0</div><div class="slbl">Fel</div></div>
+    <div class="stat-box"><div class="snum" id="s-pct">0%</div><div class="slbl">Andel rätt</div></div>
+    <div class="stat-box ss"><div class="snum" id="s-streak">0</div><div class="slbl">Längsta svit</div></div>
+  </div>
+  <div class="missed-section" id="missed-section"></div>
+  <div class="section-hd" id="facit-hd">Fullständigt facit</div>
+  <div id="facit-list"></div>
+  <div class="end-btns">
+    <button class="btn-primary" id="btn-restart" onclick="restartQuiz()">↺ Gör om quizet</button>
+    <button class="btn-secondary" id="btn-choose" onclick="chooseOther()">Välj en annan del</button>
+  </div>
+</div>
+
+<footer>Designad av John</footer>
+
+<script src="nk1a2_genteknik_questions.js"></script>
+<script>
+// ── Tillbaka: history.back() om vi kom hit från samma sajt, annars fallback ──
+const BACK_FALLBACK = 'index.html#kurs=nk_1a2'; // portalens Nak 1a2-del
+function smartBack(e) {
+  if (e) e.preventDefault();
+  try {
+    if (document.referrer && new URL(document.referrer).hostname === window.location.hostname) {
+      history.back();
+      return;
+    }
+  } catch (err) {}
+  window.location.href = BACK_FALLBACK;
+}
+
+// ── Urval: en del eller alla 30 ──
+const SELECTIONS = {
+  del1: { label: 'Del 1', title: DELAR[1], filter: q => q.del === 1 },
+  del2: { label: 'Del 2', title: DELAR[2], filter: q => q.del === 2 },
+  del3: { label: 'Del 3', title: DELAR[3], filter: q => q.del === 3 },
+  alla: { label: 'Allt',  title: 'Alla tre delarna', filter: () => true }
+};
+
+// ── Rank: S = 100 %, A ≥ 90 %, B ≥ 80 % (gränsen för klarat), C ≥ 60 %, D under 60 % ──
+const PASS_PCT = 80;
+function computeRank(pct) {
+  if (pct === 100) return 'S';
+  if (pct >= 90)   return 'A';
+  if (pct >= PASS_PCT) return 'B';
+  if (pct >= 60)   return 'C';
+  return 'D';
+}
+
+// ── Dagens kod NK2Q-XXXX: datum + urval + poäng + rank + salt ──
+const CODE_SALT = 'nk1a2genteknikquiz4ade80';
+function computeVerificationCode(selKey, correct, total, rank) {
+  const d = new Date();
+  const dateStr = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+  const input = dateStr + '|' + selKey + '|' + correct + '/' + total + '|' + rank + '|' + CODE_SALT;
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) {
+    hash = (hash + input.charCodeAt(i) * (i + 1)) % 1679616; // 36^4
+  }
+  return 'NK2Q-' + hash.toString(36).toUpperCase().padStart(4, '0');
+}
+
+// ── UI-texter: gränssnittet är alltid på svenska; Enkel svenska har egna etiketter ──
+const UI_ENKEL = {
+  missedHd:         'Frågor du svarade fel på',
+  facitHd:          'Alla frågor och svar',
+  yourAnswerLbl:    'Du svarade: ',
+  correctAnswerLbl: 'Rätt svar: ',
+  notAnswered:      '– (du svarade inte)',
+  srcLbl:           'Läs mer i boken: ',
+  backBtn:          '← Tillbaka',
+  nextBtn:          'Nästa →',
+  modalNextBtn:     'Nästa fråga →',
+  restartBtn:       '↺ Gör om',
+  chooseBtn:        'Välj en annan del'
+};
+const UI_ORIG = {
+  missedHd:         'Frågor du missade',
+  facitHd:          'Fullständigt facit',
+  yourAnswerLbl:    'Ditt svar: ',
+  correctAnswerLbl: 'Rätt svar: ',
+  notAnswered:      '–',
+  srcLbl:           'Källa: ',
+  backBtn:          '← Bakåt',
+  nextBtn:          'Nästa →',
+  modalNextBtn:     'Nästa fråga →',
+  restartBtn:       '↺ Gör om quizet',
+  chooseBtn:        'Välj en annan del'
+};
+
+// ── State ──────────────────────────────────────────────────
+// Blandning sker på INDEX en gång vid start: order[] = visad plats → index i q.opts/q.optsEnkel/q.optsAr.
+// chosen/correct är index i q.opts, så rättningen är oberoende av textläge och arabiskt stöd.
+let selKey   = 'alla';
+let shuffled = [];
+let states   = []; // { order:number[], chosen:number|null, correct:number, answered:bool }
+let cur      = 0;
+let score    = 0;
+let streak   = 0;
+let bestStreak = 0;
+let timerInterval = null;
+let startTime = 0;
+let elapsedMs = 0;
+let modalOpen = false;
+
+// ── Textläge och arabiskt stöd – två oberoende inställningar ──
+// mode: 'sv' (original) eller 'easy' (Enkel svenska). arSupport: arabisk rad under svenskan.
+const MODES    = ['sv', 'easy'];
+const LANG_KEY = 'nk1a2_genteknik_quiz_sprak';
+const AR_KEY   = 'nk1a2_genteknik_quiz_arabiska';
+let mode = 'sv';
+let arSupport = false;
+try {
+  const saved = sessionStorage.getItem(LANG_KEY);
+  if (MODES.includes(saved)) mode = saved;
+  if (sessionStorage.getItem(AR_KEY) === '1') arSupport = true;
+} catch (e) {}
+
+const ui = key => (mode === 'easy' ? UI_ENKEL : UI_ORIG)[key];
+const $ = id => document.getElementById(id);
+
+const warned = new Set();
+function warnMissing(q, field) {
+  const key = q.id + ':' + field;
+  if (warned.has(key)) return;
+  warned.add(key);
+  console.warn('Översättning saknas (' + field + ') för fråga ' + q.id + ' – visar ' + (field.includes('Ar') ? 'bara svenska.' : 'originalet.'));
+}
+
+// Svensk text enligt textläge (Enkel svenska faller tillbaka på originalet).
+function qText(q) {
+  if (mode !== 'easy') return q.q;
+  if (q.qEnkel) return q.qEnkel;
+  warnMissing(q, 'qEnkel'); return q.q;
+}
+function optText(q, i) {
+  if (mode !== 'easy') return q.opts[i];
+  if (q.optsEnkel && q.optsEnkel.length === q.opts.length && q.optsEnkel[i]) return q.optsEnkel[i];
+  warnMissing(q, 'optsEnkel'); return q.opts[i];
+}
+function explText(q) {
+  if (mode !== 'easy') return q.expl;
+  if (q.expEnkel) return q.expEnkel;
+  warnMissing(q, 'expEnkel'); return q.expl;
+}
+// Arabisk text – bara när arabiskt stöd är på. Saknas den: null + konsolvarning.
+function qAr(q) {
+  if (!arSupport) return null;
+  if (q.qAr) return q.qAr;
+  warnMissing(q, 'qAr'); return null;
+}
+function optAr(q, i) {
+  if (!arSupport) return null;
+  if (q.optsAr && q.optsAr.length === q.opts.length && q.optsAr[i]) return q.optsAr[i];
+  warnMissing(q, 'optsAr[' + i + ']'); return null;
+}
+function explAr(q) {
+  if (!arSupport) return null;
+  if (q.expAr) return q.expAr;
+  warnMissing(q, 'expAr'); return null;
+}
+
+// Fyller el med svensk text och, om ar finns, en arabisk rad under (lang=ar, dir=rtl).
+// Svenskan står alltid kvar – arabiskan är bara en stödrad.
+function setText(el, sv, ar) {
+  el.textContent = sv;
+  appendAr(el, ar);
+}
+function appendAr(el, ar) {
+  if (!ar) return;
+  const span = document.createElement('span');
+  span.className = 'ar-sub';
+  span.lang = 'ar';
+  span.dir = 'rtl';
+  span.textContent = ar;
+  el.appendChild(span);
+}
+
+function updateControls() {
+  document.querySelectorAll('.lang-switch [data-mode]').forEach(b =>
+    b.setAttribute('aria-pressed', b.dataset.mode === mode ? 'true' : 'false'));
+  $('btn-ar').setAttribute('aria-checked', arSupport ? 'true' : 'false');
+}
+updateControls();
+
+// Ritar om aktiv skärm utan att röra poäng, timer, aktuell fråga, svar eller blandning.
+// Scrollen hålls kvar: elementet överst i bild ska stå på samma plats efteråt.
+const ANCHORS = '.q-text, .opt-btn, .nav-row, .res-header, .stats-row, .section-hd, .missed-item, .facit-item';
+function rerender() {
+  const screen = document.querySelector('.screen.active');
+  const before = screen ? [...screen.querySelectorAll(ANCHORS)] : [];
+  const idx = before.findIndex(el => el.getBoundingClientRect().bottom > 0);
+  const top = idx >= 0 ? before[idx].getBoundingClientRect().top : 0;
+
+  if ($('screen-quiz').classList.contains('active')) {
+    renderQuestion();
+    if (modalOpen) renderModal();
+  }
+  if ($('screen-result').classList.contains('active')) renderResult();
+
+  if (idx >= 0) {
+    const after = screen.querySelectorAll(ANCHORS)[idx];
+    if (after) window.scrollBy(0, after.getBoundingClientRect().top - top);
+  }
+}
+
+function setMode(m) {
+  if (!MODES.includes(m) || m === mode) return;
+  mode = m;
+  try { sessionStorage.setItem(LANG_KEY, mode); } catch (e) {}
+  updateControls();
+  rerender();
+}
+
+function toggleArSupport() {
+  arSupport = !arSupport;
+  try { sessionStorage.setItem(AR_KEY, arSupport ? '1' : '0'); } catch (e) {}
+  updateControls();
+  rerender();
+}
+
+// ── Helpers ────────────────────────────────────────────────
+// Fisher-Yates på en kopia
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function fmtTime(ms) {
+  const s = Math.floor(ms / 1000);
+  return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+}
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ── Startskärm: valkort ────────────────────────────────────
+function renderStart() {
+  const grid = $('del-grid');
+  grid.innerHTML = '';
+  Object.entries(SELECTIONS).forEach(([key, s]) => {
+    const n = QUESTIONS.filter(s.filter).length;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'del-card' + (key === 'alla' ? ' all' : '');
+    btn.onclick = () => startQuiz(key);
+    btn.innerHTML = '<span class="dk"></span><span class="dt"></span><span class="dn"></span>';
+    btn.querySelector('.dk').textContent = s.label;
+    btn.querySelector('.dt').textContent = key === 'alla' ? 'Allt (' + n + ' frågor)' : s.title;
+    btn.querySelector('.dn').textContent = key === 'alla' ? 'Hela läxförhöret – alla tre delarna blandade' : n + ' frågor';
+    grid.appendChild(btn);
+  });
+}
+renderStart();
+
+// ── Start ──────────────────────────────────────────────────
+function startQuiz(key) {
+  if (key) selKey = key;
+  const pool = QUESTIONS.filter(SELECTIONS[selKey].filter);
+  shuffled = shuffle(pool);
+  states   = shuffled.map(q => ({
+    order:    shuffle(q.opts.map((_, i) => i)),
+    chosen:   null,
+    correct:  q.correct,
+    answered: false
+  }));
+  cur   = 0;
+  score = 0;
+  streak = 0;
+  bestStreak = 0;
+  modalOpen = false;
+  $('modal-overlay').classList.add('hidden');
+  const s = SELECTIONS[selKey];
+  $('quiz-sel').textContent = s.label + ' · ' + s.title;
+  clearInterval(timerInterval);
+  startTime = Date.now();
+  $('timer').textContent = '⏱ 00:00';
+  timerInterval = setInterval(() => {
+    $('timer').textContent = '⏱ ' + fmtTime(Date.now() - startTime);
+  }, 500);
+  show('screen-quiz');
+  renderQuestion();
+}
+
+// ── Render question ────────────────────────────────────────
+function renderQuestion() {
+  const q  = shuffled[cur];
+  const st = states[cur];
+  const n  = shuffled.length;
+  const answeredCount = states.filter(s => s.answered).length;
+
+  $('q-counter').textContent = 'Fråga ' + (cur + 1) + ' av ' + n;
+  setText($('q-text'), qText(q), qAr(q));
+  $('progress-bar').style.width = ((answeredCount / n) * 100) + '%';
+  $('score-pill').textContent = 'Poäng: ' + score;
+  renderStreak(false);
+
+  const container = $('opts');
+  container.innerHTML = '';
+  st.order.forEach(origIdx => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    setText(btn, optText(q, origIdx), optAr(q, origIdx));
+    if (st.answered) {
+      btn.disabled = true;
+      if (origIdx === st.correct) {
+        btn.classList.add('correct');
+      } else if (origIdx === st.chosen) {
+        btn.classList.add('wrong');
+      } else {
+        btn.classList.add('dimmed');
+      }
+    } else {
+      btn.onclick = () => answerQuestion(origIdx);
+    }
+    container.appendChild(btn);
+  });
+
+  const back = $('btn-back');
+  const next = $('btn-next');
+  back.textContent = ui('backBtn');
+  next.textContent = ui('nextBtn');
+  back.style.display = cur > 0 ? 'block' : 'none';
+  next.style.display = st.answered ? 'block' : 'none';
+}
+
+function renderStreak(bump) {
+  const pill = $('streak-pill');
+  pill.textContent = '🔥 ' + streak + ' i rad';
+  pill.classList.toggle('off', streak < 2);
+  if (bump && streak >= 2) {
+    pill.classList.add('bump');
+    setTimeout(() => pill.classList.remove('bump'), 220);
+  }
+}
+
+// ── Answer ─────────────────────────────────────────────────
+// Poäng och svit räknas exakt en gång per fråga, vid det första svaret.
+function answerQuestion(chosenIdx) {
+  const st = states[cur];
+  if (st.answered) return;
+
+  const isCorrect = chosenIdx === st.correct;
+  st.chosen   = chosenIdx;
+  st.answered = true;
+  if (isCorrect) {
+    score++;
+    streak++;
+    bestStreak = Math.max(bestStreak, streak);
+  } else {
+    st.brokenStreak = streak;
+    streak = 0;
+  }
+  st.streakAfter = streak;
+
+  renderQuestion();
+  renderStreak(isCorrect);
+
+  const answeredAt = cur;
+  setTimeout(() => {
+    if (cur !== answeredAt || !$('screen-quiz').classList.contains('active')) return;
+    modalOpen = true;
+    renderModal();
+    $('modal-overlay').classList.remove('hidden');
+  }, 600);
+}
+
+function renderModal() {
+  const st = states[cur];
+  const q  = shuffled[cur];
+  const isCorrect = st.chosen === st.correct;
+  const verdict = $('modal-verdict');
+  $('modal-icon').textContent = isCorrect ? '✅' : '❌';
+  verdict.textContent = isCorrect ? 'Rätt!' : 'Fel!';
+  verdict.className = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
+  let streakMsg = '';
+  if (isCorrect && st.streakAfter >= 3) streakMsg = '🔥 ' + st.streakAfter + ' rätt i rad!';
+  else if (!isCorrect && st.brokenStreak >= 3) streakMsg = 'Sviten bröts efter ' + st.brokenStreak + ' rätt i rad';
+  $('modal-streak').textContent = streakMsg;
+  setText($('modal-expl'), explText(q), explAr(q));
+  $('modal-src').textContent = ui('srcLbl') + q.kalla;
+  $('modal-next').textContent = cur < shuffled.length - 1 ? ui('modalNextBtn') : 'Se resultatet →';
+}
+
+// ── Modal close → next ─────────────────────────────────────
+function closeModal() {
+  $('modal-overlay').classList.add('hidden');
+  modalOpen = false;
+  goNext();
+}
+
+// ── Navigation ─────────────────────────────────────────────
+function goNext() {
+  $('modal-overlay').classList.add('hidden');
+  modalOpen = false;
+  if (cur < shuffled.length - 1) {
+    cur++;
+    renderQuestion();
+  } else {
+    endQuiz();
+  }
+}
+
+function goBack() {
+  if (cur > 0) {
+    cur--;
+    renderQuestion();
+  }
+}
+
+// ── End quiz ───────────────────────────────────────────────
+function endQuiz() {
+  clearInterval(timerInterval);
+  elapsedMs = Date.now() - startTime;
+  show('screen-result');
+  renderResult();
+}
+
+const RANK_TEXT = {
+  S: ['🏆 Fullpott!',     'Alla rätt – du är redo för läxförhöret.'],
+  A: ['🌟 Redo för provet!', 'Nästan alla rätt. Titta på det du missade en gång till.'],
+  B: ['👍 Klarat!',        'Du har klarat 80 %-gränsen. Repetera frågorna du missade.'],
+  C: ['💪 Öva lite till',  'Du är på väg. Läs pluggmaterialet för delarna du missade och gör om quizet.'],
+  D: ['📚 Öva mer',        'Börja med begreppen och pluggmaterialet, och försök sedan igen.']
+};
+
+function renderResult() {
+  const elapsed = fmtTime(elapsedMs);
+  const n       = shuffled.length;
+  const pct     = Math.round((score / n) * 100);
+  const rank    = computeRank(pct);
+  const s       = SELECTIONS[selKey];
+
+  $('r-sel').textContent     = s.label + ' · ' + s.title;
+  $('r-score').textContent   = score + '/' + n;
+  $('s-correct').textContent = score;
+  $('s-wrong').textContent   = n - score;
+  $('s-pct').textContent     = pct + '%';
+  $('s-streak').textContent  = bestStreak;
+  $('r-time').textContent    = 'Tid: ' + elapsed;
+  $('progress-bar').style.width = '100%';
+
+  $('r-rank').className = 'rank-badge rank-' + rank;
+  $('r-rank-letter').textContent = rank;
+  const pass = $('r-pass');
+  const passed = pct >= PASS_PCT;
+  pass.className = 'pass-pill ' + (passed ? 'ok' : 'not');
+  pass.textContent = passed ? '✓ Klarat – minst 80 % rätt' : 'Inte klarat än – gränsen är 80 %';
+  $('r-title').textContent = RANK_TEXT[rank][0];
+  $('r-msg').textContent   = RANK_TEXT[rank][1];
+  $('r-code').textContent  = computeVerificationCode(selKey, score, n, rank);
+
+  // Missade frågor
+  const missedEl = $('missed-section');
+  missedEl.innerHTML = '';
+  const missedIdx = states.map((st, i) => i).filter(i => states[i].chosen !== states[i].correct);
+  if (missedIdx.length > 0) {
+    const hd = document.createElement('div');
+    hd.className = 'section-hd';
+    hd.textContent = ui('missedHd') + ' (' + missedIdx.length + ')';
+    missedEl.appendChild(hd);
+    missedIdx.forEach(idx => {
+      const item = document.createElement('div');
+      item.className = 'missed-item';
+      setText(item, (idx + 1) + '. ' + qText(shuffled[idx]), qAr(shuffled[idx]));
+      missedEl.appendChild(item);
+    });
+  }
+
+  // Fullständigt facit: ditt svar / rätt svar / källa
+  $('facit-hd').textContent    = ui('facitHd');
+  $('btn-restart').textContent = ui('restartBtn');
+  $('btn-choose').textContent  = ui('chooseBtn');
+  const facitEl = $('facit-list');
+  facitEl.innerHTML = '';
+  states.forEach((st, i) => {
+    const q      = shuffled[i];
+    const ok     = st.chosen === st.correct;
+    const item   = document.createElement('div');
+    item.className = 'facit-item ' + (ok ? 'fc' : 'fw');
+
+    const num = document.createElement('div');
+    num.className = 'fi-num';
+    num.textContent = 'Fråga ' + (i + 1) + ' · Del ' + q.del;
+
+    const qEl = document.createElement('div');
+    qEl.className = 'fi-q';
+    setText(qEl, qText(q), qAr(q));
+
+    const ya = document.createElement('div');
+    ya.className = 'fi-row ' + (ok ? 'ya-ok' : 'ya-bad');
+    const yaLbl = document.createElement('span');
+    yaLbl.className = 'lbl';
+    yaLbl.textContent = ui('yourAnswerLbl');
+    ya.appendChild(yaLbl);
+    ya.appendChild(document.createTextNode(
+      (st.chosen === null ? ui('notAnswered') : optText(q, st.chosen)) + (ok ? ' ✓' : ' ✗')));
+    if (st.chosen !== null) appendAr(ya, optAr(q, st.chosen));
+
+    item.appendChild(num);
+    item.appendChild(qEl);
+    item.appendChild(ya);
+
+    if (!ok) {
+      const ra = document.createElement('div');
+      ra.className = 'fi-row ra';
+      const raLbl = document.createElement('span');
+      raLbl.className = 'lbl';
+      raLbl.textContent = ui('correctAnswerLbl');
+      ra.appendChild(raLbl);
+      ra.appendChild(document.createTextNode(optText(q, st.correct)));
+      appendAr(ra, optAr(q, st.correct));
+      item.appendChild(ra);
+    }
+
+    const src = document.createElement('div');
+    src.className = 'fi-row src';
+    src.textContent = ui('srcLbl') + q.kalla;
+    item.appendChild(src);
+
+    facitEl.appendChild(item);
+  });
+}
+
+// ── Restart ────────────────────────────────────────────────
+// Gör om = samma urval, ny blandning av både frågor och alternativ.
+// Textläge och arabiskt stöd ligger kvar (sessionStorage).
+function restartQuiz() {
+  startQuiz(selKey);
+}
+function chooseOther() {
+  clearInterval(timerInterval);
+  show('screen-start');
+}
+</script>
+    <script src="feedback-widget.js" defer></script>
+    <script data-goatcounter="https://johnblixt.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

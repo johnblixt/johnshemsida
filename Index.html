@@ -571,7 +571,9 @@
         id: 'nk_1a2', name: 'Naturkunskap 1a2', emoji: '🌱',
         color: '#4ade80', bgLight: '#f0fdf4', textDark: '#14532d',
         areas: [
-          { name: 'Genteknik',             course: 'NK1a2', color: '#4ade80', bgLight: '#f0fdf4', textDark: '#14532d', quizLabel: 'Starta Quiz',    quiz: 'nk2_genteknik.html',      material: 'nk2_genteknik_material.html',  begrepp: 'nk2_genteknik_begrepp.html' },
+          { name: 'Cellen, DNA och genteknik', course: 'NK1a2', color: '#4ade80', bgLight: '#f0fdf4', textDark: '#14532d', quizLabel: 'Starta Quiz', quiz: 'nk1a2_genteknik_quiz.html', material: 'nk1a2_genteknik_plugg.html', begrepp: 'nk1a2_genteknik_begrepp.html' },
+          // Gamla Genteknik-kortet – ersatt av kortet ovan. Ta bort dold: true för att visa det igen.
+          { name: 'Genteknik',             course: 'NK1a2', color: '#4ade80', bgLight: '#f0fdf4', textDark: '#14532d', quizLabel: 'Starta Quiz',    quiz: 'nk2_genteknik.html',      material: 'nk2_genteknik_material.html',  begrepp: 'nk2_genteknik_begrepp.html', dold: true },
           { name: 'Folkhälsa',             course: 'NK1a2', color: '#4ade80', bgLight: '#f0fdf4', textDark: '#14532d', quizLabel: 'Starta Quiz',    quiz: 'nk2_folkhalsa.html',      material: 'nk2_folkhalsa_material.html',  begrepp: 'nk2_folkhalsa_begrepp.html' },
           { name: 'Hållbar utveckling',    course: 'NK1a2', color: '#4ade80', bgLight: '#f0fdf4', textDark: '#14532d', quizLabel: 'Starta Quiz',    quiz: 'nk2_hallbarhet.html',     material: 'nk2_hallbarhet_material.html', begrepp: 'nk2_hallbarhet_begrepp.html' },
           { name: 'Vetenskap',             course: 'NK1a2', color: '#4ade80', bgLight: '#f0fdf4', textDark: '#14532d', quizLabel: 'Starta Quiz',    quiz: 'nk2_vetenskap.html',      material: 'nk2_vetenskap_material.html',  begrepp: 'nk2_vetenskap_begrepp.html' }
@@ -1018,7 +1020,7 @@
         if (s.areas[i].dold) continue;
         cards += deskAreaCardHtml(s.areas[i]);
       }
-      return '<section class="desk-course">'
+      return '<section class="desk-course" id="desk-kurs-' + s.id + '">'
         + '<div class="desk-course-head">'
         + '<span class="desk-course-badge" style="background:' + deskTint(s.color, 18) + ';border-color:' + deskTint(s.color, 42) + ';"><span>' + s.emoji + '</span></span>'
         + '<h2 class="desk-course-title" style="color:' + deskInkify(s.color) + ';">' + s.name + '</h2>'
@@ -1184,6 +1186,38 @@
     }
 
     renderDesktop();
+
+    /* ── Djuplänk från undersidor: index.html#kurs=<id> öppnar kursens del ──
+       Används som tillbaka-fallback (t.ex. #kurs=nk_1a2). Klassvalet rörs aldrig:
+       läser klassen inte kursen visas "Alla kurser" i stället. */
+    function openCourseFromHash() {
+      var m = /^#kurs=([\w-]+)$/.exec(window.location.hash);
+      if (!m) return;
+      var idx = -1;
+      for (var i = 0; i < MOB_SUBJECTS.length; i++) {
+        if (MOB_SUBJECTS[i].id === m[1]) { idx = i; break; }
+      }
+      if (idx === -1) return;
+      var s = MOB_SUBJECTS[idx];
+
+      // Desktop: se till att kurssektionen finns i vyn och scrolla dit
+      var allowed = mobSelectedClass ? (CLASS_COURSES[mobSelectedClass] || []) : [];
+      if (allowed.indexOf(s.id) === -1) {
+        deskShowAll = true;
+        deskGy11Open = !!s.gy11;
+        renderDesktop();
+      }
+      if (window.matchMedia('(min-width: 768px)').matches) {
+        var sec = document.getElementById('desk-kurs-' + s.id);
+        if (sec) sec.scrollIntoView({ block: 'start' });
+      }
+
+      // Mobil: öppna kursens områdeslista (steg 2), tillbaka-pilen leder till steg 1
+      mobSelectedSubjectIdx = idx;
+      renderMobStep2();
+      mobSlide(1, 2);
+    }
+    openCourseFromHash();
 
 
     fetch('https://johnblixt.goatcounter.com/counter/TOTAL.json')
