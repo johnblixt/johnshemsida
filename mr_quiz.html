@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mänskliga rättigheter – Quiz | Samhällskunskap nivå 1a1</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --primary:       #d97706;
@@ -28,16 +28,43 @@
     }
     a.back-btn:hover { background: var(--primary-light); }
 
-    .easy-toggle {
+    /* Språkväljare: Svenska / 📖 Enkel svenska / العربية – samma stil som tidigare Enkel svenska-toggle */
+    .lang-switch {
       position: fixed; top: 14px; right: 14px; z-index: 200;
-      background: white; border: 2px solid #16a34a; color: #16a34a;
-      padding: 7px 16px; border-radius: 999px; font-family: inherit;
-      font-size: 0.88rem; font-weight: 600; cursor: pointer;
+      display: flex; gap: 2px; background: white; border: 2px solid #16a34a;
+      border-radius: 999px; padding: 2px; direction: ltr;
+    }
+    .easy-toggle {
+      background: transparent; border: none; color: #16a34a;
+      padding: 5px 14px; border-radius: 999px; font-family: inherit;
+      font-size: 0.88rem; font-weight: 600; cursor: pointer; white-space: nowrap;
       transition: background 0.15s, color 0.15s;
     }
     .easy-toggle:hover { background: #dcfce7; }
     .easy-toggle[aria-pressed="true"] { background: #16a34a; color: white; }
     .easy-toggle[aria-pressed="true"]:hover { background: #15803d; }
+    .easy-toggle[lang="ar"] { font-size: 0.95rem; line-height: 1.3; }
+
+    /* ── Arabiska (RTL) ── */
+    [lang="ar"] {
+      font-family: 'Noto Naskh Arabic', 'Noto Sans Arabic', 'Segoe UI', Tahoma, 'Arial', serif;
+      line-height: 1.85;
+    }
+    bdi[lang="sv"] { font-family: 'EB Garamond', Georgia, serif; unicode-bidi: isolate; }
+    .q-text[lang="ar"]     { font-size: 1.22rem; line-height: 1.95; }
+    .opt-btn[lang="ar"]    { line-height: 1.8; }
+    .modal-expl[lang="ar"] { line-height: 2; }
+    .sv-peek-wrap { margin: -12px 0 18px; }
+    .sv-peek {
+      background: white; border: 1px solid #cbd5e1; border-radius: 999px;
+      padding: 3px 12px; font-family: 'EB Garamond', Georgia, serif; font-size: 0.85rem;
+      color: #475569; cursor: pointer;
+    }
+    .sv-peek:hover { border-color: #16a34a; color: #16a34a; }
+    .sv-orig {
+      margin-top: 8px; background: #f8fafc; border-left: 3px solid #16a34a;
+      border-radius: 6px; padding: 8px 12px; font-size: 1rem; color: #334155; line-height: 1.5;
+    }
 
     .screen { display: none; }
     .screen.active { display: block; }
@@ -80,7 +107,7 @@
     .opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
     .opt-btn {
       background: white; border: 2px solid #e2e8f0; border-radius: 12px;
-      padding: 13px 18px; text-align: left; font-size: 1rem; font-family: inherit;
+      padding: 13px 18px; text-align: start; font-size: 1rem; font-family: inherit;
       cursor: pointer; transition: border-color 0.15s, background 0.15s; line-height: 1.45;
     }
     .opt-btn:hover:not(:disabled) { border-color: var(--primary); background: var(--primary-light); }
@@ -97,7 +124,7 @@
     .btn-next {
       background: var(--primary); border: none; border-radius: 10px;
       padding: 10px 28px; font-family: inherit; font-size: 0.9rem; font-weight: 600;
-      color: white; cursor: pointer; margin-left: auto; transition: background 0.15s;
+      color: white; cursor: pointer; margin-inline-start: auto; transition: background 0.15s;
     }
     .btn-next:hover { background: var(--primary-dark); }
 
@@ -146,15 +173,15 @@
     }
     .missed-section { margin-bottom: 32px; }
     .missed-item {
-      background: var(--wrong-bg); border-left: 4px solid var(--wrong-border);
+      background: var(--wrong-bg); border-inline-start: 4px solid var(--wrong-border);
       border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-size: 0.92rem;
     }
     .facit-item {
       background: white; border: 1px solid #e2e8f0; border-radius: 12px;
       padding: 14px 16px; margin-bottom: 10px;
     }
-    .facit-item.fc { border-left: 4px solid var(--correct-border); }
-    .facit-item.fw { border-left: 4px solid var(--wrong-border); }
+    .facit-item.fc { border-inline-start: 4px solid var(--correct-border); }
+    .facit-item.fw { border-inline-start: 4px solid var(--wrong-border); }
     .fi-num { font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
     .fi-q   { font-size: 0.93rem; font-weight: 600; color: #0f172a; margin-bottom: 8px; line-height: 1.4; }
     .fi-row { font-size: 0.88rem; padding: 2px 0; }
@@ -173,9 +200,17 @@
 
     @media (max-width: 768px) {
       a.back-btn { top: 10px; left: 8px; padding: 6px 10px; font-size: 0.88rem; }
-      .easy-toggle { top: 10px; right: 8px; padding: 6px 12px; font-size: 0.8rem; }
+      .lang-switch { top: 10px; right: 8px; }
+      .easy-toggle { padding: 5px 10px; font-size: 0.8rem; }
       #screen-quiz, #screen-result { padding-left: 16px; padding-right: 16px; }
       .modal-box { padding: 24px 20px; max-height: 90vh; overflow-y: auto; }
+    }
+    /* Smal skärm: språkväljaren flyttas till en egen rad under tillbaka-länken */
+    @media (max-width: 640px) {
+      .lang-switch { top: 46px; left: 50%; right: auto; transform: translateX(-50%); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+      #screen-start  { padding-top: 110px; }
+      #screen-quiz   { padding-top: 100px; }
+      #screen-result { padding-top: 110px; }
     }
     @media (max-width: 500px) {
       #screen-start h1 { font-size: 1.85rem; }
@@ -185,20 +220,24 @@
 </head>
 <body>
 
-<a href="politik.html" class="back-btn">← Tillbaka</a>
-<button class="easy-toggle" id="btn-easy" type="button" aria-pressed="false" onclick="toggleEasy()">📖 Enkel svenska</button>
+<a href="politik.html" class="back-btn" id="back-link">← Tillbaka</a>
+<div class="lang-switch" role="group" aria-label="Språk">
+  <button class="easy-toggle" type="button" data-mode="sv"   aria-pressed="true"  onclick="setMode('sv')">Svenska</button>
+  <button class="easy-toggle" type="button" data-mode="easy" aria-pressed="false" onclick="setMode('easy')" id="btn-easy">📖 Enkel svenska</button>
+  <button class="easy-toggle" type="button" data-mode="ar"   aria-pressed="false" onclick="setMode('ar')" lang="ar" dir="rtl">العربية</button>
+</div>
 
 <!-- ═══════════ START ═══════════ -->
 <div id="screen-start" class="screen active">
-  <div class="badge">Samhällskunskap nivå 1a1 · Politik</div>
-  <h1>⚖️ Mänskliga rättigheter</h1>
-  <p class="subtitle">30 frågor om rättigheters historia, FN, Europarådet och kränkningar</p>
+  <div class="badge" id="start-badge">Samhällskunskap nivå 1a1 · Politik</div>
+  <h1 id="start-title">⚖️ Mänskliga rättigheter</h1>
+  <p class="subtitle" id="start-sub">30 frågor om rättigheters historia, FN, Europarådet och kränkningar</p>
   <div class="info-cards">
-    <div class="info-card"><div class="num">30</div><div class="lbl">Frågor</div></div>
-    <div class="info-card"><div class="num">4</div><div class="lbl">Alternativ</div></div>
-    <div class="info-card"><div class="num">⏱</div><div class="lbl">Timer</div></div>
+    <div class="info-card"><div class="num">30</div><div class="lbl" id="lbl-questions">Frågor</div></div>
+    <div class="info-card"><div class="num">4</div><div class="lbl" id="lbl-options">Alternativ</div></div>
+    <div class="info-card"><div class="num">⏱</div><div class="lbl" id="lbl-timer">Timer</div></div>
   </div>
-  <button class="btn-primary" onclick="startQuiz()">Starta Quiz →</button>
+  <button class="btn-primary" id="btn-start" onclick="startQuiz()">Starta Quiz →</button>
 </div>
 
 <!-- ═══════════ QUIZ ═══════════ -->
@@ -210,6 +249,10 @@
   <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
   <div class="q-counter" id="q-counter">Fråga 1 av 30</div>
   <div class="q-text" id="q-text"></div>
+  <div class="sv-peek-wrap" id="sv-peek-wrap" style="display:none">
+    <button class="sv-peek" id="sv-peek" type="button" lang="sv" aria-expanded="false" aria-controls="sv-orig" onclick="toggleSvPeek()">Visa svenska ▾</button>
+    <div class="sv-orig" id="sv-orig" lang="sv" dir="ltr" hidden></div>
+  </div>
   <div class="opts" id="opts"></div>
   <div class="nav-row">
     <button class="btn-back" id="btn-back" onclick="goBack()" style="display:none">← Bakåt</button>
@@ -219,7 +262,7 @@
 
 <!-- ═══════════ MODAL ═══════════ -->
 <div id="modal-overlay" class="hidden">
-  <div class="modal-box">
+  <div class="modal-box" id="modal-box">
     <div class="modal-icon"    id="modal-icon"></div>
     <div class="modal-verdict" id="modal-verdict"></div>
     <div class="modal-expl"    id="modal-expl"></div>
@@ -232,16 +275,16 @@
   <div class="res-header">
     <div class="score-ring">
       <div class="rnum" id="r-score"></div>
-      <div class="rlbl">poäng</div>
+      <div class="rlbl" id="r-ringlbl">poäng</div>
     </div>
     <div class="res-title" id="r-title"></div>
     <div class="res-msg"   id="r-msg"></div>
     <div class="res-time"  id="r-time"></div>
   </div>
   <div class="stats-row">
-    <div class="stat-box cs"><div class="snum" id="s-correct">0</div><div class="slbl">Rätt</div></div>
-    <div class="stat-box ws"><div class="snum" id="s-wrong">0</div><div class="slbl">Fel</div></div>
-    <div class="stat-box"><div class="snum" id="s-pct">0%</div><div class="slbl">Andel rätt</div></div>
+    <div class="stat-box cs"><div class="snum" id="s-correct">0</div><div class="slbl" id="l-correct">Rätt</div></div>
+    <div class="stat-box ws"><div class="snum" id="s-wrong">0</div><div class="slbl" id="l-wrong">Fel</div></div>
+    <div class="stat-box"><div class="snum" id="s-pct">0%</div><div class="slbl" id="l-pct">Andel rätt</div></div>
   </div>
   <div class="missed-section" id="missed-section"></div>
   <div class="section-hd" id="facit-hd">Fullständigt facit</div>
@@ -270,7 +313,15 @@ const QUESTIONS = [
       'De gäller bara i de 193 länder som är med i FN',
       'De gäller bara vuxna, alltså de som är myndiga'
     ],
-    expEnkel: 'Universell betyder att något gäller alla. Mänskliga rättigheter gäller alla människor. Det spelar ingen roll vilket land du kommer från. Det spelar heller ingen roll vilken religion, vilket kön eller vilka åsikter du har.'
+    expEnkel: 'Universell betyder att något gäller alla. Mänskliga rättigheter gäller alla människor. Det spelar ingen roll vilket land du kommer från. Det spelar heller ingen roll vilken religion, vilket kön eller vilka åsikter du har.',
+    qAr: 'حقوق الإنسان (mänskliga rättigheter) عالمية (universella). ماذا يعني ذلك؟',
+    optsAr: [
+      'تنطبق على جميع البشر، في كل البلدان وفي كل العصور',
+      'تنطبق فقط على من هم مواطنون في دولة ديمقراطية',
+      'تنطبق فقط في الدول الأعضاء في الأمم المتحدة وعددها 193',
+      'تنطبق فقط على البالغين، أي من بلغوا سن الرشد'
+    ],
+    expAr: 'كلمة «عالمي» (universell) تعني أن الشيء ينطبق على الجميع. حقوق الإنسان (mänskliga rättigheter) تنطبق على جميع البشر. لا يهم من أي بلد أتيت. ولا يهم أيضاً ما هو دينك أو جنسك أو آراؤك.'
   },
   {
     q: 'I vilka tre huvudkategorier brukar mänskliga rättigheter delas in?',
@@ -289,7 +340,15 @@ const QUESTIONS = [
       'Nationella, regionala och lokala rättigheter i varje land',
       'Barnens rättigheter, kvinnornas rättigheter och de äldres rättigheter'
     ],
-    expEnkel: 'Det finns tre grupper. Personliga rättigheter, till exempel rätten att leva. Politiska rättigheter, till exempel rätten att rösta. Ekonomiska, sociala och kulturella rättigheter, till exempel rätten att gå i skolan och att arbeta.'
+    expEnkel: 'Det finns tre grupper. Personliga rättigheter, till exempel rätten att leva. Politiska rättigheter, till exempel rätten att rösta. Ekonomiska, sociala och kulturella rättigheter, till exempel rätten att gå i skolan och att arbeta.',
+    qAr: 'تُقسَّم حقوق الإنسان (mänskliga rättigheter) غالباً إلى ثلاث مجموعات. ما هي؟',
+    optsAr: [
+      'الحقوق الشخصية والسياسية، والحقوق الاقتصادية والاجتماعية والثقافية',
+      'الحقوق المدنية والحقوق العسكرية والحقوق الدينية لجميع البشر',
+      'الحقوق الوطنية والحقوق الإقليمية والحقوق المحلية في كل بلد',
+      'حقوق الأطفال وحقوق النساء وحقوق كبار السن في المجتمع'
+    ],
+    expAr: 'هناك ثلاث مجموعات. الحقوق الشخصية (personliga rättigheter)، مثل الحق في الحياة. الحقوق السياسية (politiska rättigheter)، مثل الحق في التصويت. الحقوق الاقتصادية والاجتماعية والثقافية (ekonomiska, sociala och kulturella rättigheter)، مثل الحق في الذهاب إلى المدرسة والحق في العمل.'
   },
   {
     q: 'Vilken 1600-talsfilosof formulerade idén om att alla människor föds med naturliga rättigheter till liv, frihet och egendom?',
@@ -308,7 +367,15 @@ const QUESTIONS = [
       'Jean-Jacques Rousseau',
       'Immanuel Kant'
     ],
-    expEnkel: 'John Locke var en filosof från England. Han sa att alla människor föds med rätt till liv, frihet och egendom (saker man äger). Hans idéer blev en grund för dagens mänskliga rättigheter. De påverkade också USA:s självständighetsförklaring.'
+    expEnkel: 'John Locke var en filosof från England. Han sa att alla människor föds med rätt till liv, frihet och egendom (saker man äger). Hans idéer blev en grund för dagens mänskliga rättigheter. De påverkade också USA:s självständighetsförklaring.',
+    qAr: 'قال فيلسوف في القرن السابع عشر إن كل البشر يولدون ولهم حقوق طبيعية (naturliga rättigheter): الحق في الحياة والحرية والملكية. من هو؟',
+    optsAr: [
+      'جون لوك (John Locke)',
+      'توماس هوبز (Thomas Hobbes)',
+      'جان جاك روسو (Jean-Jacques Rousseau)',
+      'إيمانويل كانط (Immanuel Kant)'
+    ],
+    expAr: 'كان جون لوك (John Locke) فيلسوفاً من إنجلترا. قال إن كل البشر يولدون ولهم الحق في الحياة والحرية والملكية، أي الأشياء التي يملكها الإنسان. أصبحت أفكاره أساساً لحقوق الإنسان اليوم. وأثّرت أيضاً في إعلان استقلال الولايات المتحدة.'
   },
   {
     q: 'Vad var Kyroskylindren, skapad ca 539 f.v.t.?',
@@ -327,7 +394,15 @@ const QUESTIONS = [
       'En lag för armén som sa att man fick ta över länderna runt omkring',
       'Den äldsta text vi känner till om handel, och den kommer från Persien'
     ],
-    expEnkel: 'Kyroskylindren gjordes av Kyros den store. Han var kung i Persien. Många ser den som världens första rättighetsförklaring. Den gjorde slavar fria. Den gav också alla i riket rätt att ha sin egen religion.'
+    expEnkel: 'Kyroskylindren gjordes av Kyros den store. Han var kung i Persien. Många ser den som världens första rättighetsförklaring. Den gjorde slavar fria. Den gav också alla i riket rätt att ha sin egen religion.',
+    qAr: 'صُنعت أسطوانة قورش (Kyroskylindern) نحو عام 539 قبل الميلاد. ماذا كانت؟',
+    optsAr: [
+      'نص عن الحقوق حرّر العبيد ومنح الناس حرية الدين، ضمن أمور أخرى',
+      'أول جواز سفر حديث، كان يُستخدم للسفر بين البلدان المختلفة',
+      'قانون للجيش يسمح بالاستيلاء على كل البلدان المجاورة له',
+      'أقدم نص معروف لنا عن التجارة، وهو يعود إلى بلاد فارس'
+    ],
+    expAr: 'صنع أسطوانةَ قورش (Kyroskylindern) الملكُ قورش الكبير (Kyros den store). كان ملكاً على بلاد فارس. يرى كثيرون أنها أول إعلان للحقوق في العالم. حرّرت العبيد. ومنحت أيضاً كل من يعيش في المملكة الحق في أن يكون له دينه الخاص.'
   },
   {
     q: 'Vilket år grundades Förenta nationerna (FN)?',
@@ -341,7 +416,15 @@ const QUESTIONS = [
       '1948',
       '1939'
     ],
-    expEnkel: 'FN bildades 1945, direkt efter andra världskriget. Målet var att stoppa nya krig och skydda människors rättigheter. 51 länder skrev under FN-stadgan i San Francisco.'
+    expEnkel: 'FN bildades 1945, direkt efter andra världskriget. Målet var att stoppa nya krig och skydda människors rättigheter. 51 länder skrev under FN-stadgan i San Francisco.',
+    qAr: 'في أي عام تأسست الأمم المتحدة (FN)؟',
+    optsAr: [
+      '1945',
+      '1919',
+      '1948',
+      '1939'
+    ],
+    expAr: 'تأسست الأمم المتحدة (FN) عام 1945، مباشرة بعد الحرب العالمية الثانية. كان الهدف منع حروب جديدة وحماية حقوق الناس. وقّعت 51 دولة على ميثاق الأمم المتحدة (FN-stadgan) في سان فرانسيسكو.'
   },
   {
     q: 'Hur många länder grundade FN år 1945?',
@@ -355,7 +438,15 @@ const QUESTIONS = [
       '100 länder',
       '193 länder'
     ],
-    expEnkel: 'FN bildades 1945 av 51 länder. I dag är 193 länder med i FN. FN arbetar för fred och säkerhet. FN hjälper människor i nöd och arbetar för mänskliga rättigheter.'
+    expEnkel: 'FN bildades 1945 av 51 länder. I dag är 193 länder med i FN. FN arbetar för fred och säkerhet. FN hjälper människor i nöd och arbetar för mänskliga rättigheter.',
+    qAr: 'كم عدد الدول التي شاركت في تأسيس الأمم المتحدة (FN) عام 1945؟',
+    optsAr: [
+      '51 دولة',
+      '16 دولة',
+      '100 دولة',
+      '193 دولة'
+    ],
+    expAr: 'تأسست الأمم المتحدة (FN) عام 1945 على يد 51 دولة. اليوم تضم الأمم المتحدة 193 دولة. تعمل الأمم المتحدة من أجل السلام والأمن. وتساعد الناس المحتاجين، وتعمل من أجل حقوق الإنسان.'
   },
   {
     q: 'Hur många artiklar innehåller FN:s allmänna förklaring om de mänskliga rättigheterna, antagen 1948?',
@@ -369,7 +460,15 @@ const QUESTIONS = [
       '10 artiklar',
       '100 artiklar'
     ],
-    expEnkel: 'FN:s allmänna förklaring om de mänskliga rättigheterna antogs den 10 december 1948. Den har 30 artiklar. De handlar till exempel om rätten att leva och vara fri, och om rätten till skola och arbete.'
+    expEnkel: 'FN:s allmänna förklaring om de mänskliga rättigheterna antogs den 10 december 1948. Den har 30 artiklar. De handlar till exempel om rätten att leva och vara fri, och om rätten till skola och arbete.',
+    qAr: 'صدر الإعلان العالمي لحقوق الإنسان (FN:s allmänna förklaring om de mänskliga rättigheterna) عام 1948. كم مادةً (artiklar) يتضمن؟',
+    optsAr: [
+      '30 مادة',
+      '50 مادة',
+      '10 مواد',
+      '100 مادة'
+    ],
+    expAr: 'اعتُمد الإعلان العالمي لحقوق الإنسان (FN:s allmänna förklaring) في 10 ديسمبر 1948. يتضمن 30 مادة (artiklar). تتناول مثلاً الحق في الحياة والحرية، والحق في التعليم والعمل.'
   },
   {
     q: 'Är FN:s allmänna förklaring om de mänskliga rättigheterna från 1948 juridiskt bindande för länder?',
@@ -388,7 +487,15 @@ const QUESTIONS = [
       'Ja, men bara för de fasta medlemmarna i FN:s säkerhetsråd',
       'Ja, men bara för de länder som är medlemmar i EU'
     ],
-    expEnkel: 'FN:s allmänna förklaring är en deklaration. En deklaration är inte ett bindande avtal. Den visar vad som är rätt och viktigt, men ingen lag tvingar länderna att följa den. Konventioner är annorlunda. De är juridiskt bindande för de länder som har ratificerat dem (godkänt dem).'
+    expEnkel: 'FN:s allmänna förklaring är en deklaration. En deklaration är inte ett bindande avtal. Den visar vad som är rätt och viktigt, men ingen lag tvingar länderna att följa den. Konventioner är annorlunda. De är juridiskt bindande för de länder som har ratificerat dem (godkänt dem).',
+    qAr: 'صدر الإعلان العالمي لحقوق الإنسان (FN:s allmänna förklaring) عام 1948. هل هو ملزِم قانونياً (juridiskt bindande)، أي هل يجب على الدول اتباعه بحكم القانون؟',
+    optsAr: [
+      'لا، ليس ملزِماً قانونياً لأي دولة من الدول',
+      'نعم، يجب على كل الدول اتباعه، وإلا تُعاقَب',
+      'نعم، لكن فقط للأعضاء الدائمين في مجلس الأمن',
+      'نعم، لكن فقط للدول الأعضاء في الاتحاد الأوروبي'
+    ],
+    expAr: 'الإعلان العالمي هو إعلان (deklaration). والإعلان ليس اتفاقاً ملزِماً. هو يبيّن ما هو صحيح ومهم، لكن لا يوجد قانون يُجبر الدول على اتباعه. الاتفاقيات (konventioner) مختلفة. فهي ملزِمة قانونياً (juridiskt bindande) للدول التي صادقت عليها (ratificerat)، أي وافقت عليها.'
   },
   {
     q: 'Vad är skillnaden mellan en deklaration och en konvention inom mänskliga rättigheter?',
@@ -407,7 +514,15 @@ const QUESTIONS = [
       'En deklaration gäller enskilda människor. En konvention gäller bara länder.',
       'Det finns ingen viktig skillnad mellan en deklaration och en konvention.'
     ],
-    expEnkel: 'En deklaration, som FN:s från 1948, visar vad länderna tycker är rätt. Men den är inte juridiskt bindande. En konvention är ett avtal. Länder som skriver under och ratificerar den måste följa den enligt lag.'
+    expEnkel: 'En deklaration, som FN:s från 1948, visar vad länderna tycker är rätt. Men den är inte juridiskt bindande. En konvention är ett avtal. Länder som skriver under och ratificerar den måste följa den enligt lag.',
+    qAr: 'ما الفرق بين الإعلان (deklaration) والاتفاقية (konvention) في مجال حقوق الإنسان؟',
+    optsAr: [
+      'الاتفاقية ملزِمة قانونياً للدول التي توقّع عليها. أما الإعلان فليس كذلك.',
+      'الإعلان ملزِم قانونياً. أما الاتفاقية فهي مجرد نصيحة للدول.',
+      'الإعلان ينطبق على الأفراد. أما الاتفاقية فتنطبق على الدول فقط.',
+      'لا يوجد أي فرق مهم بين الإعلان وبين الاتفاقية.'
+    ],
+    expAr: 'الإعلان (deklaration)، مثل إعلان الأمم المتحدة عام 1948، يبيّن ما تراه الدول صحيحاً. لكنه ليس ملزِماً قانونياً. أما الاتفاقية (konvention) فهي اتفاق. والدول التي توقّع عليها وتصادق عليها (ratificerar) يجب أن تلتزم بها بحكم القانون.'
   },
   {
     q: 'Vilket år antogs de två viktigaste FN-konventionerna om mänskliga rättigheter – de s.k. kärnkonventionerna?',
@@ -421,7 +536,15 @@ const QUESTIONS = [
       '1945',
       '1989'
     ],
-    expEnkel: 'År 1966 antogs två konventioner. Den ena handlar om medborgerliga och politiska rättigheter. Den andra handlar om ekonomiska, sociala och kulturella rättigheter. De är juridiskt bindande för de länder som har ratificerat dem.'
+    expEnkel: 'År 1966 antogs två konventioner. Den ena handlar om medborgerliga och politiska rättigheter. Den andra handlar om ekonomiska, sociala och kulturella rättigheter. De är juridiskt bindande för de länder som har ratificerat dem.',
+    qAr: 'لدى الأمم المتحدة اتفاقيتان مهمتان لحقوق الإنسان. تُسمّيان الاتفاقيتين الأساسيتين (kärnkonventionerna). في أي عام اعتُمدتا؟',
+    optsAr: [
+      '1966',
+      '1948',
+      '1945',
+      '1989'
+    ],
+    expAr: 'في عام 1966 اعتُمدت اتفاقيتان (konventioner). الأولى تتناول الحقوق المدنية والسياسية (medborgerliga och politiska rättigheter). والثانية تتناول الحقوق الاقتصادية والاجتماعية والثقافية. وهما ملزِمتان قانونياً للدول التي صادقت عليهما. وتُعرفان بالعربية أيضاً باسم «العهدين الدوليين».'
   },
   {
     q: 'Vilken FN-konvention ger barn under 18 år specifika rättigheter som rätt till skydd, utbildning och deltagande?',
@@ -440,7 +563,15 @@ const QUESTIONS = [
       'Europakonventionen',
       'Konventionen mot tortyr'
     ],
-    expEnkel: 'Barnkonventionen antogs av FN 1989. Den ger barn under 18 år egna rättigheter. Barn har till exempel rätt till skydd, skola, lek och att få säga vad de tycker. Nästan alla länder i världen har ratificerat den.'
+    expEnkel: 'Barnkonventionen antogs av FN 1989. Den ger barn under 18 år egna rättigheter. Barn har till exempel rätt till skydd, skola, lek och att få säga vad de tycker. Nästan alla länder i världen har ratificerat den.',
+    qAr: 'أي اتفاقية للأمم المتحدة تمنح الأطفال دون 18 عاماً حقوقاً خاصة بهم، مثل الحق في الحماية والمدرسة والمشاركة في اتخاذ القرار؟',
+    optsAr: [
+      'اتفاقية حقوق الطفل (Barnkonventionen)',
+      'اتفاقية اللاجئين (Flyktingkonventionen)',
+      'الاتفاقية الأوروبية (Europakonventionen)',
+      'اتفاقية مناهضة التعذيب (Konventionen mot tortyr)'
+    ],
+    expAr: 'اعتمدت الأمم المتحدة اتفاقية حقوق الطفل (Barnkonventionen) عام 1989. تمنح الأطفال دون 18 عاماً حقوقاً خاصة بهم. للأطفال مثلاً الحق في الحماية والمدرسة واللعب، والحق في التعبير عن رأيهم. صادقت عليها تقريباً كل دول العالم.'
   },
   {
     q: 'Vilken rättslig status har Europakonventionen om de mänskliga rättigheterna i Sverige?',
@@ -459,7 +590,15 @@ const QUESTIONS = [
       'Den gäller bara EU-medborgare som bor i Sverige',
       'Den gäller bara i brottmål, inte i andra rättegångar'
     ],
-    expEnkel: 'Europakonventionen blev svensk lag år 1995. Sedan dess gäller den som lag i Sverige. Det betyder att man kan hänvisa till den direkt i en svensk domstol.'
+    expEnkel: 'Europakonventionen blev svensk lag år 1995. Sedan dess gäller den som lag i Sverige. Det betyder att man kan hänvisa till den direkt i en svensk domstol.',
+    qAr: 'ما وضع الاتفاقية الأوروبية لحقوق الإنسان (Europakonventionen) في السويد؟',
+    optsAr: [
+      'هي قانون سارٍ في السويد، مثل القوانين الأخرى تماماً',
+      'هي مجرد نصيحة للدولة، وليست قانوناً في السويد',
+      'تنطبق فقط على مواطني الاتحاد الأوروبي المقيمين في السويد',
+      'تنطبق فقط في القضايا الجنائية، لا في المحاكمات الأخرى'
+    ],
+    expAr: 'أصبحت الاتفاقية الأوروبية (Europakonventionen) قانوناً سويدياً عام 1995. ومنذ ذلك الحين تُطبَّق كقانون في السويد. هذا يعني أنه يمكن الاستناد إليها مباشرة أمام محكمة سويدية.'
   },
   {
     q: 'Vilket år bildades Europarådet?',
@@ -473,7 +612,15 @@ const QUESTIONS = [
       '1945',
       '1995'
     ],
-    expEnkel: 'Europarådet bildades 1949, efter det hemska andra världskriget. Europarådet är inte samma sak som EU. Europarådet arbetar för mänskliga rättigheter, demokrati och rättsstatsprincipen (att alla måste följa lagen, även staten). I dag är 46 länder med.'
+    expEnkel: 'Europarådet bildades 1949, efter det hemska andra världskriget. Europarådet är inte samma sak som EU. Europarådet arbetar för mänskliga rättigheter, demokrati och rättsstatsprincipen (att alla måste följa lagen, även staten). I dag är 46 länder med.',
+    qAr: 'في أي عام تأسس مجلس أوروبا (Europarådet)؟',
+    optsAr: [
+      '1949',
+      '1957',
+      '1945',
+      '1995'
+    ],
+    expAr: 'تأسس مجلس أوروبا (Europarådet) عام 1949، بعد الحرب العالمية الثانية المروّعة. مجلس أوروبا ليس هو الاتحاد الأوروبي (EU). يعمل مجلس أوروبا من أجل حقوق الإنسان والديمقراطية ومبدأ سيادة القانون (rättsstatsprincipen)، أي أن الجميع يجب أن يلتزموا بالقانون، حتى الدولة نفسها. اليوم يضم 46 دولة.'
   },
   {
     q: 'Vad kan Europadomstolen för de mänskliga rättigheterna göra med stater som kränker sina medborgares rättigheter?',
@@ -492,7 +639,15 @@ const QUESTIONS = [
       'Kräva att andra länder skickar sin militär mot landet',
       'Sätta landets ledare i fängelse, som straff för dem själva'
     ],
-    expEnkel: 'Europadomstolen kan döma länder som bryter mot Europakonventionen. Domstolen kan bestämma att landet ska betala skadestånd (pengar) till den som drabbats. Den kan också kräva att landet ändrar sina lagar.'
+    expEnkel: 'Europadomstolen kan döma länder som bryter mot Europakonventionen. Domstolen kan bestämma att landet ska betala skadestånd (pengar) till den som drabbats. Den kan också kräva att landet ändrar sina lagar.',
+    qAr: 'دولة تنتهك حقوق مواطنيها. ماذا تستطيع المحكمة الأوروبية لحقوق الإنسان (Europadomstolen) أن تفعل؟',
+    optsAr: [
+      'أن تُصدر حكماً على الدولة بسبب انتهاك حقوق مواطنيها',
+      'أن تقرر أن الدولة لم تعد عضواً في الأمم المتحدة',
+      'أن تطلب من دول أخرى إرسال جيوشها ضد تلك الدولة',
+      'أن تسجن قادة الدولة، كعقوبة شخصية لهم هم أنفسهم'
+    ],
+    expAr: 'تستطيع المحكمة الأوروبية (Europadomstolen) أن تحكم على الدول التي تنتهك الاتفاقية الأوروبية (Europakonventionen). يمكن للمحكمة أن تقرر أن على الدولة دفع تعويض (skadestånd)، أي مال، للشخص المتضرر. ويمكنها أيضاً أن تطلب من الدولة تغيير قوانينها.'
   },
   {
     q: 'Under vilken organisation lyder Europadomstolen för de mänskliga rättigheterna?',
@@ -506,7 +661,15 @@ const QUESTIONS = [
       'FN:s säkerhetsråd',
       'NATO'
     ],
-    expEnkel: 'Europadomstolen är Europarådets domstol. Den hör inte till EU. Europarådet bildades 1949. Det har 46 medlemsländer. EU har 27.'
+    expEnkel: 'Europadomstolen är Europarådets domstol. Den hör inte till EU. Europarådet bildades 1949. Det har 46 medlemsländer. EU har 27.',
+    qAr: 'إلى أي منظمة تتبع المحكمة الأوروبية لحقوق الإنسان (Europadomstolen)؟',
+    optsAr: [
+      'مجلس أوروبا (Europarådet)',
+      'الاتحاد الأوروبي (EU)',
+      'مجلس الأمن الدولي (FN:s säkerhetsråd)',
+      'حلف الناتو (NATO)'
+    ],
+    expAr: 'المحكمة الأوروبية (Europadomstolen) هي محكمة مجلس أوروبا (Europarådet). وهي لا تتبع الاتحاد الأوروبي (EU). تأسس مجلس أوروبا عام 1949. ويضم 46 دولة عضواً. أما الاتحاد الأوروبي فيضم 27 دولة.'
   },
   {
     q: 'Vad innebär kollektiva rättigheter?',
@@ -525,7 +688,15 @@ const QUESTIONS = [
       'Rättigheter som alla som är medborgare i ett EU-land har tillsammans',
       'Rättigheter som gäller för en hel familj i stället för en enda person'
     ],
-    expEnkel: 'Kollektiva rättigheter gäller en grupp, inte en enskild person. Det kan till exempel vara en folkgrupp eller ett urfolk. Gruppen har rätt till sin kultur, sitt språk och sin religion. Ibland har gruppen också rätt att bestämma över vissa saker själv.'
+    expEnkel: 'Kollektiva rättigheter gäller en grupp, inte en enskild person. Det kan till exempel vara en folkgrupp eller ett urfolk. Gruppen har rätt till sin kultur, sitt språk och sin religion. Ibland har gruppen också rätt att bestämma över vissa saker själv.',
+    qAr: 'ما هي الحقوق الجماعية (kollektiva rättigheter)؟',
+    optsAr: [
+      'حق جماعة عرقية في الحفاظ على لغتها وثقافتها وقدر من تقرير المصير',
+      'حق جميع الناس في أن يلتقوا ويجتمعوا معاً في مجموعة واحدة',
+      'حقوق يملكها معاً كل من هو مواطن في دولة من الاتحاد الأوروبي',
+      'حقوق تنطبق على أسرة كاملة بدلاً من شخص واحد فقط'
+    ],
+    expAr: 'الحقوق الجماعية (kollektiva rättigheter) تخص مجموعة، لا شخصاً واحداً. قد تكون مثلاً جماعة عرقية (folkgrupp) أو شعباً أصلياً (urfolk). للمجموعة الحق في ثقافتها ولغتها ودينها. وأحياناً يكون للمجموعة أيضاً الحق في أن تقرر بنفسها في بعض الأمور، أي تقرير المصير (självbestämmande).'
   },
   {
     q: 'Vilket folk erkänns som urfolk i Sverige?',
@@ -539,7 +710,15 @@ const QUESTIONS = [
       'Romer',
       'Sverigefinnar'
     ],
-    expEnkel: 'Samerna är det enda urfolket i Sverige. Ett urfolk har bott på en plats länge, långt innan länderna fick sina gränser. Samerna har särskilda rättigheter, till exempel när det gäller renskötsel och samiska språket.'
+    expEnkel: 'Samerna är det enda urfolket i Sverige. Ett urfolk har bott på en plats länge, långt innan länderna fick sina gränser. Samerna har särskilda rättigheter, till exempel när det gäller renskötsel och samiska språket.',
+    qAr: 'أي شعب يُعَدّ شعباً أصلياً (urfolk) في السويد؟',
+    optsAr: [
+      'الصاميون (samerna)',
+      'سكان وادي تورنه (tornedalingarna)',
+      'الروما (romer)',
+      'فنلنديو السويد (sverigefinnar)'
+    ],
+    expAr: 'الصاميون (samerna) هم الشعب الأصلي الوحيد في السويد. الشعب الأصلي (urfolk) عاش في مكان ما زمناً طويلاً، قبل أن تحصل الدول على حدودها بوقت طويل. للصاميين حقوق خاصة، مثلاً في رعي الرنة (renskötsel) وفي اللغة الصامية.'
   },
   {
     q: 'Vilka grupper räknas som nationella minoriteter i Sverige, förutom samerna?',
@@ -558,7 +737,15 @@ const QUESTIONS = [
       'Danskar, norrmän, tyskar och polacker',
       'Katoliker, muslimer, hinduer och buddhister'
     ],
-    expEnkel: 'Sverige har fem nationella minoriteter: samer, judar, romer, tornedalingar och sverigefinnar. Samerna är också ett urfolk. Alla fem grupperna har bott i Sverige länge. De har rättigheter som står i lagen.'
+    expEnkel: 'Sverige har fem nationella minoriteter: samer, judar, romer, tornedalingar och sverigefinnar. Samerna är också ett urfolk. Alla fem grupperna har bott i Sverige länge. De har rättigheter som står i lagen.',
+    qAr: 'في السويد أقليات قومية (nationella minoriteter). ما هي هذه المجموعات، إلى جانب الصاميين؟',
+    optsAr: [
+      'اليهود والروما وسكان وادي تورنه وفنلنديو السويد',
+      'الصوماليون والعراقيون والسوريون والأفغان في السويد',
+      'الدنماركيون والنرويجيون والألمان والبولنديون',
+      'الكاثوليك والمسلمون والهندوس والبوذيون في السويد'
+    ],
+    expAr: 'في السويد خمس أقليات قومية (nationella minoriteter): الصاميون (samer)، واليهود (judar)، والروما (romer)، وسكان وادي تورنه (tornedalingar)، وفنلنديو السويد (sverigefinnar). الصاميون أيضاً شعب أصلي (urfolk). عاشت المجموعات الخمس كلها في السويد زمناً طويلاً. ولها حقوق منصوص عليها في القانون.'
   },
   {
     q: 'Vilket år antog FN deklarationen om urfolks rättigheter?',
@@ -572,7 +759,15 @@ const QUESTIONS = [
       '1966',
       '1989'
     ],
-    expEnkel: 'FN antog deklarationen om urfolks rättigheter 2007. Den säger att urfolk har rätt till sin mark, sin kultur, sitt språk och att bestämma själva. Det är en deklaration. Den är alltså inte juridiskt bindande.'
+    expEnkel: 'FN antog deklarationen om urfolks rättigheter 2007. Den säger att urfolk har rätt till sin mark, sin kultur, sitt språk och att bestämma själva. Det är en deklaration. Den är alltså inte juridiskt bindande.',
+    qAr: 'في أي عام اعتمدت الأمم المتحدة إعلان حقوق الشعوب الأصلية (deklarationen om urfolks rättigheter)؟',
+    optsAr: [
+      '2007',
+      '1948',
+      '1966',
+      '1989'
+    ],
+    expAr: 'اعتمدت الأمم المتحدة إعلان حقوق الشعوب الأصلية عام 2007. يقول الإعلان إن للشعوب الأصلية (urfolk) الحق في أرضها وثقافتها ولغتها وفي أن تقرر بنفسها. إنه إعلان (deklaration). أي أنه ليس ملزِماً قانونياً.'
   },
   {
     q: 'Hur många suveräna stater finns det ungefär i världen?',
@@ -586,7 +781,15 @@ const QUESTIONS = [
       'Ungefär 500 stater',
       'Exakt 100 stater'
     ],
-    expEnkel: 'Det finns ungefär 195 suveräna stater i världen. 193 av dem är med i FN. En suverän stat är ett land som har egen mark, eget folk och egen regering. Inget annat land bestämmer över det.'
+    expEnkel: 'Det finns ungefär 195 suveräna stater i världen. 193 av dem är med i FN. En suverän stat är ett land som har egen mark, eget folk och egen regering. Inget annat land bestämmer över det.',
+    qAr: 'كم عدد الدول ذات السيادة (suveräna stater)، أي الدول المستقلة، في العالم تقريباً؟',
+    optsAr: [
+      'نحو 195 دولة',
+      'نحو 50 دولة',
+      'نحو 500 دولة',
+      '100 دولة بالضبط'
+    ],
+    expAr: 'يوجد في العالم نحو 195 دولة ذات سيادة (suveräna stater). منها 193 دولة عضو في الأمم المتحدة. الدولة ذات السيادة هي بلد له أرضه وشعبه وحكومته. ولا تتحكم فيه أي دولة أخرى.'
   },
   {
     q: 'Vad hände Rosa Parks när hon år 1955 vägrade ge upp sin bussplats för en vit passagerare i Alabama?',
@@ -605,7 +808,15 @@ const QUESTIONS = [
       'Ingenting, för busschaufförerna hade ingen lag att följa',
       'Hon fick sparken från jobbet och fick lämna landet'
     ],
-    expEnkel: 'Rosa Parks greps av polisen, för att hon bröt mot lagar som skilde svarta och vita åt. Efter det slutade många att åka buss i Montgomery i 381 dagar. Det kallas bussbojkotten. Den gjorde medborgarrättsrörelsen i USA starkare.'
+    expEnkel: 'Rosa Parks greps av polisen, för att hon bröt mot lagar som skilde svarta och vita åt. Efter det slutade många att åka buss i Montgomery i 381 dagar. Det kallas bussbojkotten. Den gjorde medborgarrättsrörelsen i USA starkare.',
+    qAr: 'في عام 1955 رفضت روزا باركس (Rosa Parks) أن تعطي مقعدها في الحافلة لشخص أبيض. حدث ذلك في ولاية ألاباما. ماذا حدث لها بعد ذلك؟',
+    optsAr: [
+      'اعتقلتها الشرطة، وبعد ذلك فُرضت عليها غرامة',
+      'حصلت على جائزة نوبل لأنها احتجّت على ذلك',
+      'لا شيء، لأن سائقي الحافلات لم يكن لديهم قانون يتبعونه',
+      'فُصلت من عملها واضطرت إلى مغادرة البلاد'
+    ],
+    expAr: 'اعتقلت الشرطة روزا باركس (Rosa Parks)، لأنها خالفت قوانين كانت تفصل بين السود والبيض. بعد ذلك توقّف كثيرون عن ركوب الحافلات في مونتغمري لمدة 381 يوماً. يُسمّى ذلك مقاطعة الحافلات (bussbojkotten). وقد جعلت حركة الحقوق المدنية (medborgarrättsrörelsen) في الولايات المتحدة أقوى.'
   },
   {
     q: 'Vilket historiskt genombrott nådde medborgarrättsrörelsen i USA år 1964?',
@@ -624,7 +835,15 @@ const QUESTIONS = [
       'Barack Obama vann valet och blev den nya presidenten i USA',
       'Alabama fick en ny grundlag där alla människor fick samma rättigheter'
     ],
-    expEnkel: 'År 1964 kom lagen Civil Rights Act. Den förbjöd diskriminering (orättvis behandling) på grund av ras, hudfärg, religion, kön eller vilket land man kommer från. Alla medborgare fick samma rättigheter. Det var en stor seger för medborgarrättsrörelsen.'
+    expEnkel: 'År 1964 kom lagen Civil Rights Act. Den förbjöd diskriminering (orättvis behandling) på grund av ras, hudfärg, religion, kön eller vilket land man kommer från. Alla medborgare fick samma rättigheter. Det var en stor seger för medborgarrättsrörelsen.',
+    qAr: 'حققت حركة الحقوق المدنية (medborgarrättsrörelsen) في الولايات المتحدة نصراً كبيراً عام 1964. ما هو؟',
+    optsAr: [
+      'قانون منع الفصل العنصري ومنح كل المواطنين في الولايات المتحدة الحقوق نفسها',
+      'أصبحت العبودية ممنوعة في الولايات المتحدة، وصار كل العبيد أحراراً',
+      'فاز باراك أوباما في الانتخابات وأصبح الرئيس الجديد للولايات المتحدة',
+      'حصلت ولاية ألاباما على دستور جديد يمنح كل الناس الحقوق نفسها'
+    ],
+    expAr: 'في عام 1964 صدر قانون الحقوق المدنية (Civil Rights Act). منع هذا القانون التمييز (diskriminering)، أي المعاملة غير العادلة، بسبب العرق أو لون البشرة أو الدين أو الجنس أو البلد الذي ينحدر منه الشخص. وحصل كل المواطنين على الحقوق نفسها. كان ذلك نصراً كبيراً لحركة الحقوق المدنية.'
   },
   {
     q: 'Vad betyder ordet apartheid?',
@@ -643,7 +862,15 @@ const QUESTIONS = [
       'Ett namn som inte går att översätta till svenska',
       'Politisk exil (att tvingas fly från sitt land)'
     ],
-    expEnkel: 'Apartheid är ett ord på afrikaans. Det betyder "åtskillnad", alltså rasåtskillnad. I Sydafrika fanns apartheid 1948–1994. Svarta och vita hölls isär genom lagar. Den svarta majoriteten blev förtryckt.'
+    expEnkel: 'Apartheid är ett ord på afrikaans. Det betyder "åtskillnad", alltså rasåtskillnad. I Sydafrika fanns apartheid 1948–1994. Svarta och vita hölls isär genom lagar. Den svarta majoriteten blev förtryckt.',
+    qAr: 'ماذا تعني كلمة أبارتهايد (apartheid)؟',
+    optsAr: [
+      'الفصل العنصري (rasåtskillnad): الفصل بين الناس حسب العرق',
+      'قمع الشعب (folkförtryck): أن تقمع السلطة الشعب كله',
+      'اسم لا يمكن ترجمته إلى اللغة السويدية على الإطلاق',
+      'المنفى السياسي (politisk exil): أن تُجبَر على الفرار من بلدك'
+    ],
+    expAr: 'أبارتهايد (apartheid) كلمة من لغة الأفريكانس. تعني «الانفصال»، أي الفصل العنصري (rasåtskillnad). كان نظام الأبارتهايد قائماً في جنوب أفريقيا من 1948 إلى 1994. كانت القوانين تفصل بين السود والبيض. وكانت الأغلبية السوداء مضطهَدة.'
   },
   {
     q: 'Vem ledde motståndet mot apartheid i Sydafrika och valdes 1994 till landets president?',
@@ -657,7 +884,15 @@ const QUESTIONS = [
       'Steve Biko',
       'F.W. de Klerk'
     ],
-    expEnkel: 'Nelson Mandela satt 27 år i fängelse för sin kamp mot apartheid. Han släpptes 1990. År 1994 blev han Sydafrikas första svarta president. Det var det första valet där alla fick rösta, oavsett hudfärg.'
+    expEnkel: 'Nelson Mandela satt 27 år i fängelse för sin kamp mot apartheid. Han släpptes 1990. År 1994 blev han Sydafrikas första svarta president. Det var det första valet där alla fick rösta, oavsett hudfärg.',
+    qAr: 'من قاد النضال ضد الأبارتهايد (apartheid) في جنوب أفريقيا وأصبح رئيساً للبلاد عام 1994؟',
+    optsAr: [
+      'نيلسون مانديلا (Nelson Mandela)',
+      'ديزموند توتو (Desmond Tutu)',
+      'ستيف بيكو (Steve Biko)',
+      'فريدريك دي كليرك (F.W. de Klerk)'
+    ],
+    expAr: 'قضى نيلسون مانديلا (Nelson Mandela) 27 عاماً في السجن بسبب نضاله ضد الأبارتهايد (apartheid). أُطلق سراحه عام 1990. وفي عام 1994 أصبح أول رئيس أسود لجنوب أفريقيا. كانت تلك أول انتخابات يحق فيها للجميع التصويت، بغض النظر عن لون البشرة.'
   },
   {
     q: 'Vilka tre organisationer arbetar med att bevaka och rapportera om kränkningar av mänskliga rättigheter?',
@@ -676,7 +911,15 @@ const QUESTIONS = [
       'Röda korset, Läkare utan gränser och Save the Children',
       'Greenpeace, WWF och Transparency International'
     ],
-    expEnkel: 'Amnesty International, Human Rights Watch och Reportrar utan gränser är kända organisationer för mänskliga rättigheter. De tar reda på och skriver ner kränkningar. De försöker påverka regeringar. De berättar för alla hur det ser ut i världen.'
+    expEnkel: 'Amnesty International, Human Rights Watch och Reportrar utan gränser är kända organisationer för mänskliga rättigheter. De tar reda på och skriver ner kränkningar. De försöker påverka regeringar. De berättar för alla hur det ser ut i världen.',
+    qAr: 'ما المنظمات الثلاث التي تراقب انتهاكات حقوق الإنسان (kränkningar) وتُخبر الناس عنها؟',
+    optsAr: [
+      'منظمة العفو الدولية، وهيومن رايتس ووتش، ومراسلون بلا حدود',
+      'منظمة الصحة العالمية، ومنظمة اليونيسف، ومنظمة اليونسكو',
+      'الصليب الأحمر، وأطباء بلا حدود، ومنظمة إنقاذ الطفل',
+      'غرينبيس، والصندوق العالمي للطبيعة، ومنظمة الشفافية الدولية'
+    ],
+    expAr: 'منظمة العفو الدولية (Amnesty International) وهيومن رايتس ووتش (Human Rights Watch) ومراسلون بلا حدود (Reportrar utan gränser) منظمات معروفة لحقوق الإنسان. تبحث عن الانتهاكات (kränkningar) وتوثّقها. وتحاول التأثير في الحكومات. وتُخبر الجميع بما يحدث في العالم.'
   },
   {
     q: 'Vad menas med en kränkning av mänskliga rättigheter?',
@@ -695,7 +938,15 @@ const QUESTIONS = [
       'Att offentligt säga att en ledare för ett land har fattat ett dåligt beslut',
       'Att ett land säger nej till att skriva under ett avtal mellan flera länder'
     ],
-    expEnkel: 'En kränkning betyder att någons mänskliga rättigheter inte respekteras. Det kan vara tortyr. Det kan vara att tidningar inte får skriva fritt (censur). Det kan också vara diskriminering. Ofta är det stater som står bakom kränkningarna.'
+    expEnkel: 'En kränkning betyder att någons mänskliga rättigheter inte respekteras. Det kan vara tortyr. Det kan vara att tidningar inte får skriva fritt (censur). Det kan också vara diskriminering. Ofta är det stater som står bakom kränkningarna.',
+    qAr: 'ما هو انتهاك (kränkning) حقوق الإنسان؟',
+    optsAr: [
+      'أن تعامل شخصاً معاملة سيئة بالكلام أو الفعل، أو تسلبه حقوقه',
+      'أن يكون لك رأي مختلف عمّا هو مكتوب في قوانين البلد',
+      'أن تقول علناً إن قائد بلدٍ ما قد اتخذ قراراً سيئاً',
+      'أن ترفض دولة التوقيع على اتفاق بين عدة دول أخرى'
+    ],
+    expAr: 'الانتهاك (kränkning) يعني أن حقوق الإنسان لشخص ما لا تُحترَم. قد يكون ذلك تعذيباً (tortyr). وقد يكون منع الصحف من الكتابة بحرية، أي الرقابة (censur). وقد يكون أيضاً تمييزاً (diskriminering). وغالباً ما تكون الدول هي التي تقف وراء الانتهاكات.'
   },
   {
     q: 'Vad är ett hatbrott?',
@@ -714,7 +965,15 @@ const QUESTIONS = [
       'Ett brott som riktas mot diplomater, alltså de som representerar andra länder',
       'Ett brott som görs mot civila (de som inte är soldater) under ett krig'
     ],
-    expEnkel: 'Ett hatbrott görs på grund av fördomar mot en grupp. Det kan handla om ras, etnicitet, religion, sexuell läggning eller funktionsnedsättning. Hatbrott är extra allvarliga. Offret blir utsatt just för att hen tillhör en viss grupp.'
+    expEnkel: 'Ett hatbrott görs på grund av fördomar mot en grupp. Det kan handla om ras, etnicitet, religion, sexuell läggning eller funktionsnedsättning. Hatbrott är extra allvarliga. Offret blir utsatt just för att hen tillhör en viss grupp.',
+    qAr: 'ما هي جريمة الكراهية (hatbrott)؟',
+    optsAr: [
+      'جريمة تُرتكب لأن المجرم لديه أحكام مسبقة ضد مجموعة في المجتمع',
+      'جريمة فيها عنف شديد جداً ضد أشخاص صادف وجودهم في المكان',
+      'جريمة موجهة ضد الدبلوماسيين، أي من يمثلون الدول الأخرى',
+      'جريمة تُرتكب ضد المدنيين، أي غير الجنود، أثناء الحرب'
+    ],
+    expAr: 'تُرتكب جريمة الكراهية (hatbrott) بسبب أحكام مسبقة (fördomar) ضد مجموعة. قد يتعلق الأمر بالعرق أو الأصل الإثني أو الدين أو الميول الجنسية أو الإعاقة. جرائم الكراهية خطيرة بشكل خاص. فالضحية يتعرض لها بالذات لأنه ينتمي إلى مجموعة معينة.'
   },
   {
     q: 'Hur heter det brott i Sverige som innebär att man sprider uttalanden som hotar eller uttrycker förakt mot en folkgrupp?',
@@ -733,7 +992,15 @@ const QUESTIONS = [
       'Diskrimineringsbrott',
       'Folkförtryck'
     ],
-    expEnkel: 'Hets mot folkgrupp är ett brott i Sverige. Det betyder att man sprider ord eller meddelanden som hotar, visar förakt för eller kränker en folkgrupp. Det kan gälla till exempel ras, etnicitet, religion eller sexuell läggning.'
+    expEnkel: 'Hets mot folkgrupp är ett brott i Sverige. Det betyder att man sprider ord eller meddelanden som hotar, visar förakt för eller kränker en folkgrupp. Det kan gälla till exempel ras, etnicitet, religion eller sexuell läggning.',
+    qAr: 'في السويد، من الجرائم نشرُ كلام يهدد جماعة عرقية أو يُظهر الاحتقار لها. ما اسم هذه الجريمة؟',
+    optsAr: [
+      'التحريض ضد جماعة عرقية (hets mot folkgrupp)',
+      'الجريمة ذات الطابع العنصري (rasistbrott)',
+      'جريمة التمييز ضد الآخرين (diskrimineringsbrott)',
+      'قمع الشعب أو اضطهاده (folkförtryck)'
+    ],
+    expAr: 'التحريض ضد جماعة عرقية (hets mot folkgrupp) جريمة في السويد. وتعني نشر كلام أو رسائل تهدد جماعة عرقية أو تُظهر الاحتقار لها أو تهينها. قد يتعلق الأمر مثلاً بالعرق أو الأصل الإثني أو الدين أو الميول الجنسية.'
   },
   {
     q: 'Vilka länder verkställer flest dödsstraff i världen, enligt Amnesty International?',
@@ -752,7 +1019,15 @@ const QUESTIONS = [
       'USA, Australien, Kanada, Japan och Israel',
       'Somalia, Sudan, Etiopien, Jemen och Afghanistan'
     ],
-    expEnkel: 'Kina avrättar fler människor än alla andra länder tillsammans. Andra länder med många dödsstraff är Iran, Saudiarabien, Egypten och USA. Amnesty och FN menar att dödsstraff bryter mot rätten till liv.'
+    expEnkel: 'Kina avrättar fler människor än alla andra länder tillsammans. Andra länder med många dödsstraff är Iran, Saudiarabien, Egypten och USA. Amnesty och FN menar att dödsstraff bryter mot rätten till liv.',
+    qAr: 'وفقاً لمنظمة العفو الدولية (Amnesty International): ما الدول التي تنفّذ أكبر عدد من أحكام الإعدام (dödsstraff) في العالم؟',
+    optsAr: [
+      'الصين وإيران والسعودية ومصر والولايات المتحدة',
+      'روسيا وكوريا الشمالية وكوبا وفنزويلا وزيمبابوي',
+      'الولايات المتحدة وأستراليا وكندا واليابان وإسرائيل',
+      'الصومال والسودان وإثيوبيا واليمن وأفغانستان'
+    ],
+    expAr: 'تُعدم الصين أشخاصاً أكثر من كل الدول الأخرى مجتمعة. ومن الدول الأخرى التي تنفّذ أحكام إعدام كثيرة: إيران والسعودية ومصر والولايات المتحدة. ترى منظمة العفو الدولية والأمم المتحدة أن عقوبة الإعدام (dödsstraff) تنتهك الحق في الحياة.'
   },
   {
     q: 'Vad menas med naturrätt i sammanhanget mänskliga rättigheter?',
@@ -771,23 +1046,44 @@ const QUESTIONS = [
       'Regler som bestämmer vilka rättigheter de vilda djuren har ute i naturen',
       'En regel som säger att staten äger allt i naturen inom landets gränser'
     ],
-    expEnkel: 'Naturrätten är en idé inom filosofin. Den säger att människan har rättigheter bara för att hon är människa. Rättigheterna finns även om ingen lag skriver om dem. Därför får ingen stat kränka dem. Inte ens en demokrati får det.'
+    expEnkel: 'Naturrätten är en idé inom filosofin. Den säger att människan har rättigheter bara för att hon är människa. Rättigheterna finns även om ingen lag skriver om dem. Därför får ingen stat kränka dem. Inte ens en demokrati får det.',
+    qAr: 'ماذا يعني القانون الطبيعي (naturrätt) عندما نتحدث عن حقوق الإنسان؟',
+    optsAr: [
+      'أن للإنسان حقوقاً لا يجوز حتى للسياسيين المنتخبين من الشعب انتهاكها',
+      'قانون يقول إن للجميع الحق في استخدام الطبيعة وما فيها بحرية',
+      'قواعد تحدد الحقوق التي تملكها الحيوانات البرية في الطبيعة',
+      'قاعدة تقول إن الدولة تملك كل ما في الطبيعة داخل حدود البلد'
+    ],
+    expAr: 'القانون الطبيعي (naturrätten) فكرة في الفلسفة. تقول إن للإنسان حقوقاً لمجرد أنه إنسان. وهذه الحقوق موجودة حتى لو لم يكتب عنها أي قانون. لذلك لا يجوز لأي دولة أن تنتهكها. ولا حتى الدولة الديمقراطية.'
   }
 ];
 
-// ── Enkel svenska – UI-texter ──────────────────────────────
-const UI_ENKEL = {
-  missedHd:         'Frågor du svarade fel på',
-  facitHd:          'Alla frågor och svar',
-  yourAnswerLbl:    'Du svarade: ',
-  correctAnswerLbl: 'Rätt svar: ',
-  notAnswered:      '– (du svarade inte)',
-  backBtn:          '← Tillbaka',
-  nextBtn:          'Nästa →',
-  modalNextBtn:     'Nästa fråga →',
-  restartBtn:       '↺ Gör om'
-};
-const UI_ORIG = {
+// ── Språklägen: 'sv' (original), 'easy' (Enkel svenska), 'ar' (العربية) ──
+// Platshållare {i}, {n}, {s}, {t} fylls i av ui().
+const UI = {};
+UI.sv = {
+  backLink:         '← Tillbaka',
+  badge:            'Samhällskunskap nivå 1a1 · Politik',
+  title:            '⚖️ Mänskliga rättigheter',
+  subtitle:         '30 frågor om rättigheters historia, FN, Europarådet och kränkningar',
+  lblQuestions:     'Frågor',
+  lblOptions:       'Alternativ',
+  lblTimer:         'Timer',
+  startBtn:         'Starta Quiz →',
+  counter:          'Fråga {i} av {n}',
+  score:            'Poäng: {s}',
+  verdictOk:        'Rätt!',
+  verdictBad:       'Fel!',
+  ringLbl:          'poäng',
+  time:             'Tid: {t}',
+  statCorrect:      'Rätt',
+  statWrong:        'Fel',
+  statPct:          'Andel rätt',
+  res90:            ['🏆 Strålande!',  'Imponerande! Du behärskar mänskliga rättigheter.'],
+  res75:            ['👍 Bra jobbat!', 'Bra resultat! Läs igenom det du missade en gång till.'],
+  res60:            ['✓ Godkänt!',     'Du klarar provet! Repetera de svåra delarna.'],
+  resLow:           ['💪 Öva mer!',     'Läs pluggmaterialet och försök igen.'],
+  facitNum:         'Fråga {i}',
   missedHd:         'Frågor du missade',
   facitHd:          'Fullständigt facit',
   yourAnswerLbl:    'Ditt svar: ',
@@ -798,9 +1094,54 @@ const UI_ORIG = {
   modalNextBtn:     'Nästa fråga →',
   restartBtn:       '↺ Gör om quizet'
 };
+UI.easy = Object.assign({}, UI.sv, {
+  missedHd:         'Frågor du svarade fel på',
+  facitHd:          'Alla frågor och svar',
+  yourAnswerLbl:    'Du svarade: ',
+  correctAnswerLbl: 'Rätt svar: ',
+  notAnswered:      '– (du svarade inte)',
+  backBtn:          '← Tillbaka',
+  nextBtn:          'Nästa →',
+  modalNextBtn:     'Nästa fråga →',
+  restartBtn:       '↺ Gör om'
+});
+// Pilarna står så att de pekar rätt i höger-till-vänster-text.
+UI.ar = {
+  backLink:         'العودة ←',
+  badge:            'التربية الاجتماعية (Samhällskunskap 1a1) · السياسة',
+  title:            '⚖️ حقوق الإنسان',
+  subtitle:         '30 سؤالاً عن تاريخ الحقوق، والأمم المتحدة، ومجلس أوروبا، والانتهاكات',
+  lblQuestions:     'أسئلة',
+  lblOptions:       'خيارات',
+  lblTimer:         'مؤقّت',
+  startBtn:         'ابدأ الاختبار ←',
+  counter:          'السؤال {i} من {n}',
+  score:            'النقاط: {s}',
+  verdictOk:        'صحيح!',
+  verdictBad:       'خطأ!',
+  ringLbl:          'نقطة',
+  time:             'الوقت: {t}',
+  statCorrect:      'صحيح',
+  statWrong:        'خطأ',
+  statPct:          'نسبة الإجابات الصحيحة',
+  res90:            ['🏆 رائع!',        'نتيجة مذهلة! أنت تتقن موضوع حقوق الإنسان.'],
+  res75:            ['👍 أحسنت!',       'نتيجة جيدة! اقرأ مرة أخرى ما أخطأت فيه.'],
+  res60:            ['✓ ناجح!',         'ستنجح في الامتحان! راجع الأجزاء الصعبة.'],
+  resLow:           ['💪 تدرّب أكثر!',   'اقرأ المادة الدراسية وحاول مرة أخرى.'],
+  facitNum:         'السؤال {i}',
+  missedHd:         'الأسئلة التي أخطأت فيها',
+  facitHd:          'التصحيح الكامل',
+  yourAnswerLbl:    'إجابتك: ',
+  correctAnswerLbl: 'الإجابة الصحيحة: ',
+  notAnswered:      '– (لم تُجب)',
+  backBtn:          '→ السابق',
+  nextBtn:          'التالي ←',
+  modalNextBtn:     'السؤال التالي ←',
+  restartBtn:       '↺ أعِد الاختبار'
+};
 
 // ── State ──────────────────────────────────────────────────
-// Blandning sker på INDEX: order[] = visad plats → index i q.opts/q.optsEnkel.
+// Blandning sker på INDEX: order[] = visad plats → index i q.opts/q.optsEnkel/q.optsAr.
 // chosen/correct är index i q.opts, så rättningen är oberoende av språkläge.
 let shuffled = [];
 let states   = []; // { order:number[], chosen:number|null, correct:number, answered:bool }
@@ -810,51 +1151,146 @@ let timerInterval = null;
 let startTime = 0;
 let elapsedMs = 0;
 let modalOpen = false;
+let svPeekOpen = false;
 
-// ── Enkel svenska – läge, lagring och texthjälpare ─────────
-const EASY_KEY = 'mr_quiz_enkelsvenska';
-let easyMode = false;
-try { easyMode = sessionStorage.getItem(EASY_KEY) === '1'; } catch (e) {}
+// ── Språkläge – lagring och texthjälpare ───────────────────
+const MODES    = ['sv', 'easy', 'ar'];
+const LANG_KEY = 'mr_quiz_sprak';
+const OLD_EASY_KEY = 'mr_quiz_enkelsvenska'; // tidigare nyckel för Enkel svenska
+let mode = 'sv';
+try {
+  const saved = sessionStorage.getItem(LANG_KEY);
+  if (MODES.includes(saved)) mode = saved;
+  else if (sessionStorage.getItem(OLD_EASY_KEY) === '1') mode = 'easy';
+} catch (e) {}
+const isAr = () => mode === 'ar';
 
 const warned = new Set();
 function warnMissing(q, field) {
   const key = QUESTIONS.indexOf(q) + ':' + field;
   if (warned.has(key)) return;
   warned.add(key);
-  console.warn('Enkel svenska saknas (' + field + ') för fråga: ' + q.q + ' – visar originalet.');
+  console.warn('Översättning saknas (' + field + ') för fråga: ' + q.q + ' – visar svenska.');
 }
-function ui(key) { return (easyMode ? UI_ENKEL : UI_ORIG)[key]; }
+function ui(key, vars) {
+  let s = UI[mode][key];
+  if (s === undefined) { console.warn('UI-text saknas (' + mode + '): ' + key); s = UI.sv[key]; }
+  if (vars) Object.keys(vars).forEach(k => { s = s.replace('{' + k + '}', vars[k]); });
+  return s;
+}
+
+// Textväljare returnerar { text, ar } – ar=true betyder att texten är arabisk.
+// Saknas arabiska visas Enkel svenska (eller originalet), med konsolvarning.
 function qText(q) {
-  if (!easyMode) return q.q;
-  if (q.qEnkel) return q.qEnkel;
-  warnMissing(q, 'qEnkel'); return q.q;
+  if (mode === 'ar') { if (q.qAr) return { text: q.qAr, ar: true }; warnMissing(q, 'qAr'); }
+  if (mode !== 'sv') { if (q.qEnkel) return { text: q.qEnkel, ar: false }; warnMissing(q, 'qEnkel'); }
+  return { text: q.q, ar: false };
 }
 function optText(q, i) {
-  if (!easyMode) return q.opts[i];
-  if (q.optsEnkel && q.optsEnkel.length === q.opts.length && q.optsEnkel[i]) return q.optsEnkel[i];
-  warnMissing(q, 'optsEnkel'); return q.opts[i];
+  if (mode === 'ar') {
+    if (q.optsAr && q.optsAr.length === q.opts.length && q.optsAr[i]) return { text: q.optsAr[i], ar: true };
+    warnMissing(q, 'optsAr');
+  }
+  if (mode !== 'sv') {
+    if (q.optsEnkel && q.optsEnkel.length === q.opts.length && q.optsEnkel[i]) return { text: q.optsEnkel[i], ar: false };
+    warnMissing(q, 'optsEnkel');
+  }
+  return { text: q.opts[i], ar: false };
 }
 function explText(q) {
-  if (!easyMode) return q.expl;
-  if (q.expEnkel) return q.expEnkel;
-  warnMissing(q, 'expEnkel'); return q.expl;
+  if (mode === 'ar') { if (q.expAr) return { text: q.expAr, ar: true }; warnMissing(q, 'expAr'); }
+  if (mode !== 'sv') { if (q.expEnkel) return { text: q.expEnkel, ar: false }; warnMissing(q, 'expEnkel'); }
+  return { text: q.expl, ar: false };
 }
 
-function updateEasyButton() {
-  document.getElementById('btn-easy').setAttribute('aria-pressed', easyMode ? 'true' : 'false');
+// Riktning: arabisk text får dir=rtl/lang=ar. Svensk reservtext i arabiskt läge
+// får uttryckligen ltr/sv så att den inte ärver rtl från omgivande behållare.
+function setDir(el, ar) {
+  if (ar)               { el.setAttribute('dir', 'rtl'); el.setAttribute('lang', 'ar'); }
+  else if (mode === 'ar') { el.setAttribute('dir', 'ltr'); el.setAttribute('lang', 'sv'); }
+  else                  { el.removeAttribute('dir'); el.removeAttribute('lang'); }
 }
-updateEasyButton();
+// Latinska ord i arabisk text (svenska termer, namn) isoleras med <bdi> så att
+// parenteser och skiljetecken hamnar rätt.
+const LATIN_RUN = /[A-Za-zÀ-ÖØ-öø-ÿ](?:[A-Za-zÀ-ÖØ-öø-ÿ0-9 .,:'’\-]*[A-Za-zÀ-ÖØ-öø-ÿ0-9])?/g;
+function appendText(el, text, ar) {
+  if (!ar) { el.appendChild(document.createTextNode(text)); return; }
+  let last = 0;
+  text.replace(LATIN_RUN, (m, off) => {
+    if (off > last) el.appendChild(document.createTextNode(text.slice(last, off)));
+    const b = document.createElement('bdi');
+    b.lang = 'sv'; b.dir = 'ltr'; b.textContent = m;
+    el.appendChild(b);
+    last = off + m.length;
+    return m;
+  });
+  if (last < text.length) el.appendChild(document.createTextNode(text.slice(last)));
+}
+function setText(el, text, ar) {
+  el.textContent = '';
+  setDir(el, ar);
+  appendText(el, text, ar);
+}
+function setUi(el, key, vars) { setText(el, ui(key, vars), isAr()); }
+const $ = id => document.getElementById(id);
+
+function updateModeButtons() {
+  document.querySelectorAll('.lang-switch [data-mode]').forEach(b =>
+    b.setAttribute('aria-pressed', b.dataset.mode === mode ? 'true' : 'false'));
+}
+
+// Texter utanför frågorna: startskärm, tillbaka-länk, resultatskärmens etiketter.
+function applyStaticUI() {
+  const ar = isAr();
+  setUi($('back-link'), 'backLink');
+  setDir($('screen-start'), ar);
+  setDir($('screen-result'), ar);
+  setDir($('modal-box'), ar);
+  setUi($('start-badge'), 'badge');
+  setUi($('start-title'), 'title');
+  setUi($('start-sub'), 'subtitle');
+  setUi($('lbl-questions'), 'lblQuestions');
+  setUi($('lbl-options'), 'lblOptions');
+  setUi($('lbl-timer'), 'lblTimer');
+  setUi($('btn-start'), 'startBtn');
+  setUi($('r-ringlbl'), 'ringLbl');
+  setUi($('l-correct'), 'statCorrect');
+  setUi($('l-wrong'), 'statWrong');
+  setUi($('l-pct'), 'statPct');
+}
+
+updateModeButtons();
+applyStaticUI();
 
 // Byter bara texten – poäng, timer, aktuell fråga, svar och blandning rörs inte.
-function toggleEasy() {
-  easyMode = !easyMode;
-  try { sessionStorage.setItem(EASY_KEY, easyMode ? '1' : '0'); } catch (e) {}
-  updateEasyButton();
-  if (document.getElementById('screen-quiz').classList.contains('active')) {
+function setMode(m) {
+  if (!MODES.includes(m) || m === mode) return;
+  mode = m;
+  try { sessionStorage.setItem(LANG_KEY, mode); } catch (e) {}
+  updateModeButtons();
+  applyStaticUI();
+  if ($('screen-quiz').classList.contains('active')) {
     renderQuestion();
     if (modalOpen) renderModal();
   }
-  if (document.getElementById('screen-result').classList.contains('active')) renderResult();
+  if ($('screen-result').classList.contains('active')) renderResult();
+}
+
+// "Visa svenska" i arabiskt läge: fäller ut frågan på enkel svenska.
+function toggleSvPeek() {
+  svPeekOpen = !svPeekOpen;
+  renderSvPeek();
+}
+function renderSvPeek() {
+  const wrap = $('sv-peek-wrap');
+  if (!isAr() || !shuffled.length) { wrap.style.display = 'none'; return; }
+  const q = shuffled[cur];
+  wrap.style.display = 'block';
+  const btn = $('sv-peek');
+  btn.textContent = svPeekOpen ? 'Dölj svenska ▴' : 'Visa svenska ▾';
+  btn.setAttribute('aria-expanded', svPeekOpen ? 'true' : 'false');
+  $('sv-orig').textContent = q.qEnkel || q.q;
+  $('sv-orig').hidden = !svPeekOpen;
 }
 
 // ── Helpers ────────────────────────────────────────────────
@@ -874,7 +1310,7 @@ function fmtTime(ms) {
 
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  $(id).classList.add('active');
 }
 
 // ── Start ──────────────────────────────────────────────────
@@ -889,11 +1325,12 @@ function startQuiz() {
   cur   = 0;
   score = 0;
   modalOpen = false;
+  svPeekOpen = false;
   clearInterval(timerInterval);
   startTime = Date.now();
-  document.getElementById('timer').textContent = '⏱ 0:00';
+  $('timer').textContent = '⏱ 0:00';
   timerInterval = setInterval(() => {
-    document.getElementById('timer').textContent = '⏱ ' + fmtTime(Date.now() - startTime);
+    $('timer').textContent = '⏱ ' + fmtTime(Date.now() - startTime);
   }, 500);
   show('screen-quiz');
   renderQuestion();
@@ -905,17 +1342,20 @@ function renderQuestion() {
   const st = states[cur];
   const n  = shuffled.length;
 
-  document.getElementById('q-counter').textContent = 'Fråga ' + (cur + 1) + ' av ' + n;
-  document.getElementById('q-text').textContent    = qText(q);
-  document.getElementById('progress-bar').style.width = ((cur / n) * 100) + '%';
-  document.getElementById('score-pill').textContent   = 'Poäng: ' + score;
+  setUi($('q-counter'), 'counter', { i: cur + 1, n: n });
+  const qt = qText(q);
+  setText($('q-text'), qt.text, qt.ar);
+  $('progress-bar').style.width = ((cur / n) * 100) + '%';
+  setUi($('score-pill'), 'score', { s: score });
+  renderSvPeek();
 
-  const container = document.getElementById('opts');
+  const container = $('opts');
   container.innerHTML = '';
   st.order.forEach(origIdx => {
     const btn = document.createElement('button');
     btn.className = 'opt-btn';
-    btn.textContent = optText(q, origIdx);
+    const ot = optText(q, origIdx);
+    setText(btn, ot.text, ot.ar);
     if (st.answered) {
       btn.disabled = true;
       if (origIdx === st.correct) {
@@ -931,10 +1371,13 @@ function renderQuestion() {
     container.appendChild(btn);
   });
 
-  const back = document.getElementById('btn-back');
-  const next = document.getElementById('btn-next');
-  back.textContent = ui('backBtn');
-  next.textContent = ui('nextBtn');
+  // Navigeringsraden vänds i arabiskt läge: Bakåt till höger, Nästa till vänster.
+  const navRow = document.querySelector('.nav-row');
+  if (isAr()) navRow.setAttribute('dir', 'rtl'); else navRow.removeAttribute('dir');
+  const back = $('btn-back');
+  const next = $('btn-next');
+  setUi(back, 'backBtn');
+  setUi(next, 'nextBtn');
   back.style.display = cur > 0 ? 'block' : 'none';
   next.style.display = st.answered ? 'block' : 'none';
 }
@@ -953,35 +1396,35 @@ function answerQuestion(chosenIdx) {
 
   const answeredAt = cur;
   setTimeout(() => {
-    if (cur !== answeredAt || !document.getElementById('screen-quiz').classList.contains('active')) return;
+    if (cur !== answeredAt || !$('screen-quiz').classList.contains('active')) return;
     modalOpen = true;
     renderModal();
-    document.getElementById('modal-overlay').classList.remove('hidden');
+    $('modal-overlay').classList.remove('hidden');
   }, 600);
 }
 
 function renderModal() {
   const st = states[cur];
   const isCorrect = st.chosen === st.correct;
-  const icon    = document.getElementById('modal-icon');
-  const verdict = document.getElementById('modal-verdict');
-  icon.textContent    = isCorrect ? '✅' : '❌';
-  verdict.textContent = isCorrect ? 'Rätt!' : 'Fel!';
-  verdict.className   = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
-  document.getElementById('modal-expl').textContent = explText(shuffled[cur]);
-  document.getElementById('modal-next').textContent = ui('modalNextBtn');
+  const verdict = $('modal-verdict');
+  $('modal-icon').textContent = isCorrect ? '✅' : '❌';
+  setUi(verdict, isCorrect ? 'verdictOk' : 'verdictBad');
+  verdict.className = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
+  const et = explText(shuffled[cur]);
+  setText($('modal-expl'), et.text, et.ar);
+  setUi($('modal-next'), 'modalNextBtn');
 }
 
 // ── Modal close → next ─────────────────────────────────────
 function closeModal() {
-  document.getElementById('modal-overlay').classList.add('hidden');
+  $('modal-overlay').classList.add('hidden');
   modalOpen = false;
   goNext();
 }
 
 // ── Navigation ─────────────────────────────────────────────
 function goNext() {
-  document.getElementById('modal-overlay').classList.add('hidden');
+  $('modal-overlay').classList.add('hidden');
   modalOpen = false;
   if (cur < shuffled.length - 1) {
     cur++;
@@ -1011,42 +1454,47 @@ function renderResult() {
   const n       = shuffled.length;
   const pct     = Math.round((score / n) * 100);
 
-  document.getElementById('r-score').textContent   = score + '/' + n;
-  document.getElementById('s-correct').textContent = score;
-  document.getElementById('s-wrong').textContent   = n - score;
-  document.getElementById('s-pct').textContent     = pct + '%';
-  document.getElementById('r-time').textContent    = 'Tid: ' + elapsed;
-  document.getElementById('progress-bar').style.width = '100%';
+  $('r-score').textContent   = score + '/' + n;
+  $('s-correct').textContent = score;
+  $('s-wrong').textContent   = n - score;
+  $('s-pct').textContent     = pct + '%';
+  setUi($('r-time'), 'time', { t: elapsed });
+  $('progress-bar').style.width = '100%';
 
-  let title, msg;
-  if      (pct >= 90) { title = '🏆 Strålande!';   msg = 'Imponerande! Du behärskar mänskliga rättigheter.'; }
-  else if (pct >= 75) { title = '👍 Bra jobbat!';  msg = 'Bra resultat! Läs igenom det du missade en gång till.'; }
-  else if (pct >= 60) { title = '✓ Godkänt!';      msg = 'Du klarar provet! Repetera de svåra delarna.'; }
-  else                { title = '💪 Öva mer!';      msg = 'Läs pluggmaterialet och försök igen.'; }
-  document.getElementById('r-title').textContent = title;
-  document.getElementById('r-msg').textContent   = msg;
+  const grade = pct >= 90 ? 'res90' : pct >= 75 ? 'res75' : pct >= 60 ? 'res60' : 'resLow';
+  const [title, msg] = ui(grade);
+  setText($('r-title'), title, isAr());
+  setText($('r-msg'),   msg,   isAr());
 
   // Missed questions
-  const missedEl = document.getElementById('missed-section');
+  const missedEl = $('missed-section');
   missedEl.innerHTML = '';
   const missedIdx = states.map((st, i) => i).filter(i => states[i].chosen !== states[i].correct);
   if (missedIdx.length > 0) {
     const hd = document.createElement('div');
     hd.className = 'section-hd';
-    hd.textContent = ui('missedHd') + ' (' + missedIdx.length + ')';
+    setText(hd, ui('missedHd') + ' (' + missedIdx.length + ')', isAr());
     missedEl.appendChild(hd);
     missedIdx.forEach(idx => {
       const item = document.createElement('div');
       item.className = 'missed-item';
-      item.textContent = (idx + 1) + '. ' + qText(shuffled[idx]);
+      const qt = qText(shuffled[idx]);
+      setDir(item, qt.ar);
+      // Frågenumret isoleras så att "3." inte vänds i höger-till-vänster-text.
+      const num = document.createElement('bdi');
+      num.dir = 'ltr';
+      num.textContent = (idx + 1) + '.';
+      item.appendChild(num);
+      item.appendChild(document.createTextNode(' '));
+      appendText(item, qt.text, qt.ar);
       missedEl.appendChild(item);
     });
   }
 
   // Full facit
-  document.getElementById('facit-hd').textContent    = ui('facitHd');
-  document.getElementById('btn-restart').textContent = ui('restartBtn');
-  const facitEl = document.getElementById('facit-list');
+  setUi($('facit-hd'), 'facitHd');
+  setUi($('btn-restart'), 'restartBtn');
+  const facitEl = $('facit-list');
   facitEl.innerHTML = '';
   states.forEach((st, i) => {
     const q      = shuffled[i];
@@ -1056,20 +1504,24 @@ function renderResult() {
 
     const num = document.createElement('div');
     num.className = 'fi-num';
-    num.textContent = 'Fråga ' + (i + 1);
+    setUi(num, 'facitNum', { i: i + 1 });
 
     const qEl = document.createElement('div');
     qEl.className = 'fi-q';
-    qEl.textContent = qText(q);
+    const qt = qText(q);
+    setText(qEl, qt.text, qt.ar);
 
     const ya = document.createElement('div');
     ya.className = 'fi-row ' + (ok ? 'ya-ok' : 'ya-bad');
     const yaLbl = document.createElement('span');
     yaLbl.className = 'lbl';
-    yaLbl.textContent = ui('yourAnswerLbl');
+    setUi(yaLbl, 'yourAnswerLbl');
     ya.appendChild(yaLbl);
-    ya.appendChild(document.createTextNode(
-      (st.chosen === null ? ui('notAnswered') : optText(q, st.chosen)) + (ok ? ' ✓' : ' ✗')));
+    const yaTxt = document.createElement('span');
+    if (st.chosen === null) setUi(yaTxt, 'notAnswered');
+    else { const ot = optText(q, st.chosen); setText(yaTxt, ot.text, ot.ar); }
+    ya.appendChild(yaTxt);
+    ya.appendChild(document.createTextNode(ok ? ' ✓' : ' ✗'));
 
     item.appendChild(num);
     item.appendChild(qEl);
@@ -1080,9 +1532,12 @@ function renderResult() {
       ra.className = 'fi-row ra';
       const raLbl = document.createElement('span');
       raLbl.className = 'lbl';
-      raLbl.textContent = ui('correctAnswerLbl');
+      setUi(raLbl, 'correctAnswerLbl');
       ra.appendChild(raLbl);
-      ra.appendChild(document.createTextNode(optText(q, st.correct)));
+      const raTxt = document.createElement('span');
+      const ct = optText(q, st.correct);
+      setText(raTxt, ct.text, ct.ar);
+      ra.appendChild(raTxt);
       item.appendChild(ra);
     }
 
@@ -1091,7 +1546,7 @@ function renderResult() {
 }
 
 // ── Restart ────────────────────────────────────────────────
-// Enkel svenska-läget ligger kvar (sessionStorage), allt annat nollställs vid start.
+// Språkläget ligger kvar (sessionStorage), allt annat nollställs vid start.
 function restartQuiz() {
   clearInterval(timerInterval);
   show('screen-start');
