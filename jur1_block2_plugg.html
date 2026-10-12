@@ -1,0 +1,1910 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pluggmaterial – Familje- och arvsrätt | Juridik 1</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --p:  #0d9488;
+    --pl: #f0fdfa;
+    --pb: #ccfbf1;
+    --pd: #134e4a;
+    --p-deep: #0f766e;
+    --line: #99f6e4;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: 'EB Garamond', serif; font-size: 1.1rem; background:#f8fafc; color:#1e293b; margin:0; }
+  h1,h2,h3,h4,.fredoka { font-family: 'Fredoka', sans-serif; }
+
+  .wrap { max-width: 74rem; margin: 0 auto; padding: 1.6rem 1.25rem 4rem; }
+
+  /* ── Tillbaka ── */
+  .back {
+    display:inline-flex; align-items:center; gap:.35rem; font-family:'Fredoka',sans-serif;
+    font-size:.88rem; color:#64748b; text-decoration:none; transition:color .15s;
+  }
+  .back:hover { color: var(--p-deep); }
+
+  /* ── Header ── */
+  .head { text-align:center; margin: 1.8rem 0 1.6rem; }
+  .eyebrow {
+    font-family:'Fredoka',sans-serif; font-size:.72rem; font-weight:600; text-transform:uppercase;
+    letter-spacing:.22em; color:var(--p-deep); margin:0 0 .5rem;
+  }
+  .head h1 {
+    font-size: clamp(2rem, 6vw, 2.9rem); font-weight:700; font-style:italic;
+    color:#0f172a; margin:0; line-height:1.1;
+  }
+  .rule { height:.25rem; width:5rem; border-radius:999px; background:var(--p); margin:.9rem auto 1.1rem; }
+  .lead { font-size:1.02rem; color:#475569; max-width:36rem; margin:0 auto; line-height:1.7; }
+  .lead strong { color:var(--p-deep); font-weight:700; }
+
+  /* ── Lägesväxlare ── */
+  .pill-toggle {
+    display:flex; gap:.3rem; justify-content:center; background:#fff; border:1px solid #e2e8f0;
+    border-radius:999px; padding:.3rem; width:fit-content; margin:0 auto .6rem;
+    box-shadow:0 1px 3px rgba(0,0,0,.05);
+  }
+  .pill-toggle button {
+    padding: .5rem 1.4rem; border-radius: 999px; font-family:'Fredoka',sans-serif;
+    font-weight: 600; font-size: .95rem; transition: all .2s; border: none; cursor: pointer;
+  }
+  .pill-toggle button.active   { background: var(--p-deep); color: #fff; box-shadow:0 2px 8px rgba(13,148,136,.35); }
+  .pill-toggle button.inactive { background: transparent; color: #64748b; }
+  .pill-toggle button.inactive:hover { color: var(--p-deep); }
+  .mode-note {
+    text-align:center; font-family:'Fredoka',sans-serif; font-size:.85rem; color:#64748b;
+    margin:0 0 1.6rem;
+  }
+
+  /* ── Layout: sticky innehållsförteckning + innehåll ── */
+  .layout { display:grid; grid-template-columns: 16.5rem minmax(0,1fr); gap:2rem; align-items:start; }
+  .toc {
+    position:sticky; top:1rem; max-height:calc(100vh - 2rem); overflow-y:auto;
+    background:#fff; border:1px solid #e2e8f0; border-radius:1.2rem;
+    padding:.9rem .8rem; box-shadow:0 1px 3px rgba(0,0,0,.05);
+  }
+  .toc-h {
+    font-family:'Fredoka',sans-serif; font-size:.7rem; font-weight:700; text-transform:uppercase;
+    letter-spacing:.14em; color:var(--p-deep); margin:.2rem .3rem .4rem;
+  }
+  .toc-del {
+    font-family:'Fredoka',sans-serif; font-size:.74rem; font-weight:700; color:#475569;
+    margin:.8rem .4rem .25rem; padding-top:.6rem; border-top:1px solid #f1f5f9;
+  }
+  .toc-del:first-of-type { border-top:none; padding-top:0; margin-top:.2rem; }
+  .toc-btn { display:none; }
+  .toc-list a {
+    display:flex; align-items:center; gap:.55rem; padding:.42rem .5rem; border-radius:.75rem;
+    color:#334155; text-decoration:none; transition:background .15s; line-height:1.3; font-size:.98rem;
+  }
+  .toc-list a:hover { background: var(--pl); }
+  .toc-list a.active { background: var(--pl); color:var(--pd); font-weight:700; }
+  .toc-n {
+    flex:none; min-width:2.1rem; height:1.5rem; border-radius:.55rem; background:var(--pl); color:var(--pd);
+    font-family:'Fredoka',sans-serif; font-weight:700; font-size:.76rem;
+    display:flex; align-items:center; justify-content:center; padding:0 .3rem;
+  }
+  .toc-list a.active .toc-n { background:var(--p); color:#fff; }
+  .toc-t { flex:1; }
+
+  /* ── Delrubriker ── */
+  .del-head {
+    margin: .4rem 0 1.4rem; padding: 1.2rem 1.3rem; border-radius: 1.4rem;
+    background: var(--p-deep); color:#fff; scroll-margin-top:1rem;
+  }
+  .del-head .del-nr { font-family:'Fredoka',sans-serif; font-size:.74rem; font-weight:600; text-transform:uppercase;
+                      letter-spacing:.2em; opacity:.85; margin:0 0 .2rem; }
+  .del-head h2 { font-size:1.6rem; font-weight:700; font-style:italic; margin:0; font-family:'EB Garamond',serif; }
+  .del-head p.del-lead { margin:.35rem 0 0; line-height:1.6; opacity:.95; }
+
+  /* ── Avsnitt ── */
+  .sec { margin-bottom: 2.6rem; scroll-margin-top: 1rem; }
+  .sec-head {
+    display:flex; align-items:center; gap:.9rem;
+    background:#fff; border-left:8px solid var(--p);
+    border-radius:1rem; padding:1.05rem 1.2rem; box-shadow:0 1px 3px rgba(0,0,0,.06);
+  }
+  .sec-emoji { flex:none; font-size:1.6rem; line-height:1; }
+  .sec-title { font-size:1.45rem; font-weight:600; color:#0f172a; line-height:1.25; margin:0; }
+  .sec-title .nr { color:var(--p-deep); margin-right:.35rem; }
+  .ingress {
+    margin:.9rem .3rem 0; padding:.75rem 1rem; background:#fff; border:1px solid var(--line);
+    border-radius:.9rem; color:#334155; line-height:1.65; font-size:1.04rem;
+  }
+  .ingress b { font-family:'Fredoka',sans-serif; color:var(--p-deep); font-weight:600; font-size:.78rem;
+               text-transform:uppercase; letter-spacing:.1em; display:block; margin-bottom:.15rem; }
+
+  /* ── Brödtext ── */
+  .block { padding: .2rem .3rem 0; }
+  .block h3 { font-size:1.12rem; font-weight:600; color:var(--pd); margin:1.5rem 0 .15rem; }
+  .block p { margin:.55rem 0; line-height:1.85; color:#1e293b; }
+  .block .term { color:var(--p-deep); font-weight:700; }
+  .block ul { list-style:none; padding:0; margin:.6rem 0; }
+  .block ul li { position:relative; padding:.22rem 0 .22rem 1.5rem; color:#1e293b; line-height:1.7; }
+  .block ul li::before { content:'→'; position:absolute; left:0; color:var(--p); font-weight:700; }
+
+  /* ── Citat ur källan ── */
+  .citat {
+    margin:1.1rem 0; padding:1rem 1.2rem 1rem 3rem; background:#fff; border-radius:1rem;
+    border:1px solid #e2e8f0; position:relative; color:#1e293b; font-style:italic; line-height:1.75;
+  }
+  .citat::before { content:'\201D'; position:absolute; left:.8rem; top:.2rem; font-size:3rem;
+                   color:var(--p); font-family:Georgia,serif; font-style:normal; line-height:1; }
+  .citat-k { display:block; margin-top:.4rem; font-style:normal; font-family:'Fredoka',sans-serif;
+             font-size:.8rem; color:#64748b; }
+
+  /* ── Fördjupningsruta ── */
+  .ruta {
+    background:#fff; border:2px dashed var(--p); border-radius:1rem;
+    padding:.8rem 1.1rem; margin:1.2rem 0;
+  }
+  .ruta-h { font-family:'Fredoka',sans-serif; font-weight:700; color:var(--p-deep); font-size:.92rem; margin-bottom:.1rem; }
+
+  /* ── Exempel / fall ── */
+  .case {
+    background:#fff; border:1px solid #e2e8f0; border-left:5px solid var(--p);
+    border-radius:0 1rem 1rem 0; padding:.9rem 1.15rem .7rem; margin:1.6rem 0 0;
+    box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  .case-h { font-family:'Fredoka',sans-serif; font-weight:700; color:var(--pd); font-size:1rem; margin-bottom:.15rem; }
+  .case-tag { display:inline-block; font-family:'Fredoka',sans-serif; font-size:.68rem; font-weight:600;
+              text-transform:uppercase; letter-spacing:.08em; color:#64748b; background:#f1f5f9;
+              border-radius:999px; padding:.1rem .55rem; margin-left:.4rem; vertical-align:middle; }
+  .case h3 { margin-top:1rem; font-size:1.02rem; }
+  .case p, .case li { font-size:1.02rem; }
+
+  /* ── Nyckelbegrepp ── */
+  .nyckel {
+    background:#fff; border:2px solid var(--line); border-radius:1.2rem;
+    padding:1rem 1.25rem; margin:1.6rem 0 0;
+  }
+  .nyckel-h { font-family:'Fredoka',sans-serif; font-size:1rem; font-weight:700; color:var(--pd); margin-bottom:.4rem; }
+  .nyckel dl { margin:0; }
+  .nb { padding:.45rem 0; border-top:1px solid #f1f5f9; line-height:1.6; }
+  .nb:first-child { border-top:none; }
+  .nb dt { font-weight:700; color:var(--p-deep); display:inline; }
+  .nb dt::after { content:' – '; font-weight:400; color:#94a3b8; }
+  .nb dd { display:inline; margin:0; color:#1e293b; }
+  .nyckel-k { font-family:'Fredoka',sans-serif; font-size:.74rem; color:#64748b; margin-top:.4rem; }
+
+  /* ── Kom ihåg ── */
+  .komihag {
+    background:var(--pl); border:2px solid var(--p); border-radius:1.2rem;
+    padding:1.05rem 1.3rem; margin:1.2rem 0 .4rem;
+  }
+  .komihag-h { font-family:'Fredoka',sans-serif; font-size:1rem; font-weight:700; color:var(--pd); margin-bottom:.45rem; }
+  .komihag ul { list-style:none; padding:0; margin:0; }
+  .komihag li { position:relative; padding:.26rem 0 .26rem 1.6rem; color:var(--pd); line-height:1.65; }
+  .block .komihag li::before, .komihag li::before { content:'✓'; position:absolute; left:0; font-weight:700; color:var(--p-deep); }
+  .komihag .term { font-weight:700; color:var(--p-deep); }
+
+  /* ── Inbyggda diagram (SVG) ── */
+  .diagram { margin:1.4rem 0; background:#fff; border:1px solid #e2e8f0; border-radius:1.2rem; padding:1rem 1rem .8rem; }
+  .diagram svg { display:block; width:100%; height:auto; max-width:36rem; margin:0 auto; }
+  .diagram svg text { font-family:'Fredoka',sans-serif; }
+  .diagram figcaption { font-size:.95rem; color:#475569; line-height:1.6; margin-top:.6rem; text-align:center; }
+  .diagram figcaption .term { font-family:'Fredoka',sans-serif; color:var(--pd); font-weight:600; }
+
+  /* ── Tabell ── */
+  .tbl-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; margin:.8rem 0; }
+  .tbl { border-collapse:collapse; width:100%; font-size:.97rem; background:#fff; border:1px solid #e2e8f0; }
+  .tbl th, .tbl td { padding:.5rem .7rem; text-align:left; border-bottom:1px solid #e2e8f0; vertical-align:top; line-height:1.45; }
+  .tbl th { font-family:'Fredoka',sans-serif; font-size:.74rem; text-transform:uppercase;
+            letter-spacing:.06em; color:var(--pd); background:var(--pl); }
+  .tbl td.num, .tbl th.num { text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .tbl tfoot td { font-weight:700; color:var(--pd); background:var(--pl); border-bottom:none; }
+
+  .to-top { text-align:center; margin:1rem 0 .2rem; }
+  .to-top a { font-family:'Fredoka',sans-serif; font-size:.8rem; color:#64748b; text-decoration:none; }
+  .to-top a:hover { color:var(--p-deep); }
+
+  /* ── Sammanfattning ── */
+  .summary { background:#fff; border-top:8px solid var(--p); border-radius:1.5rem; padding:1.3rem 1.4rem 1.2rem;
+             box-shadow:0 1px 3px rgba(0,0,0,.06); scroll-margin-top:1rem; }
+  .summary h2 { font-size:1.4rem; font-weight:600; margin:0 0 .8rem; color:#0f172a; }
+  .sum-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+  .sum-col { background:var(--pl); border-radius:1rem; padding:.9rem 1rem; }
+  .sum-col h3 { font-size:.98rem; font-weight:700; color:var(--pd); margin:0 0 .4rem; }
+  .sum-col ul { list-style:none; padding:0; margin:0; }
+  .sum-col li { position:relative; padding:.22rem 0 .22rem 1.3rem; line-height:1.55; font-size:1rem; }
+  .sum-col li::before { content:'✓'; position:absolute; left:0; color:var(--p-deep); font-weight:700; }
+  .sum-col .term { color:var(--p-deep); font-weight:700; }
+
+  /* ── Öva vidare ── */
+  .next {
+    background:#fff; border-top:8px solid var(--p); border-radius:1.5rem;
+    padding:1.4rem 1.4rem 1.5rem; margin-top:2rem; box-shadow:0 1px 3px rgba(0,0,0,.06);
+  }
+  .next h2 { font-size:1.3rem; font-weight:600; margin:0 0 .3rem; color:#0f172a; }
+  .next p { margin:0 0 1rem; color:#475569; line-height:1.6; }
+  .next-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:.7rem; }
+  .next-btn {
+    display:flex; align-items:center; gap:.6rem; padding:.85rem 1rem; border-radius:1rem;
+    font-family:'Fredoka',sans-serif; font-weight:600; text-decoration:none; transition:transform .15s, background .15s;
+  }
+  .next-btn:hover { transform:translateY(-2px); }
+  .next-btn.primary { background:var(--p-deep); color:#fff; }
+  .next-btn.ghost { background:var(--pl); color:var(--pd); border:1px solid var(--line); }
+  .next-btn.wide { grid-column:1 / -1; }
+
+  /* ── Footer ── */
+  .foot { text-align:center; margin-top:3rem; color:#64748b; font-size:.88rem; line-height:1.7; }
+  .foot .by { font-style:italic; }
+
+  /* ── Mobil ── */
+  @media (max-width: 767px) {
+    body { font-size: 1.04rem; }
+    .wrap { padding: 1.2rem .9rem 3rem; }
+    .layout { display:block; }
+    .toc { position:sticky; top:0; z-index:30; max-height:none; overflow:visible;
+           border-radius:0 0 1rem 1rem; margin:0 -.9rem 1.4rem; padding:.5rem .9rem;
+           border-top:none; border-left:none; border-right:none; }
+    .toc-h { display:none; }
+    .toc-btn { display:flex; width:100%; align-items:center; justify-content:space-between; gap:.6rem;
+               background:var(--pl); color:var(--pd); border:none; border-radius:.8rem; padding:.6rem .9rem;
+               font-family:'Fredoka',sans-serif; font-weight:600; font-size:.95rem; cursor:pointer; text-align:left; }
+    .toc-btn-t { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .toc-list { display:none; max-height:60vh; overflow-y:auto; padding-top:.4rem; }
+    .toc.open .toc-list { display:block; }
+    .sec, .del-head, .summary { scroll-margin-top: 4.2rem; }
+    .sec-title { font-size: 1.2rem; }
+    .sec-head { padding: .85rem .9rem; gap:.65rem; border-left-width:6px; }
+    .sec-emoji { font-size:1.35rem; }
+    .del-head h2 { font-size:1.35rem; }
+    .block { padding: .2rem 0 0; }
+    .block h3 { font-size: 1.05rem; }
+    .block p  { line-height: 1.75; }
+    .pill-toggle button { padding:.45rem 1.05rem; font-size:.9rem; }
+    .next-grid, .sum-grid { grid-template-columns:1fr; }
+    .tbl { font-size:.9rem; }
+    .tbl th, .tbl td { padding:.45rem .5rem; }
+    .citat { padding:.9rem 1rem .9rem 2.4rem; }
+    .citat::before { left:.5rem; font-size:2.4rem; }
+    .diagram { padding:.7rem .35rem .6rem; }
+    .case { padding:.8rem .9rem .6rem; }
+    .nyckel, .komihag { padding:.9rem 1rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<!-- Delad tillbaka-navigering för Juridik 1: jur1GoBack(event, fallback) -->
+<script src="jur1_nav.js"></script>
+
+<!-- ════════════════════════════════════════════════════════════
+     ALL TEXT LIGGER I DATA-ARRAYEN DELAR – en del per "## Del" i källan,
+     varje avsnitt: { id, nr, emoji, rubrik, hook, lattlast[], fordjupning[], diagram[], fall, begrepp[], komihag[] }
+     Textlistor (lattlast/fordjupning/fall.text) består av:
+       'sträng'            → stycke (**term** = fackterm, *ord* = kursiv)
+       { h }               → mellanrubrik
+       { lista: [] }       → punktlista
+       { citat, kalla }    → citat ur källan
+       { tabell: { huvud[], rader[[]], summa[] } }
+       { ruta: { h, p[] } } → fördjupningsruta ur källan
+     Lägena ERSÄTTER varandra: Lättläst visar lattlast[], Fördjupning visar fordjupning[].
+     Fackbegreppen är desamma i båda lägena – bara förklaringarna runt dem skiljer sig.
+     begrepp[] slås upp i BEGREPP (samma definitioner som jur1_block2_begrepp.html).
+     Enda innehållskälla: jur1_block2_familje_arvsratt.md
+     ════════════════════════════════════════════════════════════ -->
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const PAGE = {
+  storeKey: 'jur1_block2_plugg_mode',
+  eyebrow: 'Juridik 1 · Block 2',
+  titel: 'Familje- och arvsrätt',
+  hub: 'jur_familj.html',
+  kalla: 'Juridik 1, Block 2 (kapitel 3–5)'
+};
+
+/* ---------- Definitioner – ordagrant som i jur1_block2_begrepp.html ---------- */
+const BEGREPP = {
+  'Sambolagen': 'Den lag där reglerna om samboskap finns.',
+  'Samboavtal': 'Ett avtal där samborna kan skriva hur de vill göra med sin egendom vid en separation.',
+  'Kvarsittanderätt': 'Begäran hos tingsrätten om rätten att ensam få bo kvar i bostaden.',
+  'Äktenskapsbalken': 'Den lag där reglerna om äktenskap finns.',
+  'Könsneutral': 'Reglerna gäller oavsett kön på parterna.',
+  'Erkännande': 'Innebär att ett par som kommer från ett annat land, och som redan är gifta, även betraktas som gifta i Sverige ur ett juridiskt perspektiv.',
+  'Hindersprövning': 'En kontroll av om det finns något hinder för äktenskap mellan två personer.',
+  'Vigsel': 'En ceremoni där två personer ingår äktenskap.',
+  'Underhållsskyldighet': 'Innebär att om makarnas ekonomiska situation är olik, har den ena maken skyldighet att tillskjuta pengar till den andra maken som inte har lika god ekonomi.',
+  'Giftorättsgods': 'Är den egendom som ingår i bodelning vid äktenskapsskillnad eller vid ena makens död.',
+  'Giftorätt': 'Är en vilande äganderätt till hälften av den gemensamma egendomen.',
+  'Enskild egendom': 'Är egendom som inte ingår i bodelning och som inte omfattas av giftorätten.',
+  'Äktenskapsförord': 'Ett skriftligt avtal mellan makar om att all egendom, eller viss egendom, inte ska vara giftorättsgods under pågående äktenskap.',
+  'Äktenskapsskillnad': 'Det juridiska begreppet för det vi i dagligt tal kallar "skilsmässa".',
+  'Betänketid': 'Innebär att makarna får sex månader på sig att tänka igenom ett livsavgörande beslut.',
+  'Fullföljd av äktenskapsskillnad': 'Innebär att en av makarna, efter att betänketiden har passerat, begär att äktenskapet ska upplösas.',
+  'Bodelning vid äktenskap': 'Att dela upp egendom mellan makar vid ena makens död eller vid äktenskapsskillnad.',
+  'Skiftesliked': 'Pengarna den ena parten ska betala till den andra så att de får lika mycket vid en bodelning.',
+  'Oskäligt': 'Betyder i detta fall att det inte är rimligt att dela helt lika i bodelningen.',
+  'Jämkning': 'Innebär i detta fall att undantag görs från reglerna för hur giftorättsgodset ska fördelas.',
+  'Barnkonventionen': 'En FN-konvention om barns rättigheter.',
+  'Föräldrabalken': 'Den lag som reglerar barns och föräldrars rättsliga relationer.',
+  'Inkorporera': 'Betyder införliva.',
+  'Barnets bästa': 'Är utgångspunkten för lagstiftning där barn berörs.',
+  'Faderskapspresumtion': 'En regel som utgår från att mannen som kvinnan är gift med är far till hennes barn.',
+  'Vårdnadshavare': 'Den förälder som har vårdnaden om barnet, oftast båda föräldrarna.',
+  'Föräldraskapsbekräftelse': 'Om föräldrarna till barnet inte är gifta med varandra måste partnern erkänna föräldraskapet.',
+  'Bevittna': 'Ett intyg om att ha sett på när dokumentet undertecknades.',
+  'Adoptera': 'Att få ett barn i sin vård i ett varaktigt föräldra-barnförhållande.',
+  'Haagkonventionen': 'En internationell överenskommelse från 1996 om barns rättigheter.',
+  'Omvårdnad': 'Vårdnadshavaren ska se till att barnet tas om hand, både fysiskt och psykiskt.',
+  'Trygghet': 'Vårdnadshavare ska ge barnet trygghet och vägledning.',
+  'God fostran': 'Innebär att uppfostra barnet till en självständig person.',
+  'Försörjning och tillsyn': 'Vårdnadshavare har en skyldighet att försörja och se efter barnet.',
+  'Tillsynsansvar': 'Vårdnadshavarens ansvar att se till så att barnet inte orsakar skada.',
+  'Förmyndare': 'Har ansvar för barnets ekonomiska förhållanden.',
+  'Överförmyndare': 'Är en kommunal tjänsteman som har tillsynsansvar över förmyndarnas förvaltning.',
+  'Orosanmälan': 'Att anmäla till en myndighet att man är orolig för att ett barn far illa.',
+  'Omhändertagande': 'Ett barn kan omhändertas mot föräldrarnas vilja, enligt särskild lag med bestämmelser om vård av unga (LVU).',
+  'Gemensam vårdnad': 'Föräldrar som är gifta med varandra har automatiskt gemensam vårdnad av barnet.',
+  'Boendeförälder': 'Den förälder som barnet bor mest hos om föräldrarna är separerade.',
+  'Umgänge': 'Barn har rätt att träffa och umgås med den förälder de inte bor tillsammans med.',
+  'Underhållsbidrag': 'Bidrag som den förälder som barnet inte bor med ska lämna till barnets försörjning.',
+  'Underhållsstöd': 'Stöd för barnet som betalas ut av Försäkringskassan under vissa omständigheter.',
+  'Dödsbo': 'Är en död persons tillgångar och skulder. Dödsboet är en juridisk person.',
+  'Juridisk person': 'Är en sammanslutning som har egen rättskapacitet, det vill säga kan ingå avtal, äga tillgångar och ta på sig skulder.',
+  'Dödsbodelägare': 'Är de personer som förvaltar dödsboet, exempelvis barn, make eller maka.',
+  'Ärvdabalken': 'Är den lag som innehåller regler om arv.',
+  'Arvlåtare': 'Den som dött och efterlämnar ett arv.',
+  'Arvinge': 'Den som ärver.',
+  'Arv': 'Det som arvingarna ärver. Kan till exempel vara pengar, fastigheter och smycken.',
+  'Legala arvsordningen': 'Avgör vilka som är berättigade till arv på grund av släktskap med den avlidne, det vill säga arvlåtaren.',
+  'Bröstarvinge': 'Barn eller barnbarn till den avlidne.',
+  'Istadarätt': 'Innebär att en levande släkting träder in och tar en avliden släktings arv.',
+  'Allmänna arvsfonden': 'Statlig myndighet som förvaltar medel från dödsbon som saknar arvingar.',
+  'Makes arvsrätt': 'Efterlevande make eller maka ärver före gemensamma barn.',
+  'Fri förfoganderätt': 'Innebär att maken/makan kan använda arvet hur den vill, alltså även förbruka det helt, men inte testamentera bort det.',
+  'Särkullbarn': 'Barn som inte är barn till båda makarna.',
+  'Testamente': 'Ett juridiskt dokument med instruktioner om arvet och vem eller vilka som ska ärva.',
+  'Testator': 'Den som skrivit ett testamente.',
+  'Testamentstagare': 'Den som ärver egendom via testamente.',
+  'Laglott': 'Hälften av arvet efter den avlidne som den avlidnes barn alltid har rätt till.',
+  'Klandra': 'Att överklaga innehållet i ett testamente.',
+  'Delgivning': 'Att få ett dokument överlämnat till sig av en myndighetsperson.',
+  'Bouppteckning': 'Förteckning av en avliden persons tillgångar och skulder.',
+  'Förrättningsmän': 'De två personer som gör bouppteckningen.',
+  'Bouppgivare': 'Den person som lämnar uppgifter om den avlidnes tillgångar och skulder.',
+  'Fullmakt': 'Rätt att företräda någon annan.',
+  'Arvskifte': 'Handling som skrivs för att fördela arvet mellan arvingarna.'
+};
+
+/* ===================== INNEHÅLL ===================== */
+
+const DELAR = [
+/* ─────────────────────────── DEL 1 ─────────────────────────── */
+{
+  id: 'del1', nr: 'Del 1', titel: 'Att leva tillsammans',
+  lead: 'Två samlevnadsformer regleras i lag: samboskap och äktenskap. Här lär du dig vad som gäller för var och en – och vad som skiljer dem åt.',
+  sections: [
+  {
+    id: 's1-1', nr: '1.1', emoji: '🏠', rubrik: 'Att vara sambo',
+    hook: 'Lisen och Henry har bott ihop i fem år. Nu ska de flytta isär. Vem får lägenheten – och vem får sängen de köpte tillsammans?',
+    lattlast: [
+      'Lagen reglerar två sätt att leva ihop i Sverige: **samboskap** och **äktenskap**. Reglerna för sambor finns i **sambolagen**.',
+      'Sambolagen kom i slutet av 1980-talet. Den ska skydda den som har sämst ekonomi när ett par separerar.',
+      'Två personer är sambor om de bor ihop, är ett par och har gemensamt hushåll.',
+      { lista: [
+        'Lagen är **könsneutral**. Den gäller oavsett vilket kön personerna har.',
+        'Paret ska bo ihop stadigvarande. Det betyder ungefär minst ett halvår.'
+      ]},
+      'När sambor separerar delar de bara på **samboegendomen**. Det är saker de köpt för att använda tillsammans, till exempel säng, matbord och tv.',
+      'Bostaden räknas också, om den köpts för att paret skulle bo ihop.',
+      'Saker som någon ägde innan, till exempel en egen bil, delas inte.'
+    ],
+    fordjupning: [
+      'Svensk lagstiftning har två lagreglerade samlevnadsformer: **samboskapet** och **äktenskapet**. Samboskapet regleras i **sambolagen** och äktenskapet i **äktenskapsbalken**. Enligt SCB ingicks 44 854 äktenskap i Sverige 2024, och samma år skedde 21 672 skilsmässor – i genomsnitt efter drygt elva års äktenskap.',
+      'Innan sambolagen fanns kunde man vid en separation bara använda lagen om samäganderätt. Den innebär att två personer som betalat hälften var av till exempel en soffa äger halva soffan var – bara det paret köpt tillsammans delas. **Sambolagen** infördes därför i slutet av 1980-talet för att skydda den ekonomiskt svagare parten.',
+      { citat: 'Med sambor avses två personer som stadigvarande bor tillsammans i ett parförhållande och har gemensamt hushåll.', kalla: 'Sambolagen 1 §' },
+      'Definitionen innehåller flera villkor. "Två personer" visar att reglerna är **könsneutrala**. "Stadigvarande" innebär att paret bör ha bott tillsammans åtminstone ett halvår. Ett par som bara bott ihop några veckor uppfyller alltså inte lagens krav.',
+      'Vid en separation ingår bara **samboegendomen** i bodelningen: bohag som köpts för gemensam användning (till exempel soffa, säng, matbord och hushållsmaskiner) och bostaden om den skaffats för att bo tillsammans. Det som en av dem ägde redan innan ligger utanför. Jämför med äktenskapet i avsnitt 1.7, där betydligt mer ingår.'
+    ],
+    fall: {
+      titel: 'Exempel: Samborna Lisen och Henry ska separera',
+      text: [
+        'Lisen och Henry har varit sambor i fem år. Lisen köpte en bostadsrätt för 1 650 000 kr med ett lån på 1 350 000 kr. Tillsammans köpte de säng (20 000 kr), matsalsmöbler (15 000 kr) och tv (15 000 kr) och betalade hälften var.',
+        'Lisens skinnsoffa och glasbord (60 000 kr) och Henrys bil (50 000 kr) fanns innan de flyttade ihop. De är inte samboegendom.',
+        { tabell: { huvud: ['Samboegendom', 'Belopp'], rader: [
+          ['Lägenheten (1 650 000 − 1 350 000)', '300 000'],
+          ['Säng', '20 000'], ['Matsalsmöbler', '15 000'], ['Tv', '15 000']
+        ], summa: ['Summa', '350 000 kr'] } },
+        'Samboegendomen delas lika: 175 000 kr var. Lisen behåller lägenheten (värd 300 000 kr efter lånet) och betalar Henry 300 000 − 175 000 = 125 000 kr. Henry får säng, matsalsmöbler och tv (50 000 kr) plus 125 000 kr – totalt 175 000 kr.'
+      ]
+    },
+    begrepp: ['Sambolagen', 'Könsneutral'],
+    komihag: [
+      '**Sambolagen** gäller par som bor ihop stadigvarande – ungefär minst ett halvår.',
+      'Reglerna är **könsneutrala**.',
+      'Bara samboegendomen delas: gemensamt bohag och bostad som köpts för att bo ihop.'
+    ]
+  },
+  {
+    id: 's1-2', nr: '1.2', emoji: '📝', rubrik: 'Samboavtal och gemensam bostad',
+    hook: 'Kan ett par själva bestämma att lagen inte ska gälla dem? Och vem får bo kvar i lägenheten när det finns barn?',
+    lattlast: [
+      'Sambolagen är **dispositiv**. Det betyder att samborna får bestämma något annat än lagen säger.',
+      'Det gör de i ett **samboavtal**. Avtalet ska vara skriftligt. Båda ska skriva under.',
+      'Sambor ärver inte varandra. Vill de ärva varandra måste de skriva ett **testamente**. Mer om det i Del 3.',
+      { h: 'Vem får bostaden?' },
+      'När sambor separerar får den som behöver bostaden mest behålla den.',
+      'Har paret barn är det oftast den som har barnen boende mest hos sig som får bostaden.',
+      'Rätten att ensam få bo kvar kallas **kvarsittanderätt**.'
+    ],
+    fordjupning: [
+      'Sambolagen är **dispositiv**: den gäller bara om samborna inte har kommit överens om något annat. Genom ett **samboavtal** kan de själva bestämma hur egendomen ska delas vid en separation. Avtalet måste vara skriftligt och undertecknat av båda.',
+      'Ett sätt är att avtala bort sambolagens regler om bodelning och i stället låta lagen om samäganderätt gälla. Då delas bara det som paret faktiskt betalat tillsammans. Jämför med Lisen och Henry: utan avtal får Henry 175 000 kr, med ett sådant avtal bara 25 000 kr (se exemplet nedan). Avtalet flyttar alltså skyddet från den ekonomiskt svagare parten till den som äger mest.',
+      'Ett samboavtal gäller vid separation, inte vid dödsfall. Sambor som vill kunna ärva varandra måste också skriva ett **testamente** (se avsnitt 3.4–3.5).',
+      { h: 'Gemensam bostad och kvarsittanderätt' },
+      'Vem som får behålla den gemensamma bostaden beror på vem som har störst behov av den. Finns barn i samboförhållandet väger det tungt: oftast får den sambo som har barnen boende mest hos sig behålla bostaden. Barnens situation påverkar alltså även de ekonomiska reglerna mellan de vuxna. Rätten att ensam få bo kvar kallas **kvarsittanderätt**.'
+    ],
+    fall: {
+      titel: 'Exempel: Vem har rätt till hyreslägenheten?',
+      text: [
+        'Samed och Otis är sambor och har barnen Kalle (3 år) och Meja (4 år). De bor i en hyresrätt. När de separerar bestämmer de att barnen ska bo med Samed, eftersom Otis reser mycket i arbetet. Samed får då enligt sambolagens regler rätt att ta över den gemensamma hyreslägenheten – **kvarsittanderätt**.',
+        { h: 'Lisen och Henry med samboavtal' },
+        'Om Lisen och Henry i ett samboavtal hade bestämt att lagen om samäganderätt ska gälla i stället för sambolagen, delar de bara det de betalat gemensamt:',
+        { tabell: { huvud: ['Köpt tillsammans', 'Belopp'], rader: [
+          ['Säng', '20 000'], ['Matsalsmöbler', '15 000'], ['Tv', '15 000']
+        ], summa: ['Summa', '50 000 kr'] } },
+        'Delat på två blir det 25 000 kr var.'
+      ]
+    },
+    begrepp: ['Samboavtal', 'Kvarsittanderätt'],
+    komihag: [
+      'Sambolagen är **dispositiv** – ett **samboavtal** kan ändra hur egendomen delas.',
+      'Samboavtalet ska vara skriftligt och undertecknat av båda.',
+      'Den som behöver bostaden mest – ofta den som har barnen – kan få **kvarsittanderätt**.'
+    ]
+  },
+  {
+    id: 's1-3', nr: '1.3', emoji: '💍', rubrik: 'Att gifta sig',
+    hook: 'Två personer bestämmer sig för att gifta sig. Kan de bara gå till en präst nästa lördag – eller måste något göras först?',
+    lattlast: [
+      'Ett äktenskap är ett juridiskt avtal mellan två personer. Det påverkar ekonomin mycket. Reglerna finns i **äktenskapsbalken**.',
+      'Sedan 2009 är lagen **könsneutral**. Två personer kan gifta sig oavsett kön.',
+      { h: 'Steg 1: Hindersprövning' },
+      'Först ansöker paret om **hindersprövning** hos Skatteverket. Skatteverket kollar att inget hindrar äktenskapet.',
+      'Finns inget hinder får paret ett intyg. Intyget gäller i fyra månader. De måste gifta sig inom den tiden.',
+      { lista: [
+        'Du måste vara 18 år.',
+        'Du får inte gifta dig med din förälder, ditt barn eller ditt helsyskon.',
+        'Halvsyskon och adoptivsyskon behöver tillstånd från länsstyrelsen.',
+        'Du får bara vara gift med en person i taget.'
+      ]},
+      { h: 'Steg 2: Vigsel' },
+      'Själva bröllopet kallas **vigsel**. En **vigselförrättare** leder vigseln, till exempel en präst.',
+      'Båda ska vara på plats samtidigt. Två vittnen ska vara med. Båda svarar "ja". Sedan förklarar vigselförrättaren dem för makar.',
+      { h: 'Gifta i ett annat land?' },
+      'Ett par som redan är gifta när de kommer till Sverige räknas som gifta här också. Det kallas **erkännande**.',
+      'Men barnäktenskap och månggifte godkänns inte.'
+    ],
+    fordjupning: [
+      'Äktenskapet är i grunden ett juridiskt avtal mellan två personer med stora ekonomiska konsekvenser. Reglerna finns i **äktenskapsbalken**. Flera av dem härstammar från 1734 års lag, men de har anpassats till samhällsutvecklingen – bland annat mot ökad jämställdhet mellan makarna.',
+      { citat: 'I denna balk finns bestämmelser om samlevnad i äktenskap. De två som ingår äktenskap med varandra blir makar.', kalla: 'Äktenskapsbalken 1 §' },
+      'Formuleringen blev **könsneutral** 2009. Tidigare kunde bara en man och en kvinna gifta sig med varandra.',
+      { h: 'Hindersprövning' },
+      'Den som vill gifta sig måste ansöka om **hindersprövning** hos Skatteverket – en kontroll av om det finns något äktenskapshinder. Finns inget hinder utfärdas ett intyg som gäller i fyra månader, och äktenskapet måste ingås inom den tiden. Hindren är:',
+      { lista: [
+        'Den som är under 18 år får inte gifta sig.',
+        'Nära släktingar i rakt upp- eller nedstigande led får inte gifta sig med varandra.',
+        'Helsyskon får inte gifta sig med varandra.',
+        'Halvsyskon och adoptivsyskon får gifta sig efter tillstånd från länsstyrelsen.',
+        'Månggifte – att vara gift med mer än en person samtidigt – är förbjudet.'
+      ]},
+      { ruta: { h: 'Uppstramning av reglerna (lagförslag från 1 juli 2026)', p: [
+        { lista: [
+          'Kusinäktenskap förbjuds.',
+          'Äktenskap mellan syskon och syskonbarn förbjuds.',
+          'Dispensmöjligheten för äktenskap mellan halvsyskon tas bort.',
+          'Dispensmöjligheten för äktenskap med helsyskon på grund av adoption tas bort.',
+          'Utländska äktenskap mellan kusiner, syskon eller syskonbarn ska inte erkännas, utom vid synnerliga skäl.'
+        ]}
+      ]}},
+      { h: 'Vigsel' },
+      'Äktenskapet ingås vid en ceremoni som heter **vigsel**. Den utförs av en **vigselförrättare** – en representant för ett trossamfund, till exempel en präst, eller en person som förordnats av länsstyrelsen. Vigseln är giltig om vigselförrättaren är behörig, hindersprövningen är godkänd, båda parter är närvarande samtidigt, två vittnen finns med, båda svarar "ja" och vigselförrättaren förklarar dem för makar.',
+      { h: 'Erkännande av utländska äktenskap' },
+      'Ett par som redan är gifta när de kommer till Sverige fortsätter att betraktas som gifta här – **erkännande**. Det finns två undantag. Ett barnäktenskap godkänns inte om en av makarna var barn vid prövningen, och månggifte erkänns inte utan synnerliga skäl. Undantagen bygger på samma värderingar som hindren vid hindersprövningen: åldersgränsen 18 år och förbudet mot månggifte.'
+    ],
+    fall: {
+      titel: 'Exempel: Från ansökan till vigsel', tag: 'Tankeexempel',
+      text: [
+        'Alva och Kim vill gifta sig i juni. I mars ansöker de om hindersprövning hos Skatteverket. Skatteverket hittar inget hinder och skickar ett intyg som gäller i fyra månader – vigseln i juni ryms alltså inom tiden.',
+        'På bröllopsdagen står båda inför en behörig vigselförrättare. Två vänner är vittnen. Båda svarar "ja", och vigselförrättaren förklarar dem för makar. Nu gäller äktenskapsbalkens regler för Alva och Kim.'
+      ]
+    },
+    begrepp: ['Äktenskapsbalken', 'Hindersprövning', 'Vigsel', 'Erkännande'],
+    komihag: [
+      'Reglerna om äktenskap finns i **äktenskapsbalken**, som är könsneutral sedan 2009.',
+      'Först **hindersprövning** hos Skatteverket – intyget gäller i fyra månader.',
+      'En giltig **vigsel** kräver bland annat behörig vigselförrättare, båda på plats och två vittnen.',
+      'Utländska äktenskap **erkänns** – men inte barnäktenskap eller månggifte.'
+    ]
+  },
+  {
+    id: 's1-4', nr: '1.4', emoji: '💰', rubrik: 'Makarnas ekonomi och egendom',
+    hook: 'Samir äger en del av ett familjeföretag värt flera miljoner. Han ska gifta sig med Vilma. Blir hälften av hans andel automatiskt Vilmas om de skiljer sig?',
+    lattlast: [
+      'Makar ska hjälpa varandra med pengar. Var och en betalar efter sin förmåga.',
+      'Har den ena för lite pengar ska den andra skjuta till. Det kallas **underhållsskyldighet**. Makarna ska ha samma levnadsstandard.',
+      'Under äktenskapet sköter var och en sin egen ekonomi. Båda har sina egna tillgångar och skulder.',
+      'Men båda har rätt till hälften av den andras egendom om äktenskapet tar slut. Den rätten kallas **giftorätt**.',
+      'Egendom som delas kallas **giftorättsgods**.',
+      'Egendom som inte delas kallas **enskild egendom**. Den kan bli enskild på fyra sätt:',
+      { lista: [
+        'genom en gåva där det står att den ska vara enskild',
+        'genom ett testamente där det står att arvet ska vara enskilt',
+        'genom ett äktenskapsförord',
+        'genom en bodelning under äktenskapet'
+      ]},
+      'Ett **äktenskapsförord** är ett skriftligt avtal mellan makarna. Där bestämmer de att viss egendom inte ska delas.',
+      'Äktenskapsförordet måste registreras hos Skatteverket för att gälla.'
+    ],
+    fordjupning: [
+      'Äktenskapet ska ge makarna en någorlunda rättvis ekonomisk situation. Var och en ska bidra efter sin förmåga till det personliga underhållet och det gemensamma dagliga livet. Räcker inte den enes pengar ska den andra skjuta till – **underhållsskyldighet**. Målet är att makarna ska ha samma levnadsstandard, även om de tjänar olika mycket.',
+      'Reglerna om egendom kombinerar självständighet och gemenskap. Under äktenskapet ansvarar varje make för sin egen ekonomi, både tillgångar och skulder. Samtidigt har båda en vilande äganderätt till hälften av den andres egendom – **giftorätt**. Den kallas vilande eftersom den får betydelse först när äktenskapet upphör, vid äktenskapsskillnad eller dödsfall.',
+      'Makarnas egendom är **giftorättsgods** om den inte är **enskild egendom**. Giftorättsgods är alltså huvudregeln och enskild egendom undantaget. Enskild egendom kan uppstå på fyra sätt:',
+      { lista: [
+        'genom gåva med förbehåll om att den ska vara enskild egendom',
+        'genom testamente med förordnande om enskild egendom',
+        'genom äktenskapsförord',
+        'genom bodelning under äktenskapet'
+      ]},
+      'Vid gåva och testamente är det givaren eller den avlidne som bestämmer att egendomen ska vara enskild. I ett äktenskapsförord bestämmer makarna det själva.',
+      'Ett **äktenskapsförord** är ett avtal om att all egendom, eller viss egendom, inte ska vara giftorättsgods. Det kan skrivas före giftermålet eller under äktenskapet, men måste vara skriftligt och registreras hos Skatteverket för att vara giltigt. Äktenskapsförordet fyller alltså samma funktion för makar som samboavtalet för sambor (avsnitt 1.2): paret styr själva vad som ska delas.'
+    ],
+    fall: {
+      titel: 'Exempel: Vilma och Samir skriver äktenskapsförord',
+      text: [
+        'Samir äger en fjärdedel av ett fastighetsföretag som är värt flera miljoner kronor. Vilma och Samir skriver ett äktenskapsförord om att Samirs andel i familjeföretaget ska vara hans **enskilda egendom** och inte omfattas av giftorätten.',
+        'Om de skulle skilja sig har Vilma då inte rätt att i bodelningen få hälften av värdet av Samirs andel i familjeföretaget.'
+      ]
+    },
+    begrepp: ['Underhållsskyldighet', 'Giftorätt', 'Giftorättsgods', 'Enskild egendom', 'Äktenskapsförord'],
+    komihag: [
+      'Makar har **underhållsskyldighet** mot varandra.',
+      '**Giftorätt** är en vilande rätt till hälften av den andres egendom.',
+      'Egendom är **giftorättsgods** om den inte är **enskild egendom**.',
+      'Enskild egendom uppstår genom gåva, testamente, äktenskapsförord eller bodelning under äktenskapet.'
+    ]
+  },
+  {
+    id: 's1-5', nr: '1.5', emoji: '⚖️', rubrik: 'Skilsmässa och bodelning',
+    hook: 'Josefin och Hugo ska skiljas efter tolv år. Villan, bilarna och aktierna ska delas – men vad händer med Josefins ärvda Steinwayflygel?',
+    lattlast: [
+      '**Äktenskapsskillnad** är lagens ord för skilsmässa.',
+      'Oftast är makarna överens. Då ansöker de tillsammans hos tingsrätten.',
+      'Ibland måste makarna vänta sex månader först. Det kallas **betänketid**. Den behövs om:',
+      { lista: [
+        'bara den ena vill skiljas, eller',
+        'någon av dem har vårdnaden om ett barn under 16 år som bor hos hen.'
+      ]},
+      'Efter betänketiden måste en av makarna begära att skilsmässan ska bli klar. Det kallas **fullföljd av äktenskapsskillnad**.',
+      'Det måste ske inom tolv månader. Annars fortsätter äktenskapet.',
+      { h: 'Bodelning' },
+      'När ett äktenskap tar slut delas egendomen. Det kallas **bodelning**. Det sker vid skilsmässa och när en make dör.',
+      'Bara **giftorättsgodset** delas. Den **enskilda egendomen** delas inte.',
+      'Var och en får behålla vissa privata saker, till exempel kläder och personliga presenter.',
+      'Den som har mer giftorättsgods betalar pengar till den andra. Då får båda lika mycket. De pengarna kallas **skiftesliked**.'
+    ],
+    fordjupning: [
+      '**Äktenskapsskillnad** är det juridiska begreppet för skilsmässa. Lagens utgångspunkt är att makarna är överens och gör en gemensam ansökan till tingsrätten.',
+      '**Betänketid** på sex månader krävs i två fall: om bara den ena maken vill skiljas, eller om någon av makarna har vårdnaden om barn under 16 år som bor tillsammans med den föräldern. Makarna får då tid att tänka igenom ett livsavgörande beslut – och när barn finns med påverkar beslutet fler än makarna själva. Efter betänketiden måste någon av makarna inom tolv månader ansöka om att äktenskapsskillnaden ska **fullföljas**. Annars upphör inte äktenskapet.',
+      { h: 'Bodelning' },
+      '**Bodelning** görs när äktenskapet upplöses, antingen genom äktenskapsskillnad eller genom att ena maken dör. Det är **giftorättsgodset** som ingår. Egendom som skaffats efter ansökan om äktenskapsskillnad eller under betänketiden ingår inte. Båda makarna får dessutom ta undan vissa privata saker, till exempel kläder och personliga presenter.',
+      'Bodelningen går till i steg. Varje makes tillgångar (bankmedel, fastigheter, bil) läggs ihop, och var och en drar av sina egna skulder. Har en make mer skulder än tillgångar sätts hens giftorättsgods till noll – skulderna minskar alltså inte den andra makens del. Därefter läggs det kvarstående giftorättsgodset ihop och fördelas jämnt. Den som har mer än hälften betalar **skiftesliked** till den andra.',
+      '**Enskild egendom** (avsnitt 1.4) ligger helt utanför bodelningen. Därför kan ett arv eller en gåva med villkor om enskild egendom få stor betydelse vid en skilsmässa – som Josefins flygel i exemplet nedan.'
+    ],
+    diagram: ['bodelning'],
+    fall: {
+      titel: 'Exempel: Bodelning med enskild egendom',
+      text: [
+        'Josefin och Hugo har varit gifta i 12 år. De äger en villa värd 2 000 000 kr (lån 800 000 kr) och bohag för 250 000 kr. Josefin har aktier för 200 000 kr och en bil värd 300 000 kr. Hugo har konst för 150 000 kr och en bil värd 50 000 kr.',
+        'Josefin har ärvt en Steinwayflygel (400 000 kr) som enligt testamentet är hennes enskilda egendom. Hugo har fått en symaskin (50 000 kr) i gåva som enskild egendom.',
+        { tabell: { huvud: ['Josefins giftorättsgods', 'Belopp'], rader: [
+          ['Hälften av villan', '1 000 000'], ['Hälften av bohaget', '125 000'],
+          ['Josefins aktier', '200 000'], ['Josefins bil', '300 000'],
+          ['Avgår: hälften av lånet på villan', '−400 000']
+        ], summa: ['Summa', '1 225 000 kr'] } },
+        { tabell: { huvud: ['Hugos giftorättsgods', 'Belopp'], rader: [
+          ['Hälften av villan', '1 000 000'], ['Hälften av bohaget', '125 000'],
+          ['Hugos konst', '150 000'], ['Hugos bil', '50 000'],
+          ['Avgår: hälften av lånet på villan', '−400 000']
+        ], summa: ['Summa', '925 000 kr'] } },
+        'Totalt giftorättsgods är 2 150 000 kr. Det delas lika: 1 075 000 kr var. Josefin betalar 150 000 kr i **skiftesliked** till Hugo så att de får lika mycket. Flygeln och symaskinen ingår inte – de är enskild egendom.'
+      ]
+    },
+    begrepp: ['Äktenskapsskillnad', 'Betänketid', 'Fullföljd av äktenskapsskillnad', 'Bodelning vid äktenskap', 'Skiftesliked'],
+    komihag: [
+      '**Äktenskapsskillnad** är samma sak som skilsmässa. Ansökan görs till tingsrätten.',
+      '**Betänketid** på sex månader krävs om bara en vill skiljas eller om det finns barn under 16 år.',
+      'Vid **bodelning** delas giftorättsgodset lika – enskild egendom delas inte.',
+      'Den som har mer betalar **skiftesliked** till den andra.'
+    ]
+  },
+  {
+    id: 's1-6', nr: '1.6', emoji: '✂️', rubrik: 'Jämkning av bodelning',
+    hook: 'Misha och Nathalie har varit gifta i två år. Nathalie har tio gånger mer pengar än Misha. Är det rimligt att de delar allt lika?',
+    lattlast: [
+      'Ibland är det inte rimligt att dela allt lika. Lagen kallar det **oskäligt**.',
+      'Det kan vara oskäligt om äktenskapet varit kort, högst fem år. Eller om makarna har väldigt olika mycket egendom.',
+      'Då kan en make begära **jämkning**. Då görs ett undantag från regeln att dela lika.',
+      'Regeln är så här: för varje år som gifta delas en femtedel av giftorättsgodset. Efter fem år delas allt.',
+      'Tid som sambo innan giftermålet räknas också med.',
+      { h: 'Två andra skäl till jämkning' },
+      { lista: [
+        'En make har gett bort saker eller pengar för att få mindre att dela. Gåvor de senaste tre åren före bodelningen räknas då med ändå.',
+        'En make har gått i konkurs. Då räknas båda makarnas egendom som enskild. Den andra ska inte behöva betala skulderna.'
+      ]}
+    ],
+    fordjupning: [
+      'Huvudregeln är att giftorättsgodset delas lika. Ibland blir det ändå **oskäligt**, alltså inte rimligt, att dela helt lika. Det gäller till exempel om skillnaden i tillgångar varit mycket stor eller om äktenskapet varit mycket kort (högst fem år). Då kan en part begära **jämkning**.',
+      'Jämkningen följer en princip med femtedelar. Varje års äktenskap ger rätt till en femtedel av giftorättsgodset från båda makarna, och resten ingår inte i bodelningen. Efter fem år ingår allt giftorättsgods. Den ekonomiska gemenskapen anses alltså byggas upp gradvis: ju längre äktenskapet varat, desto rimligare är det att dela allt. Tid som sambo räknas in i de fem åren.',
+      'Jämkning kan också bli aktuell i två andra situationer:',
+      { lista: [
+        'Om en make har minskat sitt giftorättsgods inför bodelningen genom att ge bort saker eller pengar räknas gåvorna in, om de gjorts inom tre år före bodelningen. Annars skulle en make kunna "tömma" sin del innan den delas.',
+        'Om en make är försatt i konkurs betraktas bådas egendom som enskild. Då ska den andra parten inte behöva finansiera konkursboets skulder.'
+      ]}
+    ],
+    diagram: ['jamkning'],
+    fall: {
+      titel: 'Exempel: Misha och Nathalie skiljer sig efter två år',
+      text: [
+        'Misha har giftorättsgods värt 200 000 kr och Nathalie 2 000 000 kr – totalt 2 200 000 kr. Delar de lika får båda 1 100 000 kr.',
+        'Nathalie begär jämkning. Eftersom de varit gifta i två år delas bara två femtedelar av giftorättsgodset:',
+        { citat: '2/5 × 200 000 + 2/5 × 2 000 000 = 880 000 kr → delat på två = 440 000 kr var' },
+        'Resten (3/5) av sitt eget giftorättsgods behåller var och en:',
+        { lista: [
+          'Misha: 3/5 × 200 000 + 440 000 = 560 000 kr',
+          'Nathalie: 3/5 × 2 000 000 + 440 000 = 1 640 000 kr'
+        ]}
+      ]
+    },
+    begrepp: ['Oskäligt', 'Jämkning'],
+    komihag: [
+      '**Jämkning** kan begäras när det är **oskäligt** att dela lika.',
+      'Varje års äktenskap ger en femtedel – efter fem år delas allt.',
+      'Tid som sambo räknas med i de fem åren.',
+      'Gåvor inom tre år före bodelningen och konkurs kan också ge jämkning.'
+    ]
+  },
+  {
+    id: 's1-7', nr: '1.7', emoji: '🔀', rubrik: 'Sambo eller gift?',
+    hook: 'Lisen och Henry var sambor. Vad hade varit annorlunda om de i stället hade varit gifta?',
+    lattlast: [
+      'Sambor och gifta har olika regler. Här är de viktigaste skillnaderna:',
+      { lista: [
+        'Gifta har **underhållsskyldighet** för varandra. Sambor har det inte.',
+        'Gifta måste berätta för varandra om sin ekonomi. Sambor behöver inte det.',
+        'Sambor delar bara samboegendomen. Gifta delar allt som inte är enskild egendom, till exempel fritidshus, motorcykel och aktier.',
+        'Gifta ärver varandra. Sambor ärver inte varandra – om de inte har skrivit ett testamente.'
+      ]},
+      'Den viktigaste skillnaden är alltså **arvsrätten**.'
+    ],
+    fordjupning: [
+      'Sambolagen och äktenskapsbalken är båda könsneutrala, men de ger olika starkt skydd. Sambolagen skyddar den ekonomiskt svagare parten vid en separation. Äktenskapet skapar en ekonomisk gemenskap med både rättigheter och skyldigheter.',
+      'Gifta makar har **underhållsskyldighet** och en skyldighet att hålla varandra informerade om sina ekonomiska förhållanden. Sambor har ingen av dessa skyldigheter.',
+      'Vid bodelning delar sambor bara samboegendomen. Gifta makar delar allt **giftorättsgods**, alltså även till exempel fritidshus, motorcykel och aktier som bara den ena äger.',
+      'Den viktigaste skillnaden är **arvsrätten**. Den som är gift ärver sin make eller maka före de gemensamma barnen. Sambor har ingen arvsrätt alls efter varandra om de inte skrivit testamente. Exemplet med Ulf och Karin i avsnitt 3.5 visar hur ett par kan välja att gifta sig just av det skälet.'
+    ],
+    diagram: ['sambogift'],
+    fall: {
+      titel: 'Exempel: Om Lisen och Henry hade varit gifta', tag: 'Tankeexempel',
+      text: [
+        'Som sambor delade Lisen och Henry bara samboegendomen. Lisens skinnsoffa och glasbord och Henrys bil låg utanför bodelningen.',
+        'Om de i stället hade varit gifta – utan äktenskapsförord – hade även soffan, glasbordet och bilen varit giftorättsgods och ingått i bodelningen.',
+        'Och om Lisen hade dött: som sambo ärver Henry ingenting utan testamente. Som make hade han ärvt henne.'
+      ]
+    },
+    begrepp: ['Sambolagen', 'Äktenskapsbalken', 'Giftorättsgods', 'Underhållsskyldighet'],
+    komihag: [
+      'Gifta har **underhållsskyldighet** och ska informera varandra om ekonomin – sambor inte.',
+      'Sambor delar bara samboegendom. Gifta delar allt **giftorättsgods**.',
+      'Den största skillnaden: makar ärver varandra, sambor gör det inte utan testamente.'
+    ]
+  }
+  ]
+},
+
+/* ─────────────────────────── DEL 2 ─────────────────────────── */
+{
+  id: 'del2', nr: 'Del 2', titel: 'Föräldrar och barn',
+  lead: 'Barn kan inte ta hand om sig själva eller försörja sig. Här lär du dig vem som räknas som förälder, vad vårdnaden innebär och vad som händer när föräldrar separerar.',
+  sections: [
+  {
+    id: 's2-1', nr: '2.1', emoji: '🧒', rubrik: 'Barnens rättsliga ställning',
+    hook: 'Vem bestämmer när ett beslut handlar om dig som barn – och vems bästa ska gå först?',
+    lattlast: [
+      'Barn klarar inte att ta hand om sig själva. Därför har lagen särskilda regler för barn.',
+      'De flesta regler om barn finns i **föräldrabalken**.',
+      '**Barnkonventionen** är FN:s regler om barns rättigheter. Den blev svensk lag 2020.',
+      'Att **inkorporera** betyder att föra in något i lagen. Barnkonventionen har inkorporerats i svensk lag.',
+      'Två viktiga artiklar i barnkonventionen:',
+      { lista: [
+        'Artikel 2: Alla barn har samma rättigheter och samma värde. Ingen får diskrimineras.',
+        'Artikel 3: Barnets bästa ska beaktas i alla beslut som rör barn.'
+      ]},
+      '**Barnets bästa** ska alltid vara utgångspunkten när någon fattar beslut om barn. Det gäller till exempel domstolar och socialtjänsten.'
+    ],
+    fordjupning: [
+      'Barnens rättsliga ställning har förändrats genom åren. Sedan början av 1990-talet finns FN:s **barnkonvention**, som infördes som egen lag i Sverige 2020. Därmed är barnperspektivet upphöjt till lag och har fått högre status. De flesta svenska regler om barn finns i **föräldrabalken**.',
+      'Konventionens artiklar har **inkorporerats** – införlivats – i svensk rätt, bland annat på två sätt. I rättsliga frågor om vårdnad och umgänge ska barnperspektivet gälla: barnets trygghet och säkerhet är det viktiga när beslut fattas. Och socialtjänsten ska följa socialtjänstlagen, som vilar på samma grund som föräldrabalken: barnperspektivet och **barnets bästa**.',
+      { citat: 'Alla barn har samma rättigheter och samma värde. Ingen får diskrimineras.', kalla: 'Barnkonventionen, artikel 2' },
+      { citat: 'Barnets bästa ska beaktas i alla beslut som rör barn.', kalla: 'Barnkonventionen, artikel 3' },
+      'Artikel 3 går igen i resten av Del 2. När föräldrar separerar, när en domstol avgör en vårdnadstvist och när socialtjänsten tar emot en orosanmälan är det barnets bästa – inte föräldrarnas – som ska styra.',
+      { ruta: { h: 'Vilka är BO och BRIS?', p: [
+        '**Barnombudsmannen (BO)** är en statlig myndighet som arbetar med information och opinionsbildning om barns och ungdomars behov och rättigheter. Uppdraget är att driva på och bevaka att barnkonventionen följs.',
+        '**BRIS (Barnens rätt i samhället)** är en barnrättsorganisation som med barnkonventionen som grund arbetar för ett bättre samhälle för barn. BRIS har stödlinjer för barn som känner sig utsatta, skriver rapporter och medverkar i statliga utredningar om barnfrågor.'
+      ]}}
+    ],
+    fall: {
+      titel: 'Exempel: Vart kan ett barn vända sig?',
+      text: [
+        'Ett barn som känner sig utsatt kan kontakta BRIS. Det går att ringa eller sms:a 116 111, eller chatta och mejla via bris.se.',
+        'BRIS arbetar med barnkonventionen som grund – samma regler som sedan 2020 är svensk lag.'
+      ]
+    },
+    begrepp: ['Barnkonventionen', 'Föräldrabalken', 'Inkorporera', 'Barnets bästa'],
+    komihag: [
+      '**Barnkonventionen** är svensk lag sedan 2020.',
+      'De flesta regler om barn finns i **föräldrabalken**.',
+      '**Barnets bästa** ska beaktas i alla beslut som rör barn.'
+    ]
+  },
+  {
+    id: 's2-2', nr: '2.2', emoji: '👪', rubrik: 'Vem är förälder?',
+    hook: 'Ett barn föds. Föräldrarna är sambor, inte gifta. Blir båda automatiskt barnets vårdnadshavare?',
+    lattlast: [
+      'Den som är förälder har det juridiska ansvaret för barnet.',
+      'En **vårdnadshavare** är den som är juridiskt ansvarig för barnet. Oftast är det båda föräldrarna.',
+      { h: 'Om föräldrarna är gifta' },
+      'Lagen utgår från att mannen som mamman är gift med är pappa till barnet. Det kallas **faderskapspresumtion**.',
+      'Samma sak gäller för samkönade gifta par. Båda blir barnets föräldrar.',
+      'Gifta föräldrar blir automatiskt vårdnadshavare. De får **gemensam vårdnad**.',
+      { h: 'Om föräldrarna inte är gifta' },
+      'Mamman blir ensam vårdnadshavare när barnet föds.',
+      'Partnern måste först bekräfta att hen är förälder. Det kallas **föräldraskapsbekräftelse**.',
+      'Två personer ska **bevittna** bekräftelsen. Socialnämnden och mamman ska godkänna den.',
+      'Sedan måste föräldrarna ansöka om gemensam vårdnad.'
+    ],
+    fordjupning: [
+      'Genom att bestämma vem som är förälder avgörs vem som har det juridiska ansvaret för barnets uppväxt och fostran. Vem som är mamma är sällan något problem, men det kan vara svårare att veta vem som är pappa. Reglerna om hur faderskapet fastställs finns i föräldrabalken.',
+      'En **vårdnadshavare** är den eller de som har den rättsliga vårdnaden, alltså är juridiskt ansvariga för barnet.',
+      { h: 'Gifta föräldrar' },
+      'Om en kvinna är gift när hon föder ett barn utgår lagen från – presumerar – att mannen hon är gift med är far till barnet: **faderskapspresumtion**. Samma princip gäller samkönade äktenskap, där det gifta paret blir gemensamma föräldrar. Gifta föräldrar blir automatiskt vårdnadshavare och får automatiskt gemensam vårdnad.',
+      { h: 'Ogifta föräldrar' },
+      'Är kvinnan inte gift när barnet föds blir hon ensam vårdnadshavare. För att pappan eller den samkönade partnern också ska bli vårdnadshavare måste föräldraskapet bekräftas skriftligen eller genom en dom – vanligen genom en **föräldraskapsbekräftelse**. Bekräftelsen ska **bevittnas** av två personer och godkännas av socialnämnden och av barnets mamma.',
+      'Observera att det är två steg: först bekräftas föräldraskapet, sedan ansöker föräldrarna om gemensam vårdnad. Att vara förälder och att vara vårdnadshavare är alltså inte samma sak.',
+      { ruta: { h: 'Föräldraskapet vid insemination och provrörsbefruktning', p: [
+        'Befruktningen ska ske enligt lagen om genetisk integritet. Sedan 2005 har heterosexuella par, homosexuella par och ensamstående kvinnor rätt till insemination. Den partner som samtyckt till befruktningen blir också barnets förälder – om befruktningen skett enligt lagen, annars är bara modern förälder.',
+        'I oklara fall kan socialnämnden utreda faderskapet, till exempel med ett faderskapstest med DNA-teknik. Barn som blivit till genom insemination eller provrörsbefruktning har rätt att få veta sin bakgrund: från 18 års ålder får de ta del av uppgifter om donatorn.'
+      ]}}
+    ],
+    fall: {
+      titel: 'Exempel: Anna och Omar får en dotter', tag: 'Tankeexempel',
+      text: [
+        'Anna och Omar är sambor och får en dotter. Eftersom Anna inte är gift blir hon ensam vårdnadshavare när dottern föds – faderskapspresumtionen gäller bara gifta.',
+        'Omar skriver en föräldraskapsbekräftelse. Två personer bevittnar den, och socialnämnden och Anna godkänner den. Därefter ansöker Anna och Omar om gemensam vårdnad. Först då är båda vårdnadshavare.'
+      ]
+    },
+    begrepp: ['Vårdnadshavare', 'Faderskapspresumtion', 'Föräldraskapsbekräftelse', 'Bevittna'],
+    komihag: [
+      'Gifta: **faderskapspresumtion** och automatisk gemensam vårdnad.',
+      'Ogifta: mamman blir ensam **vårdnadshavare** från början.',
+      'En **föräldraskapsbekräftelse** bevittnas av två personer och godkänns av socialnämnden och mamman.'
+    ]
+  },
+  {
+    id: 's2-3', nr: '2.3', emoji: '🤝', rubrik: 'Adoption',
+    hook: 'Ett par vill adoptera ett barn från ett annat land. Vem får adoptera – och vem hjälper till?',
+    lattlast: [
+      'Att **adoptera** betyder att få ett barn som sitt eget, för alltid.',
+      'Efter adoptionen är de nya föräldrarna barnets vårdnadshavare.',
+      'Barnet har inga juridiska band kvar till sina biologiska föräldrar. Barnet ärver sina adoptivföräldrar.',
+      'Du måste ha fyllt 18 år för att få adoptera.',
+      'Gifta par och sambor ska adoptera tillsammans. Ensamstående och samkönade par får också adoptera.',
+      'De flesta adoptioner i Sverige sker från andra länder. Men de har blivit färre.',
+      'Kommunen utreder de som vill adoptera. **Barnets bästa** ska styra hela arbetet.',
+      'Internationella adoptioner regleras bland annat av **Haagkonventionen**.'
+    ],
+    fordjupning: [
+      'Reglerna om adoption ändrades på flera viktiga sätt 2018. När en adoption är genomförd har barnet fått nya föräldrar, som därmed också är vårdnadshavare och förmyndare. Alla juridiska band till de biologiska föräldrarna upphör – barnet ärver sina adoptivföräldrar och inte sina biologiska föräldrar. Adoptionen påverkar alltså även arvsrätten i Del 3.',
+      'Den som fyllt 18 år får adoptera. Makar och sambor får enligt huvudregeln bara adoptera tillsammans. Ett undantag är när en make eller sambo vill adoptera den andres barn: det är möjligt om den biologiska förälder som barnet inte bor hos är avliden eller godkänner adoptionen. Även ensamstående och samkönade par kan adoptera.',
+      'Nationell adoption av svenska barn är inte så vanligt. Internationella adoptioner är vanligast, men antalet har minskat, bland annat eftersom flera länder skärpt sina regler. Kommunerna ansvarar för att förbereda och utreda de som vill adoptera, och barnets bästa ska vara vägledande i alla delar av adoptionsarbetet. Internationell adoption regleras bland annat av **Haagkonventionen** om skydd av barn och samarbete vid internationella adoptioner.',
+      'Två svenska organisationer är viktiga:',
+      { lista: [
+        '**Adoptionscentrum** – en ideell förening och den största förmedlaren av internationella adoptioner.',
+        '**Myndigheten för familjerätt och föräldraskapsstöd (MFoF)** – en statlig kunskapsmyndighet med ansvar för familjerätt, föräldraskapsstöd och familjerådgivning. Den samarbetar med Adoptionscentrum.'
+      ]}
+    ],
+    fall: {
+      titel: 'Exempel: Sara och Leo vill adoptera', tag: 'Tankeexempel',
+      text: [
+        'Sara och Leo är sambor och vill adoptera ett barn från ett annat land. Eftersom de är sambor måste de adoptera tillsammans. Kommunen förbereder och utreder dem först, och Adoptionscentrum kan förmedla adoptionen.',
+        'När adoptionen är klar är Sara och Leo barnets vårdnadshavare. Barnet ärver Sara och Leo – inte sina biologiska föräldrar.',
+        'Om Leo i stället ville adoptera Saras son från ett tidigare förhållande, krävs att sonens andra biologiska förälder är avliden eller godkänner adoptionen.'
+      ]
+    },
+    begrepp: ['Adoptera', 'Haagkonventionen'],
+    komihag: [
+      'Den som fyllt 18 år får **adoptera**. Makar och sambor adopterar tillsammans.',
+      'Efter adoptionen upphör alla juridiska band till de biologiska föräldrarna.',
+      'Internationell adoption regleras bland annat av **Haagkonventionen**.'
+    ]
+  },
+  {
+    id: 's2-4', nr: '2.4', emoji: '🛡️', rubrik: 'Vårdnaden om barnet',
+    hook: 'Fyra 12-åringar krossar 13 fönster på sin skola. Vem får betala?',
+    lattlast: [
+      'De flesta barn har båda sina föräldrar som vårdnadshavare.',
+      'Ibland är bara en förälder vårdnadshavare. Det kan bero på missbruk, svår psykisk sjukdom eller brott. Det kan också bero på att föräldrarna inte kan samarbeta.',
+      'Vårdnadshavaren ska ge barnet:',
+      { lista: [
+        '**Omvårdnad** – mat, kläder, boende och sjukvård.',
+        '**Trygghet** – stöd och vägledning.',
+        '**God fostran** – lära barnet hur man uppför sig. Det är förbjudet att använda våld.',
+        '**Försörjning och tillsyn** – betala för barnet, se efter det och se till att det går i skolan.'
+      ]},
+      '**Tillsynsansvar** betyder att vårdnadshavaren ansvarar om barnet skadar någon annan eller någon annans saker.',
+      'Vårdnaden gäller tills barnet fyller 18 år. Går barnet i gymnasiet måste föräldrarna försörja det tills det fyller 21.',
+      'Vårdnadshavarna är också barnets **förmyndare**. De sköter barnets pengar.',
+      'Har barnet mycket pengar kan en **överförmyndare** kontrollera hur förmyndaren sköter dem.'
+    ],
+    fordjupning: [
+      'Föräldrar ger barnet kärlek och uppmärksamhet, men vårdnaden är också ett juridiskt ansvar. I de flesta familjer är båda föräldrarna vårdnadshavare. Där bara den ena är det, har vårdnadshavaren rätten att bestämma till exempel var barnet ska bo och gå i skola. Skälen kan vara missbruk, svår psykisk sjukdom eller kriminalitet – men allt vanligare är djupgående samarbetssvårigheter som omöjliggör gemensam vårdnad.',
+      'Enligt föräldrabalken ska vårdnadshavaren ge barnet "omvårdnad, trygghet och en god fostran". Vårdnadshavaren ska också försörja barnet och ha tillsyn över det:',
+      { lista: [
+        '**Omvårdnad**: barnet ska tas om hand både fysiskt och psykiskt – sjukvård, kläder, mat och boende.',
+        '**Trygghet**: vårdnadshavaren ska ge barnet trygghet och vägledning.',
+        '**God fostran**: vårdnadshavaren ska lära barnet hur det ska uppföra sig och uppfostra det till en fungerande vuxen. Våld, både fysiskt och psykiskt, är förbjudet i uppfostran.',
+        '**Försörjning och tillsyn**: vårdnadshavaren ska försörja och se efter barnet, se till att det går i skolan och att det inte orsakar skada.'
+      ]},
+      'Den sista delen kallas **tillsynsansvar**: vårdnadshavaren ansvarar om barnet gör något som skadar en annan person eller någons egendom. Det förklarar exemplet nedan – det är inte 12-åringarna själva som får räkningen.',
+      'Vårdnaden gäller tills barnet fyller 18 år och blir myndigt. Försörjningsplikten finns dock kvar tills barnet fyllt 21 år, om barnet fortfarande går i gymnasieskolan.',
+      'Så länge barnet är omyndigt är vårdnadshavarna också **förmyndare**, med ansvar för barnets ekonomi och vid behov förvaltning av barnets tillgångar. Om barnets ekonomi kräver det, till exempel om barnet har en förmögenhet, kan även en **överförmyndare** utses – en kommunal tjänsteman som har tillsyn över hur förmyndaren förvaltar barnets ekonomi.'
+    ],
+    fall: {
+      titel: 'Exempel: Vårdnadshavare fick betala för skadegörelsen',
+      text: [
+        'Fyra 12-åriga barn krossade 13 fönster på Västervångskolan i Landskrona. Ett vaktbolag fick rycka ut och ta hand om de akuta skadorna, och sedan bytte en glasmästare rutorna. Totalt kostade det 48 837 kronor.',
+        'Kommunen hänvisade till skadeståndslagen och skickade räkningen till de fyra barnens vårdnadshavare, som fick betala 12 209 kronor var.'
+      ]
+    },
+    begrepp: ['Omvårdnad', 'Trygghet', 'God fostran', 'Försörjning och tillsyn', 'Tillsynsansvar', 'Förmyndare', 'Överförmyndare'],
+    komihag: [
+      'Vårdnadshavaren ska ge **omvårdnad**, **trygghet** och **god fostran** – och sköta **försörjning och tillsyn**.',
+      '**Tillsynsansvar**: vårdnadshavaren ansvarar om barnet skadar någon eller något.',
+      'Vårdnaden gäller till 18 år, försörjningen till 21 år om barnet går i gymnasiet.',
+      'Vårdnadshavarna är barnets **förmyndare**. En **överförmyndare** kan kontrollera dem.'
+    ]
+  },
+  {
+    id: 's2-5', nr: '2.5', emoji: '🚨', rubrik: 'När barn far illa',
+    hook: 'En lärare märker att en elev ofta kommer hungrig och ledsen till skolan. Vad måste läraren göra?',
+    lattlast: [
+      'Ibland klarar föräldrar inte att ta hand om sina barn. Då kan socialtjänsten i kommunen hjälpa till.',
+      'Ofta börjar det med en **orosanmälan**. Någon anmäler att de är oroliga för ett barn. Det kan vara förskolan, skolan, sjukvården eller en privatperson.',
+      'Personal i förskola och skola måste göra en orosanmälan om de tror att ett barn far illa.',
+      'Socialtjänsten försöker först att stödja föräldrarna.',
+      'Blir det inte bättre kan barnet **omhändertas**. Då flyttar barnet till ett familjehem.',
+      'Det kan ske även om föräldrarna inte vill. Reglerna finns i en lag som förkortas LVU.'
+    ],
+    fordjupning: [
+      'Om föräldrar har svårt att ta sitt ansvar kan socialtjänsten i kommunen gå in – i första hand för att stödja föräldrarna. Det sker ofta efter en **orosanmälan** till socialnämnden från förskola, skola, sjukvård eller en privatperson.',
+      'För personal i förskola och grundskola är det inte frivilligt. Den som misstänker eller får kännedom om att ett barn far illa är skyldig att göra en orosanmälan hos socialtjänsten.',
+      'Om föräldrarna trots stödet inte blir bättre på att ta hand om barnet är sista utvägen att barnet **omhändertas** och placeras i ett familjehem. Ett omhändertagande kan ske mot föräldrarnas vilja, enligt lagen med särskilda bestämmelser om vård av unga (LVU).',
+      'Ordningen är viktig: stöd först, omhändertagande sist. Samhället griper in i familjens liv steg för steg, med barnets bästa som utgångspunkt.'
+    ],
+    fall: {
+      titel: 'Exempel: Vanvårdade barn omhändertogs av socialtjänsten',
+      text: [
+        'I ett uppmärksammat fall i Ystad hade fem barn under lång tid hållits isolerade, utan kontakt med omvärlden och andra barn. Flera av barnen hade ingen tidsuppfattning och kunde varken knyta skorna, tvätta sig, gå på toaletten eller skala en banan.',
+        'Barnen (4–18 år) hade inte gått i skolan – föräldrarna hade lurat kommunen att tro att de gick i skola utomlands. När missförhållandena avslöjades omhändertogs de fyra barnen under 18 år av socialtjänsten i Ystad. De bor nu i familjehem.'
+      ]
+    },
+    begrepp: ['Orosanmälan', 'Omhändertagande'],
+    komihag: [
+      'Förskola, skola, sjukvård eller privatpersoner kan göra en **orosanmälan**.',
+      'Personal i förskola och skola är skyldiga att anmäla.',
+      'Socialtjänsten stödjer först – **omhändertagande** enligt LVU är sista utvägen.'
+    ]
+  },
+  {
+    id: 's2-6', nr: '2.6', emoji: '🏡', rubrik: 'Om föräldrarna separerar',
+    hook: 'En mamma får jobb i Etiopien i tre år. Barnen bor kvar i Sverige. Får hon flytta – och hur ska de träffas?',
+    lattlast: [
+      'När föräldrar separerar påverkas barnet mycket. Boende, umgänge och pengar förändras.',
+      'Lagen säger att **barnets bästa** ska styra – inte föräldrarnas bästa.',
+      'Föräldrarna ska försöka komma överens. Socialtjänsten kan hjälpa dem att skriva ett avtal.',
+      { h: 'Vårdnad' },
+      'Oftast fortsätter föräldrarna att ha **gemensam vårdnad** efter en separation.',
+      'En förälder kan ansöka om ensam vårdnad. Då avgör domstolen.',
+      { h: 'Boende' },
+      'Barnet kan bo växelvis, till exempel en vecka hos varje förälder.',
+      'Barnet kan också bo mest hos en förälder. Den föräldern kallas **boendeförälder**.',
+      'Äldre barn får vara med och bestämma var de ska bo. En 17-åring kan sällan tvingas bo hos en förälder.',
+      'Har föräldrarna gemensam vårdnad får ingen av dem flytta till en annan ort med barnet utan att den andra säger ja.',
+      { h: 'Umgänge och pengar' },
+      'Barnet har rätt att träffa föräldern det inte bor med. Det kallas **umgänge**.',
+      'Båda föräldrarna ska försörja barnet. Föräldern som barnet inte bor med betalar **underhållsbidrag**.',
+      'Betalar föräldern inte kan boendeföräldern få **underhållsstöd** från Försäkringskassan.'
+    ],
+    fordjupning: [
+      'En separation påverkar barnets livssituation genomgripande: boendet, umgänget med föräldrarna och den ekonomiska situationen. Föräldrabalkens utgångspunkt är att **barnets bästa** ska gälla vid beslut om barnets boende och umgänge. Föräldrarna ska i första hand komma överens, muntligt eller skriftligt. Vid samarbetssvårigheter kan socialtjänsten hjälpa till med avtal om umgänge och boende, och det går också att vända sig till allmän domstol för medling.',
+      { h: 'Vårdnad' },
+      'Grundprincipen är att båda föräldrarnas ansvar för barnets fostran fortsätter efter en separation. I de flesta fall blir det därför fortsatt **gemensam vårdnad**. En förälder kan ansöka om ensam vårdnad, och då är det domstolen som avgör.',
+      { h: 'Boende' },
+      'Barnets bästa, inte föräldrarnas, är utgångspunkten. Har föräldrarna lätt att komma överens kan växelvis boende fungera bra. Annars bor barnet i huvudsak hos en **boendeförälder**, och barnet och den andra föräldern har rätt till umgänge. Barnets inflytande ökar med ålder och mognad – en 17-åring kan sällan tvingas bo hos en förälder mot sin vilja.',
+      'Flytt till en annan ort visar vad gemensam vårdnad innebär i praktiken: beslutet måste fattas av båda. Ger den förälder som bor kvar inte sitt medgivande har den andra ingen rätt att flytta med barnet. Föräldrarna är också skyldiga att delta i ett informationssamtal med socialtjänsten om flytten. Kan de inte enas är enda vägen att den som vill flytta ansöker om ensam vårdnad.',
+      { h: 'Umgänge' },
+      'Barnet har rätt till **umgänge** med den förälder det inte bor med. För barnets bästa ska umgänget vara tillräckligt omfattande och regelbundet. Kan föräldrarna inte enas kan socialtjänsten hjälpa till att formulera ett avtal; sista utvägen är att domstol beslutar. Rätten till umgänge tillhör barnet – därför gäller den oavsett hur vårdnaden ser ut.',
+      { h: 'Underhåll' },
+      'Båda föräldrarna ska försörja barnet. Vid växelvis boende fördelas kostnaderna förmodligen relativt lika. Bor barnet mest hos en förälder står den föräldern för kostnaderna, och den andra är skyldig att betala **underhållsbidrag**, vars storlek till stor del beror på inkomsten. Sköts inte betalningarna har boendeföräldern rätt till **underhållsstöd** från Försäkringskassan – samhället går in så att barnet inte drabbas.'
+    ],
+    fall: {
+      titel: 'Exempel: Två familjer efter skilsmässan',
+      text: [
+        { h: 'Mari och Klas – en förälder flyttar utomlands' },
+        'Mari och Klas är skilda och har gemensam vårdnad om Johannes (12 år) och Julia (9 år). Mari erbjuds en FN-tjänst i Etiopien i tre år. Eftersom de har gemensam vårdnad måste de komma överens. De bestämmer att Mari reser hem var tredje månad och att barnen hälsar på henne under höst- och sportloven.',
+        { h: 'Emil och Ida – underhållsbidrag' },
+        'Emil och Ida skiljer sig och har tre barn: Alfred (12 år), Lina (10 år) och Maja (8 år). Emil bor kvar i lägenheten med barnen, och Ida flyttar en bit bort. Eftersom barnen främst bor hos Emil betalar Ida **underhållsbidrag** till Emil.',
+        'De har fortfarande gemensam vårdnad och fattar beslut om barnen tillsammans. Enligt avtalet har barnen umgänge med Ida varannan helg, och i veckorna turas föräldrarna om att hämta på skolan.'
+      ]
+    },
+    begrepp: ['Gemensam vårdnad', 'Boendeförälder', 'Umgänge', 'Underhållsbidrag', 'Underhållsstöd'],
+    komihag: [
+      '**Barnets bästa** styr boende och umgänge – inte föräldrarnas.',
+      'Oftast fortsätter **gemensam vårdnad**. Då måste båda vara överens om en flytt.',
+      'Barnet har rätt till **umgänge** med föräldern det inte bor med.',
+      'Den förälder barnet inte bor med betalar **underhållsbidrag**. Annars kan **underhållsstöd** betalas ut.'
+    ]
+  },
+  {
+    id: 's2-7', nr: '2.7', emoji: '🏛️', rubrik: 'När föräldrarna inte kommer överens',
+    hook: 'Två utredningar säger att flickan ska bo kvar hos mamman. Ändå ger hovrätten pappan ensam vårdnad. Hur kan det bli så?',
+    lattlast: [
+      'Vid en skilsmässa är känslorna ofta starka. Ibland kan föräldrarna inte komma överens om vårdnad eller umgänge.',
+      'Då är sista utvägen att låta domstolen bestämma. Det blir en tvist i allmän domstol.',
+      'Domstolen utreder vilken förälder som passar bäst. Den väljer det som är bäst för barnet – även om en förälder inte håller med.',
+      'Allt fler vårdnadstvister hamnar i domstol. Ofta är det barnen som förlorar när föräldrarna inte kan enas.',
+      { h: 'Lukas och Minna' },
+      'Lukas och Minna fick dottern Jonna. Lukas ville ha gemensam vårdnad. Minna ville inte.',
+      'Domstolen lät Minna fortsätta vara ensam **vårdnadshavare**. Lukas hade haft ett missbruk och begått brott. Han var nykter sedan en tid, men han hade inte visat att han klarade gemensam vårdnad.',
+      'Jonna har ändå rätt till **umgänge** med båda sina föräldrar.'
+    ],
+    fordjupning: [
+      'Upprörda känslor är vanliga vid en skilsmässa och kan göra det svårt att komma överens. Om föräldrarna inte kan lösa frågan om vårdnad eller umgänge är sista utvägen att driva den som ett civilrättsligt tvistemål i allmän domstol. Domstolen ska då utreda föräldrarnas lämplighet och hitta den lösning som är bäst för barnet – även om den går emot någon förälders vilja. Antalet vårdnadstvister i domstol ökar stadigt, och barnen blir ofta förlorare när föräldrarna inte kan enas.',
+      'Fallet med Lukas och Minna visar hur domstolen bedömer lämplighet. Lukas ville ha gemensam vårdnad om dottern Jonna, men Minna motsatte sig det och domstolen gick på hennes linje. Lukas hade haft ett missbruk som han finansierat genom brott. Trots att han var nykter sedan en tid hade han inte visat att han var kapabel att ha gemensam vårdnad. Jonna har ändå rätt till umgänge med båda föräldrarna – vårdnad och umgänge är olika frågor.',
+      'Rättsfallet nedan visar att domstolar kan dra olika slutsatser i samma fall. Tingsrätten och utredarna betonade kontinuitet och stabilitet. Hovrätten lade större vikt vid att flickan skulle få tillgång till båda sina föräldrar. Båda resonemangen utgår från **barnets bästa**, men tolkar det på olika sätt.'
+    ],
+    fall: {
+      titel: 'Rättsfall: Pappan fick ensam vårdnad',
+      text: [
+        'En 4-årig flickas föräldrar bodde ihop en kort period 2010 men separerade. Mamman har haft vårdnaden sedan flickan föddes. Pappan hävdade att mamman var olämplig som vårdnadshavare, bland annat för att hon drog in flickan i föräldrarnas konflikt.',
+        { h: 'Tingsrätten' },
+        'Tingsrätten gick inte på pappans linje. Den stödde sig på en vårdnadsutredning som kommit fram till att det bästa för flickan var att bo hos mamman, bland annat med hänvisning till kontinuitet i flickans liv.',
+        { h: 'Hovrätten' },
+        'Pappan överklagade. En ny vårdnadsutredning visade att pappan stängts ute från stora delar av dotterns vardag på grund av konflikten, och att mamman hanterade umgänget på ett sätt som var dåligt för flickan. Ändå ansåg utredarna att flickan borde bo kvar hos mamman, med hänvisning till kontinuitet och stabilitet.',
+        'Hovrätten gick emot både tingsrätten och utredarna. Problemen med omställningen kunde vara ett pris värt att betala om dottern fick ett fungerande liv med båda sina föräldrar. Pappan fick ensam vårdnad.',
+        { citat: 'Källa: Mikael Kindbom, Dagens Juridik, 2023-12-14.' }
+      ]
+    },
+    begrepp: ['Barnets bästa', 'Vårdnadshavare', 'Umgänge'],
+    komihag: [
+      'Kan föräldrarna inte enas avgör domstolen – sista utvägen.',
+      'Domstolen väljer det som är bäst för barnet, även mot en förälders vilja.',
+      'Vårdnad och **umgänge** är olika frågor – barnet har rätt att träffa båda föräldrarna.'
+    ]
+  },
+  {
+    id: 's2-8', nr: '2.8', emoji: '🏷️', rubrik: 'Barnets namn',
+    hook: 'Föräldrar vill ge sitt barn ett namn som kan göra att barnet blir retat hela livet. Får de det?',
+    lattlast: [
+      'Ett barn ska ha både förnamn och efternamn.',
+      'Efternamnet kan vara föräldrarnas gemensamma namn, den enas namn eller båda namnen.',
+      'Föräldrarna ska bestämma förnamnet inom tre månader efter att barnet föddes.',
+      'De ansöker om namnet hos Skatteverket. När namnet är godkänt registreras det.',
+      'Skatteverket kan säga nej till ett namn som kan väcka anstöt eller bli obehagligt för barnet.',
+      'Föräldrarna kan överklaga ett nej till förvaltningsrätten.',
+      'En vuxen kan själv byta både förnamn och efternamn.'
+    ],
+    fordjupning: [
+      'När ett barn har fötts ska det ha både förnamn och efternamn. **Lagen om personnamn** reglerar namnen och hur en person kan ändra sitt för- och efternamn. Efternamnet kan vara föräldrarnas gemensamma, någotderas eller båda föräldrarnas efternamn.',
+      'Förnamnet ska föräldrarna bestämma inom tre månader från födseln. De ansöker hos Skatteverket om att få ge barnet namnet, och när namnet godkänts registreras det.',
+      'Lagen om personnamn ger Skatteverket möjlighet att avslå ett förnamn om myndigheten bedömer att namnet kan väcka anstöt, leda till obehag för barnet eller av annan anledning är olämpligt. Här syns barnets bästa igen: föräldrarnas frihet att välja namn begränsas av hänsyn till barnet, som ska bära namnet. Ett avslag kan överklagas hos förvaltningsrätten.',
+      'Den som är vuxen kan själv byta både för- och efternamn.'
+    ],
+    fall: {
+      titel: 'Exempel: Ett förnamn får avslag', tag: 'Tankeexempel',
+      text: [
+        'Ett föräldrapar ansöker hos Skatteverket om ett förnamn till sin nyfödda dotter, två månader efter födseln. Skatteverket bedömer att namnet kan leda till obehag för barnet och avslår ansökan.',
+        'Föräldrarna kan välja ett annat namn – eller överklaga beslutet till förvaltningsrätten.'
+      ]
+    },
+    begrepp: [
+      { term: 'Lagen om personnamn', def: 'Lagen som reglerar hur en person kan ändra sitt för- och efternamn.', kalla: true }
+    ],
+    komihag: [
+      'Förnamnet ska bestämmas inom tre månader.',
+      'Skatteverket godkänner och registrerar namnet – och kan avslå olämpliga namn.',
+      'Ett avslag kan överklagas till förvaltningsrätten.'
+    ]
+  }
+  ]
+},
+
+/* ─────────────────────────── DEL 3 ─────────────────────────── */
+{
+  id: 'del3', nr: 'Del 3', titel: 'Arvsrätt',
+  lead: 'Vem ärver när någon dör? Här lär du dig den legala arvsordningen, vad ett testamente kan och inte kan göra, och vilka formella krav som gäller efter ett dödsfall.',
+  sections: [
+  {
+    id: 's3-1', nr: '3.1', emoji: '🕯️', rubrik: 'Dödsboet och arvets grundbegrepp',
+    hook: 'Tim "Avicii" Bergling dog 2018, bara 28 år gammal. Han hade inga egna barn. Vem ärvde honom?',
+    lattlast: [
+      'När någon dör kallas allt hen ägde och var skyldig för **dödsboet**.',
+      'Dödsboet är en **juridisk person**. Det betyder att det kan äga saker, skriva avtal och ha skulder – precis som en människa.',
+      'En människa kallas i juridiken för en fysisk person.',
+      'Dödsboet sköts av **dödsbodelägarna**, till exempel barn, make eller maka.',
+      'Reglerna om arv finns i **ärvdabalken**.',
+      { lista: [
+        '**Arvlåtare** – den som har dött och lämnar ett arv.',
+        '**Arvinge** – den som ärver.',
+        '**Arv** – det som ärvs, till exempel pengar, hus eller smycken.'
+      ]},
+      'Den **legala arvsordningen** bestämmer vilka släktingar som ärver. Barn ärver sina föräldrar först.',
+      'Var den döde gift? Då ärver maken eller makan före de gemensamma barnen.'
+    ],
+    fordjupning: [
+      'När någon dör utgör den dödes tillgångar och skulder **dödsboet**. Dödsboet är en **juridisk person** som förvaltas av **dödsbodelägarna**.',
+      'Skillnaden mellan fysisk och juridisk person är central. En fysisk person är en människa med både rättigheter och skyldigheter – även en enskild näringsidkare är en fysisk person. En juridisk person kan vara ett företag, en verksamhet, en organisation eller ett dödsbo, och har rättigheter och skyldigheter precis som en fysisk person.',
+      'Arvsreglerna finns i **ärvdabalken** och har sitt ursprung i den romerska rätten. Tanken är att den döde under sin livstid skapat tillgångar som de som stod hen närmast ska ta hand om – därför ärver de närmaste först. Den som dött kallas **arvlåtare**, den som ärver **arvinge** och egendomen **arv**.',
+      'Den **legala arvsordningen** innebär att barn ärver sina föräldrar, och finns inga barn går arvet vidare i familjen. Ett viktigt undantag: var den döde gift med barnens andra förälder ärver maken före de gemensamma barnen, som får vänta tills även den föräldern gått bort (avsnitt 3.3).',
+      { ruta: { h: 'Notera: nya regler kan vara på väg', p: [
+        'Förslag om nya regler för arv och testamente finns i den statliga utredningen SOU 2025:91. Den ser över hur reglerna i ärvdabalken kan anpassas till den digitala och ekonomiska samhällsutvecklingen.'
+      ]}}
+    ],
+    fall: {
+      titel: 'Exempel: En stiftelse till Tims minne',
+      text: [
+        'Husartisten och kompositören Tim "Avicii" Bergling avled 2018, endast 28 år gammal. Eftersom han inte hade några egna barn ärvde hans föräldrar honom.',
+        'Med hjälp av arvet startade familjen Bergling Tim Bergling Foundation. Stiftelsen stödjer personer och organisationer som arbetar förebyggande mot psykisk ohälsa, samt med klimat, bistånd och hotad natur.'
+      ]
+    },
+    begrepp: ['Dödsbo', 'Juridisk person', 'Dödsbodelägare', 'Ärvdabalken', 'Arvlåtare', 'Arvinge', 'Arv', 'Legala arvsordningen'],
+    komihag: [
+      'Den dödes tillgångar och skulder är **dödsboet** – en **juridisk person**.',
+      'Reglerna om arv finns i **ärvdabalken**.',
+      '**Arvlåtare** = den som dött. **Arvinge** = den som ärver.',
+      'Den **legala arvsordningen** avgör vilka släktingar som ärver.'
+    ]
+  },
+  {
+    id: 's3-2', nr: '3.2', emoji: '🌳', rubrik: 'Arvsordningen',
+    hook: 'Lina dör före sin pappa Pelle. När Pelle sedan dör – får Linas döttrar något?',
+    lattlast: [
+      'Arvingarna delas in i tre arvsgrupper. Finns det någon som kan ärva i en grupp, ärver ingen i nästa grupp.',
+      { lista: [
+        '**Arvsgrupp 1:** barn och barnbarn. De kallas **bröstarvingar**.',
+        '**Arvsgrupp 2:** föräldrar. Lever inte en förälder ärver syskonen den förälderns del. Sedan syskonbarnen.',
+        '**Arvsgrupp 3:** far- och morföräldrar. Lever de inte ärver deras barn – fastrar, farbröder, mostrar och morbröder.'
+      ]},
+      'Båda sidor av släkten får lika stor del.',
+      'Är en arvinge redan död tar hens barn över hens del. Det kallas **istadarätt**.',
+      'Kusiner ärver inte. Finns bara kusiner kvar går arvet till **Allmänna arvsfonden**.',
+      'Pengarna i Allmänna arvsfonden går till projekt för barn, unga, äldre och personer med funktionsnedsättning.'
+    ],
+    fordjupning: [
+      'I första hand ärver barnen. De tillhör **arvsgrupp 1** och kallas i lagen **bröstarvingar**. Har en bröstarvinge redan dött men själv har barn – arvlåtarens barnbarn – så ärver de.',
+      'Finns inga bröstarvingar går arvsordningen bakåt i släktträdet till **arvsgrupp 2**: den dödes föräldrar ärver hälften var om de lever. Är en eller båda döda ärver den dödes syskon den förälderns del, och därefter syskonbarnen.',
+      'Arvsordningen sträcker sig till den dödes far- och morföräldrar, eller om de är döda deras barn, i **arvsgrupp 3** – alltså farbror, faster, moster och morbror. Kusiner ärver inte; där tar arvsordningen stopp.',
+      'Två principer går igen i alla grupper. Båda sidor av släkten tar lika lott, alltså lika stor del av arvet. Och en levande släkting träder in och tar en avliden släktings arv – **istadarätt**. Istadarätten gör att arvet följer släktgrenarna nedåt, som i exemplet med Lina och Pelle.',
+      'Finns inga legala arvingar och inget testamente går arvet enligt ärvdabalken till **Allmänna arvsfonden**. Medlen används till projekt som stödjer barn, ungdomar, äldre och personer med funktionsnedsättning. Ansökningarna handläggs av den statliga myndigheten Kammarkollegiet.',
+      { ruta: { h: 'Den som mördat sin förälder ärver inte', p: [
+        'Enligt ärvdabalken 15 kap. 1 § får den som mördat någon ingen rätt till arv eller testamente efter den döde. Undantaget är om gärningspersonen är under 15 år, om brottet begåtts under psykisk sjukdom eller av någon under 18 år med uppenbart bristande utveckling eller omdömesförmåga.'
+      ]}}
+    ],
+    diagram: ['arvsgrupper'],
+    fall: {
+      titel: 'Exempel: Hur fördelas arvet efter Pelle?',
+      text: [
+        'Lina är ogift, 50 år, och har två barn: Frida och Rut. Linas pappa Pelle, nästan 100 år, har förutom Lina också sonen Sune. När Pelle dör har han 500 000 kronor i tillgångar.',
+        { tabell: { huvud: ['Situation', 'Så fördelas arvet'], rader: [
+          ['Lina lever', 'Lina 250 000 kr · Sune 250 000 kr'],
+          ['Lina har redan dött', 'Sune 250 000 kr · Frida 125 000 kr · Rut 125 000 kr']
+        ] } },
+        'Om Lina redan är död träder Frida och Rut in i hennes ställe och delar på hennes del – **istadarätt**. De ärver alltså sin morfar Pelle.'
+      ]
+    },
+    begrepp: ['Bröstarvinge', 'Istadarätt', 'Allmänna arvsfonden'],
+    komihag: [
+      'Arvsgrupp 1: **bröstarvingar** (barn, barnbarn). Arvsgrupp 2: föräldrar, syskon. Arvsgrupp 3: far- och morföräldrar och deras barn.',
+      '**Istadarätt**: en levande släkting tar en avliden släktings plats.',
+      'Kusiner ärver inte. Saknas arvingar går arvet till **Allmänna arvsfonden**.'
+    ]
+  },
+  {
+    id: 's3-3', nr: '3.3', emoji: '💞', rubrik: 'Makes arvsrätt och särkullbarn',
+    hook: 'Marco dör. Han har två barn med sin fru Vera – och dottern My från tiden innan. Vem får vad, och när?',
+    lattlast: [
+      'Om den som dör är gift ärver maken eller makan först. De gemensamma barnen får vänta.',
+      'Det kallas **makes arvsrätt**. Makarna har haft en gemensam ekonomi. Den som lever kvar ska inte drabbas för hårt.',
+      'Maken ärver med **fri förfoganderätt**. Hen får använda arvet som hen vill, till exempel sälja huset. Men hen får inte ge bort det eller testamentera bort det.',
+      'När båda föräldrarna är döda får barnen sitt arv efter den som dog först. Det kallas efterarv.',
+      { h: 'Särkullbarn' },
+      'Ett barn som bara är barn till en av makarna kallas **särkullbarn**.',
+      'Ett särkullbarn får sitt arv direkt. Det behöver inte vänta.',
+      'Men maken som lever kvar har alltid rätt att behålla ett minimibelopp: fyra gånger basbeloppet. För 2025 blir det 235 200 kronor.',
+      'Ett särkullbarn kan välja att avstå sitt arv till den efterlevande maken.'
+    ],
+    fordjupning: [
+      'För att en efterlevande make eller maka inte ska drabbas för hårt av dödsfallet finns **makes arvsrätt**: är den avlidne gift ärver maken före de gemensamma barnen. Skälet är att makarna levt i en sorts ekonomisk gemenskap under äktenskapet. De gemensamma barnen får sitt arv från den först avlidna föräldern som ett efterarv, när båda föräldrarna är döda.',
+      'Maken ärver med **fri förfoganderätt**. Hen kan använda arvet fritt och till exempel sälja ett hus, men kan inte ge bort eller testamentera bort egendomen. Begränsningen skyddar de gemensamma barnens efterarv.',
+      'Observera ordningen när en gift person dör: först görs en bodelning (avsnitt 1.5), där hälften av giftorättsgodset tillhör den efterlevande. Bara den andra hälften är arvet efter den avlidne – se Stella och John nedan.',
+      { h: 'Särkullbarn' },
+      'Barn som inte är gemensamma i äktenskapet kallas **särkullbarn**. Är den avlidnes bröstarvinge ett särkullbarn har barnet rätt att få ut sitt arv på en gång – det är inte barn till den efterlevande maken. Särkullbarnet kan dock göra arvsavstående till förmån för den efterlevande maken.',
+      'Särkullbarnets arvsrätt begränsas bara av den efterlevande makens rätt att behålla ett minimibelopp motsvarande fyra gånger basbeloppet. Basbeloppet är 58 800 kronor för 2025, vilket ger 235 200 kronor.'
+    ],
+    diagram: ['sarkull'],
+    fall: {
+      titel: 'Exempel: Två dödsfall, två olika regler',
+      text: [
+        { h: 'Stella och John – gemensamma barn' },
+        'Stella är gift med John och de har barnen Kevin och Linda. Stella dör efter en svår sjukdom. I boet finns tillgångar på 500 000 kronor. Hälften tillhör John, och hälften är arvet efter Stella.',
+        'John ärver Stellas 250 000 kronor. Kevin och Linda får vänta på arvet efter sin mamma tills deras pappa John också har dött.',
+        { h: 'Marco, Vera och My – ett särkullbarn' },
+        'Innan Marco gifte sig med Vera och fick barnen Nina och Magnus fick han dottern My. Marco bodde aldrig ihop med Mys mamma. När Marco hastigt dör finns tillgångar på 1 500 000 kronor i boet. Hälften (750 000 kr) tillhör Vera, och resten är arvet efter Marco.',
+        { lista: [
+          'My är särkullbarn och får sin del direkt: 750 000 / 3 = 250 000 kronor.',
+          'Vera ärver i sina barns ställe de resterande två tredjedelarna: 500 000 kronor.'
+        ]}
+      ]
+    },
+    begrepp: ['Makes arvsrätt', 'Fri förfoganderätt', 'Särkullbarn'],
+    komihag: [
+      '**Makes arvsrätt**: maken ärver före de gemensamma barnen, som får efterarv senare.',
+      'Maken ärver med **fri förfoganderätt** – får använda men inte testamentera bort arvet.',
+      'Ett **särkullbarn** får sitt arv direkt.',
+      'Maken har rätt att behålla minst fyra basbelopp.'
+    ]
+  },
+  {
+    id: 's3-4', nr: '3.4', emoji: '🏔️', rubrik: 'Sambor ärver inte varandra',
+    hook: 'Två kompisar dör i samma lavin. Den ena var gift, den andra sambo. Får deras partner samma sak?',
+    lattlast: [
+      'Makar ärver varandra. Det står i ärvdabalken.',
+      'Det finns ingen regel om att sambor ärver varandra.',
+      'Vill en sambo att partnern ska ärva måste hen skriva ett **testamente**.',
+      'Har sambon barn ärver barnen. Finns inga barn ärver andra släktingar enligt arvsordningen.',
+      'Även med testamente kan barnen inte uteslutas helt. De har alltid rätt till sin **laglott**.'
+    ],
+    fordjupning: [
+      'Att makar ärver varandra är reglerat i ärvdabalken, men någon regel om arv för sambor finns inte. För att en sambo ska ärva är det helt avgörande att det finns ett **testamente** till sambons fördel. Annars ärver den avlidnes barn, eller om barn saknas övriga släktingar enligt den legala arvsordningen.',
+      'Även med testamente kan bröstarvingarna inte uteslutas helt – de har rätt till sin **laglott** (avsnitt 3.5). Skyddet för en sambo blir alltså svagare än för en make, även med testamente. Det förklarar varför Ulf och Karin i avsnitt 3.5 väljer att gifta sig.',
+      'Här knyts Del 1 och Del 3 ihop: sambolagen ger ett skydd vid separation men inget vid dödsfall. Därför är arvsrätten den viktigaste juridiska skillnaden mellan att vara sambo och att vara gift.'
+    ],
+    fall: {
+      titel: 'Exempel: Maken Per ärver, men inte sambon Greta',
+      text: [
+        'Elliot och hans kompis Tage är på skidresa i Alperna. En lavin går, och båda kompisarna dör. Hemma i Sverige finns Elliots make Per och Tages sambo Greta.',
+        'Per ärver sin make Elliot. Tages föräldrar ärver Tage. Greta ärver ingenting, eftersom hon inte var gift med Tage och han inte hade skrivit något testamente.'
+      ]
+    },
+    begrepp: ['Testamente', 'Laglott'],
+    komihag: [
+      'Sambor ärver inte varandra utan **testamente**.',
+      'Utan testamente ärver sambons barn – eller andra släktingar.',
+      'Även med testamente har barnen rätt till sin **laglott**.'
+    ]
+  },
+  {
+    id: 's3-5', nr: '3.5', emoji: '✍️', rubrik: 'Testamente och laglott',
+    hook: 'Kan man skriva i sitt testamente att ens barn inte ska få någonting?',
+    lattlast: [
+      'Med ett **testamente** kan du själv bestämma vem som ska få det du äger när du dör.',
+      'Den som skriver testamentet kallas **testator**. Testatorn måste vara myndig.',
+      'Den som får något genom testamentet kallas **testamentstagare**.',
+      'Barn har alltid rätt till hälften av sitt arv. Den delen kallas **laglott**. Ett barn kan inte göras arvlöst.',
+      { h: 'Så blir testamentet giltigt' },
+      { lista: [
+        'Det ska vara skriftligt och ha ett datum.',
+        'Två vittnen ska skriva under. De ska vara på plats samtidigt.',
+        'Vittnena ska vara minst 15 år. De får inte vara släkt med testatorn eller få något i testamentet.',
+        'Vittnena måste veta att det är ett testamente. De behöver inte veta vad som står i det.',
+        'Det ska vara helt tydligt vad testatorn vill.'
+      ]},
+      'Testatorn måste vara psykiskt frisk och förstå vad hen gör.',
+      'Ångrar du dig kan du skriva ett nytt testamente. Det senaste gäller. Det gamla bör förstöras.'
+    ],
+    fordjupning: [
+      'Arv fördelas enligt den legala arvsordningen, men med ett **testamente** går det att fördela sin egendom efter egen vilja. Testamentet ställer delvis arvsordningen åt sidan. Den som skriver det och uttalar sin yttersta vilja kallas **testator** och måste vara myndig. Den som får egendom genom testamentet kallas **testamentstagare**. Testamentet måste upprättas strikt enligt formkraven i ärvdabalkens 9 och 10 kap.',
+      'Testamentet har en tydlig gräns: barnens arvsrätt får inte kränkas. De har alltid rätt till sin **laglott**, som är hälften av arvet. Barn kan alltså inte göras arvlösa. Har den avlidne själv ärvt sin make får hen inte heller testamentera bort det arvet om det finns bröstarvingar eller andra arvingar enligt den legala arvsordningen – det hänger ihop med den fria förfoganderätten i avsnitt 3.3.',
+      { h: 'Formkraven' },
+      'Testamentet måste vara skriftligt, daterat och **bevittnat** av två personer. Vittnena måste vara samtidigt närvarande när testatorn skriver under eller intygar att det är hens underskrift. De måste vara minst 15 år och får inte vara släkt med testatorn, lida av en psykisk störning eller vara berörda av innehållet. De ska veta att det är ett testamente, men behöver inte veta vad som står i det.',
+      'Kraven är stränga av ett skäl: när testamentet blir gällande är testatorn död och kan inte förklara hur egendomen var tänkt att fördelas. Därför måste viljan vara helt entydig, utan utrymme för tolkning. Testatorn måste också vara mentalt frisk och förstå vad hen gör – det intygar vittnena med en formulering i testamentet.',
+      'Det senaste testamentet gäller. Den som ångrar sig skriver ett nytt och bör helst förstöra det gamla, så att inte flera testamenten presenteras vid bouppteckningen.',
+      { ruta: { h: 'Arv och testamente utomlands', p: [
+        'Grundprincipen när någon dör utomlands är att det landets arvsregler gäller. Det regleras i lagen om arv i internationella situationer. Efterlevande barn har därför inte alltid rätt till laglott.',
+        'Har en person som dör i Sverige skrivit ett testamente i ett annat land gäller det på samma sätt som ett svenskt testamente – förutsatt att det skrivits enligt det andra landets regler.'
+      ]}}
+    ],
+    fall: {
+      titel: 'Exempel: Vem ska driva krukmakeriet vidare?',
+      text: [
+        'Ulf och Karin har varit sambor i nästan 40 år och har de vuxna barnen Niklas och Sam. Ulf och Karin driver tillsammans ett lönsamt krukmakeri. På banken får de veta att när en av dem dör ärver barnen den som dött. Då skulle krukmakeriet få drivas vidare av den efterlevande sambon och barnen tillsammans – men inget av barnen vill driva företag.',
+        'Ett testamente skulle delvis hjälpa, eftersom barnen då bara skulle ärva hälften av den avlidnes del – sin laglott. Men Ulf och Karin väljer att gifta sig i stället. Då ärver den som lever längst före de gemensamma barnen och kan driva krukmakeriet vidare på egen hand. Barnen får vänta på sitt arv tills båda föräldrarna är döda.',
+        { h: 'Så kan ett testamente se ut: Kajsas testamente' },
+        { citat: 'Jag förklarar härmed som min yttersta vilja, med upphävande av tidigare testamente, att efter min bortgång ska mina samtliga tillgångar tillfalla min bäste vän Amir Precvic, med personnummer 760601-XXXX. Kalmar den 23 februari 2026. Kajsa Karlsson, personnummer 780607-XXXX.', kalla: 'Testamentets förordnande, daterat och undertecknat' },
+        { citat: 'Att Kajsa Karlsson, som vi känner personligen, denna dag, med sunt och fullt förstånd och av fri vilja i bådas vår samtidiga närvaro, förklarat ovanstående förordnande innefatta hennes yttersta vilja och därunder tecknat sitt namn, intygar vi särskilt anmodade och närvarande testamentsvittnen.', kalla: 'Vittnenas intyg – undertecknat av två vittnen med namn och adress' },
+        'Lägg märke till hur formkraven syns: datum, underskrift, två vittnen som var närvarande samtidigt och som intygar att Kajsa hade "sunt och fullt förstånd".'
+      ]
+    },
+    begrepp: ['Testamente', 'Testator', 'Testamentstagare', 'Laglott', 'Bevittna'],
+    komihag: [
+      'En **testator** måste vara myndig. Den som får något är **testamentstagare**.',
+      'Barn har alltid rätt till sin **laglott** – hälften av arvet.',
+      'Skriftligt, daterat och **bevittnat** av två samtidigt närvarande vittnen, minst 15 år och inte släkt.',
+      'Det senaste testamentet gäller.'
+    ]
+  },
+  {
+    id: 's3-6', nr: '3.6', emoji: '⚔️', rubrik: 'Klandra ett testamente',
+    hook: 'Ett barn får veta att pappan testamenterat nästan allt till en granne. Kan barnet göra något?',
+    lattlast: [
+      'Alla arvingar ska få veta vad som står i testamentet. Det sker när arbetet med bouppteckningen börjar.',
+      'En arvinge som inte godkänner testamentet kan **klandra** det. Det betyder att överklaga.',
+      'Det måste ske inom sex månader. Tiden räknas från att arvingen fått testamentet överlämnat av en myndighetsperson. Det kallas **delgivning**.',
+      'Arvingen stämmer då testamentstagaren vid tingsrätten.',
+      'Ett skäl kan vara att ett barn inte har fått sin laglott.',
+      'Ett annat skäl kan vara att den döde gav bort stora gåvor strax före sin död. Arvingarna kan då kräva att gåvan återvinns. Då räknas gåvan in i det som ska delas.'
+    ],
+    fordjupning: [
+      'Alla arvingar ska få veta vad som står i ett testamente när arbetet med bouppteckningen startar. En arvinge som inte godkänner testamentet kan överklaga det – **klandra** testamentet. Det måste ske inom sex månader från att arvingen tagit del av det, det vill säga **delgivits** testamentet. Arvingen stämmer då testamentstagaren vid tingsrätten.',
+      'Typiska skäl att klandra är att den avlidnes barn inte får sin laglott, eller att den avlidne gett bort stora gåvor kort före sin död. Då kan arvingarna kräva att gåvan ska "återvinnas", alltså räknas in i tillgångarna som ska fördelas. Reglerna om klander och återvinning skyddar laglotten (avsnitt 3.5): annars kunde den kringgås genom gåvor eller ett testamente.',
+      'Tidsgränsen på sex månader skapar samtidigt förutsebarhet – efter den tiden ska arvingar och testamentstagare kunna lita på att arvet fördelas enligt testamentet.'
+    ],
+    fall: {
+      titel: 'Exempel från verkligheten: Trolle Ljungby Slott',
+      text: [
+        'Våren 2025 klandrades testamentet efter greve Hans-Gabriel Trolle-Wachtmeister. Arvstvisten gäller bland annat Trolle Ljungby Slott i Skåne.',
+        'Fallet visar att klander är ett sätt för en arvinge att få frågan prövad i domstol när hen inte godkänner hur testamentet fördelar arvet.'
+      ]
+    },
+    begrepp: ['Klandra', 'Delgivning'],
+    komihag: [
+      'Att **klandra** ett testamente betyder att överklaga det.',
+      'Det ska ske inom sex månader från **delgivning**.',
+      'Skäl: barnen får inte sin laglott, eller stora gåvor före döden som kan återvinnas.'
+    ]
+  },
+  {
+    id: 's3-7', nr: '3.7', emoji: '📋', rubrik: 'Bouppteckning, arvskifte och begravning',
+    hook: 'Karl Benjamin Andersson dör i juni 2025. Han har tre vuxna barn, en bostadsrätt och några bankkonton. Vad måste barnen göra – och när?',
+    lattlast: [
+      'När någon dör måste en **bouppteckning** göras inom tre månader. Det är en lista över allt den döde ägde och var skyldig.',
+      'Två **förrättningsmän** gör bouppteckningen. Ingen av dem får vara släkt med den döde.',
+      'Den som vet mest om den dödes ekonomi lämnar uppgifterna. Hen kallas **bouppgivare**. Ofta är det make, maka eller ett barn.',
+      'Var den döde gift tar man först reda på om det finns enskild egendom. Sedan delas giftorättsgodset i två delar: en till den som lever kvar och en till den döde.',
+      'Dödsbodelägarna ska få chansen att vara med. En dödsbodelägare kan ge en annan **fullmakt** att företräda sig.',
+      'Bouppteckningen skickas till Skatteverket. Skatteverket godkänner och registrerar den.',
+      { h: 'Arvskifte' },
+      'Sedan delas arvet mellan arvingarna i ett **arvskifte**. Då upphör dödsboet.',
+      'Finns bara en arvinge behövs oftast inget arvskifte.',
+      'Arvingar ärver aldrig skulder. Är skulderna större än tillgångarna behöver arvingarna inte betala.',
+      { h: 'Lite pengar och begravning' },
+      'Räcker pengarna bara till begravningen behövs ingen bouppteckning. Då gör socialtjänsten en dödsboanmälan till Skatteverket.',
+      'Begravningen ska ske inom en månad. Den kan vara religiös eller borgerlig. Urnan ska sättas ned inom ett år.'
+    ],
+    fordjupning: [
+      'När någon dör finns formella krav som dödsboet måste uppfylla. Bland annat krävs en redogörelse för den dödes ekonomiska och juridiska situation vid dödsfallet – en **bouppteckning**. Den ska upprättas inom tre månader. Den görs av två **förrättningsmän**, och ingen av dem får vara släkt med den avlidne.',
+      'I bouppteckningen skrivs den dödes tillgångar och skulder in. Finns en efterlevande make börjar förrättningsmännen med att ta reda på om det finns enskild egendom genom äktenskapsförord, gåva eller arv. Därefter räknas boets giftorättsgods ut och delas i två delar – en som tillhör den efterlevande och en som tillhör den avlidne. Den enskilda egendomen och den avlidnes del av giftorättsgodset skrivs in. Här används alltså reglerna om bodelning från Del 1.',
+      'Uppgifterna lämnas av den som har bäst kunskap om den dödes ekonomi, vanligen make eller barn – **bouppgivaren**. I bouppteckningen antecknas vilka som är **dödsbodelägare**; det framgår av dödsfallsintyget från Skatteverket. Dödsbodelägarna behöver inte vara närvarande, men ska ha getts möjlighet att närvara, och en dödsbodelägare kan ge en annan **fullmakt** att företräda sina intressen. När bouppteckningen är klar skickas den till Skatteverket, som godkänner och registrerar den. Den är sedan underlag när arvet ska fördelas.',
+      { h: 'Arvskifte' },
+      'När bouppteckningen är klar fördelas tillgångarna i ett **arvskifte** – ett avtal mellan arvingarna om hur tillgångarna enligt bouppteckningen ska fördelas. I och med det upphör dödsboet. Finns bara en arvinge behövs oftast inget arvskifte; den registrerade bouppteckningen räcker som underlag. Är arvingarna flera skrivs en arvskifteshandling som dödsbodelägarna undertecknar. Skiftas dödsboet inte finns det kvar som juridisk person.',
+      'Är skulderna större än tillgångarna behöver dödsbodelägarna inte skjuta till egna pengar – de kan inte "ärva" den avlidnes skulder.',
+      { h: 'Dödsboanmälan och begravning' },
+      'Täcker den dödes kvarlåtenskap bara begravningskostnaderna eller mindre behövs ingen bouppteckning. Då räcker en dödsboanmälan till Skatteverket, som görs av socialtjänsten i den dödes hemkommun.',
+      'Begravningen ska ske inom en månad efter dödsfallet och kan vara religiös eller borgerlig. Urnnedsättning ska ske inom ett år.'
+    ],
+    diagram: ['tidslinje'],
+    fall: {
+      titel: 'Exempel: Bouppteckning och arvskifte efter Karl Benjamin Andersson',
+      text: [
+        'Karl Benjamin Andersson i Stockholm dog den 19 juni 2025. Bouppteckningen förrättades den 27 augusti 2025 – inom tre månader. Dödsbodelägare är hans tre barn Bianca, Elena och Nicola. Det fanns inget testamente. Nicola var bouppgivare.',
+        { tabell: { huvud: ['Tillgångar på dödsdagen', 'Kronor'], rader: [
+          ['Bostadsrätt (andel nr 14, BRF Blodigeln)', '1 625 000'],
+          ['Danske Bank, kapitalkonto', '525 000'],
+          ['Länsförsäkringar Bank, sparkonto', '78 342'],
+          ['Nordea, personkonto', '96 545'],
+          ['Sedvanligt lösöre i tre rum och kök', '6 500']
+        ], summa: ['Totalt tillgångar', '2 331 387'] } },
+        { tabell: { huvud: ['Skulder', 'Kronor'], rader: [
+          ['Danske Bank, bolån', '600 000'],
+          ['Danske Bank, personlån', '38 987'],
+          ['EON, elräkning', '1 750'],
+          ['Region Stockholm, sjukvård', '5 698'],
+          ['Begravningskostnader och förtäring', '45 360'],
+          ['Bouppteckningskostnad', '5 500']
+        ], summa: ['Totalt skulder', '697 295'] } },
+        'Boets behållning (tillgångar − skulder) är **1 634 092 kronor**.',
+        { h: 'Arvskiftet' },
+        'Vid arvskiftet i oktober 2025 kom syskonen överens om att Nicola tar över bostadsrätten (1 625 000 kr) och bolånet (600 000 kr), samt lösöret (6 500 kr). Behållningen räcker till 544 697 kronor var.',
+        { lista: [
+          'Nicola får 1 025 000 kr (lägenhet minus lån) + 6 500 kr (lösöre) = 1 031 500 kr. Han betalar 1 031 500 − 544 697 = 486 803 kr till sina syskon.',
+          'Bianca får 301 296 kr från dödsboet + 243 401,50 kr från Nicola.',
+          'Elena får 301 296 kr från dödsboet + 243 401,50 kr från Nicola.'
+        ]}
+      ]
+    },
+    begrepp: ['Bouppteckning', 'Förrättningsmän', 'Bouppgivare', 'Dödsbodelägare', 'Fullmakt', 'Arvskifte'],
+    komihag: [
+      '**Bouppteckning** inom tre månader, gjord av två **förrättningsmän** som inte är släkt med den döde.',
+      'Bouppteckningen godkänns och registreras av Skatteverket.',
+      'I **arvskiftet** fördelas arvet – arvingar ärver aldrig skulder.',
+      'Begravning inom en månad, urnnedsättning inom ett år.'
+    ]
+  }
+  ]
+}
+];
+
+const SECTIONS = DELAR.flatMap(d => d.sections);
+
+const SAMMANFATTNING = [
+  { h: 'Del 1 · Att leva tillsammans', lista: [
+    'Samboskap regleras i **sambolagen**, äktenskap i **äktenskapsbalken**. Båda är könsneutrala.',
+    'Sambor delar bara samboegendom. Makar delar allt **giftorättsgods** vid **bodelning**.',
+    '**Enskild egendom** uppstår genom äktenskapsförord, gåva, testamente eller bodelning under äktenskapet.',
+    '**Betänketid** på sex månader om bara en vill skiljas eller om det finns barn under 16 år.'
+  ]},
+  { h: 'Del 2 · Föräldrar och barn', lista: [
+    '**Barnets bästa** gäller i alla beslut som rör barn. Barnkonventionen är lag sedan 2020.',
+    'Gifta: **faderskapspresumtion**. Ogifta: **föräldraskapsbekräftelse** och ansökan om gemensam vårdnad.',
+    'Vårdnadshavaren ger **omvårdnad**, **trygghet** och **god fostran**.',
+    'Vid separation: boende, **umgänge** och **underhållsbidrag** – annars avgör domstol.'
+  ]},
+  { h: 'Del 3 · Arvsrätt', lista: [
+    'Den **legala arvsordningen**: arvsgrupp 1, 2 och 3. Kusiner ärver inte.',
+    'Makar ärver före gemensamma barn. **Särkullbarn** får sitt arv direkt.',
+    'Sambor ärver inte varandra utan **testamente**. Barn har alltid rätt till sin **laglott**.',
+    '**Bouppteckning** inom tre månader, sedan **arvskifte**.'
+  ]}
+];
+
+/* ---------- Textformatering: **term** -> markerad fackterm, *ord* -> kursiv ---------- */
+function fmt(text) {
+  const parts = String(text).split(/(\*\*.+?\*\*|\*[^*\s][^*]*?\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**') && part.length > 4)
+      return <strong key={i} className="term">{part.slice(2, -2)}</strong>;
+    if (part.startsWith('*') && part.endsWith('*') && part.length > 2)
+      return <em key={i}>{part.slice(1, -1)}</em>;
+    return <React.Fragment key={i}>{part}</React.Fragment>;
+  });
+}
+
+/* ===================== INBYGGDA DIAGRAM (SVG) ===================== */
+
+const C = {
+  p: '#0d9488', pl: '#f0fdfa', pb: '#ccfbf1', pd: '#134e4a', deep: '#0f766e',
+  ax: '#334155', mute: '#64748b', line: '#cbd5e1', grey: '#f1f5f9', red: '#b91c1c', redl: '#fef2f2'
+};
+
+/* Flerradig text: varje rad blir en <tspan>. */
+function Lines({ x, y, lines, size = 16, lh = 1.3, anchor = 'start', weight = 400, fill = C.ax }) {
+  return (
+    <text x={x} y={y} fontSize={size} textAnchor={anchor} fontWeight={weight} fill={fill}>
+      {lines.map((l, i) => <tspan key={i} x={x} dy={i === 0 ? 0 : size * lh}>{l}</tspan>)}
+    </text>
+  );
+}
+/* Första baslinjen så att n rader hamnar vertikalt centrerade i en ruta. */
+const midY = (top, h, n, size = 16, lh = 1.3) => top + h / 2 + size * 0.35 - (n - 1) * size * lh / 2;
+
+function Marker({ id, color = C.ax }) {
+  return (
+    <defs>
+      <marker id={id} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill={color} />
+      </marker>
+    </defs>
+  );
+}
+
+/* 1.5 Bodelning steg för steg (Josefin och Hugo) */
+function BodelningSVG() {
+  const steps = [
+    ['Lägg ihop varje makes tillgångar', 'Villa, bohag, aktier, konst och bilar'],
+    ['Dra av varje makes egna skulder', 'Josefin 1 225 000 kr · Hugo 925 000 kr'],
+    ['Mer skulder än tillgångar? Sätt till 0', 'Behövs inte för Josefin och Hugo'],
+    ['Lägg ihop giftorättsgodset', '1 225 000 + 925 000 = 2 150 000 kr'],
+    ['Dela lika – den som har mer betalar skiftesliked', '1 075 000 kr var · Josefin betalar 150 000 kr']
+  ];
+  return (
+    <svg viewBox="0 0 560 520" role="img" aria-labelledby="bd-t bd-d">
+      <title id="bd-t">Bodelning steg för steg</title>
+      <desc id="bd-d">Fem steg: lägg ihop tillgångar, dra av skulder, sätt negativt giftorättsgods till noll, lägg ihop giftorättsgodset och dela lika. Enskild egendom ligger utanför.</desc>
+      <Marker id="bd-ah" color={C.deep} />
+      {steps.map(([t, s], i) => {
+        const y = 12 + i * 86;
+        const last = i === steps.length - 1;
+        return (
+          <g key={i}>
+            <rect x="20" y={y} width="520" height="64" rx="14" fill={last ? C.pb : '#fff'} stroke={C.p} strokeWidth="2" />
+            <circle cx="54" cy={y + 32} r="17" fill={C.p} />
+            <text x="54" y={y + 38} fontSize="17" fontWeight="700" fill="#fff" textAnchor="middle">{i + 1}</text>
+            <text x="86" y={y + 27} fontSize="16.5" fontWeight="600" fill={C.pd}>{t}</text>
+            <text x="86" y={y + 49} fontSize="14" fill={C.deep}>{s}</text>
+            {!last && <line x1="280" y1={y + 66} x2="280" y2={y + 84} stroke={C.deep} strokeWidth="2.5" markerEnd="url(#bd-ah)" />}
+          </g>
+        );
+      })}
+      <rect x="20" y="440" width="520" height="66" rx="14" fill="#f8fafc" stroke={C.mute} strokeWidth="2" strokeDasharray="7 5" />
+      <text x="280" y="467" fontSize="15.5" fontWeight="600" fill={C.ax} textAnchor="middle">Utanför bodelningen: enskild egendom</text>
+      <text x="280" y="490" fontSize="14" fill={C.mute} textAnchor="middle">Josefins Steinwayflygel · Hugos symaskin</text>
+    </svg>
+  );
+}
+
+/* 1.6 Jämkning i femtedelar (Misha och Nathalie, två års äktenskap) */
+function JamkningSVG() {
+  const cols = [0, 1, 2, 3, 4].map(k => 150 + k * 80);
+  const rows = [
+    { y: 50, namn: 'Misha', belopp: '200 000 kr' },
+    { y: 118, namn: 'Nathalie', belopp: '2 000 000 kr' }
+  ];
+  return (
+    <svg viewBox="0 0 560 330" role="img" aria-labelledby="jm-t jm-d">
+      <title id="jm-t">Jämkning i femtedelar</title>
+      <desc id="jm-d">Efter två års äktenskap delas två femtedelar av båda makarnas giftorättsgods. Tre femtedelar behåller var och en.</desc>
+      <text x="20" y="34" fontSize="14" fontWeight="600" fill={C.ax}>År som gifta:</text>
+      {cols.map((x, k) => (
+        <text key={k} x={x + 38} y="34" fontSize="14" fill={k < 2 ? C.deep : C.mute} fontWeight={k < 2 ? 700 : 400} textAnchor="middle">{k + 1} år</text>
+      ))}
+      {rows.map(r => (
+        <g key={r.namn}>
+          <Lines x={20} y={r.y + 22} lines={[r.namn, r.belopp]} size={15} lh={1.3} fill={C.pd} />
+          {cols.map((x, k) => (
+            <g key={k}>
+              <rect x={x} y={r.y} width="76" height="54" rx="8" fill={k < 2 ? C.p : C.grey} stroke={k < 2 ? C.deep : C.line} strokeWidth="1.5" />
+              <text x={x + 38} y={r.y + 33} fontSize="15" fontWeight="600" fill={k < 2 ? '#fff' : C.mute} textAnchor="middle">1/5</text>
+            </g>
+          ))}
+        </g>
+      ))}
+      <line x1="308" y1="42" x2="308" y2="180" stroke={C.deep} strokeWidth="2" strokeDasharray="5 4" />
+      <rect x="20" y="196" width="18" height="18" rx="4" fill={C.p} />
+      <text x="46" y="210" fontSize="14" fill={C.ax}>Delas i bodelningen (2/5)</text>
+      <rect x="290" y="196" width="18" height="18" rx="4" fill={C.grey} stroke={C.line} />
+      <text x="316" y="210" fontSize="14" fill={C.ax}>Behålls av var och en (3/5)</text>
+      <rect x="20" y="234" width="520" height="80" rx="12" fill={C.pl} stroke={C.p} strokeWidth="1.5" />
+      <text x="280" y="266" fontSize="15.5" fontWeight="600" fill={C.pd} textAnchor="middle">Delas: 880 000 kr → 440 000 kr var</text>
+      <text x="280" y="293" fontSize="14.5" fill={C.deep} textAnchor="middle">Misha får 560 000 kr · Nathalie får 1 640 000 kr</text>
+    </svg>
+  );
+}
+
+/* 1.7 Sambo eller gift – jämförelsetabell */
+function SamboGiftSVG() {
+  const rows = [
+    [['Lag'], ['Sambolagen'], ['Äktenskapsbalken']],
+    [['Bodelning'], ['Bara', 'samboegendom'], ['Allt', 'giftorättsgods']],
+    [['Underhålls-', 'skyldighet'], ['Nej'], ['Ja']],
+    [['Informera om', 'ekonomin'], ['Nej'], ['Ja']],
+    [['Arv efter', 'partnern'], ['Nej – bara med', 'testamente'], ['Ja – före', 'gemensamma barn']]
+  ];
+  const tone = l => l[0] === 'Nej' || l[0].startsWith('Nej') ? C.red : (l[0] === 'Ja' || l[0].startsWith('Ja') ? C.deep : C.ax);
+  return (
+    <svg viewBox="0 0 560 412" role="img" aria-labelledby="sg-t sg-d">
+      <title id="sg-t">Sambo eller gift</title>
+      <desc id="sg-d">Jämförelse: sambor delar bara samboegendom, har ingen underhållsskyldighet och ärver inte varandra. Gifta delar giftorättsgods, har underhållsskyldighet och ärver före gemensamma barn.</desc>
+      <rect x="200" y="10" width="170" height="46" rx="12" fill={C.pl} stroke={C.p} strokeWidth="2" />
+      <text x="285" y="40" fontSize="20" fontWeight="600" fill={C.pd} textAnchor="middle">Sambo</text>
+      <rect x="380" y="10" width="170" height="46" rx="12" fill={C.deep} />
+      <text x="465" y="40" fontSize="20" fontWeight="600" fill="#fff" textAnchor="middle">Gift</text>
+      {rows.map((r, i) => {
+        const y = 66 + i * 68, h = 62;
+        return (
+          <g key={i}>
+            <rect x="10" y={y} width="540" height={h} rx="10" fill={i % 2 ? '#fff' : '#f8fafc'} stroke="#e2e8f0" />
+            <Lines x={24} y={midY(y, h, r[0].length, 15)} lines={r[0]} size={15} weight={600} fill={C.pd} />
+            <Lines x={285} y={midY(y, h, r[1].length, 15)} lines={r[1]} size={15} anchor="middle" weight={r[1].length === 1 && r[1][0].length < 4 ? 700 : 500} fill={tone(r[1])} />
+            <Lines x={465} y={midY(y, h, r[2].length, 15)} lines={r[2]} size={15} anchor="middle" weight={r[2].length === 1 && r[2][0].length < 4 ? 700 : 500} fill={tone(r[2])} />
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+/* 3.2 Arvsgrupperna i turordning */
+function ArvsgrupperSVG() {
+  const boxes = [
+    { y: 12,  h: 66, n: '1', t: 'Arvsgrupp 1 – bröstarvingar', s: 'Barn → barnbarn', fill: C.deep, stroke: C.deep, tc: '#fff', sc: C.pb },
+    { y: 112, h: 66, n: '2', t: 'Arvsgrupp 2', s: 'Föräldrar → syskon → syskonbarn', fill: C.pb, stroke: C.p, tc: C.pd, sc: C.deep },
+    { y: 212, h: 66, n: '3', t: 'Arvsgrupp 3', s: 'Far- och morföräldrar → deras barn', fill: C.pl, stroke: C.p, tc: C.pd, sc: C.deep },
+    { y: 312, h: 62, n: '✕', t: 'Kusiner ärver inte', s: 'Här tar arvsordningen stopp', fill: C.redl, stroke: C.red, tc: C.red, sc: C.mute, dash: true },
+    { y: 406, h: 62, n: '→', t: 'Allmänna arvsfonden', s: 'Om inga arvingar och inget testamente finns', fill: C.grey, stroke: C.mute, tc: C.ax, sc: C.mute }
+  ];
+  return (
+    <svg viewBox="0 0 560 480" role="img" aria-labelledby="ag-t ag-d">
+      <title id="ag-t">Den legala arvsordningen</title>
+      <desc id="ag-d">Arvsgrupp 1 ärver först, sedan arvsgrupp 2 och därefter arvsgrupp 3. Kusiner ärver inte. Finns inga arvingar går arvet till Allmänna arvsfonden.</desc>
+      <Marker id="ag-ah" color={C.mute} />
+      {boxes.map((b, i) => (
+        <g key={i}>
+          <rect x="20" y={b.y} width="520" height={b.h} rx="14" fill={b.fill} stroke={b.stroke} strokeWidth="2" strokeDasharray={b.dash ? '7 5' : undefined} />
+          <circle cx="58" cy={b.y + b.h / 2} r="19" fill="#fff" stroke={b.stroke} strokeWidth="2" />
+          <text x="58" y={b.y + b.h / 2 + 6} fontSize="17" fontWeight="700" fill={b.stroke === C.deep ? C.deep : b.tc} textAnchor="middle">{b.n}</text>
+          <text x="92" y={b.y + 28} fontSize="17" fontWeight="600" fill={b.tc}>{b.t}</text>
+          <text x="92" y={b.y + 51} fontSize="14.5" fill={b.sc}>{b.s}</text>
+          {i < boxes.length - 1 && (
+            <g>
+              <line x1="470" y1={b.y + b.h + 2} x2="470" y2={boxes[i + 1].y - 3} stroke={C.mute} strokeWidth="2" markerEnd="url(#ag-ah)" />
+              <text x="458" y={(b.y + b.h + boxes[i + 1].y) / 2 + 5} fontSize="13" fill={C.mute} textAnchor="end">
+                {i < 2 ? 'Inga arvingar här?' : i === 2 ? 'Inga arvingar här?' : 'Bara kusiner kvar?'}
+              </text>
+            </g>
+          )}
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+/* 3.3 Make och särkullbarn (Stella/John och Marco/My/Vera) */
+function SarkullSVG() {
+  const box = (x, y, w, h, lines, opt = {}) => (
+    <g>
+      <rect x={x} y={y} width={w} height={h} rx="12" fill={opt.fill || '#fff'} stroke={opt.stroke || C.p} strokeWidth="2" />
+      <Lines x={x + w / 2} y={midY(y, h, lines.length, 15)} lines={lines} size={15} anchor="middle"
+             weight={opt.weight || 500} fill={opt.color || C.pd} />
+    </g>
+  );
+  const L = 12, R = 288, W = 248, cL = L + W / 2, cR = R + W / 2;
+  return (
+    <svg viewBox="0 0 560 412" role="img" aria-labelledby="sk-t sk-d">
+      <title id="sk-t">Make och särkullbarn</title>
+      <desc id="sk-d">Vänster: Stella dör och John ärver med fri förfoganderätt, barnen får efterarv. Höger: Marco dör och särkullbarnet My får sin del direkt medan Vera ärver resten.</desc>
+      <Marker id="sk-ah" color={C.deep} />
+      {box(L, 8, W, 44, ['Gemensamma barn'], { fill: C.deep, stroke: C.deep, color: '#fff', weight: 600 })}
+      {box(R, 8, W, 44, ['Särkullbarn'], { fill: C.deep, stroke: C.deep, color: '#fff', weight: 600 })}
+      {box(L, 76, W, 70, ['Stella dör', 'Arvet: 250 000 kr'], { fill: C.pb })}
+      {box(R, 76, W, 70, ['Marco dör', 'Arvet: 750 000 kr'], { fill: C.pb })}
+      {box(L, 176, W, 84, ['John (make) ärver', '250 000 kr med', 'fri förfoganderätt'])}
+      {box(R, 176, W, 84, ['My (särkullbarn)', 'får 250 000 kr', 'direkt'])}
+      {box(L, 290, W, 84, ['Kevin och Linda', 'får efterarv när', 'John har dött'], { fill: C.grey, stroke: C.line, color: C.ax })}
+      {box(R, 290, W, 84, ['Vera (make) ärver', '500 000 kr i sina', 'barns ställe'])}
+      <line x1={cL} y1="148" x2={cL} y2="172" stroke={C.deep} strokeWidth="2.5" markerEnd="url(#sk-ah)" />
+      <line x1={cL} y1="262" x2={cL} y2="286" stroke={C.deep} strokeWidth="2.5" strokeDasharray="5 4" markerEnd="url(#sk-ah)" />
+      <line x1={cR} y1="148" x2={cR} y2="172" stroke={C.deep} strokeWidth="2.5" markerEnd="url(#sk-ah)" />
+      <path d={`M${R + W},111 H550 V332 H${R + W + 4}`} fill="none" stroke={C.deep} strokeWidth="2.5" markerEnd="url(#sk-ah)" />
+      <text x="280" y="402" fontSize="13" fill={C.mute} textAnchor="middle">Hälften av giftorättsgodset tillhör redan den efterlevande maken</text>
+    </svg>
+  );
+}
+
+/* 3.7 Tidslinje efter ett dödsfall */
+function TidslinjeSVG() {
+  const pts = [
+    [40, 'Dödsfallet', 'Dödsboet – en juridisk person – bildas'],
+    [112, 'Inom 1 månad: begravning', 'Religiös eller borgerlig'],
+    [184, 'Inom 3 månader: bouppteckning', 'Två förrättningsmän och en bouppgivare'],
+    [256, 'Skatteverket', 'Godkänner och registrerar bouppteckningen'],
+    [328, 'Arvskifte', 'Arvet fördelas – dödsboet upphör'],
+    [400, 'Inom 1 år: urnnedsättning', 'Räknat från dödsfallet']
+  ];
+  return (
+    <svg viewBox="0 0 520 440" role="img" aria-labelledby="tl-t tl-d">
+      <title id="tl-t">Efter ett dödsfall</title>
+      <desc id="tl-d">Begravning inom en månad, bouppteckning inom tre månader som registreras av Skatteverket, därefter arvskifte. Urnnedsättning inom ett år.</desc>
+      <line x1="44" y1="40" x2="44" y2="400" stroke={C.line} strokeWidth="4" strokeLinecap="round" />
+      {pts.map(([y, t, s], i) => (
+        <g key={i}>
+          <circle cx="44" cy={y} r="12" fill={i === 0 ? C.pd : C.p} stroke="#fff" strokeWidth="3" />
+          <text x="72" y={y + 2} fontSize="17" fontWeight="600" fill={C.pd}>{t}</text>
+          <text x="72" y={y + 24} fontSize="14" fill={C.mute}>{s}</text>
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+const DIAGRAMS = {
+  bodelning:   { Comp: BodelningSVG,   cap: '**Bodelning steg för steg.** Bara giftorättsgodset delas. Den som har mer betalar **skiftesliked** så att båda får lika mycket. **Enskild egendom** ligger helt utanför.' },
+  jamkning:    { Comp: JamkningSVG,    cap: '**Jämkning efter två års äktenskap.** Varje år ger en femtedel. Två femtedelar av båda makarnas giftorättsgods delas – resten behåller var och en.' },
+  sambogift:   { Comp: SamboGiftSVG,   cap: '**Sambo eller gift?** Den största skillnaden är **arvsrätten**: makar ärver varandra, sambor gör det bara med testamente.' },
+  arvsgrupper: { Comp: ArvsgrupperSVG, cap: '**Den legala arvsordningen.** En grupp ärver bara om det inte finns arvingar i gruppen före. Inom varje grupp gäller **istadarätt**, och båda sidor av släkten tar lika lott.' },
+  sarkull:     { Comp: SarkullSVG,     cap: '**Make och särkullbarn.** Gemensamma barn får vänta på **efterarv**. Ett **särkullbarn** får sitt arv direkt – men maken har alltid rätt att behålla minst fyra basbelopp.' },
+  tidslinje:   { Comp: TidslinjeSVG,   cap: '**Efter ett dödsfall.** Tidsgränserna gäller begravning, bouppteckning och urnnedsättning. **Arvskiftet** görs när bouppteckningen är klar.' }
+};
+
+function Diagram({ id }) {
+  const d = DIAGRAMS[id];
+  if (!d) return null;
+  return (
+    <figure className="diagram">
+      <d.Comp />
+      <figcaption>{fmt(d.cap)}</figcaption>
+    </figure>
+  );
+}
+
+/* ===================== INNEHÅLLSKOMPONENTER ===================== */
+
+function Tabell({ t }) {
+  return (
+    <div className="tbl-wrap">
+      <table className="tbl">
+        <thead><tr>{t.huvud.map((h, i) => <th key={i} className={i > 0 ? 'num' : ''}>{h}</th>)}</tr></thead>
+        <tbody>
+          {t.rader.map((r, i) => (
+            <tr key={i}>{r.map((c, j) => <td key={j} className={j > 0 && /^[−\d]/.test(c) ? 'num' : ''}>{fmt(c)}</td>)}</tr>
+          ))}
+        </tbody>
+        {t.summa && (
+          <tfoot><tr>{t.summa.map((c, j) => <td key={j} className={j > 0 ? 'num' : ''}>{c}</td>)}</tr></tfoot>
+        )}
+      </table>
+    </div>
+  );
+}
+
+function Items({ list }) {
+  return (list || []).map((it, i) => {
+    if (typeof it === 'string') return <p key={i}>{fmt(it)}</p>;
+    if (it.h) return <h3 key={i}>{it.h}</h3>;
+    if (it.lista) return <ul key={i}>{it.lista.map((t, j) => <li key={j}>{fmt(t)}</li>)}</ul>;
+    if (it.citat) return (
+      <blockquote className="citat" key={i}>
+        {fmt(it.citat)}
+        {it.kalla && <span className="citat-k">— {it.kalla}</span>}
+      </blockquote>
+    );
+    if (it.tabell) return <Tabell key={i} t={it.tabell} />;
+    if (it.ruta) return (
+      <div className="ruta" key={i}>
+        <div className="ruta-h">🔎 {it.ruta.h}</div>
+        <Items list={it.ruta.p} />
+      </div>
+    );
+    return null;
+  });
+}
+
+function Nyckelbegrepp({ list }) {
+  const items = list.map(b => typeof b === 'string' ? { term: b, def: BEGREPP[b] } : b);
+  const egen = items.some(b => b.kalla);
+  return (
+    <div className="nyckel">
+      <div className="nyckel-h">🔑 Nyckelbegrepp</div>
+      <dl>
+        {items.map(b => (
+          <div className="nb" key={b.term}>
+            <dt>{b.term}</dt>
+            <dd>{b.def}</dd>
+          </div>
+        ))}
+      </dl>
+      {egen && <div className="nyckel-k">Begreppet finns inte i begreppsövningen – förklaringen kommer från kurstexten.</div>}
+    </div>
+  );
+}
+
+function Section({ sec, mode }) {
+  const text = mode === 'lattlast' ? sec.lattlast : sec.fordjupning;
+  return (
+    <section id={sec.id} className="sec">
+      <div className="sec-head">
+        <span className="sec-emoji" aria-hidden="true">{sec.emoji}</span>
+        <h2 className="sec-title"><span className="nr">{sec.nr}</span>{sec.rubrik}</h2>
+      </div>
+      <p className="ingress"><b>🤔 Fundera först</b>{fmt(sec.hook)}</p>
+
+      <div className="block">
+        <Items list={text} />
+
+        {(sec.diagram || []).map(id => <Diagram key={id} id={id} />)}
+
+        {sec.fall && (
+          <div className="case">
+            <div className="case-h">📌 {sec.fall.titel}{sec.fall.tag && <span className="case-tag">{sec.fall.tag}</span>}</div>
+            <Items list={sec.fall.text} />
+          </div>
+        )}
+
+        <Nyckelbegrepp list={sec.begrepp} />
+
+        <div className="komihag">
+          <div className="komihag-h">💡 Kom ihåg</div>
+          <ul>{sec.komihag.map((t, i) => <li key={i}>{fmt(t)}</li>)}</ul>
+        </div>
+
+        <div className="to-top">
+          <a href="#toppen" onClick={(e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}>↑ Till toppen</a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ===================== APP ===================== */
+
+function App() {
+  /* Läget sparas bara i sessionStorage under egen nyckel. */
+  const [mode, setMode] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem(PAGE.storeKey);
+      if (saved === 'lattlast' || saved === 'fordjupning') return saved;
+    } catch (e) {}
+    return 'lattlast';
+  });
+  const [active, setActive] = useState(SECTIONS[0].id);
+  const [tocOpen, setTocOpen] = useState(false);
+
+  useEffect(() => {
+    try { sessionStorage.setItem(PAGE.storeKey, mode); } catch (e) {}
+  }, [mode]);
+
+  /* Markera aktuellt avsnitt i innehållsförteckningen. */
+  useEffect(() => {
+    if (!('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver(entries => {
+      const vis = entries.filter(en => en.isIntersecting)
+                         .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+      if (vis.length) setActive(vis[0].target.id);
+    }, { rootMargin: '-15% 0px -70% 0px' });
+    [...SECTIONS.map(s => s.id), 'sammanfattning'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) io.observe(el);
+    });
+    return () => io.disconnect();
+  }, []);
+
+  /* Djuplänk: scrolla till avsnittet i URL:ens hash när sidan laddats. */
+  useEffect(() => {
+    const id = decodeURIComponent((window.location.hash || '').replace('#', ''));
+    if (!id) return;
+    window.setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ block: 'start' });
+    }, 150);
+  }, []);
+
+  const goto = (e, id) => {
+    e.preventDefault();
+    setTocOpen(false);
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    try { history.replaceState(null, '', '#' + id); } catch (err) {}
+  };
+
+  const activeSec = SECTIONS.find(s => s.id === active);
+  const activeLabel = activeSec ? activeSec.nr + ' ' + activeSec.rubrik : 'Sammanfattning';
+
+  return (
+    <div className="wrap" id="toppen">
+
+      <a href={PAGE.hub} className="back" onClick={(e) => jur1GoBack(e, PAGE.hub)}>
+        ← Tillbaka till Familje- och arvsrätt
+      </a>
+
+      <header className="head">
+        <p className="eyebrow">{PAGE.eyebrow}</p>
+        <h1>{PAGE.titel}</h1>
+        <div className="rule"></div>
+        <p className="lead">
+          Pluggmaterial i tre delar och {SECTIONS.length} avsnitt. Välj <strong>Lättläst</strong> för korta meningar
+          och en tanke i taget, eller <strong>Fördjupning</strong> för resonemang, undantag och samband.
+        </p>
+      </header>
+
+      <div className="pill-toggle" role="tablist" aria-label="Välj läge">
+        <button role="tab" aria-selected={mode === 'lattlast'}
+                className={mode === 'lattlast' ? 'active' : 'inactive'}
+                onClick={() => setMode('lattlast')}>Lättläst</button>
+        <button role="tab" aria-selected={mode === 'fordjupning'}
+                className={mode === 'fordjupning' ? 'active' : 'inactive'}
+                onClick={() => setMode('fordjupning')}>Fördjupning</button>
+      </div>
+      <p className="mode-note" aria-live="polite">
+        {mode === 'lattlast'
+          ? 'Lättläst: korta meningar och en tanke i taget. Fackorden förklaras första gången.'
+          : 'Fördjupning: samma avsnitt och fackord, men med resonemang, undantag och kopplingar.'}
+      </p>
+
+      <div className="layout">
+        <nav className={'toc' + (tocOpen ? ' open' : '')} aria-label="Innehåll">
+          <button className="toc-btn" onClick={() => setTocOpen(o => !o)} aria-expanded={tocOpen}>
+            <span className="toc-btn-t">☰ {activeLabel}</span>
+            <span aria-hidden="true">{tocOpen ? '▲' : '▼'}</span>
+          </button>
+          <div className="toc-h">Innehåll</div>
+          <div className="toc-list">
+            {DELAR.map(d => (
+              <React.Fragment key={d.id}>
+                <div className="toc-del">{d.nr} · {d.titel}</div>
+                {d.sections.map(s => (
+                  <a href={'#' + s.id} key={s.id} onClick={(e) => goto(e, s.id)}
+                     className={s.id === active ? 'active' : ''}>
+                    <span className="toc-n">{s.nr}</span>
+                    <span className="toc-t">{s.rubrik}</span>
+                  </a>
+                ))}
+              </React.Fragment>
+            ))}
+            <div className="toc-del">Avslutning</div>
+            <a href="#sammanfattning" onClick={(e) => goto(e, 'sammanfattning')}
+               className={active === 'sammanfattning' ? 'active' : ''}>
+              <span className="toc-n">★</span>
+              <span className="toc-t">Sammanfattning</span>
+            </a>
+          </div>
+        </nav>
+
+        <main>
+          {DELAR.map(d => (
+            <React.Fragment key={d.id}>
+              <div className="del-head" id={d.id}>
+                <p className="del-nr">{d.nr}</p>
+                <h2>{d.titel}</h2>
+                <p className="del-lead">{d.lead}</p>
+              </div>
+              {d.sections.map(s => <Section key={s.id} sec={s} mode={mode} />)}
+            </React.Fragment>
+          ))}
+
+          <section className="summary" id="sammanfattning" aria-label="Sammanfattning">
+            <h2>📝 Sammanfattning</h2>
+            <div className="sum-grid">
+              {SAMMANFATTNING.map(col => (
+                <div className="sum-col" key={col.h}>
+                  <h3>{col.h}</h3>
+                  <ul>{col.lista.map((t, i) => <li key={i}>{fmt(t)}</li>)}</ul>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="next" aria-label="Öva vidare">
+            <h2>Öva vidare</h2>
+            <p>Har du läst klart? Testa dig själv på områdets begrepp och quiz.</p>
+            <div className="next-grid">
+              <a className="next-btn ghost" href="jur1_block2_begrepp.html">📖 Öva på begrepp</a>
+              <a className="next-btn primary" href="jur1_block2_quiz.html">🎯 Starta quizet</a>
+              <a className="next-btn ghost wide" href={PAGE.hub}>📚 Till Familje- och arvsrätt</a>
+            </div>
+          </section>
+
+          <footer className="foot">
+            <p>Källa: {PAGE.kalla}</p>
+            <p className="by">Designad av John</p>
+          </footer>
+        </main>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+
+<script src="feedback-widget.js" defer></script>
+<script data-goatcounter="https://johnblixt.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

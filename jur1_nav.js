@@ -1,7 +1,8 @@
 // Delad "tillbaka"-navigering för Juridik 1 (jur1_-filer)
 // Går tillbaka i historiken om sidan nåddes via en länk på samma domän,
-// annars faller den tillbaka till startsidan (index.html).
-function jur1GoBack(e) {
+// annars faller den tillbaka till områdessidan som anges i `fallback`
+// (eller startsidan index.html om ingen fallback skickas med).
+function jur1GoBack(e, fallback) {
     if (e) e.preventDefault();
     var ref = document.referrer;
     if (ref) {
@@ -12,5 +13,5 @@ function jur1GoBack(e) {
             }
         } catch (err) {}
     }
-    window.location.href = 'index.html';
+    window.location.href = fallback || 'index.html';
 }
