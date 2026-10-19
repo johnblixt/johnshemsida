@@ -381,7 +381,13 @@ function handleAnswer(displayPos) {
   document.getElementById('btn-next').textContent = cur === qs.length - 1 ? 'Se resultat →' : 'Nästa →';
   document.getElementById('score-pill').textContent = 'Poäng: ' + score;
 
-  setTimeout(() => showModal(isCorrect, q.expl), 600);
+  // Hoppa över modalen om eleven redan gått vidare — annars stegar
+  // modalens "Nästa fråga →" fram en gång till och en fråga hoppas över.
+  const answeredAt = cur;
+  setTimeout(() => {
+    if (cur !== answeredAt || !document.getElementById('screen-quiz').classList.contains('active')) return;
+    showModal(isCorrect, q.expl);
+  }, 600);
 }
 
 // ════════════════════════════════════════════════════════════
