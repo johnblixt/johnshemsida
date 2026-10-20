@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Naturvetenskapligt arbetssätt – Quiz | NK 1a1</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --primary: #0891b2;
@@ -124,7 +124,7 @@
       #screen-start h1 { font-size: 1.85rem; }
       .q-text { font-size: 1.1rem; }
     }
-    /* ── Textläge: Svenska / 📖 Enkel svenska ── */
+    /* Toppkontroller: textläge (Svenska / 📖 Enkel svenska) + separat på/av för arabiskt stöd */
     .top-controls {
       position: fixed; top: 14px; right: 14px; z-index: 200;
       display: flex; gap: 8px; align-items: center;
@@ -142,22 +142,63 @@
     .easy-toggle:hover { background: #dcfce7; }
     .easy-toggle[aria-pressed="true"] { background: #16a34a; color: white; }
     .easy-toggle[aria-pressed="true"]:hover { background: #15803d; }
+    .ar-toggle {
+      display: flex; align-items: center; gap: 7px; background: white;
+      border: 2px solid #16a34a; border-radius: 999px; padding: 3px 12px 3px 6px;
+      color: #16a34a; font-weight: 600; cursor: pointer; white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .ar-toggle:hover { background: #dcfce7; }
+    .ar-toggle [lang="ar"] { font-size: 0.95rem; line-height: 1.3; }
+    .ar-toggle .sw {
+      position: relative; width: 28px; height: 16px; border-radius: 999px;
+      background: #cbd5e1; transition: background 0.15s; flex-shrink: 0;
+    }
+    .ar-toggle .sw::after {
+      content: ''; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px;
+      border-radius: 50%; background: white; transition: left 0.15s;
+    }
+    .ar-toggle[aria-checked="true"] .sw { background: #16a34a; }
+    .ar-toggle[aria-checked="true"] .sw::after { left: 14px; }
+
+    /* ── Arabiskt stöd: underordnad rad under den svenska texten ── */
+    [lang="ar"] {
+      font-family: 'Noto Naskh Arabic', 'Noto Sans Arabic', 'Segoe UI', Tahoma, 'Arial', serif;
+      line-height: 1.85;
+    }
+    .ar-sub {
+      display: block; direction: rtl; text-align: right;
+      font-size: 0.9em; font-weight: 400; color: #475569;
+      margin-top: 6px; padding-top: 6px; border-top: 1px solid #e2e8f0;
+    }
+    .opt-btn .ar-sub     { border-top-color: rgba(100,116,139,0.25); }
+    .opt-btn.correct .ar-sub { color: #166534; }
+    .opt-btn.wrong .ar-sub   { color: #991b1b; }
+    .fi-row .ar-sub      { margin-top: 3px; padding-top: 3px; }
+    .fi-row.ya-ok .ar-sub, .fi-row.ra .ar-sub { color: #166534; }
+    .fi-row.ya-bad .ar-sub { color: #991b1b; }
+    .missed-item .ar-sub { color: #7f1d1d; border-top-color: rgba(220,38,38,0.2); }
 
     @media (max-width: 768px) {
       a.back-btn { top: 10px; left: 8px; padding: 6px 10px; font-size: 0.88rem; }
-      .top-controls { top: 10px; right: 8px; }
+      .top-controls { top: 10px; right: 8px; gap: 6px; }
       .easy-toggle { padding: 5px 10px; font-size: 0.8rem; }
+      .ar-toggle { padding: 3px 10px 3px 5px; gap: 5px; }
+      #screen-quiz, #screen-result { padding-left: 16px; padding-right: 16px; }
+      .modal-box { padding: 24px 20px; max-height: 90vh; overflow-y: auto; }
     }
-    /* Smal skärm: textläget flyttas till en egen rad under tillbaka-länken */
+    /* Smal skärm: kontrollerna flyttas till en egen rad under tillbaka-länken */
     @media (max-width: 640px) {
       .top-controls { top: 46px; left: 50%; right: auto; transform: translateX(-50%); }
-      .lang-switch { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+      .lang-switch, .ar-toggle { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
       #screen-start  { padding-top: 110px; }
       #screen-quiz   { padding-top: 100px; }
       #screen-result { padding-top: 110px; }
     }
     @media (max-width: 380px) {
+      .top-controls { gap: 4px; }
       .easy-toggle { padding: 5px 8px; font-size: 0.76rem; }
+      .ar-toggle { padding: 3px 8px 3px 4px; }
     }
   </style>
 </head>
@@ -169,6 +210,10 @@
     <button class="easy-toggle" type="button" data-mode="sv"   aria-pressed="true"  onclick="setMode('sv')">Svenska</button>
     <button class="easy-toggle" type="button" data-mode="easy" aria-pressed="false" onclick="setMode('easy')" id="btn-easy">📖 Enkel svenska</button>
   </div>
+  <button class="ar-toggle" type="button" role="switch" aria-checked="false" id="btn-ar"
+          onclick="toggleArSupport()" title="Arabiskt stöd: visa arabisk översättning under den svenska texten">
+    <span class="sw" aria-hidden="true"></span><span lang="ar" dir="rtl">العربية</span>
+  </button>
 </div>
 
 <!-- ═══════════ START ═══════════ -->
@@ -550,8 +595,321 @@ const ENKEL = [
   }
 ];
 
-// Original + enkel text i samma frågeobjekt (samma struktur som mr_quiz.html)
-const QS = QUESTIONS.map((q, i) => Object.assign({}, q, ENKEL[i]));
+// ════════════════════════════════════════════════════════════
+// ARABISKT STÖD — samma ordning som QUESTIONS/ENKEL. optsAr[i]
+// motsvarar alltid opts[i], så arabiskan följer sitt alternativ
+// genom blandningen. Översatt från Enkel svenska (som i
+// mr_quiz.html). Centrala begrepp får det svenska ordet inom
+// parentes i fråga eller förklaring – aldrig bara i ett alternativ.
+// ════════════════════════════════════════════════════════════
+const AR = [
+  // A1
+  {
+    qAr: 'ما هي الثورة العلمية (den vetenskapliga revolutionen)؟',
+    optsAr: [
+      'في القرن السادس عشر توقّف الناس عن الثقة العمياء بالكنيسة والكتب القديمة. وبدأوا يختبرون الأفكار بالتجارب.',
+      'صنع غاليليو غاليلي تلسكوباً. وعندها استطاع الناس لأول مرة أن ينظروا إلى النجوم بدقة.',
+      'في العصور القديمة بدأ الفلاسفة الإغريق بالعلوم الطبيعية. وكانت تلك أول علوم على الإطلاق.',
+      'في القرن التاسع عشر ظهرت المصانع. فبنى الناس مختبرات جديدة ووجدوا طرقاً جديدة للبحث.'
+    ],
+    expAr: 'بدأت الثورة العلمية في القرن السادس عشر. في السابق كان الناس يبحثون عن الأجوبة في تعاليم الكنيسة وفي الكتب القديمة. ثم بدأ الباحثون يختبرون أفكارهم. أجروا تجارب وراقبوا بدقة. ومن أشهر هؤلاء الباحثين كوبرنيكوس وغاليليو غاليلي.'
+  },
+  {
+    qAr: 'ما هو سؤال البحث (frågeställning) عندما نُجري بحثاً علمياً؟',
+    optsAr: [
+      'سؤال واضح. يبيّن بالضبط ما الذي يجب أن تكتشفه الدراسة.',
+      'عبارة أو ادعاء. تقول ما الذي نتوقع أن نجده.',
+      'نص قصير. يروي ما توصّلنا إليه بعد التجربة.',
+      'فكرة عن كيفية عمل العالم. يجب أن نثبتها بالقياسات.'
+    ],
+    expAr: 'سؤال البحث هو سؤال واضح. مثلاً: «ما سبب هذا الشيء؟» أما الفرضية (hypotes) فهي شيء آخر. الفرضية جواب محتمل عن السؤال. وتُكتب على شكل عبارة أو ادعاء.'
+  },
+  {
+    qAr: 'ما هي الفرضية (hypotes)؟',
+    optsAr: [
+      'عبارة تمثّل جواباً محتملاً عن السؤال. لا نعرف بعد إن كانت صحيحة.',
+      'جواب مؤكد. حصلنا عليه بعد إجراء التجربة مرات كثيرة.',
+      'سؤال واضح. يبيّن بالضبط ما يجب أن نكتشفه في الدراسة.',
+      'شيء لاحظناه أثناء التجربة. يجب على الباحث أن يشرح سبب حدوثه.'
+    ],
+    expAr: 'الفرضية عبارة. وهي جواب محتمل عن سؤال البحث (frågeställning). يجب أن نستطيع اختبارها. ويجب أيضاً أن نستطيع إثبات أنها خاطئة. عندما نكتب الفرضية لا نعرف إن كانت صحيحة.'
+  },
+  {
+    qAr: 'للدراسة العلمية ثلاثة شروط. ما هي؟',
+    optsAr: [
+      'يجب أن تكون الفرضية قابلة للاختبار وقابلة للدحض. ويجب أن تكون التجربة قابلة للتكرار.',
+      'يجب أن تقوم الفرضية على نظرية. ويجب أن توافق عليها لجنة أخلاقيات. ويجب أن تكون النتيجة واضحة.',
+      'يجب إثبات أن الفرضية صحيحة. ويجب أن يكتبها باحثان. ويجب أن تُنشر في مجلة علمية.',
+      'يجب أن تكون التجربة بسيطة ورخيصة. ويجب أن يستطيع جميع الناس فهمها.'
+    ],
+    expAr: 'هناك ثلاثة شروط. قابلة للاختبار (testbar): يجب أن نستطيع فحص الفرضية بتجربة. قابلة للدحض (falsifierbar): يجب أن نستطيع إثبات أن الفرضية خاطئة. قابلة للتكرار (repeterbar): يجب أن يستطيع الآخرون إعادة التجربة ليروا إن كانوا سيحصلون على النتيجة نفسها.'
+  },
+  {
+    qAr: 'ماذا يعني أن تكون الفرضية قابلة للدحض (falsifierbar)؟',
+    optsAr: [
+      'يجب أن يكون ممكناً إثبات أن الفرضية خاطئة. مثلاً إذا جاءت النتيجة مخالفة لها.',
+      'الفرضية مكتوبة بطريقة تجعل أي تجربة عاجزة دائماً عن إثبات أنها خاطئة.',
+      'تُعدّ الفرضية خاطئة مباشرةً إذا لم نستطع اختبارها في المختبر.',
+      'يجب أن تختبر ثلاث مجموعات مختلفة من الباحثين الفرضية قبل أن تُقبل.'
+    ],
+    expAr: 'قابلة للدحض تعني أنه يجب أن يكون ممكناً إثبات أن الفرضية خاطئة. تخيّل فرضية لا يمكن لأي نتيجة أن تخالفها. عندها لا تكون فرضية علمية.'
+  },
+  {
+    qAr: 'للطريقة الفرضية الاستنتاجية (den hypotetisk-deduktiva metoden) خمس خطوات. ما الترتيب الصحيح؟',
+    optsAr: [
+      'سؤال البحث ← الفرضية ← التنبؤ ← الدراسة ← الاستنتاج',
+      'الفرضية ← سؤال البحث ← الدراسة ← التنبؤ ← الاستنتاج',
+      'الملاحظة ← الاستنتاج ← سؤال البحث ← الفرضية ← التجربة',
+      'سؤال البحث ← الدراسة ← الفرضية ← التنبؤ ← الاستنتاج'
+    ],
+    expAr: 'تأتي الخطوات بهذا الترتيب. أولاً، سؤال البحث (frågeställning): ماذا تريد أن تعرف؟ ثانياً، الفرضية (hypotes): ما الجواب الذي تتوقعه؟ ثالثاً، التنبؤ (förutsägelse): ماذا يجب أن يحدث إذا كنت على حق؟ رابعاً، الدراسة (undersökning): تُجري التجربة. خامساً، الاستنتاج (slutsats): هل كانت الفرضية صحيحة أم لا؟'
+  },
+  {
+    qAr: 'ما هي النظرية العلمية (vetenskaplig teori)؟',
+    optsAr: [
+      'تفسير له دعم قوي. يقوم على نتائج تجارب دقيقة كثيرة.',
+      'تخمين ذكي عن كيفية عمل شيء ما. لم يختبره أحد في تجربة بعد.',
+      'استنتاج من تجربة واحدة فقط. كانت النتيجة واضحة وأمكن تكرارها.',
+      'فكرة عن قوانين الطبيعة. توصّل إليها شخص مشهور ومهم في هذا المجال.'
+    ],
+    expAr: 'النظرية أكثر بكثير من مجرد تخمين. إنها تفسير تدعمه تجارب كثيرة. ومع ذلك يمكن أن تتغيّر النظرية. يحدث ذلك إذا أظهرت أدلة جديدة شيئاً مختلفاً.'
+  },
+  {
+    qAr: 'ما هو تحوّل النموذج الفكري (paradigmskifte)؟',
+    optsAr: [
+      'تُستبدل نظرية قديمة بنظرية جديدة. يحدث ذلك عندما تُظهر الأدلة أن القديمة خاطئة.',
+      'تفشل تجربة ما. لذلك يجب إضافة متغيّرات جديدة إلى الدراسة.',
+      'تترك مجموعة من الباحثين مجالها. ويبدؤون البحث في شيء مختلف تماماً.',
+      'تظهر تقنية جديدة. تجعل التجارب القديمة أسرع وأكثر دقة.'
+    ],
+    expAr: 'في تحوّل النموذج الفكري تُستبدل نظرية بنظرية جديدة. في الماضي كان الناس يعتقدون أن الأرض في مركز كل شيء. ثم أظهرت الأدلة أن الأرض والكواكب تدور حول الشمس. واستبدال النظريات يدل على أن العلم يعمل كما ينبغي.'
+  },
+  {
+    qAr: 'ما الذي يُعدّ غشاً علمياً (forskningsfusk)؟',
+    optsAr: [
+      'نسخ عمل الآخرين، أو اختلاق النتائج، أو إخفاء النتائج التي لا تعجبنا.',
+      'استخدام طريقة لم تُختبر بما يكفي، والنشر دون مراجعة الأقران.',
+      'إجراء تجارب على الحيوانات دون إجراء مراجعة أخلاقية أولاً.',
+      'تغيير الفرضية في منتصف التجربة دون البدء من جديد.'
+    ],
+    expAr: 'الغش العلمي هو الانتحال (plagiera)، أي نسخ عمل الآخرين، أو التزوير (förfalska)، أي اختلاق النتائج، أو إخفاء النتائج. الغش يضر بالبحث العلمي. ويجعل الناس يتوقفون عن الثقة بالباحثين. وفي معهد كارولينسكا حدثت قضية غش مات فيها مرضى.'
+  },
+  {
+    qAr: '«هل التغيّرات المناخية سيئة؟» لماذا لا تستطيع العلوم الطبيعية الإجابة عن هذا السؤال؟',
+    optsAr: [
+      'إنه سؤال عن القيم. يستطيع العلم أن يقيس، لكنه لا يستطيع أن يقول ما الصواب وما الخطأ.',
+      'المناخ معقّد جداً. لا يمكن دراسته وقياسه بالطرق العلمية.',
+      'الجواب يعتمد على ما يقرّره السياسيون. لذلك لا ينتمي السؤال إلى العلوم الطبيعية.',
+      'لم يجمع العلم بيانات كافية بعد. لذلك لا يوجد جواب مؤكد.'
+    ],
+    expAr: 'لا تستطيع العلوم الطبيعية أن تجيب إلا عن الأشياء التي يمكن اختبارها. أما السؤال عن كون شيء ما «جيداً» أو «سيئاً» فهو مسألة قيم (värderingsfråga). ولا يمكن اختباره. تستطيع العلوم الطبيعية أن تصف التغيّرات المناخية وتقيسها. لكنها لا تستطيع أن تقول إن كانت صواباً أم خطأ.'
+  },
+  // A2
+  {
+    qAr: 'ما هو المتغيّر المستقل (oberoende variabel) في التجربة؟',
+    optsAr: [
+      'الشيء الذي تغيّره أنت بنفسك في التجربة. تريد أن ترى إن كان يؤثر في شيء آخر.',
+      'الشيء الذي تقيسه. تريد أن ترى إن كان قد تغيّر بسبب ما فعلته في التجربة.',
+      'الشيء الذي يبقى متشابهاً في كل المجموعات. وبذلك لا يستطيع شيء آخر أن يشوّش التجربة.',
+      'الشيء الذي لا تستطيع التحكم فيه. قد يشوّش نتيجة التجربة.'
+    ],
+    expAr: 'المتغيّر المستقل هو الشيء الذي تغيّره أنت بنفسك. مثال: تعطي نباتات البصل كميات مختلفة من الضوء. الضوء هو المتغيّر المستقل. وأنت تعتقد أن الضوء يؤثر في المتغيّر التابع (beroende variabel).'
+  },
+  {
+    qAr: 'ما هو المتغيّر التابع (beroende variabel)؟',
+    optsAr: [
+      'الشيء الذي تقيسه. تعتقد أنه يتأثر بما تغيّره في التجربة.',
+      'شيء لا يمكن تغييره. يبقى كما هو طوال التجربة.',
+      'شيء يؤثر في التجربة دون أن يلاحظه الباحث أبداً.',
+      'الشيء الذي يغيّره الباحث بنفسه ليرى ماذا يحدث لشيء آخر.'
+    ],
+    expAr: 'المتغيّر التابع هو الشيء الذي تقيسه. مثال: مقدار نمو نباتات البصل. مقدار نموها «يعتمد» على كمية الضوء التي تحصل عليها. والضوء هو المتغيّر المستقل (oberoende variabel).'
+  },
+  {
+    qAr: 'ما هي المجموعة الضابطة (kontrollgrupp)؟',
+    optsAr: [
+      'مجموعة لا تحصل على الشيء الذي يُختبر. ونقارنها بالمجموعة التجريبية.',
+      'مجموعة تتأكد من أن التجربة تُجرى بشكل صحيح وأن أحداً لا يخطئ.',
+      'المجموعة التي تحصل على أكبر كمية من الشيء الذي يُختبر في التجربة.',
+      'مجموعة من الخبراء من الخارج. يقيّمون إن كان يمكن الوثوق بالنتيجة.'
+    ],
+    expAr: 'المجموعة الضابطة لا تحصل على العلاج. وفي كل شيء آخر تُعامل تماماً مثل المجموعات الأخرى. وبذلك يمكننا المقارنة. والفرق بين المجموعات يبيّن ما يفعله العلاج.'
+  },
+  {
+    qAr: 'ما هو تأثير الدواء الوهمي (placeboeffekten)؟',
+    optsAr: [
+      'يشعر شخص بتحسّن لأنه يعتقد أنه سيتحسّن. لكنه لم يحصل على دواء حقيقي.',
+      'يعمل دواء بشكل أسوأ مما كان متوقعاً. لم يُختبر بدقة كافية من قبل.',
+      'يكذب المشاركون في التجربة عمداً بشأن حالتهم. يريدون تغيير النتيجة.',
+      'يفيد دواء بشكل أقل فأقل مع الوقت، رغم أن الشخص يستمر في تناوله.'
+    ],
+    expAr: 'تأثير الدواء الوهمي يعني أن ما نعتقده قد يجعلنا نشعر بتحسّن. تخيّل أنك حصلت على حبة سكر. وأنت تعتقد أنها دواء. عندها قد تشعر بتحسّن رغم ذلك. لهذا يُجري الباحثون الدراسات العمياء (blindstudier).'
+  },
+  {
+    qAr: 'لماذا تُجرى الدراسات العمياء (blindstudier) عند اختبار الأدوية؟',
+    optsAr: [
+      'لمنع تأثير الدواء الوهمي. لا يعرف المشاركون إن كانوا يحصلون على دواء حقيقي أم دواء وهمي.',
+      'لحماية الباحثين. لا يجوز لأحد من الخارج أن يعرف ما تُظهره التجربة.',
+      'لأنه يمكن عندها إجراء التجربة دون إجراء مراجعة أخلاقية أولاً.',
+      'لكي لا يضطر المشاركون إلى أن يختاروا بأنفسهم إن كانوا يريدون الدواء الحقيقي.'
+    ],
+    expAr: 'في الدراسة العمياء لا يعرف المشاركون في أي مجموعة هم. لا يعرفون إن كانوا يحصلون على الدواء أم على الدواء الوهمي (placebo). وبذلك لا يستطيع تأثير الدواء الوهمي أن يؤثر في النتيجة. فتصبح النتيجة أكثر موثوقية.'
+  },
+  {
+    qAr: 'لماذا يصبح الاستنتاج (slutsats) أكثر موثوقية إذا أعدنا التجربة مرات كثيرة؟',
+    optsAr: [
+      'مع زيادة عدد القياسات يقلّ تأثير الصدفة والفروق الصغيرة بين المحاولات.',
+      'كل محاولة جديدة تعطي فرضية جديدة. وهذا يؤدي إلى استنتاجات أفضل.',
+      'تشترط لجنة الأخلاقيات ذلك قبل أن يُسمح بنشر النتيجة في مجلة علمية.',
+      'عندها يصبح من المرجّح أكثر أن تعطي محاولة واحدة على الأقل النتيجة التي أردناها.'
+    ],
+    expAr: 'قد تخطئ تجربة واحدة بسبب الصدفة. وقد توجد أيضاً فروق صغيرة، مثلاً بين نباتات مختلفة. إذا أجريت التجربة مرات كثيرة فإن الأخطاء تتوازن. ويصبح المتوسط (medelvärde) عندها أكثر موثوقية.'
+  },
+  {
+    qAr: 'التلازم (samvariation) ليس هو نفسه العلاقة السببية (orsakssamband). ماذا يعني ذلك؟',
+    optsAr: [
+      'قد يتغيّر شيئان في الوقت نفسه دون أن يكون أحدهما سبباً للآخر. قد يكون وراءهما شيء ثالث.',
+      'يجب اختبار العلاقة القوية في تجارب أكثر قبل أن تُعدّ علاقة سببية.',
+      'قد توجد علاقة سببية حتى لو لم تظهر على شكل تلازم في القياسات.',
+      'التلازم موجود فقط في الطب. أما العلاقات السببية فموجودة في كل العلوم المختلفة.'
+    ],
+    expAr: 'مثال: عندما يأكل الناس المزيد من المثلجات يُصاب المزيد منهم بحروق الشمس. لكن المثلجات لا تسبّب حروق الشمس. الشمس والحرارة هما ما يؤثر في الأمرين معاً. ومن الأخطاء الشائعة أن نعتقد أن أحد الأمرين يسبّب الآخر.'
+  },
+  {
+    qAr: 'ما الأجزاء التي يجب أن يتضمنها التقرير العلمي (vetenskaplig rapport)؟',
+    optsAr: [
+      'العنوان، المقدمة، المواد والطريقة، النتائج، المناقشة، قائمة المراجع',
+      'العنوان، الملخص، الفرضية، التجربة، التحليل، الاستنتاجات',
+      'الخلفية، النظرية، الملاحظات، الحسابات، الاستنتاج، الملاحق',
+      'العنوان الرئيسي، سؤال البحث، بيانات القياس، الرسوم البيانية، التفسير، الشكر'
+    ],
+    expAr: 'للتقرير ستة أجزاء. العنوان (titel). المقدمة (inledning): الخلفية وسؤال البحث. المواد والطريقة (material och metod): ما الذي فعلته، بدقة تسمح للآخرين بإعادته. النتائج (resultat): الجداول والرسوم البيانية. المناقشة (diskussion): ماذا تعني النتيجة. قائمة المراجع (källförteckning): أين وجدت المعلومات.'
+  },
+  {
+    qAr: 'لماذا يجب أن نكتب بدقة عن المواد والطريقة (material och metod) في التقرير؟',
+    optsAr: [
+      'لكي يستطيع باحثون آخرون إعادة التجربة ليروا إن كانوا سيحصلون على النتيجة نفسها.',
+      'لكي يستطيع القارئ أن يرى إن كانت التجربة كبيرة بما يكفي للوثوق بالنتيجة.',
+      'لأن السلطات تشترط حفظ الطريقة لكي تتمكن من مراجعتها لاحقاً.',
+      'لكي يستطيع من أجرى التجربة أن يعود إليها ويصحّح أخطاءه بنفسه.'
+    ],
+    expAr: 'قابلية التكرار (repeterbarhet) شرط مهم في العلم. يجب أن يستطيع الآخرون إعادة تجربتك. وبذلك يمكنهم أن يروا إن كانت النتيجة صحيحة. وهذا ممكن فقط إذا كتبت بدقة كيف أجريت التجربة.'
+  },
+  {
+    qAr: 'ما هو تقييم المخاطر (riskbedömning) قبل العمل في المختبر؟',
+    optsAr: [
+      'قبل أن تبدأ تراجع ما قد يكون خطيراً في الأدوات والمواد الكيميائية.',
+      'بعد وقوع حادث نراجع ما حدث، لكي لا يتكرر مرة أخرى.',
+      'تفحص لجنة الأخلاقيات إن كانت التجربة آمنة بما يكفي ليُسمح بإجرائها.',
+      'قائمة قواعد يوقّعها الطلاب ليُظهروا أنهم يريدون المشاركة.'
+    ],
+    expAr: 'نُجري تقييم المخاطر قبل أن نبدأ. نفكّر فيما قد يكون خطيراً. قد يكون ذلك المواد الكيميائية أو الأدوات أو طريقة العمل. والهدف ألّا يُصاب أحد بأذى.'
+  },
+  // A3
+  {
+    qAr: 'ما هو نقد المصادر (källkritik)؟',
+    optsAr: [
+      'أن نفحص بدقة إن كان يمكن الوثوق بمصدر ما، لكي لا ننخدع.',
+      'أن نستخدم المقالات العلمية وحدها مصادرَ عندما نقدّم حججنا.',
+      'أن نثق فقط بالمصادر الصادرة عن السلطات أو الجامعات أو المنظمات المعروفة.',
+      'أن نفحص الإملاء والقواعد في مصدر ما لنرى إن كان مصنوعاً باحتراف.'
+    ],
+    expAr: 'نقد المصادر يعني أن تفحص المعلومات قبل أن تثق بها. اسأل نفسك: هل المصدر حقيقي؟ هل هو حديث؟ من يقف وراءه؟ هل يريد أحد أن يعرضه من زاوية واحدة؟ هل راجعه أحد؟ وبذلك تستطيع أن تستبعد المصادر غير الموثوقة.'
+  },
+  {
+    qAr: 'ماذا يعني أن يكون المصدر منحازاً (tendensiös)؟',
+    optsAr: [
+      'المصدر يعرض الأمور من زاوية واحدة. شخص ما وراءه يريد أن يكسب المال أو أن ينشر رأياً.',
+      'لم يمرّ المصدر بمراجعة الأقران. لذلك لا يُعدّ علمياً.',
+      'المصدر قديم جداً. لم تعد المعلومات تتفق مع الواقع اليوم.',
+      'لا أحد يعرف من كتب المصدر. ولا يمكن معرفة من هو.'
+    ],
+    expAr: 'المصدر المنحاز يعرض الأمور من زاوية واحدة. مثال: شركات التبغ تدفع ثمن تقرير عن التدخين. قد يقول التقرير إن التدخين أقل خطراً مما هو عليه في الحقيقة. فشركات التبغ تكسب المال عندما يدخّن الناس.'
+  },
+  {
+    qAr: 'ما هي مراجعة الأقران (peer review)؟',
+    optsAr: [
+      'يفحص باحثان آخران على الأقل تقريراً علمياً قبل نشره.',
+      'تفحص الدولة البحث العلمي قبل أن يُسمح باستخدامه في المجتمع.',
+      'قاعدة بيانات يستطيع فيها الباحثون البحث عن مقالات بعضهم ومقارنتها.',
+      'طريقة لحساب عدد المرات التي استشهد فيها باحثون آخرون بمقالة ما.'
+    ],
+    expAr: 'مراجعة الأقران تعني أن باحثين آخرين يفحصون المقالة. يقرؤها خبيران على الأقل قبل نشرها. ويجب ألّا تكون لهما علاقة بالبحث. إنها فحص للجودة. وهي ما يميّز المقالة العلمية عن المدوّنة مثلاً.'
+  },
+  {
+    qAr: 'ما الفرق بين المصدر الأولي (primärkälla) والمصدر الثانوي (sekundärkälla)؟',
+    optsAr: [
+      'المصدر الأولي يقوم على قياسات أصحابه. والمصدر الثانوي يأخذ الحقائق من مصادر أخرى.',
+      'المصدر الأولي كتاب مطبوع دائماً. والمصدر الثانوي موجود على الإنترنت فقط.',
+      'المصدر الأولي يكتبه خبير. والمصدر الثانوي يكتبه صحفي.',
+      'المصدر الأولي أحدث. والمصدر الثانوي يقوم غالباً على معلومات قديمة.'
+    ],
+    expAr: 'المصدر الأولي يأتي مباشرة ممن قام بالبحث، مثل مقالة علمية. والمصدر الثانوي يعيد رواية ما يقوله المصدر الأولي. وعندها يجب أن تثق بأنه أعاد روايته بشكل صحيح.'
+  },
+  {
+    qAr: 'ما هو التضليل الإعلامي (desinformation)؟',
+    optsAr: [
+      'معلومات كاذبة ينشرها شخص ما عن قصد. والهدف خداع من يقرؤها.',
+      'معلومات غير مؤكدة، لأنه لا يوجد بحث كافٍ عنها.',
+      'أخبار أصبحت خاطئة عن طريق الخطأ، لأن الصحفي لم يكن يعرف أفضل من ذلك.',
+      'إعلان يقول إن منتجاً أفضل مما هو عليه ويخفي عيوبه.'
+    ],
+    expAr: 'يُنشر التضليل الإعلامي عن قصد. وهذا ما يميّزه عن الأخطاء العادية. من ينشره يريد شيئاً ما. قد يكون ذلك كسب المال، أو التأثير في السياسة، أو جعل الناس يتوقفون عن الثقة بالخبراء.'
+  },
+  {
+    qAr: 'لماذا تنتشر الأخبار الكاذبة بسرعة على وسائل التواصل الاجتماعي؟',
+    optsAr: [
+      'الخوارزميات تعرض أكثر ما يثير مشاعر قوية. فتنتشر المنشورات الكاذبة والصادمة بسرعة.',
+      'لا يوجد محرّرون في وسائل التواصل الاجتماعي. لا أحد يتحقق مما يُنشر هناك.',
+      'الأخبار الكاذبة دائماً أقصر وأسهل في القراءة والمشاركة من الأخبار الصحيحة.',
+      'مستخدمو وسائل التواصل الاجتماعي أضعف في نقد المصادر من قرّاء الصحف.'
+    ],
+    expAr: 'الخوارزميات (algoritmer) في وسائل التواصل الاجتماعي تفضّل المنشورات التي يتفاعل معها كثير من الناس. والمنشورات التي تحصل على كثير من الإعجابات والمشاركات والتعليقات تُعرض لعدد أكبر من الناس. وغالباً ما تحصل المنشورات الكاذبة والصادمة على تفاعل أكثر من المنشورات الهادئة والصحيحة.'
+  },
+  {
+    qAr: 'ما هي مقاومة الحقائق (faktaresistens)؟',
+    optsAr: [
+      'يتمسك شخص بما يعتقده، رغم أن حقائق مؤكدة تُظهر أنه مخطئ.',
+      'يرفض شخص قراءة معلومات من مصادر لم يوافق عليها الباحثون.',
+      'البحث في موضوع ما صعب جداً لدرجة أن الناس العاديين لا يستطيعون فهمه.',
+      'تُخفي السلطات الحقائق عن الشعب. تفعل ذلك لأسباب سياسية أو من أجل المال.'
+    ],
+    expAr: 'مقاومة الحقائق تعني أن الشخص لا يغيّر رأيه رغم أن الأدلة تخالفه. وهذا يتعارض مع طريقة التفكير في العلم. وقد يجعل الأفكار الخاطئة تبقى حيّة. وهناك أمثلة على ذلك عن اللقاحات وعن المناخ.'
+  },
+  {
+    qAr: 'ما هي فقاعة التصفية (filterbubbla)؟',
+    optsAr: [
+      'تختار الخوارزميات ما تراه بناءً على ما يعجبك. فترى غالباً ما تؤمن به أصلاً.',
+      'حماية في وسائل التواصل الاجتماعي. توقف الأخبار الكاذبة والتضليل الإعلامي تلقائياً.',
+      'محرّك بحث يحذف المصادر الرديئة. ولا يعرض إلا المقالات العلمية المراجَعة.',
+      'مجموعة مغلقة على وسائل التواصل الاجتماعي. يتشارك أعضاؤها آراء بعضهم ويقوّونها.'
+    ],
+    expAr: 'تنشأ فقاعة التصفية بفعل الخوارزميات. فهي تتعلم ما يعجبك وتعرض لك المزيد منه. وغالباً لا تلاحظ ذلك. أما غرفة الصدى (ekokammare) فهي شيء آخر. يصنعها المستخدمون بأنفسهم، عندما يبحثون عن أناس يفكرون مثلهم.'
+  },
+  {
+    qAr: 'ما هو انحياز التأكيد (bekräftelsebias)؟',
+    optsAr: [
+      'نصدّق بسهولة أكبر المعلومات التي تتفق مع رأينا. ولا نلاحظ ذلك بأنفسنا.',
+      'نتحقق دائماً من أن المصدر موثوق قبل أن نشاركه على وسائل التواصل الاجتماعي.',
+      'نثق دائماً بالمصادر العلمية أكثر مما نثق بمعتقدات الناس والتقاليد القديمة.',
+      'نفهم المعلومات في القوائم النقطية والرسوم البيانية أسهل من النص العادي المتصل.'
+    ],
+    expAr: 'انحياز التأكيد شيء يحدث في الدماغ. نبحث عن المعلومات التي تُظهر أننا على حق. وما يخالفنا نتجاهله دون أن نلاحظ. لهذا يصعب علينا أن نغيّر رأينا.'
+  },
+  {
+    qAr: 'ما هو العلم الزائف (pseudovetenskap)؟',
+    optsAr: [
+      'أفكار تقول إنها علم لكنها بلا دعم. وغالباً لا يمكن دحضها.',
+      'نظريات علمية لم تُبحث بما يكفي لكي يقبلها الباحثون.',
+      'بحث خارج الجامعات يعطي مع ذلك نتائج يمكن الوثوق بها وتكرارها.',
+      'نظريات يرفضها معظم الباحثين، لكن يمكن إثباتها بالتجربة الصحيحة.'
+    ],
+    expAr: 'العلم الزائف يبدو مثل العلم لكنه لا يحقق شروطه. ومن أمثلته التنجيم (astrologi). تنبؤاته غامضة جداً لدرجة أنه لا يمكن دحضها (falsifieras)، أي لا يمكن إثبات أنها خاطئة. والمشكلة أن الناس قد يختارون مثل هذه «العلاجات» بدلاً من الرعاية الصحية الحقيقية.'
+  }
+];
+
+// Original + enkel + arabisk text i samma frågeobjekt (samma struktur som mr_quiz.html)
+const QS = QUESTIONS.map((q, i) => Object.assign({}, q, ENKEL[i], AR[i]));
 
 // ── UI-texter: Enkel svenska har egna etiketter ──
 const UI_ENKEL = {
@@ -580,8 +938,8 @@ const UI_ORIG = {
 };
 
 // ── State ──────────────────────────────────────────────────
-// Blandning sker på INDEX: order[] = visad plats → index i q.opts/q.optsEnkel.
-// chosen/correct är index i q.opts, så rättningen är oberoende av textläge.
+// Blandning sker på INDEX: order[] = visad plats → index i q.opts/q.optsEnkel/q.optsAr.
+// chosen/correct är index i q.opts, så rättningen är oberoende av textläge och arabiskt stöd.
 let shuffled = [];
 let states   = []; // { order:number[], chosen:number|null, correct:number, answered:bool }
 let cur      = 0;
@@ -591,16 +949,19 @@ let startTime = 0;
 let elapsedMs = 0;
 let modalOpen = false;
 
-// ── Textläge ──
-// mode: 'sv' (original) eller 'easy' (Enkel svenska). Sparas i sessionStorage.
+// ── Textläge och arabiskt stöd – två oberoende inställningar ──
+// mode: 'sv' (original) eller 'easy' (Enkel svenska). arSupport: arabisk rad under svenskan.
 const MODES    = ['sv', 'easy'];
 const LANG_KEY = 'nk1a1_nvq_sprak';
+const AR_KEY   = 'nk1a1_nvq_arabiska';
 const OLD_EASY_KEY = 'nk1a1_nvq_easy'; // äldre nyckel för Enkel svenska
 let mode = 'sv';
+let arSupport = false;
 try {
   const saved = sessionStorage.getItem(LANG_KEY);
   if (MODES.includes(saved)) mode = saved;
   else if (sessionStorage.getItem(OLD_EASY_KEY) === '1') mode = 'easy';
+  if (sessionStorage.getItem(AR_KEY) === '1') arSupport = true;
 } catch (e) {}
 
 const ui = key => (mode === 'easy' ? UI_ENKEL : UI_ORIG)[key];
@@ -611,7 +972,7 @@ function warnMissing(q, field) {
   const key = QS.indexOf(q) + ':' + field;
   if (warned.has(key)) return;
   warned.add(key);
-  console.warn('Enkel svenska saknas (' + field + ') för fråga: ' + q.q + ' – visar originalet.');
+  console.warn('Översättning saknas (' + field + ') för fråga: ' + q.q + ' – visar ' + (field.includes('Ar') ? 'bara svenska.' : 'originalet.'));
 }
 
 // Svensk text enligt textläge (Enkel svenska faller tillbaka på originalet).
@@ -630,10 +991,43 @@ function explText(q) {
   if (q.expEnkel) return q.expEnkel;
   warnMissing(q, 'expEnkel'); return q.expl;
 }
+// Arabisk text – bara när arabiskt stöd är på. Saknas den: null + konsolvarning.
+function qAr(q) {
+  if (!arSupport) return null;
+  if (q.qAr) return q.qAr;
+  warnMissing(q, 'qAr'); return null;
+}
+function optAr(q, i) {
+  if (!arSupport) return null;
+  if (q.optsAr && q.optsAr.length === q.opts.length && q.optsAr[i]) return q.optsAr[i];
+  warnMissing(q, 'optsAr[' + i + ']'); return null;
+}
+function explAr(q) {
+  if (!arSupport) return null;
+  if (q.expAr) return q.expAr;
+  warnMissing(q, 'expAr'); return null;
+}
+
+// Fyller el med svensk text och, om ar finns, en arabisk rad under (lang=ar, dir=rtl).
+// Svenskan ärver lang="sv" från <html>. Spans används så att det fungerar inuti <button>.
+function setText(el, sv, ar) {
+  el.textContent = sv;
+  appendAr(el, ar);
+}
+function appendAr(el, ar) {
+  if (!ar) return;
+  const span = document.createElement('span');
+  span.className = 'ar-sub';
+  span.lang = 'ar';
+  span.dir = 'rtl';
+  span.textContent = ar;
+  el.appendChild(span);
+}
 
 function updateControls() {
   document.querySelectorAll('.lang-switch [data-mode]').forEach(b =>
     b.setAttribute('aria-pressed', b.dataset.mode === mode ? 'true' : 'false'));
+  $('btn-ar').setAttribute('aria-checked', arSupport ? 'true' : 'false');
 }
 updateControls();
 
@@ -662,6 +1056,13 @@ function setMode(m) {
   if (!MODES.includes(m) || m === mode) return;
   mode = m;
   try { sessionStorage.setItem(LANG_KEY, mode); } catch (e) {}
+  updateControls();
+  rerender();
+}
+
+function toggleArSupport() {
+  arSupport = !arSupport;
+  try { sessionStorage.setItem(AR_KEY, arSupport ? '1' : '0'); } catch (e) {}
   updateControls();
   rerender();
 }
@@ -720,7 +1121,7 @@ function renderQuestion() {
   const n  = shuffled.length;
 
   $('q-counter').textContent = 'Fråga ' + (cur + 1) + ' av ' + n;
-  $('q-text').textContent = qText(q);
+  setText($('q-text'), qText(q), qAr(q));
   $('progress-bar').style.width = ((cur / n) * 100) + '%';
   $('score-pill').textContent = 'Poäng: ' + score;
 
@@ -729,7 +1130,7 @@ function renderQuestion() {
   st.order.forEach(origIdx => {
     const btn = document.createElement('button');
     btn.className = 'opt-btn';
-    btn.textContent = optText(q, origIdx);
+    setText(btn, optText(q, origIdx), optAr(q, origIdx));
     if (st.answered) {
       btn.disabled = true;
       if (origIdx === st.correct)     btn.classList.add('correct');
@@ -784,7 +1185,7 @@ function renderModal() {
   $('modal-icon').textContent = isCorrect ? '✅' : '❌';
   verdict.textContent = isCorrect ? 'Rätt svar!' : 'Fel svar';
   verdict.className = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
-  $('modal-expl').textContent = explText(shuffled[cur]);
+  setText($('modal-expl'), explText(shuffled[cur]), explAr(shuffled[cur]));
   $('modal-next').textContent = ui('modalNextBtn');
 }
 function closeModal() {
@@ -844,7 +1245,7 @@ function renderResult() {
     missedIdx.forEach(idx => {
       const item = document.createElement('div');
       item.className = 'missed-item';
-      item.textContent = (idx + 1) + '. ' + qText(shuffled[idx]);
+      setText(item, (idx + 1) + '. ' + qText(shuffled[idx]), qAr(shuffled[idx]));
       missedEl.appendChild(item);
     });
   }
@@ -866,7 +1267,7 @@ function renderResult() {
 
     const qEl = document.createElement('div');
     qEl.className = 'fi-q';
-    qEl.textContent = qText(q);
+    setText(qEl, qText(q), qAr(q));
 
     const ya = document.createElement('div');
     ya.className = 'fi-row' + (!st.answered ? '' : ok ? ' ya-ok' : ' ya-bad');
@@ -876,6 +1277,7 @@ function renderResult() {
     yaLbl.textContent = ui('yourAnswerLbl');
     ya.appendChild(yaLbl);
     ya.appendChild(document.createTextNode(st.answered ? optText(q, st.chosen) : ui('notAnswered')));
+    if (st.answered) appendAr(ya, optAr(q, st.chosen));
 
     item.appendChild(num);
     item.appendChild(qEl);
@@ -889,6 +1291,7 @@ function renderResult() {
       raLbl.textContent = ui('correctAnswerLbl');
       ra.appendChild(raLbl);
       ra.appendChild(document.createTextNode(optText(q, st.correct)));
+      appendAr(ra, optAr(q, st.correct));
       item.appendChild(ra);
     }
 
@@ -899,7 +1302,7 @@ function renderResult() {
 // ════════════════════════════════════════════════════════════
 // RESTART
 // ════════════════════════════════════════════════════════════
-// Textläget ligger kvar (sessionStorage), allt annat nollställs vid start.
+// Textläge och arabiskt stöd ligger kvar (sessionStorage), allt annat nollställs vid start.
 function restartQuiz() {
   clearInterval(timerInterval);
   show('screen-start');
