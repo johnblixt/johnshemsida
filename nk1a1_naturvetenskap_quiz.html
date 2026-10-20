@@ -124,21 +124,52 @@
       #screen-start h1 { font-size: 1.85rem; }
       .q-text { font-size: 1.1rem; }
     }
-    /* ── Enkel svenska ── */
-    .easy-pill {
+    /* ── Textläge: Svenska / 📖 Enkel svenska ── */
+    .top-controls {
       position: fixed; top: 14px; right: 14px; z-index: 200;
-      background: #16a34a; color: white; border: none; border-radius: 20px;
-      padding: 8px 16px; font-size: 0.88rem; font-family: 'EB Garamond', Georgia, serif;
-      cursor: pointer; transition: background 0.2s;
+      display: flex; gap: 8px; align-items: center;
     }
-    .easy-pill[aria-pressed="true"] { background: #15803d; outline: 2px solid #86efac; outline-offset: 2px; }
-    .easy-pill:hover { background: #15803d; }
+    .lang-switch {
+      display: flex; gap: 2px; background: white; border: 2px solid #16a34a;
+      border-radius: 999px; padding: 2px;
+    }
+    .easy-toggle {
+      background: transparent; border: none; color: #16a34a;
+      padding: 5px 14px; border-radius: 999px; font-family: inherit;
+      font-size: 0.88rem; font-weight: 600; cursor: pointer; white-space: nowrap;
+      transition: background 0.15s, color 0.15s;
+    }
+    .easy-toggle:hover { background: #dcfce7; }
+    .easy-toggle[aria-pressed="true"] { background: #16a34a; color: white; }
+    .easy-toggle[aria-pressed="true"]:hover { background: #15803d; }
+
+    @media (max-width: 768px) {
+      a.back-btn { top: 10px; left: 8px; padding: 6px 10px; font-size: 0.88rem; }
+      .top-controls { top: 10px; right: 8px; }
+      .easy-toggle { padding: 5px 10px; font-size: 0.8rem; }
+    }
+    /* Smal skärm: textläget flyttas till en egen rad under tillbaka-länken */
+    @media (max-width: 640px) {
+      .top-controls { top: 46px; left: 50%; right: auto; transform: translateX(-50%); }
+      .lang-switch { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+      #screen-start  { padding-top: 110px; }
+      #screen-quiz   { padding-top: 100px; }
+      #screen-result { padding-top: 110px; }
+    }
+    @media (max-width: 380px) {
+      .easy-toggle { padding: 5px 8px; font-size: 0.76rem; }
+    }
   </style>
 </head>
 <body>
 
 <a href="nk1a1_naturvetenskap.html" class="back-btn">← Tillbaka till området</a>
-<button id="easy-btn" class="easy-pill" onclick="toggleEasyMode()" aria-pressed="false">📖 Enkel svenska</button>
+<div class="top-controls">
+  <div class="lang-switch" role="group" aria-label="Textläge">
+    <button class="easy-toggle" type="button" data-mode="sv"   aria-pressed="true"  onclick="setMode('sv')">Svenska</button>
+    <button class="easy-toggle" type="button" data-mode="easy" aria-pressed="false" onclick="setMode('easy')" id="btn-easy">📖 Enkel svenska</button>
+  </div>
+</div>
 
 <!-- ═══════════ START ═══════════ -->
 <div id="screen-start" class="screen active">
@@ -175,7 +206,7 @@
     <div class="modal-icon"    id="modal-icon"></div>
     <div class="modal-verdict" id="modal-verdict"></div>
     <div class="modal-expl"    id="modal-expl"></div>
-    <button class="btn-primary" onclick="closeModal()">Nästa fråga →</button>
+    <button class="btn-primary" id="modal-next" onclick="closeModal()">Nästa fråga →</button>
   </div>
 </div>
 
@@ -196,59 +227,444 @@
     <div class="stat-box"><div class="snum" id="s-pct">0%</div><div class="slbl">Andel rätt</div></div>
   </div>
   <div class="missed-section" id="missed-section"></div>
-  <div class="section-hd">Fullständigt facit</div>
+  <div class="section-hd" id="facit-hd">Fullständigt facit</div>
   <div id="facit-list"></div>
   <div style="text-align:center;margin-top:32px">
-    <button class="btn-primary" onclick="restartQuiz()">↺ Gör om quizet</button>
+    <button class="btn-primary" id="btn-restart" onclick="restartQuiz()">↺ Gör om quizet</button>
   </div>
 </div>
 
 <script src="nk1a1_naturvetenskap_questions.js"></script>
 <script>
 
-// Knapptexter i enkel svenska — används när easyMode är på
+// ════════════════════════════════════════════════════════════
+// ENKEL SVENSKA — samma ordning som QUESTIONS i
+// nk1a1_naturvetenskap_questions.js. optsEnkel[i] motsvarar
+// alltid opts[i], så QUESTIONS[n].correct pekar på rätt svar
+// i båda versionerna. Begreppen behålls, bara språket runt
+// omkring förenklas.
+// ════════════════════════════════════════════════════════════
+const ENKEL = [
+  // A1
+  {
+    qEnkel: 'Vad var den vetenskapliga revolutionen?',
+    optsEnkel: [
+      'På 1500-talet slutade man lita blint på kyrkan och gamla böcker. Man testade idéer med experiment.',
+      'Galileo Galilei byggde ett teleskop. Då kunde man för första gången titta noga på stjärnorna.',
+      'Under antiken började grekiska filosofer med naturvetenskap. Det var den allra första vetenskapen.',
+      'På 1800-talet kom fabrikerna. Då byggde man nya laboratorier och hittade nya sätt att forska.'
+    ],
+    expEnkel: 'Den vetenskapliga revolutionen började på 1500-talet. Förut letade man svar i kyrkans lära och i gamla böcker. Nu började forskare testa sina idéer. De gjorde experiment och tittade noga. Två kända forskare är Copernicus och Galileo Galilei.'
+  },
+  {
+    qEnkel: 'Vad är en frågeställning när man forskar?',
+    optsEnkel: [
+      'En tydlig fråga. Den visar exakt vad undersökningen ska ta reda på.',
+      'Ett påstående. Det säger vad man tror att man kommer att hitta.',
+      'En kort text. Den berättar vad man kom fram till efter experimentet.',
+      'En idé om hur världen fungerar. Man ska bevisa den med mätningar.'
+    ],
+    expEnkel: 'En frågeställning är en tydlig fråga. Till exempel: "Vad beror det här på?" En hypotes är något annat. Hypotesen är ett möjligt svar på frågan. Den skrivs som ett påstående.'
+  },
+  {
+    qEnkel: 'Vad är en hypotes?',
+    optsEnkel: [
+      'Ett påstående som är ett möjligt svar på frågan. Man vet inte än om det stämmer.',
+      'Ett säkert svar. Man har fått fram det genom att göra experimentet många gånger.',
+      'En tydlig fråga. Den visar exakt vad man ska ta reda på i undersökningen.',
+      'Något man har sett under experimentet. Forskaren behöver förklara varför det hände.'
+    ],
+    expEnkel: 'En hypotes är ett påstående. Den är ett möjligt svar på frågeställningen. Man ska kunna testa den. Man ska också kunna visa att den är fel. När man skriver hypotesen vet man inte om den stämmer.'
+  },
+  {
+    qEnkel: 'En vetenskaplig undersökning har tre krav. Vilka är de?',
+    optsEnkel: [
+      'Hypotesen ska vara testbar och falsifierbar. Experimentet ska vara repeterbart.',
+      'Hypotesen ska bygga på en teori. En etikkommitté ska godkänna den. Resultatet ska vara tydligt.',
+      'Hypotesen ska bevisas sann. Två forskare ska skriva den. Den ska publiceras i en tidskrift.',
+      'Experimentet ska vara enkelt och billigt. Alla människor ska kunna förstå det.'
+    ],
+    expEnkel: 'Det finns tre krav. Testbar: man ska kunna undersöka hypotesen med ett experiment. Falsifierbar: man ska kunna visa att hypotesen är fel. Repeterbar: andra ska kunna göra om experimentet och se om de får samma resultat.'
+  },
+  {
+    qEnkel: 'Vad betyder det att en hypotes är falsifierbar?',
+    optsEnkel: [
+      'Det ska gå att visa att hypotesen är fel. Till exempel om resultatet säger emot den.',
+      'Hypotesen är skriven så att inget experiment någonsin kan visa att den är fel.',
+      'Hypotesen räknas som fel direkt om man inte kan testa den i ett laboratorium.',
+      'Tre olika grupper av forskare måste testa hypotesen innan den blir godkänd.'
+    ],
+    expEnkel: 'Falsifierbar betyder att det ska gå att visa att hypotesen är fel. Tänk dig en hypotes som inget resultat kan säga emot. Då är den inte vetenskaplig.'
+  },
+  {
+    qEnkel: 'Den hypotetisk-deduktiva metoden har fem steg. Vilken ordning är rätt?',
+    optsEnkel: [
+      'Frågeställning → Hypotes → Förutsägelse → Undersökning → Slutsats',
+      'Hypotes → Frågeställning → Undersökning → Förutsägelse → Slutsats',
+      'Observation → Slutsats → Frågeställning → Hypotes → Experiment',
+      'Frågeställning → Undersökning → Hypotes → Förutsägelse → Slutsats'
+    ],
+    expEnkel: 'Stegen kommer i den här ordningen. 1. Frågeställning: vad vill du veta? 2. Hypotes: vad tror du är svaret? 3. Förutsägelse: vad borde hända om du har rätt? 4. Undersökning: du gör experimentet. 5. Slutsats: stämde hypotesen eller inte?'
+  },
+  {
+    qEnkel: 'Vad är en vetenskaplig teori?',
+    optsEnkel: [
+      'En förklaring som har starkt stöd. Den bygger på resultat från många noggranna experiment.',
+      'En smart gissning om hur något fungerar. Ingen har testat den i ett experiment än.',
+      'En slutsats från ett enda experiment. Resultatet blev tydligt och gick att göra om.',
+      'En tanke om naturens lagar. En känd och viktig person inom ämnet har kommit på den.'
+    ],
+    expEnkel: 'En teori är mycket mer än en gissning. Den är en förklaring som många experiment stödjer. En teori kan ändå ändras. Det händer om nya bevis visar något annat.'
+  },
+  {
+    qEnkel: 'Vad är ett paradigmskifte?',
+    optsEnkel: [
+      'En gammal teori byts ut mot en ny. Det händer när bevisen visar att den gamla är fel.',
+      'Ett experiment misslyckas. Därför måste man lägga till nya variabler i undersökningen.',
+      'En grupp forskare slutar med sitt ämne. De börjar forska om något helt annat.',
+      'En ny teknik kommer. Den gör att gamla experiment går snabbare och blir mer exakta.'
+    ],
+    expEnkel: 'Vid ett paradigmskifte byts en teori ut mot en ny. Förr trodde man att jorden var i mitten av allt. Sedan visade bevisen att jorden och planeterna går runt solen. Att teorier byts ut visar att vetenskapen fungerar.'
+  },
+  {
+    qEnkel: 'Vad räknas som forskningsfusk?',
+    optsEnkel: [
+      'Att kopiera andras arbete, hitta på resultat eller gömma resultat man inte gillar.',
+      'Att använda en metod som inte är testad nog och publicera utan peer review.',
+      'Att göra experiment på djur utan att först göra en etikprövning.',
+      'Att byta hypotes mitt i experimentet utan att börja om från början.'
+    ],
+    expEnkel: 'Forskningsfusk är att plagiera (kopiera andras arbete), förfalska (hitta på) eller gömma resultat. Fusk skadar forskningen. Människor slutar också lita på forskare. På Karolinska fanns ett fall med fusk där patienter dog.'
+  },
+  {
+    qEnkel: '"Är klimatförändringar dåliga?" Varför kan naturvetenskapen inte svara på den frågan?',
+    optsEnkel: [
+      'Det är en fråga om värderingar. Vetenskapen kan mäta, men inte säga vad som är rätt eller fel.',
+      'Klimatet är för krångligt. Det går inte att undersöka och mäta med vetenskapliga metoder.',
+      'Svaret beror på vad politikerna bestämmer. Därför hör frågan inte till naturvetenskapen.',
+      'Vetenskapen har inte samlat in tillräckligt med data än. Därför finns inget säkert svar.'
+    ],
+    expEnkel: 'Naturvetenskapen kan bara svara på sådant som går att testa. Frågan om något är "bra" eller "dåligt" handlar om värderingar. Den går inte att testa. Naturvetenskapen kan beskriva och mäta klimatförändringarna. Men den kan inte säga om de är rätt eller fel.'
+  },
+  // A2
+  {
+    qEnkel: 'Vad är den oberoende variabeln i ett experiment?',
+    optsEnkel: [
+      'Det som du själv ändrar på i experimentet. Du vill se om det påverkar något annat.',
+      'Det som du mäter. Du vill se om det har ändrats av det du gjorde i experimentet.',
+      'Det som är likadant i alla grupper. Då kan inget annat störa experimentet.',
+      'Det som du inte kan styra över. Det kan störa resultatet i experimentet.'
+    ],
+    expEnkel: 'Den oberoende variabeln är det du själv ändrar på. Exempel: du ger lökplantor olika mycket ljus. Ljuset är den oberoende variabeln. Du tror att ljuset påverkar den beroende variabeln.'
+  },
+  {
+    qEnkel: 'Vad är en beroende variabel?',
+    optsEnkel: [
+      'Det som du mäter. Du tror att det påverkas av det du ändrar i experimentet.',
+      'Något som inte kan ändras. Det är likadant under hela experimentet.',
+      'Något som påverkar experimentet utan att forskaren märker det alls.',
+      'Det som forskaren själv ändrar på för att se vad som händer med något annat.'
+    ],
+    expEnkel: 'Den beroende variabeln är det du mäter. Exempel: hur mycket lökplantorna växer. Hur mycket de växer "beror" på hur mycket ljus de får. Ljuset är den oberoende variabeln.'
+  },
+  {
+    qEnkel: 'Vad är en kontrollgrupp?',
+    optsEnkel: [
+      'En grupp som inte får det som testas. Man jämför den med försöksgruppen.',
+      'En grupp som ser till att experimentet görs rätt och att ingen gör fel.',
+      'Den grupp som får den största mängden av det som testas i experimentet.',
+      'En grupp experter utifrån. De bedömer om man kan lita på resultatet.'
+    ],
+    expEnkel: 'Kontrollgruppen får inte behandlingen. I övrigt behandlas den precis som de andra grupperna. Då kan man jämföra. Skillnaden mellan grupperna visar vad behandlingen gör.'
+  },
+  {
+    qEnkel: 'Vad är placeboeffekten?',
+    optsEnkel: [
+      'En person mår bättre för att hen tror att hen ska bli bättre. Men hen har inte fått riktig medicin.',
+      'En medicin fungerar sämre än man trodde. Den har inte testats tillräckligt noga innan.',
+      'Personer i ett experiment ljuger med flit om hur de mår. De vill ändra resultatet.',
+      'En medicin hjälper mindre och mindre med tiden, fast personen fortsätter att ta den.'
+    ],
+    expEnkel: 'Placeboeffekten betyder att det man tror kan göra att man mår bättre. Tänk dig att du får ett sockerpiller. Du tror att det är medicin. Då kan du ändå känna dig bättre. Därför gör forskare blindstudier.'
+  },
+  {
+    qEnkel: 'Varför gör man blindstudier när man testar medicin?',
+    optsEnkel: [
+      'För att stoppa placeboeffekten. Deltagarna vet inte om de får riktig medicin eller placebo.',
+      'För att skydda forskarna. Ingen utanför ska få veta vad experimentet visar.',
+      'För att man då kan göra experimentet utan att först göra en etikprövning.',
+      'För att deltagarna ska slippa välja själva om de vill ha den riktiga medicinen.'
+    ],
+    expEnkel: 'I en blindstudie vet deltagarna inte vilken grupp de är i. De vet inte om de får medicin eller placebo. Då kan placeboeffekten inte påverka resultatet. Resultatet blir mer säkert.'
+  },
+  {
+    qEnkel: 'Varför blir slutsatsen säkrare om man gör om ett experiment många gånger?',
+    optsEnkel: [
+      'Med fler mätningar påverkar slumpen och små skillnader mellan försöken mindre.',
+      'Varje nytt försök ger en ny hypotes. Det leder till bättre slutsatser.',
+      'En etikkommitté kräver det innan resultatet får publiceras i en tidskrift.',
+      'Då blir det mer troligt att minst ett försök ger det resultat man ville ha.'
+    ],
+    expEnkel: 'Ett enda experiment kan bli fel av en slump. Det kan också finnas små skillnader, till exempel mellan olika plantor. Om du gör experimentet många gånger jämnas felen ut. Medelvärdet blir då mer pålitligt.'
+  },
+  {
+    qEnkel: 'Samvariation är inte samma sak som orsakssamband. Vad betyder det?',
+    optsEnkel: [
+      'Två saker kan ändras samtidigt utan att den ena orsakar den andra. Något tredje kan ligga bakom.',
+      'Ett starkt samband måste testas i fler experiment innan det räknas som ett orsakssamband.',
+      'Ett orsakssamband kan finnas fast det inte syns som någon samvariation i mätningarna.',
+      'Samvariation finns bara inom medicin. Orsakssamband finns i alla olika vetenskaper.'
+    ],
+    expEnkel: 'Ett exempel: när folk äter mer glass blir fler solbrända. Men glass gör inte att man blir solbränd. Det är solen och värmen som påverkar båda. Det är ett vanligt misstag att tro att det ena orsakar det andra.'
+  },
+  {
+    qEnkel: 'Vilka delar ska finnas i en vetenskaplig rapport?',
+    optsEnkel: [
+      'Titel, inledning, material och metod, resultat, diskussion och källförteckning',
+      'Titel, sammanfattning, hypotes, experiment, analys och slutsatser',
+      'Bakgrund, teori, observationer, beräkningar, slutsats och bilagor',
+      'Rubrik, frågeställning, mätdata, diagram, tolkning och tacksägelse'
+    ],
+    expEnkel: 'En rapport har sex delar. Titel. Inledning: bakgrund och frågeställning. Material och metod: vad du gjorde, så noga att andra kan göra om det. Resultat: tabeller och diagram. Diskussion: vad resultatet betyder. Källförteckning: var du hittade information.'
+  },
+  {
+    qEnkel: 'Varför ska man skriva noga om material och metod i en rapport?',
+    optsEnkel: [
+      'Så att andra forskare kan göra om experimentet och se om de får samma resultat.',
+      'Så att läsaren kan se om experimentet var stort nog för att lita på resultatet.',
+      'För att myndigheter kräver att metoden sparas så att de kan kontrollera den senare.',
+      'Så att den som gjorde experimentet kan gå tillbaka och rätta sina egna misstag.'
+    ],
+    expEnkel: 'Repeterbarhet är ett viktigt krav i vetenskapen. Andra ska kunna göra om ditt experiment. Då kan de se om resultatet stämmer. Det går bara om du har skrivit noga hur du gjorde.'
+  },
+  {
+    qEnkel: 'Vad är en riskbedömning inför en laboration?',
+    optsEnkel: [
+      'Innan du börjar går du igenom vad som kan vara farligt med utrustning och kemikalier.',
+      'Efter en olycka går man igenom vad som hände, så att det inte händer igen.',
+      'En etikkommitté kollar om experimentet är tillräckligt säkert för att få göras.',
+      'En lista med regler som eleverna skriver under för att visa att de vill vara med.'
+    ],
+    expEnkel: 'En riskbedömning gör man innan man börjar. Man tänker igenom vad som kan vara farligt. Det kan vara kemikalier, utrustning eller hur man gör. Målet är att ingen ska skada sig.'
+  },
+  // A3
+  {
+    qEnkel: 'Vad är källkritik?',
+    optsEnkel: [
+      'Att noga granska om en källa går att lita på, så att man inte blir lurad.',
+      'Att bara använda vetenskapliga artiklar som källor när man argumenterar.',
+      'Att bara lita på källor från myndigheter, universitet eller kända organisationer.',
+      'Att kolla stavning och grammatik i en källa för att se om den är proffsigt gjord.'
+    ],
+    expEnkel: 'Källkritik betyder att du granskar information innan du litar på den. Fråga dig: Är källan äkta? Är den ny? Vem står bakom? Vill någon vinkla den? Har någon granskat den? Då kan du sortera bort källor som inte håller.'
+  },
+  {
+    qEnkel: 'Vad betyder det att en källa är tendensiös?',
+    optsEnkel: [
+      'Källan är vinklad. Någon bakom den vill tjäna pengar eller sprida en åsikt.',
+      'Källan har inte gått igenom peer review. Därför räknas den inte som vetenskaplig.',
+      'Källan är för gammal. Informationen stämmer inte längre med hur det är i dag.',
+      'Ingen vet vem som har skrivit källan. Det går inte att ta reda på vem det är.'
+    ],
+    expEnkel: 'En tendensiös källa är vinklad. Ett exempel: tobaksbolag betalar för en rapport om rökning. Rapporten kanske säger att rökning är mindre farligt än det är. Tobaksbolagen tjänar ju pengar på att folk röker.'
+  },
+  {
+    qEnkel: 'Vad är peer review?',
+    optsEnkel: [
+      'Minst två andra forskare granskar en vetenskaplig rapport innan den publiceras.',
+      'Staten granskar forskning innan den får användas ute i samhället.',
+      'En databas där forskare kan söka efter och jämföra varandras artiklar.',
+      'Ett sätt att räkna hur många gånger andra forskare har citerat en artikel.'
+    ],
+    expEnkel: 'Peer review betyder att andra forskare granskar en artikel. Minst två experter läser den innan den publiceras. De ska inte ha med forskningen att göra. Det är en kontroll av kvaliteten. Det skiljer en vetenskaplig artikel från till exempel en blogg.'
+  },
+  {
+    qEnkel: 'Vad är skillnaden mellan en primärkälla och en sekundärkälla?',
+    optsEnkel: [
+      'Primärkällan bygger på egna mätningar. Sekundärkällan hämtar fakta från andra källor.',
+      'Primärkällan är alltid en tryckt bok. Sekundärkällan finns bara på internet.',
+      'Primärkällan är skriven av en expert. Sekundärkällan är skriven av en journalist.',
+      'Primärkällan är nyare. Sekundärkällan bygger ofta på gammal information.'
+    ],
+    expEnkel: 'En primärkälla kommer direkt från den som har forskat, till exempel en vetenskaplig artikel. En sekundärkälla återberättar vad primärkällan säger. Då måste du lita på att den har återberättat rätt.'
+  },
+  {
+    qEnkel: 'Vad är desinformation?',
+    optsEnkel: [
+      'Falsk information som någon sprider med flit. Målet är att lura den som läser.',
+      'Information som är osäker, eftersom det inte finns tillräckligt med forskning om den.',
+      'Nyheter som blivit fel av misstag, eftersom journalisten inte visste bättre.',
+      'Reklam som säger att en produkt är bättre än den är och gömmer nackdelarna.'
+    ],
+    expEnkel: 'Desinformation sprids med flit. Det är det som skiljer den från vanliga misstag. Den som sprider den vill något. Det kan vara att tjäna pengar, påverka politiken eller göra att folk slutar lita på experter.'
+  },
+  {
+    qEnkel: 'Varför sprids falska nyheter snabbt på sociala medier?',
+    optsEnkel: [
+      'Algoritmerna visar mest det som väcker starka känslor. Falska och chockerande inlägg sprids snabbt.',
+      'Sociala medier har inga redaktörer. Ingen person kollar det som läggs ut där.',
+      'Falska nyheter är alltid kortare och lättare att läsa och dela än sanna nyheter.',
+      'De som använder sociala medier är sämre på källkritik än de som läser tidningar.'
+    ],
+    expEnkel: 'Algoritmerna i sociala medier gillar inlägg som många reagerar på. Inlägg med många gillningar, delningar och kommentarer visas för fler. Falska och chockerande inlägg får ofta fler reaktioner än lugna och sanna inlägg.'
+  },
+  {
+    qEnkel: 'Vad är faktaresistens?',
+    optsEnkel: [
+      'En person håller fast vid vad hen tror, fast säkra fakta visar att hen har fel.',
+      'En person vägrar läsa information från källor som forskarna inte har godkänt.',
+      'Forskningen om ett ämne är så svår att vanliga människor inte kan förstå den.',
+      'Myndigheter gömmer fakta för folket. De gör det av politiska skäl eller för pengar.'
+    ],
+    expEnkel: 'Faktaresistens betyder att man inte ändrar åsikt, fast bevisen säger emot. Det går emot hur man ska tänka i vetenskap. Det kan göra att felaktiga idéer lever kvar. Exempel finns om vaccin och om klimatet.'
+  },
+  {
+    qEnkel: 'Vad är en filterbubbla?',
+    optsEnkel: [
+      'Algoritmer väljer vad du ser utifrån vad du gillar. Du ser mest sådant som du redan tror på.',
+      'Ett skydd i sociala medier. Det stoppar falska nyheter och desinformation automatiskt.',
+      'En sökmotor som tar bort dåliga källor. Den visar bara granskade vetenskapliga artiklar.',
+      'En sluten grupp på sociala medier. Medlemmarna delar och stärker varandras åsikter.'
+    ],
+    expEnkel: 'En filterbubbla skapas av algoritmer. De lär sig vad du gillar och visar mer av det. Du märker det oftast inte. En ekokammare är något annat. Den skapar användarna själva, när de söker sig till folk som tycker som de.'
+  },
+  {
+    qEnkel: 'Vad är bekräftelsebias?',
+    optsEnkel: [
+      'Vi tror lättare på information som stämmer med det vi redan tycker. Vi märker det inte själva.',
+      'Vi kollar alltid att en källa går att lita på innan vi delar den på sociala medier.',
+      'Vi litar alltid mer på vetenskapliga källor än på vad folk tror och gamla traditioner.',
+      'Vi förstår lättare information i punktlistor och diagram än i vanlig löpande text.'
+    ],
+    expEnkel: 'Bekräftelsebias är något som händer i hjärnan. Vi letar efter information som visar att vi har rätt. Det som säger emot oss struntar vi i, utan att märka det. Därför är det svårt att ändra åsikt.'
+  },
+  {
+    qEnkel: 'Vad är pseudovetenskap?',
+    optsEnkel: [
+      'Idéer som säger att de är vetenskap men saknar stöd. De går ofta inte att falsifiera.',
+      'Vetenskapliga teorier som inte har forskats på tillräckligt för att forskarna ska godta dem.',
+      'Forskning utanför universiteten som ändå ger resultat man kan lita på och göra om.',
+      'Teorier som de flesta forskare säger nej till, men som kan bevisas med rätt experiment.'
+    ],
+    expEnkel: 'Pseudovetenskap ser ut som vetenskap men klarar inte kraven. Ett exempel är astrologi. Dess förutsägelser är så vaga att de inte kan falsifieras, alltså inte kan visas vara fel. Problemet är att folk kan välja sådana "behandlingar" istället för riktig vård.'
+  }
+];
+
+// Original + enkel text i samma frågeobjekt (samma struktur som mr_quiz.html)
+const QS = QUESTIONS.map((q, i) => Object.assign({}, q, ENKEL[i]));
+
+// ── UI-texter: Enkel svenska har egna etiketter ──
 const UI_ENKEL = {
-  backBtn: '← Bakåt',
-  nextBtn: 'Nästa →',
-  showResult: 'Se resultat →',
-  modalNext: 'Nästa fråga →',
-  correct: 'Rätt!',
-  wrong: 'Fel svar',
-  restart: '↺ Börja om',
-  missedHd: 'Frågorna du hade fel',
-  fullFacit: 'Alla svar',
-  yourAnswer: 'Ditt svar:',
-  correctAnswer: 'Rätt svar:'
+  missedHd:         'Frågor du svarade fel på',
+  facitHd:          'Alla frågor och svar',
+  yourAnswerLbl:    'Du svarade: ',
+  correctAnswerLbl: 'Rätt svar: ',
+  notAnswered:      '– (du svarade inte)',
+  backBtn:          '← Tillbaka',
+  nextBtn:          'Nästa →',
+  resultBtn:        'Se resultat →',
+  modalNextBtn:     'Nästa fråga →',
+  restartBtn:       '↺ Gör om'
+};
+const UI_ORIG = {
+  missedHd:         'Missade frågor',
+  facitHd:          'Fullständigt facit',
+  yourAnswerLbl:    'Ditt svar: ',
+  correctAnswerLbl: 'Rätt svar: ',
+  notAnswered:      '— (inte besvarad)',
+  backBtn:          '← Bakåt',
+  nextBtn:          'Nästa →',
+  resultBtn:        'Se resultat →',
+  modalNextBtn:     'Nästa fråga →',
+  restartBtn:       '↺ Gör om quizet'
 };
 
-// Enkel-läge — persists i session, inte localStorage
-let easyMode = sessionStorage.getItem('nk1a1_nvq_easy') === '1';
+// ── State ──────────────────────────────────────────────────
+// Blandning sker på INDEX: order[] = visad plats → index i q.opts/q.optsEnkel.
+// chosen/correct är index i q.opts, så rättningen är oberoende av textläge.
+let shuffled = [];
+let states   = []; // { order:number[], chosen:number|null, correct:number, answered:bool }
+let cur      = 0;
+let score    = 0;
+let timerInterval = null;
+let startTime = 0;
+let elapsedMs = 0;
+let modalOpen = false;
 
-// ────────────────────────────────────────────────────────────
-// mapOpt(variant, qState, optStr)
-// Returnerar det alternativ i variant som motsvarar optStr
-// i originalet. qState måste ha .opts, .correct och .origIdx.
-// ────────────────────────────────────────────────────────────
-function mapOpt(variant, qState, optStr) {
-  if (variant !== 'sv_enkel') return null;
-  const eq = EASY_Q[qState.origIdx];
-  if (!eq) return null;
-  if (optStr === qState.opts[qState.correct]) return eq.a;
-  const incorrects = qState.opts.filter((_, i) => i !== qState.correct);
-  const iIdx = incorrects.indexOf(optStr);
-  return iIdx >= 0 ? eq.i[iIdx] : null;
+// ── Textläge ──
+// mode: 'sv' (original) eller 'easy' (Enkel svenska). Sparas i sessionStorage.
+const MODES    = ['sv', 'easy'];
+const LANG_KEY = 'nk1a1_nvq_sprak';
+const OLD_EASY_KEY = 'nk1a1_nvq_easy'; // äldre nyckel för Enkel svenska
+let mode = 'sv';
+try {
+  const saved = sessionStorage.getItem(LANG_KEY);
+  if (MODES.includes(saved)) mode = saved;
+  else if (sessionStorage.getItem(OLD_EASY_KEY) === '1') mode = 'easy';
+} catch (e) {}
+
+const ui = key => (mode === 'easy' ? UI_ENKEL : UI_ORIG)[key];
+const $ = id => document.getElementById(id);
+
+const warned = new Set();
+function warnMissing(q, field) {
+  const key = QS.indexOf(q) + ':' + field;
+  if (warned.has(key)) return;
+  warned.add(key);
+  console.warn('Enkel svenska saknas (' + field + ') för fråga: ' + q.q + ' – visar originalet.');
 }
 
-function toggleEasyMode() {
-  easyMode = !easyMode;
-  sessionStorage.setItem('nk1a1_nvq_easy', easyMode ? '1' : '0');
-  document.getElementById('easy-btn').setAttribute('aria-pressed', String(easyMode));
-  const quizActive = document.getElementById('screen-quiz').classList.contains('active');
-  const resActive  = document.getElementById('screen-result').classList.contains('active');
-  if (quizActive) render();
-  else if (resActive) showResults();
+// Svensk text enligt textläge (Enkel svenska faller tillbaka på originalet).
+function qText(q) {
+  if (mode !== 'easy') return q.q;
+  if (q.qEnkel) return q.qEnkel;
+  warnMissing(q, 'qEnkel'); return q.q;
+}
+function optText(q, i) {
+  if (mode !== 'easy') return q.opts[i];
+  if (q.optsEnkel && q.optsEnkel.length === q.opts.length && q.optsEnkel[i]) return q.optsEnkel[i];
+  warnMissing(q, 'optsEnkel'); return q.opts[i];
+}
+function explText(q) {
+  if (mode !== 'easy') return q.expl;
+  if (q.expEnkel) return q.expEnkel;
+  warnMissing(q, 'expEnkel'); return q.expl;
 }
 
+function updateControls() {
+  document.querySelectorAll('.lang-switch [data-mode]').forEach(b =>
+    b.setAttribute('aria-pressed', b.dataset.mode === mode ? 'true' : 'false'));
+}
+updateControls();
+
+// Ritar om aktiv skärm utan att röra poäng, timer, aktuell fråga, svar eller blandning.
+// Scrollen hålls kvar: elementet överst i bild ska stå på samma plats efteråt.
+const ANCHORS = '.q-text, .opt-btn, .nav-row, .res-header, .stats-row, .section-hd, .missed-item, .facit-item';
+function rerender() {
+  const screen = document.querySelector('.screen.active');
+  const before = screen ? [...screen.querySelectorAll(ANCHORS)] : [];
+  const idx = before.findIndex(el => el.getBoundingClientRect().bottom > 0);
+  const top = idx >= 0 ? before[idx].getBoundingClientRect().top : 0;
+
+  if ($('screen-quiz').classList.contains('active')) {
+    renderQuestion();
+    if (modalOpen) renderModal();
+  }
+  if ($('screen-result').classList.contains('active')) renderResult();
+
+  if (idx >= 0) {
+    const after = screen.querySelectorAll(ANCHORS)[idx];
+    if (after) window.scrollBy(0, after.getBoundingClientRect().top - top);
+  }
+}
+
+function setMode(m) {
+  if (!MODES.includes(m) || m === mode) return;
+  mode = m;
+  try { sessionStorage.setItem(LANG_KEY, mode); } catch (e) {}
+  updateControls();
+  rerender();
+}
 
 // ════════════════════════════════════════════════════════════
 // FISHER-YATES SHUFFLE
@@ -261,271 +677,233 @@ function shuffleArray(array) {
   return array;
 }
 
-// ════════════════════════════════════════════════════════════
-// STATE
-// ════════════════════════════════════════════════════════════
-let qs = [];
-let cur = 0;
-let score = 0;
-let elapsed = 0;
-let timerID = null;
-
-function buildState() {
-  const shuffled = shuffleArray([...QUESTIONS]);
-  qs = shuffled.map(q => ({
-    ...q,
-    origIdx: QUESTIONS.indexOf(q),
-    shuffledIdx: shuffleArray(q.opts.map((_, i) => i)),
-    selectedDisplay: null,
-    answered: false
-  }));
+function fmtTime(ms) {
+  const s = Math.floor(ms / 1000);
+  return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
 }
 
-// ════════════════════════════════════════════════════════════
-// SCREENS
-// ════════════════════════════════════════════════════════════
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  $(id).classList.add('active');
 }
-
-// ════════════════════════════════════════════════════════════
-// TIMER
-// ════════════════════════════════════════════════════════════
-function fmt(s) {
-  return '⏱ ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
-}
-function startTimer() {
-  elapsed = 0;
-  timerID = setInterval(() => { elapsed++; document.getElementById('timer').textContent = fmt(elapsed); }, 1000);
-}
-function stopTimer() { clearInterval(timerID); }
 
 // ════════════════════════════════════════════════════════════
 // START
 // ════════════════════════════════════════════════════════════
 function startQuiz() {
-  buildState();
-  cur = 0;
+  shuffled = shuffleArray([...QS]);
+  states   = shuffled.map(q => ({
+    order:    shuffleArray(q.opts.map((_, i) => i)),
+    chosen:   null,
+    correct:  q.correct,
+    answered: false
+  }));
+  cur   = 0;
   score = 0;
+  modalOpen = false;
+  clearInterval(timerInterval);
+  startTime = Date.now();
+  $('timer').textContent = '⏱ 0:00';
+  timerInterval = setInterval(() => {
+    $('timer').textContent = '⏱ ' + fmtTime(Date.now() - startTime);
+  }, 500);
   show('screen-quiz');
-  startTimer();
-  render();
+  renderQuestion();
 }
 
 // ════════════════════════════════════════════════════════════
 // RENDER
 // ════════════════════════════════════════════════════════════
-function render() {
-  const q = qs[cur];
-  const total = qs.length;
+function renderQuestion() {
+  const q  = shuffled[cur];
+  const st = states[cur];
+  const n  = shuffled.length;
 
-  document.getElementById('progress-bar').style.width = (cur / total * 100) + '%';
-  document.getElementById('q-counter').textContent = 'Fråga ' + (cur + 1) + ' av ' + total;
-  document.getElementById('score-pill').textContent = 'Poäng: ' + score;
+  $('q-counter').textContent = 'Fråga ' + (cur + 1) + ' av ' + n;
+  $('q-text').textContent = qText(q);
+  $('progress-bar').style.width = ((cur / n) * 100) + '%';
+  $('score-pill').textContent = 'Poäng: ' + score;
 
-  const qTextEl = document.getElementById('q-text');
-  const eq = EASY_Q[q.origIdx];
-  qTextEl.textContent = (easyMode && eq) ? eq.q : q.q;
-
-  const optsEl = document.getElementById('opts');
-  optsEl.innerHTML = '';
-
-  q.shuffledIdx.forEach((origIdx, displayPos) => {
+  const container = $('opts');
+  container.innerHTML = '';
+  st.order.forEach(origIdx => {
     const btn = document.createElement('button');
     btn.className = 'opt-btn';
-    // Klickhanteraren skickar alltid displayPos (originalbaserad index),
-    // aldrig den visade enkla texten — rättningslogiken påverkas inte.
-    const easyOptText = easyMode ? mapOpt('sv_enkel', q, q.opts[origIdx]) : null;
-    btn.textContent = (easyMode && easyOptText) ? easyOptText : q.opts[origIdx];
-    btn.disabled = q.answered;
-
-    if (q.answered) {
-      const correctDisplay = q.shuffledIdx.indexOf(q.correct);
-      if (displayPos === correctDisplay)         btn.classList.add('correct');
-      else if (displayPos === q.selectedDisplay) btn.classList.add('wrong');
-      else                                       btn.classList.add('dimmed');
+    btn.textContent = optText(q, origIdx);
+    if (st.answered) {
+      btn.disabled = true;
+      if (origIdx === st.correct)     btn.classList.add('correct');
+      else if (origIdx === st.chosen) btn.classList.add('wrong');
+      else                            btn.classList.add('dimmed');
     } else {
-      btn.addEventListener('click', () => handleAnswer(displayPos));
+      btn.onclick = () => answerQuestion(origIdx);
     }
-    optsEl.appendChild(btn);
+    container.appendChild(btn);
   });
 
-  document.getElementById('btn-back').style.display = cur > 0 ? 'inline-block' : 'none';
-  document.getElementById('btn-next').style.display = q.answered ? 'inline-block' : 'none';
-  document.getElementById('btn-next').textContent = cur === total - 1 ? 'Se resultat →' : 'Nästa →';
+  const back = $('btn-back');
+  const next = $('btn-next');
+  back.textContent = ui('backBtn');
+  next.textContent = cur === n - 1 ? ui('resultBtn') : ui('nextBtn');
+  back.style.display = cur > 0 ? 'inline-block' : 'none';
+  next.style.display = st.answered ? 'inline-block' : 'none';
 }
 
 // ════════════════════════════════════════════════════════════
 // ANSWER
 // ════════════════════════════════════════════════════════════
-function handleAnswer(displayPos) {
-  const q = qs[cur];
-  if (q.answered) return;
+function answerQuestion(chosenIdx) {
+  const st = states[cur];
+  if (st.answered) return;
 
-  q.answered = true;
-  q.selectedDisplay = displayPos;
-
-  const correctDisplay = q.shuffledIdx.indexOf(q.correct);
-  const isCorrect = displayPos === correctDisplay;
+  const isCorrect = chosenIdx === st.correct;
+  st.chosen   = chosenIdx;
+  st.answered = true;
   if (isCorrect) score++;
 
-  document.querySelectorAll('.opt-btn').forEach((btn, i) => {
-    btn.disabled = true;
-    if (i === correctDisplay)          btn.classList.add('correct');
-    else if (i === displayPos)         btn.classList.add('wrong');
-    else                               btn.classList.add('dimmed');
-  });
-
-  document.getElementById('btn-next').style.display = 'inline-block';
-  document.getElementById('btn-next').textContent = cur === qs.length - 1 ? 'Se resultat →' : 'Nästa →';
-  document.getElementById('score-pill').textContent = 'Poäng: ' + score;
+  renderQuestion();
 
   // Hoppa över modalen om eleven redan gått vidare — annars stegar
   // modalens "Nästa fråga →" fram en gång till och en fråga hoppas över.
   const answeredAt = cur;
   setTimeout(() => {
-    if (cur !== answeredAt || !document.getElementById('screen-quiz').classList.contains('active')) return;
-    showModal(isCorrect, q.expl);
+    if (cur !== answeredAt || !$('screen-quiz').classList.contains('active')) return;
+    modalOpen = true;
+    renderModal();
+    $('modal-overlay').classList.remove('hidden');
   }, 600);
 }
 
 // ════════════════════════════════════════════════════════════
 // MODAL
 // ════════════════════════════════════════════════════════════
-function showModal(isCorrect, expl) {
-  document.getElementById('modal-icon').textContent    = isCorrect ? '✅' : '❌';
-  document.getElementById('modal-verdict').textContent = isCorrect ? 'Rätt svar!' : 'Fel svar';
-  document.getElementById('modal-verdict').className   = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
-  const explEl = document.getElementById('modal-expl');
-  const eqModal = EASY_Q[qs[cur].origIdx];
-  explEl.textContent = (easyMode && eqModal) ? eqModal.expl : expl;
-  document.getElementById('modal-overlay').classList.remove('hidden');
+function renderModal() {
+  const st = states[cur];
+  const isCorrect = st.chosen === st.correct;
+  const verdict = $('modal-verdict');
+  $('modal-icon').textContent = isCorrect ? '✅' : '❌';
+  verdict.textContent = isCorrect ? 'Rätt svar!' : 'Fel svar';
+  verdict.className = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
+  $('modal-expl').textContent = explText(shuffled[cur]);
+  $('modal-next').textContent = ui('modalNextBtn');
 }
 function closeModal() {
-  document.getElementById('modal-overlay').classList.add('hidden');
+  $('modal-overlay').classList.add('hidden');
+  modalOpen = false;
   goNext();
 }
 
 // ════════════════════════════════════════════════════════════
 // NAVIGATION
 // ════════════════════════════════════════════════════════════
-function goBack() { if (cur > 0) { cur--; render(); } }
+function goBack() { if (cur > 0) { cur--; renderQuestion(); } }
 function goNext() {
-  document.getElementById('modal-overlay').classList.add('hidden');
-  if (cur < qs.length - 1) { cur++; render(); }
-  else showResults();
+  $('modal-overlay').classList.add('hidden');
+  modalOpen = false;
+  if (cur < shuffled.length - 1) { cur++; renderQuestion(); }
+  else endQuiz();
 }
 
 // ════════════════════════════════════════════════════════════
 // RESULTS
 // ════════════════════════════════════════════════════════════
-function showResults() {
-  stopTimer();
+function endQuiz() {
+  clearInterval(timerInterval);
+  elapsedMs = Date.now() - startTime;
   show('screen-result');
+  renderResult();
+}
 
-  const total = qs.length;
-  const wrong = total - score;
-  const pct   = Math.round(score / total * 100);
+function renderResult() {
+  const n     = shuffled.length;
+  const pct   = Math.round(score / n * 100);
 
-  document.getElementById('r-score').textContent   = score + '/' + total;
-  document.getElementById('s-correct').textContent = score;
-  document.getElementById('s-wrong').textContent   = wrong;
-  document.getElementById('s-pct').textContent     = pct + '%';
-
-  const m = Math.floor(elapsed / 60), s = String(elapsed % 60).padStart(2, '0');
-  document.getElementById('r-time').textContent = 'Tid: ' + m + ':' + s;
+  $('r-score').textContent   = score + '/' + n;
+  $('s-correct').textContent = score;
+  $('s-wrong').textContent   = n - score;
+  $('s-pct').textContent     = pct + '%';
+  $('r-time').textContent    = 'Tid: ' + fmtTime(elapsedMs);
 
   let title, msg;
   if (pct >= 90)      { title = '🏆 Utmärkt!';          msg = 'Du behärskar naturvetenskapligt arbetssätt på hög nivå.'; }
   else if (pct >= 75) { title = '✅ Redo för provet!';   msg = 'Bra resultat – du har koll på det centrala.'; }
   else if (pct >= 55) { title = '📖 Öva lite till';      msg = 'Du är på rätt spår men behöver repetera en del.'; }
   else                { title = '💡 Fortsätt repetera'; msg = 'Gå igenom pluggmaterialet och försök igen.'; }
+  $('r-title').textContent = title;
+  $('r-msg').textContent   = msg;
 
-  document.getElementById('r-title').textContent = title;
-  document.getElementById('r-msg').textContent   = msg;
-
-  // Missed
-  const missedEl = document.getElementById('missed-section');
-  const missed = qs.filter(q => q.answered && q.shuffledIdx.indexOf(q.correct) !== q.selectedDisplay);
-  if (missed.length) {
-    missedEl.innerHTML = '<div class="section-hd">Missade frågor (' + missed.length + ')</div>';
-    missed.forEach(q => {
-      const d = document.createElement('div');
-      d.className = 'missed-item';
-      const eqMissed = EASY_Q[q.origIdx];
-      d.textContent = (easyMode && eqMissed) ? eqMissed.q : q.q;
-      missedEl.appendChild(d);
+  // Missade frågor
+  const missedEl = $('missed-section');
+  missedEl.innerHTML = '';
+  const missedIdx = states.map((st, i) => i).filter(i => states[i].answered && states[i].chosen !== states[i].correct);
+  if (missedIdx.length) {
+    const hd = document.createElement('div');
+    hd.className = 'section-hd';
+    hd.textContent = ui('missedHd') + ' (' + missedIdx.length + ')';
+    missedEl.appendChild(hd);
+    missedIdx.forEach(idx => {
+      const item = document.createElement('div');
+      item.className = 'missed-item';
+      item.textContent = (idx + 1) + '. ' + qText(shuffled[idx]);
+      missedEl.appendChild(item);
     });
-  } else {
-    missedEl.innerHTML = '';
   }
 
-  // Full facit
-  const facitEl = document.getElementById('facit-list');
+  // Fullständigt facit
+  $('facit-hd').textContent    = ui('facitHd');
+  $('btn-restart').textContent = ui('restartBtn');
+  const facitEl = $('facit-list');
   facitEl.innerHTML = '';
-  qs.forEach((q, i) => {
-    const correctDisplay = q.shuffledIdx.indexOf(q.correct);
-    const isCorrect   = q.answered && q.selectedDisplay === correctDisplay;
-    const notAnswered = !q.answered;
-    const correctText  = q.opts[q.correct];
-    const selectedText = q.answered ? q.opts[q.shuffledIdx[q.selectedDisplay]] : null;
-    const eq = easyMode ? EASY_Q[q.origIdx] : null;
+  states.forEach((st, i) => {
+    const q    = shuffled[i];
+    const ok   = st.answered && st.chosen === st.correct;
+    const item = document.createElement('div');
+    item.className = 'facit-item ' + (!st.answered ? '' : ok ? 'fc' : 'fw');
 
-    const div = document.createElement('div');
-    div.className = 'facit-item ' + (notAnswered ? '' : isCorrect ? 'fc' : 'fw');
+    const num = document.createElement('div');
+    num.className = 'fi-num';
+    num.textContent = 'Fråga ' + (i + 1);
 
-    // Frågenummer
-    const numEl = document.createElement('div');
-    numEl.className = 'fi-num';
-    numEl.textContent = 'Fråga ' + (i + 1);
-    div.appendChild(numEl);
-
-    // Frågetext
     const qEl = document.createElement('div');
     qEl.className = 'fi-q';
-    qEl.textContent = eq ? eq.q : q.q;
-    div.appendChild(qEl);
+    qEl.textContent = qText(q);
 
-    if (notAnswered) {
-      const r1 = document.createElement('div'); r1.className = 'fi-row';
-      r1.innerHTML = '<span class="lbl">Ditt svar: </span>— (inte besvarad)';
-      div.appendChild(r1);
-      const r2 = document.createElement('div'); r2.className = 'fi-row ra';
-      r2.innerHTML = '<span class="lbl">Rätt svar: </span>';
-      r2.appendChild(document.createTextNode(eq ? eq.a : correctText));
-      div.appendChild(r2);
-    } else if (isCorrect) {
-      const r1 = document.createElement('div'); r1.className = 'fi-row ya-ok';
-      r1.innerHTML = '✓ <span class="lbl">Ditt svar: </span>';
-      const selEasy = eq ? mapOpt('sv_enkel', q, selectedText) : null;
-      r1.appendChild(document.createTextNode(selEasy || selectedText));
-      div.appendChild(r1);
-    } else {
-      const r1 = document.createElement('div'); r1.className = 'fi-row ya-bad';
-      r1.innerHTML = '✗ <span class="lbl">Ditt svar: </span>';
-      const selEasy = eq ? mapOpt('sv_enkel', q, selectedText) : null;
-      r1.appendChild(document.createTextNode(selEasy || selectedText));
-      div.appendChild(r1);
-      const r2 = document.createElement('div'); r2.className = 'fi-row ra';
-      r2.innerHTML = '<span class="lbl">Rätt svar: </span>';
-      r2.appendChild(document.createTextNode(eq ? eq.a : correctText));
-      div.appendChild(r2);
+    const ya = document.createElement('div');
+    ya.className = 'fi-row' + (!st.answered ? '' : ok ? ' ya-ok' : ' ya-bad');
+    if (st.answered) ya.appendChild(document.createTextNode(ok ? '✓ ' : '✗ '));
+    const yaLbl = document.createElement('span');
+    yaLbl.className = 'lbl';
+    yaLbl.textContent = ui('yourAnswerLbl');
+    ya.appendChild(yaLbl);
+    ya.appendChild(document.createTextNode(st.answered ? optText(q, st.chosen) : ui('notAnswered')));
+
+    item.appendChild(num);
+    item.appendChild(qEl);
+    item.appendChild(ya);
+
+    if (!ok) {
+      const ra = document.createElement('div');
+      ra.className = 'fi-row ra';
+      const raLbl = document.createElement('span');
+      raLbl.className = 'lbl';
+      raLbl.textContent = ui('correctAnswerLbl');
+      ra.appendChild(raLbl);
+      ra.appendChild(document.createTextNode(optText(q, st.correct)));
+      item.appendChild(ra);
     }
-    facitEl.appendChild(div);
+
+    facitEl.appendChild(item);
   });
 }
 
 // ════════════════════════════════════════════════════════════
 // RESTART
 // ════════════════════════════════════════════════════════════
+// Textläget ligger kvar (sessionStorage), allt annat nollställs vid start.
 function restartQuiz() {
-  stopTimer();
+  clearInterval(timerInterval);
   show('screen-start');
 }
-
-// Synka knappens visuella tillstånd med sessionStorage vid sidladdning
-document.getElementById('easy-btn').setAttribute('aria-pressed', String(easyMode));
 </script>
     <script src="feedback-widget.js" defer></script>
     <script data-goatcounter="https://johnblixt.goatcounter.com/count"
