@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jeopardy – Mänskliga rättigheter | Sa1a1</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;0,800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0b1120;
+    --navy2:#111c33;
+  }
+  body{font-family:'EB Garamond',serif;}
+  .num{font-family:'Fredoka',sans-serif;font-variant-numeric:tabular-nums;}
+
+  /* ── Scenen ── */
+  #jp-stage{
+    background:var(--navy);
+    border-radius:1.25rem;
+    overflow:hidden;
+    position:relative;
+    display:flex;flex-direction:column;
+    height:min(78vh,660px);
+  }
+  #jp-stage.jp-fs{
+    position:fixed;inset:0;z-index:400;
+    height:100dvh;border-radius:0;
+  }
+  #jp-stage:fullscreen{height:100dvh;border-radius:0;}
+
+  /* ── Rutnät ── */
+  #jp-board{
+    flex:1;min-height:0;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    grid-template-rows:auto repeat(5,1fr);
+    gap:6px;padding:10px;
+  }
+  .jp-head{
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    font-family:'Fredoka',sans-serif;font-weight:700;
+    text-transform:uppercase;letter-spacing:.06em;line-height:1.1;
+    font-size:clamp(.6rem,1.5vh,.95rem);
+    color:#fff;padding:.5rem .35rem;border-radius:.6rem .6rem .2rem .2rem;
+    overflow-wrap:break-word;
+  }
+  .jp-cell{
+    display:flex;align-items:center;justify-content:center;
+    border-radius:.6rem;cursor:pointer;
+    font-family:'Fredoka',sans-serif;font-weight:700;
+    font-size:clamp(1.3rem,4.6vh,3.1rem);
+    border:1px solid rgba(255,255,255,.07);
+    transition:transform .12s ease,filter .12s ease,background .12s ease;
+  }
+  .jp-cell:hover:not(.jp-used){transform:translateY(-2px) scale(1.02);}
+  .jp-cell:focus-visible{outline:3px solid #fff;outline-offset:2px;}
+  .jp-used{
+    background:rgba(255,255,255,.04)!important;color:rgba(255,255,255,.16)!important;
+    cursor:default;transform:none;font-size:clamp(1rem,2.6vh,1.6rem);
+  }
+
+  /* ── Lagrad ── */
+  #jp-teams{
+    display:grid;gap:6px;padding:0 10px 10px;
+    grid-template-columns:repeat(var(--tc,2),1fr);
+  }
+  .jp-team{
+    background:var(--navy2);border-radius:.7rem;padding:.4rem .6rem;
+    display:flex;align-items:center;gap:.6rem;border:1px solid rgba(255,255,255,.08);
+  }
+  .jp-team .nm{
+    flex:1;min-width:0;color:#cbd5e1;font-weight:700;
+    font-size:clamp(.7rem,1.6vh,.95rem);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .jp-team .sc{font-family:'Fredoka',sans-serif;font-size:clamp(1rem,2.6vh,1.6rem);font-weight:700;}
+  .jp-step{
+    background:rgba(255,255,255,.08);color:#e2e8f0;border:none;border-radius:.4rem;
+    width:1.7rem;height:1.7rem;font-weight:700;cursor:pointer;font-family:'Fredoka',sans-serif;
+  }
+  .jp-step:hover{background:rgba(255,255,255,.2);}
+
+  #jp-turn{font-size:clamp(.8rem,2vh,1.1rem);}
+  #jp-round{
+    font-family:'Fredoka',sans-serif;
+    font-size:clamp(.55rem,1.3vh,.72rem);
+  }
+
+  /* ── Modal ── */
+  #jp-modal{position:absolute;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(4,8,18,.9);}
+  #jp-modal.on{display:flex;}
+  .jp-card{background:#fff;border-radius:1.1rem;width:100%;max-width:820px;max-height:94%;overflow-y:auto;padding:1.1rem 1.3rem 1rem;}
+  #jp-q{font-size:clamp(1.05rem,2.7vh,1.6rem);overflow-wrap:break-word;}
+  .jp-opt{
+    text-align:left;font-family:'EB Garamond',serif;border:2px solid #e2e8f0;background:#fff;
+    border-radius:.7rem;padding:.6rem .8rem;font-size:clamp(.85rem,1.9vh,1.05rem);
+    line-height:1.35;transition:all .12s ease;width:100%;overflow-wrap:anywhere;
+  }
+  .jp-opt:hover:not(:disabled){background:#f8fafc;}
+  .jp-opt:disabled{cursor:default;}
+  .jp-picked{background:#fef3c7!important;border-color:#f59e0b!important;}
+  .jp-wrong{background:#fee2e2!important;border-color:#dc2626!important;color:#991b1b;opacity:.65;}
+  .jp-correct{background:#dcfce7!important;border-color:#16a34a!important;color:#166534;font-weight:700;}
+  .jp-bar{transition:width 1s linear,background-color .3s;}
+
+  /* ── Helskärm: skala upp allt eleverna ska läsa från bänkraden ──
+     .jp-fs sätts alltid av jpToggleFullscreen (även när Fullscreen API
+     saknas); :fullscreen/:-webkit-full-screen fångar äkta helskärm.
+     Inget här nedan påverkar normalvyn i webbläsarfönstret. */
+  #jp-stage.jp-fs #jp-turn,
+  #jp-stage:fullscreen #jp-turn,
+  #jp-stage:-webkit-full-screen #jp-turn{
+    font-size:clamp(1.05rem,2.8vh,2rem);
+  }
+  #jp-stage.jp-fs #jp-round,
+  #jp-stage:fullscreen #jp-round,
+  #jp-stage:-webkit-full-screen #jp-round{
+    font-size:clamp(.75rem,1.8vh,1.2rem);
+    padding:clamp(.2rem,.6vh,.4rem) clamp(.7rem,1.4vw,1.15rem);
+  }
+  #jp-stage.jp-fs #jp-board,
+  #jp-stage:fullscreen #jp-board,
+  #jp-stage:-webkit-full-screen #jp-board{
+    gap:clamp(6px,.9vh,12px);
+    padding:clamp(10px,1.4vh,18px);
+  }
+  #jp-stage.jp-fs .jp-head,
+  #jp-stage:fullscreen .jp-head,
+  #jp-stage:-webkit-full-screen .jp-head{
+    font-size:clamp(.85rem,2.1vh,1.7rem);
+    letter-spacing:.04em;
+    padding:clamp(.5rem,1.2vh,.9rem) .45rem;
+    overflow-wrap:break-word;
+  }
+  #jp-stage.jp-fs .jp-cell,
+  #jp-stage:fullscreen .jp-cell,
+  #jp-stage:-webkit-full-screen .jp-cell{
+    font-size:clamp(1.8rem,6.2vh,4.6rem);
+  }
+  #jp-stage.jp-fs .jp-used,
+  #jp-stage:fullscreen .jp-used,
+  #jp-stage:-webkit-full-screen .jp-used{
+    font-size:clamp(1.2rem,3.2vh,2.4rem);
+  }
+  #jp-stage.jp-fs .jp-team,
+  #jp-stage:fullscreen .jp-team,
+  #jp-stage:-webkit-full-screen .jp-team{
+    padding:clamp(.4rem,1vh,.8rem) clamp(.6rem,1.2vw,1rem);
+  }
+  #jp-stage.jp-fs .jp-team .nm,
+  #jp-stage:fullscreen .jp-team .nm,
+  #jp-stage:-webkit-full-screen .jp-team .nm{
+    font-size:clamp(.95rem,2.3vh,1.8rem);
+  }
+  #jp-stage.jp-fs .jp-team .sc,
+  #jp-stage:fullscreen .jp-team .sc,
+  #jp-stage:-webkit-full-screen .jp-team .sc{
+    font-size:clamp(1.3rem,3.4vh,2.6rem);
+  }
+  #jp-stage.jp-fs .jp-step,
+  #jp-stage:fullscreen .jp-step,
+  #jp-stage:-webkit-full-screen .jp-step{
+    width:clamp(1.7rem,3.4vh,2.6rem);height:clamp(1.7rem,3.4vh,2.6rem);
+    font-size:clamp(.85rem,1.9vh,1.35rem);
+  }
+  #jp-stage.jp-fs #jp-modal .jp-card,
+  #jp-stage:fullscreen #jp-modal .jp-card,
+  #jp-stage:-webkit-full-screen #jp-modal .jp-card{
+    max-width:min(1500px,94vw);
+    max-height:96%;
+    padding:clamp(1.1rem,2.4vh,2.2rem) clamp(1.2rem,2.6vw,3rem);
+    border-radius:1.4rem;
+  }
+  #jp-stage.jp-fs #jp-cat,
+  #jp-stage:fullscreen #jp-cat,
+  #jp-stage:-webkit-full-screen #jp-cat{
+    font-size:clamp(.8rem,1.7vh,1.2rem);
+    padding:clamp(.3rem,.8vh,.55rem) clamp(.8rem,1.6vw,1.35rem);
+  }
+  #jp-stage.jp-fs #jp-val,
+  #jp-stage:fullscreen #jp-val,
+  #jp-stage:-webkit-full-screen #jp-val,
+  #jp-stage.jp-fs #jp-time,
+  #jp-stage:fullscreen #jp-time,
+  #jp-stage:-webkit-full-screen #jp-time{
+    font-size:clamp(1rem,2.3vh,1.7rem);
+  }
+  #jp-stage.jp-fs #jp-answering,
+  #jp-stage:fullscreen #jp-answering,
+  #jp-stage:-webkit-full-screen #jp-answering{
+    font-size:clamp(.85rem,1.8vh,1.15rem);
+    padding:.35rem 1rem;
+  }
+  #jp-stage.jp-fs #jp-banner p,
+  #jp-stage:fullscreen #jp-banner p,
+  #jp-stage:-webkit-full-screen #jp-banner p{
+    font-size:clamp(.9rem,1.9vh,1.25rem);
+  }
+  #jp-stage.jp-fs #jp-q,
+  #jp-stage:fullscreen #jp-q,
+  #jp-stage:-webkit-full-screen #jp-q{
+    font-size:clamp(1.35rem,3.2vh,2.4rem);
+    margin-bottom:clamp(.9rem,2.2vh,1.6rem);
+    overflow-wrap:break-word;
+  }
+  #jp-stage.jp-fs #jp-opts,
+  #jp-stage:fullscreen #jp-opts,
+  #jp-stage:-webkit-full-screen #jp-opts{
+    gap:clamp(.55rem,1.4vh,1rem);
+  }
+  #jp-stage.jp-fs #jp-opts .jp-opt,
+  #jp-stage:fullscreen #jp-opts .jp-opt,
+  #jp-stage:-webkit-full-screen #jp-opts .jp-opt{
+    display:flex;align-items:center;
+    min-height:clamp(2.6rem,7.5vh,5rem);
+    padding:clamp(.6rem,1.5vh,1.2rem) clamp(.9rem,2vw,1.7rem);
+    font-size:clamp(1.15rem,2.8vh,2.3rem);
+    line-height:1.3;
+    border-width:3px;
+    overflow-wrap:anywhere;
+  }
+  #jp-stage.jp-fs #jp-expl-wrap,
+  #jp-stage:fullscreen #jp-expl-wrap,
+  #jp-stage:-webkit-full-screen #jp-expl-wrap{
+    font-size:clamp(1rem,2.1vh,1.5rem);
+    padding:clamp(.7rem,1.6vh,1.1rem) clamp(.8rem,1.8vw,1.3rem);
+  }
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body class="bg-slate-50">
+
+<a href="politik.html" onclick="smartBack(event)" class="fixed top-4 left-4 z-50 text-sm font-medium text-slate-500 hover:text-yellow-700 bg-white/90 px-3 py-2 rounded-xl shadow-sm transition-colors">← Tillbaka till området</a>
+
+<div class="max-w-5xl mx-auto px-5 py-8">
+
+  <div class="border-l-4 pl-4 mb-8" style="border-color: #fbbf24;">
+    <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Samhällskunskap nivå 1a1 · Spel</p>
+    <h1 class="text-3xl md:text-4xl font-bold italic text-slate-900">Jeopardy – Mänskliga rättigheter</h1>
+    <p class="text-slate-500 text-sm mt-1 italic">Två omgångar · 100–500p och 600–1000p</p>
+  </div>
+
+  <!-- ══ SETUP ══ -->
+  <div id="jp-setup" class="max-w-sm mx-auto bg-white border-2 border-slate-200 rounded-2xl p-6">
+    <h2 class="font-bold text-xl mb-4 text-center">Vilka lag tävlar?</h2>
+    <div id="jp-team-inputs" class="space-y-2 mb-3"></div>
+    <div class="flex justify-center gap-5 mb-5 text-xs font-bold text-amber-600">
+      <button id="jp-add" onclick="jpChangeTeamCount(1)">+ Lägg till lag</button>
+      <button id="jp-remove" onclick="jpChangeTeamCount(-1)">− Ta bort lag</button>
+    </div>
+    <button onclick="jpStartGame()" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold uppercase tracking-wide text-sm hover:bg-slate-700">Starta spelet</button>
+  </div>
+
+  <!-- ══ SCEN ══ -->
+  <div id="jp-stage" class="hidden">
+
+    <div class="flex items-center gap-3 px-4 pt-3 pb-1">
+      <p class="text-slate-400 text-[11px] uppercase tracking-[.2em] font-bold truncate">Mänskliga rättigheter</p>
+      <span id="jp-round" class="px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wide whitespace-nowrap"></span>
+      <span class="flex-1"></span>
+      <button onclick="jpShowRules(false)" class="text-slate-400 hover:text-white text-xs font-bold">Regler</button>
+      <button onclick="jpNewGame()" class="text-slate-400 hover:text-white text-xs font-bold">Nytt spel</button>
+      <button id="jp-fsbtn" onclick="jpToggleFullscreen()" class="bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-lg">⛶ Helskärm</button>
+    </div>
+
+    <p id="jp-turn" class="text-center font-bold px-4 pb-2"></p>
+
+    <div id="jp-board"></div>
+    <div id="jp-teams"></div>
+
+    <!-- Spelregler -->
+    <div id="jp-rules" class="hidden absolute inset-0 z-[55] items-center justify-center p-6" style="background:rgba(4,8,18,.94)">
+      <div class="bg-white rounded-2xl w-full max-w-lg p-6 max-h-[92%] overflow-y-auto">
+        <h2 class="font-bold text-2xl mb-4 text-center">Så funkar det</h2>
+        <ul class="space-y-2 text-sm text-slate-700 mb-4 list-disc pl-5 leading-snug">
+          <li><strong>Två omgångar.</strong> Först 4 kategorier med 100–500p. När brädet är tomt kommer en mellanskärm där du kan starta omgång 2 (nya kategorier, 600–1000p) eller avsluta spelet om tiden är slut.</li>
+          <li><strong>Fast turordning.</strong> Lagen väljer ruta i tur och ordning – Lag 1, Lag 2, Lag 3, Lag 1 igen. Ordningen ändras aldrig, oavsett om laget svarar rätt eller fel.</li>
+          <li><strong>Rätt svar ger poäng, inte turen.</strong> Ett lag kan alltså aldrig ta flera rutor i rad.</li>
+          <li><strong>Stöld ger inte turen.</strong> Svarar ett lag fel går frågan vidare till nästa lag för halva poängen. Det laget kan ta poängen – men väljer ändå inte nästa fråga. Rotationen rullar på som vanligt.</li>
+          <li><strong>Längre tid på svårare frågor.</strong> 100–300p ger 45 sekunder, 400–700p ger 60 och 800–1000p ger 75. Ett stulet försök har 20 sekunder, eftersom frågan redan är uppläst.</li>
+          <li>Laget säger sitt svar högt — du klickar på det alternativ de väljer.</li>
+          <li>Har alla lag svarat fel visas rätt svar automatiskt. Ingen får poäng.</li>
+          <li><strong>Du behöver inte kunna ämnet</strong> — spelet rättar själv och visar en förklaring du kan läsa upp.</li>
+        </ul>
+        <p id="jp-rules-start" class="text-center font-bold mb-4" style="font-size:clamp(.9rem,2.2vh,1.15rem)"></p>
+        <button onclick="jpHideRules()" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold uppercase tracking-wide text-sm hover:bg-slate-700">Kör igång</button>
+      </div>
+    </div>
+
+    <!-- Frågemodal -->
+    <div id="jp-modal">
+      <div class="jp-card" id="jp-card">
+        <div class="flex items-center gap-3 mb-3">
+          <span id="jp-cat" class="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide text-white"></span>
+          <span id="jp-val" class="num font-bold text-slate-400"></span>
+          <span class="flex-1"></span>
+          <span id="jp-time" class="num text-sm font-bold text-slate-400">45</span>
+        </div>
+        <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden mb-4">
+          <div id="jp-bar" class="jp-bar h-full" style="width:100%"></div>
+        </div>
+
+        <div id="jp-answering-wrap" class="mb-3">
+          <span id="jp-answering" class="px-3 py-1 rounded-full text-xs font-bold text-white"></span>
+        </div>
+
+        <div id="jp-banner" class="hidden mb-3 text-center">
+          <p class="text-sm font-bold text-amber-800 bg-amber-50 border border-amber-300 rounded-lg py-2 px-3 inline-block"></p>
+        </div>
+
+        <p id="jp-q" class="font-bold text-slate-900 mb-4 leading-snug"></p>
+        <div id="jp-opts" class="grid gap-2 mb-3"></div>
+
+        <div id="jp-expl-wrap" class="hidden border-l-4 rounded-r-lg p-3 mb-3 text-sm text-slate-700">
+          <p class="font-bold text-[11px] uppercase tracking-wide mb-1" id="jp-expl-label">Förklaring</p>
+          <p id="jp-expl"></p>
+        </div>
+
+        <div id="jp-actions" class="flex justify-center gap-5 text-xs font-bold pt-2 border-t border-slate-100">
+          <button id="jp-reveal-btn" onclick="jpRevealAnswer()" class="text-amber-600">Visa svar</button>
+          <button id="jp-close-btn" onclick="jpCloseModal()" class="text-slate-400">Stäng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mellanskärm mellan omgångarna -->
+    <div id="jp-inter" class="hidden absolute inset-0 z-[58] items-center justify-center p-6" style="background:rgba(4,8,18,.94)">
+      <div class="text-center w-full max-w-md">
+        <p class="text-slate-400 text-xs uppercase tracking-[.25em] font-bold mb-4">Omgång 1 klar</p>
+        <div id="jp-inter-list" class="space-y-2 mb-5"></div>
+        <p id="jp-inter-next" class="font-bold mb-5" style="font-size:clamp(.9rem,2.2vh,1.15rem)"></p>
+        <div class="flex flex-col gap-3">
+          <button onclick="jpStartRound2()" class="bg-white text-slate-900 px-6 py-3 rounded-xl font-bold text-sm uppercase tracking-wide">Starta omgång 2 · 600–1000p</button>
+          <button onclick="jpShowEnd()" class="text-slate-400 hover:text-white text-xs font-bold">Avsluta spelet och visa slutställning</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slutresultat -->
+    <div id="jp-end" class="hidden absolute inset-0 z-[60] items-center justify-center p-6" style="background:rgba(4,8,18,.94)">
+      <div class="text-center">
+        <p class="text-slate-400 text-xs uppercase tracking-[.25em] font-bold mb-4">Slutresultat</p>
+        <div id="jp-end-list" class="space-y-2 mb-6"></div>
+        <button onclick="jpNewGame()" class="bg-white text-slate-900 px-6 py-2.5 rounded-xl font-bold text-sm">Spela igen</button>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="mt-16 text-center border-t border-slate-200 pt-8">
+    <p class="text-slate-400 text-xs uppercase tracking-[0.2em] font-black italic">Designad av John</p>
+  </footer>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// TILLBAKA-NAVIGERING
+// ════════════════════════════════════════════════════════════
+function smartBack(e) {
+  if (e) e.preventDefault();
+  var ref = document.referrer;
+  if (ref) {
+    try {
+      if (new URL(ref).origin === window.location.origin) {
+        history.back();
+        return;
+      }
+    } catch (err) {}
+  }
+  window.location.href = 'politik.html';
+}
+</script>
+
+<script>
+/* ════════ DATA ════════ */
+
+/* Lagfärgerna är fasta genom hela spelet och frikopplade från
+   kategorifärgerna – annars skulle lagen byta färg i omgång 2. */
+const JP_TEAM_COLORS = ['#06b6d4','#a855f7','#f59e0b','#f43f5e'];
+
+/* Tid i sekunder när en fråga går vidare till nästa lag. Kortare,
+   eftersom frågan redan är uppläst. */
+const JP_STEAL_TIME = 20;
+
+const JP_ROUNDS = [
+{
+  label:'Omgång 1 · 100–500p',
+  cats:[
+  { name:'Rättigheternas historia', color:'#06b6d4', rgb:'6,182,212', qs:[
+    { v:100, q:'Vad var Kyroscylindern, som den persiske kungen Kyros den store lät skriva år 539 f.v.t.?',
+      opts:['En rättighetsförklaring i lera som bland annat släppte slavar fria och gav religionsfrihet','En lagsamling i lera som bland annat gav kungen rätt att erövra alla grannländer','Ett handelsavtal i lera som bland annat reglerade skatter mellan Persien och Babylon','Ett fredsfördrag i lera som bland annat delade upp Babylonien mellan två kungar'],
+      correct:0, expl:'Kyros den store släppte slavar fria och skrev in allas religionsfrihet i en cylinder av lera. Vissa forskare ser den som världens första deklaration av mänskliga rättigheter.' },
+    { v:200, q:'Vilken engelsk filosof menade under upplysningstiden att varje människa har rätt till liv, frihet och resultatet av sitt arbete?',
+      opts:['John Locke','Thomas Hobbes','Jean-Jacques Rousseau','Immanuel Kant'],
+      correct:0, expl:'John Locke menade att alla människor har naturliga rättigheter till liv, frihet och egendom, och att statens viktigaste uppgift var att skydda dessa personliga rättigheter.' },
+    { v:300, q:'Varför räknas Sverige som en demokrati med fullständiga medborgerliga rättigheter först från år 1921?',
+      opts:['Det var då även kvinnor fick rösträtt, så att de politiska rättigheterna gällde alla vuxna','Det var då Sverige gick med i FN, så att de mänskliga rättigheterna blev svensk lag','Det var då kungen förlorade sin makt, så att riksdagen ensam fick stifta alla lagar','Det var då Europakonventionen antogs, så att svenska domstolar fick döma staten'],
+      correct:0, expl:'Personliga och politiska rättigheter kallas tillsammans medborgerliga rättigheter. Stater som gav alla medborgare dessa blev demokratier – i Sverige skedde det 1921 när även kvinnor fick rösträtt.' },
+    { v:400, q:'Vad var den viktigaste orsaken till att världens länder efter 1945 ville skriva ner gemensamma mänskliga rättigheter?',
+      opts:['Förintelsen visade vad som händer när vissa grupper fråntas alla rättigheter – det skulle aldrig upprepas','Kalla kriget hade gjort stormakterna oense, och ett gemensamt dokument skulle tvinga dem att samarbeta','Kolonierna krävde självständighet, och ett gemensamt dokument skulle ge dem rätt att bilda egna stater','Världshandeln hade kollapsat, och ett gemensamt dokument skulle ge alla länder samma regler för handel'],
+      correct:0, expl:'Nazisterna ansåg att bland andra judar, romer, homosexuella och personer med funktionsnedsättning saknade rättigheter och mördade miljoner. När lägren öppnades frågade man sig hur något liknande skulle kunna förhindras – svaret blev FN och rättighetsförklaringen.' },
+    { v:500, q:'Montgomery, Alabama, december 1955: en svart sömmerska vägrar ge sin bussplats till en vit man. Vad händer med henne?',
+      opts:['Hon arresteras och döms senare till böter, eftersom hon brutit mot delstatens raslagar','Hon får böter på plats av chauffören men släpps, eftersom hon betalat för sin biljett','Hon tvingas av bussen och förbjuds åka kollektivt, eftersom hon vägrat lyda chauffören','Hon frikänns direkt av en domstol, eftersom raslagarna redan förbjudits av presidenten'],
+      correct:0, expl:'Rosa Parks arresterades och dömdes till böter – hon hade "fel hudfärg". Händelsen blev startskottet för protester över hela USA och för medborgarrättsrörelsen.' }
+  ]},
+  { name:'FN', color:'#a855f7', rgb:'168,85,247', qs:[
+    { v:100, q:'Vilket år bildades Förenta nationerna (FN)?',
+      opts:['1945','1919','1948','1939'],
+      correct:0, expl:'FN bildades 1945, direkt efter andra världskriget, när företrädare för 51 länder möttes i San Francisco och kom överens om FN-stadgan.' },
+    { v:200, q:'Hur många artiklar innehåller FN:s allmänna förklaring om de mänskliga rättigheterna från 1948?',
+      opts:['30 artiklar','50 artiklar','10 artiklar','100 artiklar'],
+      correct:0, expl:'Rättighetsförklaringen antogs av FN:s generalförsamling 1948 och räknar upp våra rättigheter i 30 artiklar. Artikel 1: "Alla människor är födda fria och lika i värde och rättigheter."' },
+    { v:300, q:'Vilka två huvuduppgifter har FN-organet UNHCR?',
+      opts:['Att skydda flyktingar och att söka varaktiga lösningar på deras problem','Att döma stater som kränker flyktingar och att utdöma skadestånd till dem','Att bevaka FN:s gränser och att avgöra vilka flyktingar som får asyl','Att samla in skatt till flyktingläger och att fördela pengarna mellan stater'],
+      correct:0, expl:'UNHCR skyddar flyktingar och söker varaktiga lösningar, bland annat i flyktingläger och genom återintegrering i hemlandet. Själva asylprövningen sköts av varje land.' },
+    { v:400, q:'Vem räknas som flykting enligt FN:s flyktingkonvention från 1951?',
+      opts:['Den som flytt sitt land i välgrundad fruktan för förföljelse p.g.a. ras, religion, grupp eller politisk åsikt','Den som lämnat sitt land för att få ett bättre betalt arbete och en tryggare ekonomisk framtid','Den som tvingats flytta till en annan del av sitt eget land p.g.a. inbördeskrig eller andra oroligheter','Den som flytt sitt land p.g.a. översvämningar eller annan naturkatastrof som gjort marken obeboelig'],
+      correct:0, expl:'Konventionen kräver välgrundad fruktan för förföljelse och att personen befinner sig utanför sitt hemland. Internflyktingar och de som flyr för klimatets skull omfattas inte av själva definitionen.' },
+    { v:500, q:'En folkgrupp i norra Sverige levde i området långt innan nationsgränserna drogs och har ett eget språk och egna traditioner som renskötsel. Vilken ställning har gruppen?',
+      opts:['Samerna har ställning som urfolk och har därmed kollektiva rättigheter','Samerna har ställning som invandrargrupp och har därmed rätt till hemspråk','Samerna har ställning som egen stat och har därmed fullt självbestämmande','Samerna har ställning som vanlig folkgrupp och har inga särskilda rättigheter'],
+      correct:0, expl:'Samerna är det enda folk som erkänns som urfolk i Sverige och har därmed kollektiva rättigheter, t.ex. att bevara sitt språk, sina traditioner och ha ett visst självbestämmande.' }
+  ]},
+  { name:'Europarådet', color:'#f59e0b', rgb:'245,158,11', qs:[
+    { v:100, q:'Vilket år bildades Europarådet?',
+      opts:['1949','1957','1945','1995'],
+      correct:0, expl:'Europarådet bildades 1949, några år efter andra världskriget. Det är en egen organisation – inte samma sak som EU.' },
+    { v:200, q:'Vilket dokument om mänskliga rättigheter antog Europarådet redan året efter att det bildats?',
+      opts:['Europakonventionen','Barnkonventionen','Flyktingkonventionen','FN-stadgan'],
+      correct:0, expl:'Europarådet bildades 1949 och redan året därpå, 1950, antogs Europakonventionen om mänskliga rättigheter.' },
+    { v:300, q:'Vad var syftet när Europarådet bildades?',
+      opts:['Att främja demokrati och mänskliga rättigheter i de europeiska länderna','Att skapa en gemensam marknad och en gemensam valuta för Europas länder','Att bygga upp ett gemensamt försvar mot angrepp från länder utanför Europa','Att fördela pengar för återuppbyggnaden av de städer som förstörts i kriget'],
+      correct:0, expl:'Europarådet bildades för att främja demokrati och mänskliga rättigheter i Europa. Gemensam marknad och valuta hör till EU, som är en annan organisation.' },
+    { v:400, q:'Europakonventionen är gällande lag i Sverige. Vad innebär det i praktiken?',
+      opts:['Att man kan hänvisa till konventionen direkt i en svensk domstol, precis som till andra lagar','Att konventionen bara är ett råd som riksdagen kan välja att följa när den stiftar nya lagar','Att konventionen bara gäller EU-medborgare som bor i Sverige, inte svenska medborgare','Att konventionen bara får användas i brottmål, inte när enskilda har tvister med staten'],
+      correct:0, expl:'Europakonventionen blev svensk lag 1995. Därför kan den åberopas direkt i svenska domstolar – den är inte bara en rekommendation.' },
+    { v:500, q:'En medborgare i ett av Europarådets länder anser att staten kränkt hennes rättigheter enligt Europakonventionen. Vad kan Europadomstolen göra om hon får rätt?',
+      opts:['Döma staten för brott mot medborgarens rättigheter, t.ex. till att betala skadestånd','Döma de ansvariga politikerna till fängelse för brott mot medborgarens rättigheter','Utesluta staten ur EU och stoppa alla bidrag tills rättigheterna har återställts','Avsätta landets regering och utlysa nyval under tillsyn av Europarådets ministrar'],
+      correct:0, expl:'Europadomstolen hör till Europarådet och kan döma europeiska stater för brott mot sina medborgares rättigheter, bland annat till att betala skadestånd. Den dömer stater – inte enskilda personer.' }
+  ]},
+  { name:'Kränkningar', color:'#f43f5e', rgb:'244,63,94', qs:[
+    { v:100, q:'Vilka tre organisationer nämns som exempel på människorättsorganisationer som granskar kränkningar?',
+      opts:['Amnesty, Human Rights Watch och Reportrar utan gränser','WHO, Unicef och Unesco inom FN-systemet','Röda korset, Läkare utan gränser och Rädda Barnen','Greenpeace, WWF och Transparency International'],
+      correct:0, expl:'Amnesty, Human Rights Watch och Reportrar utan gränser är människorättsorganisationer som tillsammans med FN gör de mänskliga rättigheterna till en del av de internationella relationerna.' },
+    { v:200, q:'Vilka länder avrättar flest människor i världen?',
+      opts:['Kina, Iran, Saudiarabien, Egypten och USA','Ryssland, Nordkorea, Kuba, Venezuela och Zimbabwe','Japan, Indien, Australien, Kanada och Israel','Somalia, Sudan, Etiopien, Jemen och Afghanistan'],
+      correct:0, expl:'De länder som avrättar flest är Kina, Iran, Saudiarabien, Egypten och USA. Dödsstraff kritiseras för att strida mot rätten till liv.' },
+    { v:300, q:'Vad menas med en kränkning?',
+      opts:['Att behandla någon nedsättande i ord eller handling, eller göra ingrepp i någons rättigheter','Att öppet kritisera ett lands regering och dess beslut i tidningar eller sociala medier','Att vägra skriva under ett internationellt avtal om mänskliga rättigheter i FN','Att inte hålla med om en lag som riksdagen har beslutat och protestera mot den'],
+      correct:0, expl:'Kränkning är ett samlingsnamn för bland annat trakasserier, mobbning och diskriminering. Att kritisera makthavare är tvärtom en rättighet – yttrandefrihet.' },
+    { v:400, q:'Vad är det som gör ett brott till ett hatbrott?',
+      opts:['Att offret väljs ut på grund av t.ex. hudfärg, etnisk bakgrund, religion eller sexuell läggning','Att brottet är extra våldsamt och riktas mot ett slumpmässigt utvalt offer på allmän plats','Att brottet begås av en grupp gärningsmän som har planerat det tillsammans i förväg','Att brottet riktas mot en polis, en politiker eller någon annan som företräder staten'],
+      correct:0, expl:'Hatbrott är brott som begås för att gärningsmannen har fördomar mot en grupp. Avgörande är att offret väljs ut för sin grupptillhörighet – inte hur våldsamt brottet är.' },
+    { v:500, q:'En person sprider inlägg på nätet där en hel religiös grupp hånas och beskrivs som mindre värd. Vilket brott i Sverige handlar det om?',
+      opts:['Hets mot folkgrupp','Grovt elakt förtal','Olaga diskriminering','Olaga förföljelse'],
+      correct:0, expl:'Att förtala eller förolämpa en enskild person kallas elakt förtal. När det i stället riktas mot en folkgrupp – t.ex. utifrån religion eller etnicitet – kallas det hets mot folkgrupp.' }
+  ]}
+  ]
+},
+{
+  label:'Omgång 2 · 600–1000p',
+  cats:[
+  { name:'Historia på djupet', color:'#34d399', rgb:'52,211,153', qs:[
+    { v:600, q:'Rätten att rösta, rätten till en lämplig bostad och förbudet mot tortyr – hur sorteras de in i de tre grupperna av mänskliga rättigheter?',
+      opts:['Rösträtt är politisk, bostad är ekonomisk-social-kulturell och tortyrförbud är personlig','Rösträtt är personlig, bostad är politisk och tortyrförbud är ekonomisk-social-kulturell','Rösträtt är politisk, bostad är personlig och tortyrförbud är ekonomisk-social-kulturell','Rösträtt är ekonomisk-social-kulturell, bostad är politisk och tortyrförbud är personlig'],
+      correct:0, expl:'Personliga rättigheter skyddar individen mot statliga övergrepp (t.ex. tortyrförbud). Politiska ger rätt att delta (t.ex. rösträtt). Ekonomiska, sociala och kulturella ger rätt till ett bra liv (t.ex. mat och bostad).' },
+    { v:700, q:'Medborgarrättsrörelsen i USA, ledd av Martin Luther King, nådde ett genombrott år 1964. Vad var det?',
+      opts:['En lag som förbjöd rasåtskillnad och gav landets alla medborgare samma rättigheter','En lag som gav svarta amerikaner rätt att bilda en egen delstat med egna domstolar','En dom som gav svarta amerikaner skadestånd för slaveriet och för åren av förtryck','En dom som tvingade alla delstater att låta svarta amerikaner bli presidentkandidater'],
+      correct:0, expl:'Efter tio års kamp skrev USA:s president 1964 under en lag som förbjöd rasåtskillnad och gav alla medborgare samma rättigheter. Det lyfts fram som ett positivt exempel på att utvecklingen gått framåt.' },
+    { v:800, q:'Staten höjer skatten för att alla ska få vård, utbildning och bostad. Vilken konflikt mellan rättigheter uppstår?',
+      opts:['Ekonomiska och sociala rättigheter kräver omfördelning, medan rätten till egendom skyddar det man äger','Politiska rättigheter kräver lika röstvärde, medan rätten till utbildning gör att vissa röster väger tyngre','Kollektiva rättigheter kräver skydd för minoriteter, medan rätten till vård bara gäller landets medborgare','Personliga rättigheter kräver religionsfrihet, medan rätten till bostad tvingar alla att bo på samma sätt'],
+      correct:0, expl:'Konventionen om ekonomiska, sociala och kulturella rättigheter ger rätt till mat, bostad, vård och utbildning – vilket finansieras med skatt. Samtidigt ger konventionen om medborgerliga och politiska rättigheter rätt till egendom. Vilken som väger tyngst är en politisk fråga.' },
+    { v:900, q:'USA:s självständighetsförklaring (1776) och den franska författningen (1789) talade om okränkbara rättigheter. Vad var banbrytande med FN:s förklaring 1948 jämfört med dem?',
+      opts:['Rättigheterna blev universella – för första gången omfattades alla människor, även de som tidigare uteslutits','Rättigheterna blev bindande – för första gången kunde en internationell domstol döma alla världens stater','Rättigheterna blev nationella – för första gången fick varje land självt bestämma vilka som skulle omfattas','Rättigheterna blev religiösa – för första gången byggde de på en gemensam tro som alla folk kunde enas om'],
+      correct:0, expl:'1700-talets förklaringar gällde inte alla – bland annat var kvinnor uteslutna. FN-förklaringen var den första som omfattade alla människor, överallt och i alla tider, och den står över kulturer, religioner och länders lagar. Den är däremot inte juridiskt bindande.' },
+    { v:1000, q:'Ett parti får 60 % av rösterna på löftet att invandrare inte ska få rösta eller yttra sig fritt. Enligt vilken uppfattning får partiet ändå inte genomföra det – och varför?',
+      opts:['Naturrätt – människan har rättigheter som inte ens demokratiskt valda politiker får kränka','Positiv rätt – majoriteten har vunnit valet och bestämmer därför i alla frågor utan undantag','Naturrätt – folket vet alltid sitt eget bästa, så valresultatet måste följas i alla frågor','Positiv rätt – människan har rättigheter som bara en domstol, aldrig riksdagen, kan ta bort'],
+      correct:0, expl:'Positiv rätt säger att majoriteten alltid har rätt. Naturrätten säger att människan har rättigheter som inga politiker får kränka. Länder som skrivit under FN:s konventioner har lovat att respektera alla individers rättigheter – demokrati får aldrig innebära majoritetens förtryck av minoriteter.' }
+  ]},
+  { name:'FN på djupet', color:'#818cf8', rgb:'129,140,248', qs:[
+    { v:600, q:'En elev skriver: "FN bildades 1945 av världens alla 193 stater." Vad är fel i påståendet?',
+      opts:['FN bildades av 51 länder – 193 är antalet medlemsstater i dag','FN bildades av 16 länder – 193 är antalet stater som finns i Europa','FN bildades av 100 länder – 193 är antalet stater som gick med 1948','FN bildades av 195 länder – 193 är antalet som är kvar efter utträden'],
+      correct:0, expl:'Det var företrädare för 51 länder som möttes i San Francisco 1945 och bildade FN. I dag har FN 193 medlemsstater av världens omkring 195 suveräna stater.' },
+    { v:700, q:'Ett land vill juridiskt förbinda sig att respektera yttrandefrihet, föreningsfrihet och rösträtt. Vilket FN-dokument ska det skriva under?',
+      opts:['Konventionen om de medborgerliga och politiska rättigheterna från 1966','Konventionen om de ekonomiska, sociala och kulturella rättigheterna från 1966','FN:s allmänna förklaring om de mänskliga rättigheterna från år 1948','FN:s deklaration om urfolkens rättigheter och självbestämmande från 2007'],
+      correct:0, expl:'De två kärnkonventionerna från 1966 är bindande för de stater som skriver under. Yttrandefrihet, föreningsfrihet och rösträtt är politiska rättigheter. Förklaringen från 1948 och urfolksdeklarationen från 2007 är inte bindande.' },
+    { v:800, q:'Vad är den avgörande skillnaden mellan FN:s rättighetsförklaring från 1948 och FN:s konventioner?',
+      opts:['Konventionerna är juridiskt bindande för stater som skriver under – förklaringen är inte bindande','Förklaringen är juridiskt bindande för alla stater – konventionerna är bara rekommendationer','Förklaringen gäller bara enskilda människor – konventionerna gäller bara stater och regeringar','Konventionerna gäller bara FN:s medlemmar – förklaringen gäller även stater utanför FN'],
+      correct:0, expl:'En deklaration är en förklaring av vad FN anser vara viktigt, men den är inte juridiskt bindande. Den har legat till grund för bindande konventioner – när en stat skriver under förbinder den sig att följa dem.' },
+    { v:900, q:'FN:s rättighetsförklaring handlar artikel efter artikel om individer. Varför har FN ändå formulerat kollektiva rättigheter, t.ex. i urfolksdeklarationen från 2007?',
+      opts:['För att skydda en grupps språk och kultur mot majoritetssamhället, och för att många kulturer ser människan som del av en grupp','För att ge stora folkgrupper fler röster i FN än små, och för att alla folk ska få en egen stat med egna gränser','För att grupper ska kunna dömas för brott som enskilda begått, och för att straffen ska bli lika för alla i gruppen','För att ersätta de individuella rättigheterna helt, och för att staten ska kunna bestämma över varje folkgrupp'],
+      correct:0, expl:'Kollektiva rättigheter tillhör folkgrupper. De ska skydda t.ex. ursprungsbefolkningars språk, traditioner och visst självbestämmande. FN erkänner i dag både individuella och kollektiva rättigheter.' },
+    { v:1000, q:'Ett ensamkommande barn söker asyl i Sverige. Varför måste Migrationsverket ta särskild hänsyn till barnet i beslutet?',
+      opts:['Barnkonventionen är svensk lag sedan 2020 och säger att barnets bästa ska beaktas vid alla beslut som rör barn','Flyktingkonventionen är svensk lag sedan 2020 och säger att alla barn automatiskt ska få permanent uppehållstillstånd','Europakonventionen är svensk lag sedan 2020 och säger att barn alltid ska placeras hos en familj i samma land','FN-förklaringen är svensk lag sedan 2020 och säger att barn under 18 år inte får skickas tillbaka till sitt hemland'],
+      correct:0, expl:'Barnkonventionen (antagen av FN 1989) har fyra grundprinciper, bland annat att barnets bästa ska beaktas vid alla beslut som rör barn. Sedan 1 januari 2020 är den svensk lag, och den påverkar därför handläggningen av asylärenden med barn.' }
+  ]},
+  { name:'Europarådet på djupet', color:'#fb923c', rgb:'251,146,60', qs:[
+    { v:600, q:'En skola i Tornedalen vill stärka undervisningen i elevernas eget språk. Varför har tornedalingarna särskilt skydd för sitt språk och sin kultur?',
+      opts:['De är en nationell minoritet, och deras språk och kultur skyddas genom en Europakonvention från år 2000','De är ett urfolk, och deras språk och kultur skyddas genom FN:s deklaration om urfolk från år 2007','De är en invandrargrupp, och deras språk och kultur skyddas genom FN:s flyktingkonvention från år 1951','De är en egen delstat, och deras språk och kultur skyddas genom den svenska regeringsformen från 1974'],
+      correct:0, expl:'Judar, romer, tornedalingar och sverigefinnar är – liksom samerna – nationella minoriteter i Sverige. Deras språk och kultur skyddas genom en Europakonvention från år 2000. Samerna har dessutom ställning som urfolk.' },
+    { v:700, q:'Sverige har i förhållande till sin folkmängd relativt många anmälningar till Europadomstolen. Vilket fall liknar de klagomål som är vanliga?',
+      opts:['En misstänkt sitter häktad mycket länge, eller staten samlar in och hanterar personuppgifter felaktigt','En kommun höjer skatten för mycket, eller staten lägger ner en järnvägslinje som många har använt','En partiledare förlorar ett val med liten marginal, eller staten bestämmer att valet ska göras om','En arbetsgivare säger upp en anställd, eller staten sänker ersättningen i arbetslöshetsförsäkringen'],
+      correct:0, expl:'Sverige har anmälts till Europadomstolen bland annat för långa häktningstider och för statens insamling och hantering av personuppgifter – alltså frågor om frihet och privatliv.' },
+    { v:800, q:'En nyhetsartikel skriver: "EU:s domstol i Strasbourg fällde Sverige för brott mot Europakonventionen." Vad är fel?',
+      opts:['Europadomstolen hör till Europarådet, inte EU – EU har en egen stadga om grundläggande rättigheter','Europadomstolen hör till FN, inte EU – EU har ingen egen stadga om grundläggande rättigheter','Europadomstolen kan bara döma enskilda, inte stater – EU-stadgan dömer stater i stället','Europadomstolen hör till EU men får bara döma i brottmål – Sverige kan alltså inte fällas'],
+      correct:0, expl:'Europadomstolen är Europarådets domstol. Europarådet är en egen organisation med fler medlemsländer än EU. Inom EU finns i stället en separat stadga om grundläggande rättigheter.' },
+    { v:900, q:'FN:s rättighetsförklaring och Europakonventionen har till stor del liknande innehåll. Varför behövs ändå båda?',
+      opts:['FN-förklaringen gäller alla världens stater men saknar domstol – Europakonventionen har en domstol som kan döma stater','FN-förklaringen gäller bara Europa men har en domstol – Europakonventionen gäller hela världen men saknar domstol','FN-förklaringen gäller bara demokratier men är bindande – Europakonventionen gäller alla stater men är frivillig','FN-förklaringen gäller bara personliga rättigheter – Europakonventionen gäller bara ekonomiska och sociala rättigheter'],
+      correct:0, expl:'FN-förklaringen gäller i alla världens stater men har ingen koppling till en domstol. Europakonventionen är en överenskommelse mellan europeiska stater och har Europadomstolen, som kan ta upp fall där stater bryter mot den.' },
+    { v:1000, q:'En svensk anser att staten kränkt hennes privatliv. Hon vill få sin sak prövad med stöd av Europakonventionen. Vilka två vägar finns?',
+      opts:['Åberopa konventionen i svensk domstol eftersom den är svensk lag – och sedan anmäla Sverige till Europadomstolen','Anmäla Sverige till FN:s generalförsamling – och sedan låta riksdagen rösta om hon ska få skadestånd','Åberopa konventionen hos EU-kommissionen eftersom den är EU-lag – och sedan stämma Sverige i EU-domstolen','Anmäla myndigheten till Amnesty – och sedan låta Europarådets medlemsländer rösta om Sverige ska straffas'],
+      correct:0, expl:'Europakonventionen är gällande lag i Sverige och kan därför åberopas direkt i svenska domstolar. Får hon inte rätt kan Sverige anmälas till Europadomstolen, som hör till Europarådet och kan döma stater för brott mot medborgarnas rättigheter.' }
+  ]},
+  { name:'Kränkningar på djupet', color:'#e879f9', rgb:'232,121,249', qs:[
+    { v:600, q:'I ett land var svarta och vita åtskilda enligt lag. En ledare satt 27 år i fängelse för kampen mot systemet och valdes 1994 till president. Vem och vilket system?',
+      opts:['Nelson Mandela och apartheid i Sydafrika','Martin Luther King och raslagarna i USA','Desmond Tutu och kolonialstyret i Kenya','Steve Biko och militärdiktaturen i Nigeria'],
+      correct:0, expl:'Nelson Mandela ledde kampen mot apartheid (= rasåtskillnad) i Sydafrika. Han släpptes 1990 och valdes 1994 till president i landets första demokratiska val.' },
+    { v:700, q:'Ett land förbjuder sitt minoritetsfolk att tala sitt eget språk och hänvisar till att landet är suveränt. Vad beskriver situationen bäst?',
+      opts:['Statens självbestämmande över sin befolkning hamnar i konflikt med de mänskliga rättigheterna','Statens självbestämmande ger rätt att bestämma språk, så ingen rättighet kränks i detta fall','Minoritetsfolket kränker statens rättigheter genom att vägra anpassa sig till majoritetens språk','Minoritetsfolkets språk skyddas bara om landet är medlem i EU, annars gäller statens beslut'],
+      correct:0, expl:'Det finns omkring 195 suveräna stater som själva bestämmer över sitt område och sin befolkning. Den självbestämmanderätten kan krocka med de mänskliga rättigheterna – och ofta är det statsmakten som står för förtrycket.' },
+    { v:800, q:'En man misshandlas på gatan för att han bär kippa. Efteråt vågar andra judar i staden inte längre visa sin tro. Varför räknas hatbrott som särskilt allvarliga?',
+      opts:['De kränker inte bara den som drabbas utan skapar också rädsla och otrygghet i hela gruppen','De är alltid mer våldsamma än andra brott och leder därför oftare till svåra skador hos offret','De begås oftast av organiserade grupper och är därför svårare för polisen att utreda och lösa','De riktas oftast mot kända personer och får därför större uppmärksamhet i medierna än andra brott'],
+      correct:0, expl:'Ett hatbrott drabbar personen som väljs ut för sin grupptillhörighet, men skapar också otrygghet och rädsla hos hela gruppen. Det strider mot principen att alla människor har samma värde.' },
+    { v:900, q:'Omkring 110 länder har avskaffat dödsstraffet helt och ett 30-tal till har slutat använda det. Varför kritiseras dödsstraff utifrån de mänskliga rättigheterna?',
+      opts:['Det strider mot rätten till liv – "var och en har rätt till liv, frihet och personlig säkerhet"','Det strider mot rätten till arbete – "var och en har rätt till arbete och skälig levnadsnivå"','Det strider mot rösträtten – "var och en har rätt att delta i allmänna och lika val"','Det strider mot yttrandefriheten – "var och en har rätt till åsiktsfrihet och yttrandefrihet"'],
+      correct:0, expl:'Rätten till liv är en grundläggande mänsklig rättighet. FN-förklaringen säger: "Var och en har rätt till liv, frihet och personlig säkerhet." En stor majoritet av världens länder genomför i dag inga avrättningar.' },
+    { v:1000, q:'En regering vill ersätta de mänskliga rättigheterna med statsreligionens regler som grund för alla lagar. Varför leder det enligt kapitlet till kränkningar?',
+      opts:['Många skulle känna sig utanför eller bli förtryckta – rättigheterna är en överenskommelse mellan alla kulturer','Religionen skulle ge alla samma rättigheter – men den kan inte översättas till alla FN:s officiella språk','Ingen skulle förtryckas – men landet skulle tvingas lämna FN och förlora sin röst i generalförsamlingen','Många skulle bli mer jämlika – men staten skulle få svårare att samla in skatt och betala för välfärden'],
+      correct:0, expl:'De mänskliga rättigheterna arbetades fram av företrädare för många kulturer och religioner. Försöker man ersätta dem med en religion eller ideologi kommer många att känna sig utanför eller bli förtryckta.' }
+  ]}
+  ]
+}
+];
+
+/* Den aktiva omgångens kategorier. Pekas om av jpStartRound(). */
+let JP_CATEGORIES = JP_ROUNDS[0].cats;
+
+/* ════════ SETUP ════════ */
+let jpTeamCount = 2, jpTeams = [], jpUsed = 0, jpTurn = null, jpRound = 0;
+
+function jpTeamColor(i){ return JP_TEAM_COLORS[i%JP_TEAM_COLORS.length]; }
+
+function jpRenderRound(){
+  const el=document.getElementById('jp-round');
+  el.textContent=JP_ROUNDS[jpRound].label;
+  el.style.background=JP_CATEGORIES[0].color;
+  el.style.color='#0b1120';
+}
+
+function jpRenderTurn(){
+  const el=document.getElementById('jp-turn');
+  if(jpTurn===null||!jpTeams[jpTurn]){ el.textContent=''; return; }
+  el.textContent=jpTeams[jpTurn].name+' väljer nästa fråga';
+  el.style.color=jpTeamColor(jpTurn);
+}
+
+function jpRenderTeamInputs(){
+  const wrap = document.getElementById('jp-team-inputs');
+  wrap.innerHTML = '';
+  for(let i=0;i<jpTeamCount;i++){
+    const inp = document.createElement('input');
+    inp.type='text'; inp.id='jp-team-'+i; inp.placeholder='Lag '+(i+1);
+    inp.className='w-full p-2.5 border-2 border-slate-200 rounded-lg text-sm outline-none focus:border-slate-900';
+    wrap.appendChild(inp);
+  }
+  document.getElementById('jp-remove').style.visibility = jpTeamCount<=2?'hidden':'visible';
+  document.getElementById('jp-add').style.visibility    = jpTeamCount>=4?'hidden':'visible';
+}
+function jpChangeTeamCount(d){ jpTeamCount=Math.min(4,Math.max(2,jpTeamCount+d)); jpRenderTeamInputs(); }
+
+function jpStartGame(){
+  jpTeams=[];
+  for(let i=0;i<jpTeamCount;i++){
+    const v=document.getElementById('jp-team-'+i).value.trim();
+    jpTeams.push({name:v||('Lag '+(i+1)),score:0});
+  }
+  jpTurn=Math.floor(Math.random()*jpTeams.length);
+  document.getElementById('jp-setup').classList.add('hidden');
+  document.getElementById('jp-stage').classList.remove('hidden');
+  jpHideOverlay('jp-end');
+  jpHideOverlay('jp-inter');
+  document.getElementById('jp-teams').style.setProperty('--tc', jpTeams.length);
+  jpRenderTeams();
+  jpStartRound(0);
+  jpShowRules(true);
+}
+function jpNewGame(){
+  jpTurn=null;
+  jpExitFullscreen();
+  jpHideRules();
+  jpHideOverlay('jp-end');
+  jpHideOverlay('jp-inter');
+  document.getElementById('jp-modal').classList.remove('on');
+  document.getElementById('jp-stage').classList.add('hidden');
+  document.getElementById('jp-setup').classList.remove('hidden');
+}
+
+function jpHideOverlay(id){
+  const el=document.getElementById(id);
+  el.classList.add('hidden'); el.style.display='none';
+}
+function jpIsOpen(id){ return document.getElementById(id).style.display==='flex'; }
+
+/* ════════ OMGÅNGAR ════════ */
+/* jpTurn rörs aldrig här – rotationen fortsätter där omgång 1 slutade. */
+function jpStartRound(n){
+  jpRound=n;
+  JP_CATEGORIES=JP_ROUNDS[n].cats;
+  jpUsed=0;
+  jpBuildBoard();
+  jpRenderRound();
+  jpRenderTurn();
+}
+function jpStartRound2(){
+  jpHideOverlay('jp-inter');
+  jpStartRound(1);
+}
+function jpShowIntermission(){
+  const list=document.getElementById('jp-inter-list'); list.innerHTML='';
+  jpTeams.map((t,i)=>({t,i})).sort((a,b)=>b.t.score-a.t.score).forEach((e,pos)=>{
+    const row=document.createElement('div');
+    row.className='flex items-center gap-4 justify-center';
+    row.innerHTML=`<span class="text-slate-300 font-bold" style="font-size:clamp(.95rem,2.6vh,1.4rem)">${pos+1}. ${e.t.name}</span>
+      <span class="num font-bold" style="color:${jpTeamColor(e.i)};font-size:clamp(1.2rem,3.4vh,2rem)">${e.t.score}</span>`;
+    list.appendChild(row);
+  });
+  const nx=document.getElementById('jp-inter-next');
+  nx.textContent=jpTeams[jpTurn].name+' inleder omgång 2.';
+  nx.style.color=jpTeamColor(jpTurn);
+  const el=document.getElementById('jp-inter');
+  el.classList.remove('hidden'); el.style.display='flex';
+}
+
+/* ════════ SPELREGLER ════════ */
+function jpShowRules(initial){
+  if(jpTurn===null||!jpTeams[jpTurn]) return;
+  const el=document.getElementById('jp-rules-start');
+  el.textContent=jpTeams[jpTurn].name+(initial?' börjar.':' har turen.');
+  el.style.color=jpTeamColor(jpTurn);
+  const r=document.getElementById('jp-rules');
+  r.classList.remove('hidden'); r.style.display='flex';
+}
+function jpHideRules(){ jpHideOverlay('jp-rules'); }
+
+/* ════════ LAG ════════ */
+function jpRenderTeams(){
+  const p=document.getElementById('jp-teams'); p.innerHTML='';
+  jpTeams.forEach((t,i)=>{
+    const c=jpTeamColor(i);
+    const el=document.createElement('div');
+    el.className='jp-team';
+    if(i===jpTurn){
+      el.style.border='2px solid '+c;
+      el.style.background='rgba(255,255,255,.13)';
+    }else{
+      el.style.opacity='.5';
+    }
+    el.innerHTML=`<span class="nm" style="border-left:3px solid ${c};padding-left:.5rem">${t.name}</span>
+      <span class="sc" style="color:${c}">${t.score}</span>
+      <button class="jp-step" onclick="jpAdjust(${i},-100)">−</button>
+      <button class="jp-step" onclick="jpAdjust(${i},100)">+</button>`;
+    p.appendChild(el);
+  });
+}
+function jpAdjust(i,a){ jpTeams[i].score+=a; jpRenderTeams(); }
+
+/* ════════ SPELPLAN ════════ */
+function jpBuildBoard(){
+  const b=document.getElementById('jp-board'); b.innerHTML='';
+  JP_CATEGORIES.forEach(cat=>{
+    const h=document.createElement('div');
+    h.className='jp-head'; h.style.background=cat.color; h.textContent=cat.name;
+    b.appendChild(h);
+  });
+  /* Högsta värdet överst, lägsta nederst. */
+  for(let row=4;row>=0;row--){
+    JP_CATEGORIES.forEach((cat,ci)=>{
+      const q=cat.qs[row];
+      const cell=document.createElement('button');
+      cell.className='jp-cell';
+      cell.style.background=`rgba(${cat.rgb},.13)`;
+      cell.style.color=cat.color;
+      cell.textContent=q.v;
+      cell.onmouseenter=()=>{ if(!cell.classList.contains('jp-used')){cell.style.background=cat.color;cell.style.color='#0b1120';} };
+      cell.onmouseleave=()=>{ if(!cell.classList.contains('jp-used')){cell.style.background=`rgba(${cat.rgb},.13)`;cell.style.color=cat.color;} };
+      cell.onclick=()=>jpOpenQuestion(ci,row,cell);
+      b.appendChild(cell);
+    });
+  }
+}
+
+/* ════════ FRÅGA ════════ */
+let jpCat=null,jpRow=null,jpCell=null,jpOpts=[],jpPicked=null,jpWrong=[],jpRevealed=false,jpTimer=null;
+let jpTime=45,jpTimeTotal=45;
+let jpChooser=null,jpAnswering=null,jpFailed=[];
+let jpValue=0,jpBaseValue=0,jpResolved=false,jpWinner=null;
+
+/* Tiden styrs av frågans ursprungliga poängvärde, inte det halverade. */
+function jpBaseTime(v){ return v<=300 ? 45 : (v<=700 ? 60 : 75); }
+
+function jpLowerValue(){
+  let v=Math.floor(jpValue/2);
+  v=Math.floor(v/50)*50;
+  jpValue=Math.max(50,v);
+}
+function jpRenderValue(old){
+  const el=document.getElementById('jp-val');
+  if(old!==undefined && old!==jpValue){
+    el.innerHTML='<span class="line-through opacity-60">'+old+' p</span> <span class="text-slate-800">'+jpValue+' p</span>';
+  }else{
+    el.textContent=jpValue+' p';
+  }
+}
+
+function jpNextAnswerer(){
+  const n=jpTeams.length;
+  for(let step=1;step<=n;step++){
+    const cand=(jpAnswering+step)%n;
+    if(!jpFailed.includes(cand)) return cand;
+  }
+  return null;
+}
+function jpRenderAnswering(){
+  const el=document.getElementById('jp-answering');
+  el.textContent='Svarar: '+jpTeams[jpAnswering].name;
+  el.style.background=jpTeamColor(jpAnswering);
+}
+
+function jpShuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+function jpOpenQuestion(ci,row,cell){
+  if(cell.classList.contains('jp-used')) return;
+  if(jpIsOpen('jp-rules')||jpIsOpen('jp-inter')||jpIsOpen('jp-end')) return;
+  jpCat=ci; jpRow=row; jpCell=cell;
+  const cat=JP_CATEGORIES[ci], q=cat.qs[row];
+  jpPicked=null; jpWrong=[]; jpRevealed=false; jpResolved=false; jpWinner=null; jpFailed=[];
+  jpChooser=jpTurn; jpAnswering=jpTurn;
+  jpValue=q.v; jpBaseValue=q.v;
+  jpOpts=jpShuffle(q.opts.map((t,i)=>({text:t,isCorrect:i===q.correct})));
+
+  const catEl=document.getElementById('jp-cat');
+  catEl.textContent=cat.name; catEl.style.background=cat.color;
+  jpRenderValue();
+  document.getElementById('jp-q').textContent=q.q;
+  document.getElementById('jp-expl').textContent=q.expl;
+  const ew=document.getElementById('jp-expl-wrap');
+  ew.style.background=`rgba(${cat.rgb},.08)`; ew.style.borderColor=cat.color;
+  document.getElementById('jp-expl-label').style.color=cat.color;
+  document.getElementById('jp-bar').style.background=cat.color;
+  ew.classList.add('hidden');
+  document.getElementById('jp-banner').classList.add('hidden');
+  document.getElementById('jp-actions').classList.remove('hidden');
+  document.getElementById('jp-reveal-btn').classList.remove('hidden');
+  document.getElementById('jp-answering-wrap').classList.remove('hidden');
+  jpRenderAnswering();
+  jpRenderOptions();
+  document.getElementById('jp-modal').classList.add('on');
+  jpStartTimer(jpBaseTime(jpBaseValue));
+}
+
+function jpRenderOptions(){
+  const w=document.getElementById('jp-opts'); w.innerHTML='';
+  const done = jpResolved || jpRevealed;
+  jpOpts.forEach((o,idx)=>{
+    const b=document.createElement('button');
+    let cls='jp-opt', dis=false;
+    if(done && o.isCorrect){ cls+=' jp-correct'; dis=true; }
+    else if(jpWrong.includes(idx)){ cls+=' jp-wrong'; dis=true; }
+    else if(done){ cls+=' opacity-40'; dis=true; }
+    b.className=cls; b.disabled=dis;
+    b.textContent=String.fromCharCode(97+idx)+') '+o.text;
+    b.onclick=()=>jpPick(idx);
+    w.appendChild(b);
+  });
+}
+
+function jpPick(idx){
+  if(jpResolved||jpRevealed) return;
+  if(jpWrong.includes(idx)) return;
+  const o=jpOpts[idx];
+  if(o.isCorrect){
+    clearInterval(jpTimer);
+    jpResolved=true; jpWinner=jpAnswering; jpPicked=idx;
+    jpTeams[jpAnswering].score+=jpValue;
+    /* Strikt rotation: poängen går till det svarande laget, men turen
+       flyttas alltid ett steg från den som VALDE rutan (jpCloseModal). */
+    const next=(jpChooser+1)%jpTeams.length;
+    const stolen = jpAnswering!==jpChooser;
+    jpRenderTeams(); jpRenderOptions();
+    document.getElementById('jp-expl-wrap').classList.remove('hidden');
+    document.getElementById('jp-answering-wrap').classList.add('hidden');
+    document.getElementById('jp-reveal-btn').classList.add('hidden');
+    jpBanner('✓ Rätt – '+jpTeams[jpAnswering].name+' får '+jpValue+' poäng. '
+      +(stolen?'Stöld ger inte turen: ':'')
+      +jpTeams[next].name+' väljer nästa fråga.', jpTeamColor(jpAnswering));
+  }else{
+    jpFailAndAdvance({clickedIdx:idx});
+  }
+}
+
+function jpFailAndAdvance(o){
+  if(o.clickedIdx!==undefined && !jpWrong.includes(o.clickedIdx)) jpWrong.push(o.clickedIdx);
+  if(!jpFailed.includes(jpAnswering)) jpFailed.push(jpAnswering);
+  const old=jpValue; jpLowerValue(); jpRenderValue(old);
+  jpRenderOptions();
+  const next=jpNextAnswerer();
+  if(next===null){
+    clearInterval(jpTimer);
+    jpResolved=true; jpRevealed=true; jpWinner=null;
+    jpRenderOptions();
+    document.getElementById('jp-expl-wrap').classList.remove('hidden');
+    document.getElementById('jp-answering-wrap').classList.add('hidden');
+    document.getElementById('jp-reveal-btn').classList.add('hidden');
+    jpBanner('Ingen fick rätt. '+jpTeams[(jpChooser+1)%jpTeams.length].name+' väljer nästa fråga.', '#dc2626');
+  }else{
+    jpAnswering=next;
+    jpRenderAnswering();
+    const lead = o.timedOut ? '⏰ Tiden är ute.' : '✗ FEL – försök igen.';
+    jpBanner(lead+' '+jpTeams[next].name+' får chansen på '+jpValue+' p ('+JP_STEAL_TIME+' sek).', jpTeamColor(next));
+    jpStartTimer(JP_STEAL_TIME);
+  }
+}
+
+function jpBanner(txt,color){
+  const b=document.getElementById('jp-banner');
+  const p=b.querySelector('p');
+  p.textContent=txt;
+  if(color){ p.style.color=color; p.style.borderColor=color; p.style.background=color+'18'; }
+  else{ p.style.color=''; p.style.borderColor=''; p.style.background=''; }
+  b.classList.remove('hidden');
+}
+
+function jpRevealAnswer(){
+  clearInterval(jpTimer);
+  jpRevealed=true; jpResolved=true; jpWinner=null;
+  jpRenderTeams(); jpRenderOptions();
+  document.getElementById('jp-expl-wrap').classList.remove('hidden');
+  document.getElementById('jp-banner').classList.add('hidden');
+  document.getElementById('jp-answering-wrap').classList.add('hidden');
+  document.getElementById('jp-reveal-btn').classList.add('hidden');
+}
+
+function jpCloseModal(){
+  clearInterval(jpTimer);
+  /* Strikt rotation – turen går alltid vidare från den som valde rutan,
+     oavsett rätt, fel, stöld eller "Visa svar". */
+  jpTurn=(jpChooser+1)%jpTeams.length;
+  jpRenderTeams(); jpRenderTurn();
+  jpCell.classList.add('jp-used'); jpCell.textContent='✓'; jpCell.onmouseenter=null; jpCell.onmouseleave=null;
+  document.getElementById('jp-modal').classList.remove('on');
+  document.getElementById('jp-actions').classList.remove('hidden');
+  jpUsed++;
+  if(jpUsed>=20){
+    if(jpRound===0) jpShowIntermission();
+    else jpShowEnd();
+  }
+}
+
+function jpShowEnd(){
+  jpHideOverlay('jp-inter');
+  const list=document.getElementById('jp-end-list'); list.innerHTML='';
+  jpTeams.map((t,i)=>({t,i})).sort((a,b)=>b.t.score-a.t.score).forEach((e,pos)=>{
+    const c=jpTeamColor(e.i);
+    const row=document.createElement('div');
+    row.className='flex items-center gap-4 justify-center';
+    row.innerHTML=`<span class="text-slate-300 font-bold" style="font-size:clamp(1rem,3vh,1.6rem)">${pos===0?'🏆':(pos+1)+'.'} ${e.t.name}</span>
+      <span class="num font-bold" style="color:${c};font-size:clamp(1.3rem,4vh,2.4rem)">${e.t.score}</span>`;
+    list.appendChild(row);
+  });
+  const e=document.getElementById('jp-end');
+  e.classList.remove('hidden'); e.style.display='flex';
+}
+
+/* ════════ TIMER ════════ */
+function jpStartTimer(sec){
+  clearInterval(jpTimer);
+  jpTimeTotal=sec; jpTime=sec;
+  const bar=document.getElementById('jp-bar'), txt=document.getElementById('jp-time');
+  const c=JP_CATEGORIES[jpCat].color;
+  bar.style.width='100%'; bar.style.background=c;
+  txt.textContent=sec; txt.className='num text-sm font-bold text-slate-400';
+  jpTimer=setInterval(()=>{
+    jpTime--; txt.textContent=jpTime; bar.style.width=(jpTime/jpTimeTotal*100)+'%';
+    if(jpTime<=10){ bar.style.background='#dc2626'; txt.className='num text-sm font-bold text-red-600'; }
+    if(jpTime<=0){ clearInterval(jpTimer); if(!jpResolved && !jpRevealed) jpFailAndAdvance({timedOut:true}); }
+  },1000);
+}
+
+/* ════════ HELSKÄRM ════════ */
+function jpToggleFullscreen(){
+  const s=document.getElementById('jp-stage');
+  if(s.classList.contains('jp-fs')){ jpExitFullscreen(); return; }
+  s.classList.add('jp-fs');
+  document.getElementById('jp-fsbtn').textContent='⤫ Avsluta helskärm';
+  if(s.requestFullscreen) s.requestFullscreen().catch(()=>{});
+}
+function jpExitFullscreen(){
+  const s=document.getElementById('jp-stage');
+  s.classList.remove('jp-fs');
+  document.getElementById('jp-fsbtn').textContent='⛶ Helskärm';
+  if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+}
+document.addEventListener('fullscreenchange',()=>{
+  if(!document.fullscreenElement) jpExitFullscreen();
+});
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape') return;
+  if(document.getElementById('jp-modal').classList.contains('on')){ jpCloseModal(); }
+  else if(jpIsOpen('jp-rules')){ jpHideRules(); }
+  else if(jpIsOpen('jp-inter')){ /* mellanskärmen kräver ett aktivt val */ }
+  else{ jpExitFullscreen(); }
+});
+
+jpRenderTeamInputs();
+</script>
+
+<script src="feedback-widget.js" defer></script>
+<script data-goatcounter="https://johnblixt.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
