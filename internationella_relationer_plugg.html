@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pluggmaterial – Internationella relationer | Samhällskunskap 1a1</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --p:  #fbbf24;
+    --pl: #fef9c3;
+    --pd: #78350f;
+    --p-deep: #92400e;
+    --p-badge: #fef3c7;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: 'EB Garamond', serif; font-size: 1.08rem; background:#f8fafc; color:#1e293b; margin:0; }
+  h1,h2,h3,h4,.fredoka { font-family: 'Fredoka', sans-serif; }
+
+  .wrap { max-width: 74rem; margin: 0 auto; padding: 1.6rem 1.25rem 4rem; }
+
+  /* ── Tillbaka ── */
+  .back {
+    display:inline-flex; align-items:center; gap:.35rem; font-family:'Fredoka',sans-serif;
+    font-size:.88rem; color:#94a3b8; text-decoration:none; transition:color .15s;
+  }
+  .back:hover { color: var(--p-deep); }
+
+  /* ── Header ── */
+  .head { text-align:center; margin: 1.8rem 0 1.6rem; }
+  .eyebrow {
+    font-family:'Fredoka',sans-serif; font-size:.72rem; font-weight:600; text-transform:uppercase;
+    letter-spacing:.22em; color:var(--p-deep); margin:0 0 .5rem;
+  }
+  .head h1 {
+    font-size: clamp(2rem, 6vw, 2.9rem); font-weight:700; font-style:italic;
+    color:#0f172a; margin:0; line-height:1.1;
+  }
+  .rule { height:.25rem; width:5rem; border-radius:999px; background:var(--p); margin:.9rem auto 1.1rem; }
+  .lead { font-size:1rem; color:#64748b; max-width:34rem; margin:0 auto; line-height:1.7; }
+  .lead strong { color:var(--p-deep); font-weight:700; }
+
+  /* ── Toggle ── */
+  .pill-toggle {
+    display:flex; gap:.3rem; justify-content:center; background:#fff; border:1px solid #e2e8f0;
+    border-radius:999px; padding:.3rem; width:fit-content; margin:0 auto .6rem;
+    box-shadow:0 1px 3px rgba(0,0,0,.05);
+  }
+  .pill-toggle button {
+    padding: .5rem 1.4rem; border-radius: 999px; font-family:'Fredoka',sans-serif;
+    font-weight: 600; font-size: .95rem; transition: all .2s; border: none; cursor: pointer;
+  }
+  .pill-toggle button.active   { background: var(--p); color: var(--pd); box-shadow:0 2px 8px rgba(251,191,36,.4); }
+  .pill-toggle button.inactive { background: transparent; color: #94a3b8; }
+  .mode-note {
+    text-align:center; font-family:'Fredoka',sans-serif; font-size:.82rem; color:#94a3b8;
+    margin:0 0 1rem;
+  }
+
+  /* ── Färgkoder: ämnesord = gult, bindeord = grönt ── */
+  .amne  { background:#fef08a; color:#713f12; font-weight:700; padding:0 .2em; border-radius:.3em;
+           -webkit-box-decoration-break:clone; box-decoration-break:clone; }
+  .binde { background:#bbf7d0; color:#14532d; font-weight:700; padding:0 .2em; border-radius:.3em;
+           -webkit-box-decoration-break:clone; box-decoration-break:clone; }
+  .legend {
+    display:flex; flex-wrap:wrap; gap:.5rem 1.2rem; justify-content:center; align-items:center;
+    font-family:'Fredoka',sans-serif; font-size:.85rem; color:#64748b; margin:0 auto 1.8rem;
+  }
+  .legend .amne, .legend .binde { font-weight:600; }
+
+  /* ── Layout: sticky innehållsförteckning + innehåll ── */
+  .layout { display:grid; grid-template-columns: 16.5rem minmax(0,1fr); gap:2rem; align-items:start; }
+  .toc {
+    position:sticky; top:1rem; max-height:calc(100vh - 2rem); overflow-y:auto;
+    background:#fff; border:1px solid #e2e8f0; border-radius:1.2rem;
+    padding:.9rem .8rem; box-shadow:0 1px 3px rgba(0,0,0,.05);
+  }
+  .toc-h {
+    font-family:'Fredoka',sans-serif; font-size:.7rem; font-weight:700; text-transform:uppercase;
+    letter-spacing:.14em; color:var(--p-deep); margin:.2rem .3rem .5rem;
+  }
+  .toc-del {
+    font-family:'Fredoka',sans-serif; font-size:.74rem; font-weight:600; color:#64748b;
+    margin:.8rem .4rem .25rem; line-height:1.35;
+  }
+  .toc-del:first-child { margin-top:.2rem; }
+  .toc-btn { display:none; }
+  .toc-list a {
+    display:flex; align-items:center; gap:.6rem; padding:.45rem .6rem; border-radius:.75rem;
+    color:#334155; text-decoration:none; transition:background .15s; line-height:1.3; font-size:.98rem;
+  }
+  .toc-list a:hover { background: var(--pl); }
+  .toc-list a.active { background: var(--p-badge); color:var(--pd); font-weight:700; }
+  .toc-n {
+    flex:none; min-width:2.1rem; height:1.6rem; padding:0 .35rem; border-radius:999px; background:var(--p-badge); color:var(--pd);
+    font-family:'Fredoka',sans-serif; font-weight:700; font-size:.78rem;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .toc-list a.active .toc-n { background:var(--p); }
+  .toc-t { flex:1; }
+
+  /* ── Delar och avsnitt ── */
+  .del-head {
+    font-size:1.05rem; font-weight:700; text-transform:uppercase; letter-spacing:.12em;
+    color:var(--p-deep); margin:2.6rem 0 1rem; padding-bottom:.4rem; border-bottom:2px solid var(--p-badge);
+    scroll-margin-top:1rem;
+  }
+  .del-head:first-child { margin-top:0; }
+  .sec { margin-bottom: 2.4rem; scroll-margin-top: 1rem; }
+  .sec-head {
+    display:flex; align-items:center; gap:.9rem; flex-wrap:wrap;
+    background:#fff; border-left:8px solid var(--p);
+    border-radius:1rem; padding:1.1rem 1.2rem; box-shadow:0 1px 3px rgba(0,0,0,.06);
+  }
+  .sec-nr {
+    flex:none; background:var(--p-badge); color:var(--pd); font-family:'Fredoka',sans-serif;
+    font-weight:700; font-size:.95rem; border-radius:999px; padding:.2rem .65rem;
+  }
+  .sec-title { flex:1; font-size:1.45rem; font-weight:600; color:#0f172a; line-height:1.25; margin:0; }
+  .sec-sida { flex:none; font-family:'Fredoka',sans-serif; font-size:.8rem; color:#64748b;
+              background:#f1f5f9; border-radius:999px; padding:.2rem .7rem; }
+
+  /* ── Brödtext ── */
+  .block { padding: .2rem .3rem 0; }
+  .block p.ll { margin:1rem 0 .5rem; line-height:1.95; color:#334155; font-size:1.12rem; }
+
+  .fdj {
+    background:#fff; border:1px solid var(--p-badge); border-left:4px solid var(--p);
+    border-radius:0 1rem 1rem 0; padding:.9rem 1.1rem .7rem; margin:1.2rem 0;
+  }
+  .fdj-h { font-family:'Fredoka',sans-serif; font-weight:700; color:var(--p-deep); font-size:.85rem;
+           text-transform:uppercase; letter-spacing:.1em; margin-bottom:.3rem; }
+  .fdj ul { list-style:none; padding:0; margin:0; }
+  .fdj li { position:relative; padding:.3rem 0 .3rem 1.5rem; color:#334155; line-height:1.8; }
+  .fdj li::before { content:'→'; position:absolute; left:0; color:var(--p-deep); font-weight:700; }
+
+  /* ── Inbyggda diagram (SVG) ── */
+  .diagram { margin:1.4rem 0; background:#fff; border:1px solid #e2e8f0; border-radius:1.2rem; padding:1rem 1rem .8rem; }
+  .diagram svg { display:block; width:100%; height:auto; max-width:30rem; margin:0 auto; }
+  .diagram svg text { font-family:'Fredoka',sans-serif; }
+  .diagram figcaption { font-size:.95rem; color:#475569; line-height:1.6; margin-top:.6rem; text-align:center; }
+  .diagram figcaption b { font-family:'Fredoka',sans-serif; color:var(--pd); }
+
+  .to-top { text-align:center; margin:1rem 0 .2rem; }
+  .to-top a { font-family:'Fredoka',sans-serif; font-size:.8rem; color:#94a3b8; text-decoration:none; }
+  .to-top a:hover { color:var(--p-deep); }
+
+  /* ── Öva vidare ── */
+  .next {
+    background:#fff; border-top:8px solid var(--p); border-radius:1.5rem;
+    padding:1.4rem 1.4rem 1.5rem; margin-top:2.4rem; box-shadow:0 1px 3px rgba(0,0,0,.06);
+  }
+  .next h2 { font-size:1.3rem; font-weight:600; margin:0 0 .3rem; color:#0f172a; }
+  .next p { margin:0 0 1rem; color:#64748b; line-height:1.6; }
+  .next-links { display:flex; flex-direction:column; gap:.6rem; }
+  .next-btn {
+    display:flex; align-items:center; gap:.6rem; padding:.85rem 1rem; border-radius:1rem;
+    font-family:'Fredoka',sans-serif; font-weight:600; text-decoration:none; transition:transform .15s;
+    background:var(--p); color:var(--pd);
+  }
+  .next-btn:hover { transform:translateY(-2px); }
+
+  /* ── Footer ── */
+  .foot { text-align:center; margin-top:3rem; color:#94a3b8; font-size:.85rem; line-height:1.7; }
+  .foot .by { font-style:italic; }
+
+  /* ── Mobil ── */
+  @media (max-width: 767px) {
+    body { font-size: 1rem; }
+    .wrap { padding: 1.2rem .9rem 3rem; }
+    .layout { display:block; }
+    .toc { position:sticky; top:0; z-index:30; max-height:none; overflow:visible;
+           border-radius:0 0 1rem 1rem; margin:0 -.9rem 1.4rem; padding:.5rem .9rem;
+           border-top:none; border-left:none; border-right:none; }
+    .toc-h { display:none; }
+    .toc-btn { display:flex; width:100%; align-items:center; justify-content:space-between; gap:.6rem;
+               background:var(--p-badge); color:var(--pd); border:none; border-radius:.8rem; padding:.6rem .9rem;
+               font-family:'Fredoka',sans-serif; font-weight:600; font-size:.95rem; cursor:pointer; text-align:left; }
+    .toc-btn-t { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .toc-list { display:none; max-height:60vh; overflow-y:auto; padding-top:.4rem; }
+    .toc.open .toc-list { display:block; }
+    .sec, .del-head { scroll-margin-top: 4.2rem; }
+    .sec-title { font-size: 1.2rem; }
+    .sec-head { padding: .85rem .9rem; gap:.5rem .65rem; border-left-width:6px; }
+    .block p.ll { font-size:1.05rem; line-height:1.85; }
+    .pill-toggle button { padding:.45rem 1.05rem; font-size:.88rem; }
+    .fdj { padding:.8rem .85rem .6rem; }
+    .diagram { padding:.7rem .4rem .6rem; }
+    .legend { font-size:.8rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; scroll-behavior:auto !important; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<!-- ════════════════════════════════════════════════════════════
+     ALL TEXT LIGGER I DELAR: { titel, avsnitt[] }
+     Avsnitt: { id, nr, rubrik, sida, lattlast[], fordjupning[], diagram[] }
+       lattlast    = stycken under **Lättläst:** i internationella_relationer_plugg.md
+       fordjupning = punktlistan under **Fördjupning:** i samma fil
+       diagram     = nycklar i DIAGRAMS (inbyggd SVG), visas i båda lägena
+     Färgkod i texten: **ord** = ämnesord (gult), __ord__ = bindeord (grönt).
+     Alla begrepp från internationella_relationer_begrepp.html står fetstilta
+     med exakt samma stavning som på begreppssidan.
+     ════════════════════════════════════════════════════════════ -->
+<script>
+/* Källa: Internationella_relationer_material.md (kap. 3) och Internationella_relationer_uppgifter.md.
+   Texten är sparad i internationella_relationer_plugg.md. Inga fakta utöver källan. */
+var PAGE = {
+  eyebrow: "Samhällskunskap 1a1 · Politik",
+  titel: "Internationella relationer",
+  storeKey: "internationella_relationer_plugg_mode",
+  kalla: "Pluggmaterial Internationella relationer, Samhällskunskap 1a1. Bygger på läroboken, kapitel 3 Internationella relationer."
+};
+
+var DELAR = [
+
+/* ══════════ DEL 1 ══════════ */
+{
+  titel: "Del 1 – Europeiska unionen",
+  avsnitt: [
+  {
+    id: "eu-vaxer-fram", nr: "1.1", rubrik: "EU växer fram", sida: "tidslinje s. 68–69",
+    lattlast: [
+      "Sverige är medlem i **Europeiska unionen (EU)** sedan 1995. Året innan röstade svenskarna i en folkomröstning. 52 procent ville gå med. EU:s beslut påverkar oss mycket. Många svenska lagar bygger på EU:s regler. __Även__ kommuner och regioner påverkas, __eftersom__ det är där de flesta EU-beslut ska genomföras.",
+      "Samarbetet började efter andra världskriget. Tanken var att skapa fred och säkerhet och samtidigt göra ekonomin starkare. Länge handlade samarbetet mest om ekonomi. Det hette __då__ EG. I början av 1990-talet bildades EU. __Då__ började länderna __också__ samarbeta om utrikes- och säkerhetspolitik, miljö och migration.",
+      "**Inre marknaden** infördes när EU bildades. Den betyder fri rörlighet för fyra saker: varor, tjänster, personer och kapital (pengar). Det betyder __till exempel__ att människor kan flytta och arbeta i ett annat EU-land.",
+      "Sex länder startade samarbetet. När Sverige gick med 1995 hade EU 15 medlemsländer. År 2013 var de 28. År 2016 röstade Storbritannien för att lämna EU. Det kallas brexit. År 2020 lämnade Storbritannien EU. Det var första gången ett land gick ur. I dag har EU 27 medlemsländer."
+    ],
+    fordjupning: [
+      "Tidslinjen (s. 68–69): Schuman-planen 1950 → Kol- och stålgemenskapen 1952 (Frankrike, Västtyskland, Italien, Belgien, Nederländerna och Luxemburg) → Romfördraget 1957 → tullunionen 1970 → Maastrichtfördraget, EU:s grundfördrag → EU bildas 1993 → Sverige, Finland och Österrike går med 1995 → euron införs 2001–2002 → stora utvidgningar 2004, 2007 och 2013.",
+      "Samarbetet har både fördjupats __och__ breddats. Fördjupats: fler politikområden, som utrikes- och säkerhetspolitik, miljöpolitik och migrationspolitik. Breddats: fler medlemsländer.",
+      "Inre marknaden infördes __för att__ förenkla och effektivisera det ekonomiska samarbetet mellan medlemsländerna.",
+      "Vid ett toppmöte i Nice år 2000 ändrades reglerna __så att__ fler länder skulle kunna komma in. Fler länder vill fortfarande förhandla om medlemskap.",
+      "Brexit var ett trendbrott. EU hade aldrig tidigare behövt hantera att ett land ville gå ur, __och__ utträdet visade sig vara mycket komplicerat.",
+      "Folkomröstningen 1994 om svenskt EU-medlemskap var rådgivande."
+    ],
+    diagram: []
+  },
+  {
+    id: "mellanstatligt-overstatligt", nr: "1.2", rubrik: "Lissabonfördraget – mellanstatligt och överstatligt", sida: "",
+    lattlast: [
+      "EU:s viktigaste dokument är **Lissabonfördraget**. Det trädde i kraft 2009. Det kallas EU:s grundlag. Där står reglerna för hur EU fungerar och hur beslut fattas.",
+      "**Mellanstatlig** betyder att självständiga stater samarbetar. De gör avtal och fattar beslut tillsammans. EU är en mellanstatlig organisation. Länderna har valt att gå med frivilligt.",
+      "**Överstatlighet** betyder att länderna lämnar över en del av sin makt till EU. EU:s beslut blir __då__ bindande för länderna. Inom vissa områden är EU överstatligt. __Där__ kan ett enskilt land inte själv styra över besluten. Alla medlemsländer måste rätta sig efter beslut som fattas på EU-nivå."
+    ],
+    fordjupning: [
+      "Exempel på överstatlighet: inom handels- och konkurrenspolitiken har EU ensam beslutanderätt. __Där__ får Sverige inte stifta egna lagar (se 1.5).",
+      "Genom hela EU:s historia har medlemsländerna diskuterat hur mycket överstatlighet unionen ska ha. __Ju mer__ överstatlighet, __desto mer__ självbestämmande lämnar länderna över till EU.",
+      "Lissabonfördraget ändrade __också__ beslutsreglerna i Ministerrådet. Enligt fördraget ska alla överläggningar och beslut som rör lagstiftning vara offentliga (se 1.3).",
+      "Fundera (analysfråga 1): vilka frågor kräver att EU-länderna samarbetar? Räcker det med mellanstatligt samarbete, __eller__ behövs överstatliga beslut?"
+    ],
+    diagram: []
+  },
+  {
+    id: "eu-institutioner", nr: "1.3", rubrik: "EU:s institutioner", sida: "",
+    lattlast: [
+      "EU har flera institutioner. De har olika uppgifter.",
+      "**Europeiska rådet** är EU:s högsta politiska organ. Där träffas EU-ländernas stats- och regeringschefer, __till exempel__ Sveriges statsminister. Kommissionens ordförande är __också__ med. De drar upp riktlinjerna för EU:s politik. De bestämmer alltså vilken riktning EU ska ta.",
+      "**Ministerrådet** kallas __också__ Rådet. Där träffas ministrar från EU-ländernas regeringar. Vilka ministrar som möts beror på frågan. Jordbruksministrarna möts __till exempel__ i Jordbruksrådet. Ministerrådet beslutar om nya lagar tillsammans med Europaparlamentet. Det bestämmer __också__ EU:s budget tillsammans med parlamentet.",
+      "**Europaparlamentet** är EU:s folkvalda församling. Folket i EU-länderna väljer det vart femte år. Parlamentet har 720 ledamöter. Sverige har 21 av dem. Stora länder har fler ledamöter än små. Parlamentet stiftar lagar och beslutar om budgeten tillsammans med Ministerrådet. Det godkänner __också__ utnämningen av kommissionen. Ledamöterna samlas i Strasbourg fyra dagar varje månad. Kortare sammanträden hålls i Bryssel.",
+      "**Europeiska kommissionen** (EU-kommissionen) skriver de flesta förslagen till nya EU-lagar. Den kontrollerar att länderna följer reglerna. __Om__ ett land bryter mot reglerna kan kommissionen skicka ärendet till EU-domstolen. Kommissionen sköter __också__ EU:s budget. Den leds av en ordförande och har 27 kommissionärer, en från varje medlemsland.",
+      "**EU-domstolen** tolkar EU:s lagar. Den ser till att lagarna används på samma sätt i alla medlemsländer. Den löser __också__ juridiska tvister mellan länderna och EU:s institutioner. Domstolen ligger i Luxemburg."
+    ],
+    fordjupning: [
+      "Se upp – blanda inte ihop! Europeiska rådet = stats- och regeringschefer som drar upp riktlinjerna. Ministerrådet = ministrar som beslutar om lagar och budget tillsammans med parlamentet.",
+      "Ministerrådet: varje medlemsland är ordförande i sex månader __och__ leder __då__ arbetet. Sverige har varit ordförande bland annat 2001, 2009 och 2023. Finansministrarna möts i Ekofinrådet.",
+      "Sedan 2014 fattar Ministerrådet beslut med dubbel majoritet: minst 55 procent av länderna, som representerar minst 65 procent av EU:s befolkning. __På så sätt__ räknas både antalet länder och antalet invånare. Förändringen kom i samband med Lissabonfördraget.",
+      "Europaparlamentet har lika mycket makt som Ministerrådet i lagstiftning om bland annat inre marknaden, invandring, straffrättsligt samarbete och polissamarbete. Det ska __också__ godkänna de flesta internationella avtal. I den gemensamma utrikes- och säkerhetspolitiken beslutar parlamentet inte, __men__ yttrar sig.",
+      "Budgeten kan inte antas __förrän__ parlamentet och Ministerrådet är överens. Parlamentet håller utfrågningar med kandidaterna till kommissionen __och__ är den enda institution som kan avsätta kommissionen. __Därför__ är parlamentet en viktig kontroll av kommissionen.",
+      "Antalet ledamöter grundas på ländernas invånarantal: Tyskland har 96, Frankrike 81, Sverige 21 och Malta 6. De nationella partierna ingår i partigrupper med likasinnade partier från andra länder. Mellan sammanträdena arbetar ledamöterna i partigrupper och utskott.",
+      "Kommissionen har 36 generaldirektorat, förvaltar EU:s fonder för jordbruks- och regionalstöd __och__ förhandlar med länder som vill gå med. Den kanske viktigaste uppgiften är att ta initiativ till lagstiftning.",
+      "Europeiska rådet möts normalt fyra gånger om året. Det utser kommissionens ordförande och EU:s höga representant för utrikes frågor och säkerhetspolitik. Europeiska rådets egen ordförande utses för två och ett halvt år __och__ ska förbereda frågor och verka för eniga beslut.",
+      "Fler institutioner: Revisionsrätten granskar räkenskaperna och kontrollerar hur besluten efterlevs. Europeiska centralbanken ansvarar för penningpolitiken i de länder som har euro som valuta."
+    ],
+    diagram: ["institutioner"]
+  },
+  {
+    id: "beslut-i-eu", nr: "1.4", rubrik: "Så fattas beslut i EU", sida: "",
+    lattlast: [
+      "Tre institutioner brukar vara med __när__ EU stiftar lagar. **Europeiska kommissionen** föreslår en ny lag. **Europaparlamentet** och **Ministerrådet** går igenom förslaget. De kan föreslå ändringar. __Sedan__ fattar de beslut tillsammans.",
+      "__Om__ parlamentet och rådet är överens, och kommissionen godtar ändringarna, blir förslaget en ny lag. __Om__ de inte är överens förhandlar de i flera steg. Målet är en kompromiss.",
+      "Hur kan Sverige påverka? Sveriges regering sitter med i Ministerrådet. Före ett möte granskar regeringen förslaget och bestämmer vad den tycker. Regeringen stämmer av med riksdagens EU-nämnd för att få stöd. Ministern ska __sedan__ driva den åsikten i Ministerrådet. Svenska väljare påverkar __också__ genom att rösta i valet till Europaparlamentet."
+    ],
+    fordjupning: [
+      "Innan förslaget läggs fram gör kommissionen utredningar __och__ diskuterar med medlemsländernas regeringar, näringsliv, organisationer och experter. Det blir underlag för ändringar i förslaget.",
+      "Idén till en ny lag kan komma från Europaparlamentet, __men__ det är kommissionen som lägger fram förslaget.",
+      "EU-medlemskapet har förskjutit makt från riksdagen till regeringen. Orsaken: det är regeringen som sitter i Ministerrådet, __så__ riksdagen är inte längre ensam lagstiftare. __Men__ före mötena måste regeringen diskutera ärendena med riksdagens EU-nämnd. __På så sätt__ har riksdagen fortfarande inflytande.",
+      "Vad parlamentet tycker styrs av vilka folkvalda representanter som sitter där. __Därför__ påverkar valet till Europaparlamentet vilka lagar EU antar.",
+      "Fundera (analysfråga 3): bör Europaparlamentet få en lika stark ställning i EU som riksdagen har i Sverige? Vilka konsekvenser skulle det få?"
+    ],
+    diagram: ["beslut"]
+  },
+  {
+    id: "vem-bestammer", nr: "1.5", rubrik: "Vad bestämmer EU – och vad bestämmer Sverige?", sida: "",
+    lattlast: [
+      "EU:s lagar står över svenska lagar. __Om__ en svensk lag och en EU-lag inte stämmer överens gäller EU-lagen.",
+      "EU har två sorters lagar. En **EU-förordning** gäller direkt i Sverige. Sverige behöver inte ändra något först. Exempel: en förordning säger att alla länder ska stoppa invasiva arter, __till exempel__ jättebalsamin och signalkräftor.",
+      "Ett **EU-direktiv** innehåller mål som ska nås. Varje land bestämmer själv hur målen ska nås. Sverige kan __då__ behöva stifta nya lagar. Ibland räcker det med nya föreskrifter från en myndighet.",
+      "Inom handels- och konkurrenspolitik bestämmer EU ensamt. __Där__ får Sverige inte stifta egna lagar. Orsaken är den fria rörligheten för varor, tjänster, personer och kapital.",
+      "**Subsidiaritetsprincipen (närhetsprincipen)** betyder att beslut ska fattas så nära medborgarna som möjligt. Sverige bestämmer själv om sådant som inte påverkar resten av EU. Det gäller skola, sjukvård, socialtjänst, pensioner, barnbidrag, allemansrätt, kultur, energikällor och bostäder.",
+      "Det finns __också__ en spärr. __Om__ en tredjedel av medlemsländernas parlament tycker att ett lagförslag inte borde behandlas på EU-nivå, måste EU-kommissionen överväga förslaget på nytt."
+    ],
+    fordjupning: [
+      "Varför går EU-rätt före svensk lag? Sverige gick med i EU frivilligt, __och__ medlemskapet innebär att alla länder måste rätta sig efter besluten på EU-nivå. __Om__ varje land kunde låta sin egen lag gälla skulle EU:s lagar inte tillämpas lika i alla länder. Det är EU-domstolens uppgift att se till att de gör det.",
+      "Förordning eller direktiv? En förordning gäller direkt, utan att svenska lagar behöver ändras. Ett direktiv anger målet __men__ inte vägen. Hur stora förändringar Sverige måste göra beror på hur nära de tidigare svenska reglerna låg målen i direktivet.",
+      "Fri rörlighet har länge varit ett kännetecken för EU-samarbetet. __Därför__ har EU ensam beslutanderätt i handels- och konkurrenspolitiken.",
+      "Självbestämmandet i till exempel skola och sjukvård gäller __så länge__ inte samtliga EU-länder vill göra gemensamma förändringar. Sverige får __också__ besluta i andra frågor __där__ det ännu inte finns EU-lagstiftning.",
+      "Tredjedelsregeln ger de nationella parlamenten en möjlighet att säga ifrån __när__ de anser att en fråga inte hör hemma på EU-nivå."
+    ],
+    diagram: []
+  }
+  ]
+},
+
+/* ══════════ DEL 2 ══════════ */
+{
+  titel: "Del 2 – Sveriges säkerhet",
+  avsnitt: [
+  {
+    id: "utrikes-sakerhetspolitik", nr: "2.1", rubrik: "Svensk utrikes- och säkerhetspolitik", sida: "",
+    lattlast: [
+      "Sverige var länge alliansfritt. Det betyder att Sverige inte var med i några militära allianser. Syftet var att kunna vara neutralt __om__ det blev krig.",
+      "Under 1990- och 2000-talen ändrades försvaret. Det skulle inte längre främst stoppa en invasion. Det skulle __i stället__ göra fredsbevarande uppdrag runt om i världen. Värnplikten avskaffades 2010. Försvaret blev mindre.",
+      "__Sedan__ ökade oron i världen. Värnplikten återinfördes 2017. Både det militära och det civila försvaret har fått mer resurser. __När__ Ryssland invaderade Ukraina 2022 tänkte Sverige om på allvar. År 2024 övergav Sverige alliansfriheten och blev medlem i Nato. En stor majoritet i riksdagen var för."
+    ],
+    fordjupning: [
+      "I över tvåhundra år var Sverige neutralt. Den gamla försvarsdoktrinen hette ”alliansfrihet i fredstid syftande till neutralitet i krig”.",
+      "Kedjan: ökad oro i världen → Rysslands invasion av Ukraina 2022 → Sverige omprövar sin utrikes- och säkerhetspolitik → alliansfriheten överges __och__ Sverige går med i Nato 2024.",
+      "Alliansfrihet och Natomedlemskap går inte ihop. I Nato lovar medlemmarna att hjälpa varandra vid angrepp (artikel 5, se 2.3), __medan__ alliansfriheten byggde på att stå utanför militära allianser __för att__ kunna vara neutral.",
+      "Fundera (analysfråga 4): vilka argument talar för ett Natomedlemskap, __och__ vilka talar för att Sverige skulle ha behållit sin neutralitet?"
+    ],
+    diagram: []
+  },
+  {
+    id: "totalforsvaret", nr: "2.2", rubrik: "Det svenska totalförsvaret", sida: "",
+    lattlast: [
+      "**Totalförsvar** är allt som behövs för att förbereda Sverige för krig. Det svenska totalförsvaret har två delar: ett militärt försvar och ett civilt försvar. Många myndigheter, organisationer och företag hjälper till.",
+      "**Försvarsmakten** är det militära försvaret. Totalförsvaret ska försvara Sverige mot angrepp. Det ska skydda Sveriges territorium, frihet och självständighet. Försvaret ska vara så starkt att andra länder inte vågar anfalla. Det kallas att avskräcka.",
+      "**Civilförsvaret** är det civila försvaret. Det skyddar och hjälper befolkningen. Det ser till att viktiga samhällsfunktioner fungerar. Det stöttar __också__ Försvarsmakten, __till exempel__ med transporter, sjukvård, el och vatten.",
+      "**Totalförsvarsplikt** betyder att alla som bor i Sverige och är 16–70 år kan kallas in __om__ det blir krig __eller__ krigsfara. Man kan __till exempel__ få sköta transporter, arbeta i vården __eller__ i barnomsorgen.",
+      "Alla bör kunna klara sig själva i några dagar vid en kris. Man behöver mat, vatten, värme och möjlighet att ta emot information."
+    ],
+    fordjupning: [
+      "Totalförsvaret fungerar bara väl __om__ befolkningen har en viss beredskap för kriser. __Därför__ är din och din familjs beredskap en del av totalförsvaret.",
+      "Uppmaningen att klara sig själv i några dagar kommer från Myndigheten för samhällsskydd och beredskap (MSB). Från den 1 januari 2026 blir MSB Myndigheten för civilt försvar, som ett led i att det civila försvaret betonas mer.",
+      "Totalförsvarsplikten gäller alla i åldern 16–70 år, inte bara den som gör värnplikt. Uppgifterna kan vara transporter, vård, barnomsorg __eller__ annan samhällsviktig verksamhet.",
+      "Samband: civilförsvaret håller igång el, vatten, transporter och sjukvård. Det behöver __både__ befolkningen __och__ Försvarsmakten.",
+      "Fundera: hur förberedd är din familj __om__ elen och värmen inte fungerar under ett par dagar?"
+    ],
+    diagram: ["totalforsvar"]
+  },
+  {
+    id: "nato", nr: "2.3", rubrik: "Nato och artikel 5", sida: "",
+    lattlast: [
+      "**Kalla kriget** var konflikten mellan väst och öst efter andra världskriget. Väst leddes av USA. Östeuropa leddes av Sovjetunionen. Det tog slut __när__ kommunismen föll i Östeuropa.",
+      "År 1949 skrev tolv länder under Atlantpakten. Bland dem fanns USA och Kanada. __Då__ bildades **Nato**. Nato är en försvarsallians mellan länder i Europa och Nordamerika.",
+      "Natos viktigaste regel är **artikel 5**. Den säger att medlemmarna ska komma till varandras hjälp __om__ ett medlemsland angrips. Huvudsyftet är att avskräcka andra från att angripa medlemmarna och att säkra freden i det nordatlantiska området.",
+      "__När__ kalla kriget tog slut försvann det största skälet till Nato. __Därför__ har Nato __sedan dess__ mest deltagit i fredsbevarande uppdrag. __Men__ efter att Ryssland annekterade Krim 2014 har Nato gått tillbaka till sina ursprungliga uppgifter.",
+      "Sverige blev fullvärdig medlem i Nato den 7 mars 2024. Rysslands invasion av Ukraina 2022 var en starkt bidragande orsak. Artikel 5 betyder två saker för Sverige. Sverige får stöd __om__ vi angrips. Sverige måste __också__ hjälpa andra medlemmar som angrips."
+    ],
+    fordjupning: [
+      "Nato växte fram ur Brysselpakten 1948 (Storbritannien, Frankrike, Belgien, Luxemburg och Nederländerna). USA såg pakten som ett tecken på att Västeuropa ville samarbeta om försvar __och__ inledde förhandlingar tillsammans med Kanada. Danmark, Island, Italien, Norge och Portugal bjöds in. Atlantpakten skrevs under den 4 april 1949. Först 1951 fick organisationen en mer genomarbetad struktur.",
+      "Nato har i perioder präglats av inre stridigheter om vilken roll organisationen ska ha efter stora samhällsomvandlingar.",
+      "Efter Krim 2014 har beredskapen höjts. Efter invasionen av Ukraina 2022 har allt fler medlemsländer ökat sina försvarsutgifter, __och__ röster har höjts för att Europa behöver en modern och självförsörjande försvarsindustri.",
+      "Sverige samarbetade med Nato långt före medlemskapet: i de Nato-ledda FN-insatserna i Kosovo, Bosnien-Hercegovina och Afghanistan, __och__ i gemensamma övningar under flera decennier.",
+      "Som medlem är Sverige en del av Natos kollektiva försvar __och__ deltar i försvarsplaneringen. Artikel 5 finns i nordatlantiska fördraget och ger ömsesidiga försvarsgarantier: både en rättighet (att få stöd) __och__ en skyldighet (att hjälpa andra)."
+    ],
+    diagram: ["artikel5"]
+  }
+  ]
+},
+
+/* ══════════ DEL 3 ══════════ */
+{
+  titel: "Del 3 – Folkrätten",
+  avsnitt: [
+  {
+    id: "folkratten", nr: "3.1", rubrik: "Folkrätten och dess två delar", sida: "",
+    lattlast: [
+      "Utan regler kan den starkaste bestämma. Det vill de flesta stater undvika. __Därför__ har de kommit överens om internationella spelregler. **Folkrätt** kallas dessa spelregler tillsammans med de mänskliga rättigheterna. Folkrätten styr hur stater ska bete sig mot varandra. Den styr __också__ statens ansvar mot enskilda människor.",
+      "Folkrätten har två huvuddelar. **Fredens folkrätt** gäller i fredstid. Den handlar om mänskliga rättigheter och om internationella avtal mellan stater.",
+      "**Internationell humanitär rätt** gäller __när__ en konflikt uppstår __eller__ är på väg att uppstå. Den kallas __också__ krigets lagar. Reglerna ska __bland annat__ skydda civilbefolkningen. De viktigaste dokumenten är de fyra Genèvekonventionerna med tilläggsprotokoll och de tolv Haagkonventionerna."
+    ],
+    fordjupning: [
+      "Mänskliga rättigheter skyddar medborgarna mot staten. __Men__ det räcker inte: folkrätten behövs __också__ för att skapa ordning mellan stater, __så att__ den starkes rätt inte ska råda.",
+      "Vid första världskriget handlade krigets lagar mest om slagfältet. __Sedan dess__ har konventioner tillkommit som __bland annat__ ska skydda civilbefolkningen.",
+      "Ur Förintelsen föddes två principer. Raphaël Lemkin ville skydda folkgrupper. Det ledde till brottet folkmord och FN:s folkmordskonvention 1948. Hersch Lauterpacht ville stärka individens rättigheter. Det ledde till brottet brott mot mänskligheten. I dag är båda principerna bärande delar av folkrätten.",
+      "Lemkin ifrågasatte varför mord på individer bestraffades __men inte__ folkmord."
+    ],
+    diagram: []
+  },
+  {
+    id: "domstolar", nr: "3.2", rubrik: "Internationella domstolar och statens ansvar", sida: "",
+    lattlast: [
+      "**Internationell domstol** är en domstol som främst hanterar tvister mellan stater. Det finns flera domstolar som ska följa upp att folkrätten följs.",
+      "Krigsförbrytartribunaler är tillfälliga domstolar som FN kan upprätta. De har funnits i Haag för forna Jugoslavien och i Arusha för Rwanda. Internationella domstolen i Haag är ett FN-organ. Den dömer i tvister mellan länder som har lovat att följa domstolens beslut. Internationella brottmålsdomstolen (ICC) dömer enskilda personer. Det gäller krigsförbrytelser, folkmord och brott mot mänskligheten.",
+      "Varje lands statsmakt ansvarar för att den humanitära rätten följs. Landet ska söka efter misstänkta personer. Landet ska åtala misstänkta krigsförbrytare i sina egna domstolar. Det fungerar inte __när__ det är landets egen regim som begår brotten. __Då__ kan de internationella domstolarna döma."
+    ],
+    fordjupning: [
+      "ICC är en fristående organisation som har tillkommit genom samarbetet inom FN. I mars 2023 utfärdade ICC en arresteringsorder på Rysslands president Putin och barnrättskommissionären Maria Lvova-Belova, misstänkta för olaglig förflyttning av ukrainska barn. Länder som är medlemmar i ICC ska vara skyldiga att gripa de efterlysta.",
+      "Varför behövs internationella domstolar? Nationella domstolar fungerar inte __när__ regimen själv begår krigsbrotten. __Därför__ dömer __både__ nationella __och__ internationella domstolar brott mot humanitär rätt.",
+      "Trots folkrätten och domstolarna råder i stort sett djungelns lag i internationell politik. Reglerna följs dåligt av både små och stora stater, __och__ ofta driver de starkaste staterna igenom sin vilja på de svagares bekostnad.",
+      "Fundera (analysfråga 5): är det realistiskt att alla stater följer folkrätten i en värld __där__ starkare stater ofta har mer inflytande?"
+    ],
+    diagram: []
+  }
+  ]
+}
+];
+</script>
+
+<script>
+  /* Smart tillbaka-navigering: history.back() inom samma domän, annars fallback.
+     Fallback: områdets hubbsida (politik.html). */
+  function smartBack(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    try {
+      if (document.referrer &&
+          new URL(document.referrer).hostname === window.location.hostname) {
+        history.back();
+        return;
+      }
+    } catch (err) {}
+    window.location.href = 'politik.html'; // områdets hubbsida
+  }
+</script>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const ALLA = DELAR.flatMap(d => d.avsnitt);
+
+/* ---------- Textformatering: **ord** -> ämnesord (gult), __ord__ -> bindeord (grönt) ---------- */
+function fmt(text) {
+  const parts = String(text).split(/(\*\*.+?\*\*|__.+?__)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**') && part.length > 4)
+      return <mark key={i} className="amne">{part.slice(2, -2)}</mark>;
+    if (part.startsWith('__') && part.endsWith('__') && part.length > 4)
+      return <mark key={i} className="binde">{part.slice(2, -2)}</mark>;
+    return <React.Fragment key={i}>{part}</React.Fragment>;
+  });
+}
+
+/* ===================== INBYGGDA DIAGRAM (SVG) ===================== */
+
+const C = {
+  ax: '#334155', mute: '#64748b', line: '#cbd5e1',
+  acc: '#d97706', accL: '#fef3c7', dark: '#78350f', gold: '#fbbf24',
+  blue: '#2563eb', blueL: '#dbeafe', blueD: '#1e3a8a',
+  purple: '#7c3aed', purpleL: '#ede9fe', purpleD: '#4c1d95',
+  teal: '#0d9488', tealL: '#ccfbf1', tealD: '#134e4a',
+  slate: '#475569', slateL: '#f1f5f9',
+  red: '#dc2626', redL: '#fee2e2'
+};
+
+/* Flera textrader i SVG. */
+function Lines({ x, y, lines, size = 18, lh = 1.25, anchor = 'start', weight = 500, fill = C.ax }) {
+  return (
+    <text x={x} y={y} fontSize={size} textAnchor={anchor} fontWeight={weight} fill={fill}>
+      {lines.map((t, i) => <tspan key={i} x={x} dy={i === 0 ? 0 : size * lh}>{t}</tspan>)}
+    </text>
+  );
+}
+
+function Arrow({ id, color }) {
+  return (
+    <marker id={id} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill={color} />
+    </marker>
+  );
+}
+
+/* (1) EU:s institutioner och hur de hänger ihop */
+function InstitutionerSVG() {
+  return (
+    <svg viewBox="0 0 440 540" role="img" aria-labelledby="ins-t ins-d">
+      <title id="ins-t">EU:s institutioner</title>
+      <desc id="ins-d">Europeiska rådet, med stats- och regeringscheferna, drar upp riktlinjerna och utser kommissionens ordförande. Kommissionen föreslår lagar och sköter budgeten. Kommissionen kan skicka ärenden till EU-domstolen, som tolkar EU:s lagar och ligger i Luxemburg. Kommissionen lägger förslag till Europaparlamentet och Ministerrådet, som beslutar tillsammans om lagar och budget. Medborgarna väljer Europaparlamentet vart femte år. Regeringarna skickar sina ministrar till Ministerrådet.</desc>
+      <defs><Arrow id="ins-a" color={C.ax} /></defs>
+      <text x="220" y="28" fontSize="20" fontWeight="700" textAnchor="middle" fill={C.dark}>EU:s institutioner</text>
+
+      <rect x="80" y="44" width="280" height="78" rx="14" fill={C.accL} stroke={C.acc} strokeWidth="2.5" />
+      <text x="220" y="72" fontSize="19" fontWeight="700" textAnchor="middle" fill={C.dark}>Europeiska rådet</text>
+      <text x="220" y="94" fontSize="15" textAnchor="middle" fill={C.ax}>stats- och regeringschefer</text>
+      <text x="220" y="113" fontSize="15" textAnchor="middle" fill={C.ax}>drar upp riktlinjerna</text>
+
+      <line x1="115" y1="124" x2="115" y2="164" stroke={C.ax} strokeWidth="3" markerEnd="url(#ins-a)" />
+      <text x="126" y="150" fontSize="13" fill={C.mute}>utser ordförande</text>
+
+      <rect x="20" y="170" width="180" height="92" rx="14" fill={C.blueL} stroke={C.blue} strokeWidth="2" />
+      <text x="110" y="198" fontSize="18" fontWeight="700" textAnchor="middle" fill={C.blueD}>Kommissionen</text>
+      <text x="110" y="222" fontSize="15" textAnchor="middle" fill={C.ax}>föreslår lagar</text>
+      <text x="110" y="244" fontSize="15" textAnchor="middle" fill={C.ax}>sköter budgeten</text>
+
+      <line x1="202" y1="222" x2="254" y2="222" stroke={C.ax} strokeWidth="3" markerEnd="url(#ins-a)" />
+      <Lines x={229} y={196} lines={['skickar', 'ärenden']} size={12} lh={1.15} anchor="middle" fill={C.mute} />
+
+      <rect x="260" y="170" width="160" height="92" rx="14" fill={C.slateL} stroke={C.slate} strokeWidth="2" />
+      <text x="340" y="198" fontSize="18" fontWeight="700" textAnchor="middle" fill={C.ax}>EU-domstolen</text>
+      <text x="340" y="222" fontSize="15" textAnchor="middle" fill={C.ax}>tolkar EU:s lagar</text>
+      <text x="340" y="244" fontSize="15" textAnchor="middle" fill={C.ax}>Luxemburg</text>
+
+      <line x1="110" y1="264" x2="110" y2="302" stroke={C.ax} strokeWidth="3" markerEnd="url(#ins-a)" />
+      <text x="121" y="288" fontSize="13" fill={C.mute}>lägger förslag</text>
+
+      <rect x="14" y="306" width="412" height="130" rx="18" fill="none" stroke={C.acc} strokeWidth="2.5" strokeDasharray="7 5" />
+      <text x="220" y="328" fontSize="15" fontWeight="700" textAnchor="middle" fill={C.dark}>Beslutar tillsammans: lagar och budget</text>
+      <rect x="26" y="340" width="188" height="86" rx="14" fill={C.purpleL} stroke={C.purple} strokeWidth="2" />
+      <text x="120" y="364" fontSize="16" fontWeight="700" textAnchor="middle" fill={C.purpleD}>Europaparlamentet</text>
+      <text x="120" y="386" fontSize="14" textAnchor="middle" fill={C.ax}>720 ledamöter</text>
+      <text x="120" y="408" fontSize="13" textAnchor="middle" fill={C.ax}>godkänner kommissionen</text>
+      <rect x="226" y="340" width="188" height="86" rx="14" fill={C.tealL} stroke={C.teal} strokeWidth="2" />
+      <text x="320" y="364" fontSize="17" fontWeight="700" textAnchor="middle" fill={C.tealD}>Ministerrådet</text>
+      <text x="320" y="386" fontSize="14" textAnchor="middle" fill={C.ax}>ministrar från</text>
+      <text x="320" y="408" fontSize="13" textAnchor="middle" fill={C.ax}>EU-ländernas regeringar</text>
+
+      <line x1="120" y1="484" x2="120" y2="432" stroke={C.purple} strokeWidth="3" markerEnd="url(#ins-a)" />
+      <line x1="320" y1="484" x2="320" y2="432" stroke={C.teal} strokeWidth="3" markerEnd="url(#ins-a)" />
+      <Lines x={120} y={504} lines={['Medborgarna väljer', 'vart femte år']} size={14} anchor="middle" weight={600} />
+      <Lines x={320} y={504} lines={['Regeringarna skickar', 'sina ministrar']} size={14} anchor="middle" weight={600} />
+    </svg>
+  );
+}
+
+/* (2) Beslutsprocessen – från förslag till lag, och Sveriges väg in */
+function BeslutSVG() {
+  const steg = [
+    { t: ['EU-kommissionen föreslår', 'en ny lag'], eu: true },
+    { t: ['Regeringen granskar förslaget', 'och tar ställning'], eu: false },
+    { t: ['Regeringen stämmer av med', 'riksdagens EU-nämnd'], eu: false },
+    { t: ['Ministern driver Sveriges', 'linje i Ministerrådet'], eu: false },
+    { t: ['Ministerrådet och Europa-', 'parlamentet beslutar tillsammans'], eu: true }
+  ];
+  return (
+    <svg viewBox="0 0 440 612" role="img" aria-labelledby="bes-t bes-d">
+      <title id="bes-t">Beslutsprocessen i EU</title>
+      <desc id="bes-d">Steg 1: EU-kommissionen föreslår en ny lag. Steg 2: regeringen granskar förslaget och tar ställning. Steg 3: regeringen stämmer av med riksdagens EU-nämnd. Steg 4: ministern driver Sveriges linje i Ministerrådet. Steg 5: Ministerrådet och Europaparlamentet beslutar tillsammans. Om de är överens blir det en ny EU-lag. Om de inte är överens förhandlar de i flera steg mot en kompromiss.</desc>
+      <defs><Arrow id="bes-a" color={C.mute} /></defs>
+      <text x="220" y="26" fontSize="20" fontWeight="700" textAnchor="middle" fill={C.dark}>Från förslag till EU-lag</text>
+      <rect x="64" y="36" width="18" height="18" rx="4" fill={C.blueL} stroke={C.blue} strokeWidth="2" />
+      <text x="90" y="51" fontSize="15" fill={C.ax}>EU-nivå</text>
+      <rect x="230" y="36" width="18" height="18" rx="4" fill={C.accL} stroke={C.acc} strokeWidth="2" />
+      <text x="256" y="51" fontSize="15" fill={C.ax}>i Sverige</text>
+      {steg.map((s, i) => {
+        const y = 66 + i * 84;
+        return (
+          <g key={i}>
+            <rect x="20" y={y} width="400" height="68" rx="14" fill={s.eu ? C.blueL : C.accL} stroke={s.eu ? C.blue : C.acc} strokeWidth="2" />
+            <circle cx="52" cy={y + 34} r="18" fill={s.eu ? C.blue : C.acc} />
+            <text x="52" y={y + 41} fontSize="19" fontWeight="700" textAnchor="middle" fill="#fff">{i + 1}</text>
+            <Lines x={84} y={y + 29} lines={s.t} size={16} weight={600} />
+            <line x1="52" y1={y + 70} x2="52" y2={y + 82} stroke={C.mute} strokeWidth="2.5" markerEnd="url(#bes-a)" />
+          </g>
+        );
+      })}
+      <rect x="20" y="486" width="400" height="58" rx="29" fill={C.gold} />
+      <text x="220" y="522" fontSize="20" fontWeight="700" textAnchor="middle" fill={C.dark}>Överens → ny EU-lag</text>
+      <Lines x={220} y={572} lines={['Inte överens? Förhandling i flera steg', 'med målet att nå en kompromiss.']} size={15} anchor="middle" fill={C.mute} />
+    </svg>
+  );
+}
+
+/* (3) Totalförsvaret: militärt + civilt försvar */
+function TotalforsvarSVG() {
+  return (
+    <svg viewBox="0 0 440 520" role="img" aria-labelledby="tf-t tf-d">
+      <title id="tf-t">Det svenska totalförsvaret</title>
+      <desc id="tf-d">Totalförsvaret försvarar Sverige mot angrepp. Det består av två delar. Det militära försvaret är Försvarsmakten, som försvarar landet och gör fredsbevarande insatser. Det civila försvaret är Civilförsvaret, som skyddar och hjälper befolkningen och ser till att samhället fungerar. Civilförsvaret stöder Försvarsmakten med transporter, sjukvård, el och vatten. Totalförsvarsplikt gäller alla som bor i Sverige och är 16 till 70 år.</desc>
+      <defs><Arrow id="tf-a" color={C.ax} /><Arrow id="tf-b" color={C.teal} /></defs>
+      <rect x="60" y="20" width="320" height="80" rx="16" fill={C.accL} stroke={C.acc} strokeWidth="2.5" />
+      <text x="220" y="54" fontSize="23" fontWeight="700" textAnchor="middle" fill={C.dark}>Totalförsvar</text>
+      <text x="220" y="80" fontSize="15" textAnchor="middle" fill={C.ax}>försvarar Sverige mot angrepp</text>
+
+      <line x1="150" y1="102" x2="116" y2="164" stroke={C.ax} strokeWidth="3" markerEnd="url(#tf-a)" />
+      <line x1="290" y1="102" x2="324" y2="164" stroke={C.ax} strokeWidth="3" markerEnd="url(#tf-a)" />
+
+      <rect x="16" y="170" width="196" height="160" rx="16" fill={C.blueL} stroke={C.blue} strokeWidth="2" />
+      <text x="114" y="196" fontSize="14" fontWeight="600" textAnchor="middle" fill={C.mute}>MILITÄRT FÖRSVAR</text>
+      <text x="114" y="224" fontSize="19" fontWeight="700" textAnchor="middle" fill={C.blueD}>Försvarsmakten</text>
+      <Lines x={114} y={258} lines={['försvarar landet', 'fredsbevarande', 'insatser']} size={15} anchor="middle" />
+
+      <rect x="228" y="170" width="196" height="160" rx="16" fill={C.tealL} stroke={C.teal} strokeWidth="2" />
+      <text x="326" y="196" fontSize="14" fontWeight="600" textAnchor="middle" fill={C.mute}>CIVILT FÖRSVAR</text>
+      <text x="326" y="224" fontSize="19" fontWeight="700" textAnchor="middle" fill={C.tealD}>Civilförsvaret</text>
+      <Lines x={326} y={258} lines={['skyddar och hjälper', 'befolkningen', 'håller samhället igång']} size={15} anchor="middle" />
+
+      <path d="M326 334 C 300 388, 140 388, 116 336" stroke={C.teal} strokeWidth="3" fill="none" markerEnd="url(#tf-b)" />
+      <Lines x={220} y={400} lines={['stöd: transporter, sjukvård,', 'el och vatten']} size={14} anchor="middle" weight={600} fill={C.tealD} />
+
+      <rect x="16" y="434" width="408" height="70" rx="14" fill={C.accL} stroke={C.acc} strokeWidth="2" />
+      <text x="220" y="462" fontSize="18" fontWeight="700" textAnchor="middle" fill={C.dark}>Totalförsvarsplikt</text>
+      <text x="220" y="488" fontSize="15" textAnchor="middle" fill={C.ax}>alla som bor i Sverige och är 16–70 år</text>
+    </svg>
+  );
+}
+
+/* (4) Natos artikel 5 */
+function Artikel5SVG() {
+  const cx = 220, cy = 220, R = 140;
+  const nodes = [0, 60, 120, 180, 240, 300].map(a => {
+    const r = a * Math.PI / 180;
+    return { a, x: cx + R * Math.cos(r), y: cy + R * Math.sin(r), sv: a === 180 };
+  });
+  return (
+    <svg viewBox="0 0 440 500" role="img" aria-labelledby="a5-t a5-d">
+      <title id="a5-t">Natos artikel 5</title>
+      <desc id="a5-d">En angripare anfaller ett medlemsland i Nato. Alla andra medlemmar, bland dem Sverige, ska komma till hjälp. För Sverige betyder det att Sverige får stöd om vi angrips, och att Sverige ska hjälpa andra medlemmar som angrips.</desc>
+      <defs><Arrow id="a5-r" color={C.red} /><Arrow id="a5-h" color={C.acc} /></defs>
+      <text x="220" y="26" fontSize="20" fontWeight="700" textAnchor="middle" fill={C.dark}>Natos artikel 5</text>
+      <rect x="178" y="40" width="84" height="32" rx="8" fill={C.redL} stroke={C.red} strokeWidth="2" />
+      <text x="220" y="62" fontSize="15" fontWeight="700" textAnchor="middle" fill={C.red}>Angripare</text>
+      <line x1="220" y1="74" x2="220" y2="166" stroke={C.red} strokeWidth="3.5" strokeDasharray="8 5" markerEnd="url(#a5-r)" />
+      {nodes.map(n => {
+        const ux = (cx - n.x) / R, uy = (cy - n.y) / R;
+        return (
+          <line key={'l' + n.a} x1={n.x + ux * 34} y1={n.y + uy * 34} x2={cx - ux * 56} y2={cy - uy * 56}
+                stroke={C.acc} strokeWidth="3" markerEnd="url(#a5-h)" />
+        );
+      })}
+      <circle cx={cx} cy={cy} r="48" fill={C.red} />
+      <text x={cx} y={cy - 3} fontSize="15" fontWeight="700" textAnchor="middle" fill="#fff">Angripet</text>
+      <text x={cx} y={cy + 16} fontSize="13" fontWeight="600" textAnchor="middle" fill="#fff">medlemsland</text>
+      {nodes.map(n => (
+        <g key={'n' + n.a}>
+          <circle cx={n.x} cy={n.y} r="32" fill={n.sv ? C.gold : C.accL} stroke={C.acc} strokeWidth="2" />
+          <text x={n.x} y={n.y + 5} fontSize="14" fontWeight="700" textAnchor="middle" fill={C.dark}>{n.sv ? 'Sverige' : 'Medlem'}</text>
+        </g>
+      ))}
+      <text x="220" y="392" fontSize="15" fontWeight="600" textAnchor="middle" fill={C.ax}>Medlemmarna ska komma till varandras hjälp</text>
+      <rect x="16" y="406" width="200" height="78" rx="14" fill={C.accL} stroke={C.acc} strokeWidth="2" />
+      <Lines x={116} y={436} lines={['Sverige får stöd', 'om vi angrips']} size={16} lh={1.35} anchor="middle" weight={600} fill={C.dark} />
+      <rect x="224" y="406" width="200" height="78" rx="14" fill={C.accL} stroke={C.acc} strokeWidth="2" />
+      <Lines x={324} y={436} lines={['Sverige ska hjälpa', 'andra som angrips']} size={16} lh={1.35} anchor="middle" weight={600} fill={C.dark} />
+    </svg>
+  );
+}
+
+const DIAGRAMS = {
+  institutioner: { Comp: InstitutionerSVG, cap: '**EU:s institutioner**: kommissionen föreslår, parlamentet och Ministerrådet beslutar tillsammans, EU-domstolen tolkar lagarna och Europeiska rådet drar upp riktlinjerna.' },
+  beslut:        { Comp: BeslutSVG,        cap: '**Beslutsprocessen**: kommissionen föreslår → Europaparlamentet + Ministerrådet beslutar. Sverige påverkar via regeringen, som först stämmer av med riksdagens EU-nämnd.' },
+  totalforsvar:  { Comp: TotalforsvarSVG,  cap: '**Totalförsvaret** = militärt försvar (Försvarsmakten) + civilt försvar (Civilförsvaret).' },
+  artikel5:      { Comp: Artikel5SVG,      cap: '**Artikel 5**: om ett medlemsland angrips ska de andra komma till hjälp. Sverige kan både få stöd och måste hjälpa andra.' }
+};
+
+function Diagram({ id }) {
+  const d = DIAGRAMS[id];
+  if (!d) return null;
+  return (
+    <figure className="diagram">
+      <d.Comp />
+      <figcaption>{fmt(d.cap)}</figcaption>
+    </figure>
+  );
+}
+
+/* ===================== AVSNITT ===================== */
+
+function Section({ sec, mode }) {
+  return (
+    <section id={sec.id} className="sec">
+      <div className="sec-head">
+        <span className="sec-nr">{sec.nr}</span>
+        <h3 className="sec-title">{sec.rubrik}</h3>
+        {sec.sida && <span className="sec-sida">{sec.sida}</span>}
+      </div>
+
+      <div className="block">
+        {[].concat(sec.lattlast).map((t, i) => <p key={i} className="ll">{fmt(t)}</p>)}
+
+        {sec.diagram.map(id => <Diagram key={id} id={id} />)}
+
+        {mode === 'fordjupning' && (
+          <div className="fdj">
+            <div className="fdj-h">🔍 Fördjupning</div>
+            <ul>{sec.fordjupning.map((t, i) => <li key={i}>{fmt(t)}</li>)}</ul>
+          </div>
+        )}
+
+        <div className="to-top">
+          <a href="#toppen" onClick={(e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}>↑ Till toppen</a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ===================== APP ===================== */
+
+function App() {
+  /* Läget sparas bara i sessionStorage under egen nyckel – påverkar inget annat. */
+  const [mode, setMode] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem(PAGE.storeKey);
+      if (saved === 'lattlast' || saved === 'fordjupning') return saved;
+    } catch (e) {}
+    return 'lattlast';
+  });
+  const [active, setActive] = useState(ALLA[0].id);
+  const [tocOpen, setTocOpen] = useState(false);
+
+  useEffect(() => {
+    try { sessionStorage.setItem(PAGE.storeKey, mode); } catch (e) {}
+  }, [mode]);
+
+  /* Markera aktuellt avsnitt i innehållsförteckningen. */
+  useEffect(() => {
+    if (!('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver(entries => {
+      const vis = entries.filter(en => en.isIntersecting)
+                         .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+      if (vis.length) setActive(vis[0].target.id);
+    }, { rootMargin: '-15% 0px -70% 0px' });
+    ALLA.forEach(s => { const el = document.getElementById(s.id); if (el) io.observe(el); });
+    return () => io.disconnect();
+  }, []);
+
+  /* Djuplänk: scrolla till avsnittet i URL:ens hash när sidan laddats. */
+  useEffect(() => {
+    const id = decodeURIComponent((window.location.hash || '').replace('#', ''));
+    if (!id) return;
+    window.setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ block: 'start' });
+    }, 150);
+  }, []);
+
+  const goto = (e, id) => {
+    e.preventDefault();
+    setTocOpen(false);
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    try { history.replaceState(null, '', '#' + id); } catch (err) {}
+  };
+
+  const activeSec = ALLA.find(s => s.id === active) || ALLA[0];
+
+  return (
+    <div className="wrap" id="toppen">
+
+      <a href="politik.html" className="back" onClick={smartBack}>
+        ← Tillbaka till startsidan
+      </a>
+
+      <header className="head">
+        <p className="eyebrow">{PAGE.eyebrow}</p>
+        <h1>{PAGE.titel}</h1>
+        <div className="rule"></div>
+        <p className="lead">
+          Pluggmaterial i {DELAR.length} delar och {ALLA.length} avsnitt. <strong>Lättläst</strong> visar grundtexten.
+          {' '}<strong>Fördjupning</strong> visar samma text plus orsaker, konsekvenser och samband för dig som vill veta mer.
+        </p>
+      </header>
+
+      <div className="pill-toggle" role="tablist" aria-label="Välj läge">
+        <button role="tab" aria-selected={mode === 'lattlast'}
+                className={mode === 'lattlast' ? 'active' : 'inactive'}
+                onClick={() => setMode('lattlast')}>Lättläst</button>
+        <button role="tab" aria-selected={mode === 'fordjupning'}
+                className={mode === 'fordjupning' ? 'active' : 'inactive'}
+                onClick={() => setMode('fordjupning')}>Fördjupning</button>
+      </div>
+      <p className="mode-note">
+        {mode === 'lattlast'
+          ? 'Lättläst: grundtexten för varje avsnitt.'
+          : 'Fördjupning: grundtexten + en punktlista med orsaker, konsekvenser och samband.'}
+      </p>
+
+      <div className="legend" aria-label="Färgkoder i texten">
+        <span><mark className="amne">gult</mark> = ämnesord</span>
+        <span><mark className="binde">grönt</mark> = bindeord</span>
+      </div>
+
+      <div className="layout">
+        <nav className={'toc' + (tocOpen ? ' open' : '')} aria-label="Innehåll">
+          <button className="toc-btn" onClick={() => setTocOpen(o => !o)} aria-expanded={tocOpen}>
+            <span className="toc-btn-t">☰ {activeSec.nr} {activeSec.rubrik}</span>
+            <span aria-hidden="true">{tocOpen ? '▲' : '▼'}</span>
+          </button>
+          <div className="toc-h">Innehåll</div>
+          <div className="toc-list">
+            {DELAR.map(d => (
+              <React.Fragment key={d.titel}>
+                <div className="toc-del">{d.titel}</div>
+                {d.avsnitt.map(s => (
+                  <a href={'#' + s.id} key={s.id} onClick={(e) => goto(e, s.id)}
+                     className={s.id === active ? 'active' : ''}>
+                    <span className="toc-n">{s.nr}</span>
+                    <span className="toc-t">{s.rubrik}</span>
+                  </a>
+                ))}
+              </React.Fragment>
+            ))}
+          </div>
+        </nav>
+
+        <main>
+          {DELAR.map(d => (
+            <React.Fragment key={d.titel}>
+              <h2 className="del-head">{d.titel}</h2>
+              {d.avsnitt.map(s => <Section key={s.id} sec={s} mode={mode} />)}
+            </React.Fragment>
+          ))}
+
+          <section className="next" aria-label="Öva vidare">
+            <h2>Öva vidare</h2>
+            <p>Har du läst klart? Testa dig själv på områdets begrepp och gör quizet.</p>
+            <div className="next-links">
+              <a className="next-btn" href="internationella_relationer_begrepp.html">📖 Öva på begrepp</a>
+              <a className="next-btn" href="internationella_relationer_quiz.html">🎯 Starta quiz</a>
+            </div>
+          </section>
+
+          <footer className="foot">
+            <p>Källa: {PAGE.kalla}</p>
+            <p className="by">Designad av John</p>
+          </footer>
+        </main>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+
+<script src="feedback-widget.js" defer></script>
+<script data-goatcounter="https://johnblixt.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
