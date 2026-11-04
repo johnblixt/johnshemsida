@@ -199,6 +199,13 @@
       * { transition: none !important; animation: none !important; }
       .btn-primary:hover { transform: none; }
     }
+
+    /* Nästa-knappen ska alltid gå att nå */
+    .modal-box { max-height: 100%; overflow-y: auto; }
+    @media (max-width: 768px) {
+      .nav-row { flex-wrap: wrap; justify-content: space-between; position: sticky; bottom: 0; padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); background: #f6fdf8; }
+      .btn-back, .btn-next { flex: 1; min-width: 120px; min-height: 48px; text-align: center; margin-left: 0; }
+    }
   </style>
 </head>
 <body>
@@ -665,6 +672,9 @@ let cur = 0;
 let score = 0;
 let elapsed = 0;
 let timerID = null;
+let feedbackTimeout = null;
+let modalShownAt = 0;
+const MODAL_LOCK_MS = 400; // ett extra tryck när modalen öppnas får inte stänga den
 
 function buildState() {
   qs = shuffleArray([...FRAGOR]).map(f => {
@@ -746,9 +756,10 @@ function render() {
   });
 
   document.getElementById('btn-back').style.display = cur > 0 ? 'inline-block' : 'none';
+  document.getElementById('btn-back').disabled = feedbackActive();
   const nextBtn = document.getElementById('btn-next');
-  nextBtn.style.display = q.answered ? 'inline-block' : 'none';
-  nextBtn.textContent = cur === total - 1 ? 'Se resultat →' : 'Nästa →';
+  nextBtn.style.display = q.answered && !feedbackActive() ? 'inline-block' : 'none';
+  nextBtn.textContent = nextLabel();
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -770,12 +781,15 @@ function handleAnswer(i) {
     else                 btn.classList.add('dimmed');
   });
 
-  const nextBtn = document.getElementById('btn-next');
-  nextBtn.style.display = 'inline-block';
-  nextBtn.textContent = cur === qs.length - 1 ? 'Se resultat →' : 'Nästa →';
+  document.getElementById('btn-back').disabled = true;
   document.getElementById('score-pill').textContent = 'Poäng: ' + score;
 
-  setTimeout(() => showModal(isCorrect, q), 600);
+  // Navigeringen hålls låst tills modalen stängts — annars hamnar förklaringen
+  // på nästa fråga och modalens knapp hoppar över en fråga.
+  feedbackTimeout = setTimeout(() => {
+    feedbackTimeout = null;
+    showModal(isCorrect, q);
+  }, 600);
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -798,26 +812,48 @@ function showModal(isCorrect, q) {
   ansEl.appendChild(document.createTextNode(q.data.ratt));
 
   document.getElementById('modal-read').innerHTML = lasMerHtml(q.data);
-  document.getElementById('modal-next').textContent =
-    cur === qs.length - 1 ? 'Se resultat →' : 'Nästa fråga →';
+  document.getElementById('modal-next').textContent = nextLabel();
   document.getElementById('modal-overlay').classList.remove('hidden');
+  document.getElementById('modal-next').focus({ preventScroll: true });
+  modalShownAt = performance.now();
 }
 
 function closeModal() {
+  if (performance.now() - modalShownAt < MODAL_LOCK_MS) return;
   document.getElementById('modal-overlay').classList.add('hidden');
   goNext();
+}
+function feedbackActive() {
+  return feedbackTimeout !== null || !document.getElementById('modal-overlay').classList.contains('hidden');
+}
+function nextLabel() {
+  return cur === qs.length - 1 ? 'Visa resultat →' : 'Nästa fråga →';
 }
 
 /* ════════════════════════════════════════════════════════════
    NAVIGERING — bakåt påverkar aldrig poäng eller blandning
    ════════════════════════════════════════════════════════════ */
-function goBack() { if (cur > 0) { cur--; render(); } }
+function goBack() {
+  if (feedbackActive()) return;
+  if (cur > 0) { cur--; render(); }
+}
 
 function goNext() {
-  document.getElementById('modal-overlay').classList.add('hidden');
+  if (feedbackActive() || !qs[cur].answered) return;
   if (cur < qs.length - 1) { cur++; render(); }
   else showResults();
 }
+
+// Enter/mellanslag går vidare när frågan är besvarad. Aktiva knappar sköter tangenten själva.
+document.addEventListener('keydown', e => {
+  if ((e.key !== 'Enter' && e.key !== ' ') || e.repeat) return;
+  if (!document.getElementById('screen-quiz').classList.contains('active')) return;
+  if (e.target.closest('button:not(:disabled), a, input, textarea, select')) return;
+  e.preventDefault();
+  if (feedbackTimeout !== null) return;
+  if (!document.getElementById('modal-overlay').classList.contains('hidden')) closeModal();
+  else goNext();
+});
 
 /* ════════════════════════════════════════════════════════════
    RESULTATSKÄRM

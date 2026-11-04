@@ -200,6 +200,13 @@
       .easy-toggle { padding: 5px 8px; font-size: 0.76rem; }
       .ar-toggle { padding: 3px 8px 3px 4px; }
     }
+
+    /* Nästa-knappen ska alltid gå att nå */
+    .modal-box { max-height: 100%; overflow-y: auto; }
+    @media (max-width: 768px) {
+      .nav-row { flex-wrap: wrap; justify-content: space-between; position: sticky; bottom: 0; padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); background: #f0f9ff; }
+      .btn-back, .btn-next { flex: 1; min-width: 120px; min-height: 48px; text-align: center; margin-left: 0; }
+    }
   </style>
 </head>
 <body>
@@ -919,9 +926,8 @@ const UI_ENKEL = {
   correctAnswerLbl: 'Rätt svar: ',
   notAnswered:      '– (du svarade inte)',
   backBtn:          '← Tillbaka',
-  nextBtn:          'Nästa →',
-  resultBtn:        'Se resultat →',
-  modalNextBtn:     'Nästa fråga →',
+  nextBtn:          'Nästa fråga →',
+  resultBtn:        'Visa resultat →',
   restartBtn:       '↺ Gör om'
 };
 const UI_ORIG = {
@@ -931,9 +937,8 @@ const UI_ORIG = {
   correctAnswerLbl: 'Rätt svar: ',
   notAnswered:      '— (inte besvarad)',
   backBtn:          '← Bakåt',
-  nextBtn:          'Nästa →',
-  resultBtn:        'Se resultat →',
-  modalNextBtn:     'Nästa fråga →',
+  nextBtn:          'Nästa fråga →',
+  resultBtn:        'Visa resultat →',
   restartBtn:       '↺ Gör om quizet'
 };
 
@@ -948,6 +953,9 @@ let timerInterval = null;
 let startTime = 0;
 let elapsedMs = 0;
 let modalOpen = false;
+let feedbackTimeout = null;
+let modalShownAt = 0;
+const MODAL_LOCK_MS = 400; // ett extra tryck när modalen öppnas får inte stänga den
 
 // ── Textläge och arabiskt stöd – två oberoende inställningar ──
 // mode: 'sv' (original) eller 'easy' (Enkel svenska). arSupport: arabisk rad under svenskan.
@@ -1145,9 +1153,10 @@ function renderQuestion() {
   const back = $('btn-back');
   const next = $('btn-next');
   back.textContent = ui('backBtn');
-  next.textContent = cur === n - 1 ? ui('resultBtn') : ui('nextBtn');
+  next.textContent = nextLabel();
   back.style.display = cur > 0 ? 'inline-block' : 'none';
-  next.style.display = st.answered ? 'inline-block' : 'none';
+  back.disabled = feedbackActive();
+  next.style.display = st.answered && !feedbackActive() ? 'inline-block' : 'none';
 }
 
 // ════════════════════════════════════════════════════════════
@@ -1162,17 +1171,18 @@ function answerQuestion(chosenIdx) {
   st.answered = true;
   if (isCorrect) score++;
 
-  renderQuestion();
-
-  // Hoppa över modalen om eleven redan gått vidare — annars stegar
-  // modalens "Nästa fråga →" fram en gång till och en fråga hoppas över.
-  const answeredAt = cur;
-  setTimeout(() => {
-    if (cur !== answeredAt || !$('screen-quiz').classList.contains('active')) return;
+  // Navigeringen hålls låst tills modalen stängts — annars kan förklaringen hoppas över.
+  feedbackTimeout = setTimeout(() => {
+    feedbackTimeout = null;
     modalOpen = true;
     renderModal();
     $('modal-overlay').classList.remove('hidden');
+    $('modal-next').focus({ preventScroll: true });
+    modalShownAt = performance.now();
   }, 600);
+
+  renderQuestion();
+
 }
 
 // ════════════════════════════════════════════════════════════
@@ -1186,24 +1196,44 @@ function renderModal() {
   verdict.textContent = isCorrect ? 'Rätt svar!' : 'Fel svar';
   verdict.className = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
   setText($('modal-expl'), explText(shuffled[cur]), explAr(shuffled[cur]));
-  $('modal-next').textContent = ui('modalNextBtn');
+  $('modal-next').textContent = nextLabel();
 }
 function closeModal() {
+  if (performance.now() - modalShownAt < MODAL_LOCK_MS) return;
   $('modal-overlay').classList.add('hidden');
   modalOpen = false;
   goNext();
+}
+function feedbackActive() {
+  return feedbackTimeout !== null || modalOpen;
+}
+function nextLabel() {
+  return cur === shuffled.length - 1 ? ui('resultBtn') : ui('nextBtn');
 }
 
 // ════════════════════════════════════════════════════════════
 // NAVIGATION
 // ════════════════════════════════════════════════════════════
-function goBack() { if (cur > 0) { cur--; renderQuestion(); } }
+function goBack() {
+  if (feedbackActive()) return;
+  if (cur > 0) { cur--; renderQuestion(); }
+}
 function goNext() {
-  $('modal-overlay').classList.add('hidden');
-  modalOpen = false;
+  if (feedbackActive() || !states[cur].answered) return;
   if (cur < shuffled.length - 1) { cur++; renderQuestion(); }
   else endQuiz();
 }
+
+// Enter/mellanslag går vidare när frågan är besvarad. Aktiva knappar sköter tangenten själva.
+document.addEventListener('keydown', e => {
+  if ((e.key !== 'Enter' && e.key !== ' ') || e.repeat) return;
+  if (!$('screen-quiz').classList.contains('active')) return;
+  if (e.target.closest('button:not(:disabled), a, input, textarea, select')) return;
+  e.preventDefault();
+  if (feedbackTimeout !== null) return;
+  if (modalOpen) closeModal();
+  else goNext();
+});
 
 // ════════════════════════════════════════════════════════════
 // RESULTS

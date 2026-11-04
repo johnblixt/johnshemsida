@@ -296,6 +296,13 @@
     @media (prefers-reduced-motion: reduce) {
       * { transition: none !important; animation: none !important; }
     }
+
+    /* Nästa-knappen ska alltid gå att nå */
+    .modal-box { max-height: 100%; overflow-y: auto; }
+    @media (max-width: 768px) {
+      .nav-row { flex-wrap: wrap; justify-content: space-between; position: sticky; bottom: 0; padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); background: var(--primary-light); }
+      .btn-back, .btn-next { flex: 1; min-width: 120px; min-height: 48px; text-align: center; margin-left: 0; }
+    }
   </style>
 </head>
 <body>
@@ -447,8 +454,8 @@ const UI_ENKEL = {
   notAnswered:      '– (du svarade inte)',
   srcLbl:           'Läs mer i boken: ',
   backBtn:          '← Tillbaka',
-  nextBtn:          'Nästa →',
-  modalNextBtn:     'Nästa fråga →',
+  nextBtn:          'Nästa fråga →',
+  resultBtn:        'Visa resultat →',
   restartBtn:       '↺ Gör om',
   chooseBtn:        'Välj en annan del'
 };
@@ -460,8 +467,8 @@ const UI_ORIG = {
   notAnswered:      '–',
   srcLbl:           'Källa: ',
   backBtn:          '← Bakåt',
-  nextBtn:          'Nästa →',
-  modalNextBtn:     'Nästa fråga →',
+  nextBtn:          'Nästa fråga →',
+  resultBtn:        'Visa resultat →',
   restartBtn:       '↺ Gör om quizet',
   chooseBtn:        'Välj en annan del'
 };
@@ -480,6 +487,9 @@ let timerInterval = null;
 let startTime = 0;
 let elapsedMs = 0;
 let modalOpen = false;
+let feedbackTimeout = null;
+let modalShownAt = 0;
+const MODAL_LOCK_MS = 400; // ett extra tryck när modalen öppnas får inte stänga den
 
 // ── Textläge och arabiskt stöd – två oberoende inställningar ──
 // mode: 'sv' (original) eller 'easy' (Enkel svenska). arSupport: arabisk rad under svenskan.
@@ -704,9 +714,10 @@ function renderQuestion() {
   const back = $('btn-back');
   const next = $('btn-next');
   back.textContent = ui('backBtn');
-  next.textContent = ui('nextBtn');
+  next.textContent = nextLabel();
   back.style.display = cur > 0 ? 'block' : 'none';
-  next.style.display = st.answered ? 'block' : 'none';
+  back.disabled = feedbackActive();
+  next.style.display = st.answered && !feedbackActive() ? 'block' : 'none';
 }
 
 function renderStreak(bump) {
@@ -738,16 +749,19 @@ function answerQuestion(chosenIdx) {
   }
   st.streakAfter = streak;
 
-  renderQuestion();
-  renderStreak(isCorrect);
-
-  const answeredAt = cur;
-  setTimeout(() => {
-    if (cur !== answeredAt || !$('screen-quiz').classList.contains('active')) return;
+  // Navigeringen hålls låst tills modalen stängts — annars kan förklaringen hoppas över.
+  feedbackTimeout = setTimeout(() => {
+    feedbackTimeout = null;
     modalOpen = true;
     renderModal();
     $('modal-overlay').classList.remove('hidden');
+    $('modal-next').focus({ preventScroll: true });
+    modalShownAt = performance.now();
   }, 600);
+
+  renderQuestion();
+  renderStreak(isCorrect);
+
 }
 
 function renderModal() {
@@ -764,20 +778,26 @@ function renderModal() {
   $('modal-streak').textContent = streakMsg;
   setText($('modal-expl'), explText(q), explAr(q));
   $('modal-src').textContent = ui('srcLbl') + q.kalla;
-  $('modal-next').textContent = cur < shuffled.length - 1 ? ui('modalNextBtn') : 'Se resultatet →';
+  $('modal-next').textContent = nextLabel();
 }
 
 // ── Modal close → next ─────────────────────────────────────
 function closeModal() {
+  if (performance.now() - modalShownAt < MODAL_LOCK_MS) return;
   $('modal-overlay').classList.add('hidden');
   modalOpen = false;
   goNext();
 }
+function feedbackActive() {
+  return feedbackTimeout !== null || modalOpen;
+}
+function nextLabel() {
+  return cur === shuffled.length - 1 ? ui('resultBtn') : ui('nextBtn');
+}
 
 // ── Navigation ─────────────────────────────────────────────
 function goNext() {
-  $('modal-overlay').classList.add('hidden');
-  modalOpen = false;
+  if (feedbackActive() || !states[cur].answered) return;
   if (cur < shuffled.length - 1) {
     cur++;
     renderQuestion();
@@ -786,7 +806,19 @@ function goNext() {
   }
 }
 
+// Enter/mellanslag går vidare när frågan är besvarad. Aktiva knappar sköter tangenten själva.
+document.addEventListener('keydown', e => {
+  if ((e.key !== 'Enter' && e.key !== ' ') || e.repeat) return;
+  if (!$('screen-quiz').classList.contains('active')) return;
+  if (e.target.closest('button:not(:disabled), a, input, textarea, select')) return;
+  e.preventDefault();
+  if (feedbackTimeout !== null) return;
+  if (modalOpen) closeModal();
+  else goNext();
+});
+
 function goBack() {
+  if (feedbackActive()) return;
   if (cur > 0) {
     cur--;
     renderQuestion();

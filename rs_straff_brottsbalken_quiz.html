@@ -170,6 +170,13 @@
       #screen-start h1 { font-size: 1.85rem; }
       .q-text { font-size: 1.05rem; }
     }
+
+    /* Nästa-knappen ska alltid gå att nå */
+    .modal-box { max-height: 100%; overflow-y: auto; }
+    @media (max-width: 768px) {
+      .nav-row { flex-wrap: wrap; justify-content: space-between; position: sticky; bottom: 0; padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); background: #fff1f2; }
+      .btn-back, .btn-next { flex: 1; min-width: 120px; min-height: 48px; text-align: center; margin-left: 0; }
+    }
   </style>
 </head>
 <body>
@@ -212,7 +219,7 @@
     <div class="modal-icon"  id="modal-icon"></div>
     <div class="modal-verdict" id="modal-verdict"></div>
     <div class="modal-expl"   id="modal-expl"></div>
-    <button class="btn-primary" onclick="closeModal()">Nästa fråga →</button>
+    <button class="btn-primary" id="modal-next" onclick="closeModal()">Nästa fråga →</button>
   </div>
 </div>
 
@@ -646,6 +653,9 @@ let cur = 0;        // current question index
 let score = 0;
 let elapsed = 0;
 let timerID = null;
+let feedbackTimeout = null;
+let modalShownAt = 0;
+const MODAL_LOCK_MS = 400; // ett extra tryck när modalen öppnas får inte stänga den
 
 function buildState() {
   const shuffled = shuffleArray([...QUESTIONS]);
@@ -749,9 +759,9 @@ function render() {
 
   // Nav buttons
   document.getElementById('btn-back').style.display = cur > 0 ? 'inline-block' : 'none';
-  document.getElementById('btn-next').style.display = q.answered ? 'inline-block' : 'none';
-  document.getElementById('btn-next').textContent =
-    cur === total - 1 ? 'Se resultat →' : 'Nästa →';
+  document.getElementById('btn-back').disabled = feedbackActive();
+  document.getElementById('btn-next').style.display = q.answered && !feedbackActive() ? 'inline-block' : 'none';
+  document.getElementById('btn-next').textContent = nextLabel();
 }
 
 // ════════════════════════════════════════════════════════════
@@ -777,14 +787,15 @@ function handleAnswer(displayPos) {
     else btn.classList.add('dimmed');
   });
 
-  // Show next button
-  document.getElementById('btn-next').style.display = 'inline-block';
-  document.getElementById('btn-next').textContent =
-    cur === qs.length - 1 ? 'Se resultat →' : 'Nästa →';
+  document.getElementById('btn-back').disabled = true;
   document.getElementById('score-pill').textContent = `Poäng: ${score}`;
 
-  // Modal after 600 ms
-  setTimeout(() => showModal(isCorrect, q.expl), 600);
+  // Navigeringen hålls låst tills modalen stängts — annars hamnar förklaringen
+  // på nästa fråga och modalens knapp hoppar över en fråga.
+  feedbackTimeout = setTimeout(() => {
+    feedbackTimeout = null;
+    showModal(isCorrect, q.expl);
+  }, 600);
 }
 
 // ════════════════════════════════════════════════════════════
@@ -795,23 +806,34 @@ function showModal(isCorrect, expl) {
   document.getElementById('modal-verdict').textContent = isCorrect ? 'Rätt svar!' : 'Fel svar';
   document.getElementById('modal-verdict').className   = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
   document.getElementById('modal-expl').textContent    = expl;
+  document.getElementById('modal-next').textContent = nextLabel();
   document.getElementById('modal-overlay').classList.remove('hidden');
+  document.getElementById('modal-next').focus({ preventScroll: true });
+  modalShownAt = performance.now();
 }
 
 function closeModal() {
+  if (performance.now() - modalShownAt < MODAL_LOCK_MS) return;
   document.getElementById('modal-overlay').classList.add('hidden');
   goNext();
+}
+function feedbackActive() {
+  return feedbackTimeout !== null || !document.getElementById('modal-overlay').classList.contains('hidden');
+}
+function nextLabel() {
+  return cur === qs.length - 1 ? 'Visa resultat →' : 'Nästa fråga →';
 }
 
 // ════════════════════════════════════════════════════════════
 // NAVIGATION
 // ════════════════════════════════════════════════════════════
 function goBack() {
+  if (feedbackActive()) return;
   if (cur > 0) { cur--; render(); }
 }
 
 function goNext() {
-  document.getElementById('modal-overlay').classList.add('hidden');
+  if (feedbackActive() || !qs[cur].answered) return;
   if (cur < qs.length - 1) {
     cur++;
     render();
@@ -819,6 +841,17 @@ function goNext() {
     showResults();
   }
 }
+
+// Enter/mellanslag går vidare när frågan är besvarad. Aktiva knappar sköter tangenten själva.
+document.addEventListener('keydown', e => {
+  if ((e.key !== 'Enter' && e.key !== ' ') || e.repeat) return;
+  if (!document.getElementById('screen-quiz').classList.contains('active')) return;
+  if (e.target.closest('button:not(:disabled), a, input, textarea, select')) return;
+  e.preventDefault();
+  if (feedbackTimeout !== null) return;
+  if (!document.getElementById('modal-overlay').classList.contains('hidden')) closeModal();
+  else goNext();
+});
 
 // ════════════════════════════════════════════════════════════
 // RESULTS
