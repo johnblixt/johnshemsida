@@ -127,6 +127,7 @@ function shuffleArray(array) {
 - Varje fråga ska ha en **förklaring** som visas efter svar
 - Förklaringen ska vara pedagogisk och förklara *varför* svaret är rätt
 - Visas i en **popup-modal** med 600ms fördröjning efter att eleven svarat
+- Quiz går aldrig vidare automatiskt. Eleven trycker 'Nästa fråga →' efter återkoppling.
 
 ---
 

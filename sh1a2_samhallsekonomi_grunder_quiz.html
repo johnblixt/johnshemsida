@@ -86,7 +86,7 @@
     /* ── Modal ── */
     #modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 500; padding: 20px; }
     #modal-overlay.hidden { display: none; }
-    .modal-box { background: white; border-radius: 20px; padding: 32px; max-width: 520px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+    .modal-box { background: white; border-radius: 20px; padding: 32px; max-width: 520px; width: 100%; max-height: 100%; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
     .modal-icon    { font-size: 2.6rem; margin-bottom: 10px; }
     .modal-verdict { font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; }
     .modal-verdict.c { color: var(--correct-text); }
@@ -129,8 +129,8 @@
     @media (max-width: 768px) {
       #screen-quiz { padding-top: 60px; }
       .quiz-header { flex-wrap: wrap; gap: 8px; }
-      .nav-row { flex-wrap: wrap; }
-      .btn-back, .btn-next { flex: 1; min-width: 120px; text-align: center; margin-left: 0; }
+      .nav-row { flex-wrap: wrap; position: sticky; bottom: 0; padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); background: #fff7ed; }
+      .btn-back, .btn-next { flex: 1; min-width: 120px; min-height: 48px; text-align: center; margin-left: 0; }
       .nav-row { justify-content: space-between; }
     }
     @media (max-width: 500px) {
@@ -171,7 +171,7 @@
   <div class="opts" id="opts"></div>
   <div class="nav-row">
     <button class="btn-back" id="btn-back" onclick="goBack()" style="display:none">← Bakåt</button>
-    <button class="btn-next" id="btn-next" onclick="goNext()" style="display:none">Nästa →</button>
+    <button class="btn-next" id="btn-next" onclick="goNext()" style="display:none">Nästa fråga →</button>
   </div>
 </div>
 
@@ -181,7 +181,7 @@
     <div class="modal-icon"    id="modal-icon"></div>
     <div class="modal-verdict" id="modal-verdict"></div>
     <div class="modal-expl"    id="modal-expl"></div>
-    <button class="btn-primary" onclick="closeModal()">Nästa fråga →</button>
+    <button class="btn-primary" id="btn-modal-next" onclick="closeModal()">Nästa fråga →</button>
   </div>
 </div>
 
@@ -571,6 +571,9 @@ let cur = 0;
 let score = 0;
 let elapsed = 0;
 let timerID = null;
+let feedbackTimeout = null;
+let modalShownAt = 0;
+const MODAL_LOCK_MS = 400; // ett extra tryck när modalen öppnas får inte stänga den
 
 function normalize(q) {
   if (q.type === 'tf') {
@@ -661,8 +664,13 @@ function render() {
   });
 
   document.getElementById('btn-back').style.display = cur > 0 ? 'inline-block' : 'none';
+  document.getElementById('btn-back').disabled = false;
   document.getElementById('btn-next').style.display = q.answered ? 'inline-block' : 'none';
-  document.getElementById('btn-next').textContent = cur === total - 1 ? 'Se resultat →' : 'Nästa →';
+  document.getElementById('btn-next').textContent = nextLabel();
+}
+
+function nextLabel() {
+  return cur === qs.length - 1 ? 'Visa resultat →' : 'Nästa fråga →';
 }
 
 // ════════════════════════════════════════════════════════════
@@ -686,11 +694,15 @@ function handleAnswer(displayPos) {
     else                               btn.classList.add('dimmed');
   });
 
-  document.getElementById('btn-next').style.display = 'inline-block';
-  document.getElementById('btn-next').textContent = cur === qs.length - 1 ? 'Se resultat →' : 'Nästa →';
+  document.getElementById('btn-back').disabled = true;
   document.getElementById('score-pill').textContent = 'Poäng: ' + score;
 
-  setTimeout(() => showModal(isCorrect, q.expl), 600);
+  // Navigeringen hålls låst tills modalen stängts — annars hamnar förklaringen
+  // på nästa fråga och modalens knapp hoppar över en fråga.
+  feedbackTimeout = setTimeout(() => {
+    feedbackTimeout = null;
+    showModal(isCorrect, q.expl);
+  }, 600);
 }
 
 // ════════════════════════════════════════════════════════════
@@ -701,22 +713,43 @@ function showModal(isCorrect, expl) {
   document.getElementById('modal-verdict').textContent   = isCorrect ? 'Rätt svar!' : 'Fel svar';
   document.getElementById('modal-verdict').className     = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
   document.getElementById('modal-expl').textContent      = expl;
+  document.getElementById('btn-modal-next').textContent = nextLabel();
   document.getElementById('modal-overlay').classList.remove('hidden');
+  document.getElementById('btn-modal-next').focus();
+  modalShownAt = performance.now();
 }
 function closeModal() {
+  if (performance.now() - modalShownAt < MODAL_LOCK_MS) return;
   document.getElementById('modal-overlay').classList.add('hidden');
   goNext();
+}
+function feedbackActive() {
+  return feedbackTimeout !== null || !document.getElementById('modal-overlay').classList.contains('hidden');
 }
 
 // ════════════════════════════════════════════════════════════
 // NAVIGATION
 // ════════════════════════════════════════════════════════════
-function goBack() { if (cur > 0) { cur--; render(); } }
+function goBack() {
+  if (feedbackActive()) return;
+  if (cur > 0) { cur--; render(); }
+}
 function goNext() {
-  document.getElementById('modal-overlay').classList.add('hidden');
+  if (feedbackActive() || !qs[cur].answered) return;
   if (cur < qs.length - 1) { cur++; render(); }
   else showResults();
 }
+
+// Enter/mellanslag går vidare när frågan är besvarad. Aktiva knappar sköter tangenten själva.
+document.addEventListener('keydown', e => {
+  if ((e.key !== 'Enter' && e.key !== ' ') || e.repeat) return;
+  if (!document.getElementById('screen-quiz').classList.contains('active')) return;
+  if (e.target.closest('button:not(:disabled), a, input, textarea, select')) return;
+  e.preventDefault();
+  if (feedbackTimeout !== null) return;
+  if (feedbackActive()) closeModal();
+  else goNext();
+});
 
 // ════════════════════════════════════════════════════════════
 // RESULTS
