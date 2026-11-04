@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Samhällsekonomins grunder – Quiz | Samhällskunskap Sa1a2</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
   <style>
     :root {
       --primary: #c2410c;
@@ -126,6 +126,35 @@
     .btn-primary:hover { background: #f97316; transform: translateY(-1px); }
     .btn-primary:active { transform: none; }
 
+    /* ── Språkväljare ── */
+    #lang-selector { position: fixed; top: 14px; right: 14px; z-index: 300; }
+    #lang-btn {
+      background: white; border: 1px solid #fed7aa; border-radius: 10px; padding: 7px 14px;
+      font-family: inherit; font-size: 0.92rem; color: var(--primary-dark); cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08); white-space: nowrap;
+    }
+    #lang-btn:hover { background: var(--primary-light); }
+    #lang-menu {
+      display: none; position: absolute; right: 0; top: calc(100% + 6px); background: white;
+      border: 1px solid #fed7aa; border-radius: 10px; box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+      overflow: hidden; min-width: 180px;
+    }
+    #lang-menu.open { display: block; }
+    .lang-opt { display: block; width: 100%; text-align: left; padding: 9px 14px; font-size: 0.95rem; border: none; background: none; cursor: pointer; font-family: inherit; color: #1e293b; }
+    .lang-opt:hover { background: #fff7ed; }
+    .lang-opt.active { background: var(--primary-light); color: var(--primary-dark); font-weight: 600; }
+    .lang-sep { border: none; border-top: 1px solid #fed7aa; margin: 4px 0; }
+
+    /* ── Översättningsrad (arabiska / enkel svenska) ── */
+    .tr-line { font-size: 0.9em; font-weight: 400; color: #64748b; line-height: 1.55; margin-top: 5px; }
+    .tr-line.rtl { direction: rtl; text-align: right; font-family: 'Noto Naskh Arabic', 'EB Garamond', serif; }
+    .tr-badge { margin-right: 6px; }
+    .tr-line.rtl .tr-badge { margin-right: 0; margin-left: 6px; }
+    .q-text .tr-line { font-size: 0.85em; color: #475569; }
+    .opt-btn .tr-line { color: inherit; opacity: 0.8; }
+    #screen-start .tr-line { text-align: center; }
+    #screen-start .tr-line.rtl { text-align: center; }
+
     @media (max-width: 768px) {
       #screen-quiz { padding-top: 60px; }
       .quiz-header { flex-wrap: wrap; gap: 8px; }
@@ -138,6 +167,8 @@
       .q-text { font-size: 1.1rem; }
       .info-cards { gap: 8px; }
       .info-card { padding: 12px 10px; min-width: 88px; }
+      a.back-btn { font-size: 0.85rem; padding: 8px 10px; }
+      #lang-btn { font-size: 0.85rem; padding: 6px 10px; }
     }
   </style>
 </head>
@@ -145,17 +176,28 @@
 
 <a href="sh1a2_samhallsekonomi.html" class="back-btn" id="back-link">← Tillbaka till startsidan</a>
 
+<!-- ═══════════ SPRÅKVÄLJARE ═══════════ -->
+<div id="lang-selector">
+  <button id="lang-btn" onclick="toggleLangMenu(event)">🌐 Välj språk</button>
+  <div id="lang-menu" onclick="event.stopPropagation()">
+    <button class="lang-opt" data-lang="sv" onclick="selectLang('sv')">🇸🇪 Svenska</button>
+    <button class="lang-opt" data-lang="ar" onclick="selectLang('ar')">🇸🇦 Arabiska</button>
+    <hr class="lang-sep">
+    <button class="lang-opt" data-lang="easy" onclick="selectLang('easy')">📖 Enkel svenska</button>
+  </div>
+</div>
+
 <!-- ═══════════ START ═══════════ -->
 <div id="screen-start" class="screen active">
-  <div class="badge">Samhällskunskap Sa1a2 · Samhällsekonomins grunder</div>
-  <h1>Quiz</h1>
-  <p class="subtitle">30 frågor om hushåll/företag/marknad, produktionsfaktorer, BNP, näringslivet, utrikeshandel, plattforms- och delningsekonomi, arbetsmarknad och kollektivavtal, jämlikhet/jämställdhet i arbetslivet, pengar, prisbildning samt inflation/deflation</p>
+  <div class="badge" id="t-badge">Samhällskunskap Sa1a2 · Samhällsekonomins grunder</div>
+  <h1 id="t-title">Quiz</h1>
+  <p class="subtitle" id="t-subtitle">30 frågor om hushåll/företag/marknad, produktionsfaktorer, BNP, näringslivet, utrikeshandel, plattforms- och delningsekonomi, arbetsmarknad och kollektivavtal, jämlikhet/jämställdhet i arbetslivet, pengar, prisbildning samt inflation/deflation</p>
   <div class="info-cards">
-    <div class="info-card"><div class="num">30</div><div class="lbl">Frågor</div></div>
-    <div class="info-card"><div class="num">MC + S/F</div><div class="lbl">Frågetyper</div></div>
-    <div class="info-card"><div class="num">F1–F16</div><div class="lbl">Faktafrågor</div></div>
+    <div class="info-card"><div class="num">30</div><div class="lbl" id="lbl-q">Frågor</div></div>
+    <div class="info-card"><div class="num">MC + S/F</div><div class="lbl" id="lbl-types">Frågetyper</div></div>
+    <div class="info-card"><div class="num">F1–F16</div><div class="lbl" id="lbl-facts">Faktafrågor</div></div>
   </div>
-  <button class="btn-primary" onclick="startQuiz()">Starta Quiz →</button>
+  <button class="btn-primary" id="btn-start" onclick="startQuiz()">Starta Quiz →</button>
 </div>
 
 <!-- ═══════════ QUIZ ═══════════ -->
@@ -181,7 +223,7 @@
     <div class="modal-icon"    id="modal-icon"></div>
     <div class="modal-verdict" id="modal-verdict"></div>
     <div class="modal-expl"    id="modal-expl"></div>
-    <button class="btn-primary" onclick="closeModal()">Nästa fråga →</button>
+    <button class="btn-primary" id="btn-modal-next" onclick="closeModal()">Nästa fråga →</button>
   </div>
 </div>
 
@@ -190,22 +232,22 @@
   <div class="res-header">
     <div class="score-ring">
       <div class="rnum" id="r-score"></div>
-      <div class="rlbl">poäng</div>
+      <div class="rlbl" id="r-lbl">poäng</div>
     </div>
     <div class="res-title" id="r-title"></div>
     <div class="res-msg"   id="r-msg"></div>
     <div class="res-time"  id="r-time"></div>
   </div>
   <div class="stats-row">
-    <div class="stat-box cs"><div class="snum" id="s-correct">0</div><div class="slbl">Rätt</div></div>
-    <div class="stat-box ws"><div class="snum" id="s-wrong">0</div><div class="slbl">Fel</div></div>
-    <div class="stat-box"><div class="snum" id="s-pct">0%</div><div class="slbl">Andel rätt</div></div>
+    <div class="stat-box cs"><div class="snum" id="s-correct">0</div><div class="slbl" id="lbl-correct">Rätt</div></div>
+    <div class="stat-box ws"><div class="snum" id="s-wrong">0</div><div class="slbl" id="lbl-wrong">Fel</div></div>
+    <div class="stat-box"><div class="snum" id="s-pct">0%</div><div class="slbl" id="lbl-pct">Andel rätt</div></div>
   </div>
   <div class="missed-section" id="missed-section"></div>
-  <div class="section-hd">Fullständigt facit</div>
+  <div class="section-hd" id="t-review">Fullständigt facit</div>
   <div id="facit-list"></div>
   <div style="text-align:center;margin-top:32px">
-    <button class="btn-primary" onclick="restartQuiz()">↺ Gör om quizet</button>
+    <button class="btn-primary" id="btn-restart" onclick="restartQuiz()">↺ Gör om quizet</button>
   </div>
 </div>
 
@@ -553,6 +595,717 @@ const QUESTIONS = [
 ];
 
 // ════════════════════════════════════════════════════════════
+// ÖVERSÄTTNINGAR — arabiska (ar) och enkel svenska (easy)
+// Samma ordning som QUESTIONS ovan (index 0–29).
+// opts-ordningen matchar originalets opts-ordning.
+// ════════════════════════════════════════════════════════════
+const TRANSLATIONS = [
+  { // 1 Produktionsfaktorer
+    ar: {
+      q: 'ما هي عوامل الإنتاج الثلاثة اللازمة لصنع شيء ما وفقاً للمادة؟',
+      opts: [
+        'الموارد الطبيعية والعمل ورأس المال الحقيقي، وهي معاً الوسائل المستخدمة لإنتاج المنتجات.',
+        'الموارد الطبيعية والسلع الرأسمالية والسلع الاستهلاكية، وهي معاً الوسائل المستخدمة لإنتاج المنتجات.',
+        'العمل ورأس المال الحقيقي ورأس المال البشري، وهي معاً الوسائل المستخدمة لإنتاج المنتجات.',
+        'الموارد الطبيعية والعمل ورأس المال المالي، وهي معاً الوسائل المستخدمة لإنتاج المنتجات.'
+      ],
+      expl: 'عوامل الإنتاج هي الموارد الطبيعية (مواد خام مثل الأرض والغابات والمعادن)، والعمل (معارف الناس ومهاراتهم)، ورأس المال الحقيقي (الآلات والأدوات المستخدمة في الإنتاج).'
+    },
+    easy: {
+      q: 'Vilka tre saker behövs för att göra en vara?',
+      opts: [
+        'Saker från naturen, människor som jobbar och maskiner.',
+        'Saker från naturen, maskiner och varor som vi köper.',
+        'Människor som jobbar, maskiner och det folk kan.',
+        'Saker från naturen, människor som jobbar och pengar.'
+      ],
+      expl: 'Man behöver tre saker. Saker från naturen, som skog och jord. Människor som jobbar. Och maskiner och verktyg.'
+    }
+  },
+  { // 2 Realkapital
+    ar: {
+      q: 'ما هو رأس المال الحقيقي وفقاً لوصف المادة لعوامل الإنتاج؟',
+      opts: [
+        'الآلات والأدوات، مثل السلالم والروبوتات الصناعية ومباني المصانع، التي تُستخدم في الإنتاج.',
+        'المواد الخام والموارد الطبيعية، مثل الأرض والغابات والمعادن، التي تُحوَّل إلى منتجات نهائية.',
+        'المعارف والمهارات، مثل القوة الجسدية والقدرة الذهنية، التي يساهم بها الناس في العمل.',
+        'الأموال والأسهم، مثل حسابات التوفير والصناديق، التي تستثمرها الشركات في إنتاجها.'
+      ],
+      expl: 'رأس المال الحقيقي هو الآلات والأدوات المستخدمة في الإنتاج، من أدوات بسيطة مثل السلّم والمجرفة إلى الروبوتات الصناعية وأنظمة الحاسوب ومباني المصانع وأنظمة النقل.'
+    },
+    easy: {
+      q: 'Vad räknas som realkapital?',
+      opts: [
+        'Maskiner och verktyg, till exempel stegar, robotar och fabriker.',
+        'Saker från naturen, till exempel jord, skog och sten.',
+        'Det människor kan, till exempel vara starka eller smarta.',
+        'Pengar och aktier, till exempel sparpengar på banken.'
+      ],
+      expl: 'Realkapital är maskiner och verktyg. Det kan vara en stege eller en spade. Det kan också vara en robot eller en fabrik.'
+    }
+  },
+  { // 3 Humankapital (S/F)
+    ar: {
+      q: 'تُعدّ القدرات الفكرية والاجتماعية للإنسان أصلاً اقتصادياً خاصاً يُسمّى رأس المال البشري.',
+      expl: 'صحيح. مع ظهور قوة الآلات أصبحت القدرات الداخلية للإنسان، أي ما يُسمّى القوة الذهنية، أكثر أهمية، وتُعدّ أصلاً اقتصادياً خاصاً: رأس المال البشري.'
+    },
+    easy: {
+      q: 'Det människor kan och vet är värt mycket för ekonomin. Det kallas humankapital.',
+      expl: 'Det stämmer. Förr var det viktigt att vara stark. Nu gör maskiner det tunga jobbet. Därför är det vi kan och vet viktigare. Det kallas humankapital.'
+    }
+  },
+  { // 4 Gungbrädan
+    ar: {
+      q: 'ماذا تريد الأرجوحة (الميزان) في المادة أن توضّح؟',
+      opts: [
+        'أن احتياجاتنا ثقيلة على أحد الجانبين، بينما توجد موارد المجتمع المحدودة على الجانب الآخر.',
+        'أن طلب الأسر ثقيل على أحد الجانبين، بينما يوجد عرض الشركات على الجانب الآخر.',
+        'أن الاستهلاك ثقيل على أحد الجانبين، بينما توجد الاستثمارات على الجانب الآخر لموازنته.',
+        'أن الموارد الطبيعية ثقيلة على أحد الجانبين، بينما توجد القوى العاملة على الجانب الآخر لموازنتها.'
+      ],
+      expl: 'توضّح الأرجوحة أن احتياجاتنا ثقيلة على أحد الجانبين، بينما توجد موارد المجتمع المحدودة على الجانب الآخر – لذلك يجب أن ندبّر الموارد النادرة بحكمة.'
+    },
+    easy: {
+      q: 'Materialet visar en gungbräda. Vad vill bilden visa?',
+      opts: [
+        'Vi vill ha mycket, men det finns inte så mycket av allt.',
+        'Folk vill köpa mycket, och företagen vill sälja mycket.',
+        'Vi köper mycket, och vi sparar lika mycket till sen.',
+        'Det finns mycket natur, och det finns många som jobbar.'
+      ],
+      expl: 'Vi vill ha väldigt mycket. Men det finns inte hur mycket som helst av allt. Därför måste vi vara sparsamma.'
+    }
+  },
+  { // 5 Potatisodlaren
+    ar: {
+      q: 'ماذا يوضّح مثال مزارع البطاطس في المادة حول الفرق بين الاستهلاك والاستثمار؟',
+      opts: [
+        'أن جزءاً من المحصول يُؤكل مباشرة (استهلاك) بينما يُحفظ جزء كبذور بطاطس للمحصول القادم (استثمار).',
+        'أن جزءاً من المحصول يُباع في السوق (استهلاك) بينما يُهدى الباقي كهدية (استثمار).',
+        'أن المحصول كله يُؤكل دائماً مباشرة (استهلاك) لأن الاستثمار غير ممكن على الإطلاق وفقاً للمثال.',
+        'أن جزءاً من المحصول يُحرق كوقود (استهلاك) بينما يُصدَّر الباقي إلى دول أخرى (استثمار).'
+      ],
+      expl: 'يمكن لمزارع البطاطس أن يحتفظ بجزء من المحصول كبذور بطاطس لمحصول العام القادم (استثمار) وأن يستخدم الباقي كطعام (استهلاك). الاستثمار يعني التخلي عن الاستهلاك اليوم لضمان الاستهلاك أو زيادته غداً.'
+    },
+    easy: {
+      q: 'En bonde odlar potatis. Vad visar exemplet om att äta nu och spara till sen?',
+      opts: [
+        'Bonden äter en del nu och sparar en del att sätta i jorden nästa år.',
+        'Bonden säljer en del i en affär och ger bort resten till andra.',
+        'Bonden äter upp all potatis direkt, för det går inte att spara.',
+        'Bonden eldar med en del och skickar resten till andra länder.'
+      ],
+      expl: 'Bonden kan äta en del av potatisen nu. Det kallas konsumtion. Bonden kan också spara en del och sätta den i jorden. Då växer det mer potatis nästa år. Det kallas investering.'
+    }
+  },
+  { // 6 Linjär/cirkulär ekonomi (S/F)
+    ar: {
+      q: 'يقوم الاقتصاد الخطي على مبدأ إعادة تدوير المنتجات وإعادة استخدامها، بينما يتبع الاقتصاد الدائري نمط: أنتِج – استهلك – ارمِ.',
+      expl: 'العكس هو الصحيح: الاقتصاد الدائري يقوم على إعادة التدوير وإعادة الاستخدام، بينما يتبع الاقتصاد الخطي مبدأ: أنتِج – استهلك – ارمِ.'
+    },
+    easy: {
+      q: 'Linjär ekonomi betyder att vi använder saker igen. Cirkulär ekonomi betyder att vi slänger saker när de är använda.',
+      expl: 'Det är tvärtom. I cirkulär ekonomi använder vi saker igen. I linjär ekonomi gör vi en sak, använder den och slänger den.'
+    }
+  },
+  { // 7 BNP
+    ar: {
+      q: 'ماذا يعني الاختصار BNP (الناتج المحلي الإجمالي) وماذا يقيس؟',
+      opts: [
+        'الناتج المحلي الإجمالي، الذي يبيّن قيمة جميع السلع والخدمات النهائية المنتجة في بلد ما خلال سنة.',
+        'الناتج المحلي الإجمالي، الذي يبيّن عدد العاملين في قطاعات الإنتاج الثلاثة خلال سنة تقويمية.',
+        'الإنتاج الوطني المتوازن، الذي يبيّن قيمة السلع والخدمات المصدَّرة إلى بلدان أخرى.',
+        'الناتج المحلي الإجمالي، الذي يبيّن متوسط دخل الأسرة في البلد خلال سنة تقويمية.'
+      ],
+      expl: 'BNP تعني الناتج المحلي الإجمالي، وهو يبيّن قيمة جميع السلع والخدمات النهائية المنتجة في بلد ما خلال سنة.'
+    },
+    easy: {
+      q: 'Vad betyder BNP och vad visar det?',
+      opts: [
+        'Bruttonationalprodukt. Det visar värdet av allt ett land gör på ett år.',
+        'Bruttonationalprodukt. Det visar hur många som jobbar i landet på ett år.',
+        'Balanserad nationalproduktion. Det visar värdet av det landet säljer utomlands.',
+        'Bruttonationalprodukt. Det visar hur mycket en familj tjänar i snitt per år.'
+      ],
+      expl: 'BNP betyder bruttonationalprodukt. Det är värdet av alla varor och tjänster som ett land gör på ett år.'
+    }
+  },
+  { // 8 Näringslivets tre delar
+    ar: {
+      q: 'ما هي الأجزاء الثلاثة التي يتكوّن منها قطاع الأعمال السويدي وفقاً للمادة؟',
+      opts: [
+        'القطاع الخاص، والتعاونيات، والشركات الحكومية والبلدية – هكذا تقسّم المادة قطاع الأعمال.',
+        'الزراعة والموارد الطبيعية، والصناعة، وقطاع الخدمات – هكذا تقسّم المادة قطاع الأعمال إلى قطاعات إنتاج.',
+        'قطاع الزراعة، وقطاع الصناعة، والقطاع العام – هكذا تقسّم المادة قطاع الأعمال.',
+        'التجارة، والنقل، والبنوك والتأمين – هكذا تقسّم المادة قطاع الأعمال.'
+      ],
+      expl: 'تقسّم المادة قطاع الأعمال السويدي إلى ثلاثة أجزاء: القطاع الخاص، والتعاونيات (مثل LRF وKF)، والشركات الحكومية والبلدية (مثل LKAB وVattenfall وSystembolaget).'
+    },
+    easy: {
+      q: 'Företagen i Sverige delas in i tre grupper. Vilka?',
+      opts: [
+        'Företag med vanliga ägare, företag som medlemmar äger och företag som staten äger.',
+        'Företag som jobbar med natur, företag med fabriker och företag som hjälper folk.',
+        'Företag som jobbar med jordbruk, företag med fabriker och jobb som staten har.',
+        'Företag som säljer saker, företag som kör saker och företag som har hand om pengar.'
+      ],
+      expl: 'Det finns tre grupper. Vanliga privata företag. Företag som ägs av sina medlemmar, som KF. Och företag som ägs av staten eller kommunen, som Systembolaget.'
+    }
+  },
+  { // 9 Export (S/F)
+    ar: {
+      q: 'تشكّل صادرات السويد اليوم أكثر من نصف الناتج المحلي الإجمالي للسويد.',
+      expl: 'صحيح. منذ الحرب العالمية الثانية زادت صادرات السويد بشكل ملحوظ وتشكّل اليوم أكثر من نصف الناتج المحلي الإجمالي – السويد اقتصاد صغير ومنفتح يعتمد على التصدير.'
+    },
+    easy: {
+      q: 'Sverige säljer så mycket till andra länder att det är mer än hälften av allt Sverige gör.',
+      expl: 'Det stämmer. Sverige säljer mycket till andra länder. Det är mer än hälften av värdet av allt vi gör. Sverige behöver handla med andra länder.'
+    }
+  },
+  { // 10 Gigekonomin
+    ar: {
+      q: 'ما الذي يميّز اقتصاد العمل المؤقت (gig) وما المخاطر التي تبرزها المادة؟',
+      opts: [
+        'مهام قصيرة الأمد قائمة على العمل الحر تُوزَّع عبر منصات رقمية، مع مخاطر مثل عدم استقرار التوظيف وبيئة عمل سيئة.',
+        'مهام طويلة الأمد بتوظيف دائم تُوزَّع عبر النقابات، مع مخاطر مثل ارتفاع الأجور والمعاشات المتفق عليها جماعياً.',
+        'مهام قصيرة الأمد قائمة على العمل الحر تُوزَّع عبر مكتب التوظيف، مع مخاطر مثل الضرائب المرتفعة وطول مدة معالجة الطلبات.',
+        'مهام طويلة الأمد بتوظيف غير محدد المدة تُوزَّع عبر منصات رقمية، مع مخاطر مثل العمل الإضافي ونقص الحق في الإجازة.'
+      ],
+      expl: 'اقتصاد العمل المؤقت (من كلمة "gig" = مهمة لمرة واحدة) يعني مهام قصيرة ومؤقتة وغالباً بنظام العمل الحر تُوزَّع عبر منصات رقمية مثل Uber وFoodora. ومن مخاطره عدم استقرار ظروف التوظيف، وبيئات العمل السيئة، والتهرب الضريبي.'
+    },
+    easy: {
+      q: 'Vad är gigekonomi och vad kan vara dåligt med den?',
+      opts: [
+        'Korta jobb som man får via en app. Det kan vara otryggt och jobbigt att jobba så.',
+        'Långa fasta jobb som man får via facket. Det kan ge för höga löner och pensioner.',
+        'Korta jobb som man får via Arbetsförmedlingen. Det kan ge höga skatter och lång väntan.',
+        'Långa fasta jobb som man får via en app. Det kan ge för mycket jobb och lite semester.'
+      ],
+      expl: 'Gig betyder ett kort jobb. Man får jobbet via en app, som Uber eller Foodora. Det kan vara otryggt. Man vet inte om man får jobb i morgon.'
+    }
+  },
+  { // 11 Delningsekonomin
+    ar: {
+      q: 'ماذا يعني اقتصاد المشاركة وما الأمثلة التي تقدّمها المادة؟',
+      opts: [
+        'مشاركة الممتلكات مع الآخرين عبر منصات رقمية، مثل تأجير السكن (Airbnb) أو الأدوات (Hygglo).',
+        'مشاركة وقت العمل مع الآخرين عبر النقابات، مثل العمل بدوام جزئي (Unionen) أو التوظيف بالساعة (LO).',
+        'مشاركة المدخرات مع الآخرين عبر البنوك، مثل حساب توفير مشترك (Swedbank) أو حصص في صناديق (Avanza).',
+        'مشاركة المعارف مع الآخرين عبر شركات التعليم، مثل المحاضرات (Folkuniversitetet) أو الدورات (Komvux).'
+      ],
+      expl: 'اقتصاد المشاركة يعني أن الناس يشاركون ممتلكاتهم عبر منصات رقمية من خلال التأجير أو الإعارة أو المشاركة، مثل السكن عبر Airbnb أو الأدوات عبر Hygglo.'
+    },
+    easy: {
+      q: 'Vad är delningsekonomi? Vilka exempel finns?',
+      opts: [
+        'Man hyr ut sina saker via en app, till exempel sin bostad (Airbnb) eller verktyg (Hygglo).',
+        'Man delar sin tid på jobbet via facket, till exempel genom att jobba halvtid (Unionen).',
+        'Man delar sina sparpengar via banken, till exempel ett konto ihop med andra (Swedbank).',
+        'Man delar det man kan via en skola, till exempel genom att hålla kurser (Komvux).'
+      ],
+      expl: 'I delningsekonomi lånar eller hyr man ut sina saker till andra. Det sker via en app. Till exempel kan man hyra ut sin lägenhet på Airbnb.'
+    }
+  },
+  { // 12 Kollektivavtal
+    ar: {
+      q: 'ما هي شروط العمل التي تنظّمها الاتفاقيات الجماعية عادةً وفقاً للمادة؟',
+      opts: [
+        'من بينها الأجر، والإجازة، وساعات العمل، وتعويض العمل الإضافي، ومعاش التقاعد المهني، وبيئة العمل، وتطوير الكفاءات.',
+        'من بينها الضرائب، وبدل السكن، وإعانة الأطفال، والمنح الدراسية، وسن التقاعد، ورسوم الرعاية الصحية.',
+        'من بينها ضريبة الشركات، وضريبة القيمة المضافة، والرسوم الجمركية، ودعم التصدير، وحصص الاستيراد، ودعم الشركات.',
+        'من بينها أسعار الفائدة، وقروض السكن، ومتطلبات السداد، والجدارة الائتمانية، والرسوم البنكية، وأسعار صرف العملات.'
+      ],
+      expl: 'تنظّم الاتفاقيات الجماعية شروط عمل مهمة مثل الأجر، والإجازة، وساعات العمل، وتعويض العمل الإضافي، ومعاش التقاعد المهني، وبيئة العمل، وتطوير الكفاءات، وهي تكمّل القوانين.'
+    },
+    easy: {
+      q: 'Facket och arbetsgivarna skriver avtal. Vad står det om i ett sådant avtal?',
+      opts: [
+        'Lön, semester, hur länge man jobbar, pension och hur det är på jobbet.',
+        'Skatt, pengar till hyran, pengar för barn, pengar för att plugga och sjukvård.',
+        'Skatt för företag, moms, avgifter vid gränsen och pengar som stöd till företag.',
+        'Räntor, lån till bostad, avgifter på banken och priset på andra länders pengar.'
+      ],
+      expl: 'I avtalet står det om lön och semester. Det står hur länge man ska jobba. Det står också om pension och om hur det ska vara på jobbet.'
+    }
+  },
+  { // 13 MBL
+    ar: {
+      q: 'ما الهدف من قانون MBL (قانون المشاركة في القرار) وفقاً للمادة؟',
+      opts: [
+        'تعزيز تأثير العاملين، إذ يجب على صاحب العمل إبلاغ النقابات والتفاوض معها بشأن التغييرات المهمة.',
+        'تنظيم أشكال التوظيف الموجودة، مثل التوظيف غير محدد المدة والتوظيف المؤقت في مكان العمل.',
+        'ضمان بيئة عمل جسدية ونفسية جيدة من خلال تعيين ممثل للسلامة في كل مكان عمل.',
+        'حظر التمييز على أساس الجنس أو الأصل العرقي أو الدين أو الإعاقة أو التوجه الجنسي أو العمر.'
+      ],
+      expl: 'يهدف قانون MBL إلى تعزيز تأثير العاملين في مكان العمل. فمن بين أمور أخرى يجب على صاحب العمل إبلاغ النقابات بالوضع الاقتصادي للشركة والتفاوض بشأن التغييرات المهمة مثل إعادة التنظيم.'
+    },
+    easy: {
+      q: 'Vad är lagen MBL till för?',
+      opts: [
+        'De anställda ska få vara med och bestämma. Chefen måste prata med facket först.',
+        'Den bestämmer vilka sorters jobb som finns, till exempel fast jobb eller kort jobb.',
+        'Den ser till att man mår bra på jobbet. Någon ska ha hand om säkerheten.',
+        'Den förbjuder att man behandlas sämre för sitt kön, sin religion eller sin ålder.'
+      ],
+      expl: 'MBL ger de anställda mer att säga till om. Chefen måste berätta för facket hur det går för företaget. Chefen måste också prata med facket innan stora ändringar.'
+    }
+  },
+  { // 14 LAS anställningsformer
+    ar: {
+      q: 'كم عدد أشكال التوظيف وفقاً لقانون LAS، وما هي؟',
+      opts: [
+        'شكلان للتوظيف – التوظيف غير محدد المدة والتوظيف المحدد المدة (المؤقت) – وهذا كل ما ينص عليه القانون.',
+        'ثلاثة أشكال للتوظيف – غير محدد المدة، والمحدد المدة، والتوظيف بالساعة – وهذا كل ما ينص عليه القانون.',
+        'أربعة أشكال للتوظيف – التجريبي، والبديل، والموسمي، وغير محدد المدة – وهذا كل ما ينص عليه القانون.',
+        'شكلان للتوظيف – التوظيف الدائم والتوظيف عبر شركة توظيف – وهذا كل ما ينص عليه القانون.'
+      ],
+      expl: 'وفقاً لقانون LAS لا يوجد سوى شكلين للتوظيف: التوظيف غير محدد المدة (ما يُسمّى في الحياة اليومية "وظيفة ثابتة") والتوظيف المحدد المدة. العمل البديل والتوظيف الموسمي والتوظيف التجريبي أمثلة على التوظيف المحدد المدة، وليست أشكالاً مستقلة.'
+    },
+    easy: {
+      q: 'Lagen LAS säger hur man kan vara anställd. Hur många sätt finns det?',
+      opts: [
+        'Två sätt. Ett fast jobb, eller ett jobb under en bestämd tid.',
+        'Tre sätt. Ett fast jobb, ett jobb en bestämd tid, eller ett jobb per timme.',
+        'Fyra sätt. Prova på, hoppa in för någon, jobba på sommaren eller ett fast jobb.',
+        'Två sätt. Ett fast jobb, eller ett jobb via ett företag som hyr ut folk.'
+      ],
+      expl: 'Det finns bara två sätt. Ett fast jobb som inte tar slut. Eller ett jobb som tar slut en viss dag. Ett sommarjobb är ett jobb som tar slut.'
+    }
+  },
+  { // 15 MBL och anställningsformer (S/F)
+    ar: {
+      q: 'ينظّم قانون MBL أشكال التوظيف الموجودة في سوق العمل، مثل التوظيف غير محدد المدة والتوظيف المحدد المدة.',
+      expl: 'قانون LAS (قانون حماية التوظيف) هو الذي ينظّم أشكال التوظيف. أما قانون MBL فيتعلق بمشاركة العاملين في القرار، مثل واجب صاحب العمل في إبلاغ النقابات والتفاوض معها.'
+    },
+    easy: {
+      q: 'Lagen MBL bestämmer om man kan ha fast jobb eller jobb en bestämd tid.',
+      expl: 'Nej, det är lagen LAS som gör det. MBL handlar om att de anställda ska få vara med och bestämma.'
+    }
+  },
+  { // 16 Saklig grund för uppsägning
+    ar: {
+      q: 'ما هما السببان الموضوعيان للفصل من العمل وفقاً لقانون LAS؟',
+      opts: [
+        'الأسباب الشخصية، أي أن الموظف لا يؤدي عمله، ونقص العمل، أي عدم وجود مهام عمل.',
+        'الغياب المرضي، أي أن الموظف في إجازة مرضية طويلة، وإجازة الوالدين، أي أن الموظف في البيت مع الأطفال.',
+        'الانتماء النقابي، أي أن الموظف غيّر نقابته، والمطالبة بالأجر، أي أن الموظف طلب أجراً أعلى.',
+        'ضعف الدرجات، أي أن الموظف يفتقر إلى التعليم المناسب، والعمر، أي أن الموظف أصبح كبيراً جداً في السن.'
+      ],
+      expl: 'وفقاً لقانون LAS يجب أن يكون للفصل سبب موضوعي. والسببان هما الأسباب الشخصية (الموظف لا يؤدي عمله) ونقص العمل (صاحب العمل لا يملك مهام عمل للموظف).'
+    },
+    easy: {
+      q: 'När får chefen säga upp någon enligt lagen LAS?',
+      opts: [
+        'När personen inte sköter jobbet, eller när det inte finns jobb att göra.',
+        'När personen är sjuk länge, eller när personen är hemma med sitt barn.',
+        'När personen byter fack, eller när personen ber om mer lön.',
+        'När personen har fel utbildning, eller när personen har blivit för gammal.'
+      ],
+      expl: 'Chefen måste ha ett bra skäl. Det finns två skäl. Personen sköter inte jobbet. Eller så finns det inte tillräckligt med jobb.'
+    }
+  },
+  { // 17 Jämlikhet
+    ar: {
+      q: 'كيف تُعرِّف المادة المساواة (jämlikhet)؟',
+      opts: [
+        'أن يتمتع الجميع بالحقوق والفرص نفسها، بغض النظر عن الجنس أو العمر أو الدين أو الإعاقة أو أي خلفية أخرى.',
+        'أن تحصل النساء والرجال على الأجر نفسه مقابل العمل نفسه وعلى الفرصة نفسها للتقدم الوظيفي.',
+        'أن يشمل الاتفاق الجماعي نفسه جميع العاملين بغض النظر عن النقابة التي اختاروا الانضمام إليها.',
+        'أن يحق للجميع الحصول على إجازة الوالدين نفسها، بغض النظر عن الجنس أو الدخل أو شكل التوظيف.'
+      ],
+      expl: 'المساواة (jämlikhet) تعني أن يتمتع الجميع بالحقوق والفرص نفسها، بغض النظر عن الجنس أو العمر أو الدين أو الإعاقة أو أي خلفية أخرى. المساواة بين الجنسين (jämställdhet) قضية مهمة من قضايا المساواة لكنها تركّز تحديداً على النساء والرجال.'
+    },
+    easy: {
+      q: 'Vad betyder ordet jämlikhet?',
+      opts: [
+        'Att alla människor ska ha samma rätt, oavsett kön, ålder, religion eller bakgrund.',
+        'Att kvinnor och män ska få samma lön när de gör samma jobb.',
+        'Att alla som jobbar ska ha samma avtal, oavsett vilket fack de är med i.',
+        'Att alla ska få vara hemma lika länge med sitt barn, oavsett lön.'
+      ],
+      expl: 'Jämlikhet betyder att alla människor är lika mycket värda. Alla ska ha samma rätt. Det gäller oavsett kön, ålder eller religion.'
+    }
+  },
+  { // 18 Jämställdhet
+    ar: {
+      q: 'كيف تُعرِّف المادة المساواة بين الجنسين (jämställdhet)؟',
+      opts: [
+        'أن تتمتع النساء والرجال بالحقوق والفرص نفسها في جميع مجالات الحياة، مثل الأجر والتقدم الوظيفي.',
+        'أن يتمتع الجميع، بغض النظر عن الجنس أو العمر أو الخلفية، بالحقوق والفرص نفسها للنجاح في الحياة.',
+        'أن يكون لجميع النقابات التأثير نفسه في المفاوضات مع منظمات أصحاب العمل في سوق العمل.',
+        'أن تمنح جميع أشكال التوظيف، سواء كانت دائمة أو مؤقتة، الأجر والمزايا نفسها.'
+      ],
+      expl: 'تركّز المساواة بين الجنسين على الرجال والنساء وعلى أن يتمتعوا بالحقوق والفرص نفسها في جميع مجالات الحياة – مثل الأجر المتساوي للعمل نفسه والفرصة نفسها للتقدم الوظيفي.'
+    },
+    easy: {
+      q: 'Vad betyder ordet jämställdhet?',
+      opts: [
+        'Att kvinnor och män ska ha samma rätt i livet, till exempel samma lön.',
+        'Att alla människor ska ha samma rätt, oavsett kön, ålder eller bakgrund.',
+        'Att alla fack ska få bestämma lika mycket när de pratar med chefer.',
+        'Att alla jobb, både fasta och korta, ska ge samma lön.'
+      ],
+      expl: 'Jämställdhet handlar om kvinnor och män. De ska ha samma rätt. De ska till exempel få samma lön för samma jobb.'
+    }
+  },
+  { // 19 Jämställdhet vs jämlikhet (S/F)
+    ar: {
+      q: 'تتعلق المساواة بين الجنسين تحديداً بتمتع النساء والرجال بالحقوق نفسها، بينما المساواة مفهوم أوسع يسري بغض النظر عن الجنس أو العمر أو الخلفية.',
+      expl: 'صحيح. المساواة تتعلق بالحقوق المتساوية لجميع الناس بغض النظر عن خلفيتهم، بينما المساواة بين الجنسين تتعلق تحديداً بالحقوق المتساوية بين النساء والرجال.'
+    },
+    easy: {
+      q: 'Jämställdhet handlar bara om kvinnor och män. Jämlikhet handlar om alla människor.',
+      expl: 'Det stämmer. Jämlikhet gäller alla människor. Jämställdhet gäller kvinnor och män.'
+    }
+  },
+  { // 20 Glastak
+    ar: {
+      q: 'إلامَ يشير تعبير "السقف الزجاجي" وفقاً للمادة؟',
+      opts: [
+        'العوائق غير المرئية (هياكل السلطة) التي تواجهها النساء عندما يسعين إلى مناصب أعلى في الحياة المهنية.',
+        'القواعد الرسمية التي تمنع النساء من شغل بعض المناصب القيادية في القطاع الخاص.',
+        'العوائق غير المرئية التي يواجهها كبار السن عندما تُرفض لهم مهام عمل جديدة بسبب عمرهم.',
+        'متطلبات التعليم الرسمية التي تجعل من الصعب على النساء أن يصبحن مديرات في السويد.'
+      ],
+      expl: '"السقف الزجاجي" يصف العوائق غير المرئية (هياكل السلطة) التي تواجهها النساء عندما يسعين إلى مناصب أعلى في الحياة المهنية، رغم عدم وجود قواعد رسمية تمنعهن.'
+    },
+    easy: {
+      q: 'Vad menas med ett "glastak"?',
+      opts: [
+        'Hinder som man inte ser, som gör att kvinnor har svårt att bli chefer.',
+        'Regler som säger att kvinnor inte får bli chefer i vissa företag.',
+        'Hinder som man inte ser, som gör att äldre inte får nya uppgifter.',
+        'Krav på skola som gör att kvinnor har svårare att bli chefer.'
+      ],
+      expl: 'Ett tak av glas kan man inte se. Men man slår i det. Så är det för många kvinnor. Ingen regel stoppar dem, men de har ändå svårt att bli chefer.'
+    }
+  },
+  { // 21 Norsk kvoteringslag
+    ar: {
+      q: 'ماذا يعني القانون النرويجي لنظام الحصص بين الجنسين الذي أُقرّ عام 2006، وفقاً للمادة؟',
+      opts: [
+        'أنه ضمن للنساء ما لا يقل عن 40 بالمئة من مقاعد مجالس الإدارة في الشركات النرويجية، وكان له أثر سريع.',
+        'أنه ضمن للنساء ما لا يقل عن 40 بالمئة من المناصب القيادية في القطاع العام النرويجي بأكمله.',
+        'أنه ضمن للنساء والرجال الأجر نفسه تماماً في جميع الشركات النرويجية المدرجة في البورصة اعتباراً من 2006.',
+        'أنه ضمن للنساء ما لا يقل عن نصف جميع التعيينات الجديدة في قطاع الأعمال النرويجي اعتباراً من 2006.'
+      ],
+      expl: 'أقرّت النرويج عام 2006 قانوناً يضمن للنساء ما لا يقل عن 40 بالمئة من مقاعد مجالس الإدارة، وكان له أثر سريع. لكن الآراء تختلف حول الآثار طويلة المدى لقوانين الحصص.'
+    },
+    easy: {
+      q: 'Norge fick en ny lag år 2006. Vad sa lagen?',
+      opts: [
+        'Minst 40 av 100 platser i företagens styrelser ska gå till kvinnor.',
+        'Minst 40 av 100 chefer i statens och kommunernas jobb ska vara kvinnor.',
+        'Kvinnor och män ska ha exakt samma lön i alla stora företag.',
+        'Minst hälften av alla som får nya jobb i företagen ska vara kvinnor.'
+      ],
+      expl: 'Lagen sa att minst 40 procent i styrelserna ska vara kvinnor. Styrelsen är de som styr ett företag. Lagen fungerade snabbt.'
+    }
+  },
+  { // 22 Värdebevarare
+    ar: {
+      q: 'ماذا يعني أن النقود تعمل "كمخزن للقيمة"؟',
+      opts: [
+        'أن النقود تجعل من الممكن الحفاظ على القيم الاقتصادية مع مرور الوقت، مثلاً عن طريق الادخار، لأن النقود لا تفسد.',
+        'أن النقود تجعل من الممكن مقارنة أسعار السلع المختلفة، مثلاً عن طريق تحديد السعر بالكرونة.',
+        'أن النقود تجعل من الممكن الدفع مقابل السلع والخدمات مباشرة، مثلاً عند الشراء من متجر.',
+        'أن النقود تجعل من الممكن إقراض رأس المال للآخرين، مثلاً عن طريق البنوك والسندات.'
+      ],
+      expl: 'مخزن القيمة يعني أن النقود تجعل من الممكن الحفاظ على القيم التي تُخلق في الاقتصاد، لأن النقود لا تفسد – يمكنك ادخار قدرتك الشرائية حتى ترغب في استخدامها.'
+    },
+    easy: {
+      q: 'Pengar kan "spara värde". Vad betyder det?',
+      opts: [
+        'Man kan spara pengar till sen. Pengar blir inte dåliga som mat.',
+        'Man kan se vad olika saker kostar, till exempel i kronor.',
+        'Man kan betala för saker direkt, till exempel i en affär.',
+        'Man kan låna ut pengar till andra, till exempel via en bank.'
+      ],
+      expl: 'Mat blir dålig om man sparar den för länge. Pengar blir inte dåliga. Man kan spara pengar och köpa saker senare.'
+    }
+  },
+  { // 23 Efterfrågekurvan
+    ar: {
+      q: 'كيف يميل منحنى الطلب في نموذج العرض والطلب، ولماذا؟',
+      opts: [
+        'إلى الأسفل، لأن المستهلكين يطلبون كمية أكبر كلما انخفض سعر السلعة.',
+        'إلى الأعلى، لأن المستهلكين يطلبون كمية أكبر كلما ارتفع سعر السلعة.',
+        'إلى الأسفل، لأن المنتجين يريدون بيع كمية أكبر كلما انخفض سعر السلعة.',
+        'إلى الأعلى، لأن المنتجين يريدون بيع كمية أكبر كلما ارتفع سعر السلعة.'
+      ],
+      expl: 'يميل منحنى الطلب إلى الأسفل: كلما انخفض السعر زاد الطلب لدى المستهلكين – مثلاً يُطلب المزيد من الفراولة عندما ينخفض سعرها خلال الموسم.'
+    },
+    easy: {
+      q: 'Hur går linjen för hur mycket folk vill köpa? Varför?',
+      opts: [
+        'Neråt. Folk vill köpa mer när priset är lågt.',
+        'Uppåt. Folk vill köpa mer när priset är högt.',
+        'Neråt. Säljarna vill sälja mer när priset är lågt.',
+        'Uppåt. Säljarna vill sälja mer när priset är högt.'
+      ],
+      expl: 'Linjen går neråt. När något blir billigt vill fler köpa det. Jordgubbar är billiga på sommaren. Då köper många jordgubbar.'
+    }
+  },
+  { // 24 Utbudskurvan
+    ar: {
+      q: 'كيف يميل منحنى العرض في نموذج العرض والطلب، ولماذا؟',
+      opts: [
+        'إلى الأعلى، لأن المنتجين يريدون بيع كمية أكبر كلما ارتفع سعر السلعة.',
+        'إلى الأسفل، لأن المنتجين يريدون بيع كمية أكبر كلما انخفض سعر السلعة.',
+        'إلى الأعلى، لأن المستهلكين يريدون شراء كمية أكبر كلما ارتفع سعر السلعة.',
+        'إلى الأسفل، لأن المستهلكين يريدون شراء كمية أكبر كلما انخفض سعر السلعة.'
+      ],
+      expl: 'يميل منحنى العرض إلى الأعلى: كلما ارتفع السعر زادت الكمية التي يرغب المنتجون في بيعها – مثلاً يزرع مزارعو الفراولة المزيد إذا كان سعر السوق مرتفعاً.'
+    },
+    easy: {
+      q: 'Hur går linjen för hur mycket säljarna vill sälja? Varför?',
+      opts: [
+        'Uppåt. Säljarna vill sälja mer när priset är högt.',
+        'Neråt. Säljarna vill sälja mer när priset är lågt.',
+        'Uppåt. Folk vill köpa mer när priset är högt.',
+        'Neråt. Folk vill köpa mer när priset är lågt.'
+      ],
+      expl: 'Linjen går uppåt. När priset är högt kan säljarna tjäna mycket. Då vill de sälja mer. Bönderna odlar fler jordgubbar.'
+    }
+  },
+  { // 25 Jämviktspris
+    ar: {
+      q: 'ماذا يُسمّى السعر الذي يتقاطع عنده منحنيا العرض والطلب، وماذا يعني؟',
+      opts: [
+        'سعر التوازن (سعر السوق) – السعر الذي يكون عنده العرض والطلب في حالة توازن وتُباع جميع السلع.',
+        'سعر البداية (السعر الأساسي) – السعر الذي يحدده البائع أولاً قبل بدء التفاوض مع المشتري.',
+        'سعر الفائض (السعر الأقصى) – أعلى سعر تسمح الدولة ببيع سلعة به في السوق.',
+        'سعر النقص (السعر الأدنى) – أدنى سعر يمكن للمنتج أن يبيع به سلعة دون خسارة.'
+      ],
+      expl: 'نقطة تقاطع منحنى العرض ومنحنى الطلب تُسمّى سعر التوازن أو سعر السوق. عند هذا السعر يكون العرض والطلب في حالة توازن، وتُباع جميع السلع في السوق.'
+    },
+    easy: {
+      q: 'Två linjer möts: hur mycket folk vill köpa och hur mycket som säljs. Vad kallas priset där?',
+      opts: [
+        'Jämviktspris. Då är köpare och säljare överens och allt blir sålt.',
+        'Startpris. Det är det pris säljaren säger först, innan man pratar pris.',
+        'Överskottspris. Det är det högsta pris staten låter någon ta för en vara.',
+        'Bristpris. Det är det lägsta pris man kan ta utan att förlora pengar.'
+      ],
+      expl: 'Priset där linjerna möts kallas jämviktspris. Då vill folk köpa lika mycket som det finns att sälja. Allt blir sålt.'
+    }
+  },
+  { // 26 Överskott (S/F)
+    ar: {
+      q: 'إذا حُدِّد سعر سلعة بشكل مرتفع جداً ينشأ فائض، لأن كثيرين يريدون البيع وقليلين يريدون الشراء.',
+      expl: 'صحيح. إذا حُدِّد السعر بشكل مرتفع جداً يريد كثيرون البيع وقليلون الشراء، مما يؤدي إلى فائض قد يبقى دون بيع ما لم يُخفَّض السعر.'
+    },
+    easy: {
+      q: 'Om en vara är för dyr blir det för mycket kvar som ingen köper.',
+      expl: 'Det stämmer. Om något är för dyrt vill få köpa det. Då blir varor kvar i affären. Affären måste sänka priset.'
+    }
+  },
+  { // 27 Laissez-faire
+    ar: {
+      q: 'ماذا يعني مبدأ "دعه يعمل" (laissez-faire) كشرط لاقتصاد سوق يعمل بشكل جيد؟',
+      opts: [
+        'أن على الدولة والسياسيين أن يتركوا السوق وشأنه قدر الإمكان دون تدخّل.',
+        'أن على الدولة أن تنظّم الأسعار في السوق بشكل فعّال لحماية المستهلكين من الأسعار المرتفعة.',
+        'أن على الدولة أن تملك جميع الشركات الكبرى لضمان منافسة عادلة بين الأطراف.',
+        'أن على الدولة أن تضع حداً أقصى لعدد الشركات المسموح بها في كل قطاع.'
+      ],
+      expl: 'مبدأ laissez-faire ("دعه يعمل") يعني أن على الدولة والسياسيين أن يتركوا السوق وشأنه قدر الإمكان، لأن التدخل الحكومي المفرط يُخِلّ بآلية السوق.'
+    },
+    easy: {
+      q: 'Vad betyder "laissez-faire" för hur handeln ska fungera?',
+      opts: [
+        'Att politikerna ska låta handeln vara i fred och inte bestämma över den.',
+        'Att politikerna ska bestämma priserna så att saker inte blir för dyra.',
+        'Att staten ska äga alla stora företag så att det blir rättvist.',
+        'Att staten ska bestämma hur många företag som får finnas.'
+      ],
+      expl: 'Laissez-faire är franska och betyder "låt det vara". Politikerna ska inte lägga sig i handeln för mycket. Annars fungerar den sämre.'
+    }
+  },
+  { // 28 KPI
+    ar: {
+      q: 'كيف يُقاس التضخم في السويد وفقاً للمادة، وماذا يُسمّى هذا المقياس؟',
+      opts: [
+        'تقارن هيئة الإحصاء SCB كل شهر سعر سلة سلع بسعر السلة نفسها في العام السابق، ويُسمّى ذلك KPI.',
+        'يقارن البنك المركزي Riksbanken كل عام فائدة قروض السكن بمستواها في العام السابق، ويُسمّى ذلك KPI.',
+        'تقارن هيئة الإحصاء SCB كل شهر متوسط الأجر في البلد بمتوسطه في الشهر نفسه من العام السابق، ويُسمّى ذلك KPI.',
+        'يقارن البنك المركزي Riksbanken كل شهر كمية النقود في البلد بكميتها في العام السابق، ويُسمّى ذلك KPI.'
+      ],
+      expl: 'تقوم هيئة الإحصاء SCB كل شهر "بشراء" سلة من السلع والخدمات وتقارن سعرها بما كانت تكلفه السلة نفسها في العام السابق. ويُسمّى التغيّر في السعر بالنسبة المئوية مؤشر أسعار المستهلك (KPI).'
+    },
+    easy: {
+      q: 'Hur mäter man i Sverige om saker blir dyrare? Vad kallas det?',
+      opts: [
+        'SCB kollar varje månad vad en korg med varor kostar, jämfört med förra året. Det kallas KPI.',
+        'Riksbanken kollar varje år vad det kostar att låna till ett hus, jämfört med förra året. Det kallas KPI.',
+        'SCB kollar varje månad hur mycket folk tjänar, jämfört med förra året. Det kallas KPI.',
+        'Riksbanken kollar varje månad hur mycket pengar det finns, jämfört med förra året. Det kallas KPI.'
+      ],
+      expl: 'SCB låtsas handla en korg med varor varje månad. Sen jämför de priset med förra året. Om korgen kostar mer har saker blivit dyrare. Det kallas KPI.'
+    }
+  },
+  { // 29 Deflation (S/F)
+    ar: {
+      q: 'الانكماش (deflation) يعني أن المستوى العام للأسعار في الاقتصاد يرتفع بشكل حاد.',
+      expl: 'العكس هو الصحيح: الانكماش يعني انخفاضاً عاماً في الأسعار، وهو ما قد يؤدي إلى تراجع الطلب وتراجع الإنتاج وارتفاع البطالة.'
+    },
+    easy: {
+      q: 'Deflation betyder att nästan allt blir mycket dyrare.',
+      expl: 'Det är tvärtom. Deflation betyder att saker blir billigare. Det låter bra, men folk väntar då med att köpa. Då säljer företagen mindre, och fler blir utan jobb.'
+    }
+  },
+  { // 30 Reallön
+    ar: {
+      q: 'ما هو الأجر الحقيقي ولماذا هو مهم؟',
+      opts: [
+        'الفرق بين الأجر الاسمي والتضخم، وهو ما يحدد كمية السلع والخدمات التي يمكننا شراؤها فعلياً.',
+        'الفرق بين الأجر الإجمالي والضريبة، وهو ما يحدد مبلغ المال الذي يُدفع كل شهر.',
+        'مجموع الأجر والإعانات، وهو ما يحدد إجمالي المال المتاح للأسرة.',
+        'الفرق بين الأجور في القطاعات المختلفة، وهو ما يحدد مدى جاذبية مهنة ما في سوق العمل.'
+      ],
+      expl: 'الأجر الحقيقي هو الفرق بين الأجر الاسمي (الأجر بالكرونة) والتضخم. والأجر الحقيقي هو ما يحدد قدرتنا الشرائية في الواقع، أي كمية ما يمكننا شراؤه بأموالنا.'
+    },
+    easy: {
+      q: 'Vad är reallön och varför är den viktig?',
+      opts: [
+        'Lönen minus hur mycket dyrare saker har blivit. Den visar vad du kan köpa för lönen.',
+        'Lönen minus skatten. Den visar hur mycket pengar du får in varje månad.',
+        'Lönen plus pengar från staten. Den visar hur mycket pengar familjen har.',
+        'Skillnaden i lön mellan olika jobb. Den visar vilka jobb folk helst vill ha.'
+      ],
+      expl: 'Om du får mer lön, men allt blir lika mycket dyrare, kan du inte köpa mer. Reallönen visar vad du faktiskt kan köpa för din lön.'
+    }
+  }
+];
+
+if (TRANSLATIONS.length !== QUESTIONS.length) console.warn('TRANSLATIONS och QUESTIONS har olika längd');
+QUESTIONS.forEach((q, i) => { q.ar = TRANSLATIONS[i].ar; q.easy = TRANSLATIONS[i].easy; });
+
+// ════════════════════════════════════════════════════════════
+// SPRÅK — UI-strängar och hjälpfunktioner
+// ════════════════════════════════════════════════════════════
+let currentLang = 'sv';
+const RTL = ['ar'];
+const LANG_FLAGS  = { sv: '🇸🇪', ar: '🇸🇦', easy: '📖' };
+const LANG_LABELS = { sv: 'Svenska', ar: 'Arabiska', easy: 'Enkel svenska' };
+const TF_OPTS = { ar: ['صحيح', 'خطأ'], easy: ['Det stämmer', 'Det stämmer inte'] };
+
+const UI = {
+  sv: {
+    langBtn: 'Välj språk',
+    badge: 'Samhällskunskap Sa1a2 · Samhällsekonomins grunder',
+    title: 'Quiz',
+    lblQuestions: 'Frågor', lblTypes: 'Frågetyper', lblFacts: 'Faktafrågor',
+    start: 'Starta Quiz →',
+    score: n => 'Poäng: ' + n,
+    counter: (n, t) => 'Fråga ' + n + ' av ' + t,
+    tagTf: 'Sant eller falskt', tagMc: 'Flerval',
+    backBtn: '← Bakåt', next: 'Nästa →', seeResult: 'Se resultat →',
+    modalNext: 'Nästa fråga →', verdictOk: 'Rätt svar!', verdictBad: 'Fel svar',
+    points: 'poäng', lblCorrect: 'Rätt', lblWrong: 'Fel', lblPct: 'Andel rätt',
+    time: t => 'Tid: ' + t,
+    missed: n => 'Missade frågor (' + n + ')',
+    reviewTitle: 'Fullständigt facit',
+    qNum: n => 'Fråga ' + n,
+    lblYourAnswer: 'Ditt svar', lblCorrectAnswer: 'Rätt svar', notAnswered: '— (inte besvarad)',
+    restart: '↺ Gör om quizet',
+    resTitles: ['🏆 Utmärkt!', '✅ Redo för provet!', '📖 Öva lite till', '💡 Fortsätt repetera'],
+    resMsgs: ['Du behärskar kapitlet Samhällsekonomins grunder på hög nivå.', 'Bra resultat – du har koll på det centrala.', 'Du är på rätt spår men behöver repetera en del.', 'Gå igenom pluggmaterialet och försök igen.']
+  },
+  ar: {
+    langBtn: 'اختر اللغة',
+    badge: 'التربية الاجتماعية Sa1a2 · أسس الاقتصاد الوطني',
+    title: 'اختبار',
+    lblQuestions: 'أسئلة', lblTypes: 'أنواع الأسئلة', lblFacts: 'أسئلة معرفية',
+    start: 'ابدأ الاختبار',
+    score: n => 'النقاط: ' + n,
+    counter: (n, t) => 'السؤال ' + n + ' من ' + t,
+    tagTf: 'صح أم خطأ', tagMc: 'اختيار من متعدد',
+    backBtn: 'رجوع', next: 'التالي', seeResult: 'عرض النتيجة',
+    modalNext: 'السؤال التالي', verdictOk: 'إجابة صحيحة!', verdictBad: 'إجابة خاطئة',
+    points: 'نقاط', lblCorrect: 'صحيح', lblWrong: 'خطأ', lblPct: 'نسبة الإجابات الصحيحة',
+    time: t => 'الوقت: ' + t,
+    missed: n => 'الأسئلة الخاطئة (' + n + ')',
+    reviewTitle: 'الإجابات الكاملة',
+    qNum: n => 'السؤال ' + n,
+    lblYourAnswer: 'إجابتك', lblCorrectAnswer: 'الإجابة الصحيحة', notAnswered: '— (لم تتم الإجابة)',
+    restart: 'أعد الاختبار',
+    resTitles: ['ممتاز!', 'جاهز للامتحان!', 'تدرّب قليلاً بعد', 'واصل المراجعة'],
+    resMsgs: ['أنت تتقن فصل أسس الاقتصاد الوطني بمستوى عالٍ.', 'نتيجة جيدة – أنت تعرف الأساسيات.', 'أنت على الطريق الصحيح لكنك تحتاج إلى مراجعة بعض الأجزاء.', 'راجع مادة الدراسة وحاول مرة أخرى.']
+  }
+};
+
+const SUBTITLE = {
+  sv: '30 frågor om hushåll/företag/marknad, produktionsfaktorer, BNP, näringslivet, utrikeshandel, plattforms- och delningsekonomi, arbetsmarknad och kollektivavtal, jämlikhet/jämställdhet i arbetslivet, pengar, prisbildning samt inflation/deflation',
+  ar: '30 سؤالاً عن الأسر والشركات والسوق، وعوامل الإنتاج، والناتج المحلي الإجمالي، وقطاع الأعمال، والتجارة الخارجية، واقتصاد المنصات والمشاركة، وسوق العمل والاتفاقيات الجماعية، والمساواة في الحياة المهنية، والنقود، وتكوّن الأسعار، والتضخم والانكماش.',
+  easy: '30 frågor om pengar, jobb, företag, priser och handel med andra länder.'
+};
+const RES_MSGS_EASY = ['Du kan det här kapitlet mycket bra.', 'Bra jobbat! Du kan det viktigaste.', 'Du är på god väg. Läs lite till.', 'Läs materialet igen och försök en gång till.'];
+
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+}
+function uiVal(lang, key, args) {
+  const v = UI[lang][key];
+  return typeof v === 'function' ? v(...args) : v;
+}
+// Svensk UI-text; vid arabiska läggs den arabiska texten till efter " · "
+function L(key, ...args) {
+  const sv = uiVal('sv', key, args);
+  // \u2067…\u2069 isolerar den arabiska delen så att siffror hamnar rätt
+  return currentLang === 'ar' ? sv + ' · \u2067' + uiVal('ar', key, args) + '\u2069' : sv;
+}
+// Kompletterande rad under den svenska texten (arabiska eller enkel svenska)
+function trLine(text) {
+  if (currentLang === 'sv' || !text) return '';
+  const rtl = RTL.includes(currentLang);
+  return '<div class="tr-line' + (rtl ? ' rtl' : '') + '"' + (rtl ? ' dir="rtl" lang="ar"' : '') + '>' +
+         '<span class="tr-badge">' + LANG_FLAGS[currentLang] + '</span>' + esc(text) + '</div>';
+}
+function trOf(q)       { return currentLang === 'sv' ? null : q[currentLang]; }
+function trQ(q)        { const t = trOf(q); return t ? t.q : ''; }
+function trExpl(q)     { const t = trOf(q); return t ? t.expl : ''; }
+function trOpt(q, i)   { const t = trOf(q); return t && t.opts ? t.opts[i] : ''; }
+
+function applyStaticUI() {
+  document.getElementById('lang-btn').textContent = currentLang === 'sv'
+    ? '🌐 ' + UI.sv.langBtn
+    : '🌐 ' + LANG_FLAGS[currentLang] + ' ' + LANG_LABELS[currentLang];
+  document.querySelectorAll('.lang-opt').forEach(b => b.classList.toggle('active', b.dataset.lang === currentLang));
+
+  document.getElementById('t-badge').textContent   = L('badge');
+  document.getElementById('t-title').textContent   = L('title');
+  document.getElementById('t-subtitle').innerHTML  = esc(SUBTITLE.sv) + trLine(SUBTITLE[currentLang]);
+  document.getElementById('lbl-q').textContent     = L('lblQuestions');
+  document.getElementById('lbl-types').textContent = L('lblTypes');
+  document.getElementById('lbl-facts').textContent = L('lblFacts');
+  document.getElementById('btn-start').textContent = L('start');
+  document.getElementById('btn-back').textContent  = L('backBtn');
+  document.getElementById('btn-modal-next').textContent = L('modalNext');
+  document.getElementById('r-lbl').textContent       = L('points');
+  document.getElementById('lbl-correct').textContent = L('lblCorrect');
+  document.getElementById('lbl-wrong').textContent   = L('lblWrong');
+  document.getElementById('lbl-pct').textContent     = L('lblPct');
+  document.getElementById('t-review').textContent    = L('reviewTitle');
+  document.getElementById('btn-restart').textContent = L('restart');
+}
+
+function toggleLangMenu(e) {
+  e.stopPropagation();
+  document.getElementById('lang-menu').classList.toggle('open');
+}
+function selectLang(lang) {
+  document.getElementById('lang-menu').classList.remove('open');
+  // Enkel svenska slås av med ett nytt klick
+  currentLang = (lang === 'easy' && currentLang === 'easy') ? 'sv' : lang;
+  applyStaticUI();
+  if (document.getElementById('screen-quiz').classList.contains('active') && qs.length) render();
+  if (document.getElementById('screen-result').classList.contains('active')) renderResults();
+  if (!document.getElementById('modal-overlay').classList.contains('hidden') && lastModal) renderModal();
+}
+document.addEventListener('click', () => document.getElementById('lang-menu').classList.remove('open'));
+
+// ════════════════════════════════════════════════════════════
 // FISHER-YATES SHUFFLE
 // ════════════════════════════════════════════════════════════
 function shuffleArray(array) {
@@ -571,6 +1324,7 @@ let cur = 0;
 let score = 0;
 let elapsed = 0;
 let timerID = null;
+let lastModal = null;
 
 function normalize(q) {
   if (q.type === 'tf') {
@@ -579,7 +1333,9 @@ function normalize(q) {
       q: q.q,
       opts: ['Sant', 'Falskt'],
       correct: q.correct ? 0 : 1,
-      expl: q.expl
+      expl: q.expl,
+      ar:   { ...q.ar,   opts: TF_OPTS.ar },
+      easy: { ...q.easy, opts: TF_OPTS.easy }
     };
   }
   return q;
@@ -635,10 +1391,10 @@ function render() {
   const total = qs.length;
 
   document.getElementById('progress-bar').style.width = (cur / total * 100) + '%';
-  document.getElementById('q-counter').textContent = 'Fråga ' + (cur + 1) + ' av ' + total;
-  document.getElementById('score-pill').textContent = 'Poäng: ' + score;
-  document.getElementById('q-type-tag').textContent = q.type === 'tf' ? 'Sant eller falskt' : 'Flerval';
-  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('q-counter').textContent = L('counter', cur + 1, total);
+  document.getElementById('score-pill').textContent = L('score', score);
+  document.getElementById('q-type-tag').textContent = L(q.type === 'tf' ? 'tagTf' : 'tagMc');
+  document.getElementById('q-text').innerHTML = esc(q.q) + trLine(trQ(q));
 
   const optsEl = document.getElementById('opts');
   optsEl.innerHTML = '';
@@ -646,7 +1402,7 @@ function render() {
   q.shuffledIdx.forEach((origIdx, displayPos) => {
     const btn = document.createElement('button');
     btn.className = 'opt-btn';
-    btn.textContent = q.opts[origIdx];
+    btn.innerHTML = esc(q.opts[origIdx]) + trLine(trOpt(q, origIdx));
     btn.disabled = q.answered;
 
     if (q.answered) {
@@ -662,7 +1418,7 @@ function render() {
 
   document.getElementById('btn-back').style.display = cur > 0 ? 'inline-block' : 'none';
   document.getElementById('btn-next').style.display = q.answered ? 'inline-block' : 'none';
-  document.getElementById('btn-next').textContent = cur === total - 1 ? 'Se resultat →' : 'Nästa →';
+  document.getElementById('btn-next').textContent = L(cur === total - 1 ? 'seeResult' : 'next');
 }
 
 // ════════════════════════════════════════════════════════════
@@ -687,21 +1443,26 @@ function handleAnswer(displayPos) {
   });
 
   document.getElementById('btn-next').style.display = 'inline-block';
-  document.getElementById('btn-next').textContent = cur === qs.length - 1 ? 'Se resultat →' : 'Nästa →';
-  document.getElementById('score-pill').textContent = 'Poäng: ' + score;
+  document.getElementById('btn-next').textContent = L(cur === qs.length - 1 ? 'seeResult' : 'next');
+  document.getElementById('score-pill').textContent = L('score', score);
 
-  setTimeout(() => showModal(isCorrect, q.expl), 600);
+  setTimeout(() => showModal(isCorrect, q), 600);
 }
 
 // ════════════════════════════════════════════════════════════
 // MODAL
 // ════════════════════════════════════════════════════════════
-function showModal(isCorrect, expl) {
-  document.getElementById('modal-icon').textContent      = isCorrect ? '✅' : '❌';
-  document.getElementById('modal-verdict').textContent   = isCorrect ? 'Rätt svar!' : 'Fel svar';
-  document.getElementById('modal-verdict').className     = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
-  document.getElementById('modal-expl').textContent      = expl;
+function showModal(isCorrect, q) {
+  lastModal = { isCorrect, q };
+  renderModal();
   document.getElementById('modal-overlay').classList.remove('hidden');
+}
+function renderModal() {
+  const { isCorrect, q } = lastModal;
+  document.getElementById('modal-icon').textContent      = isCorrect ? '✅' : '❌';
+  document.getElementById('modal-verdict').textContent   = L(isCorrect ? 'verdictOk' : 'verdictBad');
+  document.getElementById('modal-verdict').className     = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
+  document.getElementById('modal-expl').innerHTML        = esc(q.expl) + trLine(trExpl(q));
 }
 function closeModal() {
   document.getElementById('modal-overlay').classList.add('hidden');
@@ -724,7 +1485,10 @@ function goNext() {
 function showResults() {
   stopTimer();
   show('screen-result');
+  renderResults();
+}
 
+function renderResults() {
   const total = qs.length;
   const wrong = total - score;
   const pct   = Math.round(score / total * 100);
@@ -735,26 +1499,24 @@ function showResults() {
   document.getElementById('s-pct').textContent     = pct + '%';
 
   const m = Math.floor(elapsed / 60), s = String(elapsed % 60).padStart(2, '0');
-  document.getElementById('r-time').textContent = 'Tid: ' + m + ':' + s;
+  document.getElementById('r-time').textContent = L('time', m + ':' + s);
 
-  let title, msg;
-  if (pct >= 90)      { title = '🏆 Utmärkt!';          msg = 'Du behärskar kapitlet Samhällsekonomins grunder på hög nivå.'; }
-  else if (pct >= 75) { title = '✅ Redo för provet!';   msg = 'Bra resultat – du har koll på det centrala.'; }
-  else if (pct >= 55) { title = '📖 Öva lite till';      msg = 'Du är på rätt spår men behöver repetera en del.'; }
-  else                { title = '💡 Fortsätt repetera'; msg = 'Gå igenom pluggmaterialet och försök igen.'; }
+  const lvl = pct >= 90 ? 0 : pct >= 75 ? 1 : pct >= 55 ? 2 : 3;
+  const title = UI.sv.resTitles[lvl] + (currentLang === 'ar' ? ' · \u2067' + UI.ar.resTitles[lvl] + '\u2069' : '');
+  const msgTr = currentLang === 'ar' ? UI.ar.resMsgs[lvl] : currentLang === 'easy' ? RES_MSGS_EASY[lvl] : '';
 
   document.getElementById('r-title').textContent = title;
-  document.getElementById('r-msg').textContent   = msg;
+  document.getElementById('r-msg').innerHTML     = esc(UI.sv.resMsgs[lvl]) + trLine(msgTr);
 
   // Missed
   const missedEl = document.getElementById('missed-section');
   const missed = qs.filter(q => q.answered && q.shuffledIdx.indexOf(q.correct) !== q.selectedDisplay);
   if (missed.length) {
-    missedEl.innerHTML = '<div class="section-hd">Missade frågor (' + missed.length + ')</div>';
+    missedEl.innerHTML = '<div class="section-hd">' + esc(L('missed', missed.length)) + '</div>';
     missed.forEach(q => {
       const d = document.createElement('div');
       d.className = 'missed-item';
-      d.textContent = q.q;
+      d.innerHTML = esc(q.q) + trLine(trQ(q));
       missedEl.appendChild(d);
     });
   } else {
@@ -768,22 +1530,25 @@ function showResults() {
     const correctDisplay = q.shuffledIdx.indexOf(q.correct);
     const isCorrect  = q.answered && q.selectedDisplay === correctDisplay;
     const notAnswered = !q.answered;
-    const correctText  = q.opts[q.correct];
-    const selectedText = q.answered ? q.opts[q.shuffledIdx[q.selectedDisplay]] : null;
+    const selIdx       = q.answered ? q.shuffledIdx[q.selectedDisplay] : null;
+    const correctText  = esc(q.opts[q.correct]) + trLine(trOpt(q, q.correct));
+    const selectedText = q.answered ? esc(q.opts[selIdx]) + trLine(trOpt(q, selIdx)) : null;
+    const yourLbl      = '<span class="lbl">' + esc(L('lblYourAnswer')) + ': </span>';
+    const rightLbl     = '<span class="lbl">' + esc(L('lblCorrectAnswer')) + ': </span>';
 
     const div = document.createElement('div');
     div.className = 'facit-item ' + (notAnswered ? '' : isCorrect ? 'fc' : 'fw');
 
-    let html = '<div class="fi-num">Fråga ' + (i + 1) + '</div>';
-    html += '<div class="fi-q">' + q.q + '</div>';
+    let html = '<div class="fi-num">' + esc(L('qNum', i + 1)) + '</div>';
+    html += '<div class="fi-q">' + esc(q.q) + trLine(trQ(q)) + '</div>';
     if (notAnswered) {
-      html += '<div class="fi-row"><span class="lbl">Ditt svar: </span>— (inte besvarad)</div>';
-      html += '<div class="fi-row ra"><span class="lbl">Rätt svar: </span>' + correctText + '</div>';
+      html += '<div class="fi-row">' + yourLbl + esc(L('notAnswered')) + '</div>';
+      html += '<div class="fi-row ra">' + rightLbl + correctText + '</div>';
     } else if (isCorrect) {
-      html += '<div class="fi-row ya-ok">✓ <span class="lbl">Ditt svar: </span>' + selectedText + '</div>';
+      html += '<div class="fi-row ya-ok">✓ ' + yourLbl + selectedText + '</div>';
     } else {
-      html += '<div class="fi-row ya-bad">✗ <span class="lbl">Ditt svar: </span>' + selectedText + '</div>';
-      html += '<div class="fi-row ra"><span class="lbl">Rätt svar: </span>' + correctText + '</div>';
+      html += '<div class="fi-row ya-bad">✗ ' + yourLbl + selectedText + '</div>';
+      html += '<div class="fi-row ra">' + rightLbl + correctText + '</div>';
     }
     div.innerHTML = html;
     facitEl.appendChild(div);
@@ -797,6 +1562,8 @@ function restartQuiz() {
   stopTimer();
   show('screen-start');
 }
+
+applyStaticUI();
 </script>
     <script src="feedback-widget.js" defer></script>
     <script data-goatcounter="https://johnblixt.goatcounter.com/count"
