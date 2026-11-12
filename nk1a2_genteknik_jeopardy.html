@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jeopardy – Cellen, DNA och genteknik | NK 1a2</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;0,800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0b1120;
+    --navy2:#111c33;
+  }
+  body{font-family:'EB Garamond',serif;}
+  .num{font-family:'Fredoka',sans-serif;font-variant-numeric:tabular-nums;}
+
+  /* ── Scenen ── */
+  #jp-stage{
+    background:var(--navy);
+    border-radius:1.25rem;
+    overflow:hidden;
+    position:relative;
+    display:flex;flex-direction:column;
+    height:min(78vh,660px);
+  }
+  #jp-stage.jp-fs{
+    position:fixed;inset:0;z-index:400;
+    height:100dvh;border-radius:0;
+  }
+  #jp-stage:fullscreen{height:100dvh;border-radius:0;}
+
+  /* ── Rutnät ── */
+  #jp-board{
+    flex:1;min-height:0;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    grid-template-rows:auto repeat(5,1fr);
+    gap:6px;padding:10px;
+  }
+  .jp-head{
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    font-family:'Fredoka',sans-serif;font-weight:700;
+    text-transform:uppercase;letter-spacing:.06em;line-height:1.1;
+    font-size:clamp(.6rem,1.5vh,.95rem);
+    color:#fff;padding:.5rem .35rem;border-radius:.6rem .6rem .2rem .2rem;
+    overflow-wrap:break-word;
+  }
+  .jp-cell{
+    display:flex;align-items:center;justify-content:center;
+    border-radius:.6rem;cursor:pointer;
+    font-family:'Fredoka',sans-serif;font-weight:700;
+    font-size:clamp(1.3rem,4.6vh,3.1rem);
+    border:1px solid rgba(255,255,255,.07);
+    transition:transform .12s ease,filter .12s ease,background .12s ease;
+  }
+  .jp-cell:hover:not(.jp-used){transform:translateY(-2px) scale(1.02);}
+  .jp-cell:focus-visible{outline:3px solid #fff;outline-offset:2px;}
+  .jp-used{
+    background:rgba(255,255,255,.04)!important;color:rgba(255,255,255,.16)!important;
+    cursor:default;transform:none;font-size:clamp(1rem,2.6vh,1.6rem);
+  }
+
+  /* ── Lagrad ── */
+  #jp-teams{
+    display:grid;gap:6px;padding:0 10px 10px;
+    grid-template-columns:repeat(var(--tc,2),1fr);
+  }
+  .jp-team{
+    background:var(--navy2);border-radius:.7rem;padding:.4rem .6rem;
+    display:flex;align-items:center;gap:.6rem;border:1px solid rgba(255,255,255,.08);
+  }
+  .jp-team .nm{
+    flex:1;min-width:0;color:#cbd5e1;font-weight:700;
+    font-size:clamp(.7rem,1.6vh,.95rem);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .jp-team .sc{font-family:'Fredoka',sans-serif;font-size:clamp(1rem,2.6vh,1.6rem);font-weight:700;}
+  .jp-step{
+    background:rgba(255,255,255,.08);color:#e2e8f0;border:none;border-radius:.4rem;
+    width:1.7rem;height:1.7rem;font-weight:700;cursor:pointer;font-family:'Fredoka',sans-serif;
+  }
+  .jp-step:hover{background:rgba(255,255,255,.2);}
+
+  #jp-turn{font-size:clamp(.8rem,2vh,1.1rem);}
+  #jp-round{
+    font-family:'Fredoka',sans-serif;
+    font-size:clamp(.55rem,1.3vh,.72rem);
+  }
+
+  /* ── Modal ── */
+  #jp-modal{position:absolute;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(4,8,18,.9);}
+  #jp-modal.on{display:flex;}
+  .jp-card{background:#fff;border-radius:1.1rem;width:100%;max-width:820px;max-height:94%;overflow-y:auto;padding:1.1rem 1.3rem 1rem;}
+  #jp-q{font-size:clamp(1.05rem,2.7vh,1.6rem);overflow-wrap:break-word;}
+  .jp-opt{
+    text-align:left;font-family:'EB Garamond',serif;border:2px solid #e2e8f0;background:#fff;
+    border-radius:.7rem;padding:.6rem .8rem;font-size:clamp(.85rem,1.9vh,1.05rem);
+    line-height:1.35;transition:all .12s ease;width:100%;overflow-wrap:anywhere;
+  }
+  .jp-opt:hover:not(:disabled){background:#f8fafc;}
+  .jp-opt:disabled{cursor:default;}
+  .jp-picked{background:#fef3c7!important;border-color:#f59e0b!important;}
+  .jp-wrong{background:#fee2e2!important;border-color:#dc2626!important;color:#991b1b;opacity:.65;}
+  .jp-correct{background:#dcfce7!important;border-color:#16a34a!important;color:#166534;font-weight:700;}
+  .jp-bar{transition:width 1s linear,background-color .3s;}
+
+  /* ── Helskärm: skala upp allt eleverna ska läsa från bänkraden ──
+     .jp-fs sätts alltid av jpToggleFullscreen (även när Fullscreen API
+     saknas); :fullscreen/:-webkit-full-screen fångar äkta helskärm.
+     Inget här nedan påverkar normalvyn i webbläsarfönstret. */
+  #jp-stage.jp-fs #jp-turn,
+  #jp-stage:fullscreen #jp-turn,
+  #jp-stage:-webkit-full-screen #jp-turn{
+    font-size:clamp(1.05rem,2.8vh,2rem);
+  }
+  #jp-stage.jp-fs #jp-round,
+  #jp-stage:fullscreen #jp-round,
+  #jp-stage:-webkit-full-screen #jp-round{
+    font-size:clamp(.75rem,1.8vh,1.2rem);
+    padding:clamp(.2rem,.6vh,.4rem) clamp(.7rem,1.4vw,1.15rem);
+  }
+  #jp-stage.jp-fs #jp-board,
+  #jp-stage:fullscreen #jp-board,
+  #jp-stage:-webkit-full-screen #jp-board{
+    gap:clamp(6px,.9vh,12px);
+    padding:clamp(10px,1.4vh,18px);
+  }
+  #jp-stage.jp-fs .jp-head,
+  #jp-stage:fullscreen .jp-head,
+  #jp-stage:-webkit-full-screen .jp-head{
+    font-size:clamp(.85rem,2.1vh,1.7rem);
+    letter-spacing:.04em;
+    padding:clamp(.5rem,1.2vh,.9rem) .45rem;
+    overflow-wrap:break-word;
+  }
+  #jp-stage.jp-fs .jp-cell,
+  #jp-stage:fullscreen .jp-cell,
+  #jp-stage:-webkit-full-screen .jp-cell{
+    font-size:clamp(1.8rem,6.2vh,4.6rem);
+  }
+  #jp-stage.jp-fs .jp-used,
+  #jp-stage:fullscreen .jp-used,
+  #jp-stage:-webkit-full-screen .jp-used{
+    font-size:clamp(1.2rem,3.2vh,2.4rem);
+  }
+  #jp-stage.jp-fs .jp-team,
+  #jp-stage:fullscreen .jp-team,
+  #jp-stage:-webkit-full-screen .jp-team{
+    padding:clamp(.4rem,1vh,.8rem) clamp(.6rem,1.2vw,1rem);
+  }
+  #jp-stage.jp-fs .jp-team .nm,
+  #jp-stage:fullscreen .jp-team .nm,
+  #jp-stage:-webkit-full-screen .jp-team .nm{
+    font-size:clamp(.95rem,2.3vh,1.8rem);
+  }
+  #jp-stage.jp-fs .jp-team .sc,
+  #jp-stage:fullscreen .jp-team .sc,
+  #jp-stage:-webkit-full-screen .jp-team .sc{
+    font-size:clamp(1.3rem,3.4vh,2.6rem);
+  }
+  #jp-stage.jp-fs .jp-step,
+  #jp-stage:fullscreen .jp-step,
+  #jp-stage:-webkit-full-screen .jp-step{
+    width:clamp(1.7rem,3.4vh,2.6rem);height:clamp(1.7rem,3.4vh,2.6rem);
+    font-size:clamp(.85rem,1.9vh,1.35rem);
+  }
+  #jp-stage.jp-fs #jp-modal .jp-card,
+  #jp-stage:fullscreen #jp-modal .jp-card,
+  #jp-stage:-webkit-full-screen #jp-modal .jp-card{
+    max-width:min(1500px,94vw);
+    max-height:96%;
+    padding:clamp(1.1rem,2.4vh,2.2rem) clamp(1.2rem,2.6vw,3rem);
+    border-radius:1.4rem;
+  }
+  #jp-stage.jp-fs #jp-cat,
+  #jp-stage:fullscreen #jp-cat,
+  #jp-stage:-webkit-full-screen #jp-cat{
+    font-size:clamp(.8rem,1.7vh,1.2rem);
+    padding:clamp(.3rem,.8vh,.55rem) clamp(.8rem,1.6vw,1.35rem);
+  }
+  #jp-stage.jp-fs #jp-val,
+  #jp-stage:fullscreen #jp-val,
+  #jp-stage:-webkit-full-screen #jp-val,
+  #jp-stage.jp-fs #jp-time,
+  #jp-stage:fullscreen #jp-time,
+  #jp-stage:-webkit-full-screen #jp-time{
+    font-size:clamp(1rem,2.3vh,1.7rem);
+  }
+  #jp-stage.jp-fs #jp-answering,
+  #jp-stage:fullscreen #jp-answering,
+  #jp-stage:-webkit-full-screen #jp-answering{
+    font-size:clamp(.85rem,1.8vh,1.15rem);
+    padding:.35rem 1rem;
+  }
+  #jp-stage.jp-fs #jp-banner p,
+  #jp-stage:fullscreen #jp-banner p,
+  #jp-stage:-webkit-full-screen #jp-banner p{
+    font-size:clamp(.9rem,1.9vh,1.25rem);
+  }
+  #jp-stage.jp-fs #jp-q,
+  #jp-stage:fullscreen #jp-q,
+  #jp-stage:-webkit-full-screen #jp-q{
+    font-size:clamp(1.35rem,3.2vh,2.4rem);
+    margin-bottom:clamp(.9rem,2.2vh,1.6rem);
+    overflow-wrap:break-word;
+  }
+  #jp-stage.jp-fs #jp-opts,
+  #jp-stage:fullscreen #jp-opts,
+  #jp-stage:-webkit-full-screen #jp-opts{
+    gap:clamp(.55rem,1.4vh,1rem);
+  }
+  #jp-stage.jp-fs #jp-opts .jp-opt,
+  #jp-stage:fullscreen #jp-opts .jp-opt,
+  #jp-stage:-webkit-full-screen #jp-opts .jp-opt{
+    display:flex;align-items:center;
+    min-height:clamp(2.6rem,7.5vh,5rem);
+    padding:clamp(.6rem,1.5vh,1.2rem) clamp(.9rem,2vw,1.7rem);
+    font-size:clamp(1.15rem,2.8vh,2.3rem);
+    line-height:1.3;
+    border-width:3px;
+    overflow-wrap:anywhere;
+  }
+  #jp-stage.jp-fs #jp-expl-wrap,
+  #jp-stage:fullscreen #jp-expl-wrap,
+  #jp-stage:-webkit-full-screen #jp-expl-wrap{
+    font-size:clamp(1rem,2.1vh,1.5rem);
+    padding:clamp(.7rem,1.6vh,1.1rem) clamp(.8rem,1.8vw,1.3rem);
+  }
+
+  /* Mobil: lagpanelen i två kolumner så namn och knappar får plats. */
+  @media (max-width:767px){
+    #jp-teams{grid-template-columns:repeat(2,1fr);}
+    #jp-board{gap:4px;padding:6px;}
+    .jp-head{font-size:clamp(.5rem,2.6vw,.8rem);letter-spacing:.02em;padding:.4rem .2rem;}
+  }
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body class="bg-slate-50">
+
+<a href="nk1a2_genteknik.html" onclick="smartBack(event)" class="fixed top-4 left-4 z-50 text-sm font-medium text-slate-500 hover:text-green-700 bg-white/90 px-3 py-2 rounded-xl shadow-sm transition-colors">← Tillbaka till området</a>
+
+<div class="max-w-5xl mx-auto px-5 py-8">
+
+  <div class="border-l-4 pl-4 mb-8" style="border-color: #4ade80;">
+    <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Naturkunskap nivå 1a2 · Spel</p>
+    <h1 class="text-3xl md:text-4xl font-bold italic text-slate-900">Jeopardy – Cellen, DNA och genteknik</h1>
+    <p class="text-slate-500 text-sm mt-1 italic">Två omgångar · 100–500p och 600–1000p</p>
+  </div>
+
+  <!-- ══ SETUP ══ -->
+  <div id="jp-setup" class="max-w-sm mx-auto bg-white border-2 border-slate-200 rounded-2xl p-6">
+    <h2 class="font-bold text-xl mb-4 text-center">Vilka lag tävlar?</h2>
+    <div id="jp-team-inputs" class="space-y-2 mb-3"></div>
+    <div class="flex justify-center gap-5 mb-5 text-xs font-bold text-green-700">
+      <button id="jp-add" onclick="jpChangeTeamCount(1)">+ Lägg till lag</button>
+      <button id="jp-remove" onclick="jpChangeTeamCount(-1)">− Ta bort lag</button>
+    </div>
+    <button onclick="jpStartGame()" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold uppercase tracking-wide text-sm hover:bg-slate-700">Starta spelet</button>
+  </div>
+
+  <!-- ══ SCEN ══ -->
+  <div id="jp-stage" class="hidden">
+
+    <div class="flex items-center gap-3 px-4 pt-3 pb-1">
+      <p class="text-slate-400 text-[11px] uppercase tracking-[.2em] font-bold truncate">Cellen, DNA och genteknik</p>
+      <span id="jp-round" class="px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wide whitespace-nowrap"></span>
+      <span class="flex-1"></span>
+      <button onclick="jpShowRules(false)" class="text-slate-400 hover:text-white text-xs font-bold">Regler</button>
+      <button onclick="jpNewGame()" class="text-slate-400 hover:text-white text-xs font-bold">Nytt spel</button>
+      <button id="jp-fsbtn" onclick="jpToggleFullscreen()" class="bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-lg">⛶ Helskärm</button>
+    </div>
+
+    <p id="jp-turn" class="text-center font-bold px-4 pb-2"></p>
+
+    <div id="jp-board"></div>
+    <div id="jp-teams"></div>
+
+    <!-- Spelregler -->
+    <div id="jp-rules" class="hidden absolute inset-0 z-[55] items-center justify-center p-6" style="background:rgba(4,8,18,.94)">
+      <div class="bg-white rounded-2xl w-full max-w-lg p-6 max-h-[92%] overflow-y-auto">
+        <h2 class="font-bold text-2xl mb-4 text-center">Så funkar det</h2>
+        <ul class="space-y-2 text-sm text-slate-700 mb-4 list-disc pl-5 leading-snug">
+          <li><strong>Två omgångar.</strong> Först 4 kategorier med 100–500p. När brädet är tomt kommer en mellanskärm där du kan starta omgång 2 (nya kategorier, 600–1000p) eller avsluta spelet om tiden är slut.</li>
+          <li><strong>Fast turordning.</strong> Lagen väljer ruta i tur och ordning – Lag 1, Lag 2, Lag 3, Lag 1 igen. Ordningen ändras aldrig, oavsett om laget svarar rätt eller fel.</li>
+          <li><strong>Rätt svar ger poäng, inte turen.</strong> Ett lag kan alltså aldrig ta flera rutor i rad.</li>
+          <li><strong>Stöld ger inte turen.</strong> Svarar ett lag fel går frågan vidare till nästa lag för halva poängen. Det laget kan ta poängen – men väljer ändå inte nästa fråga. Rotationen rullar på som vanligt.</li>
+          <li><strong>Längre tid på svårare frågor.</strong> 100–300p ger 45 sekunder, 400–700p ger 60 och 800–1000p ger 75. Ett stulet försök har 20 sekunder, eftersom frågan redan är uppläst.</li>
+          <li>Laget säger sitt svar högt — du klickar på det alternativ de väljer.</li>
+          <li>Har alla lag svarat fel visas rätt svar automatiskt. Ingen får poäng.</li>
+          <li><strong>Du behöver inte kunna ämnet</strong> — spelet rättar själv och visar en förklaring du kan läsa upp.</li>
+        </ul>
+        <p id="jp-rules-start" class="text-center font-bold mb-4" style="font-size:clamp(.9rem,2.2vh,1.15rem)"></p>
+        <button onclick="jpHideRules()" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold uppercase tracking-wide text-sm hover:bg-slate-700">Kör igång</button>
+      </div>
+    </div>
+
+    <!-- Frågemodal -->
+    <div id="jp-modal">
+      <div class="jp-card" id="jp-card">
+        <div class="flex items-center gap-3 mb-3">
+          <span id="jp-cat" class="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide text-white"></span>
+          <span id="jp-val" class="num font-bold text-slate-400"></span>
+          <span class="flex-1"></span>
+          <span id="jp-time" class="num text-sm font-bold text-slate-400">45</span>
+        </div>
+        <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden mb-4">
+          <div id="jp-bar" class="jp-bar h-full" style="width:100%"></div>
+        </div>
+
+        <div id="jp-answering-wrap" class="mb-3">
+          <span id="jp-answering" class="px-3 py-1 rounded-full text-xs font-bold text-white"></span>
+        </div>
+
+        <div id="jp-banner" class="hidden mb-3 text-center">
+          <p class="text-sm font-bold text-amber-800 bg-amber-50 border border-amber-300 rounded-lg py-2 px-3 inline-block"></p>
+        </div>
+
+        <p id="jp-q" class="font-bold text-slate-900 mb-4 leading-snug"></p>
+        <div id="jp-opts" class="grid gap-2 mb-3"></div>
+
+        <div id="jp-expl-wrap" class="hidden border-l-4 rounded-r-lg p-3 mb-3 text-sm text-slate-700">
+          <p class="font-bold text-[11px] uppercase tracking-wide mb-1" id="jp-expl-label">Förklaring</p>
+          <p id="jp-expl"></p>
+        </div>
+
+        <div id="jp-actions" class="flex justify-center gap-5 text-xs font-bold pt-2 border-t border-slate-100">
+          <button id="jp-reveal-btn" onclick="jpRevealAnswer()" class="text-green-700">Visa svar</button>
+          <button id="jp-close-btn" onclick="jpCloseModal()" class="text-slate-400">Stäng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mellanskärm mellan omgångarna -->
+    <div id="jp-inter" class="hidden absolute inset-0 z-[58] items-center justify-center p-6" style="background:rgba(4,8,18,.94)">
+      <div class="text-center w-full max-w-md">
+        <p class="text-slate-400 text-xs uppercase tracking-[.25em] font-bold mb-4">Omgång 1 klar</p>
+        <div id="jp-inter-list" class="space-y-2 mb-5"></div>
+        <p id="jp-inter-next" class="font-bold mb-5" style="font-size:clamp(.9rem,2.2vh,1.15rem)"></p>
+        <div class="flex flex-col gap-3">
+          <button onclick="jpStartRound2()" class="bg-white text-slate-900 px-6 py-3 rounded-xl font-bold text-sm uppercase tracking-wide">Starta omgång 2 · 600–1000p</button>
+          <button onclick="jpShowEnd()" class="text-slate-400 hover:text-white text-xs font-bold">Avsluta spelet och visa slutställning</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slutresultat -->
+    <div id="jp-end" class="hidden absolute inset-0 z-[60] items-center justify-center p-6" style="background:rgba(4,8,18,.94)">
+      <div class="text-center">
+        <p class="text-slate-400 text-xs uppercase tracking-[.25em] font-bold mb-4">Slutresultat</p>
+        <div id="jp-end-list" class="space-y-2 mb-6"></div>
+        <button onclick="jpNewGame()" class="bg-white text-slate-900 px-6 py-2.5 rounded-xl font-bold text-sm">Spela igen</button>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="mt-16 text-center border-t border-slate-200 pt-8">
+    <p class="text-slate-400 text-xs uppercase tracking-[0.2em] font-black italic">Designad av John</p>
+  </footer>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// TILLBAKA-NAVIGERING
+// ════════════════════════════════════════════════════════════
+function smartBack(e) {
+  if (e) e.preventDefault();
+  var ref = document.referrer;
+  if (ref) {
+    try {
+      if (new URL(ref).origin === window.location.origin) {
+        history.back();
+        return;
+      }
+    } catch (err) {}
+  }
+  window.location.href = 'nk1a2_genteknik.html';
+}
+</script>
+
+<script>
+/* ════════ DATA ════════ */
+
+/* Lagfärgerna är fasta genom hela spelet och frikopplade från
+   kategorifärgerna – annars skulle lagen byta färg i omgång 2. */
+const JP_TEAM_COLORS = ['#06b6d4','#a855f7','#f59e0b','#f43f5e'];
+
+/* Tid i sekunder när en fråga går vidare till nästa lag. Kortare,
+   eftersom frågan redan är uppläst. */
+const JP_STEAL_TIME = 20;
+
+const JP_ROUNDS = [
+{
+  label:'Omgång 1 · 100–500p',
+  cats:[
+  { name:'Arv och kromosomer', color:'#06b6d4', rgb:'6,182,212', qs:[
+    { v:100, q:'Hur många kromosompar har en människa?',
+      opts:['23 par','46 par','22 par','44 par'],
+      correct:0, expl:'46 kromosomer i 23 par – hälften från varje förälder.', src:'s. 52' },
+    { v:200, q:'Vilken kvävebas bildar par med C i DNA?',
+      opts:['T','G','A','U'],
+      correct:1, expl:'C passar bara ihop med G, och A med T.', src:'s. 51' },
+    { v:300, q:'Varför har könsceller bara 23 kromosomer?',
+      opts:['Cellen ska dela sig snabbare','Färre mutationer ska uppstå','Barnet ska få 46 totalt','Mammans anlag ska dominera'],
+      correct:2, expl:'Vid befruktningen blir 23 + 23 = 46 kromosomer.', src:'s. 54' },
+    { v:400, q:'Varför är en bärare av ett recessivt sjukdomsanlag oftast frisk?',
+      opts:['Cellen har lagat sjukdomsanlaget','Anlaget finns bara i könsceller','Anlaget har stängts av miljön','Den andra genkopian är frisk'],
+      correct:3, expl:'Bäraren har en frisk kopia – recessivt syns bara med två.', src:'s. 55–56' },
+    { v:500, q:'Hur stor andel av ungarna blir albino om två Aa-kaniner paras?',
+      opts:['1 av 4','2 av 4','3 av 4','0 av 4'],
+      correct:0, expl:'Aa × Aa ger AA, Aa, Aa, aa – en av fyra.', src:'s. 60' }
+  ]},
+  { name:'DNA och proteiner', color:'#a855f7', rgb:'168,85,247', qs:[
+    { v:100, q:'Vad heter budbäraren som tar en kopia av genen till ribosomen?',
+      opts:['tRNA','DNA','mRNA','Histon'],
+      correct:2, expl:'mRNA kopierar genen och tar den till ribosomen.', src:'s. 64' },
+    { v:200, q:'Ungefär hur många gener har en människa?',
+      opts:['2 000','20 000','200 000','2 miljoner'],
+      correct:1, expl:'Människan har ungefär 20 000 gener.', src:'s. 63' },
+    { v:300, q:'Vad händer vid transkriptionen?',
+      opts:['Genen kopieras till mRNA','Aminosyror kopplas ihop','DNA kopieras inför celldelning','Proteinet veckas till rätt form'],
+      correct:0, expl:'Genen kopieras till mRNA i cellkärnan.', src:'s. 66' },
+    { v:400, q:'Varför kallas en gen för ett recept?',
+      opts:['Den styr cellens delning','Den tillverkar cellens aminosyror','Den ger cellen energi','Den beskriver hur protein byggs'],
+      correct:3, expl:'En gen är receptet på ett protein.', src:'s. 63' },
+    { v:500, q:'I vilken ordning går informationen när ett protein byggs?',
+      opts:['mRNA → DNA → protein','DNA → mRNA → protein','DNA → protein → mRNA','Protein → mRNA → DNA'],
+      correct:1, expl:'Genen kopieras till mRNA, som översätts till protein.', src:'s. 66–67' }
+  ]},
+  { name:'Mutationer och avel', color:'#f59e0b', rgb:'245,158,11', qs:[
+    { v:100, q:'Vad kallas en förändring i DNA?',
+      opts:['Translation','Evolution','Replikation','Mutation'],
+      correct:3, expl:'En mutation är en förändring i DNA.', src:'s. 72' },
+    { v:200, q:'Vad kallas en mutation där bara en kvävebas ändras?',
+      opts:['Blockmutation','Punktmutation','Kromosomavvikelse','Reduktionsdelning'],
+      correct:1, expl:'Punktmutation: bara en kvävebas ändras.', src:'s. 72' },
+    { v:300, q:'Varför förs en mutation i en hudcell inte vidare till barnen?',
+      opts:['Hudcellen är ingen könscell','Hudcellen lagar alltid skadan','Hudcellen saknar DNA helt','Mutationen blir alltid tyst'],
+      correct:0, expl:'Bara mutationer i könsceller förs vidare till barnen.', src:'s. 74' },
+    { v:400, q:'Varför överlever vita kaniner oftare i snörika områden?',
+      opts:['De har anpassat sig medvetet','Pälsen ger dem kamouflage','De får fler ungar','De hittar mer mat'],
+      correct:1, expl:'Vit päls ger kamouflage i snö, så fler överlever.', src:'s. 75' },
+    { v:500, q:'Vilka av barnets celler får en mutation som fanns i spermien?',
+      opts:['Bara barnets könsceller','Bara barnets hudceller','Inga av barnets celler','Alla barnets celler'],
+      correct:3, expl:'Barnet växer från ett befruktat ägg, så alla celler får den.', src:'s. 74' }
+  ]},
+  { name:'Genteknik', color:'#f43f5e', rgb:'244,63,94', qs:[
+    { v:100, q:'Vad betyder det att genmodifiera en organism?',
+      opts:['Avla fram den länge','Ändra dess DNA med flit','Låta miljön välja ut den','Byta ut dess aminosyror'],
+      correct:1, expl:'Att genmodifiera är att med flit ändra en organisms DNA.', src:'s. 83' },
+    { v:200, q:'Vilket verktyg klipper DNA på en bestämd plats?',
+      opts:['Enzymet helikas','Enzymet RNA-polymeras','Gensaxen CRISPR/Cas9','Proteinet keratin'],
+      correct:2, expl:'Gensaxen CRISPR/Cas9 klipper DNA på en bestämd plats.', src:'s. 93' },
+    { v:300, q:'Varför kan en gen flyttas från en art till en annan?',
+      opts:['Alla arter har samma kromosomer','Alla arter har samma gener','Genen anpassar sig till arten','Den genetiska koden är lika'],
+      correct:3, expl:'Den genetiska koden är lika för allt liv.', src:'s. 83' },
+    { v:400, q:'Varför är de flesta GM-laxar sterila?',
+      opts:['Så vildlaxen inte påverkas','Så de växer ännu snabbare','Så de behöver mindre foder','Så de inte blir sjuka'],
+      correct:0, expl:'Rymmer GM-laxen ska den inte fortplanta sig med vild lax.', src:'s. 89' },
+    { v:500, q:'Forskare sätter in en gen från en manet i en mus – vad blir musen?',
+      opts:['Förädlad','Transgen','Knockout','Recessiv'],
+      correct:1, expl:'Transgen organism: har fått DNA från en annan art.', src:'s. 83' }
+  ]}
+  ]
+},
+{
+  label:'Omgång 2 · 600–1000p',
+  cats:[
+  { name:'Gentester och sjukdomar', color:'#34d399', rgb:'52,211,153', qs:[
+    { v:600, q:'Typ 2-diabetes beror på flera gener plus livsstil – vilken sorts sjukdom är det?',
+      opts:['Monogen','Multifaktoriell','Recessiv','Kromosomavvikelse'],
+      correct:1, expl:'Flera gener tillsammans med miljön ger multifaktoriell sjukdom.', src:'s. 56' },
+    { v:700, q:'En gravid gör ultraljud för att undersöka fostret – vad kallas det?',
+      opts:['Genterapi','Hemtest','Provrörsbefruktning','Fosterdiagnostik'],
+      correct:3, expl:'Alla undersökningar av fostret, t.ex. ultraljud, är fosterdiagnostik.', src:'s. 57' },
+    { v:800, q:'När får embryon väljas bort vid provrörsbefruktning i Sverige?',
+      opts:['Vid anlag för allvarlig sjukdom','När föräldrarna vill välja kön','Aldrig, det är helt förbjudet','Alltid när föräldrarna önskar det'],
+      correct:0, expl:'Bara om föräldrarna bär anlag för allvarlig ärftlig sjukdom.', src:'s. 57' },
+    { v:900, q:'Varför vill kritiker att bara sjukvården testar sjukdomsanlag?',
+      opts:['Där blir testerna helt gratis','Där får svaret en förklaring','Där blir svaren aldrig fel','Där lagras inget DNA alls'],
+      correct:1, expl:'I sjukvården får man hjälp att tolka och förstå svaret.', src:'s. 57' },
+    { v:1000, q:'Vad visar epigenetiken om hur gener och miljö samspelar?',
+      opts:['Miljön ändrar kvävebasernas ordning','Generna styr allt, miljön inget','Miljön påverkar bara könsceller','Miljön påverkar genernas aktivitet'],
+      correct:3, expl:'Livsstil och miljö påverkar vilka gener som är aktiva.', src:'s. 55' }
+  ]},
+  { name:'Den genetiska koden', color:'#818cf8', rgb:'129,140,248', qs:[
+    { v:600, q:'Hur många kvävebaser på mRNA motsvarar en aminosyra?',
+      opts:['En','Två','Tre','Fyra'],
+      correct:2, expl:'En triplett – tre baser – motsvarar en aminosyra.', src:'s. 68' },
+    { v:700, q:'Vad händer när ribosomen når tripletten UAA?',
+      opts:['Kedjan slutar byggas där','Kedjan börjar byggas där','Kedjan kopieras till DNA','Kedjan får en extra aminosyra'],
+      correct:0, expl:'UAA är en stoppsekvens – där tar kedjan slut.', src:'s. 68' },
+    { v:800, q:'Vad skiljer transkription från translation?',
+      opts:['Transkription översätter, translation kopierar','Båda sker i cellkärnan','Transkription kopierar, translation översätter','Båda sker vid ribosomen'],
+      correct:2, expl:'Genen kopieras till mRNA, sedan översätts mRNA till aminosyror.', src:'s. 66–67' },
+    { v:900, q:'Vad händer om tRNA slutar hämta aminosyror till ribosomen?',
+      opts:['Genen kopieras inte längre','Inget protein kan byggas','DNA lämnar cellkärnan i stället','Ribosomen gör egna aminosyror'],
+      correct:1, expl:'Utan tRNA når inga aminosyror ribosomen – ingen kedja byggs.', src:'s. 67' },
+    { v:1000, q:'Varför kopieras DNA innan en cell delar sig?',
+      opts:['mRNA ska kunna bildas','Proteinerna ska veckas rätt','Mutationerna ska försvinna','Båda cellerna ska få DNA'],
+      correct:3, expl:'Kopieringen ger två identiska DNA-molekyler, en till varje cell.', src:'s. 63' }
+  ]},
+  { name:'Urval och förädling', color:'#fb923c', rgb:'251,146,60', qs:[
+    { v:600, q:'Vilka björkmätare gynnades när sotet försvann på 1900-talet?',
+      opts:['De svarta björkmätarna','De ljusa björkmätarna','De största björkmätarna','De yngsta björkmätarna'],
+      correct:1, expl:'Utan sot syntes svarta fjärilar bättre – ljusa gynnades igen.', src:'s. 76' },
+    { v:700, q:'En bonde låter bara korna som ger mest mjölk få kalvar – vad kallas det?',
+      opts:['Naturligt urval','Genmodifiering','Selektivt urval','Genterapi'],
+      correct:2, expl:'Människan väljer vilka djur som får ungar – selektivt urval.', src:'s. 78' },
+    { v:800, q:'Varför kan avel ge djuren hälsoproblem?',
+      opts:['Avel skapar nya sjukdomsvirus','Önskade egenskaper kan skada djuret','Avlade djur saknar könsceller','Avel tar bort alla anlag'],
+      correct:1, expl:'Belgisk blå kan kräva kejsarsnitt, trubbnosiga hundar får problem.', src:'s. 80' },
+    { v:900, q:'Vad har naturligt och selektivt urval gemensamt?',
+      opts:['Båda styrs av människan','Båda styrs av miljön','Båda kräver genmodifiering','Båda kan ge evolution'],
+      correct:3, expl:'Miljön eller människan väljer – men båda ger evolution.', src:'s. 78' },
+    { v:1000, q:'Varför kallas gamla växtsorter för en genetisk råvara?',
+      opts:['De kan vara sjukdomsresistenta','De ger alltid större skördar','De saknar helt mutationer','De växer alltid snabbast'],
+      correct:0, expl:'Äldre sorter kan vara resistenta mot sjukdomar och bära viktiga anlag.', src:'s. 81' }
+  ]},
+  { name:'Genterapi och etik', color:'#e879f9', rgb:'232,121,249', qs:[
+    { v:600, q:'Vad gör man vid genterapi mot en svår ärftlig sjukdom?',
+      opts:['Stänger av alla sjuka celler','Tar bort en hel kromosom','Byter defekt gen mot fungerande','Tillför mer av proteinet'],
+      correct:2, expl:'Genterapi byter en defekt gen mot en fungerande.', src:'s. 92' },
+    { v:700, q:'Gensaxen ändrar DNA i en könscell – vad händer med förändringen?',
+      opts:['Den kan ärvas av barnen','Den försvinner vid befruktningen','Den stannar i en kroppsdel','Den repareras alltid bort'],
+      correct:0, expl:'Ändras könsceller blir förändringen ärftlig.', src:'s. 93' },
+    { v:800, q:'Först botas svåra sjukdomar, sedan väljs barnets utseende – vad kallas risken?',
+      opts:['Det naturliga urvalet','Den genetiska koden','Det selektiva urvalet','Det sluttande planet'],
+      correct:3, expl:'Från att bota svår sjukdom till att "designa" barn.', src:'s. 94' },
+    { v:900, q:'Varför kan urval av egenskaper krocka med människors lika värde?',
+      opts:['Alla barn får samma gener','Toleransen för olikheter kan minska','Sjuka anlag blir mycket vanligare','Gensaxen klipper alltid fel ställe'],
+      correct:1, expl:'Toleransen mot "oönskade" egenskaper kan minska.', src:'s. 94' },
+    { v:1000, q:'Vilken risk med GM-grödor handlar om makt snarare än hälsa?',
+      opts:['Skördarna minskar varje år','Grödorna växer bara i EU','Bönder tvingas köpa nya frön','Odlingsarealen krymper i världen'],
+      correct:2, expl:'Patent kan tvinga bönder att köpa nya frön varje år.', src:'s. 90' }
+  ]}
+  ]
+}
+];
+
+/* Den aktiva omgångens kategorier. Pekas om av jpStartRound(). */
+let JP_CATEGORIES = JP_ROUNDS[0].cats;
+
+/* ════════ SETUP ════════ */
+let jpTeamCount = 2, jpTeams = [], jpUsed = 0, jpTurn = null, jpRound = 0;
+
+function jpTeamColor(i){ return JP_TEAM_COLORS[i%JP_TEAM_COLORS.length]; }
+
+function jpRenderRound(){
+  const el=document.getElementById('jp-round');
+  el.textContent=JP_ROUNDS[jpRound].label;
+  el.style.background=JP_CATEGORIES[0].color;
+  el.style.color='#0b1120';
+}
+
+function jpRenderTurn(){
+  const el=document.getElementById('jp-turn');
+  if(jpTurn===null||!jpTeams[jpTurn]){ el.textContent=''; return; }
+  el.textContent=jpTeams[jpTurn].name+' väljer nästa fråga';
+  el.style.color=jpTeamColor(jpTurn);
+}
+
+function jpRenderTeamInputs(){
+  const wrap = document.getElementById('jp-team-inputs');
+  wrap.innerHTML = '';
+  for(let i=0;i<jpTeamCount;i++){
+    const inp = document.createElement('input');
+    inp.type='text'; inp.id='jp-team-'+i; inp.placeholder='Lag '+(i+1);
+    inp.className='w-full p-2.5 border-2 border-slate-200 rounded-lg text-sm outline-none focus:border-slate-900';
+    wrap.appendChild(inp);
+  }
+  document.getElementById('jp-remove').style.visibility = jpTeamCount<=2?'hidden':'visible';
+  document.getElementById('jp-add').style.visibility    = jpTeamCount>=4?'hidden':'visible';
+}
+function jpChangeTeamCount(d){ jpTeamCount=Math.min(4,Math.max(2,jpTeamCount+d)); jpRenderTeamInputs(); }
+
+function jpStartGame(){
+  jpTeams=[];
+  for(let i=0;i<jpTeamCount;i++){
+    const v=document.getElementById('jp-team-'+i).value.trim();
+    jpTeams.push({name:v||('Lag '+(i+1)),score:0});
+  }
+  jpTurn=Math.floor(Math.random()*jpTeams.length);
+  document.getElementById('jp-setup').classList.add('hidden');
+  document.getElementById('jp-stage').classList.remove('hidden');
+  jpHideOverlay('jp-end');
+  jpHideOverlay('jp-inter');
+  document.getElementById('jp-teams').style.setProperty('--tc', jpTeams.length);
+  jpRenderTeams();
+  jpStartRound(0);
+  jpShowRules(true);
+}
+function jpNewGame(){
+  jpTurn=null;
+  jpExitFullscreen();
+  jpHideRules();
+  jpHideOverlay('jp-end');
+  jpHideOverlay('jp-inter');
+  document.getElementById('jp-modal').classList.remove('on');
+  document.getElementById('jp-stage').classList.add('hidden');
+  document.getElementById('jp-setup').classList.remove('hidden');
+}
+
+function jpHideOverlay(id){
+  const el=document.getElementById(id);
+  el.classList.add('hidden'); el.style.display='none';
+}
+function jpIsOpen(id){ return document.getElementById(id).style.display==='flex'; }
+
+/* ════════ OMGÅNGAR ════════ */
+/* jpTurn rörs aldrig här – rotationen fortsätter där omgång 1 slutade. */
+function jpStartRound(n){
+  jpRound=n;
+  JP_CATEGORIES=JP_ROUNDS[n].cats;
+  jpUsed=0;
+  jpBuildBoard();
+  jpRenderRound();
+  jpRenderTurn();
+}
+function jpStartRound2(){
+  jpHideOverlay('jp-inter');
+  jpStartRound(1);
+}
+function jpShowIntermission(){
+  const list=document.getElementById('jp-inter-list'); list.innerHTML='';
+  jpTeams.map((t,i)=>({t,i})).sort((a,b)=>b.t.score-a.t.score).forEach((e,pos)=>{
+    const row=document.createElement('div');
+    row.className='flex items-center gap-4 justify-center';
+    row.innerHTML=`<span class="text-slate-300 font-bold" style="font-size:clamp(.95rem,2.6vh,1.4rem)">${pos+1}. ${e.t.name}</span>
+      <span class="num font-bold" style="color:${jpTeamColor(e.i)};font-size:clamp(1.2rem,3.4vh,2rem)">${e.t.score}</span>`;
+    list.appendChild(row);
+  });
+  const nx=document.getElementById('jp-inter-next');
+  nx.textContent=jpTeams[jpTurn].name+' inleder omgång 2.';
+  nx.style.color=jpTeamColor(jpTurn);
+  const el=document.getElementById('jp-inter');
+  el.classList.remove('hidden'); el.style.display='flex';
+}
+
+/* ════════ SPELREGLER ════════ */
+function jpShowRules(initial){
+  if(jpTurn===null||!jpTeams[jpTurn]) return;
+  const el=document.getElementById('jp-rules-start');
+  el.textContent=jpTeams[jpTurn].name+(initial?' börjar.':' har turen.');
+  el.style.color=jpTeamColor(jpTurn);
+  const r=document.getElementById('jp-rules');
+  r.classList.remove('hidden'); r.style.display='flex';
+}
+function jpHideRules(){ jpHideOverlay('jp-rules'); }
+
+/* ════════ LAG ════════ */
+function jpRenderTeams(){
+  const p=document.getElementById('jp-teams'); p.innerHTML='';
+  jpTeams.forEach((t,i)=>{
+    const c=jpTeamColor(i);
+    const el=document.createElement('div');
+    el.className='jp-team';
+    if(i===jpTurn){
+      el.style.border='2px solid '+c;
+      el.style.background='rgba(255,255,255,.13)';
+    }else{
+      el.style.opacity='.5';
+    }
+    el.innerHTML=`<span class="nm" style="border-left:3px solid ${c};padding-left:.5rem">${t.name}</span>
+      <span class="sc" style="color:${c}">${t.score}</span>
+      <button class="jp-step" onclick="jpAdjust(${i},-100)">−</button>
+      <button class="jp-step" onclick="jpAdjust(${i},100)">+</button>`;
+    p.appendChild(el);
+  });
+}
+function jpAdjust(i,a){ jpTeams[i].score+=a; jpRenderTeams(); }
+
+/* ════════ SPELPLAN ════════ */
+function jpBuildBoard(){
+  const b=document.getElementById('jp-board'); b.innerHTML='';
+  JP_CATEGORIES.forEach(cat=>{
+    const h=document.createElement('div');
+    h.className='jp-head'; h.style.background=cat.color; h.textContent=cat.name;
+    b.appendChild(h);
+  });
+  /* Högsta värdet överst, lägsta nederst. */
+  for(let row=4;row>=0;row--){
+    JP_CATEGORIES.forEach((cat,ci)=>{
+      const q=cat.qs[row];
+      const cell=document.createElement('button');
+      cell.className='jp-cell';
+      cell.style.background=`rgba(${cat.rgb},.13)`;
+      cell.style.color=cat.color;
+      cell.textContent=q.v;
+      cell.onmouseenter=()=>{ if(!cell.classList.contains('jp-used')){cell.style.background=cat.color;cell.style.color='#0b1120';} };
+      cell.onmouseleave=()=>{ if(!cell.classList.contains('jp-used')){cell.style.background=`rgba(${cat.rgb},.13)`;cell.style.color=cat.color;} };
+      cell.onclick=()=>jpOpenQuestion(ci,row,cell);
+      b.appendChild(cell);
+    });
+  }
+}
+
+/* ════════ FRÅGA ════════ */
+let jpCat=null,jpRow=null,jpCell=null,jpOpts=[],jpPicked=null,jpWrong=[],jpRevealed=false,jpTimer=null;
+let jpTime=45,jpTimeTotal=45;
+let jpChooser=null,jpAnswering=null,jpFailed=[];
+let jpValue=0,jpBaseValue=0,jpResolved=false,jpWinner=null;
+
+/* Tiden styrs av frågans ursprungliga poängvärde, inte det halverade. */
+function jpBaseTime(v){ return v<=300 ? 45 : (v<=700 ? 60 : 75); }
+
+function jpLowerValue(){
+  let v=Math.floor(jpValue/2);
+  v=Math.floor(v/50)*50;
+  jpValue=Math.max(50,v);
+}
+function jpRenderValue(old){
+  const el=document.getElementById('jp-val');
+  if(old!==undefined && old!==jpValue){
+    el.innerHTML='<span class="line-through opacity-60">'+old+' p</span> <span class="text-slate-800">'+jpValue+' p</span>';
+  }else{
+    el.textContent=jpValue+' p';
+  }
+}
+
+function jpNextAnswerer(){
+  const n=jpTeams.length;
+  for(let step=1;step<=n;step++){
+    const cand=(jpAnswering+step)%n;
+    if(!jpFailed.includes(cand)) return cand;
+  }
+  return null;
+}
+function jpRenderAnswering(){
+  const el=document.getElementById('jp-answering');
+  el.textContent='Svarar: '+jpTeams[jpAnswering].name;
+  el.style.background=jpTeamColor(jpAnswering);
+}
+
+function jpShuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+function jpOpenQuestion(ci,row,cell){
+  if(cell.classList.contains('jp-used')) return;
+  if(jpIsOpen('jp-rules')||jpIsOpen('jp-inter')||jpIsOpen('jp-end')) return;
+  jpCat=ci; jpRow=row; jpCell=cell;
+  const cat=JP_CATEGORIES[ci], q=cat.qs[row];
+  jpPicked=null; jpWrong=[]; jpRevealed=false; jpResolved=false; jpWinner=null; jpFailed=[];
+  jpChooser=jpTurn; jpAnswering=jpTurn;
+  jpValue=q.v; jpBaseValue=q.v;
+  jpOpts=jpShuffle(q.opts.map((t,i)=>({text:t,isCorrect:i===q.correct})));
+
+  const catEl=document.getElementById('jp-cat');
+  catEl.textContent=cat.name; catEl.style.background=cat.color;
+  jpRenderValue();
+  document.getElementById('jp-q').textContent=q.q;
+  document.getElementById('jp-expl').textContent=q.expl+' ('+q.src+')';
+  const ew=document.getElementById('jp-expl-wrap');
+  ew.style.background=`rgba(${cat.rgb},.08)`; ew.style.borderColor=cat.color;
+  document.getElementById('jp-expl-label').style.color=cat.color;
+  document.getElementById('jp-bar').style.background=cat.color;
+  ew.classList.add('hidden');
+  document.getElementById('jp-banner').classList.add('hidden');
+  document.getElementById('jp-actions').classList.remove('hidden');
+  document.getElementById('jp-reveal-btn').classList.remove('hidden');
+  document.getElementById('jp-answering-wrap').classList.remove('hidden');
+  jpRenderAnswering();
+  jpRenderOptions();
+  document.getElementById('jp-modal').classList.add('on');
+  jpStartTimer(jpBaseTime(jpBaseValue));
+}
+
+function jpRenderOptions(){
+  const w=document.getElementById('jp-opts'); w.innerHTML='';
+  const done = jpResolved || jpRevealed;
+  jpOpts.forEach((o,idx)=>{
+    const b=document.createElement('button');
+    let cls='jp-opt', dis=false;
+    if(done && o.isCorrect){ cls+=' jp-correct'; dis=true; }
+    else if(jpWrong.includes(idx)){ cls+=' jp-wrong'; dis=true; }
+    else if(done){ cls+=' opacity-40'; dis=true; }
+    b.className=cls; b.disabled=dis;
+    b.textContent=String.fromCharCode(97+idx)+') '+o.text;
+    b.onclick=()=>jpPick(idx);
+    w.appendChild(b);
+  });
+}
+
+function jpPick(idx){
+  if(jpResolved||jpRevealed) return;
+  if(jpWrong.includes(idx)) return;
+  const o=jpOpts[idx];
+  if(o.isCorrect){
+    clearInterval(jpTimer);
+    jpResolved=true; jpWinner=jpAnswering; jpPicked=idx;
+    jpTeams[jpAnswering].score+=jpValue;
+    /* Strikt rotation: poängen går till det svarande laget, men turen
+       flyttas alltid ett steg från den som VALDE rutan (jpCloseModal). */
+    const next=(jpChooser+1)%jpTeams.length;
+    const stolen = jpAnswering!==jpChooser;
+    jpRenderTeams(); jpRenderOptions();
+    document.getElementById('jp-expl-wrap').classList.remove('hidden');
+    document.getElementById('jp-answering-wrap').classList.add('hidden');
+    document.getElementById('jp-reveal-btn').classList.add('hidden');
+    jpBanner('✓ Rätt – '+jpTeams[jpAnswering].name+' får '+jpValue+' poäng. '
+      +(stolen?'Stöld ger inte turen: ':'')
+      +jpTeams[next].name+' väljer nästa fråga.', jpTeamColor(jpAnswering));
+  }else{
+    jpFailAndAdvance({clickedIdx:idx});
+  }
+}
+
+function jpFailAndAdvance(o){
+  if(o.clickedIdx!==undefined && !jpWrong.includes(o.clickedIdx)) jpWrong.push(o.clickedIdx);
+  if(!jpFailed.includes(jpAnswering)) jpFailed.push(jpAnswering);
+  const old=jpValue; jpLowerValue(); jpRenderValue(old);
+  jpRenderOptions();
+  const next=jpNextAnswerer();
+  if(next===null){
+    clearInterval(jpTimer);
+    jpResolved=true; jpRevealed=true; jpWinner=null;
+    jpRenderOptions();
+    document.getElementById('jp-expl-wrap').classList.remove('hidden');
+    document.getElementById('jp-answering-wrap').classList.add('hidden');
+    document.getElementById('jp-reveal-btn').classList.add('hidden');
+    jpBanner('Ingen fick rätt. '+jpTeams[(jpChooser+1)%jpTeams.length].name+' väljer nästa fråga.', '#dc2626');
+  }else{
+    jpAnswering=next;
+    jpRenderAnswering();
+    const lead = o.timedOut ? '⏰ Tiden är ute.' : '✗ FEL – försök igen.';
+    jpBanner(lead+' '+jpTeams[next].name+' får chansen på '+jpValue+' p ('+JP_STEAL_TIME+' sek).', jpTeamColor(next));
+    jpStartTimer(JP_STEAL_TIME);
+  }
+}
+
+function jpBanner(txt,color){
+  const b=document.getElementById('jp-banner');
+  const p=b.querySelector('p');
+  p.textContent=txt;
+  if(color){ p.style.color=color; p.style.borderColor=color; p.style.background=color+'18'; }
+  else{ p.style.color=''; p.style.borderColor=''; p.style.background=''; }
+  b.classList.remove('hidden');
+}
+
+function jpRevealAnswer(){
+  clearInterval(jpTimer);
+  jpRevealed=true; jpResolved=true; jpWinner=null;
+  jpRenderTeams(); jpRenderOptions();
+  document.getElementById('jp-expl-wrap').classList.remove('hidden');
+  document.getElementById('jp-banner').classList.add('hidden');
+  document.getElementById('jp-answering-wrap').classList.add('hidden');
+  document.getElementById('jp-reveal-btn').classList.add('hidden');
+}
+
+function jpCloseModal(){
+  clearInterval(jpTimer);
+  /* Strikt rotation – turen går alltid vidare från den som valde rutan,
+     oavsett rätt, fel, stöld eller "Visa svar". */
+  jpTurn=(jpChooser+1)%jpTeams.length;
+  jpRenderTeams(); jpRenderTurn();
+  jpCell.classList.add('jp-used'); jpCell.textContent='✓'; jpCell.onmouseenter=null; jpCell.onmouseleave=null;
+  document.getElementById('jp-modal').classList.remove('on');
+  document.getElementById('jp-actions').classList.remove('hidden');
+  jpUsed++;
+  if(jpUsed>=20){
+    if(jpRound===0) jpShowIntermission();
+    else jpShowEnd();
+  }
+}
+
+function jpShowEnd(){
+  jpHideOverlay('jp-inter');
+  const list=document.getElementById('jp-end-list'); list.innerHTML='';
+  /* Delar flera lag högsta poängen blir det oavgjort – ingen ensam vinnare. */
+  const top=Math.max(...jpTeams.map(t=>t.score));
+  const leaders=jpTeams.filter(t=>t.score===top);
+  const head=document.createElement('p');
+  head.className='text-white font-bold mb-4';
+  head.style.fontSize='clamp(1.3rem,4.2vh,2.6rem)';
+  head.textContent=leaders.length>1
+    ? '🤝 Oavgjort! '+leaders.map(t=>t.name).join(' och ')+' delar segern.'
+    : '🏆 '+leaders[0].name+' vinner!';
+  list.appendChild(head);
+  jpTeams.map((t,i)=>({t,i})).sort((a,b)=>b.t.score-a.t.score).forEach((e,pos)=>{
+    const c=jpTeamColor(e.i);
+    const row=document.createElement('div');
+    row.className='flex items-center gap-4 justify-center';
+    const mark = e.t.score===top ? (leaders.length>1?'🤝':'🏆') : (pos+1)+'.';
+    row.innerHTML=`<span class="text-slate-300 font-bold" style="font-size:clamp(1rem,3vh,1.6rem)">${mark} ${e.t.name}</span>
+      <span class="num font-bold" style="color:${c};font-size:clamp(1.3rem,4vh,2.4rem)">${e.t.score}</span>`;
+    list.appendChild(row);
+  });
+  const e=document.getElementById('jp-end');
+  e.classList.remove('hidden'); e.style.display='flex';
+}
+
+/* ════════ TIMER ════════ */
+function jpStartTimer(sec){
+  clearInterval(jpTimer);
+  jpTimeTotal=sec; jpTime=sec;
+  const bar=document.getElementById('jp-bar'), txt=document.getElementById('jp-time');
+  const c=JP_CATEGORIES[jpCat].color;
+  bar.style.width='100%'; bar.style.background=c;
+  txt.textContent=sec; txt.className='num text-sm font-bold text-slate-400';
+  jpTimer=setInterval(()=>{
+    jpTime--; txt.textContent=jpTime; bar.style.width=(jpTime/jpTimeTotal*100)+'%';
+    if(jpTime<=10){ bar.style.background='#dc2626'; txt.className='num text-sm font-bold text-red-600'; }
+    if(jpTime<=0){ clearInterval(jpTimer); if(!jpResolved && !jpRevealed) jpFailAndAdvance({timedOut:true}); }
+  },1000);
+}
+
+/* ════════ HELSKÄRM ════════ */
+function jpToggleFullscreen(){
+  const s=document.getElementById('jp-stage');
+  if(s.classList.contains('jp-fs')){ jpExitFullscreen(); return; }
+  s.classList.add('jp-fs');
+  document.getElementById('jp-fsbtn').textContent='⤫ Avsluta helskärm';
+  if(s.requestFullscreen) s.requestFullscreen().catch(()=>{});
+}
+function jpExitFullscreen(){
+  const s=document.getElementById('jp-stage');
+  s.classList.remove('jp-fs');
+  document.getElementById('jp-fsbtn').textContent='⛶ Helskärm';
+  if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+}
+document.addEventListener('fullscreenchange',()=>{
+  if(!document.fullscreenElement) jpExitFullscreen();
+});
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape') return;
+  if(document.getElementById('jp-modal').classList.contains('on')){ jpCloseModal(); }
+  else if(jpIsOpen('jp-rules')){ jpHideRules(); }
+  else if(jpIsOpen('jp-inter')){ /* mellanskärmen kräver ett aktivt val */ }
+  else{ jpExitFullscreen(); }
+});
+
+jpRenderTeamInputs();
+</script>
+
+<script src="feedback-widget.js" defer></script>
+<script data-goatcounter="https://johnblixt.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
