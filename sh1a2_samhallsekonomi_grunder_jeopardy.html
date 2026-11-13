@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jeopardy – Samhällsekonomins grunder | Sa1a2</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;0,800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0b1120;
+    --navy2:#111c33;
+  }
+  body{font-family:'EB Garamond',serif;}
+  .num{font-family:'Fredoka',sans-serif;font-variant-numeric:tabular-nums;}
+
+  /* ── Scenen ── */
+  #jp-stage{
+    background:var(--navy);
+    border-radius:1.25rem;
+    overflow:hidden;
+    position:relative;
+    display:flex;flex-direction:column;
+    height:min(78vh,660px);
+  }
+  #jp-stage.jp-fs{
+    position:fixed;inset:0;z-index:400;
+    height:100dvh;border-radius:0;
+  }
+  #jp-stage:fullscreen{height:100dvh;border-radius:0;}
+
+  /* ── Rutnät ── */
+  #jp-board{
+    flex:1;min-height:0;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    grid-template-rows:auto repeat(5,1fr);
+    gap:6px;padding:10px;
+  }
+  .jp-head{
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    font-family:'Fredoka',sans-serif;font-weight:700;
+    text-transform:uppercase;letter-spacing:.06em;line-height:1.1;
+    font-size:clamp(.6rem,1.5vh,.95rem);
+    color:#fff;padding:.5rem .35rem;border-radius:.6rem .6rem .2rem .2rem;
+    overflow-wrap:break-word;
+  }
+  .jp-cell{
+    display:flex;align-items:center;justify-content:center;
+    border-radius:.6rem;cursor:pointer;
+    font-family:'Fredoka',sans-serif;font-weight:700;
+    font-size:clamp(1.3rem,4.6vh,3.1rem);
+    border:1px solid rgba(255,255,255,.07);
+    transition:transform .12s ease,filter .12s ease,background .12s ease;
+  }
+  .jp-cell:hover:not(.jp-used){transform:translateY(-2px) scale(1.02);}
+  .jp-cell:focus-visible{outline:3px solid #fff;outline-offset:2px;}
+  .jp-used{
+    background:rgba(255,255,255,.04)!important;color:rgba(255,255,255,.16)!important;
+    cursor:default;transform:none;font-size:clamp(1rem,2.6vh,1.6rem);
+  }
+
+  /* ── Lagrad ── */
+  #jp-teams{
+    display:grid;gap:6px;padding:0 10px 10px;
+    grid-template-columns:repeat(var(--tc,2),1fr);
+  }
+  .jp-team{
+    background:var(--navy2);border-radius:.7rem;padding:.4rem .6rem;
+    display:flex;align-items:center;gap:.6rem;border:1px solid rgba(255,255,255,.08);
+  }
+  .jp-team .nm{
+    flex:1;min-width:0;color:#cbd5e1;font-weight:700;
+    font-size:clamp(.7rem,1.6vh,.95rem);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .jp-team .sc{font-family:'Fredoka',sans-serif;font-size:clamp(1rem,2.6vh,1.6rem);font-weight:700;}
+  .jp-step{
+    background:rgba(255,255,255,.08);color:#e2e8f0;border:none;border-radius:.4rem;
+    width:1.7rem;height:1.7rem;font-weight:700;cursor:pointer;font-family:'Fredoka',sans-serif;
+  }
+  .jp-step:hover{background:rgba(255,255,255,.2);}
+
+  #jp-turn{font-size:clamp(.8rem,2vh,1.1rem);}
+  #jp-round{
+    font-family:'Fredoka',sans-serif;
+    font-size:clamp(.55rem,1.3vh,.72rem);
+  }
+
+  /* ── Modal ── */
+  #jp-modal{position:absolute;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(4,8,18,.9);}
+  #jp-modal.on{display:flex;}
+  .jp-card{background:#fff;border-radius:1.1rem;width:100%;max-width:820px;max-height:94%;overflow-y:auto;padding:1.1rem 1.3rem 1rem;}
+  #jp-q{font-size:clamp(1.05rem,2.7vh,1.6rem);overflow-wrap:break-word;}
+  .jp-opt{
+    text-align:left;font-family:'EB Garamond',serif;border:2px solid #e2e8f0;background:#fff;
+    border-radius:.7rem;padding:.6rem .8rem;font-size:clamp(.85rem,1.9vh,1.05rem);
+    line-height:1.35;transition:all .12s ease;width:100%;overflow-wrap:anywhere;
+  }
+  .jp-opt:hover:not(:disabled){background:#f8fafc;}
+  .jp-opt:disabled{cursor:default;}
+  .jp-picked{background:#fef3c7!important;border-color:#f59e0b!important;}
+  .jp-wrong{background:#fee2e2!important;border-color:#dc2626!important;color:#991b1b;opacity:.65;}
+  .jp-correct{background:#dcfce7!important;border-color:#16a34a!important;color:#166534;font-weight:700;}
+  .jp-bar{transition:width 1s linear,background-color .3s;}
+
+  /* ── Helskärm: skala upp allt eleverna ska läsa från bänkraden ──
+     .jp-fs sätts alltid av jpToggleFullscreen (även när Fullscreen API
+     saknas); :fullscreen/:-webkit-full-screen fångar äkta helskärm.
+     Inget här nedan påverkar normalvyn i webbläsarfönstret. */
+  #jp-stage.jp-fs #jp-turn,
+  #jp-stage:fullscreen #jp-turn,
+  #jp-stage:-webkit-full-screen #jp-turn{
+    font-size:clamp(1.05rem,2.8vh,2rem);
+  }
+  #jp-stage.jp-fs #jp-round,
+  #jp-stage:fullscreen #jp-round,
+  #jp-stage:-webkit-full-screen #jp-round{
+    font-size:clamp(.75rem,1.8vh,1.2rem);
+    padding:clamp(.2rem,.6vh,.4rem) clamp(.7rem,1.4vw,1.15rem);
+  }
+  #jp-stage.jp-fs #jp-board,
+  #jp-stage:fullscreen #jp-board,
+  #jp-stage:-webkit-full-screen #jp-board{
+    gap:clamp(6px,.9vh,12px);
+    padding:clamp(10px,1.4vh,18px);
+  }
+  #jp-stage.jp-fs .jp-head,
+  #jp-stage:fullscreen .jp-head,
+  #jp-stage:-webkit-full-screen .jp-head{
+    font-size:clamp(.85rem,2.1vh,1.7rem);
+    letter-spacing:.04em;
+    padding:clamp(.5rem,1.2vh,.9rem) .45rem;
+    overflow-wrap:break-word;
+  }
+  #jp-stage.jp-fs .jp-cell,
+  #jp-stage:fullscreen .jp-cell,
+  #jp-stage:-webkit-full-screen .jp-cell{
+    font-size:clamp(1.8rem,6.2vh,4.6rem);
+  }
+  #jp-stage.jp-fs .jp-used,
+  #jp-stage:fullscreen .jp-used,
+  #jp-stage:-webkit-full-screen .jp-used{
+    font-size:clamp(1.2rem,3.2vh,2.4rem);
+  }
+  #jp-stage.jp-fs .jp-team,
+  #jp-stage:fullscreen .jp-team,
+  #jp-stage:-webkit-full-screen .jp-team{
+    padding:clamp(.4rem,1vh,.8rem) clamp(.6rem,1.2vw,1rem);
+  }
+  #jp-stage.jp-fs .jp-team .nm,
+  #jp-stage:fullscreen .jp-team .nm,
+  #jp-stage:-webkit-full-screen .jp-team .nm{
+    font-size:clamp(.95rem,2.3vh,1.8rem);
+  }
+  #jp-stage.jp-fs .jp-team .sc,
+  #jp-stage:fullscreen .jp-team .sc,
+  #jp-stage:-webkit-full-screen .jp-team .sc{
+    font-size:clamp(1.3rem,3.4vh,2.6rem);
+  }
+  #jp-stage.jp-fs .jp-step,
+  #jp-stage:fullscreen .jp-step,
+  #jp-stage:-webkit-full-screen .jp-step{
+    width:clamp(1.7rem,3.4vh,2.6rem);height:clamp(1.7rem,3.4vh,2.6rem);
+    font-size:clamp(.85rem,1.9vh,1.35rem);
+  }
+  #jp-stage.jp-fs #jp-modal .jp-card,
+  #jp-stage:fullscreen #jp-modal .jp-card,
+  #jp-stage:-webkit-full-screen #jp-modal .jp-card{
+    max-width:min(1500px,94vw);
+    max-height:96%;
+    padding:clamp(1.1rem,2.4vh,2.2rem) clamp(1.2rem,2.6vw,3rem);
+    border-radius:1.4rem;
+  }
+  #jp-stage.jp-fs #jp-cat,
+  #jp-stage:fullscreen #jp-cat,
+  #jp-stage:-webkit-full-screen #jp-cat{
+    font-size:clamp(.8rem,1.7vh,1.2rem);
+    padding:clamp(.3rem,.8vh,.55rem) clamp(.8rem,1.6vw,1.35rem);
+  }
+  #jp-stage.jp-fs #jp-val,
+  #jp-stage:fullscreen #jp-val,
+  #jp-stage:-webkit-full-screen #jp-val,
+  #jp-stage.jp-fs #jp-time,
+  #jp-stage:fullscreen #jp-time,
+  #jp-stage:-webkit-full-screen #jp-time{
+    font-size:clamp(1rem,2.3vh,1.7rem);
+  }
+  #jp-stage.jp-fs #jp-answering,
+  #jp-stage:fullscreen #jp-answering,
+  #jp-stage:-webkit-full-screen #jp-answering{
+    font-size:clamp(.85rem,1.8vh,1.15rem);
+    padding:.35rem 1rem;
+  }
+  #jp-stage.jp-fs #jp-banner p,
+  #jp-stage:fullscreen #jp-banner p,
+  #jp-stage:-webkit-full-screen #jp-banner p{
+    font-size:clamp(.9rem,1.9vh,1.25rem);
+  }
+  #jp-stage.jp-fs #jp-q,
+  #jp-stage:fullscreen #jp-q,
+  #jp-stage:-webkit-full-screen #jp-q{
+    font-size:clamp(1.35rem,3.2vh,2.4rem);
+    margin-bottom:clamp(.9rem,2.2vh,1.6rem);
+    overflow-wrap:break-word;
+  }
+  #jp-stage.jp-fs #jp-opts,
+  #jp-stage:fullscreen #jp-opts,
+  #jp-stage:-webkit-full-screen #jp-opts{
+    gap:clamp(.55rem,1.4vh,1rem);
+  }
+  #jp-stage.jp-fs #jp-opts .jp-opt,
+  #jp-stage:fullscreen #jp-opts .jp-opt,
+  #jp-stage:-webkit-full-screen #jp-opts .jp-opt{
+    display:flex;align-items:center;
+    min-height:clamp(2.6rem,7.5vh,5rem);
+    padding:clamp(.6rem,1.5vh,1.2rem) clamp(.9rem,2vw,1.7rem);
+    font-size:clamp(1.15rem,2.8vh,2.3rem);
+    line-height:1.3;
+    border-width:3px;
+    overflow-wrap:anywhere;
+  }
+  #jp-stage.jp-fs #jp-expl-wrap,
+  #jp-stage:fullscreen #jp-expl-wrap,
+  #jp-stage:-webkit-full-screen #jp-expl-wrap{
+    font-size:clamp(1rem,2.1vh,1.5rem);
+    padding:clamp(.7rem,1.6vh,1.1rem) clamp(.8rem,1.8vw,1.3rem);
+  }
+
+  /* Mobil: lagpanelen i två kolumner så namn och knappar får plats. */
+  @media (max-width:767px){
+    #jp-teams{grid-template-columns:repeat(2,1fr);}
+    #jp-board{gap:4px;padding:6px;}
+    .jp-head{font-size:clamp(.5rem,2.6vw,.8rem);letter-spacing:.02em;padding:.4rem .2rem;}
+  }
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body class="bg-slate-50">
+
+<a href="sh1a2_samhallsekonomi.html" onclick="smartBack(event)" class="fixed top-4 left-4 z-50 text-sm font-medium text-slate-500 hover:text-orange-700 bg-white/90 px-3 py-2 rounded-xl shadow-sm transition-colors">← Tillbaka till området</a>
+
+<div class="max-w-5xl mx-auto px-5 py-8">
+
+  <div class="border-l-4 pl-4 mb-8" style="border-color: #fb923c;">
+    <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Samhällskunskap Sa1a2 · Spel</p>
+    <h1 class="text-3xl md:text-4xl font-bold italic text-slate-900">Jeopardy – Samhällsekonomins grunder</h1>
+    <p class="text-slate-500 text-sm mt-1 italic">Två omgångar · 100–500p och 600–1000p</p>
+  </div>
+
+  <!-- ══ SETUP ══ -->
+  <div id="jp-setup" class="max-w-sm mx-auto bg-white border-2 border-slate-200 rounded-2xl p-6">
+    <h2 class="font-bold text-xl mb-4 text-center">Vilka lag tävlar?</h2>
+    <div id="jp-team-inputs" class="space-y-2 mb-3"></div>
+    <div class="flex justify-center gap-5 mb-5 text-xs font-bold text-orange-700">
+      <button id="jp-add" onclick="jpChangeTeamCount(1)">+ Lägg till lag</button>
+      <button id="jp-remove" onclick="jpChangeTeamCount(-1)">− Ta bort lag</button>
+    </div>
+    <button onclick="jpStartGame()" class="w-full py-3 rounded-xl font-bold uppercase tracking-wide text-sm hover:brightness-95" style="background:#fb923c;color:#7c2d12">Starta spelet</button>
+  </div>
+
+  <!-- ══ SCEN ══ -->
+  <div id="jp-stage" class="hidden">
+
+    <div class="flex items-center gap-3 px-4 pt-3 pb-1">
+      <p class="text-slate-400 text-[11px] uppercase tracking-[.2em] font-bold truncate">Samhällsekonomins grunder</p>
+      <span id="jp-round" class="px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wide whitespace-nowrap"></span>
+      <span class="flex-1"></span>
+      <button onclick="jpShowRules(false)" class="text-slate-400 hover:text-white text-xs font-bold">Regler</button>
+      <button onclick="jpNewGame()" class="text-slate-400 hover:text-white text-xs font-bold">Nytt spel</button>
+      <button id="jp-fsbtn" onclick="jpToggleFullscreen()" class="bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-lg">⛶ Helskärm</button>
+    </div>
+
+    <p id="jp-turn" class="text-center font-bold px-4 pb-2"></p>
+
+    <div id="jp-board"></div>
+    <div id="jp-teams"></div>
+
+    <!-- Spelregler -->
+    <div id="jp-rules" class="hidden absolute inset-0 z-[55] items-center justify-center p-6" style="background:rgba(4,8,18,.94)">
+      <div class="bg-white rounded-2xl w-full max-w-lg p-6 max-h-[92%] overflow-y-auto">
+        <h2 class="font-bold text-2xl mb-4 text-center">Så funkar det</h2>
+        <ul class="space-y-2 text-sm text-slate-700 mb-4 list-disc pl-5 leading-snug">
+          <li><strong>Två omgångar.</strong> Först 4 kategorier med 100–500p. När brädet är tomt kommer en mellanskärm där du kan starta omgång 2 (nya kategorier, 600–1000p) eller avsluta spelet om tiden är slut.</li>
+          <li><strong>Fast turordning.</strong> Lagen väljer ruta i tur och ordning – Lag 1, Lag 2, Lag 3, Lag 1 igen. Ordningen ändras aldrig, oavsett om laget svarar rätt eller fel.</li>
+          <li><strong>Rätt svar ger poäng, inte turen.</strong> Ett lag kan alltså aldrig ta flera rutor i rad.</li>
+          <li><strong>Stöld ger inte turen.</strong> Svarar ett lag fel går frågan vidare till nästa lag för halva poängen. Det laget kan ta poängen – men väljer ändå inte nästa fråga. Rotationen rullar på som vanligt.</li>
+          <li><strong>Längre tid på svårare frågor.</strong> 100–300p ger 45 sekunder, 400–700p ger 60 och 800–1000p ger 75. Ett stulet försök har 20 sekunder, eftersom frågan redan är uppläst.</li>
+          <li>Laget säger sitt svar högt — du klickar på det alternativ de väljer.</li>
+          <li>Har alla lag svarat fel visas rätt svar automatiskt. Ingen får poäng.</li>
+          <li><strong>Du behöver inte kunna ämnet</strong> — spelet rättar själv och visar en förklaring du kan läsa upp.</li>
+        </ul>
+        <p id="jp-rules-start" class="text-center font-bold mb-4" style="font-size:clamp(.9rem,2.2vh,1.15rem)"></p>
+        <button onclick="jpHideRules()" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold uppercase tracking-wide text-sm hover:bg-slate-700">Kör igång</button>
+      </div>
+    </div>
+
+    <!-- Frågemodal -->
+    <div id="jp-modal">
+      <div class="jp-card" id="jp-card">
+        <div class="flex items-center gap-3 mb-3">
+          <span id="jp-cat" class="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide text-white"></span>
+          <span id="jp-val" class="num font-bold text-slate-400"></span>
+          <span class="flex-1"></span>
+          <span id="jp-time" class="num text-sm font-bold text-slate-400">45</span>
+        </div>
+        <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden mb-4">
+          <div id="jp-bar" class="jp-bar h-full" style="width:100%"></div>
+        </div>
+
+        <div id="jp-answering-wrap" class="mb-3">
+          <span id="jp-answering" class="px-3 py-1 rounded-full text-xs font-bold text-white"></span>
+        </div>
+
+        <div id="jp-banner" class="hidden mb-3 text-center">
+          <p class="text-sm font-bold text-amber-800 bg-amber-50 border border-amber-300 rounded-lg py-2 px-3 inline-block"></p>
+        </div>
+
+        <p id="jp-q" class="font-bold text-slate-900 mb-4 leading-snug"></p>
+        <div id="jp-opts" class="grid gap-2 mb-3"></div>
+
+        <div id="jp-expl-wrap" class="hidden border-l-4 rounded-r-lg p-3 mb-3 text-sm text-slate-700">
+          <p class="font-bold text-[11px] uppercase tracking-wide mb-1" id="jp-expl-label">Förklaring</p>
+          <p id="jp-expl"></p>
+        </div>
+
+        <div id="jp-actions" class="flex justify-center gap-5 text-xs font-bold pt-2 border-t border-slate-100">
+          <button id="jp-reveal-btn" onclick="jpRevealAnswer()" class="text-orange-700">Visa svar</button>
+          <button id="jp-close-btn" onclick="jpCloseModal()" class="text-slate-400">Stäng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mellanskärm mellan omgångarna -->
+    <div id="jp-inter" class="hidden absolute inset-0 z-[58] items-center justify-center p-6" style="background:rgba(4,8,18,.94)">
+      <div class="text-center w-full max-w-md">
+        <p class="text-slate-400 text-xs uppercase tracking-[.25em] font-bold mb-4">Omgång 1 klar</p>
+        <div id="jp-inter-list" class="space-y-2 mb-5"></div>
+        <p id="jp-inter-next" class="font-bold mb-5" style="font-size:clamp(.9rem,2.2vh,1.15rem)"></p>
+        <div class="flex flex-col gap-3">
+          <button onclick="jpStartRound2()" class="bg-white text-slate-900 px-6 py-3 rounded-xl font-bold text-sm uppercase tracking-wide">Starta omgång 2 · 600–1000p</button>
+          <button onclick="jpShowEnd()" class="text-slate-400 hover:text-white text-xs font-bold">Avsluta spelet och visa slutställning</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slutresultat -->
+    <div id="jp-end" class="hidden absolute inset-0 z-[60] items-center justify-center p-6" style="background:rgba(4,8,18,.94)">
+      <div class="text-center">
+        <p class="text-slate-400 text-xs uppercase tracking-[.25em] font-bold mb-4">Slutresultat</p>
+        <div id="jp-end-list" class="space-y-2 mb-6"></div>
+        <button onclick="jpNewGame()" class="bg-white text-slate-900 px-6 py-2.5 rounded-xl font-bold text-sm">Spela igen</button>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="mt-16 text-center border-t border-slate-200 pt-8">
+    <p class="text-slate-400 text-xs uppercase tracking-[0.2em] font-black italic">Designad av John</p>
+  </footer>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// TILLBAKA-NAVIGERING
+// ════════════════════════════════════════════════════════════
+function smartBack(e) {
+  if (e) e.preventDefault();
+  var ref = document.referrer;
+  if (ref) {
+    try {
+      if (new URL(ref).origin === window.location.origin) {
+        history.back();
+        return;
+      }
+    } catch (err) {}
+  }
+  window.location.href = 'sh1a2_samhallsekonomi.html';
+}
+</script>
+
+<script>
+/* ════════ DATA ════════ */
+
+/* Lagfärgerna är fasta genom hela spelet och frikopplade från
+   kategorifärgerna – annars skulle lagen byta färg i omgång 2. */
+const JP_TEAM_COLORS = ['#06b6d4','#a855f7','#f59e0b','#f43f5e'];
+
+/* Tid i sekunder när en fråga går vidare till nästa lag. Kortare,
+   eftersom frågan redan är uppläst. */
+const JP_STEAL_TIME = 20;
+
+/* Frågorna bygger på sh1a2_samhallsekonomi_grunder_quiz.html (kommentaren
+   "quiz N" = quizets fråga N) och samhallsekonomins_grunder_material.md /
+   _begrepp.md ("NY" = finns inte i quizet). Språket är medvetet enkelt och
+   kort så att det går att läsa från sista bänkraden. */
+const JP_ROUNDS = [
+{
+  label:'Omgång 1 · 100–500p',
+  cats:[
+  { name:'Ekonomins grunder', color:'#06b6d4', rgb:'6,182,212', qs:[
+    // quiz 2
+    { v:100, q:'Vad kallas maskiner och redskap som används när man tillverkar något?',
+      opts:['Humankapital','Realkapital','Naturresurser','Halvfabrikat'],
+      correct:1, expl:'Realkapital är maskiner och redskap – från stege och spade till robotar och fabriker.', src:'Produktion' },
+    // quiz 7
+    { v:200, q:'Vad mäter BNP?',
+      opts:['Hur många som jobbar i landet','Vad landet säljer till utlandet','Vad landet producerar på ett år','Vad ett hushåll tjänar på ett år'],
+      correct:2, expl:'BNP (bruttonationalprodukten) är värdet av alla färdiga varor och tjänster som ett land producerar under ett år.', src:'Bruttonationalprodukten' },
+    // quiz 4
+    { v:300, q:'Ekonomi ritas som en gungbräda. Vad står på de två sidorna?',
+      opts:['Stort utbud mot liten efterfrågan','Mycket konsumtion mot få investeringar','Stora behov mot begränsade resurser','Många naturresurser mot lite arbete'],
+      correct:2, expl:'Våra behov väger tungt på ena sidan, och resurserna är begränsade på den andra. Därför måste vi hushålla och välja.', src:'Behov och resurser' },
+    // quiz 6
+    { v:400, q:'Vad skiljer cirkulär ekonomi från linjär ekonomi?',
+      opts:['Saker slängs i stället för att återanvändas','Saker återanvänds i stället för att slängas','Saker importeras i stället för att tillverkas','Saker hyrs ut i stället för att säljas'],
+      correct:1, expl:'Cirkulär ekonomi bygger på återbruk och återvinning. Linjär ekonomi följer "producera – konsumera – släng".', src:'Cirkulär ekonomi' },
+    // quiz 5
+    { v:500, q:'En odlare sparar 20 av 100 säckar potatis för att sätta i jorden nästa år. Vad är de 20 säckarna?',
+      opts:['En konsumtion','En export','Ett överskott','En investering'],
+      correct:3, expl:'Att avstå från att äta nu för att få en större skörd sen är en investering. Det man äter direkt är konsumtion.', src:'Resursanvändning' }
+  ]},
+  { name:'Näringsliv & handel', color:'#a855f7', rgb:'168,85,247', qs:[
+    // NY – begreppet import
+    { v:100, q:'Vad kallas varor och tjänster som Sverige köper från utlandet?',
+      opts:['Import','Export','Utbud','Produktion'],
+      correct:0, expl:'Import är det vi köper från utlandet. Export är det vi säljer till utlandet.', src:'Utrikeshandeln' },
+    // quiz 8
+    { v:200, q:'Vilka tre delar består det svenska näringslivet av?',
+      opts:['Naturbruk, industri och tjänster','Privat, kooperation och statligt/kommunalt','Jordbruk, industri och offentlig sektor','Handel, transport och bank'],
+      correct:1, expl:'Privata näringslivet, kooperationen (t.ex. KF och LRF) samt statliga och kommunala bolag (t.ex. LKAB och Vattenfall).', src:'Näringslivet' },
+    // quiz 9
+    { v:300, q:'Exporten är över hälften av Sveriges BNP. Varför måste Sverige exportera så mycket?',
+      opts:['För att lagen kräver export av halva BNP','För att svenskar inte köper svenska varor','För att import bara får ske efter export','För att ha råd att importera det vi behöver'],
+      correct:3, expl:'Sverige är litet och har begränsade resurser. Vi måste sälja mycket utomlands för att ha råd att köpa det vi behöver.', src:'Utrikeshandeln' },
+    // quiz 10
+    { v:400, q:'Vad är en risk med gigekonomin?',
+      opts:['Otrygga anställningar','För höga avtalslöner','För långa uppsägningstider','För många fasta jobb'],
+      correct:0, expl:'Gig är korta uppdrag via appar, t.ex. Foodora. Riskerna är otrygga anställningar, dålig arbetsmiljö och skattefusk.', src:'Plattformsekonomin' },
+    // quiz 11
+    { v:500, q:'Du hyr ut din borrmaskin till grannen via en app. Vad kallas det?',
+      opts:['Gigekonomi','Bytesekonomi','Delningsekonomi','Marknadsekonomi'],
+      correct:2, expl:'I delningsekonomin hyr eller lånar man ut saker man äger via appar – t.ex. verktyg via Hygglo eller boende via Airbnb.', src:'Plattformsekonomin' }
+  ]},
+  { name:'Arbete & jämställdhet', color:'#f59e0b', rgb:'245,158,11', qs:[
+    // NY – begreppet fackförbund
+    { v:100, q:'Vad kallas organisationen som kämpar för de anställdas löner och villkor?',
+      opts:['Arbetsgivarförbund','Bemanningsföretag','Kooperation','Fackförbund'],
+      correct:3, expl:'Fackförbund företräder de anställda, t.ex. Kommunal och IF Metall. Arbetsgivarna har egna arbetsgivarförbund.', src:'Arbetslivet' },
+    // quiz 12
+    { v:200, q:'Vad brukar ett kollektivavtal bestämma om?',
+      opts:['Skatter, bidrag och studiemedel','Lön, semester och arbetstid','Moms, tullar och exportstöd','Räntor, bolån och valutor'],
+      correct:1, expl:'Kollektivavtal bestämmer bl.a. lön, semester, arbetstid, övertid, tjänstepension och arbetsmiljö.', src:'Avtal' },
+    // quiz 18 + 19
+    { v:300, q:'Vad skiljer jämställdhet från jämlikhet?',
+      opts:['Jämställdhet gäller kvinnor och män','Jämställdhet gäller alla grupper','Jämställdhet gäller bara lönen','Jämställdhet gäller bara chefer'],
+      correct:0, expl:'Jämställdhet handlar om kvinnor och män. Jämlikhet är bredare: alla ska ha samma rättigheter oavsett bakgrund.', src:'Jämlikhet och jämställdhet' },
+    // quiz 20
+    { v:400, q:'Vad menas med "glastak"?',
+      opts:['Regler som förbjuder kvinnor att bli chefer','Osynliga hinder för äldre att få nya jobb','Osynliga hinder för kvinnor att bli chefer','Krav på lång utbildning för att bli chef'],
+      correct:2, expl:'Glastaket är osynliga hinder (maktstrukturer) som stoppar kvinnor från höga jobb – fast inga regler förbjuder det.', src:'Jämlikhet och jämställdhet' },
+    // quiz 17
+    { v:500, q:'Ett företag anställer aldrig någon som är över 55 år. Vad brister företaget i?',
+      opts:['Jämlikhet','Jämställdhet','Fredsplikt','Kollektivavtal'],
+      correct:0, expl:'Jämlikhet betyder samma möjligheter oavsett t.ex. ålder. Jämställdhet gäller bara kvinnor och män.', src:'Brister i jämlikheten' }
+  ]},
+  { name:'Pengar & priser', color:'#f43f5e', rgb:'244,63,94', qs:[
+    // quiz 29
+    { v:100, q:'Vad kallas det när priserna i hela samhället sjunker?',
+      opts:['Inflation','Deflation','Hyperinflation','Överskott'],
+      correct:1, expl:'Deflation är en allmän sänkning av priserna. Motsatsen, när priserna stiger, är inflation.', src:'Deflation' },
+    // quiz 28
+    { v:200, q:'Vem mäter inflationen i Sverige, och med vilket mått?',
+      opts:['Riksbanken, med KPI','SCB, med BNP','SCB, med KPI','Riksbanken, med BNP'],
+      correct:2, expl:'SCB "köper" varje månad en varukorg och jämför priset med året innan. Måttet heter KPI, konsumentprisindex.', src:'Vad är inflation?' },
+    // quiz 23
+    { v:300, q:'Varför lutar efterfrågekurvan nedåt?',
+      opts:['Köparna vill ha mer när priset är högt','Säljarna vill sälja mer när priset är lågt','Säljarna vill sälja mer när priset är högt','Köparna vill ha mer när priset är lågt'],
+      correct:3, expl:'Ju lägre pris, desto mer vill konsumenterna köpa – t.ex. fler jordgubbar när priset sjunker.', src:'Utbuds- och efterfrågemodellen' },
+    // quiz 22
+    { v:400, q:'Pengar är en "värdebevarare". Vad betyder det?',
+      opts:['Man kan spara värdet till senare','Man kan jämföra vad saker är värda','Man kan betala direkt i affären','Man kan låna ut pengar via banken'],
+      correct:0, expl:'Pengar surnar inte. Bonden kan sälja mjölken och spara värdet tills hen vill använda det.', src:'Vad är pengar?' },
+    // quiz 26
+    { v:500, q:'En säljare tar ett för högt pris för sina jordgubbar. Vad händer?',
+      opts:['Brist – priset måste höjas mer','Överskott – priset måste sänkas','Köer – ännu fler vill köpa','Jämvikt – allt blir sålt direkt'],
+      correct:1, expl:'Vid för högt pris vill många sälja men få köpa. Det blir överskott, så säljaren måste sänka priset.', src:'Utbuds- och efterfrågemodellen' }
+  ]}
+  ]
+},
+{
+  label:'Omgång 2 · 600–1000p',
+  cats:[
+  { name:'Produktion & resurser', color:'#34d399', rgb:'52,211,153', qs:[
+    // NY – målarexemplet i materialet
+    { v:600, q:'En målare stryker färg på en vägg med en pensel. Vilken produktionsfaktor är färgen?',
+      opts:['Realkapital','Arbete','Naturresurs','Humankapital'],
+      correct:2, expl:'Färgen är naturresursen, penseln är realkapitalet och målarens insats är arbetet.', src:'Produktion' },
+    // NY – konsumtionsvaror och investeringsvaror
+    { v:700, q:'Ett land bygger vägar och elnät i stället för att göra fler kläder och bilar. Vad satsar landet på?',
+      opts:['Konsumtionsvaror','Investeringsvaror','Exportprodukter','Importprodukter'],
+      correct:1, expl:'Vägar, fabriker och elnät bygger ut produktionen – det är investeringsvaror. Kläder och bilar är konsumtionsvaror.', src:'Konsumtion och investering' },
+    // quiz 3
+    { v:800, q:'Varför har humankapital blivit viktigare för ekonomin än förr?',
+      opts:['Fabrikerna kräver mer kroppsstyrka nu','Naturresurserna har tagit slut i Sverige','Lagen kräver utbildning för alla jobb','Maskiner gör det tunga – kunskap väger mer'],
+      correct:3, expl:'Förr var kroppsstyrka viktig. När maskinerna tog över blev våra kunskaper och sociala förmågor – humankapitalet – viktigare.', src:'Produktion' },
+    // quiz 1
+    { v:900, q:'Ett bageri har mjöl och ugnar, men ingen personal. Vilken produktionsfaktor saknas?',
+      opts:['Arbete','Realkapital','Naturresurser','Halvfabrikat'],
+      correct:0, expl:'De tre produktionsfaktorerna är naturresurser (mjölet), realkapital (ugnarna) och arbete. Det är arbetet som saknas.', src:'Produktion' },
+    // NY – hur offentliga tjänster värderas i BNP
+    { v:1000, q:'Sjukvård köps inte i en butik. Hur räknas värdet av sjukvården in i BNP?',
+      opts:['Efter vad patienterna vill betala','Efter hur många som blir friska','Efter vad den kostar att framställa','Den räknas inte med i BNP alls'],
+      correct:2, expl:'Offentliga tjänster saknar prislapp. Därför räknar man med vad de kostar: löner, lokaler och utrustning.', src:'Bruttonationalprodukten' }
+  ]},
+  { name:'Näringsliv i förändring', color:'#818cf8', rgb:'129,140,248', qs:[
+    // NY – begreppet plattformsekonomi
+    { v:600, q:'En app kopplar ihop dig med en förare, men äger inga bilar själv. Vad kallas det?',
+      opts:['Kooperation','Plattformsekonomi','Cirkulär ekonomi','Privatisering'],
+      correct:1, expl:'I plattformsekonomin förmedlar en app kontakt mellan köpare och säljare, t.ex. Uber – utan att äga varorna själv.', src:'Plattformsekonomin' },
+    // NY – kooperationen
+    { v:700, q:'Coop ägs av sina medlemmar genom KF. Vilken del av näringslivet hör Coop till?',
+      opts:['Privata näringslivet','Statliga bolag','Kooperationen','Offentliga sektorn'],
+      correct:2, expl:'Kooperationen ägs gemensamt av sina medlemmar, t.ex. KF (Coop) för konsumenter och LRF för bönder.', src:'Näringslivet' },
+    // NY – jämförelse gig/delning (bygger på quiz 10 och 11)
+    { v:800, q:'Vad är skillnaden mellan gigekonomi och delningsekonomi?',
+      opts:['Gig: du hyr ut saker. Delning: du säljer ditt arbete','Gig: fast jobb via app. Delning: korta uppdrag','Gig: du säljer ditt arbete. Delning: du hyr ut saker','Gig: staten äger appen. Delning: företag äger den'],
+      correct:2, expl:'Gig är korta arbetsuppdrag, t.ex. matleverans. Delning är att hyra ut eller låna ut saker man äger, t.ex. bostad.', src:'Plattformsekonomin' },
+    // NY – plattformsekonomins baksidor för traditionella företag
+    { v:900, q:'Hur kan plattformsekonomin drabba vanliga taxibolag och hotell?',
+      opts:['De kan förlora kunder och få lägga ner','De måste anställa fler förare och städare','De förbjuds att använda appar för bokning','De får betala appföretagens skatter'],
+      correct:0, expl:'När appar som Uber och Airbnb tar kunder kan taxibolag och hotell förlora marknadsandelar, säga upp personal eller lägga ner.', src:'Plattformsekonomin' },
+    // NY – jämförelse Sverige/USA i utrikeshandeln
+    { v:1000, q:'Svensk ekonomi är fem gånger mer beroende av utrikeshandel än USA:s. Varför?',
+      opts:['Sverige har fler invånare än USA','Sverige har lägre skatter än USA','Sverige saknar helt egna naturresurser','Sverige är litet och har få resurser'],
+      correct:3, expl:'Små länder måste handla mer med omvärlden. I stora länder som USA sker det mesta av handeln inom landet.', src:'Utrikeshandeln' }
+  ]},
+  { name:'Lagar i arbetslivet', color:'#fb923c', rgb:'251,146,60', qs:[
+    // quiz 13
+    { v:600, q:'Chefen vill göra om hela företaget. Vilken lag säger att facket ska informeras och få förhandla?',
+      opts:['LAS','MBL','Arbetsmiljölagen','Diskrimineringslagen'],
+      correct:1, expl:'MBL, medbestämmandelagen, stärker de anställdas inflytande. Arbetsgivaren måste informera och förhandla med facket.', src:'Lagar' },
+    // quiz 14
+    { v:700, q:'Du har ett vikariat i ett år. Vilken anställningsform har du enligt LAS?',
+      opts:['Tillsvidareanställning','Timanställning på deltid','Projektanställning','Tidsbegränsad anställning'],
+      correct:3, expl:'LAS har bara två former: tillsvidare och tidsbegränsad. Vikariat är tidsbegränsat. Timanställning är ingen form i lagen.', src:'Anställningsformer enligt LAS' },
+    // quiz 15
+    { v:800, q:'Vad är skillnaden mellan MBL och LAS?',
+      opts:['MBL: fackets inflytande. LAS: anställningar','MBL: anställningar. LAS: fackets inflytande','MBL: arbetsmiljön. LAS: diskriminering','MBL: lönerna. LAS: semestern'],
+      correct:0, expl:'MBL ger facket rätt till information och förhandling. LAS styr anställningsformer och uppsägningar.', src:'Lagar' },
+    // quiz 16
+    { v:900, q:'Sara sägs upp för att hon bett om högre lön. Är det en saklig grund enligt LAS?',
+      opts:['Ja – chefen bestämmer själv över lönen','Nej – bara sjukdom eller hög ålder gäller','Ja – om facket godkänner det först','Nej – bara arbetsbrist eller personliga skäl'],
+      correct:3, expl:'LAS godtar bara två grunder: arbetsbrist eller personliga förhållanden (att man inte sköter jobbet). Att be om lön räknas inte.', src:'Lagar' },
+    // quiz 21
+    { v:1000, q:'Norge gav 2006 kvinnor minst 40 % av styrelseposterna. Vilken kritik finns mot sådan kvotering?',
+      opts:['Lagen gav ingen effekt alls i Norge','Posten tillsätts efter kön, inte kompetens','Männen fick fler poster än innan lagen','Lagen gällde bara den offentliga sektorn'],
+      correct:1, expl:'Lagen gav snabbt effekt. Kritiken är att höga poster då kan tillsättas efter kön snarare än kompetens.', src:'Ojämn könsfördelning' }
+  ]},
+  { name:'Marknad & köpkraft', color:'#e879f9', rgb:'232,121,249', qs:[
+    // quiz 24
+    { v:600, q:'Priset på jordgubbar stiger. Hur reagerar odlarna?',
+      opts:['De vill odla och sälja mer','De vill odla och sälja mindre','De köper upp fler jordgubbar själva','De slutar sälja tills priset sjunker'],
+      correct:0, expl:'Utbudskurvan lutar uppåt: ju högre pris, desto mer vill odlarna producera och sälja.', src:'Utbuds- och efterfrågemodellen' },
+    // NY – prismekanismen (vegetarianexemplet)
+    { v:700, q:'Plötsligt blir många vegetarianer. Vad händer med priset på kött?',
+      opts:['Det stiger när efterfrågan minskar','Det sjunker när efterfrågan minskar','Det sjunker när utbudet minskar','Det stiger när utbudet ökar'],
+      correct:1, expl:'Färre vill köpa kött, så uppfödarna måste sänka priset för att bli av med det. Det är prismekanismen.', src:'Prismekanismen' },
+    // quiz 25
+    { v:800, q:'Varför kallas jämviktspriset för "det rätta" priset?',
+      opts:['Staten har bestämt att det är rättvist','Det är det lägsta pris företagen klarar','Inget blir över och ingen brist uppstår','Det är det högsta pris köparna klarar'],
+      correct:2, expl:'Vid jämviktspriset är utbud och efterfrågan lika. Allt blir sålt och resurserna används på bästa sätt.', src:'Utbuds- och efterfrågemodellen' },
+    // quiz 30
+    { v:900, q:'Din lön höjs med 3 %, men priserna stiger med 5 %. Vad händer med din reallön?',
+      opts:['Den stiger – du får ju fler kronor','Den är oförändrad – båda ökar','Den stiger – priserna spelar ingen roll','Den sjunker – du kan köpa mindre'],
+      correct:3, expl:'Reallön är lönen minus inflationen. Stiger priserna mer än lönen kan du köpa mindre än förut.', src:'Inflation och köpkraft' },
+    // quiz 27
+    { v:1000, q:'Staten bestämmer priset på all mat. Vilken förutsättning för marknadsekonomin bryts?',
+      opts:['Privat ägande','Näringsfrihet','Laissez-faire','Många aktörer'],
+      correct:2, expl:'Laissez-faire ("låt vara") betyder att staten ska lämna marknaden i fred. För mycket inblandning rubbar prismekanismen.', src:'Vad krävs för att marknadsekonomin ska fungera?' }
+  ]}
+  ]
+}
+];
+
+/* Den aktiva omgångens kategorier. Pekas om av jpStartRound(). */
+let JP_CATEGORIES = JP_ROUNDS[0].cats;
+
+/* ════════ SETUP ════════ */
+let jpTeamCount = 2, jpTeams = [], jpUsed = 0, jpTurn = null, jpRound = 0;
+
+function jpTeamColor(i){ return JP_TEAM_COLORS[i%JP_TEAM_COLORS.length]; }
+
+function jpRenderRound(){
+  const el=document.getElementById('jp-round');
+  el.textContent=JP_ROUNDS[jpRound].label;
+  el.style.background=JP_CATEGORIES[0].color;
+  el.style.color='#0b1120';
+}
+
+function jpRenderTurn(){
+  const el=document.getElementById('jp-turn');
+  if(jpTurn===null||!jpTeams[jpTurn]){ el.textContent=''; return; }
+  el.textContent=jpTeams[jpTurn].name+' väljer nästa fråga';
+  el.style.color=jpTeamColor(jpTurn);
+}
+
+function jpRenderTeamInputs(){
+  const wrap = document.getElementById('jp-team-inputs');
+  wrap.innerHTML = '';
+  for(let i=0;i<jpTeamCount;i++){
+    const inp = document.createElement('input');
+    inp.type='text'; inp.id='jp-team-'+i; inp.placeholder='Lag '+(i+1);
+    inp.className='w-full p-2.5 border-2 border-slate-200 rounded-lg text-sm outline-none focus:border-slate-900';
+    wrap.appendChild(inp);
+  }
+  document.getElementById('jp-remove').style.visibility = jpTeamCount<=2?'hidden':'visible';
+  document.getElementById('jp-add').style.visibility    = jpTeamCount>=4?'hidden':'visible';
+}
+function jpChangeTeamCount(d){ jpTeamCount=Math.min(4,Math.max(2,jpTeamCount+d)); jpRenderTeamInputs(); }
+
+function jpStartGame(){
+  jpTeams=[];
+  for(let i=0;i<jpTeamCount;i++){
+    const v=document.getElementById('jp-team-'+i).value.trim();
+    jpTeams.push({name:v||('Lag '+(i+1)),score:0});
+  }
+  jpTurn=Math.floor(Math.random()*jpTeams.length);
+  document.getElementById('jp-setup').classList.add('hidden');
+  document.getElementById('jp-stage').classList.remove('hidden');
+  jpHideOverlay('jp-end');
+  jpHideOverlay('jp-inter');
+  document.getElementById('jp-teams').style.setProperty('--tc', jpTeams.length);
+  jpRenderTeams();
+  jpStartRound(0);
+  jpShowRules(true);
+}
+function jpNewGame(){
+  jpTurn=null;
+  jpExitFullscreen();
+  jpHideRules();
+  jpHideOverlay('jp-end');
+  jpHideOverlay('jp-inter');
+  document.getElementById('jp-modal').classList.remove('on');
+  document.getElementById('jp-stage').classList.add('hidden');
+  document.getElementById('jp-setup').classList.remove('hidden');
+}
+
+function jpHideOverlay(id){
+  const el=document.getElementById(id);
+  el.classList.add('hidden'); el.style.display='none';
+}
+function jpIsOpen(id){ return document.getElementById(id).style.display==='flex'; }
+
+/* ════════ OMGÅNGAR ════════ */
+/* jpTurn rörs aldrig här – rotationen fortsätter där omgång 1 slutade. */
+function jpStartRound(n){
+  jpRound=n;
+  JP_CATEGORIES=JP_ROUNDS[n].cats;
+  jpUsed=0;
+  jpBuildBoard();
+  jpRenderRound();
+  jpRenderTurn();
+}
+function jpStartRound2(){
+  jpHideOverlay('jp-inter');
+  jpStartRound(1);
+}
+function jpShowIntermission(){
+  const list=document.getElementById('jp-inter-list'); list.innerHTML='';
+  jpTeams.map((t,i)=>({t,i})).sort((a,b)=>b.t.score-a.t.score).forEach((e,pos)=>{
+    const row=document.createElement('div');
+    row.className='flex items-center gap-4 justify-center';
+    row.innerHTML=`<span class="text-slate-300 font-bold" style="font-size:clamp(.95rem,2.6vh,1.4rem)">${pos+1}. ${e.t.name}</span>
+      <span class="num font-bold" style="color:${jpTeamColor(e.i)};font-size:clamp(1.2rem,3.4vh,2rem)">${e.t.score}</span>`;
+    list.appendChild(row);
+  });
+  const nx=document.getElementById('jp-inter-next');
+  nx.textContent=jpTeams[jpTurn].name+' inleder omgång 2.';
+  nx.style.color=jpTeamColor(jpTurn);
+  const el=document.getElementById('jp-inter');
+  el.classList.remove('hidden'); el.style.display='flex';
+}
+
+/* ════════ SPELREGLER ════════ */
+function jpShowRules(initial){
+  if(jpTurn===null||!jpTeams[jpTurn]) return;
+  const el=document.getElementById('jp-rules-start');
+  el.textContent=jpTeams[jpTurn].name+(initial?' börjar.':' har turen.');
+  el.style.color=jpTeamColor(jpTurn);
+  const r=document.getElementById('jp-rules');
+  r.classList.remove('hidden'); r.style.display='flex';
+}
+function jpHideRules(){ jpHideOverlay('jp-rules'); }
+
+/* ════════ LAG ════════ */
+function jpRenderTeams(){
+  const p=document.getElementById('jp-teams'); p.innerHTML='';
+  jpTeams.forEach((t,i)=>{
+    const c=jpTeamColor(i);
+    const el=document.createElement('div');
+    el.className='jp-team';
+    if(i===jpTurn){
+      el.style.border='2px solid '+c;
+      el.style.background='rgba(255,255,255,.13)';
+    }else{
+      el.style.opacity='.5';
+    }
+    el.innerHTML=`<span class="nm" style="border-left:3px solid ${c};padding-left:.5rem">${t.name}</span>
+      <span class="sc" style="color:${c}">${t.score}</span>
+      <button class="jp-step" onclick="jpAdjust(${i},-100)">−</button>
+      <button class="jp-step" onclick="jpAdjust(${i},100)">+</button>`;
+    p.appendChild(el);
+  });
+}
+function jpAdjust(i,a){ jpTeams[i].score+=a; jpRenderTeams(); }
+
+/* ════════ SPELPLAN ════════ */
+function jpBuildBoard(){
+  const b=document.getElementById('jp-board'); b.innerHTML='';
+  JP_CATEGORIES.forEach(cat=>{
+    const h=document.createElement('div');
+    h.className='jp-head'; h.style.background=cat.color; h.textContent=cat.name;
+    b.appendChild(h);
+  });
+  /* Högsta värdet överst, lägsta nederst. */
+  for(let row=4;row>=0;row--){
+    JP_CATEGORIES.forEach((cat,ci)=>{
+      const q=cat.qs[row];
+      const cell=document.createElement('button');
+      cell.className='jp-cell';
+      cell.style.background=`rgba(${cat.rgb},.13)`;
+      cell.style.color=cat.color;
+      cell.textContent=q.v;
+      cell.onmouseenter=()=>{ if(!cell.classList.contains('jp-used')){cell.style.background=cat.color;cell.style.color='#0b1120';} };
+      cell.onmouseleave=()=>{ if(!cell.classList.contains('jp-used')){cell.style.background=`rgba(${cat.rgb},.13)`;cell.style.color=cat.color;} };
+      cell.onclick=()=>jpOpenQuestion(ci,row,cell);
+      b.appendChild(cell);
+    });
+  }
+}
+
+/* ════════ FRÅGA ════════ */
+let jpCat=null,jpRow=null,jpCell=null,jpOpts=[],jpPicked=null,jpWrong=[],jpRevealed=false,jpTimer=null;
+let jpTime=45,jpTimeTotal=45;
+let jpChooser=null,jpAnswering=null,jpFailed=[];
+let jpValue=0,jpBaseValue=0,jpResolved=false,jpWinner=null;
+
+/* Tiden styrs av frågans ursprungliga poängvärde, inte det halverade. */
+function jpBaseTime(v){ return v<=300 ? 45 : (v<=700 ? 60 : 75); }
+
+function jpLowerValue(){
+  let v=Math.floor(jpValue/2);
+  v=Math.floor(v/50)*50;
+  jpValue=Math.max(50,v);
+}
+function jpRenderValue(old){
+  const el=document.getElementById('jp-val');
+  if(old!==undefined && old!==jpValue){
+    el.innerHTML='<span class="line-through opacity-60">'+old+' p</span> <span class="text-slate-800">'+jpValue+' p</span>';
+  }else{
+    el.textContent=jpValue+' p';
+  }
+}
+
+function jpNextAnswerer(){
+  const n=jpTeams.length;
+  for(let step=1;step<=n;step++){
+    const cand=(jpAnswering+step)%n;
+    if(!jpFailed.includes(cand)) return cand;
+  }
+  return null;
+}
+function jpRenderAnswering(){
+  const el=document.getElementById('jp-answering');
+  el.textContent='Svarar: '+jpTeams[jpAnswering].name;
+  el.style.background=jpTeamColor(jpAnswering);
+}
+
+function jpShuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+function jpOpenQuestion(ci,row,cell){
+  if(cell.classList.contains('jp-used')) return;
+  if(jpIsOpen('jp-rules')||jpIsOpen('jp-inter')||jpIsOpen('jp-end')) return;
+  jpCat=ci; jpRow=row; jpCell=cell;
+  const cat=JP_CATEGORIES[ci], q=cat.qs[row];
+  jpPicked=null; jpWrong=[]; jpRevealed=false; jpResolved=false; jpWinner=null; jpFailed=[];
+  jpChooser=jpTurn; jpAnswering=jpTurn;
+  jpValue=q.v; jpBaseValue=q.v;
+  jpOpts=jpShuffle(q.opts.map((t,i)=>({text:t,isCorrect:i===q.correct})));
+
+  const catEl=document.getElementById('jp-cat');
+  catEl.textContent=cat.name; catEl.style.background=cat.color;
+  jpRenderValue();
+  document.getElementById('jp-q').textContent=q.q;
+  document.getElementById('jp-expl').textContent=q.expl+' ('+q.src+')';
+  const ew=document.getElementById('jp-expl-wrap');
+  ew.style.background=`rgba(${cat.rgb},.08)`; ew.style.borderColor=cat.color;
+  document.getElementById('jp-expl-label').style.color=cat.color;
+  document.getElementById('jp-bar').style.background=cat.color;
+  ew.classList.add('hidden');
+  document.getElementById('jp-banner').classList.add('hidden');
+  document.getElementById('jp-actions').classList.remove('hidden');
+  document.getElementById('jp-reveal-btn').classList.remove('hidden');
+  document.getElementById('jp-answering-wrap').classList.remove('hidden');
+  jpRenderAnswering();
+  jpRenderOptions();
+  document.getElementById('jp-modal').classList.add('on');
+  jpStartTimer(jpBaseTime(jpBaseValue));
+}
+
+function jpRenderOptions(){
+  const w=document.getElementById('jp-opts'); w.innerHTML='';
+  const done = jpResolved || jpRevealed;
+  jpOpts.forEach((o,idx)=>{
+    const b=document.createElement('button');
+    let cls='jp-opt', dis=false;
+    if(done && o.isCorrect){ cls+=' jp-correct'; dis=true; }
+    else if(jpWrong.includes(idx)){ cls+=' jp-wrong'; dis=true; }
+    else if(done){ cls+=' opacity-40'; dis=true; }
+    b.className=cls; b.disabled=dis;
+    b.textContent=String.fromCharCode(97+idx)+') '+o.text;
+    b.onclick=()=>jpPick(idx);
+    w.appendChild(b);
+  });
+}
+
+function jpPick(idx){
+  if(jpResolved||jpRevealed) return;
+  if(jpWrong.includes(idx)) return;
+  const o=jpOpts[idx];
+  if(o.isCorrect){
+    clearInterval(jpTimer);
+    jpResolved=true; jpWinner=jpAnswering; jpPicked=idx;
+    jpTeams[jpAnswering].score+=jpValue;
+    /* Strikt rotation: poängen går till det svarande laget, men turen
+       flyttas alltid ett steg från den som VALDE rutan (jpCloseModal). */
+    const next=(jpChooser+1)%jpTeams.length;
+    const stolen = jpAnswering!==jpChooser;
+    jpRenderTeams(); jpRenderOptions();
+    document.getElementById('jp-expl-wrap').classList.remove('hidden');
+    document.getElementById('jp-answering-wrap').classList.add('hidden');
+    document.getElementById('jp-reveal-btn').classList.add('hidden');
+    jpBanner('✓ Rätt – '+jpTeams[jpAnswering].name+' får '+jpValue+' poäng. '
+      +(stolen?'Stöld ger inte turen: ':'')
+      +jpTeams[next].name+' väljer nästa fråga.', jpTeamColor(jpAnswering));
+  }else{
+    jpFailAndAdvance({clickedIdx:idx});
+  }
+}
+
+function jpFailAndAdvance(o){
+  if(o.clickedIdx!==undefined && !jpWrong.includes(o.clickedIdx)) jpWrong.push(o.clickedIdx);
+  if(!jpFailed.includes(jpAnswering)) jpFailed.push(jpAnswering);
+  const old=jpValue; jpLowerValue(); jpRenderValue(old);
+  jpRenderOptions();
+  const next=jpNextAnswerer();
+  if(next===null){
+    clearInterval(jpTimer);
+    jpResolved=true; jpRevealed=true; jpWinner=null;
+    jpRenderOptions();
+    document.getElementById('jp-expl-wrap').classList.remove('hidden');
+    document.getElementById('jp-answering-wrap').classList.add('hidden');
+    document.getElementById('jp-reveal-btn').classList.add('hidden');
+    jpBanner('Ingen fick rätt. '+jpTeams[(jpChooser+1)%jpTeams.length].name+' väljer nästa fråga.', '#dc2626');
+  }else{
+    jpAnswering=next;
+    jpRenderAnswering();
+    const lead = o.timedOut ? '⏰ Tiden är ute.' : '✗ FEL – försök igen.';
+    jpBanner(lead+' '+jpTeams[next].name+' får chansen på '+jpValue+' p ('+JP_STEAL_TIME+' sek).', jpTeamColor(next));
+    jpStartTimer(JP_STEAL_TIME);
+  }
+}
+
+function jpBanner(txt,color){
+  const b=document.getElementById('jp-banner');
+  const p=b.querySelector('p');
+  p.textContent=txt;
+  if(color){ p.style.color=color; p.style.borderColor=color; p.style.background=color+'18'; }
+  else{ p.style.color=''; p.style.borderColor=''; p.style.background=''; }
+  b.classList.remove('hidden');
+}
+
+function jpRevealAnswer(){
+  clearInterval(jpTimer);
+  jpRevealed=true; jpResolved=true; jpWinner=null;
+  jpRenderTeams(); jpRenderOptions();
+  document.getElementById('jp-expl-wrap').classList.remove('hidden');
+  document.getElementById('jp-banner').classList.add('hidden');
+  document.getElementById('jp-answering-wrap').classList.add('hidden');
+  document.getElementById('jp-reveal-btn').classList.add('hidden');
+}
+
+function jpCloseModal(){
+  clearInterval(jpTimer);
+  /* Strikt rotation – turen går alltid vidare från den som valde rutan,
+     oavsett rätt, fel, stöld eller "Visa svar". */
+  jpTurn=(jpChooser+1)%jpTeams.length;
+  jpRenderTeams(); jpRenderTurn();
+  jpCell.classList.add('jp-used'); jpCell.textContent='✓'; jpCell.onmouseenter=null; jpCell.onmouseleave=null;
+  document.getElementById('jp-modal').classList.remove('on');
+  document.getElementById('jp-actions').classList.remove('hidden');
+  jpUsed++;
+  if(jpUsed>=20){
+    if(jpRound===0) jpShowIntermission();
+    else jpShowEnd();
+  }
+}
+
+function jpShowEnd(){
+  jpHideOverlay('jp-inter');
+  const list=document.getElementById('jp-end-list'); list.innerHTML='';
+  /* Delar flera lag högsta poängen blir det oavgjort – ingen ensam vinnare. */
+  const top=Math.max(...jpTeams.map(t=>t.score));
+  const leaders=jpTeams.filter(t=>t.score===top);
+  const head=document.createElement('p');
+  head.className='text-white font-bold mb-4';
+  head.style.fontSize='clamp(1.3rem,4.2vh,2.6rem)';
+  head.textContent=leaders.length>1
+    ? '🤝 Oavgjort! '+leaders.map(t=>t.name).join(' och ')+' delar segern.'
+    : '🏆 '+leaders[0].name+' vinner!';
+  list.appendChild(head);
+  jpTeams.map((t,i)=>({t,i})).sort((a,b)=>b.t.score-a.t.score).forEach((e,pos)=>{
+    const c=jpTeamColor(e.i);
+    const row=document.createElement('div');
+    row.className='flex items-center gap-4 justify-center';
+    const mark = e.t.score===top ? (leaders.length>1?'🤝':'🏆') : (pos+1)+'.';
+    row.innerHTML=`<span class="text-slate-300 font-bold" style="font-size:clamp(1rem,3vh,1.6rem)">${mark} ${e.t.name}</span>
+      <span class="num font-bold" style="color:${c};font-size:clamp(1.3rem,4vh,2.4rem)">${e.t.score}</span>`;
+    list.appendChild(row);
+  });
+  const e=document.getElementById('jp-end');
+  e.classList.remove('hidden'); e.style.display='flex';
+}
+
+/* ════════ TIMER ════════ */
+function jpStartTimer(sec){
+  clearInterval(jpTimer);
+  jpTimeTotal=sec; jpTime=sec;
+  const bar=document.getElementById('jp-bar'), txt=document.getElementById('jp-time');
+  const c=JP_CATEGORIES[jpCat].color;
+  bar.style.width='100%'; bar.style.background=c;
+  txt.textContent=sec; txt.className='num text-sm font-bold text-slate-400';
+  jpTimer=setInterval(()=>{
+    jpTime--; txt.textContent=jpTime; bar.style.width=(jpTime/jpTimeTotal*100)+'%';
+    if(jpTime<=10){ bar.style.background='#dc2626'; txt.className='num text-sm font-bold text-red-600'; }
+    if(jpTime<=0){ clearInterval(jpTimer); if(!jpResolved && !jpRevealed) jpFailAndAdvance({timedOut:true}); }
+  },1000);
+}
+
+/* ════════ HELSKÄRM ════════ */
+function jpToggleFullscreen(){
+  const s=document.getElementById('jp-stage');
+  if(s.classList.contains('jp-fs')){ jpExitFullscreen(); return; }
+  s.classList.add('jp-fs');
+  document.getElementById('jp-fsbtn').textContent='⤫ Avsluta helskärm';
+  if(s.requestFullscreen) s.requestFullscreen().catch(()=>{});
+}
+function jpExitFullscreen(){
+  const s=document.getElementById('jp-stage');
+  s.classList.remove('jp-fs');
+  document.getElementById('jp-fsbtn').textContent='⛶ Helskärm';
+  if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+}
+document.addEventListener('fullscreenchange',()=>{
+  if(!document.fullscreenElement) jpExitFullscreen();
+});
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape') return;
+  if(document.getElementById('jp-modal').classList.contains('on')){ jpCloseModal(); }
+  else if(jpIsOpen('jp-rules')){ jpHideRules(); }
+  else if(jpIsOpen('jp-inter')){ /* mellanskärmen kräver ett aktivt val */ }
+  else{ jpExitFullscreen(); }
+});
+
+jpRenderTeamInputs();
+</script>
+
+<script src="feedback-widget.js" defer></script>
+<script data-goatcounter="https://johnblixt.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
