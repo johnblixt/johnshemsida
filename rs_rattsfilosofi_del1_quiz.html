@@ -205,6 +205,7 @@
       .btn-back, .btn-next { flex: 1; min-width: 120px; min-height: 48px; text-align: center; margin-left: 0; }
     }
   </style>
+  <script src="progress.js"></script>
 </head>
 <body>
 
@@ -530,6 +531,7 @@ function computeRank(pct) {
 
 // Dagens kod RSF1-XXXX: datum + poäng + rank + salt
 const CODE_SALT = 'rsrattsfilosofidel1quizbe123c';
+const PROGRESS_ID = 'rs_rattsfilosofi_del1_quiz'; // bestående progress (progress.js)
 function computeVerificationCode(correct, total, rank) {
   const d = new Date();
   const dateStr = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
@@ -800,6 +802,8 @@ function showResults() {
   document.getElementById('r-msg').textContent   = RANK_TEXT[rank][1];
   document.getElementById('r-code').textContent  = computeVerificationCode(score, total, rank);
   document.getElementById('r-best').textContent  = 'Bästa rank i den här fliken: ' + updateBestRank(rank);
+  // Bestående progress (progress.js): bara bästa resultat sparas, rank och kod rörs inte
+  if (window.JHProgress) JHProgress.saveProgress(PROGRESS_ID, { rank: rank, pct: pct });
 
   // Missed questions
   const missedEl = document.getElementById('missed-section');

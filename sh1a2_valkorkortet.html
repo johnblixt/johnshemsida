@@ -127,6 +127,7 @@
       .info-card { padding: 12px 10px; min-width: 88px; }
     }
   </style>
+  <script src="progress.js"></script>
 </head>
 <body>
 
@@ -303,6 +304,7 @@ function renderSessionStats() {
 // datumberoende så koden roterar dagligen
 // ════════════════════════════════════════════════════════════
 const CODE_SALT = 'valkorkortet2026sakerhet';
+const PROGRESS_ID = 'sh1a2_valkorkortet'; // bestående progress (progress.js)
 
 function computeVerificationCode(pct, mode) {
   const d = new Date();
@@ -451,6 +453,8 @@ function showResults() {
     stats.bestMode = currentMode;
   }
   saveStats(stats);
+  // Bestående progress (progress.js): bara hela provet räknas, koden rörs inte
+  if (currentMode === 'alla' && window.JHProgress) JHProgress.saveProgress(PROGRESS_ID, { passed: pass, pct: pct });
 }
 
 // ════════════════════════════════════════════════════════════

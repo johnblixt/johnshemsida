@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Johns Repetitionsportal</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="progress.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
@@ -419,6 +420,33 @@
         .desk-footer-links a:hover { border-bottom-color: var(--dk-purple); }
         .desk-footer-links .sep    { color: var(--dk-ink-soft); margin: 0 12px; opacity: 0.5; }
 
+        /* ── Bestående progress (progress.js): badge på korten + nollställning ──
+           Gäller både mobil och desktop – färgerna faller tillbaka när --dk-* saknas. */
+        .desk-card-prog { margin: -10px 0 16px; --jh-ink: var(--dk-ink-soft); }
+        .jh-reset { margin-top: 24px; text-align: center; font-family: 'EB Garamond', serif; }
+        .jh-reset .jh-reset-note {
+            margin: 0 0 4px;
+            font-size: 0.95rem;
+            font-weight: 400;
+            font-style: normal;
+            letter-spacing: 0;
+            text-transform: none;
+            line-height: 1.45;
+            color: var(--dk-ink-soft, #64748b);
+        }
+        .jh-reset-btn {
+            background: none;
+            border: none;
+            padding: 8px 10px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.95rem;
+            color: var(--dk-ink-soft, #64748b);
+            text-decoration: underline;
+        }
+        .jh-reset-btn:hover { color: var(--dk-purple, #7c3aed); }
+        .jh-reset-btn.jh-reset-yes { color: #dc2626; font-weight: 700; }
+
         /* ── Tangentbordsfokus ── */
         .desktop-wrapper :focus-visible {
             outline: 3px solid var(--dk-purple);
@@ -530,6 +558,8 @@
                 <span class="sep">·</span>
                 <a href="larare-guide.html">Är du lärare? Bygg din egen hemsida</a>
             </nav>
+            <!-- Fylls av jhResetSet(): info om sparad progress + "Nollställ min progress" -->
+            <div class="jh-reset" data-jh-reset></div>
         </footer>
     </div>
     <!-- ═══════════════════════════════════════════════════
@@ -551,9 +581,9 @@
         id: 'sh_1a2', name: 'Samhällskunskap Sa1a2', emoji: '🏛️',
         color: '#fb923c', bgLight: '#ffedd5', textDark: '#7c2d12',
         areas: [
-          { name: 'Politiska partier och ideologier', course: 'Sa1a2', color: '#fb923c', bgLight: '#ffedd5', textDark: '#7c2d12', quizLabel: 'Del 1 — Valkörkortet', quiz: 'sh1a2_valkorkortet.html', material: 'sh_ideologier.html', materialLabel: 'Del 2 — Partier och ideologier', begrepp: 'sh_ideologibegrepp.html', jeopardy: 'sh1a2_ideologier_jeopardy.html' },
+          { name: 'Politiska partier och ideologier', course: 'Sa1a2', color: '#fb923c', bgLight: '#ffedd5', textDark: '#7c2d12', quizLabel: 'Del 1 — Valkörkortet', quiz: 'sh1a2_valkorkortet.html', material: 'sh_ideologier.html', materialLabel: 'Del 2 — Partier och ideologier', begrepp: 'sh_ideologibegrepp.html', jeopardy: 'sh1a2_ideologier_jeopardy.html', progress: [{ id: 'sh1a2_valkorkortet', label: 'Del 1' }, { id: 'sh_ideologier', label: 'Del 2' }, { id: 'sh_ideologibegrepp', label: 'Begrepp' }] },
           { name: 'Massmedia & Källkritik',course: 'Sa1a2', color: '#fb923c', bgLight: '#ffedd5', textDark: '#7c2d12', quizLabel: 'Starta Quiz',   quiz: 'sh_massmedia.html',       material: 'sh_massmedia_material.html',     begrepp: 'sh_massmediabegrepp.html' },
-          { name: 'Samhällsekonomi',       course: 'Sa1a2', color: '#fb923c', bgLight: '#ffedd5', textDark: '#7c2d12', quizLabel: 'Öppna område', quiz: 'sh1a2_samhallsekonomi.html', material: null, begrepp: null },
+          { name: 'Samhällsekonomi',       course: 'Sa1a2', color: '#fb923c', bgLight: '#ffedd5', textDark: '#7c2d12', quizLabel: 'Öppna område', quiz: 'sh1a2_samhallsekonomi.html', material: null, begrepp: null, progress: [{ id: 'sh1a2_samhallsekonomi_grunder_begrepp', label: 'Del 1' }, { id: 'sh1a2_samhallsekonomi_ekonomiskpolitik_begrepp', label: 'Del 2' }] },
           { name: 'Kursprov Sa1a2',        course: 'Sa1a2', color: '#fb923c', bgLight: '#ffedd5', textDark: '#7c2d12', quizLabel: 'Starta Kursprov', quiz: 'sh_kursprovsa1a2.html', material: null, begrepp: null, dold: true }
         ]
       },
@@ -571,7 +601,7 @@
         id: 'nk_1a2', name: 'Naturkunskap 1a2', emoji: '🌱',
         color: '#4ade80', bgLight: '#f0fdf4', textDark: '#14532d',
         areas: [
-          { name: '🧬 Cellen, DNA och genteknik', course: 'NK1a2', color: '#4ade80', bgLight: '#f0fdf4', textDark: '#14532d', quizLabel: 'Öppna område', quiz: 'nk1a2_genteknik.html', material: null, begrepp: null },
+          { name: '🧬 Cellen, DNA och genteknik', course: 'NK1a2', color: '#4ade80', bgLight: '#f0fdf4', textDark: '#14532d', quizLabel: 'Öppna område', quiz: 'nk1a2_genteknik.html', material: null, begrepp: null, progress: [{ id: 'nk1a2_genteknik_begrepp', label: 'Begrepp' }, { id: 'nk1a2_genteknik_quiz', label: 'Quiz' }] },
           // Gamla Genteknik-kortet – ersatt av kortet ovan. Ta bort dold: true för att visa det igen.
           { name: 'Genteknik',             course: 'NK1a2', color: '#4ade80', bgLight: '#f0fdf4', textDark: '#14532d', quizLabel: 'Starta Quiz',    quiz: 'nk2_genteknik.html',      material: 'nk2_genteknik_material.html',  begrepp: 'nk2_genteknik_begrepp.html', dold: true },
           { name: 'Folkhälsa',             course: 'NK1a2', color: '#4ade80', bgLight: '#f0fdf4', textDark: '#14532d', quizLabel: 'Starta Quiz',    quiz: 'nk2_folkhalsa.html',      material: 'nk2_folkhalsa_material.html',  begrepp: 'nk2_folkhalsa_begrepp.html' },
@@ -593,8 +623,8 @@
         id: 'nk_ny', name: 'Naturkunskap nivå 1a1', emoji: '🌿',
         color: '#0891b2', bgLight: '#e0f2fe', textDark: '#0c4a6e',
         areas: [
-          { name: '🔬 Naturvetenskapligt arbetssätt', course: 'NK nivå 1a1', color: '#0891b2', bgLight: '#e0f2fe', textDark: '#0c4a6e', quizLabel: 'Öppna område', quiz: 'nk1a1_naturvetenskap.html', material: null, begrepp: null },
-          { name: '🌱 Hållbar utveckling',            course: 'NK nivå 1a1', color: '#22c55e', bgLight: '#dcfce7', textDark: '#14532d', quizLabel: 'Öppna område', quiz: 'nk1a1_hallbarhet.html',    material: null, begrepp: null },
+          { name: '🔬 Naturvetenskapligt arbetssätt', course: 'NK nivå 1a1', color: '#0891b2', bgLight: '#e0f2fe', textDark: '#0c4a6e', quizLabel: 'Öppna område', quiz: 'nk1a1_naturvetenskap.html', material: null, begrepp: null, progress: [{ id: 'nk_naturvetenskapligt_arbetssatt_begrepp' }] },
+          { name: '🌱 Hållbar utveckling',            course: 'NK nivå 1a1', color: '#22c55e', bgLight: '#dcfce7', textDark: '#14532d', quizLabel: 'Öppna område', quiz: 'nk1a1_hallbarhet.html',    material: null, begrepp: null, progress: [{ id: 'nk1a1_hallbarhet_quiz' }] },
           { name: '💙 Sexualitet, samtycke och relationer', course: 'NK nivå 1a1', color: '#0891b2', bgLight: '#e0f2fe', textDark: '#0c4a6e', quizLabel: 'Öppna område', quiz: 'nk1a1_sexualitet.html', material: null, begrepp: null },
           { name: '🫀 Kroppen, livsstil och hälsa',   course: 'NK nivå 1a1', color: '#0891b2', bgLight: '#e0f2fe', textDark: '#0c4a6e', quizLabel: 'Öppna område', quiz: 'nk1a1_kroppen.html',       material: null, begrepp: null }
         ]
@@ -603,9 +633,9 @@
         id: 'sh_ny', name: 'Samhällskunskap nivå 1a1', emoji: '🏛️',
         color: '#7c3aed', bgLight: '#ede9fe', textDark: '#4c1d95',
         areas: [
-          { name: '🔬 Vetenskap', course: 'SH nivå 1a1', color: '#7c3aed', bgLight: '#ede9fe', textDark: '#4c1d95', quizLabel: 'Öppna område', quiz: 'sh1a1_vetenskap.html', material: null, begrepp: null },
+          { name: '🔬 Vetenskap', course: 'SH nivå 1a1', color: '#7c3aed', bgLight: '#ede9fe', textDark: '#4c1d95', quizLabel: 'Öppna område', quiz: 'sh1a1_vetenskap.html', material: null, begrepp: null, progress: [{ id: 'sh1a1_vetenskap_begrepp' }] },
           { name: '🗳️ Politik', course: 'SH nivå 1a1', color: '#7c3aed', bgLight: '#ede9fe', textDark: '#4c1d95', quizLabel: 'Öppna område', quiz: 'politik.html', material: null, begrepp: null },
-          { name: '💹 Ekonomi',   course: 'SH nivå 1a1', color: '#7c3aed', bgLight: '#ede9fe', textDark: '#4c1d95', quizLabel: 'Öppna område', quiz: 'sh1a1_ekonomi.html',  material: null, begrepp: null },
+          { name: '💹 Ekonomi',   course: 'SH nivå 1a1', color: '#7c3aed', bgLight: '#ede9fe', textDark: '#4c1d95', quizLabel: 'Öppna område', quiz: 'sh1a1_ekonomi.html',  material: null, begrepp: null, progress: [{ id: 'sh1a1_privatekonomi_begrepp', label: 'Del 1' }, { id: 'sh1a1_samhallsekonomi_begrepp', label: 'Del 2' }, { id: 'sh1a1_ekonomisk_politik_begrepp', label: 'Del 3' }] },
           { name: '🎭 Kultur',    course: 'SH nivå 1a1', color: '#7c3aed', bgLight: '#ede9fe', textDark: '#4c1d95', quizLabel: 'Öppna område', quiz: 'sh1a1_kultur.html',   material: null, begrepp: null }
         ]
       },
@@ -613,8 +643,8 @@
         id: 'jur', name: 'Juridik nivå 1', emoji: '⚖️',
         color: '#4338ca', bgLight: '#e0e7ff', textDark: '#1e1b4b',
         areas: [
-          { name: '📋 Konstitutionell rätt och allmän rättslära', course: 'Juridik', color: '#4338ca', bgLight: '#e0e7ff', textDark: '#1e1b4b', quizLabel: 'Öppna område', quiz: 'jur_konstitutionell.html', material: null, begrepp: null },
-          { name: '👨‍👩‍👧 Familje- och arvsrätt',                   course: 'Juridik', color: '#4338ca', bgLight: '#e0e7ff', textDark: '#1e1b4b', quizLabel: 'Öppna område', quiz: 'jur_familj.html',         material: null, begrepp: null },
+          { name: '📋 Konstitutionell rätt och allmän rättslära', course: 'Juridik', color: '#4338ca', bgLight: '#e0e7ff', textDark: '#1e1b4b', quizLabel: 'Öppna område', quiz: 'jur_konstitutionell.html', material: null, begrepp: null, progress: [{ id: 'juridik1_block1_begrepp' }] },
+          { name: '👨‍👩‍👧 Familje- och arvsrätt',                   course: 'Juridik', color: '#4338ca', bgLight: '#e0e7ff', textDark: '#1e1b4b', quizLabel: 'Öppna område', quiz: 'jur_familj.html',         material: null, begrepp: null, progress: [{ id: 'jur1_block2_begrepp' }] },
           { name: '🤝 Avtalsrätt, konsumenträtt och köprätt',     course: 'Juridik', color: '#4338ca', bgLight: '#e0e7ff', textDark: '#1e1b4b', quizLabel: 'Öppna område', quiz: 'jur_avtal.html',          material: null, begrepp: null },
           { name: '👷 Arbetsrätt',                                 course: 'Juridik', color: '#4338ca', bgLight: '#e0e7ff', textDark: '#1e1b4b', quizLabel: 'Öppna område', quiz: 'jur_arbets.html',         material: null, begrepp: null },
           { name: '🔒 Skadeståndsrätt',                            course: 'Juridik', color: '#4338ca', bgLight: '#e0e7ff', textDark: '#1e1b4b', quizLabel: 'Öppna område', quiz: 'jur_skadestand.html',     material: null, begrepp: null }
@@ -625,7 +655,7 @@
         color: '#be123c', bgLight: '#ffe4e6', textDark: '#881337',
         areas: [
           { name: '📜 Konstitutionell rätt',                   course: 'Rätten', color: '#be123c', bgLight: '#ffe4e6', textDark: '#881337', quizLabel: 'Öppna område', quiz: 'rs_konstitutionell.html', material: null, begrepp: null },
-          { name: '🤔 Rättsfilosofi och juridisk metod',       course: 'Rätten', color: '#be123c', bgLight: '#ffe4e6', textDark: '#881337', quizLabel: 'Öppna område', quiz: 'rs_rattsfilosofi.html',     material: null, begrepp: null },
+          { name: '🤔 Rättsfilosofi och juridisk metod',       course: 'Rätten', color: '#be123c', bgLight: '#ffe4e6', textDark: '#881337', quizLabel: 'Öppna område', quiz: 'rs_rattsfilosofi.html',     material: null, begrepp: null, progress: [{ id: 'rs_rattsfilosofi_del1_quiz', label: 'Del 1' }, { id: 'rs_juridisk_metod_del2_quiz', label: 'Del 2' }] },
           { name: '⚖️ Straffrätt',                             course: 'Rätten', color: '#be123c', bgLight: '#ffe4e6', textDark: '#881337', quizLabel: 'Öppna område', quiz: 'rs_straff.html',           material: null, begrepp: null },
           { name: '🏛️ Processrätt',                            course: 'Rätten', color: '#be123c', bgLight: '#ffe4e6', textDark: '#881337', quizLabel: 'Öppna område', quiz: 'rs_process.html',          material: null, begrepp: null },
           { name: '🌍 Internationell rätt',                    course: 'Rätten', color: '#be123c', bgLight: '#ffe4e6', textDark: '#881337', quizLabel: 'Öppna område', quiz: 'rs_internationell.html',  material: null, begrepp: null }
@@ -780,15 +810,71 @@
         + '</button>';
     }
 
+    /* ── Bestående progress (progress.js) ──
+       Områden med fältet progress: [{ id, label }] får en platshållare som progress.js
+       fyller med rank-badge + "X/5 tester". id = övningssidans filnamn utan .html,
+       label behövs bara när området har flera sidor (t.ex. "Del 1"). */
+    var JH_LIGHT_COLORS = ['#fbbf24', '#fb923c', '#22c55e', '#4ade80'];
+
+    function jhProgHtml(area, cls, style) {
+      if (!area.progress || !area.progress.length) return '';
+      var ids = [];
+      var labels = [];
+      for (var i = 0; i < area.progress.length; i++) {
+        ids.push(area.progress[i].id);
+        labels.push(area.progress[i].label || '');
+      }
+      var onColor = JH_LIGHT_COLORS.indexOf(area.color) !== -1 ? area.textDark : '#ffffff';
+      return '<span' + (cls ? ' class="' + cls + '"' : '') + ' data-jh-progress="' + ids.join(',') + '" data-jh-labels="' + labels.join('|') + '"'
+        + ' style="--jh-c:' + area.color + ';--jh-on:' + onColor + ';' + (style || '') + '"></span>';
+    }
+
+    function jhRender() {
+      if (window.JHProgress) window.JHProgress.render();
+    }
+
+    // Nollställning med bekräftelse direkt i sidan (ingen webbläsardialog)
+    var jhResetState = 'idle';   // 'idle' | 'confirm' | 'done'
+    var jhResetTimer = null;
+
+    function jhResetInnerHtml() {
+      if (!window.JHProgress) return '';
+      if (jhResetState === 'confirm') {
+        return '<p class="jh-reset-note" role="alert">Säker? All sparad progress på den här enheten tas bort.</p>'
+          + '<button type="button" class="jh-reset-btn jh-reset-yes" onclick="jhResetSet(\'done\')">Ja, nollställ</button>'
+          + '<button type="button" class="jh-reset-btn jh-reset-no" onclick="jhResetSet(\'idle\')">Avbryt</button>';
+      }
+      if (jhResetState === 'done') {
+        return '<p class="jh-reset-note" role="status">Progressen är nollställd.</p>';
+      }
+      return '<p class="jh-reset-note">Din progress sparas bara på den här enheten. Tips: lägg till sidan på hemskärmen.</p>'
+        + '<button type="button" class="jh-reset-btn" onclick="jhResetSet(\'confirm\')">Nollställ min progress</button>';
+    }
+
+    function jhResetSet(state) {
+      if (state === 'done' && window.JHProgress) window.JHProgress.resetAll();
+      jhResetState = state;
+      var els = document.querySelectorAll('[data-jh-reset]');
+      for (var i = 0; i < els.length; i++) {
+        els[i].innerHTML = jhResetInnerHtml();
+        // Tangentbordsfokus följer med till den synliga bekräftelsen
+        var no = state === 'confirm' ? els[i].querySelector('.jh-reset-no') : null;
+        if (no && no.offsetParent !== null) no.focus();
+      }
+      clearTimeout(jhResetTimer);
+      if (state === 'done') {
+        jhResetTimer = setTimeout(function () { jhResetSet('idle'); }, 4000);
+      }
+    }
+
     function renderMobStep1() {
       var el = document.getElementById('mob-step-1');
       if (!mobSelectedClass) {
         el.innerHTML = buildClassPickerHtml();
-      } else if (mobShowAllOverride) {
-        el.innerHTML = buildAllCoursesHtml();
-      } else {
-        el.innerHTML = buildMyCoursesHtml();
+        return;
       }
+      el.innerHTML = (mobShowAllOverride ? buildAllCoursesHtml() : buildMyCoursesHtml())
+        + '<div class="jh-reset" data-jh-reset>' + jhResetInnerHtml() + '</div>';
     }
 
     // Steg 1: klassval – visas när ingen klass är sparad
@@ -884,12 +970,16 @@
           if (area.course !== course) continue;
           if (area.dold) continue;
           html += '<button class="mob-area-btn" onclick="mobileSelectArea(' + ai + ')" style="background:' + area.bgLight + ';border-left:5px solid ' + area.color + ';">'
-            + '<span style="font-size:1.15rem;font-weight:700;color:' + area.textDark + ';flex:1;text-align:left;font-family:\'EB Garamond\',serif;">' + area.name + '</span>'
+            + '<span style="flex:1;display:flex;flex-direction:column;gap:8px;text-align:left;">'
+            + '<span style="font-size:1.15rem;font-weight:700;color:' + area.textDark + ';font-family:\'EB Garamond\',serif;">' + area.name + '</span>'
+            + jhProgHtml(area, '', '--jh-ink:' + area.textDark + ';')
+            + '</span>'
             + '<span style="font-size:1.4rem;color:' + area.color + ';margin-left:12px;flex-shrink:0;">›</span>'
             + '</button>';
         }
       }
       el.innerHTML = html;
+      jhRender();
     }
 
     function renderMobStep3() {
@@ -903,6 +993,7 @@
       var html = '<div style="background:' + a.bgLight + ';border-radius:16px;padding:20px 18px;margin-bottom:28px;border-left:5px solid ' + a.color + ';">'
         + '<div style="font-family:\'EB Garamond\',serif;font-size:0.8rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:' + a.color + ';margin-bottom:6px;">' + a.course + '</div>'
         + '<div style="font-family:\'EB Garamond\',serif;font-size:1.65rem;font-weight:800;color:' + a.textDark + ';line-height:1.2;">' + a.name + '</div>'
+        + jhProgHtml(a, '', 'margin-top:12px;--jh-ink:' + a.textDark + ';')
         + '</div>'
         + '<p style="color:#64748b;font-family:\'EB Garamond\',serif;font-size:1.05rem;margin-bottom:20px;">Vad vill du göra?</p>';
 
@@ -931,6 +1022,7 @@
       }
 
       el.innerHTML = html;
+      jhRender();
     }
 
     renderMobStep1();
@@ -1009,6 +1101,7 @@
 
       return '<div class="desk-card" style="background:linear-gradient(180deg,' + deskTint(c, 14) + ' 0%, var(--dk-card) 58%);border-color:' + deskTint(c, 30) + ';">'
         + head
+        + jhProgHtml(area, 'desk-card-prog')
         + '<div class="desk-card-btns">' + btns + '</div>'
         + '</div>';
     }
@@ -1136,6 +1229,7 @@
       if (deskShowAll)            root.innerHTML = deskAllCoursesHtml();
       else if (!mobSelectedClass) root.innerHTML = deskClassPickerHtml();
       else                        root.innerHTML = deskMyCoursesHtml();
+      jhRender();
     }
 
     /* ── Desktopens händelser. Klassvalet speglas till mobilvyn. ── */
@@ -1186,6 +1280,7 @@
     }
 
     renderDesktop();
+    jhResetSet('idle');
 
     /* ── Djuplänk från undersidor: index.html#kurs=<id> öppnar kursens del ──
        Används som tillbaka-fallback (t.ex. #kurs=nk_1a2). Klassvalet rörs aldrig:

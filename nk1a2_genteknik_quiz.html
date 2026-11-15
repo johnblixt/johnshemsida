@@ -304,6 +304,7 @@
       .btn-back, .btn-next { flex: 1; min-width: 120px; min-height: 48px; text-align: center; margin-left: 0; }
     }
   </style>
+  <script src="progress.js"></script>
 </head>
 <body>
 
@@ -434,6 +435,7 @@ function computeRank(pct) {
 
 // ── Dagens kod NK2Q-XXXX: datum + urval + poäng + rank + salt ──
 const CODE_SALT = 'nk1a2genteknikquiz4ade80';
+const PROGRESS_ID = 'nk1a2_genteknik_quiz'; // bestående progress (progress.js)
 function computeVerificationCode(selKey, correct, total, rank) {
   const d = new Date();
   const dateStr = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
@@ -866,6 +868,8 @@ function renderResult() {
   $('r-title').textContent = RANK_TEXT[rank][0];
   $('r-msg').textContent   = RANK_TEXT[rank][1];
   $('r-code').textContent  = computeVerificationCode(selKey, score, n, rank);
+  // Bestående progress (progress.js): bara hela quizet räknas, rank och kod rörs inte
+  if (selKey === 'alla' && window.JHProgress) JHProgress.saveProgress(PROGRESS_ID, { rank: rank, pct: pct });
 
   // Missade frågor
   const missedEl = $('missed-section');

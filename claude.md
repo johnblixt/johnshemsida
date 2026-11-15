@@ -558,6 +558,7 @@ Alla tillbaka-knappar/länkar ska använda smart navigering, aldrig hårdkodas t
 3. Du skapar hela HTML-filen direkt, klar att lägga in i GitHub
 4. Du uppdaterar `index.html` med länk till den nya filen
 5. Du matchar ämnets färg från tabellen ovan
+6. Har quizet rank eller verifieringskod kopplar du in bestående progress enligt [Bestående progress](#bestående-progress-localstorage)
 
 *John ska inte behöva ändra något manuellt.*
 
@@ -570,6 +571,7 @@ Alla tillbaka-knappar/länkar ska använda smart navigering, aldrig hårdkodas t
 3. Du följer strukturen, CSS och teknikstack ovan exakt
 4. Du matchar ämnets färg från tabellen ovan
 5. Du uppdaterar `index.html` med länk till den nya filen
+6. Du kopplar in bestående progress enligt [Bestående progress](#bestående-progress-localstorage)
 
 *John ska inte behöva ändra något manuellt.*
 
@@ -578,7 +580,7 @@ Alla tillbaka-knappar/länkar ska använda smart navigering, aldrig hårdkodas t
 ## Vad som INTE ska finnas
 
 - ❌ Inloggning eller registrering
-- ❌ Lagring av elevresultat
+- ❌ Lagring av elevresultat utanför elevens egen enhet – inget skickas någonstans. Det enda som sparas är elevens bästa resultat i webbläsarens localStorage (se [Bestående progress](#bestående-progress-localstorage))
 - ❌ Reklam
 - ❌ Komplicerad backend – allt körs lokalt i webbläsaren
 
@@ -625,6 +627,68 @@ Alla begreppsfiler med flera övningsvyer (Lista/Flashcards/Lucktext/Scenario/Ic
 - **Verifieringskod:** "PREFIX-XXXX" genererad från datum + avklarade vyer + rank + saltsträng (unik per fil), ändras dagligen — låter läraren snabbt syna en skärmdump utan att behöva logga in eleven någonstans
 
 Använd samma mönster (state lyft till toppkomponenten, onComplete-callback till varje vy-komponent) oavsett antal vyer i filen.
+
+---
+
+## Bestående progress (localStorage)
+
+Ett separat lager **ovanpå** det sessionsbaserade systemet ovan. Det minns elevens bästa resultat per sida och visar det som en liten rank-badge på korten. Ingen inloggning, ingen backend — allt stannar på elevens enhet.
+
+**Sessionens rank, 80 %-gräns och verifieringskod rörs aldrig.** Koden ska fortfarande bevisa att jobbet gjordes idag. Ändra aldrig `computeRank`, `computeVerificationCode`, `markComplete` eller sidans sessionStorage-hantering när du kopplar in det här lagret — du lägger bara till rader.
+
+### Delad fil – `progress.js`
+- All logik ligger i `progress.js` i repo-roten och exponeras som `window.JHProgress`. Kopiera aldrig in logiken i en sida
+- Laddas med `<script src="progress.js"></script>` i `<head>` (`../progress.js` från undermappar), före sidans egna skript
+- En enda localStorage-nyckel: `jh_progress_v1` — ett JSON-objekt nycklat per sid-ID
+- Post per sida: `{ rank, passed, pct, done:[vyer], total, date }` (`date` = senast övad, `ÅÅÅÅ-MM-DD`)
+- `JHProgress.getProgress(id)` → posten eller `null` · `JHProgress.saveProgress(id, data)` · `JHProgress.resetAll()` · `JHProgress.render()` · `JHProgress.fromViews(progress, VIEWS, SCORE_VIEWS, rank)`
+- **Bästa resultat vinner:** högre rank (D < C < B < A < S), vid lika rank fler avklarade vyer, därefter högre procent. Ett sämre resultat skriver aldrig över ett bättre — bara `date` uppdateras
+- Ett resultat utan rank (och utan `passed: true`) sparas inte — en öppnad men orörd sida räknas inte som påbörjad
+- All läsning och skrivning ligger i try/catch i `progress.js`. Är lagringen blockerad (inkognito, in-app-webbläsare) händer ingenting. Anropa alltid via `if (window.JHProgress)` så att sidan fungerar även om filen inte laddats
+
+### Sid-ID
+- `const PROGRESS_ID = '<filnamn utan .html>';` som explicit konstant i varje sida, bredvid `PROGRESS_KEY`/saltsträngen
+- Härled det aldrig ur `location.pathname` — sidor kan ligga i undermappar och Netlify serverar URL:er utan `.html`
+- Byter en fil namn behålls det gamla ID:t, annars tappar eleverna sin sparade progress
+
+### Inkoppling på en begreppssida
+I toppkomponenten, direkt efter den befintliga effekten som sparar till sessionStorage:
+
+```jsx
+// Bestående progress: bästa resultat sparas på enheten. Rör inte sessionens rank eller kod.
+const jhMountedRef = useRef(false);
+useEffect(() => {
+  if (!jhMountedRef.current) { jhMountedRef.current = true; return; }
+  if (window.JHProgress) {
+    JHProgress.saveProgress(PROGRESS_ID, JHProgress.fromViews(progress, VIEWS, SCORE_VIEWS, computeRank(progress)));
+  }
+}, [progress]);
+```
+
+Första renderingen hoppas över, så att enbart ett sidbesök inte sparar något.
+
+### Inkoppling på ett quiz med rank eller kod
+En rad där resultatet räknas ut (t.ex. i `showResults()`), efter att sidans egen rank och kod är klara:
+
+```js
+if (window.JHProgress) JHProgress.saveProgress(PROGRESS_ID, { rank: rank, pct: pct });
+```
+
+- **Bara hela quizet räknas.** Har quizet delurval eller lägen villkoras raden, t.ex. `if (selKey === 'alla' && …)`
+- Har sidan ingen rank-bokstav utan bara godkänt/underkänt skickas `{ passed: pass, pct: pct }` — badgen visar då ✓ i stället för en bokstav
+
+### Visning på korten
+- Platshållare: `<div data-jh-progress="id1,id2" data-jh-labels="Del 1|Del 2" style="--jh-c:#22c55e;--jh-on:#14532d;"></div>`. `progress.js` fyller den med en chip per påbörjad sida och lämnar den tom (dold) annars — **inget visas om sidan inte är påbörjad**
+- Sidor med vyer visar "X/5 tester", quiz visar "bäst X %". Flera sidor i samma platshållare får sina etiketter från `data-jh-labels` ("Del 1 · 4/5 tester")
+- Färger: `--jh-c` = kortets/ämnets färg (badgens bakgrund), `--jh-on` = textfärg på badgen (mörk text på de ljusa ämnesfärgerna, annars vit som standard), `--jh-ink` = chipens textfärg
+- **Områdessidor:** script-taggen + en platshållare i kortet, direkt före knappen/länken till sidan. På hubbar som renderas ur en JS-array (t.ex. `HUB_GROUPS` i `sh1a2_samhallsekonomi.html`) sätts `progress: '<sid-ID>'` på itemet
+- **`Index.html`:** fältet `progress: [{ id, label }]` på området i `MOB_SUBJECTS`. `jhProgHtml()` bygger platshållaren i desktopkortet och i mobilens steg 2 och 3, och `jhRender()` anropas efter varje omritning. `label` behövs bara när området har flera sidor
+- Raden "Din progress sparas bara på den här enheten…" och knappen "Nollställ min progress" finns bara på startsidan (`jhResetSet`). Bekräftelsen är inline — aldrig `alert`/`confirm`. Nollställningen rör bara `jh_progress_v1`
+
+### Nya sidor kopplas alltid in
+Varje ny begreppssida, och varje nytt quiz med rank eller verifieringskod, ska i samma ändring få: (1) script-taggen och `PROGRESS_ID`, (2) sparanropet enligt ovan, (3) en platshållare på områdessidan, (4) `progress`-fältet på området i `Index.html`.
+
+Spel (Jeopardy, Miljonär, Flappy) och rena inställningar (språkval, Enkel svenska, plugglägen) sparas inte här.
 
 ---
 

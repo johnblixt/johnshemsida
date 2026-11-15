@@ -9,6 +9,7 @@
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="progress.js"></script>
   <style>
     body { font-family: 'Fredoka', sans-serif; }
     .flip-card { perspective: 1000px; height: 350px; width: 100%; max-width: 400px; cursor: pointer; }
@@ -147,6 +148,7 @@ const VIEWS = ['Lista', 'Flashcards', 'Lucktext', 'Scenario', 'Icke-ex.'];
 const VIEW_LABELS = { 'Scenario': 'Test 1', 'Icke-ex.': 'Test 2' };
 const SCORE_VIEWS = ['Lucktext', 'Scenario', 'Icke-ex.'];
 const PROGRESS_KEY = 'jur1_block1_progress';
+const PROGRESS_ID = 'juridik1_block1_begrepp'; // bestående progress (progress.js)
 const RANK_SALT = 'jur1block1sakerhet';
 const RANK_ORDER = { D: 1, C: 2, B: 3, A: 4, S: 5 };
 
@@ -1023,6 +1025,15 @@ function App() {
 
   React.useEffect(() => {
     saveProgress(progress);
+  }, [progress]);
+
+  // Bestående progress: bästa resultat sparas på enheten. Rör inte sessionens rank eller kod.
+  const jhMountedRef = React.useRef(false);
+  React.useEffect(() => {
+    if (!jhMountedRef.current) { jhMountedRef.current = true; return; }
+    if (window.JHProgress) {
+      JHProgress.saveProgress(PROGRESS_ID, JHProgress.fromViews(progress, VIEWS, SCORE_VIEWS, computeRank(progress)));
+    }
   }, [progress]);
 
   React.useEffect(() => {

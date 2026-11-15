@@ -10,6 +10,7 @@
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="progress.js"></script>
   <style>
     body { font-family: 'EB Garamond', serif; background: #fffbeb; }
     .font-fredoka { font-family: 'Fredoka', sans-serif; }
@@ -296,6 +297,7 @@ const VIEW_LABELS = { 'Scenario': 'Test 1', 'Icke-ex.': 'Test 2' };
 const ACTIVE_VIEWS = { 'Lista': true, 'Flashcards': true, 'Lucktext': true, 'Scenario': true, 'Icke-ex.': true };
 const SCORE_VIEWS = ['Lucktext', 'Scenario', 'Icke-ex.'];
 const PROGRESS_KEY = 'sh1a2_ideologier_progress';
+const PROGRESS_ID = 'sh_ideologibegrepp'; // bestående progress (progress.js)
 const RANK_SALT = 'sh1a2ideologiermetod';
 const RANK_ORDER = { D: 1, C: 2, B: 3, A: 4, S: 5 };
 
@@ -1036,6 +1038,15 @@ function App() {
 
   useEffect(() => {
     saveProgress(progress);
+  }, [progress]);
+
+  // Bestående progress: bästa resultat sparas på enheten. Rör inte sessionens rank eller kod.
+  const jhMountedRef = useRef(false);
+  useEffect(() => {
+    if (!jhMountedRef.current) { jhMountedRef.current = true; return; }
+    if (window.JHProgress) {
+      JHProgress.saveProgress(PROGRESS_ID, JHProgress.fromViews(progress, VIEWS, SCORE_VIEWS, computeRank(progress)));
+    }
   }, [progress]);
 
   useEffect(() => {

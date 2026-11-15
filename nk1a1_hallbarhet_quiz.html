@@ -207,6 +207,7 @@
       .btn-back, .btn-next { flex: 1; min-width: 120px; min-height: 48px; text-align: center; margin-left: 0; }
     }
   </style>
+  <script src="progress.js"></script>
 </head>
 <body>
 
@@ -634,6 +635,7 @@ function shuffleArray(array) {
    ════════════════════════════════════════════════════════════ */
 const PASS_PCT  = 80;
 const RANK_SALT = 'nk1a1hallbarhetsakerhet';
+const PROGRESS_ID = 'nk1a1_hallbarhet_quiz'; // bestående progress (progress.js)
 const RANK_STEPS = [
   { rank: 'S', min: 100, label: 'Allt rätt – du kan hela området.' },
   { rank: 'A', min: 90,  label: 'Mycket starkt resultat.' },
@@ -885,6 +887,8 @@ function showResults() {
   /* ── Rank, godkändgräns och daglig kod ── */
   const step   = computeRank(pct);
   const passed = pct >= PASS_PCT;
+  // Bestående progress (progress.js): bara bästa resultat sparas, rank och kod rörs inte
+  if (window.JHProgress) JHProgress.saveProgress(PROGRESS_ID, { rank: step ? step.rank : null, pct: pct });
 
   const badgeEl = document.getElementById('r-rank-badge');
   badgeEl.textContent = step ? step.rank : '–';

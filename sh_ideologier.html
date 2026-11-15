@@ -19,6 +19,7 @@
     body { font-family: 'EB Garamond', serif; }
     .easy-toggle[aria-pressed="true"] { background: #16a34a; color: white; border-color: #16a34a; }
   </style>
+  <script src="progress.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-900">
   <a href="index.html" id="back-link" class="fixed top-4 left-4 z-50 text-sm font-medium text-slate-500 hover:text-slate-800 bg-white/90 px-3 py-2 rounded-xl shadow-sm transition-colors">← Tillbaka till startsidan</a>
@@ -743,6 +744,7 @@
 
     const KRYSS_PROGRESS_KEY = 'sh1a2_ideologier_kryssprov_progress';
     const KRYSS_RANK_SALT = 'kryssprovPartierOchIdeologierSh1a2v1';
+    const PROGRESS_ID = 'sh_ideologier'; // bestående progress (progress.js)
     const RANK_ORDER = { D: 1, C: 2, B: 3, A: 4, S: 5 };
     const RANK_STYLE = {
       S: { bg: '#fef3c7', border: '#f59e0b', text: '#b45309' },
@@ -1539,6 +1541,8 @@
           saveKryssProgress(next);
           return next;
         });
+        // Bestående progress (progress.js): bara bästa resultat sparas, rank och kod rörs inte
+        if (window.JHProgress) JHProgress.saveProgress(PROGRESS_ID, { rank: computeKryssRank(pct), pct: pct });
         setGameState('result');
       };
 
