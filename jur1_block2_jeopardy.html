@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jeopardy – Familje- och arvsrätt | Juridik 1</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;0,800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0b1120;
+    --navy2:#111c33;
+  }
+  body{font-family:'EB Garamond',serif;}
+  .num{font-family:'Fredoka',sans-serif;font-variant-numeric:tabular-nums;}
+
+  /* ── Scenen ── */
+  #jp-stage{
+    background:var(--navy);
+    border-radius:1.25rem;
+    overflow:hidden;
+    position:relative;
+    display:flex;flex-direction:column;
+    height:min(78vh,660px);
+  }
+  #jp-stage.jp-fs{
+    position:fixed;inset:0;z-index:400;
+    height:100dvh;border-radius:0;
+  }
+  #jp-stage:fullscreen{height:100dvh;border-radius:0;}
+
+  /* ── Rutnät ── */
+  #jp-board{
+    flex:1;min-height:0;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    grid-template-rows:auto repeat(5,1fr);
+    gap:6px;padding:10px;
+  }
+  .jp-head{
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    font-family:'Fredoka',sans-serif;font-weight:700;
+    text-transform:uppercase;letter-spacing:.06em;line-height:1.1;
+    font-size:clamp(.6rem,1.5vh,.95rem);
+    color:#fff;padding:.5rem .35rem;border-radius:.6rem .6rem .2rem .2rem;
+    overflow-wrap:break-word;
+  }
+  .jp-cell{
+    display:flex;align-items:center;justify-content:center;
+    border-radius:.6rem;cursor:pointer;
+    font-family:'Fredoka',sans-serif;font-weight:700;
+    font-size:clamp(1.3rem,4.6vh,3.1rem);
+    border:1px solid rgba(255,255,255,.07);
+    transition:transform .12s ease,filter .12s ease,background .12s ease;
+  }
+  .jp-cell:hover:not(.jp-used){transform:translateY(-2px) scale(1.02);}
+  .jp-cell:focus-visible{outline:3px solid #fff;outline-offset:2px;}
+  .jp-used{
+    background:rgba(255,255,255,.04)!important;color:rgba(255,255,255,.16)!important;
+    cursor:default;transform:none;font-size:clamp(1rem,2.6vh,1.6rem);
+  }
+
+  /* ── Lagrad ── */
+  #jp-teams{
+    display:grid;gap:6px;padding:0 10px 10px;
+    grid-template-columns:repeat(var(--tc,2),1fr);
+  }
+  .jp-team{
+    background:var(--navy2);border-radius:.7rem;padding:.4rem .6rem;
+    display:flex;align-items:center;gap:.6rem;border:1px solid rgba(255,255,255,.08);
+  }
+  .jp-team .nm{
+    flex:1;min-width:0;color:#cbd5e1;font-weight:700;
+    font-size:clamp(.7rem,1.6vh,.95rem);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .jp-team .sc{font-family:'Fredoka',sans-serif;font-size:clamp(1rem,2.6vh,1.6rem);font-weight:700;}
+  .jp-step{
+    background:rgba(255,255,255,.08);color:#e2e8f0;border:none;border-radius:.4rem;
+    width:1.7rem;height:1.7rem;font-weight:700;cursor:pointer;font-family:'Fredoka',sans-serif;
+  }
+  .jp-step:hover{background:rgba(255,255,255,.2);}
+
+  #jp-turn{font-size:clamp(.8rem,2vh,1.1rem);}
+  #jp-round{
+    font-family:'Fredoka',sans-serif;
+    font-size:clamp(.55rem,1.3vh,.72rem);
+  }
+
+  /* ── Modal ── */
+  #jp-modal{position:absolute;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(4,8,18,.9);}
+  #jp-modal.on{display:flex;}
+  .jp-card{background:#fff;border-radius:1.1rem;width:100%;max-width:820px;max-height:94%;overflow-y:auto;padding:1.1rem 1.3rem 1rem;}
+  #jp-q{font-size:clamp(1.05rem,2.7vh,1.6rem);overflow-wrap:break-word;}
+  .jp-opt{
+    text-align:left;font-family:'EB Garamond',serif;border:2px solid #e2e8f0;background:#fff;
+    border-radius:.7rem;padding:.6rem .8rem;font-size:clamp(.85rem,1.9vh,1.05rem);
+    line-height:1.35;transition:all .12s ease;width:100%;overflow-wrap:anywhere;
+  }
+  .jp-opt:hover:not(:disabled){background:#f8fafc;}
+  .jp-opt:disabled{cursor:default;}
+  .jp-picked{background:#fef3c7!important;border-color:#f59e0b!important;}
+  .jp-wrong{background:#fee2e2!important;border-color:#dc2626!important;color:#991b1b;opacity:.65;}
+  .jp-correct{background:#dcfce7!important;border-color:#16a34a!important;color:#166534;font-weight:700;}
+  .jp-bar{transition:width 1s linear,background-color .3s;}
+
+  /* ── Helskärm: skala upp allt eleverna ska läsa från bänkraden ──
+     .jp-fs sätts alltid av jpToggleFullscreen (även när Fullscreen API
+     saknas); :fullscreen/:-webkit-full-screen fångar äkta helskärm.
+     Inget här nedan påverkar normalvyn i webbläsarfönstret. */
+  #jp-stage.jp-fs #jp-turn,
+  #jp-stage:fullscreen #jp-turn,
+  #jp-stage:-webkit-full-screen #jp-turn{
+    font-size:clamp(1.05rem,2.8vh,2rem);
+  }
+  #jp-stage.jp-fs #jp-round,
+  #jp-stage:fullscreen #jp-round,
+  #jp-stage:-webkit-full-screen #jp-round{
+    font-size:clamp(.75rem,1.8vh,1.2rem);
+    padding:clamp(.2rem,.6vh,.4rem) clamp(.7rem,1.4vw,1.15rem);
+  }
+  #jp-stage.jp-fs #jp-board,
+  #jp-stage:fullscreen #jp-board,
+  #jp-stage:-webkit-full-screen #jp-board{
+    gap:clamp(6px,.9vh,12px);
+    padding:clamp(10px,1.4vh,18px);
+  }
+  #jp-stage.jp-fs .jp-head,
+  #jp-stage:fullscreen .jp-head,
+  #jp-stage:-webkit-full-screen .jp-head{
+    font-size:clamp(.85rem,2.1vh,1.7rem);
+    letter-spacing:.04em;
+    padding:clamp(.5rem,1.2vh,.9rem) .45rem;
+    overflow-wrap:break-word;
+  }
+  #jp-stage.jp-fs .jp-cell,
+  #jp-stage:fullscreen .jp-cell,
+  #jp-stage:-webkit-full-screen .jp-cell{
+    font-size:clamp(1.8rem,6.2vh,4.6rem);
+  }
+  #jp-stage.jp-fs .jp-used,
+  #jp-stage:fullscreen .jp-used,
+  #jp-stage:-webkit-full-screen .jp-used{
+    font-size:clamp(1.2rem,3.2vh,2.4rem);
+  }
+  #jp-stage.jp-fs .jp-team,
+  #jp-stage:fullscreen .jp-team,
+  #jp-stage:-webkit-full-screen .jp-team{
+    padding:clamp(.4rem,1vh,.8rem) clamp(.6rem,1.2vw,1rem);
+  }
+  #jp-stage.jp-fs .jp-team .nm,
+  #jp-stage:fullscreen .jp-team .nm,
+  #jp-stage:-webkit-full-screen .jp-team .nm{
+    font-size:clamp(.95rem,2.3vh,1.8rem);
+  }
+  #jp-stage.jp-fs .jp-team .sc,
+  #jp-stage:fullscreen .jp-team .sc,
+  #jp-stage:-webkit-full-screen .jp-team .sc{
+    font-size:clamp(1.3rem,3.4vh,2.6rem);
+  }
+  #jp-stage.jp-fs .jp-step,
+  #jp-stage:fullscreen .jp-step,
+  #jp-stage:-webkit-full-screen .jp-step{
+    width:clamp(1.7rem,3.4vh,2.6rem);height:clamp(1.7rem,3.4vh,2.6rem);
+    font-size:clamp(.85rem,1.9vh,1.35rem);
+  }
+  #jp-stage.jp-fs #jp-modal .jp-card,
+  #jp-stage:fullscreen #jp-modal .jp-card,
+  #jp-stage:-webkit-full-screen #jp-modal .jp-card{
+    max-width:min(1500px,94vw);
+    max-height:96%;
+    padding:clamp(1.1rem,2.4vh,2.2rem) clamp(1.2rem,2.6vw,3rem);
+    border-radius:1.4rem;
+  }
+  #jp-stage.jp-fs #jp-cat,
+  #jp-stage:fullscreen #jp-cat,
+  #jp-stage:-webkit-full-screen #jp-cat{
+    font-size:clamp(.8rem,1.7vh,1.2rem);
+    padding:clamp(.3rem,.8vh,.55rem) clamp(.8rem,1.6vw,1.35rem);
+  }
+  #jp-stage.jp-fs #jp-val,
+  #jp-stage:fullscreen #jp-val,
+  #jp-stage:-webkit-full-screen #jp-val,
+  #jp-stage.jp-fs #jp-time,
+  #jp-stage:fullscreen #jp-time,
+  #jp-stage:-webkit-full-screen #jp-time{
+    font-size:clamp(1rem,2.3vh,1.7rem);
+  }
+  #jp-stage.jp-fs #jp-answering,
+  #jp-stage:fullscreen #jp-answering,
+  #jp-stage:-webkit-full-screen #jp-answering{
+    font-size:clamp(.85rem,1.8vh,1.15rem);
+    padding:.35rem 1rem;
+  }
+  #jp-stage.jp-fs #jp-banner p,
+  #jp-stage:fullscreen #jp-banner p,
+  #jp-stage:-webkit-full-screen #jp-banner p{
+    font-size:clamp(.9rem,1.9vh,1.25rem);
+  }
+  #jp-stage.jp-fs #jp-q,
+  #jp-stage:fullscreen #jp-q,
+  #jp-stage:-webkit-full-screen #jp-q{
+    font-size:clamp(1.35rem,3.2vh,2.4rem);
+    margin-bottom:clamp(.9rem,2.2vh,1.6rem);
+    overflow-wrap:break-word;
+  }
+  #jp-stage.jp-fs #jp-opts,
+  #jp-stage:fullscreen #jp-opts,
+  #jp-stage:-webkit-full-screen #jp-opts{
+    gap:clamp(.55rem,1.4vh,1rem);
+  }
+  #jp-stage.jp-fs #jp-opts .jp-opt,
+  #jp-stage:fullscreen #jp-opts .jp-opt,
+  #jp-stage:-webkit-full-screen #jp-opts .jp-opt{
+    display:flex;align-items:center;
+    min-height:clamp(2.6rem,7.5vh,5rem);
+    padding:clamp(.6rem,1.5vh,1.2rem) clamp(.9rem,2vw,1.7rem);
+    font-size:clamp(1.15rem,2.8vh,2.3rem);
+    line-height:1.3;
+    border-width:3px;
+    overflow-wrap:anywhere;
+  }
+  #jp-stage.jp-fs #jp-expl-wrap,
+  #jp-stage:fullscreen #jp-expl-wrap,
+  #jp-stage:-webkit-full-screen #jp-expl-wrap{
+    font-size:clamp(1rem,2.1vh,1.5rem);
+    padding:clamp(.7rem,1.6vh,1.1rem) clamp(.8rem,1.8vw,1.3rem);
+  }
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body class="bg-slate-50">
+
+<a href="jur_familj.html" onclick="smartBack(event)" class="fixed top-4 left-4 z-50 text-sm font-medium text-slate-500 hover:text-teal-700 bg-white/90 px-3 py-2 rounded-xl shadow-sm transition-colors">← Tillbaka till området</a>
+
+<div class="max-w-5xl mx-auto px-5 py-8">
+
+  <div class="border-l-4 pl-4 mb-8" style="border-color: #0d9488;">
+    <p class="text-xs font-bold uppercase tracking-widest mb-1" style="color:#0d9488">Juridik nivå 1 · Block 2 · Spel</p>
+    <h1 class="text-3xl md:text-4xl font-bold italic text-slate-900">Jeopardy – Familje- och arvsrätt</h1>
+    <p class="text-slate-500 text-sm mt-1 italic">Två omgångar · 100–500p och 600–1000p</p>
+  </div>
+
+  <!-- ══ SETUP ══ -->
+  <div id="jp-setup" class="max-w-sm mx-auto bg-white border-2 border-slate-200 rounded-2xl p-6">
+    <h2 class="font-bold text-xl mb-4 text-center">Vilka lag tävlar?</h2>
+    <div id="jp-team-inputs" class="space-y-2 mb-3"></div>
+    <div class="flex justify-center gap-5 mb-5 text-xs font-bold text-teal-700">
+      <button id="jp-add" onclick="jpChangeTeamCount(1)">+ Lägg till lag</button>
+      <button id="jp-remove" onclick="jpChangeTeamCount(-1)">− Ta bort lag</button>
+    </div>
+    <button onclick="jpStartGame()" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold uppercase tracking-wide text-sm hover:bg-slate-700">Starta spelet</button>
+  </div>
+
+  <!-- ══ SCEN ══ -->
+  <div id="jp-stage" class="hidden">
+
+    <div class="flex items-center gap-3 px-4 pt-3 pb-1">
+      <p class="text-slate-400 text-[11px] uppercase tracking-[.2em] font-bold truncate">Familje- och arvsrätt</p>
+      <span id="jp-round" class="px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wide whitespace-nowrap"></span>
+      <span class="flex-1"></span>
+      <button onclick="jpShowRules(false)" class="text-slate-400 hover:text-white text-xs font-bold">Regler</button>
+      <button onclick="jpNewGame()" class="text-slate-400 hover:text-white text-xs font-bold">Nytt spel</button>
+      <button id="jp-fsbtn" onclick="jpToggleFullscreen()" class="bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-lg">⛶ Helskärm</button>
+    </div>
+
+    <p id="jp-turn" class="text-center font-bold px-4 pb-2"></p>
+
+    <div id="jp-board"></div>
+    <div id="jp-teams"></div>
+
+    <!-- Spelregler -->
+    <div id="jp-rules" class="hidden absolute inset-0 z-[55] items-center justify-center p-6" style="background:rgba(4,8,18,.94)">
+      <div class="bg-white rounded-2xl w-full max-w-lg p-6 max-h-[92%] overflow-y-auto">
+        <h2 class="font-bold text-2xl mb-4 text-center">Så funkar det</h2>
+        <ul class="space-y-2 text-sm text-slate-700 mb-4 list-disc pl-5 leading-snug">
+          <li><strong>Två omgångar.</strong> Först 4 kategorier med 100–500p. När brädet är tomt kommer en mellanskärm där du kan starta omgång 2 (nya kategorier, 600–1000p) eller avsluta spelet om tiden är slut.</li>
+          <li><strong>Fast turordning.</strong> Lagen väljer ruta i tur och ordning – Lag 1, Lag 2, Lag 3, Lag 1 igen. Ordningen ändras aldrig, oavsett om laget svarar rätt eller fel.</li>
+          <li><strong>Rätt svar ger poäng, inte turen.</strong> Ett lag kan alltså aldrig ta flera rutor i rad.</li>
+          <li><strong>Stöld ger inte turen.</strong> Svarar ett lag fel går frågan vidare till nästa lag för halva poängen. Det laget kan ta poängen – men väljer ändå inte nästa fråga. Rotationen rullar på som vanligt.</li>
+          <li><strong>Längre tid på svårare frågor.</strong> 100–300p ger 45 sekunder, 400–700p ger 60 och 800–1000p ger 75. Ett stulet försök har 20 sekunder, eftersom frågan redan är uppläst.</li>
+          <li>Laget säger sitt svar högt — du klickar på det alternativ de väljer.</li>
+          <li>Har alla lag svarat fel visas rätt svar automatiskt. Ingen får poäng.</li>
+          <li><strong>Du behöver inte kunna ämnet</strong> — spelet rättar själv och visar en förklaring du kan läsa upp.</li>
+        </ul>
+        <p id="jp-rules-start" class="text-center font-bold mb-4" style="font-size:clamp(.9rem,2.2vh,1.15rem)"></p>
+        <button onclick="jpHideRules()" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold uppercase tracking-wide text-sm hover:bg-slate-700">Kör igång</button>
+      </div>
+    </div>
+
+    <!-- Frågemodal -->
+    <div id="jp-modal">
+      <div class="jp-card" id="jp-card">
+        <div class="flex items-center gap-3 mb-3">
+          <span id="jp-cat" class="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide text-white"></span>
+          <span id="jp-val" class="num font-bold text-slate-400"></span>
+          <span class="flex-1"></span>
+          <span id="jp-time" class="num text-sm font-bold text-slate-400">45</span>
+        </div>
+        <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden mb-4">
+          <div id="jp-bar" class="jp-bar h-full" style="width:100%"></div>
+        </div>
+
+        <div id="jp-answering-wrap" class="mb-3">
+          <span id="jp-answering" class="px-3 py-1 rounded-full text-xs font-bold text-white"></span>
+        </div>
+
+        <div id="jp-banner" class="hidden mb-3 text-center">
+          <p class="text-sm font-bold text-amber-800 bg-amber-50 border border-amber-300 rounded-lg py-2 px-3 inline-block"></p>
+        </div>
+
+        <p id="jp-q" class="font-bold text-slate-900 mb-4 leading-snug"></p>
+        <div id="jp-opts" class="grid gap-2 mb-3"></div>
+
+        <div id="jp-expl-wrap" class="hidden border-l-4 rounded-r-lg p-3 mb-3 text-sm text-slate-700">
+          <p class="font-bold text-[11px] uppercase tracking-wide mb-1" id="jp-expl-label">Förklaring</p>
+          <p id="jp-expl"></p>
+        </div>
+
+        <div id="jp-actions" class="flex justify-center gap-5 text-xs font-bold pt-2 border-t border-slate-100">
+          <button id="jp-reveal-btn" onclick="jpRevealAnswer()" class="text-teal-700">Visa svar</button>
+          <button id="jp-close-btn" onclick="jpCloseModal()" class="text-slate-400">Stäng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mellanskärm mellan omgångarna -->
+    <div id="jp-inter" class="hidden absolute inset-0 z-[58] items-center justify-center p-6" style="background:rgba(4,8,18,.94)">
+      <div class="text-center w-full max-w-md">
+        <p class="text-slate-400 text-xs uppercase tracking-[.25em] font-bold mb-4">Omgång 1 klar</p>
+        <div id="jp-inter-list" class="space-y-2 mb-5"></div>
+        <p id="jp-inter-next" class="font-bold mb-5" style="font-size:clamp(.9rem,2.2vh,1.15rem)"></p>
+        <div class="flex flex-col gap-3">
+          <button onclick="jpStartRound2()" class="bg-white text-slate-900 px-6 py-3 rounded-xl font-bold text-sm uppercase tracking-wide">Starta omgång 2 · 600–1000p</button>
+          <button onclick="jpShowEnd()" class="text-slate-400 hover:text-white text-xs font-bold">Avsluta spelet och visa slutställning</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slutresultat -->
+    <div id="jp-end" class="hidden absolute inset-0 z-[60] items-center justify-center p-6" style="background:rgba(4,8,18,.94)">
+      <div class="text-center">
+        <p class="text-slate-400 text-xs uppercase tracking-[.25em] font-bold mb-4">Slutresultat</p>
+        <div id="jp-end-list" class="space-y-2 mb-6"></div>
+        <button onclick="jpNewGame()" class="bg-white text-slate-900 px-6 py-2.5 rounded-xl font-bold text-sm">Spela igen</button>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="mt-16 text-center border-t border-slate-200 pt-8">
+    <p class="text-slate-400 text-xs uppercase tracking-[0.2em] font-black italic">Designad av John</p>
+  </footer>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// TILLBAKA-NAVIGERING
+// ════════════════════════════════════════════════════════════
+function smartBack(e) {
+  if (e) e.preventDefault();
+  var ref = document.referrer;
+  if (ref) {
+    try {
+      if (new URL(ref).origin === window.location.origin) {
+        history.back();
+        return;
+      }
+    } catch (err) {}
+  }
+  window.location.href = 'jur_familj.html';
+}
+</script>
+
+<script>
+/* ════════ DATA ════════ */
+
+/* Lagfärgerna är fasta genom hela spelet och frikopplade från
+   kategorifärgerna – annars skulle lagen byta färg i omgång 2. */
+const JP_TEAM_COLORS = ['#06b6d4','#a855f7','#f59e0b','#f43f5e'];
+
+/* Tid i sekunder när en fråga går vidare till nästa lag. Kortare,
+   eftersom frågan redan är uppläst. */
+const JP_STEAL_TIME = 20;
+
+const JP_ROUNDS = [
+{
+  label:'Omgång 1 · 100–500p',
+  cats:[
+  { name:'Sambo', color:'#06b6d4', rgb:'6,182,212', qs:[
+    { v:100, q:'Hur länge bör ett par ha bott ihop för att räknas som sambor?',
+      opts:['Åtminstone ett halvår','Åtminstone ett helt år','Åtminstone två hela år','Åtminstone fem hela år'],
+      correct:0, expl:'Sambor ska enligt sambolagen bo stadigvarande tillsammans, och det brukar betyda åtminstone ett halvår. De ska också vara ett par och ha gemensamt hushåll.' },
+    { v:200, q:'Vad är samboegendom?',
+      opts:['All egendom som samborna äger när de flyttar isär','Bara saker som båda samborna har betalat hälften av','Bara den gemensamma bostaden, inte möbler och bohag','Bostad och bohag som skaffats för gemensam användning'],
+      correct:3, expl:'Samboegendom är bostad och bohag, till exempel möbler och hushållsmaskiner, som skaffats för att användas gemensamt. Det som en sambo ägde redan innan räknas inte dit.' },
+    { v:300, q:'Sambolagen är dispositiv. Vad innebär det?',
+      opts:['Reglerna gäller bara sambor som har gemensamma barn','Bodelningen måste alltid godkännas av en tingsrätt','Samborna kan avtala bort lagens regler om bodelning','Samborna måste registrera sitt förhållande hos en myndighet'],
+      correct:2, expl:'Dispositiv betyder att lagen går att avtala bort. Sambor kan skriva ett samboavtal och själva bestämma hur egendomen ska delas om de separerar.' },
+    { v:400, q:'Varför infördes sambolagen i slutet av 1980-talet?',
+      opts:['För att göra det enklare för sambor att adoptera barn','För att skydda den ekonomiskt svagare parten vid en separation','För att ge sambor samma arvsrätt som gifta par har','För att sambor skulle få underhållsskyldighet mot varandra'],
+      correct:1, expl:'Sambolagen kom till för att skydda den ekonomiskt svagare parten vid en separation. Innan dess delades bara det som paret hade köpt och betalat tillsammans.' },
+    { v:500, q:'Samborna Saga och Noah separerar. Barnen ska bo hos Saga. Vem får ta över hyreslägenheten?',
+      opts:['Saga, eftersom hon har störst behov av bostaden','Noah, om det är han som står på hyreskontraktet','Den av dem som har bott längst tid i lägenheten','Ingen, eftersom hyresrätter aldrig är samboegendom'],
+      correct:0, expl:'Den som har störst behov av bostaden får ta över den, och det är oftast den som barnen bor mest hos. Det kallas kvarsittanderätt.' }
+  ]},
+  { name:'Äktenskap och bodelning', color:'#a855f7', rgb:'168,85,247', qs:[
+    { v:100, q:'Vad kallas makars egendom som delas vid en bodelning?',
+      opts:['Kvarlåtenskap','Giftorättsgods','Samboegendom','Enskild egendom'],
+      correct:1, expl:'Giftorättsgods är den egendom som delas mellan makarna vid en bodelning. All egendom i ett äktenskap är giftorättsgods om den inte är enskild egendom.' },
+    { v:200, q:'Vad kallas kontrollen hos Skatteverket som ett par måste klara innan de gifter sig?',
+      opts:['Hindersprövning','Bouppteckning','Äktenskapsförord','Delgivning'],
+      correct:0, expl:'Vid hindersprövningen kontrollerar Skatteverket att det inte finns något hinder för äktenskapet, till exempel att någon är under 18 år eller redan gift.' },
+    { v:300, q:'Vad är enskild egendom i ett äktenskap?',
+      opts:['Egendom som makarna äger ihop och som alltid delas','Egendom som en make hade med sig in i äktenskapet','Egendom som är värd mindre än makens egna skulder','Egendom som en make äger själv och som inte delas'],
+      correct:3, expl:'Enskild egendom hålls utanför bodelningen. Egendom blir enskild genom äktenskapsförord, eller genom gåva eller testamente med ett sådant villkor – inte bara för att man ägde den före bröllopet.' },
+    { v:400, q:'Varför skriver vissa makar ett äktenskapsförord?',
+      opts:['För att makarna ska få ärva varandra före barnen','För att slippa underhållsskyldighet under äktenskapet','För att viss egendom ska bli enskild och inte delas','För att kunna skiljas direkt utan någon betänketid'],
+      correct:2, expl:'Ett äktenskapsförord är ett avtal om att viss egendom, eller all, ska vara enskild. Den egendomen delas då inte vid en skilsmässa.' },
+    { v:500, q:'Alva vill skiljas, men maken Jonatan vägrar. De har inga barn. Vad gäller?',
+      opts:['Tolv månaders betänketid, sedan upplöses det av sig självt','Sex månaders betänketid, sedan kan Alva fullfölja','Äktenskapet upplöses direkt när Alva har ansökt','Skilsmässan kräver att Jonatan också skriver under'],
+      correct:1, expl:'Om bara den ena maken vill skiljas krävs sex månaders betänketid. Därefter måste Alva själv begära att skilsmässan fullföljs – Jonatan kan inte stoppa den.' }
+  ]},
+  { name:'Föräldrar och barn', color:'#f59e0b', rgb:'245,158,11', qs:[
+    { v:100, q:'Vilket år blev FN:s barnkonvention svensk lag?',
+      opts:['År 1990','År 2009','År 2020','År 2010'],
+      correct:2, expl:'Barnkonventionen blev svensk lag år 2020. Det ger barnperspektivet en starkare ställning när beslut som rör barn ska fattas.' },
+    { v:200, q:'Vad kallas regeln att en gift kvinnas make antas vara far till hennes barn?',
+      opts:['Hindersprövning','Faderskapspresumtion','Föräldraskapsbekräftelse','Underhållsskyldighet'],
+      correct:1, expl:'Faderskapspresumtionen innebär att lagen utgår från att den man mamman är gift med är barnets far. Inget test eller intyg behövs.' },
+    { v:300, q:'Vad innebär principen om barnets bästa?',
+      opts:['Barnets trygghet väger tyngst i beslut som rör barnet','Barnet bestämmer själv i alla frågor som rör barnet','Barnet ska alltid bo kvar hos mamman vid en separation','Barnets föräldrar ska alltid ha gemensam vårdnad'],
+      correct:0, expl:'Barnets bästa betyder att barnets trygghet och säkerhet ska vara utgångspunkten för beslutet – inte vad föräldrarna själva önskar.' },
+    { v:400, q:'Ett barn föds av ogifta föräldrar. Varför blir mamman först ensam vårdnadshavare?',
+      opts:['Ogifta fäder får enligt lagen aldrig bli vårdnadshavare','Vårdnaden delas först när barnets namn har registrerats','Gemensam vårdnad kräver att föräldrarna bor på samma adress','Partnerns föräldraskap måste bekräftas innan vårdnaden delas'],
+      correct:3, expl:'För ogifta gäller ingen faderskapspresumtion. Partnern måste först bekräfta föräldraskapet, och sedan ansöker föräldrarna om gemensam vårdnad.' },
+    { v:500, q:'Två tolvåringar krossar fönster på en skola. Vem kan få betala för skadan?',
+      opts:['Barnen själva, men först när de fyllt arton år','Socialtjänsten, som ansvarar för barn som far illa','Barnens vårdnadshavare, som har tillsynsansvar','Barnens klasslärare, som har ansvar på skoltid'],
+      correct:2, expl:'Vårdnadshavare har tillsynsansvar. De ska se till att barnet inte orsakar skada, och de kan därför få betala när barnet förstör något.' }
+  ]},
+  { name:'Arv och testamente', color:'#f43f5e', rgb:'244,63,94', qs:[
+    { v:100, q:'Vad kallas den avlidnes barn och barnbarn i arvsrätten?',
+      opts:['Testamentstagare','Dödsbodelägare','Förrättningsmän','Bröstarvingar'],
+      correct:3, expl:'Barn och barnbarn till den som har dött kallas bröstarvingar. De ärver i första hand.' },
+    { v:200, q:'Vad kallas förteckningen över en avliden persons tillgångar och skulder?',
+      opts:['Testamente','Dödsboanmälan','Bouppteckning','Arvskifte'],
+      correct:2, expl:'Bouppteckningen är en lista över den dödes tillgångar och skulder. Den ska göras inom tre månader och registreras hos Skatteverket.' },
+    { v:300, q:'Vad är laglotten?',
+      opts:['Den del av arvet som går till Allmänna arvsfonden','Halva arvslotten, som barnen alltid har rätt till','Hela arvslotten, som barnen får om testamente saknas','Det belopp som efterlevande make alltid får behålla'],
+      correct:1, expl:'Laglotten är hälften av det ett barn skulle ha ärvt utan testamente. Den delen kan en förälder aldrig testamentera bort.' },
+    { v:400, q:'Varför ärver en efterlevande make före de gemensamma barnen?',
+      opts:['För att den efterlevande inte ska drabbas för hårt ekonomiskt','För att gemensamma barn saknar rätt till någon laglott','För att barn under arton år inte får ta emot något arv','För att maken annars måste betala den dödes alla skulder'],
+      correct:0, expl:'Makar lever i en ekonomisk gemenskap, och den som blir kvar ska inte drabbas för hårt. De gemensamma barnen får därför vänta på sitt arv tills båda föräldrarna har dött.' },
+    { v:500, q:'Olle skriver sitt testamente hemma och undertecknar det ensam, utan vittnen. Är det giltigt?',
+      opts:['Ja, om det är skrivet och undertecknat för hand','Ja, om det lämnas in till Skatteverket i tid','Nej, ett testamente måste skrivas av en jurist','Nej, två vittnen måste vara närvarande samtidigt'],
+      correct:3, expl:'Ett testamente ska vara skriftligt, daterat och bevittnat av två personer som är närvarande samtidigt. Utan vittnen uppfyller det inte formkraven.' }
+  ]}
+  ]
+},
+{
+  label:'Omgång 2 · 600–1000p',
+  cats:[
+  { name:'Sambo eller gift?', color:'#34d399', rgb:'52,211,153', qs:[
+    { v:600, q:'Ett ogift par separerar. Han köpte sin bil före förhållandet. Ingår bilen i bodelningen?',
+      opts:['Ja, om paret har bott ihop i minst fem år','Nej, sambor gör aldrig någon bodelning alls','Nej, bara gemensam bostad och bohag delas','Ja, all egendom delas lika när sambor separerar'],
+      correct:2, expl:'Sambor delar bara samboegendom, alltså bostad och bohag som skaffats för gemensam användning. En bil räknas inte dit.' },
+    { v:700, q:'Leo tjänar bra. Partnern Sam studerar och har ont om pengar. När är Leo enligt lag skyldig att skjuta till pengar?',
+      opts:['Inte i något fall, var och en står för sitt','Bara om de är gifta med varandra','Bara om de är sambor med samboavtal','I båda fallen, både gifta och sambor'],
+      correct:1, expl:'Makar har underhållsskyldighet och ska ha samma levnadsstandard. Sambor har ingen sådan skyldighet mot varandra.' },
+    { v:800, q:'Ogifta Frida och Sixten flyttar isär. De tvistar om soffan och om var dottern ska bo. Vilka lagar gäller?',
+      opts:['Sambolagen för soffan och föräldrabalken för dottern','Äktenskapsbalken för soffan och föräldrabalken för dottern','Sambolagen för soffan och socialtjänstlagen för dottern','Äktenskapsbalken för soffan och socialtjänstlagen för dottern'],
+      correct:0, expl:'De är ogifta och alltså sambor, så sambolagen gäller för bohaget. Frågor om barns boende och vårdnad regleras i föräldrabalken, oavsett om föräldrarna är gifta eller inte.' },
+    { v:900, q:'Två sambor med gemensamma barn vill att den som lever längst ska ärva före barnen. Vad krävs?',
+      opts:['Ett samboavtal räcker, om båda har skrivit under','Ett testamente räcker, då blir barnen helt utan arv','Inget krävs, sambor ärver varandra efter tio år','De måste gifta sig, ett testamente räcker inte helt'],
+      correct:3, expl:'Sambor ärver inte varandra. Med testamente har barnen ändå rätt till sin laglott direkt. Bara makar ärver före de gemensamma barnen.' },
+    { v:1000, q:'Ett sambopar och ett gift par skriver varsitt avtal om egendomen. Alla skriver under, ingen registrerar något. Vilka avtal gäller?',
+      opts:['Båda gäller, underskrifterna räcker alltid','Inget gäller, båda måste registreras först','Bara samboavtalet, förordet måste registreras','Bara förordet, samboavtalet måste registreras'],
+      correct:2, expl:'Ett samboavtal gäller när det är skriftligt och undertecknat av båda. Ett äktenskapsförord gäller först när det dessutom har registrerats hos Skatteverket.' }
+  ]},
+  { name:'Bodelning i praktiken', color:'#818cf8', rgb:'129,140,248', qs:[
+    { v:600, q:'Vera och Otto skiljs. Otto har ärvt en klocka som enligt testamentet är hans enskilda egendom. Ingår den i bodelningen?',
+      opts:['Ja, allt som makarna äger ska delas lika','Ja, arv räknas alltid som giftorättsgods','Nej, arv ingår aldrig i någon bodelning','Nej, enskild egendom hålls utanför bodelningen'],
+      correct:3, expl:'Klockan är enskild egendom eftersom det står så i testamentet, och enskild egendom delas inte. Utan det villkoret hade även ett arv varit giftorättsgods.' },
+    { v:700, q:'Makarna Edit och Ruben har ansökt om skilsmässa. Under betänketiden köper Edit en båt. Ingår den i bodelningen?',
+      opts:['Ja, men bara om båten köptes för gemensamma pengar','Nej, fritidsbåtar är alltid enskild egendom','Nej, det som köps efter ansökan räknas inte med','Ja, allt som köps innan skilsmässan är klar delas'],
+      correct:2, expl:'Egendom som skaffas efter ansökan om skilsmässa eller under betänketiden ingår inte i bodelningen.' },
+    { v:800, q:'Efter avdrag för skulder har Hanna giftorättsgods för 800 000 kr och maken Viktor för 200 000 kr. Vad händer i bodelningen?',
+      opts:['Hanna betalar ingenting till Viktor','Hanna betalar 300 000 kr till Viktor','Hanna betalar 400 000 kr till Viktor','Hanna betalar 600 000 kr till Viktor'],
+      correct:1, expl:'Giftorättsgodset läggs ihop till 1 000 000 kr och delas lika, 500 000 kr var. Hanna har 800 000 kr och betalar därför 300 000 kr till Viktor.' },
+    { v:900, q:'Mio har tillgångar för 100 000 kr men skulder på 300 000 kr. Hustrun Stina har 400 000 kr och inga skulder. Hur delas det?',
+      opts:['Mios del sätts till noll, Stinas 400 000 kr delas lika','Mios skuld dras av först, sedan delas 200 000 kr lika','Stina behåller allt, eftersom Mio bara har skulder','Stina får betala halva Mios skuld efter delningen'],
+      correct:0, expl:'Den som har större skulder än tillgångar får sitt giftorättsgods satt till noll. Stinas 400 000 kr delas lika, alltså 200 000 kr var. Mios skulder är fortfarande hans egna.' },
+    { v:1000, q:'Loke och Ronja skiljs efter två års äktenskap. Ronja är mycket rikare och begär jämkning. Hur stor del av giftorättsgodset delas?',
+      opts:['Hälften, eftersom äktenskapet varade i två år','Allt, jämkning gäller först efter fem års äktenskap','Inget, korta äktenskap ger ingen rätt till delning','Två femtedelar, en femtedel per år som gift'],
+      correct:3, expl:'Vid jämkning efter ett kort äktenskap ger varje år rätt till en femtedel av giftorättsgodset. Två år ger två femtedelar, och resten behåller var och en själv.' }
+  ]},
+  { name:'Vårdnad i praktiken', color:'#fb923c', rgb:'251,146,60', qs:[
+    { v:600, q:'Föräldrarna har gemensam vårdnad. Mamman vill flytta 60 mil bort med sonen, men pappan säger nej. Vad gäller?',
+      opts:['Hon får inte ta med sonen utan pappans medgivande','Hon får flytta med sonen om han bor mest hos henne','Socialtjänsten avgör om flytten ska godkännas','Sonen bestämmer själv om han har fyllt tolv år'],
+      correct:0, expl:'Vid gemensam vårdnad ska föräldrarna fatta beslutet tillsammans. Utan pappans medgivande får hon inte flytta med sonen – då återstår att ansöka om ensam vårdnad.' },
+    { v:700, q:'Malte är 19 år och går sista året på gymnasiet. Vad gäller för hans föräldrar?',
+      opts:['Både vårdnaden och försörjningsplikten upphörde vid 18','Både vårdnaden och försörjningsplikten gäller till 21','Försörjningsplikten har upphört, men vårdnaden finns kvar','Vårdnaden har upphört, men försörjningsplikten finns kvar'],
+      correct:3, expl:'Vårdnaden upphör när barnet fyller 18 år. Försörjningsplikten finns kvar så länge barnet går i gymnasiet, dock längst till 21 år.' },
+    { v:800, q:'Barnen bor hos mamma. Pappa ska betala varje månad men slutar. Vad heter hans betalning, och vem betalar i stället?',
+      opts:['Underhållsbidrag, och socialtjänsten betalar försörjningsstöd','Underhållsstöd, och socialtjänsten betalar underhållsbidrag','Underhållsbidrag, och Försäkringskassan betalar underhållsstöd','Underhållsstöd, och Försäkringskassan betalar underhållsbidrag'],
+      correct:2, expl:'Föräldern som barnet inte bor hos betalar underhållsbidrag. Sköts inte betalningen kan boendeföräldern få underhållsstöd från Försäkringskassan.' },
+    { v:900, q:'Skilda föräldrar kan inte enas om umgänget. I vilken ordning försöker man lösa det?',
+      opts:['Först medling hos Skatteverket, sist beslut av socialtjänsten','Först avtal med socialtjänstens hjälp, sist beslut i domstol','Först beslut av socialtjänsten, sedan överklagande till domstol','Först beslut i domstol, sedan avtal med socialtjänstens hjälp'],
+      correct:1, expl:'Föräldrarna ska i första hand komma överens själva. Socialtjänsten kan hjälpa dem att skriva ett avtal men bestämmer inte – sista utvägen är att en domstol beslutar.' },
+    { v:1000, q:'En hovrätt gav pappan ensam vårdnad, trots att utredningen ville att flickan skulle bo kvar hos mamman. Vad vägde tyngst för hovrätten?',
+      opts:['Att flickan skulle få fungerande kontakt med båda föräldrarna','Att flickan skulle få kontinuitet och bo kvar som tidigare','Att pappan hade bättre ekonomi och en större bostad','Att mamman tidigare hade blivit dömd för ett brott'],
+      correct:0, expl:'Mamman hade stängt ute pappan från dotterns vardag. Hovrätten ansåg att kontakt med båda föräldrarna var viktigare för barnets bästa än att allt förblev som förut.' }
+  ]},
+  { name:'Vem ärver?', color:'#e879f9', rgb:'232,121,249', qs:[
+    { v:600, q:'Barnlöse Idris dör utan testamente. Hans sambo Maja och hans föräldrar lever. Vem ärver?',
+      opts:['Allmänna arvsfonden, eftersom Idris var ogift','Föräldrarna, eftersom sambor inte ärver varandra','Sambon Maja, eftersom de hade gemensamt hushåll','Maja och föräldrarna, som delar lika på arvet'],
+      correct:1, expl:'Sambor ärver inte varandra om det inte finns ett testamente. Idris har inga barn, och då ärver hans föräldrar enligt den legala arvsordningen.' },
+    { v:700, q:'Morfar dör. Hans dotter är redan död men har två barn. Hans son lever. Hur fördelas arvet?',
+      opts:['Sonen får hälften, barnbarnen delar på hälften','Sonen får allt, eftersom han är närmast släkt','Sonen och barnbarnen får en tredjedel var','Sonen får hälften, resten går till arvsfonden'],
+      correct:0, expl:'Barnbarnen träder in i sin döda mammas ställe och delar på hennes halva. Det kallas istadarätt.' },
+    { v:800, q:'Gifte Anton dör. Han har dottern Liv från ett tidigare förhållande och sonen Max med hustrun. Vem får ut sitt arv direkt?',
+      opts:['Max direkt, medan Liv får vänta på efterarv','Båda barnen får ut sina arv på en gång','Inget av barnen, hustrun ärver allt först','Liv direkt, medan Max får vänta på efterarv'],
+      correct:3, expl:'Liv är särkullbarn, alltså inte hustruns barn, och har rätt att få ut sitt arv direkt. Max är gemensamt barn och får vänta tills även hans mamma har dött.' },
+    { v:900, q:'En gift man dör. Vad görs först, och enligt vilken lag?',
+      opts:['Bara arv enligt ärvdabalken, bodelning görs bara vid skilsmässa','Bara bodelning enligt äktenskapsbalken, makar ärver alltid allt','Bodelning enligt äktenskapsbalken, sedan arv enligt ärvdabalken','Arv enligt ärvdabalken, sedan bodelning enligt äktenskapsbalken'],
+      correct:2, expl:'Först görs en bodelning, så att den efterlevande får sin halva av giftorättsgodset. Bara den dödes halva är arv, och den fördelas enligt ärvdabalken.' },
+    { v:1000, q:'Ogifta Gun har två barn och 800 000 kr. Hon testamenterar allt till en djurförening. Hur mycket kan barnen kräva tillsammans?',
+      opts:['Ingenting, testamentet går före','400 000 kr, alltså sina laglotter','800 000 kr, testamentet är ogiltigt','200 000 kr, en laglott att dela på'],
+      correct:1, expl:'Utan testamente hade barnen ärvt 400 000 kr var. Laglotten är hälften, alltså 200 000 kr var och 400 000 kr tillsammans. Resten får föreningen.' }
+  ]}
+  ]
+}
+];
+
+/* Den aktiva omgångens kategorier. Pekas om av jpStartRound(). */
+let JP_CATEGORIES = JP_ROUNDS[0].cats;
+
+/* ════════ SETUP ════════ */
+let jpTeamCount = 2, jpTeams = [], jpUsed = 0, jpTurn = null, jpRound = 0;
+
+function jpTeamColor(i){ return JP_TEAM_COLORS[i%JP_TEAM_COLORS.length]; }
+
+function jpRenderRound(){
+  const el=document.getElementById('jp-round');
+  el.textContent=JP_ROUNDS[jpRound].label;
+  el.style.background=JP_CATEGORIES[0].color;
+  el.style.color='#0b1120';
+}
+
+function jpRenderTurn(){
+  const el=document.getElementById('jp-turn');
+  if(jpTurn===null||!jpTeams[jpTurn]){ el.textContent=''; return; }
+  el.textContent=jpTeams[jpTurn].name+' väljer nästa fråga';
+  el.style.color=jpTeamColor(jpTurn);
+}
+
+function jpRenderTeamInputs(){
+  const wrap = document.getElementById('jp-team-inputs');
+  wrap.innerHTML = '';
+  for(let i=0;i<jpTeamCount;i++){
+    const inp = document.createElement('input');
+    inp.type='text'; inp.id='jp-team-'+i; inp.placeholder='Lag '+(i+1);
+    inp.className='w-full p-2.5 border-2 border-slate-200 rounded-lg text-sm outline-none focus:border-slate-900';
+    wrap.appendChild(inp);
+  }
+  document.getElementById('jp-remove').style.visibility = jpTeamCount<=2?'hidden':'visible';
+  document.getElementById('jp-add').style.visibility    = jpTeamCount>=4?'hidden':'visible';
+}
+function jpChangeTeamCount(d){ jpTeamCount=Math.min(4,Math.max(2,jpTeamCount+d)); jpRenderTeamInputs(); }
+
+function jpStartGame(){
+  jpTeams=[];
+  for(let i=0;i<jpTeamCount;i++){
+    const v=document.getElementById('jp-team-'+i).value.trim();
+    jpTeams.push({name:v||('Lag '+(i+1)),score:0});
+  }
+  jpTurn=Math.floor(Math.random()*jpTeams.length);
+  document.getElementById('jp-setup').classList.add('hidden');
+  document.getElementById('jp-stage').classList.remove('hidden');
+  jpHideOverlay('jp-end');
+  jpHideOverlay('jp-inter');
+  document.getElementById('jp-teams').style.setProperty('--tc', jpTeams.length);
+  jpRenderTeams();
+  jpStartRound(0);
+  jpShowRules(true);
+}
+function jpNewGame(){
+  jpTurn=null;
+  jpExitFullscreen();
+  jpHideRules();
+  jpHideOverlay('jp-end');
+  jpHideOverlay('jp-inter');
+  document.getElementById('jp-modal').classList.remove('on');
+  document.getElementById('jp-stage').classList.add('hidden');
+  document.getElementById('jp-setup').classList.remove('hidden');
+}
+
+function jpHideOverlay(id){
+  const el=document.getElementById(id);
+  el.classList.add('hidden'); el.style.display='none';
+}
+function jpIsOpen(id){ return document.getElementById(id).style.display==='flex'; }
+
+/* ════════ OMGÅNGAR ════════ */
+/* jpTurn rörs aldrig här – rotationen fortsätter där omgång 1 slutade. */
+function jpStartRound(n){
+  jpRound=n;
+  JP_CATEGORIES=JP_ROUNDS[n].cats;
+  jpUsed=0;
+  jpBuildBoard();
+  jpRenderRound();
+  jpRenderTurn();
+}
+function jpStartRound2(){
+  jpHideOverlay('jp-inter');
+  jpStartRound(1);
+}
+function jpShowIntermission(){
+  const list=document.getElementById('jp-inter-list'); list.innerHTML='';
+  jpTeams.map((t,i)=>({t,i})).sort((a,b)=>b.t.score-a.t.score).forEach((e,pos)=>{
+    const row=document.createElement('div');
+    row.className='flex items-center gap-4 justify-center';
+    row.innerHTML=`<span class="text-slate-300 font-bold" style="font-size:clamp(.95rem,2.6vh,1.4rem)">${pos+1}. ${e.t.name}</span>
+      <span class="num font-bold" style="color:${jpTeamColor(e.i)};font-size:clamp(1.2rem,3.4vh,2rem)">${e.t.score}</span>`;
+    list.appendChild(row);
+  });
+  const nx=document.getElementById('jp-inter-next');
+  nx.textContent=jpTeams[jpTurn].name+' inleder omgång 2.';
+  nx.style.color=jpTeamColor(jpTurn);
+  const el=document.getElementById('jp-inter');
+  el.classList.remove('hidden'); el.style.display='flex';
+}
+
+/* ════════ SPELREGLER ════════ */
+function jpShowRules(initial){
+  if(jpTurn===null||!jpTeams[jpTurn]) return;
+  const el=document.getElementById('jp-rules-start');
+  el.textContent=jpTeams[jpTurn].name+(initial?' börjar.':' har turen.');
+  el.style.color=jpTeamColor(jpTurn);
+  const r=document.getElementById('jp-rules');
+  r.classList.remove('hidden'); r.style.display='flex';
+}
+function jpHideRules(){ jpHideOverlay('jp-rules'); }
+
+/* ════════ LAG ════════ */
+function jpRenderTeams(){
+  const p=document.getElementById('jp-teams'); p.innerHTML='';
+  jpTeams.forEach((t,i)=>{
+    const c=jpTeamColor(i);
+    const el=document.createElement('div');
+    el.className='jp-team';
+    if(i===jpTurn){
+      el.style.border='2px solid '+c;
+      el.style.background='rgba(255,255,255,.13)';
+    }else{
+      el.style.opacity='.5';
+    }
+    el.innerHTML=`<span class="nm" style="border-left:3px solid ${c};padding-left:.5rem">${t.name}</span>
+      <span class="sc" style="color:${c}">${t.score}</span>
+      <button class="jp-step" onclick="jpAdjust(${i},-100)">−</button>
+      <button class="jp-step" onclick="jpAdjust(${i},100)">+</button>`;
+    p.appendChild(el);
+  });
+}
+function jpAdjust(i,a){ jpTeams[i].score+=a; jpRenderTeams(); }
+
+/* ════════ SPELPLAN ════════ */
+function jpBuildBoard(){
+  const b=document.getElementById('jp-board'); b.innerHTML='';
+  JP_CATEGORIES.forEach(cat=>{
+    const h=document.createElement('div');
+    h.className='jp-head'; h.style.background=cat.color; h.textContent=cat.name;
+    b.appendChild(h);
+  });
+  /* Högsta värdet överst, lägsta nederst. */
+  for(let row=4;row>=0;row--){
+    JP_CATEGORIES.forEach((cat,ci)=>{
+      const q=cat.qs[row];
+      const cell=document.createElement('button');
+      cell.className='jp-cell';
+      cell.style.background=`rgba(${cat.rgb},.13)`;
+      cell.style.color=cat.color;
+      cell.textContent=q.v;
+      cell.onmouseenter=()=>{ if(!cell.classList.contains('jp-used')){cell.style.background=cat.color;cell.style.color='#0b1120';} };
+      cell.onmouseleave=()=>{ if(!cell.classList.contains('jp-used')){cell.style.background=`rgba(${cat.rgb},.13)`;cell.style.color=cat.color;} };
+      cell.onclick=()=>jpOpenQuestion(ci,row,cell);
+      b.appendChild(cell);
+    });
+  }
+}
+
+/* ════════ FRÅGA ════════ */
+let jpCat=null,jpRow=null,jpCell=null,jpOpts=[],jpPicked=null,jpWrong=[],jpRevealed=false,jpTimer=null;
+let jpTime=45,jpTimeTotal=45;
+let jpChooser=null,jpAnswering=null,jpFailed=[];
+let jpValue=0,jpBaseValue=0,jpResolved=false,jpWinner=null;
+
+/* Tiden styrs av frågans ursprungliga poängvärde, inte det halverade. */
+function jpBaseTime(v){ return v<=300 ? 45 : (v<=700 ? 60 : 75); }
+
+function jpLowerValue(){
+  let v=Math.floor(jpValue/2);
+  v=Math.floor(v/50)*50;
+  jpValue=Math.max(50,v);
+}
+function jpRenderValue(old){
+  const el=document.getElementById('jp-val');
+  if(old!==undefined && old!==jpValue){
+    el.innerHTML='<span class="line-through opacity-60">'+old+' p</span> <span class="text-slate-800">'+jpValue+' p</span>';
+  }else{
+    el.textContent=jpValue+' p';
+  }
+}
+
+function jpNextAnswerer(){
+  const n=jpTeams.length;
+  for(let step=1;step<=n;step++){
+    const cand=(jpAnswering+step)%n;
+    if(!jpFailed.includes(cand)) return cand;
+  }
+  return null;
+}
+function jpRenderAnswering(){
+  const el=document.getElementById('jp-answering');
+  el.textContent='Svarar: '+jpTeams[jpAnswering].name;
+  el.style.background=jpTeamColor(jpAnswering);
+}
+
+function jpShuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+function jpOpenQuestion(ci,row,cell){
+  if(cell.classList.contains('jp-used')) return;
+  if(jpIsOpen('jp-rules')||jpIsOpen('jp-inter')||jpIsOpen('jp-end')) return;
+  jpCat=ci; jpRow=row; jpCell=cell;
+  const cat=JP_CATEGORIES[ci], q=cat.qs[row];
+  jpPicked=null; jpWrong=[]; jpRevealed=false; jpResolved=false; jpWinner=null; jpFailed=[];
+  jpChooser=jpTurn; jpAnswering=jpTurn;
+  jpValue=q.v; jpBaseValue=q.v;
+  jpOpts=jpShuffle(q.opts.map((t,i)=>({text:t,isCorrect:i===q.correct})));
+
+  const catEl=document.getElementById('jp-cat');
+  catEl.textContent=cat.name; catEl.style.background=cat.color;
+  jpRenderValue();
+  document.getElementById('jp-q').textContent=q.q;
+  document.getElementById('jp-expl').textContent=q.expl;
+  const ew=document.getElementById('jp-expl-wrap');
+  ew.style.background=`rgba(${cat.rgb},.08)`; ew.style.borderColor=cat.color;
+  document.getElementById('jp-expl-label').style.color=cat.color;
+  document.getElementById('jp-bar').style.background=cat.color;
+  ew.classList.add('hidden');
+  document.getElementById('jp-banner').classList.add('hidden');
+  document.getElementById('jp-actions').classList.remove('hidden');
+  document.getElementById('jp-reveal-btn').classList.remove('hidden');
+  document.getElementById('jp-answering-wrap').classList.remove('hidden');
+  jpRenderAnswering();
+  jpRenderOptions();
+  document.getElementById('jp-modal').classList.add('on');
+  jpStartTimer(jpBaseTime(jpBaseValue));
+}
+
+function jpRenderOptions(){
+  const w=document.getElementById('jp-opts'); w.innerHTML='';
+  const done = jpResolved || jpRevealed;
+  jpOpts.forEach((o,idx)=>{
+    const b=document.createElement('button');
+    let cls='jp-opt', dis=false;
+    if(done && o.isCorrect){ cls+=' jp-correct'; dis=true; }
+    else if(jpWrong.includes(idx)){ cls+=' jp-wrong'; dis=true; }
+    else if(done){ cls+=' opacity-40'; dis=true; }
+    b.className=cls; b.disabled=dis;
+    b.textContent=String.fromCharCode(97+idx)+') '+o.text;
+    b.onclick=()=>jpPick(idx);
+    w.appendChild(b);
+  });
+}
+
+function jpPick(idx){
+  if(jpResolved||jpRevealed) return;
+  if(jpWrong.includes(idx)) return;
+  const o=jpOpts[idx];
+  if(o.isCorrect){
+    clearInterval(jpTimer);
+    jpResolved=true; jpWinner=jpAnswering; jpPicked=idx;
+    jpTeams[jpAnswering].score+=jpValue;
+    /* Strikt rotation: poängen går till det svarande laget, men turen
+       flyttas alltid ett steg från den som VALDE rutan (jpCloseModal). */
+    const next=(jpChooser+1)%jpTeams.length;
+    const stolen = jpAnswering!==jpChooser;
+    jpRenderTeams(); jpRenderOptions();
+    document.getElementById('jp-expl-wrap').classList.remove('hidden');
+    document.getElementById('jp-answering-wrap').classList.add('hidden');
+    document.getElementById('jp-reveal-btn').classList.add('hidden');
+    jpBanner('✓ Rätt – '+jpTeams[jpAnswering].name+' får '+jpValue+' poäng. '
+      +(stolen?'Stöld ger inte turen: ':'')
+      +jpTeams[next].name+' väljer nästa fråga.', jpTeamColor(jpAnswering));
+  }else{
+    jpFailAndAdvance({clickedIdx:idx});
+  }
+}
+
+function jpFailAndAdvance(o){
+  if(o.clickedIdx!==undefined && !jpWrong.includes(o.clickedIdx)) jpWrong.push(o.clickedIdx);
+  if(!jpFailed.includes(jpAnswering)) jpFailed.push(jpAnswering);
+  const old=jpValue; jpLowerValue(); jpRenderValue(old);
+  jpRenderOptions();
+  const next=jpNextAnswerer();
+  if(next===null){
+    clearInterval(jpTimer);
+    jpResolved=true; jpRevealed=true; jpWinner=null;
+    jpRenderOptions();
+    document.getElementById('jp-expl-wrap').classList.remove('hidden');
+    document.getElementById('jp-answering-wrap').classList.add('hidden');
+    document.getElementById('jp-reveal-btn').classList.add('hidden');
+    jpBanner('Ingen fick rätt. '+jpTeams[(jpChooser+1)%jpTeams.length].name+' väljer nästa fråga.', '#dc2626');
+  }else{
+    jpAnswering=next;
+    jpRenderAnswering();
+    const lead = o.timedOut ? '⏰ Tiden är ute.' : '✗ FEL – försök igen.';
+    jpBanner(lead+' '+jpTeams[next].name+' får chansen på '+jpValue+' p ('+JP_STEAL_TIME+' sek).', jpTeamColor(next));
+    jpStartTimer(JP_STEAL_TIME);
+  }
+}
+
+function jpBanner(txt,color){
+  const b=document.getElementById('jp-banner');
+  const p=b.querySelector('p');
+  p.textContent=txt;
+  if(color){ p.style.color=color; p.style.borderColor=color; p.style.background=color+'18'; }
+  else{ p.style.color=''; p.style.borderColor=''; p.style.background=''; }
+  b.classList.remove('hidden');
+}
+
+function jpRevealAnswer(){
+  clearInterval(jpTimer);
+  jpRevealed=true; jpResolved=true; jpWinner=null;
+  jpRenderTeams(); jpRenderOptions();
+  document.getElementById('jp-expl-wrap').classList.remove('hidden');
+  document.getElementById('jp-banner').classList.add('hidden');
+  document.getElementById('jp-answering-wrap').classList.add('hidden');
+  document.getElementById('jp-reveal-btn').classList.add('hidden');
+}
+
+function jpCloseModal(){
+  clearInterval(jpTimer);
+  /* Strikt rotation – turen går alltid vidare från den som valde rutan,
+     oavsett rätt, fel, stöld eller "Visa svar". */
+  jpTurn=(jpChooser+1)%jpTeams.length;
+  jpRenderTeams(); jpRenderTurn();
+  jpCell.classList.add('jp-used'); jpCell.textContent='✓'; jpCell.onmouseenter=null; jpCell.onmouseleave=null;
+  document.getElementById('jp-modal').classList.remove('on');
+  document.getElementById('jp-actions').classList.remove('hidden');
+  jpUsed++;
+  if(jpUsed>=20){
+    if(jpRound===0) jpShowIntermission();
+    else jpShowEnd();
+  }
+}
+
+function jpShowEnd(){
+  jpHideOverlay('jp-inter');
+  const list=document.getElementById('jp-end-list'); list.innerHTML='';
+  jpTeams.map((t,i)=>({t,i})).sort((a,b)=>b.t.score-a.t.score).forEach((e,pos)=>{
+    const c=jpTeamColor(e.i);
+    const row=document.createElement('div');
+    row.className='flex items-center gap-4 justify-center';
+    row.innerHTML=`<span class="text-slate-300 font-bold" style="font-size:clamp(1rem,3vh,1.6rem)">${pos===0?'🏆':(pos+1)+'.'} ${e.t.name}</span>
+      <span class="num font-bold" style="color:${c};font-size:clamp(1.3rem,4vh,2.4rem)">${e.t.score}</span>`;
+    list.appendChild(row);
+  });
+  const e=document.getElementById('jp-end');
+  e.classList.remove('hidden'); e.style.display='flex';
+}
+
+/* ════════ TIMER ════════ */
+function jpStartTimer(sec){
+  clearInterval(jpTimer);
+  jpTimeTotal=sec; jpTime=sec;
+  const bar=document.getElementById('jp-bar'), txt=document.getElementById('jp-time');
+  const c=JP_CATEGORIES[jpCat].color;
+  bar.style.width='100%'; bar.style.background=c;
+  txt.textContent=sec; txt.className='num text-sm font-bold text-slate-400';
+  jpTimer=setInterval(()=>{
+    jpTime--; txt.textContent=jpTime; bar.style.width=(jpTime/jpTimeTotal*100)+'%';
+    if(jpTime<=10){ bar.style.background='#dc2626'; txt.className='num text-sm font-bold text-red-600'; }
+    if(jpTime<=0){ clearInterval(jpTimer); if(!jpResolved && !jpRevealed) jpFailAndAdvance({timedOut:true}); }
+  },1000);
+}
+
+/* ════════ HELSKÄRM ════════ */
+function jpToggleFullscreen(){
+  const s=document.getElementById('jp-stage');
+  if(s.classList.contains('jp-fs')){ jpExitFullscreen(); return; }
+  s.classList.add('jp-fs');
+  document.getElementById('jp-fsbtn').textContent='⤫ Avsluta helskärm';
+  if(s.requestFullscreen) s.requestFullscreen().catch(()=>{});
+}
+function jpExitFullscreen(){
+  const s=document.getElementById('jp-stage');
+  s.classList.remove('jp-fs');
+  document.getElementById('jp-fsbtn').textContent='⛶ Helskärm';
+  if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+}
+document.addEventListener('fullscreenchange',()=>{
+  if(!document.fullscreenElement) jpExitFullscreen();
+});
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape') return;
+  if(document.getElementById('jp-modal').classList.contains('on')){ jpCloseModal(); }
+  else if(jpIsOpen('jp-rules')){ jpHideRules(); }
+  else if(jpIsOpen('jp-inter')){ /* mellanskärmen kräver ett aktivt val */ }
+  else{ jpExitFullscreen(); }
+});
+
+jpRenderTeamInputs();
+</script>
+
+<script src="feedback-widget.js" defer></script>
+<script data-goatcounter="https://johnblixt.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
