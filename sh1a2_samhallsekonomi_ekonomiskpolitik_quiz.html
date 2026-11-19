@@ -146,18 +146,38 @@
       .nav-row { flex-wrap: wrap; justify-content: space-between; position: sticky; bottom: 0; padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); background: #fff7ed; }
       .btn-back, .btn-next { flex: 1; min-width: 120px; min-height: 48px; text-align: center; margin-left: 0; }
     }
+
+    /* ── Enkel svenska ── */
+    #btn-easy {
+      position: fixed; top: 14px; right: 14px; z-index: 300;
+      background: white; border: 1px solid #fed7aa; border-radius: 10px; padding: 7px 14px;
+      font-family: inherit; font-size: 0.92rem; color: var(--primary-dark); cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08); white-space: nowrap;
+    }
+    #btn-easy:hover { background: var(--primary-light); }
+    #btn-easy.on { background: var(--primary-btn); border-color: var(--primary-btn); color: white; font-weight: 600; }
+    .tr-line { font-size: 0.9em; font-weight: 400; color: #64748b; line-height: 1.55; margin-top: 5px; }
+    .tr-badge { margin-right: 6px; }
+    .q-text .tr-line { font-size: 0.85em; color: #475569; }
+    .opt-btn .tr-line { color: inherit; opacity: 0.8; }
+    #screen-start .tr-line { text-align: center; }
+    @media (max-width: 500px) {
+      #btn-easy { font-size: 0.85rem; padding: 6px 10px; }
+      a.back-btn { font-size: 0.85rem; padding: 8px 10px; }
+    }
   </style>
   <script src="progress.js"></script>
 </head>
 <body>
 
 <a href="sh1a2_samhallsekonomi.html" class="back-btn" id="back-link">← Tillbaka till startsidan</a>
+<button id="btn-easy" onclick="toggleEasy()" aria-pressed="false">📖 Enkel svenska</button>
 
 <!-- ═══════════ START ═══════════ -->
 <div id="screen-start" class="screen active">
   <div class="badge">Samhällskunskap Sa1a2 · Ekonomisk politik</div>
   <h1>Quiz</h1>
-  <p class="subtitle">30 frågor om tillväxt och konjunkturer, hållbar utveckling, offentliga sektorn och skatter, statsbudget och statsskuld, kreditmarknaden och Riksbanken samt stabiliseringspolitik (penningpolitik, finanspolitik och inflationsmål)</p>
+  <p class="subtitle" id="t-subtitle">30 frågor om tillväxt och konjunkturer, offentliga sektorn och skatter, statsbudget och statsskuld, kreditmarknaden och Riksbanken samt stabiliseringspolitik (penningpolitik, finanspolitik och inflationsmål)</p>
   <div class="info-cards">
     <div class="info-card"><div class="num">30</div><div class="lbl">Frågor</div></div>
     <div class="info-card"><div class="num">MC + S/F</div><div class="lbl">Frågetyper</div></div>
@@ -242,15 +262,15 @@ const QUESTIONS = [
 
   {
     type: 'mc',
-    q: 'Vad menas med ekonomisk tillväxt och hur mäts den enligt materialet?',
+    q: 'Vad menas med ekonomisk tillväxt och hur mäts den?',
     opts: [
-      'Att den totala produktionen i ett land ökar under en tidsperiod, vilket mäts genom att jämföra BNP mellan olika år och räkna bort inflationen.',
-      'Att den totala befolkningen i ett land ökar under en tidsperiod, vilket mäts genom att jämföra folkmängden mellan olika år och räkna bort utvandring.',
-      'Att den totala sysselsättningen i ett land ökar under en tidsperiod, vilket mäts genom att jämföra arbetslöshetssiffror mellan olika år och kvartal.',
-      'Att den totala exporten i ett land ökar under en tidsperiod, vilket mäts genom att jämföra handelsbalansen mellan olika år och kvartal.'
+      'Att BNP, alltså värdet av allt som produceras i landet, ökar – vilket mäts som BNP:s förändring i procent från ett år till nästa.',
+      'Att befolkningen, alltså antalet invånare i landet, ökar – vilket mäts som folkmängdens förändring i procent från ett år till nästa.',
+      'Att sysselsättningen, alltså antalet personer med jobb i landet, ökar – vilket mäts som arbetslöshetens förändring i procent varje kvartal.',
+      'Att exporten, alltså värdet av allt som säljs till utlandet, ökar – vilket mäts som handelsbalansens förändring i procent varje kvartal.'
     ],
     correct: 0,
-    expl: 'Ekonomisk tillväxt innebär att den totala produktionen i ett land ökar under en viss tidsperiod. Det mäts genom att jämföra BNP mellan olika år, och man räknar ofta bort inflationen för att få en rättvisande bild.'
+    expl: 'Ekonomisk tillväxt betyder att BNP ökar. Den mäts som BNP:s förändring i procent från ett år till nästa – växer BNP från 100 till 103 är tillväxten 3 %. Tillväxt uppstår antingen genom fler resurser eller genom högre produktivitet.'
   },
   {
     type: 'mc',
@@ -338,39 +358,39 @@ const QUESTIONS = [
   },
   {
     type: 'mc',
-    q: 'Hur definieras begreppet hållbar utveckling, som lanserades av FN på 1980-talet?',
+    q: 'Det är lågkonjunktur och regeringen vill föra en expansiv finanspolitik. Vilket alternativ beskriver hur en vänster- respektive högerregering brukar göra?',
     opts: [
-      'En utveckling som tillgodoser dagens behov utan att äventyra kommande generationers möjligheter att tillgodose sina egna behov.',
-      'En utveckling som prioriterar dagens ekonomiska tillväxt framför miljöhänsyn, oavsett vilka konsekvenser det får i framtiden.',
-      'En utveckling som innebär att alla länder ska ha exakt samma BNP per invånare inom en snar framtid, oavsett förutsättningar.',
-      'En utveckling som innebär att den offentliga sektorn ska ta över allt ansvar för miljöfrågor från näringslivet och hushållen.'
+      'Vänster ökar välfärdssatsningar, bidrag och offentliga jobb – höger sänker skatter och arbetsgivaravgifter och ger stöd till företag.',
+      'Vänster sänker skatter och arbetsgivaravgifter och ger stöd till företag – höger ökar välfärdssatsningar, bidrag och offentliga jobb.',
+      'Vänster höjer skatter på förmögenhet, arv och fastigheter – höger minskar den offentliga sektorn och skär ner på bidragen.',
+      'Vänster höjer styrräntan för att få fart på utlåningen – höger sänker styrräntan för att få företagen att anställa fler.'
     ],
     correct: 0,
-    expl: 'Hållbar utveckling innebär, enligt FN:s definition från 1980-talet, en utveckling som tillgodoser dagens behov utan att äventyra kommande generationers möjligheter att tillgodose sina egna behov.'
+    expl: 'Expansiv finanspolitik betyder att staten "gasar" och tillför pengar till ekonomin. Vänstern gör det oftast genom att öka offentliga utgifter som välfärd, barnbidrag och offentliga jobb. Högern gör det oftast genom att sänka skatter och arbetsgivaravgifter så att hushåll och företag får mer pengar över.'
   },
   {
     type: 'mc',
-    q: 'Vilka tre dimensioner delas hållbarhet in i enligt materialet?',
+    q: 'Ekonomin är överhettad och regeringen vill föra en åtstramande finanspolitik. Vilket alternativ beskriver hur en vänster- respektive högerregering brukar göra?',
     opts: [
-      'Miljömässig hållbarhet, social hållbarhet och ekonomisk hållbarhet, som tillsammans behöver balanseras mot varandra.',
-      'Nationell hållbarhet, internationell hållbarhet och global hållbarhet, som tillsammans behöver balanseras mot varandra.',
-      'Politisk hållbarhet, kulturell hållbarhet och teknisk hållbarhet, som tillsammans behöver balanseras mot varandra.',
-      'Kortsiktig hållbarhet, medelsiktig hållbarhet och långsiktig hållbarhet, som tillsammans behöver balanseras mot varandra.'
+      'Vänster höjer skatter för de rikaste, t.ex. fastighets-, arvs- och förmögenhetsskatt – höger minskar den offentliga sektorn och bidragen.',
+      'Vänster minskar den offentliga sektorn och bidragen – höger höjer skatter för de rikaste, t.ex. fastighets-, arvs- och förmögenhetsskatt.',
+      'Vänster ökar barnbidraget och anställer fler i offentlig sektor – höger sänker arbetsgivaravgifterna och ger stöd till företagen.',
+      'Vänster sänker momsen för att pressa ner priserna – höger höjer inkomstskatten för alla för att minska hushållens köpkraft.'
     ],
     correct: 0,
-    expl: 'Hållbarhet delas in i tre dimensioner: miljömässig hållbarhet (naturen och klimatet), social hållbarhet (människors livsvillkor) och ekonomisk hållbarhet (tillväxt som minskar klyftorna).'
+    expl: 'Åtstramande finanspolitik betyder att staten "bromsar" och drar in pengar ur ekonomin. Vänstern brukar göra det genom att höja skatter för de rikaste, till exempel fastighets-, arvs- och förmögenhetsskatt. Högern brukar i stället minska den offentliga sektorn och skära ner på bidrag.'
   },
   {
     type: 'mc',
-    q: 'Vad handlar ekonomisk hållbarhet om enligt materialet?',
+    q: 'Vad menas med expansiv finanspolitik, och när används den?',
     opts: [
-      'Att främja en hållbar tillväxt som minskar klyftorna mellan rika och fattiga, bland annat genom gröna teknologier och cirkulär ekonomi.',
-      'Att skydda naturen så att den inte förstörs för kommande generationer, bland annat genom förnybar energi och återvinning.',
-      'Att främja jämställdhet mellan kvinnor och män, bland annat genom att ge alla möjlighet att delta i samhällslivet.',
-      'Att garantera att alla länder får exakt samma tillväxttakt, bland annat genom internationella handelsavtal och bistånd.'
+      'Staten "gasar" genom att sänka skatter eller öka sina utgifter, och det används i en lågkonjunktur för att öka efterfrågan.',
+      'Staten "bromsar" genom att höja skatter eller minska sina utgifter, och det används i en lågkonjunktur för att öka efterfrågan.',
+      'Staten "gasar" genom att sänka skatter eller öka sina utgifter, och det används vid överhettning för att få ner inflationen.',
+      'Riksbanken "gasar" genom att sänka styrräntan och trycka mer pengar, och det används i en lågkonjunktur för att öka efterfrågan.'
     ],
     correct: 0,
-    expl: 'Ekonomisk hållbarhet handlar om att främja en hållbar tillväxt som också minskar klyftorna mellan rika och fattiga, till exempel genom att stödja miljövänliga företag och använda resurser smartare.'
+    expl: 'Expansiv finanspolitik är regeringens sätt att "gasa": staten sänker skatter eller ökar sina utgifter så att hushåll och företag får mer pengar att använda. Den används i lågkonjunktur för att öka efterfrågan och minska arbetslösheten. Styrräntan hör till Riksbankens penningpolitik, inte till finanspolitiken.'
   },
   {
     type: 'mc',
@@ -434,15 +454,15 @@ const QUESTIONS = [
   },
   {
     type: 'mc',
-    q: 'Vad kallas andelen skatt i förhållande till BNP, och vilka länder hade enligt materialet högst andel 2023?',
+    q: 'Vad menas med skattekvot, och vad är för- och nackdelen med att Sverige har en skattekvot på drygt 40 procent?',
     opts: [
-      'Skattekvoten (skattetrycket), där Frankrike och Norge hade de högsta andelarna i världen medan Sverige låg på ungefär åttonde plats.',
-      'Skattekvoten (skattetrycket), där Sverige och Danmark hade de högsta andelarna i världen medan Norge låg på ungefär åttonde plats.',
-      'Skatteunderlaget, där USA och Tyskland hade de högsta andelarna i världen medan Sverige låg på ungefär åttonde plats.',
-      'Skatteunderlaget, där Frankrike och Sverige hade de högsta andelarna i världen medan Norge låg på ungefär åttonde plats.'
+      'Skatternas andel av BNP – en hög kvot ger pengar till gemensam välfärd, men hushållen får mindre kvar att handla för.',
+      'Skatternas andel av statsbudgeten – en hög kvot ger pengar till fler bidrag, men staten får en större statsskuld att betala av.',
+      'Skatternas andel av lönen – en hög kvot ger högre löner på sikt, men företagen får svårare att anställa ny personal.',
+      'Skatternas andel av exporten – en hög kvot ger en starkare krona, men företagen får svårare att sälja varor utomlands.'
     ],
     correct: 0,
-    expl: 'Andelen skatt i förhållande till BNP kallas skattekvoten eller skattetrycket. Frankrike och Norge hade de högsta skattekvoterna i världen 2023, medan Sverige låg på ungefär åttonde plats.'
+    expl: 'Skattekvoten är skatternas andel av BNP, och i Sverige var den drygt 40 % år 2023. Fördelen är att skatterna finansierar välfärd som skola, vård och omsorg. Nackdelen är att hushållen får lägre köpkraft, alltså mindre pengar kvar att konsumera för.'
   },
   {
     type: 'mc',
@@ -476,39 +496,39 @@ const QUESTIONS = [
   },
   {
     type: 'mc',
-    q: 'Vad är Riksbanken och hur leds den enligt materialet?',
+    q: 'Efterfrågan är större än vad företagen hinner producera, och priserna stiger snabbt. Vilken finanspolitik passar då, och varför?',
     opts: [
-      'Sveriges centralbank, som ligger under riksdagen men är självständig och leds av en direktion med riksbankschefen som ordförande.',
-      'Sveriges affärsbank, som ligger under regeringen och styrs direkt av finansministern tillsammans med finansdepartementet.',
-      'Sveriges tillsynsmyndighet för banker, som ligger under Riksgälden och leds av en styrelse med finansministern som ordförande.',
-      'Sveriges statliga pensionsfond, som ligger under Skatteverket och leds av en nämnd med riksdagens talman som ordförande.'
+      'Åtstramande finanspolitik, till exempel höjda skatter eller minskade utgifter, som minskar efterfrågan och dämpar inflationen.',
+      'Expansiv finanspolitik, till exempel sänkta skatter eller ökade utgifter, som ökar produktionen så att den hinner ikapp efterfrågan.',
+      'Åtstramande finanspolitik, till exempel sänkta skatter eller ökade bidrag, som ökar köpkraften och dämpar inflationen.',
+      'Expansiv finanspolitik, till exempel höjda skatter eller minskade utgifter, som minskar efterfrågan och dämpar inflationen.'
     ],
     correct: 0,
-    expl: 'Riksbanken är Sveriges centralbank. Den ligger under riksdagen men är självständig i förhållande till politikerna, och leds av en direktion med sex ledamöter där riksbankschefen är ordförande.'
+    expl: 'När efterfrågan är större än produktionen är ekonomin överhettad – priserna stiger (inflation) och risken för en krasch ökar. Staten bör då "bromsa" med åtstramande finanspolitik, alltså höjda skatter eller minskade utgifter, så att efterfrågan minskar.'
   },
   {
     type: 'mc',
-    q: 'Vilka två tydliga uppdrag har Riksbanken fått av politikerna enligt materialet?',
+    q: 'I en lågkonjunktur kan arbetslösheten förvärra sig själv i en ond cirkel. Vilken ordning beskriver den onda cirkeln rätt?',
     opts: [
-      'Att främja ett säkert och effektivt betalningssystem samt att upprätthålla ett stabilt penningvärde genom att hålla inflationen kring två procent.',
-      'Att främja en hög ekonomisk tillväxt samt att garantera full sysselsättning genom att sätta ett tak för arbetslösheten på två procent.',
-      'Att övervaka statsbudgeten samt att godkänna regeringens budgetproposition innan den läggs fram för riksdagen varje höst.',
-      'Att kontrollera bankernas vinster samt att fördela statliga bidrag till kommunerna baserat på deras befolkningsmängd.'
+      'Fler arbetslösa → lägre inkomster → minskad konsumtion → lägre efterfrågan → företagen säljer mindre → ännu fler arbetslösa.',
+      'Fler arbetslösa → högre bidrag → ökad konsumtion → högre efterfrågan → företagen höjer priserna → ännu fler arbetslösa.',
+      'Fler arbetslösa → ökat sparande → högre räntor → minskade investeringar → företagen säljer mindre → ännu fler arbetslösa.',
+      'Fler arbetslösa → högre skatter → minskad export → lägre styrränta → företagen lånar mindre → ännu fler arbetslösa.'
     ],
     correct: 0,
-    expl: 'Riksbanken har fått två tydliga uppdrag: att främja ett säkert och effektivt betalningssystem, och att upprätthålla ett stabilt penningvärde genom att hålla inflationen omkring två procent per år.'
+    expl: 'När fler blir arbetslösa får hushållen lägre inkomster och konsumerar mindre. Då minskar efterfrågan, företagen säljer mindre och behöver färre anställda – vilket ger ännu fler arbetslösa. Staten kan försöka bryta cirkeln med expansiv finanspolitik.'
   },
   {
     type: 'mc',
-    q: 'Vilken roll spelar räntan på kreditmarknaden enligt materialet?',
+    q: 'Under coronapandemin ökade staten sina utgifter kraftigt, till exempel med stöd till företag. Vilken tanke låg bakom, och vem förknippas den med?',
     opts: [
-      'Räntan styr hur mycket som lånas ut och hur mycket som sparas, och hjälper på så vis till att balansera utbud och efterfrågan på krediter.',
-      'Räntan styr hur mycket som produceras och hur mycket som exporteras, och hjälper på så vis till att balansera utbud och efterfrågan på varor.',
-      'Räntan styr hur mycket skatt som tas in och hur mycket som betalas ut i bidrag, och hjälper på så vis till att balansera statsbudgeten.',
-      'Räntan styr hur mycket som investeras i realkapital och hur mycket som satsas på humankapital, och hjälper till att balansera produktionen.'
+      'Expansiv finanspolitik enligt Keynes – staten ska öka efterfrågan i en kris för att jämna ut konjunktursvängningarna.',
+      'Åtstramande finanspolitik enligt Keynes – staten ska minska efterfrågan i en kris för att förhindra att inflationen stiger.',
+      'Expansiv penningpolitik enligt Riksbanken – centralbanken ska öka utlåningen i en kris för att hålla kronan stark.',
+      'Åtstramande penningpolitik enligt Riksbanken – centralbanken ska höja räntan i en kris för att statsskulden inte ska växa.'
     ],
     correct: 0,
-    expl: 'Räntan kan ses som priset på pengar. Den styr hur mycket som lånas ut och hur mycket som sparas, och hjälper på så sätt till att balansera utbud och efterfrågan på krediter.'
+    expl: 'Enligt ekonomen John Maynard Keynes ska staten jämna ut konjunkturen: "gasa" i lågkonjunktur och "bromsa" vid överhettning. Under pandemin föll efterfrågan kraftigt, och regeringen förde därför en expansiv finanspolitik med stöd till företag och ökade utgifter. Finanspolitiken sköts av regeringen, inte av Riksbanken.'
   },
   {
     type: 'mc',
@@ -567,6 +587,209 @@ const QUESTIONS = [
 ];
 
 // ════════════════════════════════════════════════════════════
+// ENKEL SVENSKA — EASY[i] hör till QUESTIONS[i] (samma ordning).
+// opts ligger i samma ordning som originalets opts; tf-frågor har inga opts.
+// ════════════════════════════════════════════════════════════
+const EASY = [
+  { q: 'Vad är ekonomisk tillväxt? Hur mäter man den?',
+    opts: ['Landet gör fler varor och tjänster än förra året. Man räknar hur många procent mer.',
+           'Fler människor bor i landet än förra året. Man räknar hur många procent fler.',
+           'Fler människor har jobb än förra kvartalet. Man räknar hur många procent fler.',
+           'Landet säljer mer till andra länder. Man räknar hur många procent mer varje kvartal.'],
+    expl: 'Tillväxt betyder att landet gör mer än förut. Gjorde landet för 100 kronor förra året och för 103 kronor i år, är tillväxten 3 procent.' },
+  { q: 'Ekonomin går upp och ner som vågor. Vad heter vågorna? Hur länge varar en våg?',
+    opts: ['De heter konjunkturer. En våg varar ofta ungefär fem år.',
+           'De heter recessioner. En våg varar ofta ungefär tio år.',
+           'De heter depressioner. En våg varar ofta ungefär två år.',
+           'De heter trender. En våg varar ofta ungefär ett år.'],
+    expl: 'Vågorna heter konjunkturer. Ibland går det bra och ibland dåligt. En hel våg tar ofta ungefär fem år.' },
+  { q: 'Hur är det när ekonomin går mycket bra?',
+    opts: ['Folk har mycket pengar. Företag gör mer och anställer fler. Folk tjänar mer.',
+           'Folk har lite pengar. Företag gör mindre och sparkar folk. Folk tjänar mindre.',
+           'Folk sparar mycket på banken. Företag köper nya maskiner. Det blir billigt att låna.',
+           'Banker lånar ut lite pengar. Företag anställer inte fler. Priserna blir lägre.'],
+    expl: 'När det går bra köper folk mycket. Då gör företagen mer och behöver fler som jobbar. Fler får jobb och tjänar pengar.' },
+  { q: 'Varför kan bra tider bli dåliga tider?',
+    opts: ['Företagen hinner inte göra allt folk vill köpa. De höjer priserna. Då har folk inte råd.',
+           'Staten tar mycket mindre skatt och ger mer bidrag. Då får folk alldeles för mycket pengar.',
+           'Banken gör det för billigt att låna. Då lånar alla för mycket pengar på en och samma gång.',
+           'Landet säljer för mycket till andra länder. Företagen anställer för många som jobbar.'],
+    expl: 'Ibland vill folk köpa mer än företagen hinner göra. Då höjer företagen priserna. Till slut har folk inte råd att köpa lika mycket, och de bra tiderna tar slut.' },
+  { q: 'När det går dåligt köper folk mindre. Då sparkar företagen folk, och fler blir utan jobb.',
+    expl: 'Det stämmer. Företagen säljer mindre och behöver färre som jobbar. Då blir fler utan jobb.' },
+  { q: 'Ett land vill göra fler saker. Vilka två sätt finns det?',
+    opts: ['Använda mer material, fler som jobbar och fler maskiner. Eller använda dem smartare.',
+           'Ta mindre skatt från företagen. Eller ge mer pengar till familjerna så att de köper mer.',
+           'Sälja mer saker till andra länder. Eller köpa färre saker från andra länder än förut.',
+           'Göra det dyrare att låna pengar. Eller göra det billigare att låna pengar än förut.'],
+    expl: 'Man kan använda mer: mer material, fler som jobbar och fler maskiner. Eller så kan man jobba smartare med det man redan har.' },
+  { q: 'Vad betyder det att man blir mer produktiv?',
+    opts: ['Man gör fler saker med samma jobb, material och maskiner som förut.',
+           'Man använder mer jobb, material och maskiner för att göra fler saker.',
+           'Man gör saker billigare så att man kan sälja fler av dem än förut.',
+           'Man ger de anställda mer lön så att de jobbar snabbare än förut.'],
+    expl: 'Att bli mer produktiv är att jobba smartare. Man gör mer, men man använder inte mer jobb eller material.' },
+  { q: 'Vad är en investering?',
+    opts: ['Man satsar pengar på bättre maskiner, eller på att folk ska lära sig mer.',
+           'Man satsar pengar på att blanda saker på nya sätt och hitta på nya produkter.',
+           'Man satsar pengar på att skydda naturen, till exempel el från sol och vind.',
+           'Man flyttar pengar mellan olika grupper, till exempel med skatt och bidrag.'],
+    expl: 'En investering är att satsa pengar nu så att det blir bättre sedan. Det kan vara nya maskiner. Det kan också vara att folk går en utbildning.' },
+  { q: 'Lagar, myndigheter och gamla vanor hjälper ekonomin att fungera bra.',
+    expl: 'Det stämmer. Tydliga regler och myndigheter gör samhället tryggt. Då kan ekonomin fungera bra.' },
+  { q: 'Det går dåligt för ekonomin. Regeringen vill få fart på den. Vad brukar vänster och höger göra?',
+    opts: ['Vänster ger mer bidrag och fler jobb hos staten. Höger tar mindre skatt och hjälper företag.',
+           'Vänster tar mindre skatt och hjälper företag. Höger ger mer bidrag och fler jobb hos staten.',
+           'Vänster tar mer skatt från de rika. Höger gör staten mindre och ger mindre bidrag.',
+           'Vänster gör det dyrare att låna. Höger gör det billigare att låna pengar.'],
+    expl: 'Att få fart på ekonomin betyder att staten ger folk mer pengar. Vänster gör det ofta med mer bidrag och fler jobb hos staten. Höger gör det ofta genom att ta mindre skatt.' },
+  { q: 'Ekonomin går för fort. Regeringen vill bromsa. Vad brukar vänster och höger göra?',
+    opts: ['Vänster tar mer skatt från de rikaste. Höger gör staten mindre och ger mindre bidrag.',
+           'Vänster gör staten mindre och ger mindre bidrag. Höger tar mer skatt från de rikaste.',
+           'Vänster ger mer bidrag och fler jobb hos staten. Höger tar mindre skatt från företagen.',
+           'Vänster gör varorna billigare med lägre skatt. Höger tar mer skatt på allas löner.'],
+    expl: 'Att bromsa betyder att staten tar pengar ur ekonomin. Vänster gör det ofta genom att ta mer skatt från de rikaste. Höger gör det ofta genom att staten spenderar mindre.' },
+  { q: 'Vad betyder det att staten "gasar"? När gör man det?',
+    opts: ['Staten tar mindre skatt eller spenderar mer. Man gör det när det går dåligt.',
+           'Staten tar mer skatt eller spenderar mindre. Man gör det när det går dåligt.',
+           'Staten tar mindre skatt eller spenderar mer. Man gör det när priserna stiger fort.',
+           'Riksbanken gör det billigt att låna och gör mer pengar. Man gör det när det går dåligt.'],
+    expl: 'När staten gasar får folk och företag mer pengar. Då köper de mer. Man gör det när det går dåligt, så att fler får jobb. Räntan bestämmer Riksbanken, inte regeringen.' },
+  { q: 'Vilka tre delar finns i den offentliga sektorn?',
+    opts: ['Staten för hela landet, regionen för ett större område och kommunen där du bor.',
+           'Riksdagen för hela landet, regeringen för ett större område och myndigheten där du bor.',
+           'Företagen för hela landet, föreningarna för ett större område och statens bolag där du bor.',
+           'Bankerna för hela landet, lånemarknaden för ett större område och Riksbanken där du bor.'],
+    expl: 'Det offentliga är det vi har tillsammans. Staten sköter saker för hela landet. Regionen sköter till exempel sjukhusen. Kommunen sköter till exempel skolan där du bor.' },
+  { q: 'Polisen och försvaret finns för alla. Det spelar ingen roll om du använder dem eller inte.',
+    expl: 'Det stämmer. Polisen och försvaret skyddar alla. Skola och vård är annorlunda. Där får varje person hjälp för sig.' },
+  { q: 'Vilka två viktiga uppgifter har det offentliga?',
+    opts: ['Ge oss saker som skola och försvar. Och flytta pengar mellan grupper med skatt och bidrag.',
+           'Bestämma räntan när man lånar. Och hålla koll på hur mycket bankerna lånar ut till folk.',
+           'Sköta all handel med andra länder. Och bestämma vilka saker som får säljas i landet.',
+           'Äga alla stora företag i landet. Och bestämma vad alla saker i affärerna ska kosta.'],
+    expl: 'Det offentliga ger oss saker som skola, vård och polis. Det tar också skatt och ger bidrag. Så flyttas pengar mellan dem som har mer och dem som har mindre.' },
+  { q: 'Vilka fyra sorters skatt betalar vi i Sverige?',
+    opts: ['Skatt på lönen, skatt när vi köper, avgift för anställda och skatt på sparade pengar.',
+           'Skatt på lönen, skatt när vi säljer utomlands, skatt när vi köper utomlands och skatt på hus.',
+           'Skatt på lönen, skatt på företag, skatt på vissa varor och skatt på det man ärver.',
+           'Skatt när vi köper, skatt på rikedom, skatt på reklam och skatt på det som smutsar ner.'],
+    expl: 'Vi betalar skatt på lönen. Vi betalar skatt när vi köper saker. Arbetsgivaren betalar en avgift för de anställda. Och vi betalar skatt på pengar som vi tjänar på sparande.' },
+  { q: 'Moms och punktskatt är skatt när vi köper saker. Vad är skillnaden?',
+    opts: ['Moms finns på nästan allt. Punktskatt finns bara på vissa saker, som cigaretter och bensin.',
+           'Moms tar man bara på lönen. Punktskatt tar man bara på pengar man tjänar på sparande.',
+           'Moms betalar chefen för de anställda. Punktskatt betalar bara den som har ett eget företag.',
+           'Moms tar man på saker från andra länder. Punktskatt tar man på saker som säljs utomlands.'],
+    expl: 'Moms betalar du på nästan allt du köper. Punktskatt finns bara på vissa saker, som alkohol, tobak och bensin. Ofta vill staten att vi ska köpa mindre av dem.' },
+  { q: 'Skatten på lönen beror på hur mycket du tjänar. Momsen beror på vad du köper.',
+    expl: 'Det stämmer. Skatten på lönen dras från det du tjänar. Momsen finns redan i priset när du handlar.' },
+  { q: 'Vad är skattekvot? Sverige har drygt 40 procent. Vad är bra och dåligt med det?',
+    opts: ['Hur mycket av allt landet gör som blir skatt. Bra: mer till vård och skola. Dåligt: mindre kvar att handla för.',
+           'Hur mycket av statens plan som blir skatt. Bra: mer pengar till bidrag. Dåligt: staten får större skulder.',
+           'Hur mycket av lönen som blir skatt. Bra: högre löner längre fram. Dåligt: svårare för företag att anställa.',
+           'Hur mycket av det som säljs utomlands som blir skatt. Bra: starkare krona. Dåligt: svårare att sälja utomlands.'],
+    expl: 'Skattekvoten visar hur stor del av allt landet gör som går till skatt. I Sverige är det drygt 40 procent. Det ger pengar till skola och vård. Men folk har mindre pengar kvar själva.' },
+  { q: 'Vad är statsbudgeten? Vem bestämmer den?',
+    opts: ['Statens plan för pengar in och ut under ett år. Regeringen föreslår och riksdagen bestämmer.',
+           'Kommunens plan för pengar in och ut under ett år. Kommunens politiker bestämmer den varje år.',
+           'Riksbankens plan för räntan under ett år. Riksbankens chefer bestämmer den fyra gånger per år.',
+           'Företagens plan för nya maskiner under ett år. Regeringen bestämmer den efter samtal med dem.'],
+    expl: 'Statsbudgeten är en plan för statens pengar under ett år. Den visar vad staten får in och vad den betalar. Regeringen gör ett förslag. Riksdagen bestämmer.' },
+  { q: 'Staten har mindre pengar än den behöver. Vad gör den? Vem sköter det?',
+    opts: ['Staten lånar pengar genom Riksgälden. Alla lånen blir statens skuld.',
+           'Staten tar mycket mer skatt genom Skatteverket. Pengarna sparas undan.',
+           'Staten säljer sina företag genom Riksbanken. Pengarna sparas i andra länders pengar.',
+           'Staten ger mindre till kommunerna genom Riksrevisionen. Då blir det pengar över.'],
+    expl: 'Har staten för lite pengar måste den låna. Det sköter myndigheten Riksgälden. Alla lån läggs ihop och blir statsskulden.' },
+  { q: 'Sverige är skyldigt ungefär en sjättedel av det landet gör på ett år. Det är lite jämfört med många andra EU-länder.',
+    expl: 'Det stämmer. Sverige har en liten skuld jämfört med de flesta andra länder i EU.' },
+  { q: 'Folk vill köpa mer än företagen hinner göra. Priserna stiger fort. Vad ska staten göra?',
+    opts: ['Bromsa: ta mer skatt eller spendera mindre. Då köper folk mindre och priserna slutar stiga.',
+           'Gasa: ta mindre skatt eller spendera mer. Då hinner företagen göra allt som folk vill köpa.',
+           'Bromsa: ta mindre skatt eller ge mer bidrag. Då får folk mer pengar och priserna slutar stiga.',
+           'Gasa: ta mer skatt eller spendera mindre. Då köper folk mindre och priserna slutar stiga.'],
+    expl: 'När folk vill köpa för mycket stiger priserna. Då ska staten bromsa. Den tar mer skatt eller spenderar mindre. Då köper folk lite mindre.' },
+  { q: 'När det går dåligt kan det bli en ond cirkel. Vilken ordning är rätt?',
+    opts: ['Fler utan jobb → mindre pengar → folk köper mindre → företag säljer mindre → ännu fler utan jobb.',
+           'Fler utan jobb → mer bidrag → folk köper mer → företag höjer priserna → ännu fler utan jobb.',
+           'Fler utan jobb → folk sparar mer → dyrare att låna → företag köper mindre → ännu fler utan jobb.',
+           'Fler utan jobb → mer skatt → landet säljer mindre → billigare att låna → ännu fler utan jobb.'],
+    expl: 'Den som förlorar jobbet får mindre pengar och köper mindre. Då säljer företagen mindre. De behöver färre som jobbar. Så blir ännu fler utan jobb.' },
+  { q: 'Under corona gav staten mycket pengar till företag. Varför? Vem kom på tanken?',
+    opts: ['Staten gasar i en kris så att folk köper mer. Tanken kommer från Keynes.',
+           'Staten bromsar i en kris så att priserna inte stiger. Tanken kommer från Keynes.',
+           'Riksbanken lånar ut mer i en kris så att kronan blir stark. Tanken kommer från Riksbanken.',
+           'Riksbanken gör lån dyrare i en kris så att skulden inte växer. Tanken kommer från Riksbanken.'],
+    expl: 'Keynes tyckte att staten ska gasa när det går dåligt och bromsa när det går för fort. Under corona köpte folk mycket mindre. Därför gav regeringen pengar till företagen.' },
+  { q: 'Politikerna har tre mål för ekonomin. Vilka?',
+    opts: ['Att ekonomin växer på ett bra sätt, att den är stabil och att pengarna delas rättvist.',
+           'Att landet säljer mycket, köper lite från andra och att kronan behåller sitt värde.',
+           'Att skatten är låg, att alla har jobb och att det är lätt att köpa en bostad.',
+           'Att kronan är stark, att staten har lite skulder och att folk sparar mycket.'],
+    expl: 'Ett mål är att ekonomin växer utan att förstöra för framtiden. Ett annat är att den är stabil, med jämna priser och få utan jobb. Det tredje är att pengarna delas rättvist.' },
+  { q: 'Den ekonomiska politiken har tre verktyg. Vilka?',
+    opts: ['Ett för att ekonomin ska växa, ett för att jämna ut bra och dåliga tider och ett för att dela rättvist.',
+           'Ett för räntan på lån, ett för statens pengar och ett för handeln med andra länder.',
+           'Ett för skatterna, ett för bidragen och ett för hur dyrt det är att låna pengar.',
+           'Ett för att sälja utomlands, ett för att köpa från utlandet och ett för kronans värde.'],
+    expl: 'Ett verktyg hjälper ekonomin att växa länge. Ett annat gör skillnaden mellan bra och dåliga tider mindre. Det tredje gör att pengarna delas rättvist.' },
+  { q: 'Staten gör tvärtom mot hur ekonomin går. Den bromsar i bra tider och gasar i dåliga tider.',
+    expl: 'Det stämmer. Staten försöker göra svängningarna mindre. Därför gör den tvärtom mot hur det går.' },
+  { q: 'Vem bestämmer över räntan? Vem bestämmer över statens pengar?',
+    opts: ['Riksbanken bestämmer räntan. Regeringen bestämmer statens pengar i budgeten.',
+           'Regeringen bestämmer räntan. Riksbanken bestämmer statens pengar och skatter.',
+           'Riksdagen bestämmer räntan med skatter. Riksgälden bestämmer genom att låna pengar.',
+           'Ett departement bestämmer räntan med bidrag. Riksbanken bestämmer statens pengar.'],
+    expl: 'Riksbanken bestämmer räntan. Den försöker hålla priserna stabila. Regeringen bestämmer hur staten ska använda sina pengar.' },
+  { q: 'Hur mycket ska priserna stiga varje år i Sverige? Hur får Riksbanken det att stämma?',
+    opts: ['Två procent. Riksbanken gör lån dyrare när priserna stiger för fort, och billigare när de stiger för lite.',
+           'Fem procent. Riksbanken tar mindre skatt när priserna stiger för fort, och mer när de stiger för lite.',
+           'Noll procent. Riksbanken ger mer bidrag när priserna stiger för fort, och mindre när de stiger för lite.',
+           'Två procent. Riksbanken minskar statens utgifter när priserna stiger för fort, och ökar dem annars.'],
+    expl: 'Målet är att priserna ska stiga två procent per år. Stiger de för fort gör Riksbanken det dyrare att låna. Då köper folk mindre. Stiger de för lite gör den det billigare att låna.' }
+];
+if (EASY.length !== QUESTIONS.length) console.warn('EASY och QUESTIONS har olika längd');
+QUESTIONS.forEach((q, i) => { q.easy = EASY[i]; });
+
+const EASY_TF_OPTS = ['Det stämmer', 'Det stämmer inte'];
+const SUBTITLE_EASY = '30 frågor om goda och dåliga tider, skatter, statens pengar och hur Riksbanken styr priserna.';
+const RES_MSGS_EASY = ['Du kan det här kapitlet mycket bra.', 'Bra jobbat! Du kan det viktigaste.', 'Du är på god väg. Läs lite till.', 'Läs materialet igen och försök en gång till.'];
+const EASY_KEY = 'sh1a2_ekonomiskpolitik_easy';
+
+let easyOn = false;
+try { easyOn = sessionStorage.getItem(EASY_KEY) === '1'; } catch (e) {}
+let lastModal = null;
+
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+}
+// Kompletterande rad på enkel svenska under originaltexten
+function trLine(text) {
+  if (!easyOn || !text) return '';
+  return '<div class="tr-line"><span class="tr-badge">📖</span>' + esc(text) + '</div>';
+}
+function trQ(q)      { return q.easy ? q.easy.q : ''; }
+function trExpl(q)   { return q.easy ? q.easy.expl : ''; }
+function trOpt(q, i) { return q.easy && q.easy.opts ? q.easy.opts[i] : ''; }
+
+function applyEasyUI() {
+  const b = document.getElementById('btn-easy');
+  b.classList.toggle('on', easyOn);
+  b.setAttribute('aria-pressed', easyOn ? 'true' : 'false');
+  const sub = document.getElementById('t-subtitle');
+  if (!sub.dataset.sv) sub.dataset.sv = sub.textContent;
+  sub.innerHTML = esc(sub.dataset.sv) + trLine(SUBTITLE_EASY);
+}
+function toggleEasy() {
+  easyOn = !easyOn;
+  try { sessionStorage.setItem(EASY_KEY, easyOn ? '1' : '0'); } catch (e) {}
+  applyEasyUI();
+  if (document.getElementById('screen-quiz').classList.contains('active') && qs.length) render();
+  if (document.getElementById('screen-result').classList.contains('active')) renderResults();
+  if (!document.getElementById('modal-overlay').classList.contains('hidden') && lastModal) renderModal();
+}
+
+// ════════════════════════════════════════════════════════════
 // FISHER-YATES SHUFFLE
 // ════════════════════════════════════════════════════════════
 function shuffleArray(array) {
@@ -596,7 +819,8 @@ function normalize(q) {
       q: q.q,
       opts: ['Sant', 'Falskt'],
       correct: q.correct ? 0 : 1,
-      expl: q.expl
+      expl: q.expl,
+      easy: { ...q.easy, opts: EASY_TF_OPTS }
     };
   }
   return q;
@@ -655,7 +879,7 @@ function render() {
   document.getElementById('q-counter').textContent = 'Fråga ' + (cur + 1) + ' av ' + total;
   document.getElementById('score-pill').textContent = 'Poäng: ' + score;
   document.getElementById('q-type-tag').textContent = q.type === 'tf' ? 'Sant eller falskt' : 'Flerval';
-  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('q-text').innerHTML = esc(q.q) + trLine(trQ(q));
 
   const optsEl = document.getElementById('opts');
   optsEl.innerHTML = '';
@@ -663,7 +887,7 @@ function render() {
   q.shuffledIdx.forEach((origIdx, displayPos) => {
     const btn = document.createElement('button');
     btn.className = 'opt-btn';
-    btn.textContent = q.opts[origIdx];
+    btn.innerHTML = esc(q.opts[origIdx]) + trLine(trOpt(q, origIdx));
     btn.disabled = q.answered;
 
     if (q.answered) {
@@ -711,22 +935,27 @@ function handleAnswer(displayPos) {
   // på nästa fråga och modalens knapp hoppar över en fråga.
   feedbackTimeout = setTimeout(() => {
     feedbackTimeout = null;
-    showModal(isCorrect, q.expl);
+    showModal(isCorrect, q);
   }, 600);
 }
 
 // ════════════════════════════════════════════════════════════
 // MODAL
 // ════════════════════════════════════════════════════════════
-function showModal(isCorrect, expl) {
-  document.getElementById('modal-icon').textContent      = isCorrect ? '✅' : '❌';
-  document.getElementById('modal-verdict').textContent   = isCorrect ? 'Rätt svar!' : 'Fel svar';
-  document.getElementById('modal-verdict').className     = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
-  document.getElementById('modal-expl').textContent      = expl;
-  document.getElementById('modal-next').textContent = nextLabel();
+function showModal(isCorrect, q) {
+  lastModal = { isCorrect, q };
+  renderModal();
   document.getElementById('modal-overlay').classList.remove('hidden');
   document.getElementById('modal-next').focus({ preventScroll: true });
   modalShownAt = performance.now();
+}
+function renderModal() {
+  const { isCorrect, q } = lastModal;
+  document.getElementById('modal-icon').textContent      = isCorrect ? '✅' : '❌';
+  document.getElementById('modal-verdict').textContent   = isCorrect ? 'Rätt svar!' : 'Fel svar';
+  document.getElementById('modal-verdict').className     = 'modal-verdict ' + (isCorrect ? 'c' : 'w');
+  document.getElementById('modal-expl').innerHTML        = esc(q.expl) + trLine(trExpl(q));
+  document.getElementById('modal-next').textContent = nextLabel();
 }
 function closeModal() {
   if (performance.now() - modalShownAt < MODAL_LOCK_MS) return;
@@ -778,6 +1007,14 @@ function showResults() {
   const pct   = Math.round(score / total * 100);
   // Bestående progress (progress.js): varje genomfört försök sparas, bästa resultat vinner
   if (window.JHProgress) JHProgress.saveProgress(PROGRESS_ID, { passed: pct >= 80, pct: pct, attempted: true });
+  renderResults();
+}
+
+// Ritar resultatskärmen (anropas igen när Enkel svenska växlas — sparar inget)
+function renderResults() {
+  const total = qs.length;
+  const wrong = total - score;
+  const pct   = Math.round(score / total * 100);
 
   document.getElementById('r-score').textContent   = score + '/' + total;
   document.getElementById('s-correct').textContent = score;
@@ -787,14 +1024,14 @@ function showResults() {
   const m = Math.floor(elapsed / 60), s = String(elapsed % 60).padStart(2, '0');
   document.getElementById('r-time').textContent = 'Tid: ' + m + ':' + s;
 
-  let title, msg;
-  if (pct >= 90)      { title = '🏆 Utmärkt!';          msg = 'Du behärskar kapitlet Ekonomisk politik på hög nivå.'; }
-  else if (pct >= 75) { title = '✅ Redo för provet!';   msg = 'Bra resultat – du har koll på det centrala.'; }
-  else if (pct >= 55) { title = '📖 Öva lite till';      msg = 'Du är på rätt spår men behöver repetera en del.'; }
-  else                { title = '💡 Fortsätt repetera'; msg = 'Gå igenom pluggmaterialet och försök igen.'; }
+  let title, msg, lvl;
+  if (pct >= 90)      { lvl = 0; title = '🏆 Utmärkt!';          msg = 'Du behärskar kapitlet Ekonomisk politik på hög nivå.'; }
+  else if (pct >= 75) { lvl = 1; title = '✅ Redo för provet!';   msg = 'Bra resultat – du har koll på det centrala.'; }
+  else if (pct >= 55) { lvl = 2; title = '📖 Öva lite till';      msg = 'Du är på rätt spår men behöver repetera en del.'; }
+  else                { lvl = 3; title = '💡 Fortsätt repetera'; msg = 'Gå igenom pluggmaterialet och försök igen.'; }
 
   document.getElementById('r-title').textContent = title;
-  document.getElementById('r-msg').textContent   = msg;
+  document.getElementById('r-msg').innerHTML     = esc(msg) + trLine(RES_MSGS_EASY[lvl]);
 
   // Missed
   const missedEl = document.getElementById('missed-section');
@@ -804,7 +1041,7 @@ function showResults() {
     missed.forEach(q => {
       const d = document.createElement('div');
       d.className = 'missed-item';
-      d.textContent = q.q;
+      d.innerHTML = esc(q.q) + trLine(trQ(q));
       missedEl.appendChild(d);
     });
   } else {
@@ -818,14 +1055,15 @@ function showResults() {
     const correctDisplay = q.shuffledIdx.indexOf(q.correct);
     const isCorrect  = q.answered && q.selectedDisplay === correctDisplay;
     const notAnswered = !q.answered;
-    const correctText  = q.opts[q.correct];
-    const selectedText = q.answered ? q.opts[q.shuffledIdx[q.selectedDisplay]] : null;
+    const selIdx       = q.answered ? q.shuffledIdx[q.selectedDisplay] : null;
+    const correctText  = esc(q.opts[q.correct]) + trLine(trOpt(q, q.correct));
+    const selectedText = q.answered ? esc(q.opts[selIdx]) + trLine(trOpt(q, selIdx)) : null;
 
     const div = document.createElement('div');
     div.className = 'facit-item ' + (notAnswered ? '' : isCorrect ? 'fc' : 'fw');
 
     let html = '<div class="fi-num">Fråga ' + (i + 1) + '</div>';
-    html += '<div class="fi-q">' + q.q + '</div>';
+    html += '<div class="fi-q">' + esc(q.q) + trLine(trQ(q)) + '</div>';
     if (notAnswered) {
       html += '<div class="fi-row"><span class="lbl">Ditt svar: </span>— (inte besvarad)</div>';
       html += '<div class="fi-row ra"><span class="lbl">Rätt svar: </span>' + correctText + '</div>';
@@ -847,6 +1085,8 @@ function restartQuiz() {
   stopTimer();
   show('screen-start');
 }
+
+applyEasyUI();
 </script>
     <script src="feedback-widget.js" defer></script>
     <script data-goatcounter="https://johnblixt.goatcounter.com/count"
