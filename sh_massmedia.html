@@ -187,6 +187,7 @@
             margin-bottom: 10px;
         }
     </style>
+  <script src="progress.js"></script>
 </head>
 <body>
     <a href="index.html" class="fixed top-4 left-4 z-50 text-sm font-medium text-slate-500 hover:text-slate-800 bg-white/90 px-3 py-2 rounded-xl shadow-sm transition-colors">← Tillbaka till startsidan</a>
@@ -705,7 +706,12 @@
         }
 
         // Visa slutsidan
+        const PROGRESS_ID = 'sh_massmedia'; // bestående progress (progress.js)
+
         function showResult() {
+          // Bestående progress (progress.js): varje genomfört försök sparas, bästa resultat vinner
+          const jhPct = Math.round(score / questions.length * 100);
+          if (window.JHProgress) JHProgress.saveProgress(PROGRESS_ID, { passed: jhPct >= 80, pct: jhPct, attempted: true });
             stopTimer();
             quizScreen.classList.add('hide');
             resultScreen.classList.remove('hide');

@@ -558,7 +558,7 @@ Alla tillbaka-knappar/länkar ska använda smart navigering, aldrig hårdkodas t
 3. Du skapar hela HTML-filen direkt, klar att lägga in i GitHub
 4. Du uppdaterar `index.html` med länk till den nya filen
 5. Du matchar ämnets färg från tabellen ovan
-6. Har quizet rank eller verifieringskod kopplar du in bestående progress enligt [Bestående progress](#bestående-progress-localstorage)
+6. Du kopplar in bestående progress enligt [Bestående progress](#bestående-progress-localstorage)
 
 *John ska inte behöva ändra något manuellt.*
 
@@ -640,14 +640,15 @@ Ett separat lager **ovanpå** det sessionsbaserade systemet ovan. Det minns elev
 - All logik ligger i `progress.js` i repo-roten och exponeras som `window.JHProgress`. Kopiera aldrig in logiken i en sida
 - Laddas med `<script src="progress.js"></script>` i `<head>` (`../progress.js` från undermappar), före sidans egna skript
 - En enda localStorage-nyckel: `jh_progress_v1` — ett JSON-objekt nycklat per sid-ID
-- Post per sida: `{ rank, passed, pct, done:[vyer], total, date }` (`date` = senast övad, `ÅÅÅÅ-MM-DD`)
+- Post per sida: `{ rank, passed, attempted, pct, done:[vyer], total, date }` (`date` = senast övad, `ÅÅÅÅ-MM-DD`)
 - `JHProgress.getProgress(id)` → posten eller `null` · `JHProgress.saveProgress(id, data)` · `JHProgress.resetAll()` · `JHProgress.render()` · `JHProgress.fromViews(progress, VIEWS, SCORE_VIEWS, rank)`
-- **Bästa resultat vinner:** högre rank (D < C < B < A < S), vid lika rank fler avklarade vyer, därefter högre procent. Ett sämre resultat skriver aldrig över ett bättre — bara `date` uppdateras
-- Ett resultat utan rank (och utan `passed: true`) sparas inte — en öppnad men orörd sida räknas inte som påbörjad
-- All läsning och skrivning ligger i try/catch i `progress.js`. Är lagringen blockerad (inkognito, in-app-webbläsare) händer ingenting. Anropa alltid via `if (window.JHProgress)` så att sidan fungerar även om filen inte laddats
+- **Bästa resultat vinner:** högre rank (D < C < B < A < S), därefter godkänt (`passed`), därefter fler avklarade vyer, därefter högre procent. Ett sämre resultat skriver aldrig över ett bättre — bara `date` uppdateras
+- **Varje genomfört försök sparas**, även under 80 %: ett resultat räknas om det har rank, `passed: true` eller `attempted: true`. Ett helt tomt resultat (öppnad men orörd sida) sparas inte — det kontrolleras i `progress.js`, inte i sidan
+- All läsning och skrivning ligger i try/catch i `progress.js`. Är lagringen blockerad (inkognito, in-app-webbläsare) händer ingenting utom en `console.warn('[JHProgress] …')`. Anropa alltid via `if (window.JHProgress)` så att sidan fungerar även om filen inte laddats
 
 ### Sid-ID
 - `const PROGRESS_ID = '<filnamn utan .html>';` som explicit konstant i varje sida, bredvid `PROGRESS_KEY`/saltsträngen
+- `progress.js` normaliserar ID:t (`JHProgress.normId`: sökväg, `?query`, `#hash` och `.html` tas bort), så `x` och `x.html` ger samma post
 - Härled det aldrig ur `location.pathname` — sidor kan ligga i undermappar och Netlify serverar URL:er utan `.html`
 - Byter en fil namn behålls det gamla ID:t, annars tappar eleverna sin sparade progress
 
@@ -656,26 +657,25 @@ I toppkomponenten, direkt efter den befintliga effekten som sparar till sessionS
 
 ```jsx
 // Bestående progress: bästa resultat sparas på enheten. Rör inte sessionens rank eller kod.
-const jhMountedRef = useRef(false);
 useEffect(() => {
-  if (!jhMountedRef.current) { jhMountedRef.current = true; return; }
   if (window.JHProgress) {
     JHProgress.saveProgress(PROGRESS_ID, JHProgress.fromViews(progress, VIEWS, SCORE_VIEWS, computeRank(progress)));
   }
 }, [progress]);
 ```
 
-Första renderingen hoppas över, så att enbart ett sidbesök inte sparar något.
+Effekten körs **även vid första renderingen** — hoppa aldrig över den med en mount-guard. Ligger sessionens progress kvar i sessionStorage (samma flik) ändras `progress` annars aldrig och ingenting sparas. Ett orört besök sparar ändå inget, eftersom `fromViews` då ger ett tomt resultat.
 
-### Inkoppling på ett quiz med rank eller kod
+### Inkoppling på ett quiz
 En rad där resultatet räknas ut (t.ex. i `showResults()`), efter att sidans egen rank och kod är klara:
 
 ```js
-if (window.JHProgress) JHProgress.saveProgress(PROGRESS_ID, { rank: rank, pct: pct });
+if (window.JHProgress) JHProgress.saveProgress(PROGRESS_ID, { rank: rank, pct: pct, attempted: true });
 ```
 
 - **Bara hela quizet räknas.** Har quizet delurval eller lägen villkoras raden, t.ex. `if (selKey === 'alla' && …)`
-- Har sidan ingen rank-bokstav utan bara godkänt/underkänt skickas `{ passed: pass, pct: pct }` — badgen visar då ✓ i stället för en bokstav
+- Har sidan ingen rank-bokstav utan bara godkänt/underkänt skickas `{ passed: pass, pct: pct, attempted: true }` — badgen visar då ✓ i stället för en bokstav
+- Har quizet varken rank eller godkänt-gräns: `{ passed: pct >= 80, pct: pct, attempted: true }` (sidans `PASS_PCT` om den finns). Alla quiz med resultatskärm kopplas in, inte bara de med rank
 
 ### Visning på korten
 - Platshållare: `<div data-jh-progress="id1,id2" data-jh-labels="Del 1|Del 2" style="--jh-c:#22c55e;--jh-on:#14532d;"></div>`. `progress.js` fyller den med en chip per påbörjad sida och lämnar den tom (dold) annars — **inget visas om sidan inte är påbörjad**
@@ -686,7 +686,7 @@ if (window.JHProgress) JHProgress.saveProgress(PROGRESS_ID, { rank: rank, pct: p
 - Raden "Din progress sparas bara på den här enheten…" och knappen "Nollställ min progress" finns bara på startsidan (`jhResetSet`). Bekräftelsen är inline — aldrig `alert`/`confirm`. Nollställningen rör bara `jh_progress_v1`
 
 ### Nya sidor kopplas alltid in
-Varje ny begreppssida, och varje nytt quiz med rank eller verifieringskod, ska i samma ändring få: (1) script-taggen och `PROGRESS_ID`, (2) sparanropet enligt ovan, (3) en platshållare på områdessidan, (4) `progress`-fältet på området i `Index.html`.
+Varje ny begreppssida, och varje nytt quiz med resultatskärm, ska i samma ändring få: (1) script-taggen och `PROGRESS_ID`, (2) sparanropet enligt ovan, (3) en platshållare på områdessidan, (4) `progress`-fältet på området i `Index.html`.
 
 Spel (Jeopardy, Miljonär, Flappy) och rena inställningar (språkval, Enkel svenska, plugglägen) sparas inte här.
 

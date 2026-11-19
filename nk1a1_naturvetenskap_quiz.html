@@ -208,6 +208,7 @@
       .btn-back, .btn-next { flex: 1; min-width: 120px; min-height: 48px; text-align: center; margin-left: 0; }
     }
   </style>
+  <script src="progress.js"></script>
 </head>
 <body>
 
@@ -1238,6 +1239,8 @@ document.addEventListener('keydown', e => {
 // ════════════════════════════════════════════════════════════
 // RESULTS
 // ════════════════════════════════════════════════════════════
+const PROGRESS_ID = 'nk1a1_naturvetenskap_quiz'; // bestående progress (progress.js)
+
 function endQuiz() {
   clearInterval(timerInterval);
   elapsedMs = Date.now() - startTime;
@@ -1248,6 +1251,8 @@ function endQuiz() {
 function renderResult() {
   const n     = shuffled.length;
   const pct   = Math.round(score / n * 100);
+  // Bestående progress (progress.js): varje genomfört försök sparas, bästa resultat vinner
+  if (window.JHProgress) JHProgress.saveProgress(PROGRESS_ID, { passed: pct >= 80, pct: pct, attempted: true });
 
   $('r-score').textContent   = score + '/' + n;
   $('s-correct').textContent = score;

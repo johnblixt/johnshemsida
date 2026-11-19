@@ -181,6 +181,7 @@
     }
   </style>
   <script src="jur1_nav.js"></script>
+  <script src="progress.js"></script>
 </head>
 <body>
 
@@ -860,6 +861,8 @@ document.addEventListener('keydown', e => {
 // ════════════════════════════════════════════════════════════
 // RESULTS
 // ════════════════════════════════════════════════════════════
+const PROGRESS_ID = 'jur1_block1_quiz'; // bestående progress (progress.js)
+
 function showResults() {
   stopTimer();
   show('screen-result');
@@ -867,6 +870,8 @@ function showResults() {
   const total = qs.length;
   const wrong = total - score;
   const pct   = Math.round(score / total * 100);
+  // Bestående progress (progress.js): varje genomfört försök sparas, bästa resultat vinner
+  if (window.JHProgress) JHProgress.saveProgress(PROGRESS_ID, { passed: pct >= 80, pct: pct, attempted: true });
 
   document.getElementById('r-score').textContent   = `${score}/${total}`;
   document.getElementById('s-correct').textContent = score;

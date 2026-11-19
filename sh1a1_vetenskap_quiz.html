@@ -158,6 +158,7 @@
       .btn-back, .btn-next { flex: 1; min-width: 120px; min-height: 48px; text-align: center; margin-left: 0; }
     }
   </style>
+  <script src="progress.js"></script>
 </head>
 <body>
 
@@ -1089,6 +1090,8 @@ document.addEventListener('keydown', e => {
 // ════════════════════════════════════════════════════════════
 // RESULTS
 // ════════════════════════════════════════════════════════════
+const PROGRESS_ID = 'sh1a1_vetenskap_quiz'; // bestående progress (progress.js)
+
 function showResults() {
   stopTimer();
   show('screen-result');
@@ -1096,6 +1099,8 @@ function showResults() {
   const total = qs.length;
   const wrong = total - score;
   const pct   = Math.round(score / total * 100);
+  // Bestående progress (progress.js): varje genomfört försök sparas, bästa resultat vinner
+  if (window.JHProgress) JHProgress.saveProgress(PROGRESS_ID, { passed: pct >= 80, pct: pct, attempted: true });
 
   document.getElementById('r-score').textContent   = score + '/' + total;
   document.getElementById('s-correct').textContent = score;

@@ -165,6 +165,7 @@
       .q-text { font-size: 1.1rem; }
     }
   </style>
+  <script src="progress.js"></script>
 </head>
 <body>
 
@@ -704,11 +705,15 @@ function goBack() {
 }
 
 // ── End quiz ───────────────────────────────────────────────
+const PROGRESS_ID = 'demokratiska-statsskick-quiz'; // bestående progress (progress.js)
+
 function endQuiz() {
   clearInterval(timerInterval);
   const elapsed = fmtTime(Date.now() - startTime);
   const n       = shuffled.length;
   const pct     = Math.round((score / n) * 100);
+  // Bestående progress (progress.js): varje genomfört försök sparas, bästa resultat vinner
+  if (window.JHProgress) JHProgress.saveProgress(PROGRESS_ID, { passed: pct >= 80, pct: pct, attempted: true });
 
   show('screen-result');
 

@@ -15,6 +15,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
     </style>
+  <script src="progress.js"></script>
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-900">
     <a href="index.html" class="fixed top-4 left-4 z-50 text-sm font-medium text-slate-500 hover:text-slate-800 bg-white/90 px-3 py-2 rounded-xl shadow-sm transition-colors">← Tillbaka till startsidan</a>
@@ -370,7 +371,12 @@
             }
         };
 
+        const PROGRESS_ID = 'sh_kursprovsa1a2'; // bestående progress (progress.js)
+
         function showResults() {
+          // Bestående progress (progress.js): varje genomfört försök sparas, bästa resultat vinner
+          const jhPct = Math.round(score / quizData.length * 100);
+          if (window.JHProgress) JHProgress.saveProgress(PROGRESS_ID, { passed: jhPct >= 80, pct: jhPct, attempted: true });
             document.getElementById('quiz-container').classList.add('hidden');
             document.querySelector('header').classList.add('hidden');
             const resultScreen = document.getElementById('result-screen');
