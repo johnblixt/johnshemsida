@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Straffrätt – Begrepp</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="progress.js"></script>
+  <style>
+    body { font-family: 'Fredoka', system-ui, sans-serif; background: #f0fdfa; }
+    .flip-card { perspective: 1000px; height: 350px; width: 100%; max-width: 400px; cursor: pointer; }
+    .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+    .flipped-classes { transform: rotateY(180deg); }
+    .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+    .flip-card-back { transform: rotateY(180deg); }
+  </style>
+</head>
+<body class="min-h-screen">
+
+<div id="root"></div>
+
+<script>
+  // Smart tillbaka-navigering: samma domän → history.back(), annars områdessidan.
+  function smartBack(e) {
+    if (e) e.preventDefault();
+    try {
+      if (document.referrer && new URL(document.referrer).host === location.host && history.length > 1) {
+        history.back();
+        return;
+      }
+    } catch (err) {}
+    location.href = 'rs_straff.html';
+  }
+</script>
+
+<script type="text/babel">
+const PRIMARY = '#0d9488';
+const PRIMARY_LIGHT = '#ccfbf1';
+const PRIMARY_TEXT = '#134e4a';
+
+// ════════════════════════════════════════════════════════════
+// BEGREPP – en gemensam array för alla fem vyer
+// Källor: brott_och_straff_material.md, brottsbalken_specialstrafflagarna_material.md
+// ════════════════════════════════════════════════════════════
+const concepts = [
+  { id: 1, term: 'Brott',
+    def: 'En gärning, det vill säga en handling, som är beskriven i en författning och som det finns ett straff föreskrivet för.',
+    lucktext: 'Att ljuga för en kompis kan vara omoraliskt men är inget _____, eftersom handlingen inte står beskriven i någon lag med ett straff.',
+    scenario: 'Riksdagen beslutar att en viss handling ska vara förbjuden och skriver in den i en lag tillsammans med ett straff. Från och med nu kan den som gör så dömas.',
+    ickeExempel: {
+      correct: 'Elsa tar en jacka i en butik utan att betala. Handlingen står beskriven i brottsbalken och det finns ett straff för den.',
+      trap: 'Elsa sviker ett löfte till sin bästa vän. Många tycker att det är fel, så handlingen räknas som brottslig fast ingen lag nämner den.',
+      explanation: 'Ett brott kräver att handlingen är beskriven i en författning med ett straff kopplat till sig – att något är moraliskt fel räcker inte.' } },
+
+  { id: 2, term: 'Brottsbalken',
+    def: 'Brottsbalken (BrB) är den centrala lagen för brott och brottspåföljder. Där beskrivs de flesta brotten, till exempel mord, stöld, rån och misshandel.',
+    lucktext: 'Reglerna om mord, stöld och misshandel, och om vilka påföljder som finns, står samlade i _____.',
+    scenario: 'Domaren slår upp den lag där de flesta brotten finns uppräknade kapitel för kapitel: brott mot liv och hälsa, förmögenhetsbrott och brott mot offentliga intressen.',
+    ickeExempel: {
+      correct: 'Åklagaren slår upp brottet rån i den lag som samlar de flesta brotten, till exempel mord, stöld och misshandel.',
+      trap: 'Åklagaren slår upp rattfylleri och narkotikabrott i samma lag, eftersom alla brott i Sverige står samlade just där.',
+      explanation: 'Brottsbalken samlar de flesta brott, men inte alla – trafikbrott och narkotikabrott finns i specialstrafflagar som kompletterar brottsbalken.' } },
+
+  { id: 3, term: 'Specialstraffrätt',
+    def: 'Separata lagar, specialstrafflagar, som reglerar straffbelagda brott som inte står i brottsbalken – till exempel trafikbrottslagen, narkotikastrafflagen och skattebrottslagen.',
+    lucktext: 'Rattfylleri står inte i brottsbalken utan regleras inom _____, i lagen om straff för vissa trafikbrott.',
+    scenario: 'En person döms för att ha smugglat varor över gränsen. Domstolen hittar inte brottet i den stora lagboken om brott, utan i en separat lag som bara gäller just den sortens brott.',
+    ickeExempel: {
+      correct: 'Ett skattebrott regleras i skattebrottslagen, en separat lag som finns vid sidan av och kompletterar brottsbalken.',
+      trap: 'Ett skattebrott regleras i ett eget kapitel i brottsbalken, eftersom alla straffbara handlingar måste stå just där.',
+      explanation: 'Specialstraffrätten består av separata lagar utanför brottsbalken – skattebrott, trafikbrott och narkotikabrott regleras där.' } },
+
+  { id: 4, term: 'Legalitetsprincipen',
+    def: 'En domstol får inte döma för en handling som inte motsvaras av något brott i lag. Principen består av retroaktivitetsförbudet, analogiförbudet och obestämdhetsförbudet.',
+    lucktext: 'Enligt _____ kan ingen dömas för en handling som blev förbjuden först efter att den utfördes.',
+    scenario: 'En ny lag som förbjuder en viss handling börjar gälla i maj. Leo gjorde just det i mars, men domstolen kan inte döma honom, eftersom handlingen inte var förbjuden då.',
+    ickeExempel: {
+      correct: 'Domstolen friar Sara, eftersom det hon gjorde inte stod beskrivet som ett brott i någon lag när hon gjorde det.',
+      trap: 'Domstolen dömer Sara, eftersom det hon gjorde liknar ett annat brott i lagen och domaren tycker att det är lika klandervärt.',
+      explanation: 'Legalitetsprincipen förbjuder domstolen att döma för en handling som inte motsvaras av ett brott i lag. Att utsträcka en regel till liknande fall strider mot analogiförbudet.' } },
+
+  { id: 5, term: 'Objektiva rekvisit',
+    def: 'Den specifika handling som utförs och dess konsekvenser, så som de beskrivs i lagtexten. Det måste också finnas ett tydligt orsakssamband mellan gärningen och verkan (adekvat kausalitet).',
+    lucktext: 'I paragrafen om stöld är "olovligen tar vad annan tillhör" och "tillgreppet innebär skada" exempel på _____.',
+    scenario: 'En man stoppar en tröja i väskan i en butik men grips innan han lämnar butiken. Han erkänner att han tänkte ta den, men eftersom tillgreppet och skadan inte är uppfyllda går han fri.',
+    ickeExempel: {
+      correct: 'Vid stöld måste det visas att personen faktiskt olovligen tog något som tillhörde en annan, och att det innebar skada.',
+      trap: 'Vid stöld måste det visas att personen hade för avsikt att behålla det som togs och tillägna sig det för egen del.',
+      explanation: 'Objektiva rekvisit beskriver själva handlingen och dess följder. Avsikten att tillägna sig något är ett subjektivt rekvisit.' } },
+
+  { id: 6, term: 'Subjektiva rekvisit',
+    def: 'Gärningspersonens avsikt, det vill säga uppsåt, som också krävs för att handlingen ska vara brottslig. I vissa fall räcker oaktsamhet, om lagen säger det.',
+    lucktext: 'Formuleringen "med uppsåt att tillägna sig det" i paragrafen om stöld beskriver brottets _____.',
+    scenario: 'I rätten handlar diskussionen inte om vad den åtalade gjorde – det finns på film – utan om vad han tänkte och ville när han gjorde det.',
+    ickeExempel: {
+      correct: 'Domstolen prövar om Nora medvetet ville ta väskan, eller om hon på allvar trodde att den var hennes egen.',
+      trap: 'Domstolen prövar om väskan faktiskt tillhörde någon annan och om ägaren förlorade något på att den togs.',
+      explanation: 'Subjektiva rekvisit gäller gärningspersonens avsikt. Om väskan tillhörde någon annan och om det blev skada är objektiva rekvisit.' } },
+
+  { id: 7, term: 'Uppsåt',
+    def: 'Att handlingen är medveten (på latin dolus). Tre nivåer: direkt uppsåt (följden är syftet), insiktsuppsåt (praktiskt taget säker på följden) och likgiltighetsuppsåt (insåg risken men var likgiltig).',
+    lucktext: 'Huvudregeln är att en gärning bara är ett brott om den begås med _____, om inte lagen uttryckligen säger att oaktsamhet räcker.',
+    scenario: 'Natalie siktar medvetet in bilen mot Pontus, eftersom hon vill skada honom. Domstolen konstaterar att hon gjorde det med flit.',
+    ickeExempel: {
+      correct: 'Natalie insåg att hon kunde köra på Pontus men struntade i om det hände – det räcker för den lägsta nivån.',
+      trap: 'Natalie körde på Pontus för att hon tittade på mobilen och inte såg honom alls – det räcker för den lägsta nivån.',
+      explanation: 'Den lägsta nivån, likgiltighetsuppsåt, kräver att personen insåg risken. Att inte se något alls på grund av ouppmärksamhet är oaktsamhet, inte uppsåt.' } },
+
+  { id: 8, term: 'Oaktsamhet',
+    def: 'Vårdslöshet (på latin culpa) – en lägre grad av skuld än uppsåt. Räcker bara för fällande dom när det uttryckligen står i den aktuella paragrafen.',
+    lucktext: 'En bilförare som kör mot rött ljus och krockar med en cyklist som dör kan dömas för vållande till annans död, ett brott där _____ räcker.',
+    scenario: 'Erik hanterar ett stearinljus slarvigt utan att inse att elden kan sprida sig. Han ville inte att något skulle brinna, men han var inte tillräckligt försiktig.',
+    ickeExempel: {
+      correct: 'Den som av slarv orsakar en annan människas död kan dömas för vållande till annans död, eftersom lagen uttryckligen säger det.',
+      trap: 'Den som av slarv orsakar en brand kan alltid dömas för mordbrand, eftersom slarv räcker för alla brott i brottsbalken.',
+      explanation: 'Oaktsamhet räcker bara när paragrafen uttryckligen säger det. Paragrafen om mordbrand säger inte det – där krävs uppsåt.' } },
+
+  { id: 9, term: 'Försök till brott',
+    def: 'När någon försökt begå ett brott men inte lyckats, vilket i vissa fall är straffbart (BrB 23 kap.). För allvarliga brott kan även förberedelse och stämpling vara straffbara.',
+    lucktext: 'Den som har börjat genomföra ett allvarligt brott men misslyckas kan ändå straffas, eftersom _____ i vissa fall är straffbart enligt BrB 23 kap.',
+    scenario: 'Tjuven har redan brutit upp låset till cykelförrådet när larmet går, och han flyr tomhänt. Trots att han inte fick med sig något kan han straffas.',
+    ickeExempel: {
+      correct: 'Tjuven börjar bära ut en tv ur lägenheten men tappar den och flyr tomhänt när grannen kommer – han kan straffas ändå.',
+      trap: 'Två kompisar pratar löst om att det vore kul att råna en kiosk men gör sedan ingenting mer – de kan straffas för det.',
+      explanation: 'Försök kräver att man faktiskt börjat genomföra brottet. Ett "löst snack med en kompis" räcker inte för att det ska vara brottsligt.' } },
+
+  { id: 10, term: 'Nödvärn',
+    def: 'Rätten att använda våld i en nödsituation, till exempel vid ett angrepp, om våldet inte är uppenbart oförsvarligt (BrB 24 kap.). Bruka mer våld än situationen kräver kallas nödvärnsexcess.',
+    lucktext: 'Hon slog undan angriparens arm för att skydda sig, och eftersom våldet inte var uppenbart oförsvarligt var det _____ och därmed straffritt.',
+    scenario: 'En man angrips med en hammare och slår tillbaka med en mopedhjälm för att skydda sig. Domstolen bedömer de första slagen som straffria.',
+    ickeExempel: {
+      correct: 'Amir knuffar bort en person som slår honom och slutar direkt när angreppet upphör.',
+      trap: 'Amir fortsätter slå angriparen även när denne ligger ner, eftersom han fortfarande känner sig rädd.',
+      explanation: 'Nödvärn gäller bara så länge angreppet pågår. Våld efter att angreppet upphört är nödvärnsexcess och kan straffas, till exempel som misshandel.' } },
+
+  { id: 11, term: 'Påföljd',
+    def: 'Det som ett brott kan leda till enligt lag – oftast ett straff som böter eller fängelse, men också till exempel villkorlig dom, skyddstillsyn eller särskild vård.',
+    lucktext: 'Tingsrätten fann honom skyldig och skulle sedan bestämma vilken _____ han skulle få: böter, villkorlig dom eller fängelse.',
+    scenario: 'När den åtalade har förklarats skyldig återstår frågan om han ska få böter, skyddstillsyn eller fängelse.',
+    ickeExempel: {
+      correct: 'Rätten dömde Kim till skyddstillsyn för misshandeln, så att Kim skulle ha regelbunden kontakt med en övervakare.',
+      trap: 'Rätten bestämde att Kim skulle betala skadestånd till offret för misshandeln, och det var själva straffet för brottet.',
+      explanation: 'Påföljder är till exempel böter, fängelse, villkorlig dom och skyddstillsyn. Skadestånd räknas i materialet som annan rättsverkan av brottet, inte som påföljd.' } },
+
+  { id: 12, term: 'Straffskala',
+    def: 'Anger det lägsta och det högsta straff som kan dömas ut för ett visst brott (BrB 29 kap.).',
+    lucktext: 'För mordbrand är _____ fängelse i lägst två och högst åtta år.',
+    scenario: 'Lagen anger att ett visst brott kan ge allt mellan böter och fyra års fängelse.',
+    ickeExempel: {
+      correct: 'Paragrafen om stöld säger att straffet för brottet kan bli fängelse i högst två år.',
+      trap: 'Domstolen bedömer att just den här stölden var allvarligare än de flesta andra stölder.',
+      explanation: 'Straffskalan är ramen i lagen – lägsta och högsta straff. Hur allvarligt ett enskilt brott är bedöms med straffvärdet.' } },
+
+  { id: 13, term: 'Straffvärde',
+    def: 'Anger hur allvarligt ett brott är i relation till andra brott, och avgör var i straffskalan straffet för en viss gärningsperson hamnar.',
+    lucktext: 'Tingsrätten ansåg att jaktbrottets _____ låg på fängelse i två månader.',
+    scenario: 'Två personer har begått samma typ av brott, men den ena gick mycket brutalare till väga. Domstolen placerar därför hennes straff högre upp inom lagens ram.',
+    ickeExempel: {
+      correct: 'Domstolen bedömer att just den här misshandeln var grövre än de flesta andra och placerar straffet högt.',
+      trap: 'Lagen anger att stöld kan ge fängelse i högst två år, oavsett hur stölden gick till.',
+      explanation: 'Straffvärdet gäller hur allvarligt det enskilda brottet är. Lagens ram med lägsta och högsta straff är straffskalan.' } },
+
+  { id: 14, term: 'Fängelse',
+    def: 'Den strängaste påföljden, för allvarliga brott med högt straffvärde. Kan vara tidsbestämt eller livstid. Villkorlig frigivning kan bli aktuell när två tredjedelar av straffet är avtjänat.',
+    lucktext: 'Rån är ett artbrott och leder därför nästan alltid till _____.',
+    scenario: 'Den dömde ska sitta sex år på en anstalt. Om han sköter sig kan han släppas på prov när fyra år har gått.',
+    ickeExempel: {
+      correct: 'Den som dömts till tio års fängelse kan tidigast friges villkorligt när två tredjedelar, alltså knappt sju år, är avtjänade.',
+      trap: 'Den som dömts till tio års fängelse kan tidigast friges villkorligt när hälften, alltså fem år, är avtjänade.',
+      explanation: 'Villkorlig frigivning kräver att två tredjedelar av fängelsestraffet är avtjänat – inte hälften.' } },
+
+  { id: 15, term: 'Böter',
+    def: 'En lindrigare påföljd än fängelse, för brott med lägre straffvärde. Penningböter är en bestämd summa; dagsböter sätts i relation till den bötfälldes inkomst.',
+    lucktext: 'För en ringa stöld dömdes hon till _____ som räknades ut utifrån hennes inkomst.',
+    scenario: 'Två personer döms för samma trafikbrott. Den som tjänar mer får betala en högre summa, eftersom beloppet beror på inkomsten.',
+    ickeExempel: {
+      correct: 'Två personer döms för samma brott till lika många dagsböter, men den med högre inkomst betalar mer.',
+      trap: 'Två personer döms för samma brott till lika många dagsböter, och båda betalar exakt samma summa oavsett inkomst.',
+      explanation: 'Dagsböter sätts i relation till inkomsten – ju mer man tjänar, desto större blir summan. En fast summa är penningböter.' } },
+
+  { id: 16, term: 'Villkorlig dom',
+    def: 'Döms ut när den dömde anses kunna avhålla sig från fortsatt brottslighet utan övervakning, till exempel om brottet var en förmodad engångshändelse. Prövotiden är två år.',
+    lucktext: 'Eftersom brottet verkade vara en engångshändelse fick 19-åringen _____ med en prövotid på två år.',
+    scenario: 'Två 19-åringar som aldrig tidigare begått brott döms för ett jaktbrott. De slipper fängelse och får ingen övervakare, men under två år måste de sköta sig.',
+    ickeExempel: {
+      correct: 'Elias döms för ett brott som verkar vara en engångshändelse och ska under två år sköta sig utan övervakare.',
+      trap: 'Elias har avtjänat två tredjedelar av sitt fängelsestraff och släpps nu ut på prov resten av strafftiden.',
+      explanation: 'Villkorlig dom döms ut i stället för fängelse. Att släppas på prov efter två tredjedelar av ett fängelsestraff är villkorlig frigivning.' } },
+
+  { id: 17, term: 'Skyddstillsyn',
+    def: 'En påföljd för mindre allvarliga brott där den dömde har regelbunden kontakt med en övervakare. Tanken är att vardagslivet med utbildning eller arbete inte ska upphöra.',
+    lucktext: 'Hon fick behålla sitt jobb men dömdes till _____ och skulle träffa en övervakare regelbundet.',
+    scenario: 'Efter domen fortsätter Alex sin utbildning som vanligt, men varje vecka ska han träffa en person från frivården som håller koll på honom.',
+    ickeExempel: {
+      correct: 'Mira döms för ett mindre allvarligt brott, får fortsätta jobba och ska träffa en övervakare regelbundet.',
+      trap: 'Mira döms för ett engångsbrott och ska under två år sköta sig helt på egen hand, utan någon övervakare.',
+      explanation: 'Skyddstillsyn innebär regelbunden kontakt med en övervakare. Om ingen övervakning behövs är det villkorlig dom.' } },
+
+  { id: 18, term: 'Allmänprevention',
+    def: 'Att straffet ska avskräcka allmänheten från att begå samma brott. Allmänprevention är en del av den relativa straffteorin.',
+    lucktext: 'Riksdagen skärpte straffet för vapenbrott för att skrämma andra från att begå brottet – ett exempel på _____.',
+    scenario: 'Politiker vill höja straffet för ett brott som väcker uppmärksamhet i media, så att folk i allmänhet ska låta bli att begå det.',
+    ickeExempel: {
+      correct: 'Ett hårt straff för en gärningsperson ska få andra människor i samhället att avstå från samma brott.',
+      trap: 'Ett hårt straff för en gärningsperson ska få just den personen att avstå från att begå brott igen.',
+      explanation: 'Allmänprevention riktar sig mot allmänheten. När straffet ska påverka den dömde själv kallas det individualprevention.' } },
+
+  { id: 19, term: 'Individualprevention',
+    def: 'Att straffet utformas så att just den dömde inte begår eller upprepar brott – genom avskräckning, men också genom behandling och återanpassning till samhället.',
+    lucktext: 'Missbruksbehandlingen under strafftiden skulle göra att just han inte återföll i brott – ett tydligt uttryck för _____.',
+    scenario: 'Domstolen väljer en påföljd med behandling mot missbruk, så att den dömde ska kunna återgå till samhället som laglydig medborgare.',
+    ickeExempel: {
+      correct: 'Påföljden innehåller behandling, så att den dömde ska kunna leva ett laglydigt liv efter straffet.',
+      trap: 'Påföljden görs extra hård, så att andra i samhället ska se vad som händer om man begår brottet.',
+      explanation: 'Individualprevention riktar sig mot den dömde själv. Att avskräcka andra genom ett hårt exempel är allmänprevention.' } },
+
+  { id: 20, term: 'Vedergällning',
+    def: 'Att straffet är samhällets hämnd i proportion till allvaret i brottet – kärnan i den absoluta straffteorin. Talionprincipen, "öga för öga, tand för tand", är en del av den.',
+    lucktext: 'Enligt den absoluta straffteorin är straffet en _____ för det brott som begåtts, inte ett sätt att förebygga nya brott.',
+    scenario: 'Enligt Hammurabis lagar skulle den som skadat någon själv utsättas för samma skada som offret fått utstå.',
+    ickeExempel: {
+      correct: 'Straffet motiveras med att gärningspersonen förtjänar att lida i proportion till hur allvarligt brottet var.',
+      trap: 'Straffet motiveras med att det ska förhindra att gärningspersonen begår nya brott i framtiden.',
+      explanation: 'Vedergällning ser bakåt – straffet är ett svar på brottet. Att förebygga nya brott är den relativa straffteorins syfte.' } },
+];
+
+// Härledda vy-data – allt kommer från samma concepts-array
+const lucktextData = concepts.map(c => ({ id: c.id, term: c.term, sentence: c.lucktext, definition: c.def }));
+const scenarioData = concepts.map(c => ({ id: c.id, term: c.term, scenario: c.scenario }));
+const ickeExData = concepts.map(c => ({ id: c.id, term: c.term, ...c.ickeExempel }));
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// Svarsalternativ i Test 1: rätt svar först, distraktorer ur samma array, shuffle sist.
+function buildOptions(currentItem, allData) {
+  const distractors = allData.filter(d => d.id !== currentItem.id);
+  shuffleArray(distractors);
+  return shuffleArray([currentItem, ...distractors.slice(0, 3)]);
+}
+
+const VIEWS = ['Lista', 'Flashcards', 'Lucktext', 'Scenario', 'Icke-ex.'];
+const VIEW_LABELS = { 'Scenario': 'Test 1', 'Icke-ex.': 'Test 2' };
+const SCORE_VIEWS = ['Lucktext', 'Scenario', 'Icke-ex.'];
+const PROGRESS_KEY = 'rs_straff_progress';
+const PROGRESS_ID = 'rs_straff_begrepp'; // bestående progress (progress.js)
+const RANK_SALT = 'rsstraffbrottochstraff';
+const RANK_ORDER = { D: 1, C: 2, B: 3, A: 4, S: 5 };
+
+function loadProgress() {
+  try {
+    const raw = sessionStorage.getItem(PROGRESS_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return { completed: {}, best: {} };
+}
+
+function saveProgress(progress) {
+  try {
+    sessionStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+  } catch (e) {}
+}
+
+function computeRank(progress) {
+  const completedCount = VIEWS.filter(v => progress.completed[v]).length;
+  if (completedCount === 0) return null;
+  if (completedCount === 5) {
+    const allPerfect = SCORE_VIEWS.every(v => (progress.best[v] || 0) >= 100);
+    return allPerfect ? 'S' : 'A';
+  }
+  if (completedCount === 4) return 'A';
+  if (completedCount === 3) return 'B';
+  if (completedCount === 2) return 'C';
+  return 'D';
+}
+
+function computeVerificationCode(progress, rank) {
+  const d = new Date();
+  const dateStr = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+  const completedViews = VIEWS.filter(v => progress.completed[v]).sort().join(',');
+  const input = dateStr + '|' + completedViews + '|' + (rank || '-') + '|' + RANK_SALT;
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) {
+    hash = (hash + input.charCodeAt(i) * (i + 1)) % 1679616; // 36^4
+  }
+  return 'RSSTRAFF-' + hash.toString(36).toUpperCase().padStart(4, '0');
+}
+
+function LucktextView({ onComplete }) {
+  const normalize = (s) => s.trim().toLowerCase();
+  const initStates = () => lucktextData.map(() => ({ value: '', status: 'unanswered', attempts: 0 }));
+
+  const [states, setStates] = React.useState(initStates);
+  const [struckTerms, setStruckTerms] = React.useState(new Set());
+
+  const finished = states.every(s => s.status === 'correct' || s.status === 'revealed');
+  const correctCount = states.filter(s => s.status === 'correct').length;
+
+  React.useEffect(() => {
+    if (finished) onComplete((correctCount / lucktextData.length) * 100);
+  }, [finished, correctCount, onComplete]);
+
+  const handleInput = (idx, val) => {
+    setStates(prev => {
+      const next = [...prev];
+      next[idx] = { ...next[idx], value: val };
+      return next;
+    });
+  };
+
+  const check = (idx) => {
+    const item = lucktextData[idx];
+    const state = states[idx];
+    if (state.status === 'correct' || state.status === 'revealed') return;
+    setStates(prev => {
+      const next = [...prev];
+      if (normalize(state.value) === normalize(item.term)) {
+        next[idx] = { ...state, status: 'correct' };
+        setStruckTerms(s => new Set([...s, item.term]));
+      } else if (state.attempts === 0) {
+        next[idx] = { ...state, status: 'warning', attempts: 1 };
+      } else {
+        next[idx] = { ...state, status: 'wrong', attempts: state.attempts + 1 };
+      }
+      return next;
+    });
+  };
+
+  const correctAll = () => {
+    setStates(prev => prev.map((state, idx) => {
+      if (state.status === 'correct') return state;
+      return { ...state, status: 'revealed', value: lucktextData[idx].term };
+    }));
+    setStruckTerms(new Set(lucktextData.map(d => d.term)));
+  };
+
+  const restart = () => {
+    setStates(initStates());
+    setStruckTerms(new Set());
+  };
+
+  const borderColor = (status) => {
+    if (status === 'correct') return '#16a34a';
+    if (status === 'revealed' || status === 'wrong') return '#dc2626';
+    if (status === 'warning') return '#f97316';
+    return '#e2e8f0';
+  };
+
+  return (
+    <div>
+      <div className="bg-white rounded-2xl border border-slate-200 p-4 mb-6 shadow-sm">
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Begreppsbank</p>
+        <div className="flex flex-wrap gap-2">
+          {lucktextData.map(item => (
+            <span
+              key={item.id}
+              className="px-2 py-1 rounded-lg text-sm font-medium transition-all"
+              style={
+                struckTerms.has(item.term)
+                  ? { background: '#f0fdf4', color: '#86efac', textDecoration: 'line-through' }
+                  : { background: PRIMARY_LIGHT, color: PRIMARY_TEXT }
+              }
+            >
+              {item.term}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-4 mb-6">
+        {lucktextData.map((item, idx) => {
+          const state = states[idx];
+          const parts = item.sentence.split('_____');
+          const inputWidth = Math.max(item.term.length * 9, 130);
+
+          return (
+            <div
+              key={item.id}
+              className="bg-white rounded-xl shadow-sm p-4"
+              style={{ border: `1.5px solid ${borderColor(state.status)}` }}
+            >
+              <p className="text-slate-700 text-sm leading-relaxed mb-2 flex flex-wrap items-baseline gap-x-1">
+                <span>{parts[0]}</span>
+                <input
+                  type="text"
+                  value={state.value}
+                  onChange={e => handleInput(idx, e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && check(idx)}
+                  disabled={state.status === 'correct' || state.status === 'revealed'}
+                  placeholder="skriv begrepp…"
+                  className="border-b-2 bg-transparent outline-none px-1 text-sm font-semibold"
+                  style={{
+                    width: inputWidth + 'px',
+                    maxWidth: '100%',
+                    borderBottomColor: borderColor(state.status) === '#e2e8f0' ? PRIMARY : borderColor(state.status),
+                    color: state.status === 'correct' ? '#16a34a' : state.status === 'revealed' ? '#dc2626' : '#1e293b',
+                  }}
+                />
+                <span>{parts[1]}</span>
+              </p>
+
+              {state.status === 'warning' && (
+                <p className="text-orange-500 text-xs font-medium mt-1">Är du säker att du stavat rätt?</p>
+              )}
+              {state.status === 'wrong' && (
+                <p className="text-red-500 text-xs font-medium mt-1">Fel svar — prova igen eller tryck "Rätta alla".</p>
+              )}
+              {(state.status === 'correct' || state.status === 'revealed') && (
+                <div
+                  className="mt-2 text-xs rounded-lg p-2 leading-relaxed"
+                  style={{
+                    background: state.status === 'correct' ? '#dcfce7' : '#fee2e2',
+                    color: state.status === 'correct' ? '#15803d' : '#dc2626',
+                  }}
+                >
+                  {state.status === 'correct' ? '✓ Rätt! ' : `✗ Rätt svar: ${item.term}. `}
+                  {item.definition}
+                </div>
+              )}
+
+              {state.status !== 'correct' && state.status !== 'revealed' && (
+                <button
+                  onClick={() => check(idx)}
+                  className="mt-2 text-xs font-bold px-3 py-1 rounded-lg text-white"
+                  style={{ background: PRIMARY }}
+                >
+                  Kontrollera
+                </button>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {finished && (
+        <div className="rounded-2xl p-6 text-center mb-4 border-2" style={{ background: '#f0fdfa', borderColor: PRIMARY }}>
+          <p className="text-2xl font-bold mb-1" style={{ color: PRIMARY_TEXT }}>
+            {correctCount} / {lucktextData.length} rätt
+          </p>
+          <p className="text-slate-500 text-sm">
+            {correctCount === lucktextData.length
+              ? '🎉 Perfekt! Du kan alla begrepp!'
+              : correctCount >= Math.round(lucktextData.length * 0.8)
+              ? '👍 Bra jobbat! Öva lite till på de du missat.'
+              : '📚 Fortsätt öva – du är på rätt spår!'}
+          </p>
+        </div>
+      )}
+
+      <div className="flex gap-3 mb-6">
+        {!finished && (
+          <button onClick={correctAll} className="flex-1 bg-slate-200 text-slate-700 font-bold py-2 rounded-xl text-sm hover:bg-slate-300 transition-colors">
+            Rätta alla
+          </button>
+        )}
+        <button
+          onClick={restart}
+          className="flex-1 text-white font-bold py-2 rounded-xl text-sm transition-colors"
+          style={{ background: PRIMARY }}
+        >
+          Börja om
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ListView({ onComplete }) {
+  const sentinelRef = React.useRef(null);
+
+  React.useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) onComplete();
+    }, { threshold: 1.0 });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [onComplete]);
+
+  return (
+    <div className="flex flex-col gap-3">
+      {concepts.map((c) => (
+        <div
+          key={c.id}
+          className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border-l-8 pl-4 pr-4 py-3"
+          style={{ borderLeftColor: PRIMARY }}
+        >
+          <div className="flex items-start gap-3">
+            <span
+              className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mt-0.5"
+              style={{ background: PRIMARY_LIGHT, color: PRIMARY_TEXT }}
+            >
+              {c.id}
+            </span>
+            <div>
+              <p className="font-bold text-slate-800 text-base leading-snug">{c.term}</p>
+              <p className="text-slate-500 text-sm mt-1 leading-relaxed">{c.def}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+      <div ref={sentinelRef} style={{ height: 1 }} />
+    </div>
+  );
+}
+
+function FlashcardView({ onComplete }) {
+  const total = concepts.length;
+  const [deck, setDeck] = React.useState(() => shuffleArray([...concepts]));
+  const [deckIdx, setDeckIdx] = React.useState(0);
+  const [isFlipped, setIsFlipped] = React.useState(false);
+  const [kudeInte, setKudeInte] = React.useState([]);
+  const [kunde, setKunde] = React.useState([]);
+  const [phase, setPhase] = React.useState('playing'); // 'playing' | 'roundEnd' | 'allDone'
+
+  const restartAll = () => {
+    setDeck(shuffleArray([...concepts]));
+    setDeckIdx(0);
+    setIsFlipped(false);
+    setKudeInte([]);
+    setKunde([]);
+    setPhase('playing');
+  };
+
+  const sort = (pile) => {
+    const card = deck[deckIdx];
+    const newKudeInte = pile === 'kudeInte' ? [...kudeInte, card] : kudeInte;
+    const newKunde    = pile === 'kunde'    ? [...kunde, card]    : kunde;
+    const nextIdx = deckIdx + 1;
+    setKudeInte(newKudeInte);
+    setKunde(newKunde);
+    setIsFlipped(false);
+    if (nextIdx >= deck.length) {
+      setDeckIdx(nextIdx);
+      setPhase(newKudeInte.length === 0 ? 'allDone' : 'roundEnd');
+      onComplete();
+    } else {
+      setDeckIdx(nextIdx);
+    }
+  };
+
+  const nextRound = () => {
+    setDeck(shuffleArray([...kudeInte]));
+    setDeckIdx(0);
+    setIsFlipped(false);
+    setKudeInte([]);
+    setPhase('playing');
+  };
+
+  if (phase === 'allDone') return (
+    <div className="flex flex-col items-center gap-6">
+      <div className="bg-green-50 border-2 border-green-400 rounded-3xl p-8 text-center w-full max-w-sm">
+        <div className="text-5xl mb-4">🎉</div>
+        <p className="text-2xl font-bold text-green-700 mb-2">Alla kort klarade!</p>
+        <p className="text-slate-600 mb-6">Du behärskar <span className="font-bold text-green-700">{kunde.length} av {total}</span> begrepp.</p>
+        <button onClick={restartAll} className="w-full text-white px-8 py-3 rounded-2xl font-bold transition-colors" style={{ background: PRIMARY }}>Börja om med alla</button>
+      </div>
+    </div>
+  );
+
+  if (phase === 'roundEnd') return (
+    <div className="flex flex-col items-center gap-6">
+      <div className="bg-white border-2 border-slate-200 rounded-3xl p-8 text-center w-full max-w-sm shadow-sm">
+        <p className="text-lg font-bold text-slate-700 mb-4">Runda klar!</p>
+        <div className="flex justify-center gap-8 mb-6">
+          <div className="text-center">
+            <p className="text-3xl font-bold text-green-600">{kunde.length}</p>
+            <p className="text-xs text-slate-400 uppercase tracking-wide mt-1">Kunde</p>
+          </div>
+          <div className="text-center">
+            <p className="text-3xl font-bold text-red-500">{kudeInte.length}</p>
+            <p className="text-xs text-slate-400 uppercase tracking-wide mt-1">Kunde inte</p>
+          </div>
+        </div>
+        <div className="flex flex-col gap-3">
+          <button onClick={nextRound} className="w-full bg-slate-900 text-white px-8 py-3 rounded-2xl font-bold hover:bg-slate-800 transition-colors">
+            Öva på Kunde inte ({kudeInte.length} kort) →
+          </button>
+          <button onClick={restartAll} className="w-full text-white px-8 py-3 rounded-2xl font-bold transition-colors" style={{ background: PRIMARY }}>
+            Börja om med alla
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const card = deck[deckIdx];
+  const remaining = deck.length - deckIdx;
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="flex gap-3 mb-5 w-full max-w-sm">
+        <div className="flex-1 bg-red-50 border border-red-200 rounded-xl p-2 text-center">
+          <p className="text-xl font-bold text-red-500">{kudeInte.length}</p>
+          <p className="text-[10px] text-red-400 uppercase tracking-wide font-bold">Kunde inte</p>
+        </div>
+        <div className="flex-1 bg-slate-100 border border-slate-200 rounded-xl p-2 text-center">
+          <p className="text-xl font-bold text-slate-400">{remaining}</p>
+          <p className="text-[10px] text-slate-400 uppercase tracking-wide font-bold">Kvar</p>
+        </div>
+        <div className="flex-1 bg-green-50 border border-green-200 rounded-xl p-2 text-center">
+          <p className="text-xl font-bold text-green-500">{kunde.length}</p>
+          <p className="text-[10px] text-green-400 uppercase tracking-wide font-bold">Kunde</p>
+        </div>
+      </div>
+      <div className="flip-card mb-5" onClick={() => setIsFlipped(!isFlipped)}>
+        <div className={`flip-card-inner ${isFlipped ? 'flipped-classes' : ''}`}>
+          <div className="flip-card-front" style={{ background: PRIMARY }}>
+            <h2 className="text-3xl font-bold text-white text-center px-4">{card.term}</h2>
+            <div className="absolute bottom-6 animate-pulse">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-white font-bold opacity-70">Klicka för svar</span>
+            </div>
+          </div>
+          <div className="flip-card-back bg-white" style={{ border: `2px solid ${PRIMARY}` }}>
+            <p className="text-lg leading-relaxed text-slate-800 font-medium px-4">{card.def}</p>
+            <div className="absolute bottom-6">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">Klicka för att vända</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {isFlipped && (
+        <div className="flex gap-3 w-full max-w-sm mb-4">
+          <button onClick={() => sort('kudeInte')} className="flex-1 bg-red-100 text-red-700 border-2 border-red-300 font-bold py-3 rounded-2xl hover:bg-red-200 active:scale-95 transition-all">
+            ✗ Kunde inte
+          </button>
+          <button onClick={() => sort('kunde')} className="flex-1 bg-green-100 text-green-700 border-2 border-green-300 font-bold py-3 rounded-2xl hover:bg-green-200 active:scale-95 transition-all">
+            ✓ Kunde
+          </button>
+        </div>
+      )}
+      <div className="flex flex-col items-center gap-2 mt-1">
+        <p className="text-slate-500 font-medium bg-slate-200 px-4 py-1 rounded-full text-xs">{deckIdx + 1} av {deck.length}</p>
+        <button onClick={restartAll} className="text-slate-400 text-xs hover:text-slate-600 transition-colors underline">↺ Börja om med alla</button>
+      </div>
+    </div>
+  );
+}
+
+function ScenarioView({ onComplete }) {
+  const total = scenarioData.length;
+  const [items, setItems] = React.useState(() => shuffleArray([...scenarioData]));
+  const [idx, setIdx] = React.useState(0);
+  const [options, setOptions] = React.useState(() => buildOptions(items[0], scenarioData));
+  const [selected, setSelected] = React.useState(null);
+  const [score, setScore] = React.useState(0);
+  const [phase, setPhase] = React.useState('playing');
+
+  React.useEffect(() => {
+    if (phase === 'done') onComplete((score / total) * 100);
+  }, [phase]);
+
+  const current = items[idx];
+  const isAnswered = selected !== null;
+
+  const handleSelect = (opt) => {
+    if (isAnswered) return;
+    setSelected(opt);
+    if (opt.id === current.id) setScore(s => s + 1);
+  };
+
+  const handleNext = () => {
+    const nextIdx = idx + 1;
+    if (nextIdx >= total) {
+      setPhase('done');
+    } else {
+      setOptions(buildOptions(items[nextIdx], scenarioData));
+      setIdx(nextIdx);
+      setSelected(null);
+    }
+  };
+
+  const restart = () => {
+    const newItems = shuffleArray([...scenarioData]);
+    setItems(newItems);
+    setIdx(0);
+    setOptions(buildOptions(newItems[0], scenarioData));
+    setSelected(null);
+    setScore(0);
+    setPhase('playing');
+  };
+
+  if (phase === 'done') return (
+    <div className="flex flex-col items-center gap-6">
+      <div className="rounded-3xl p-8 text-center w-full" style={{ background: PRIMARY_LIGHT, border: `2px solid ${PRIMARY}` }}>
+        <div className="text-5xl mb-4">🎯</div>
+        <p className="text-2xl font-bold mb-1" style={{ color: PRIMARY_TEXT }}>{score} / {total} rätt</p>
+        <p className="text-slate-500 text-sm mb-6">
+          {score === total
+            ? 'Perfekt! Du kopplar ihop alla situationer rätt.'
+            : score >= Math.round(total * 0.8)
+            ? 'Bra jobbat! Öva lite till på de du missat.'
+            : 'Fortsätt öva – du lär dig!'}
+        </p>
+        <button onClick={restart} className="text-white font-bold px-8 py-3 rounded-2xl" style={{ background: PRIMARY }}>
+          Börja om
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-slate-400 font-medium">{idx + 1} av {total}</span>
+        <span className="text-xs font-bold px-3 py-1 rounded-full" style={{ background: PRIMARY_LIGHT, color: PRIMARY_TEXT }}>
+          {score} rätt
+        </span>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-1.5 mb-1">
+        <div className="h-1.5 rounded-full transition-all" style={{ width: `${(idx / total) * 100}%`, background: PRIMARY }} />
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm p-5 border-l-4" style={{ borderLeftColor: PRIMARY }}>
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Vilket begrepp beskrivs?</p>
+        <p className="text-slate-800 text-base leading-relaxed">{current.scenario}</p>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        {options.map(opt => {
+          const isCorrect = opt.id === current.id;
+          const isSelected = selected && selected.id === opt.id;
+          let bg = '#ffffff', border = '#e2e8f0', textColor = '#1e293b';
+          if (isAnswered) {
+            if (isCorrect) { bg = '#dcfce7'; border = '#16a34a'; textColor = '#15803d'; }
+            else if (isSelected) { bg = '#fee2e2'; border = '#dc2626'; textColor = '#dc2626'; }
+          }
+          return (
+            <button
+              key={opt.id}
+              onClick={() => handleSelect(opt)}
+              disabled={isAnswered}
+              className="w-full text-left px-4 py-3 rounded-xl font-semibold text-sm transition-all border-2"
+              style={{ background: bg, borderColor: border, color: textColor }}
+            >
+              {opt.term}
+            </button>
+          );
+        })}
+      </div>
+
+      {isAnswered && (
+        <div
+          className="rounded-xl p-4 text-sm leading-relaxed"
+          style={
+            selected.id === current.id
+              ? { background: '#dcfce7', color: '#15803d' }
+              : { background: '#fee2e2', color: '#dc2626' }
+          }
+        >
+          {selected.id === current.id ? '✓ Rätt! ' : `✗ Rätt svar: ${current.term}. `}
+          {concepts.find(c => c.id === current.id).def}
+        </div>
+      )}
+
+      {isAnswered && (
+        <button
+          onClick={handleNext}
+          className="w-full text-white font-bold py-3 rounded-2xl text-sm"
+          style={{ background: PRIMARY }}
+        >
+          {idx + 1 < total ? 'Nästa scenario →' : 'Visa resultat'}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function IckeExView({ onComplete }) {
+  const total = ickeExData.length;
+
+  const makeQuestion = (item) => {
+    const correctFirst = Math.random() < 0.5;
+    return {
+      item,
+      optionA: correctFirst ? item.correct : item.trap,
+      optionB: correctFirst ? item.trap : item.correct,
+      correctIsA: correctFirst,
+    };
+  };
+
+  const [questions, setQuestions] = React.useState(() =>
+    shuffleArray([...ickeExData]).map(makeQuestion)
+  );
+  const [idx, setIdx] = React.useState(0);
+  const [chosen, setChosen] = React.useState(null); // 'A' | 'B' | null
+  const [score, setScore] = React.useState(0);
+  const [phase, setPhase] = React.useState('playing'); // 'playing' | 'done'
+
+  const current = questions[idx];
+  const isAnswered = chosen !== null;
+
+  React.useEffect(() => {
+    if (phase === 'done') onComplete((score / total) * 100);
+  }, [phase]);
+
+  const choose = (option) => {
+    if (isAnswered) return;
+    setChosen(option);
+    const isCorrect = (option === 'A') === current.correctIsA;
+    if (isCorrect) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (idx + 1 >= total) {
+      setPhase('done');
+    } else {
+      setIdx(idx + 1);
+      setChosen(null);
+    }
+  };
+
+  const restart = () => {
+    setQuestions(shuffleArray([...ickeExData]).map(makeQuestion));
+    setIdx(0);
+    setChosen(null);
+    setScore(0);
+    setPhase('playing');
+  };
+
+  if (phase === 'done') return (
+    <div className="flex flex-col items-center gap-6">
+      <div className="rounded-3xl p-8 text-center w-full" style={{ background: PRIMARY_LIGHT, border: `2px solid ${PRIMARY}` }}>
+        <div className="text-5xl mb-4">🎯</div>
+        <p className="text-2xl font-bold mb-1" style={{ color: PRIMARY_TEXT }}>{score} / {total} rätt</p>
+        <p className="text-slate-500 text-sm mb-6">
+          {score === total
+            ? 'Perfekt! Du kan skilja rätt tillämpning från fällan!'
+            : score >= Math.round(total * 0.8)
+            ? 'Bra jobbat! Öva lite till på de du missat.'
+            : 'Fortsätt öva — du är på rätt spår!'}
+        </p>
+        <button onClick={restart} className="text-white font-bold px-8 py-3 rounded-2xl" style={{ background: PRIMARY }}>
+          Börja om
+        </button>
+      </div>
+    </div>
+  );
+
+  const chosenCorrect = chosen !== null && (chosen === 'A') === current.correctIsA;
+  const aCorrect = current.correctIsA;
+  const bCorrect = !current.correctIsA;
+
+  const optionStyle = (option) => {
+    if (!isAnswered) return { background: '#ffffff', borderColor: '#e2e8f0', color: '#1e293b' };
+    const thisCorrect = (option === 'A') ? aCorrect : bCorrect;
+    const thisChosen = chosen === option;
+    if (thisCorrect) return { background: '#dcfce7', borderColor: '#16a34a', color: '#15803d' };
+    if (thisChosen) return { background: '#fee2e2', borderColor: '#dc2626', color: '#dc2626' };
+    return { background: '#f8fafc', borderColor: '#e2e8f0', color: '#94a3b8' };
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-slate-400 font-medium">{idx + 1} av {total}</span>
+        <span className="text-xs font-bold px-3 py-1 rounded-full" style={{ background: PRIMARY_LIGHT, color: PRIMARY_TEXT }}>
+          {score} rätt
+        </span>
+      </div>
+      <div className="w-full bg-slate-200 rounded-full h-1.5 mb-1">
+        <div className="h-1.5 rounded-full transition-all" style={{ width: `${(idx / total) * 100}%`, background: PRIMARY }} />
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm p-5 border-l-4" style={{ borderLeftColor: PRIMARY }}>
+        <p className="text-xs font-bold uppercase tracking-wide mb-1" style={{ color: PRIMARY }}>Begrepp</p>
+        <p className="text-xl font-bold text-slate-800">{current.item.term}</p>
+        <p className="text-slate-500 text-xs mt-1">Vilket alternativ beskriver en korrekt tillämpning?</p>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        {['A', 'B'].map(option => {
+          const text = option === 'A' ? current.optionA : current.optionB;
+          const s = optionStyle(option);
+          return (
+            <button
+              key={option}
+              onClick={() => choose(option)}
+              disabled={isAnswered}
+              className="w-full text-left px-4 py-4 rounded-xl text-sm border-2 transition-all leading-relaxed"
+              style={{ background: s.background, borderColor: s.borderColor, color: s.color, fontWeight: isAnswered && (option === 'A' ? aCorrect : bCorrect) ? 700 : 500 }}
+            >
+              <span className="font-bold mr-2">{option}.</span>{text}
+            </button>
+          );
+        })}
+      </div>
+
+      {isAnswered && (
+        <>
+          <div
+            className="rounded-xl p-4 text-sm leading-relaxed"
+            style={chosenCorrect
+              ? { background: '#dcfce7', color: '#15803d' }
+              : { background: '#fee2e2', color: '#dc2626' }}
+          >
+            {chosenCorrect ? '✓ Rätt! ' : '✗ Fel! '}
+            {current.item.explanation}
+          </div>
+          <button
+            onClick={next}
+            className="w-full text-white font-bold py-3 rounded-2xl text-sm"
+            style={{ background: PRIMARY }}
+          >
+            {idx + 1 < total ? 'Nästa begrepp →' : 'Visa resultat'}
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
+function App() {
+  const [activeView, setActiveView] = React.useState('Lista');
+  const [progress, setProgress] = React.useState(loadProgress);
+  const [celebrateRank, setCelebrateRank] = React.useState(null);
+  const prevRankRef = React.useRef(computeRank(loadProgress()));
+
+  React.useEffect(() => {
+    saveProgress(progress);
+  }, [progress]);
+
+  // Bestående progress: bästa resultat sparas på enheten. Rör inte sessionens rank eller kod.
+  React.useEffect(() => {
+    if (window.JHProgress) {
+      JHProgress.saveProgress(PROGRESS_ID, JHProgress.fromViews(progress, VIEWS, SCORE_VIEWS, computeRank(progress)));
+    }
+  }, [progress]);
+
+  const markComplete = React.useCallback((view, pct) => {
+    setProgress(prev => {
+      const nextCompleted = { ...prev.completed };
+      const nextBest = { ...prev.best };
+      let changed = false;
+
+      if (typeof pct === 'number' && !(nextBest[view] >= pct)) {
+        nextBest[view] = pct;
+        changed = true;
+      }
+
+      const thresholdMet = typeof pct === 'number' ? pct >= 80 : true;
+      if (thresholdMet && !nextCompleted[view]) {
+        nextCompleted[view] = true;
+        changed = true;
+      }
+
+      return changed ? { completed: nextCompleted, best: nextBest } : prev;
+    });
+  }, []);
+
+  const completeLista = React.useCallback(() => markComplete('Lista'), [markComplete]);
+  const completeFlashcards = React.useCallback(() => markComplete('Flashcards'), [markComplete]);
+  const completeLucktext = React.useCallback((pct) => markComplete('Lucktext', pct), [markComplete]);
+  const completeScenario = React.useCallback((pct) => markComplete('Scenario', pct), [markComplete]);
+  const completeIckeEx = React.useCallback((pct) => markComplete('Icke-ex.', pct), [markComplete]);
+
+  const rank = computeRank(progress);
+  const completedCount = VIEWS.filter(v => progress.completed[v]).length;
+  const code = computeVerificationCode(progress, rank);
+
+  React.useEffect(() => {
+    const prevOrder = prevRankRef.current ? RANK_ORDER[prevRankRef.current] : 0;
+    const newOrder = rank ? RANK_ORDER[rank] : 0;
+    if (newOrder > prevOrder) {
+      setCelebrateRank(rank);
+      const t = setTimeout(() => setCelebrateRank(null), 2500);
+      prevRankRef.current = rank;
+      return () => clearTimeout(t);
+    }
+    prevRankRef.current = rank;
+  }, [rank]);
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 py-6">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6 gap-2">
+        <a
+          href="rs_straff.html"
+          onClick={smartBack}
+          className="text-sm font-medium transition-colors w-32"
+          style={{ color: '#64748b' }}
+          onMouseEnter={e => e.currentTarget.style.color = PRIMARY}
+          onMouseLeave={e => e.currentTarget.style.color = '#64748b'}
+        >
+          ← Tillbaka till startsidan
+        </a>
+        <h1 className="text-xl font-bold text-center" style={{ color: PRIMARY_TEXT }}>
+          Straffrätt – Begrepp
+        </h1>
+        <div className="w-32" />
+      </div>
+
+      {/* Progress + rank */}
+      <div className="mb-4">
+        <div className="flex items-center justify-between mb-1.5 flex-wrap gap-2">
+          <span className="text-sm font-semibold text-slate-600">{completedCount}/5 avsnitt klara</span>
+          {rank && (
+            <span
+              className="text-xs font-bold px-2.5 py-1 rounded-full"
+              style={{ background: PRIMARY_LIGHT, color: PRIMARY_TEXT }}
+            >
+              Rank: {rank} · Kod: {code}
+            </span>
+          )}
+        </div>
+        <div className="w-full bg-slate-200 rounded-full h-1.5">
+          <div className="h-1.5 rounded-full transition-all" style={{ width: `${(completedCount / 5) * 100}%`, background: PRIMARY }} />
+        </div>
+        {completedCount === 5 && rank !== 'S' && (
+          <p className="text-xs text-slate-400 mt-1.5 italic">100% på alla poängvyer krävs för S-rank</p>
+        )}
+      </div>
+
+      {/* Toggle */}
+      <div className="flex gap-1 bg-slate-100 rounded-2xl p-1 mb-6 overflow-x-auto">
+        {VIEWS.map((view) => (
+          <button
+            key={view}
+            onClick={() => setActiveView(view)}
+            className="flex-1 min-w-0 px-2 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap"
+            style={
+              activeView === view
+                ? { background: PRIMARY, color: '#fff' }
+                : { color: '#94a3b8', background: 'transparent' }
+            }
+          >
+            {VIEW_LABELS[view] || view}
+            {progress.completed[view] && (
+              <span className="ml-1" style={{ color: activeView === view ? '#fff' : '#16a34a' }}>✓</span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Content */}
+      {activeView === 'Lista' && <ListView onComplete={completeLista} />}
+      {activeView === 'Flashcards' && <FlashcardView onComplete={completeFlashcards} />}
+      {activeView === 'Lucktext' && <LucktextView onComplete={completeLucktext} />}
+      {activeView === 'Scenario' && <ScenarioView onComplete={completeScenario} />}
+      {activeView === 'Icke-ex.' && <IckeExView onComplete={completeIckeEx} />}
+
+      {/* Footer */}
+      <footer className="mt-10 text-center text-xs text-slate-400 italic">
+        Källa: Straffrätt begreppslista (Rätten och samhället)
+      </footer>
+
+      {/* Rank celebration overlay */}
+      {celebrateRank && (
+        <div
+          className="fixed inset-0 flex items-center justify-center z-50 px-4"
+          style={{ background: 'rgba(15, 23, 42, 0.55)' }}
+          onClick={() => setCelebrateRank(null)}
+        >
+          <div className="bg-white rounded-3xl px-10 py-8 text-center shadow-2xl">
+            <div className="text-5xl mb-3">{celebrateRank === 'S' ? '🎉🏆🎉' : '🎉'}</div>
+            <p className="text-3xl font-bold" style={{ color: PRIMARY_TEXT }}>{celebrateRank}-RANK!</p>
+            <p className="text-slate-400 text-sm mt-2">Ny rank uppnådd</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+    <script src="feedback-widget.js" defer></script>
+    <script data-goatcounter="https://johnblixt.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

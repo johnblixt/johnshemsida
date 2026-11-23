@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pluggmaterial – Straffrätt | Rätten och samhället</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --p:  #0d9488;
+    --pl: #f0fdfa;
+    --pb: #ccfbf1;
+    --pd: #134e4a;
+    --p-deep: #0f766e;
+    --line: #99f6e4;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: 'EB Garamond', serif; font-size: 1.1rem; background:#f8fafc; color:#1e293b; margin:0; }
+  h1,h2,h3,h4,.fredoka { font-family: 'Fredoka', sans-serif; }
+
+  .wrap { max-width: 74rem; margin: 0 auto; padding: 1.6rem 1.25rem 4rem; }
+
+  /* ── Tillbaka ── */
+  .back {
+    display:inline-flex; align-items:center; gap:.35rem; font-family:'Fredoka',sans-serif;
+    font-size:.88rem; color:#64748b; text-decoration:none; transition:color .15s;
+  }
+  .back:hover { color: var(--p-deep); }
+
+  /* ── Header ── */
+  .head { text-align:center; margin: 1.8rem 0 1.6rem; }
+  .eyebrow {
+    font-family:'Fredoka',sans-serif; font-size:.72rem; font-weight:600; text-transform:uppercase;
+    letter-spacing:.22em; color:var(--p-deep); margin:0 0 .5rem;
+  }
+  .head h1 {
+    font-size: clamp(2rem, 6vw, 2.9rem); font-weight:700; font-style:italic;
+    color:#0f172a; margin:0; line-height:1.1;
+  }
+  .rule { height:.25rem; width:5rem; border-radius:999px; background:var(--p); margin:.9rem auto 1.1rem; }
+  .lead { font-size:1.02rem; color:#475569; max-width:36rem; margin:0 auto; line-height:1.7; }
+  .lead strong { color:var(--p-deep); font-weight:700; }
+
+  /* ── Lägesväxlare ── */
+  .pill-toggle {
+    display:flex; gap:.3rem; justify-content:center; background:#fff; border:1px solid #e2e8f0;
+    border-radius:999px; padding:.3rem; width:fit-content; margin:0 auto .6rem;
+    box-shadow:0 1px 3px rgba(0,0,0,.05);
+  }
+  .pill-toggle button {
+    padding: .5rem 1.4rem; border-radius: 999px; font-family:'Fredoka',sans-serif;
+    font-weight: 600; font-size: .95rem; transition: all .2s; border: none; cursor: pointer;
+  }
+  .pill-toggle button.active   { background: var(--p-deep); color: #fff; box-shadow:0 2px 8px rgba(13,148,136,.35); }
+  .pill-toggle button.inactive { background: transparent; color: #64748b; }
+  .pill-toggle button.inactive:hover { color: var(--p-deep); }
+  .mode-note {
+    text-align:center; font-family:'Fredoka',sans-serif; font-size:.85rem; color:#64748b;
+    margin:0 0 1.6rem;
+  }
+
+  /* ── Layout: sticky innehållsförteckning + innehåll ── */
+  .layout { display:grid; grid-template-columns: 16.5rem minmax(0,1fr); gap:2rem; align-items:start; }
+  .toc {
+    position:sticky; top:1rem; max-height:calc(100vh - 2rem); overflow-y:auto;
+    background:#fff; border:1px solid #e2e8f0; border-radius:1.2rem;
+    padding:.9rem .8rem; box-shadow:0 1px 3px rgba(0,0,0,.05);
+  }
+  .toc-h {
+    font-family:'Fredoka',sans-serif; font-size:.7rem; font-weight:700; text-transform:uppercase;
+    letter-spacing:.14em; color:var(--p-deep); margin:.2rem .3rem .4rem;
+  }
+  .toc-del {
+    font-family:'Fredoka',sans-serif; font-size:.74rem; font-weight:700; color:#475569;
+    margin:.8rem .4rem .25rem; padding-top:.6rem; border-top:1px solid #f1f5f9;
+  }
+  .toc-del:first-of-type { border-top:none; padding-top:0; margin-top:.2rem; }
+  .toc-btn { display:none; }
+  .toc-list a {
+    display:flex; align-items:center; gap:.55rem; padding:.42rem .5rem; border-radius:.75rem;
+    color:#334155; text-decoration:none; transition:background .15s; line-height:1.3; font-size:.98rem;
+  }
+  .toc-list a:hover { background: var(--pl); }
+  .toc-list a.active { background: var(--pl); color:var(--pd); font-weight:700; }
+  .toc-n {
+    flex:none; min-width:2.1rem; height:1.5rem; border-radius:.55rem; background:var(--pl); color:var(--pd);
+    font-family:'Fredoka',sans-serif; font-weight:700; font-size:.76rem;
+    display:flex; align-items:center; justify-content:center; padding:0 .3rem;
+  }
+  .toc-list a.active .toc-n { background:var(--p); color:#fff; }
+  .toc-t { flex:1; }
+
+  /* ── Delrubriker ── */
+  .del-head {
+    margin: .4rem 0 1.4rem; padding: 1.2rem 1.3rem; border-radius: 1.4rem;
+    background: var(--p-deep); color:#fff; scroll-margin-top:1rem;
+  }
+  .del-head .del-nr { font-family:'Fredoka',sans-serif; font-size:.74rem; font-weight:600; text-transform:uppercase;
+                      letter-spacing:.2em; opacity:.85; margin:0 0 .2rem; }
+  .del-head h2 { font-size:1.6rem; font-weight:700; font-style:italic; margin:0; font-family:'EB Garamond',serif; }
+  .del-head p.del-lead { margin:.35rem 0 0; line-height:1.6; opacity:.95; }
+
+  /* ── Avsnitt ── */
+  .sec { margin-bottom: 2.6rem; scroll-margin-top: 1rem; }
+  .sec-head {
+    display:flex; align-items:center; gap:.9rem;
+    background:#fff; border-left:8px solid var(--p);
+    border-radius:1rem; padding:1.05rem 1.2rem; box-shadow:0 1px 3px rgba(0,0,0,.06);
+  }
+  .sec-emoji { flex:none; font-size:1.6rem; line-height:1; }
+  .sec-title { font-size:1.45rem; font-weight:600; color:#0f172a; line-height:1.25; margin:0; }
+  .sec-title .nr { color:var(--p-deep); margin-right:.35rem; }
+  .ingress {
+    margin:.9rem .3rem 0; padding:.75rem 1rem; background:#fff; border:1px solid var(--line);
+    border-radius:.9rem; color:#334155; line-height:1.65; font-size:1.04rem;
+  }
+  .ingress b { font-family:'Fredoka',sans-serif; color:var(--p-deep); font-weight:600; font-size:.78rem;
+               text-transform:uppercase; letter-spacing:.1em; display:block; margin-bottom:.15rem; }
+
+  /* ── Brödtext ── */
+  .block { padding: .2rem .3rem 0; }
+  .block h3 { font-size:1.12rem; font-weight:600; color:var(--pd); margin:1.5rem 0 .15rem; }
+  .block p { margin:.55rem 0; line-height:1.85; color:#1e293b; }
+  .block .term { color:var(--p-deep); font-weight:700; }
+  .block ul { list-style:none; padding:0; margin:.6rem 0; }
+  .block ul li { position:relative; padding:.22rem 0 .22rem 1.5rem; color:#1e293b; line-height:1.7; }
+  .block ul li::before { content:'→'; position:absolute; left:0; color:var(--p); font-weight:700; }
+
+  /* ── Citat ur källan ── */
+  .citat {
+    margin:1.1rem 0; padding:1rem 1.2rem 1rem 3rem; background:#fff; border-radius:1rem;
+    border:1px solid #e2e8f0; position:relative; color:#1e293b; font-style:italic; line-height:1.75;
+  }
+  .citat::before { content:'\201D'; position:absolute; left:.8rem; top:.2rem; font-size:3rem;
+                   color:var(--p); font-family:Georgia,serif; font-style:normal; line-height:1; }
+  .citat-k { display:block; margin-top:.4rem; font-style:normal; font-family:'Fredoka',sans-serif;
+             font-size:.8rem; color:#64748b; }
+
+  /* ── Fördjupningsruta ── */
+  .ruta {
+    background:#fff; border:2px dashed var(--p); border-radius:1rem;
+    padding:.8rem 1.1rem; margin:1.2rem 0;
+  }
+  .ruta-h { font-family:'Fredoka',sans-serif; font-weight:700; color:var(--p-deep); font-size:.92rem; margin-bottom:.1rem; }
+
+  /* ── Exempel / fall ── */
+  .case {
+    background:#fff; border:1px solid #e2e8f0; border-left:5px solid var(--p);
+    border-radius:0 1rem 1rem 0; padding:.9rem 1.15rem .7rem; margin:1.6rem 0 0;
+    box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  .case-h { font-family:'Fredoka',sans-serif; font-weight:700; color:var(--pd); font-size:1rem; margin-bottom:.15rem; }
+  .case-tag { display:inline-block; font-family:'Fredoka',sans-serif; font-size:.68rem; font-weight:600;
+              text-transform:uppercase; letter-spacing:.08em; color:#64748b; background:#f1f5f9;
+              border-radius:999px; padding:.1rem .55rem; margin-left:.4rem; vertical-align:middle; }
+  .case h3 { margin-top:1rem; font-size:1.02rem; }
+  .case p, .case li { font-size:1.02rem; }
+
+  /* ── Nyckelbegrepp ── */
+  .nyckel {
+    background:#fff; border:2px solid var(--line); border-radius:1.2rem;
+    padding:1rem 1.25rem; margin:1.6rem 0 0;
+  }
+  .nyckel-h { font-family:'Fredoka',sans-serif; font-size:1rem; font-weight:700; color:var(--pd); margin-bottom:.4rem; }
+  .nyckel dl { margin:0; }
+  .nb { padding:.45rem 0; border-top:1px solid #f1f5f9; line-height:1.6; }
+  .nb:first-child { border-top:none; }
+  .nb dt { font-weight:700; color:var(--p-deep); display:inline; }
+  .nb dt::after { content:' – '; font-weight:400; color:#94a3b8; }
+  .nb dd { display:inline; margin:0; color:#1e293b; }
+  .nyckel-k { font-family:'Fredoka',sans-serif; font-size:.74rem; color:#64748b; margin-top:.4rem; }
+
+  /* ── Kom ihåg ── */
+  .komihag {
+    background:var(--pl); border:2px solid var(--p); border-radius:1.2rem;
+    padding:1.05rem 1.3rem; margin:1.2rem 0 .4rem;
+  }
+  .komihag-h { font-family:'Fredoka',sans-serif; font-size:1rem; font-weight:700; color:var(--pd); margin-bottom:.45rem; }
+  .komihag ul { list-style:none; padding:0; margin:0; }
+  .komihag li { position:relative; padding:.26rem 0 .26rem 1.6rem; color:var(--pd); line-height:1.65; }
+  .block .komihag li::before, .komihag li::before { content:'✓'; position:absolute; left:0; font-weight:700; color:var(--p-deep); }
+  .komihag .term { font-weight:700; color:var(--p-deep); }
+
+  /* ── Inbyggda diagram (SVG) ── */
+  .diagram { margin:1.4rem 0; background:#fff; border:1px solid #e2e8f0; border-radius:1.2rem; padding:1rem 1rem .8rem; }
+  .diagram svg { display:block; width:100%; height:auto; max-width:36rem; margin:0 auto; }
+  .diagram svg text { font-family:'Fredoka',sans-serif; }
+  .diagram figcaption { font-size:.95rem; color:#475569; line-height:1.6; margin-top:.6rem; text-align:center; }
+  .diagram figcaption .term { font-family:'Fredoka',sans-serif; color:var(--pd); font-weight:600; }
+
+  /* ── Tabell ── */
+  .tbl-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; margin:.8rem 0; }
+  .tbl { border-collapse:collapse; width:100%; font-size:.97rem; background:#fff; border:1px solid #e2e8f0; }
+  .tbl th, .tbl td { padding:.5rem .7rem; text-align:left; border-bottom:1px solid #e2e8f0; vertical-align:top; line-height:1.45; }
+  .tbl th { font-family:'Fredoka',sans-serif; font-size:.74rem; text-transform:uppercase;
+            letter-spacing:.06em; color:var(--pd); background:var(--pl); }
+  .tbl td.num, .tbl th.num { text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .tbl tfoot td { font-weight:700; color:var(--pd); background:var(--pl); border-bottom:none; }
+
+  .to-top { text-align:center; margin:1rem 0 .2rem; }
+  .to-top a { font-family:'Fredoka',sans-serif; font-size:.8rem; color:#64748b; text-decoration:none; }
+  .to-top a:hover { color:var(--p-deep); }
+
+  /* ── Sammanfattning ── */
+  .summary { background:#fff; border-top:8px solid var(--p); border-radius:1.5rem; padding:1.3rem 1.4rem 1.2rem;
+             box-shadow:0 1px 3px rgba(0,0,0,.06); scroll-margin-top:1rem; }
+  .summary h2 { font-size:1.4rem; font-weight:600; margin:0 0 .8rem; color:#0f172a; }
+  .sum-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+  .sum-col { background:var(--pl); border-radius:1rem; padding:.9rem 1rem; }
+  .sum-col h3 { font-size:.98rem; font-weight:700; color:var(--pd); margin:0 0 .4rem; }
+  .sum-col ul { list-style:none; padding:0; margin:0; }
+  .sum-col li { position:relative; padding:.22rem 0 .22rem 1.3rem; line-height:1.55; font-size:1rem; }
+  .sum-col li::before { content:'✓'; position:absolute; left:0; color:var(--p-deep); font-weight:700; }
+  .sum-col .term { color:var(--p-deep); font-weight:700; }
+
+  /* ── Öva vidare ── */
+  .next {
+    background:#fff; border-top:8px solid var(--p); border-radius:1.5rem;
+    padding:1.4rem 1.4rem 1.5rem; margin-top:2rem; box-shadow:0 1px 3px rgba(0,0,0,.06);
+  }
+  .next h2 { font-size:1.3rem; font-weight:600; margin:0 0 .3rem; color:#0f172a; }
+  .next p { margin:0 0 1rem; color:#475569; line-height:1.6; }
+  .next-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:.7rem; }
+  .next-btn {
+    display:flex; align-items:center; gap:.6rem; padding:.85rem 1rem; border-radius:1rem;
+    font-family:'Fredoka',sans-serif; font-weight:600; text-decoration:none; transition:transform .15s, background .15s;
+  }
+  .next-btn:hover { transform:translateY(-2px); }
+  .next-btn.primary { background:var(--p-deep); color:#fff; }
+  .next-btn.ghost { background:var(--pl); color:var(--pd); border:1px solid var(--line); }
+  .next-btn.wide { grid-column:1 / -1; }
+
+  /* ── Footer ── */
+  .foot { text-align:center; margin-top:3rem; color:#64748b; font-size:.88rem; line-height:1.7; }
+  .foot .by { font-style:italic; }
+
+  /* ── Mobil ── */
+  @media (max-width: 767px) {
+    body { font-size: 1.04rem; }
+    .wrap { padding: 1.2rem .9rem 3rem; }
+    .layout { display:block; }
+    .toc { position:sticky; top:0; z-index:30; max-height:none; overflow:visible;
+           border-radius:0 0 1rem 1rem; margin:0 -.9rem 1.4rem; padding:.5rem .9rem;
+           border-top:none; border-left:none; border-right:none; }
+    .toc-h { display:none; }
+    .toc-btn { display:flex; width:100%; align-items:center; justify-content:space-between; gap:.6rem;
+               background:var(--pl); color:var(--pd); border:none; border-radius:.8rem; padding:.6rem .9rem;
+               font-family:'Fredoka',sans-serif; font-weight:600; font-size:.95rem; cursor:pointer; text-align:left; }
+    .toc-btn-t { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .toc-list { display:none; max-height:60vh; overflow-y:auto; padding-top:.4rem; }
+    .toc.open .toc-list { display:block; }
+    .sec, .del-head, .summary { scroll-margin-top: 4.2rem; }
+    .sec-title { font-size: 1.2rem; }
+    .sec-head { padding: .85rem .9rem; gap:.65rem; border-left-width:6px; }
+    .sec-emoji { font-size:1.35rem; }
+    .del-head h2 { font-size:1.35rem; }
+    .block { padding: .2rem 0 0; }
+    .block h3 { font-size: 1.05rem; }
+    .block p  { line-height: 1.75; }
+    .pill-toggle button { padding:.45rem 1.05rem; font-size:.9rem; }
+    .next-grid, .sum-grid { grid-template-columns:1fr; }
+    .tbl { font-size:.9rem; }
+    .tbl th, .tbl td { padding:.45rem .5rem; }
+    .citat { padding:.9rem 1rem .9rem 2.4rem; }
+    .citat::before { left:.5rem; font-size:2.4rem; }
+    .diagram { padding:.7rem .35rem .6rem; }
+    .case { padding:.8rem .9rem .6rem; }
+    .nyckel, .komihag { padding:.9rem 1rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script>
+/* Smart tillbaka: samma domän → history.back(), annars områdessidan. */
+function smartBack(e, fallback) {
+  try {
+    if (document.referrer && new URL(document.referrer).host === location.host && history.length > 1) {
+      e.preventDefault();
+      history.back();
+      return;
+    }
+  } catch (err) {}
+  e.preventDefault();
+  location.href = fallback || 'rs_straff.html';
+}
+</script>
+
+<!-- ════════════════════════════════════════════════════════════
+     ALL TEXT LIGGER I DATA-ARRAYEN DELAR,
+     varje avsnitt: { id, nr, emoji, rubrik, hook, lattlast[], fordjupning[], fall, begrepp[], komihag[] }
+     Textlistor (lattlast/fordjupning/fall.text) består av:
+       'sträng'            → stycke (**term** = fackterm, *ord* = kursiv)
+       { h }               → mellanrubrik
+       { lista: [] }       → punktlista
+       { citat, kalla }    → citat ur källan
+       { tabell: { huvud[], rader[[]], summa[] } }
+       { ruta: { h, p[] } } → fördjupningsruta ur källan
+     Lägena ERSÄTTER varandra: Lättläst visar lattlast[], Fördjupning visar fordjupning[].
+     begrepp[] slås upp i BEGREPP (samma definitioner som rs_straff_begrepp.html).
+     Enda innehållskällor: brott_och_straff_material.md och
+     brottsbalken_specialstrafflagarna_material.md
+     ════════════════════════════════════════════════════════════ -->
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const PAGE = {
+  storeKey: 'rs_straff_plugg_mode',
+  eyebrow: 'Rätten och samhället · Straffrätt',
+  titel: 'Straffrätt',
+  hub: 'rs_straff.html',
+  kalla: 'Rätten och samhället – Brott och straff / Brottsbalken och specialstrafflagarna'
+};
+
+/* ---------- Definitioner – ordagrant som i rs_straff_begrepp.html ---------- */
+const BEGREPP = {
+  'Brott': 'En gärning, det vill säga en handling, som är beskriven i en författning och som det finns ett straff föreskrivet för.',
+  'Brottsbalken': 'Brottsbalken (BrB) är den centrala lagen för brott och brottspåföljder. Där beskrivs de flesta brotten, till exempel mord, stöld, rån och misshandel.',
+  'Specialstraffrätt': 'Separata lagar, specialstrafflagar, som reglerar straffbelagda brott som inte står i brottsbalken – till exempel trafikbrottslagen, narkotikastrafflagen och skattebrottslagen.',
+  'Legalitetsprincipen': 'En domstol får inte döma för en handling som inte motsvaras av något brott i lag. Principen består av retroaktivitetsförbudet, analogiförbudet och obestämdhetsförbudet.',
+  'Objektiva rekvisit': 'Den specifika handling som utförs och dess konsekvenser, så som de beskrivs i lagtexten. Det måste också finnas ett tydligt orsakssamband mellan gärningen och verkan (adekvat kausalitet).',
+  'Subjektiva rekvisit': 'Gärningspersonens avsikt, det vill säga uppsåt, som också krävs för att handlingen ska vara brottslig. I vissa fall räcker oaktsamhet, om lagen säger det.',
+  'Uppsåt': 'Att handlingen är medveten (på latin dolus). Tre nivåer: direkt uppsåt (följden är syftet), insiktsuppsåt (praktiskt taget säker på följden) och likgiltighetsuppsåt (insåg risken men var likgiltig).',
+  'Oaktsamhet': 'Vårdslöshet (på latin culpa) – en lägre grad av skuld än uppsåt. Räcker bara för fällande dom när det uttryckligen står i den aktuella paragrafen.',
+  'Försök till brott': 'När någon försökt begå ett brott men inte lyckats, vilket i vissa fall är straffbart (BrB 23 kap.). För allvarliga brott kan även förberedelse och stämpling vara straffbara.',
+  'Nödvärn': 'Rätten att använda våld i en nödsituation, till exempel vid ett angrepp, om våldet inte är uppenbart oförsvarligt (BrB 24 kap.). Bruka mer våld än situationen kräver kallas nödvärnsexcess.',
+  'Påföljd': 'Det som ett brott kan leda till enligt lag – oftast ett straff som böter eller fängelse, men också till exempel villkorlig dom, skyddstillsyn eller särskild vård.',
+  'Straffskala': 'Anger det lägsta och det högsta straff som kan dömas ut för ett visst brott (BrB 29 kap.).',
+  'Straffvärde': 'Anger hur allvarligt ett brott är i relation till andra brott, och avgör var i straffskalan straffet för en viss gärningsperson hamnar.',
+  'Fängelse': 'Den strängaste påföljden, för allvarliga brott med högt straffvärde. Kan vara tidsbestämt eller livstid. Villkorlig frigivning kan bli aktuell när två tredjedelar av straffet är avtjänat.',
+  'Böter': 'En lindrigare påföljd än fängelse, för brott med lägre straffvärde. Penningböter är en bestämd summa; dagsböter sätts i relation till den bötfälldes inkomst.',
+  'Villkorlig dom': 'Döms ut när den dömde anses kunna avhålla sig från fortsatt brottslighet utan övervakning, till exempel om brottet var en förmodad engångshändelse. Prövotiden är två år.',
+  'Skyddstillsyn': 'En påföljd för mindre allvarliga brott där den dömde har regelbunden kontakt med en övervakare. Tanken är att vardagslivet med utbildning eller arbete inte ska upphöra.',
+  'Allmänprevention': 'Att straffet ska avskräcka allmänheten från att begå samma brott. Allmänprevention är en del av den relativa straffteorin.',
+  'Individualprevention': 'Att straffet utformas så att just den dömde inte begår eller upprepar brott – genom avskräckning, men också genom behandling och återanpassning till samhället.',
+  'Vedergällning': 'Att straffet är samhällets hämnd i proportion till allvaret i brottet – kärnan i den absoluta straffteorin. Talionprincipen, "öga för öga, tand för tand", är en del av den.'
+};
+
+/* ===================== INNEHÅLL ===================== */
+
+const DELAR = [
+/* ─────────────────────────── DEL 1 ─────────────────────────── */
+{
+  id: 'del1', nr: 'Del 1', titel: 'Brott och ansvar',
+  lead: 'Vad krävs för att en handling ska räknas som ett brott? Här lär du dig hur lagen beskriver brott, vilka villkor som måste vara uppfyllda och när någon ändå kan gå fri.',
+  sections: [
+  {
+    id: 's1-1', nr: '1.1', emoji: '⚖️', rubrik: 'Vad är ett brott?',
+    hook: 'Alla vet att stöld och misshandel är fel. Men vem bestämmer vad som är ett brott – och kan man dömas för något som inte står i någon lag?',
+    lattlast: [
+      'Riksdagen bestämmer vilka handlingar som är förbjudna. De förbjudna handlingarna är *kriminaliserade*. Det betyder att det finns ett straff för dem.',
+      'Ett **brott** är en handling som står beskriven i en lag och som det finns ett straff för.',
+      'De flesta brott står i **brottsbalken** (BrB). Där finns till exempel mord, stöld, rån och misshandel.',
+      'Vissa brott står i egna lagar. Det kallas **specialstraffrätt**. Exempel är trafikbrottslagen, narkotikastrafflagen och skattebrottslagen.',
+      { h: 'Legalitetsprincipen' },
+      'Enligt **legalitetsprincipen** får en domstol bara döma för något som är ett brott enligt lag. Principen gör att alla kan veta i förväg vad som är förbjudet.',
+      { lista: [
+        '*Retroaktivitetsförbudet:* man får inte göra något brottsligt i efterhand.',
+        '*Analogiförbudet:* lagen får inte tänjas ut till mer än vad orden säger.',
+        '*Obestämdhetsförbudet:* lagen måste vara tydligt skriven.'
+      ]}
+    ],
+    fordjupning: [
+      'Staten kriminaliserar vissa handlingar för att förebygga brott – ett arbete som kallas *prevention*. Lagstiftningen används alltså för att få medborgarna att avstå från vissa handlingar. De handlingar som riksdagen beslutat ska vara förbjudna är *kriminaliserade*, det vill säga belagda med straff.',
+      'I lagens mening är ett **brott** en gärning som är beskriven i en författning och som det finns ett straff föreskrivet för. Det framgår redan av brottsbalkens första paragraf:',
+      { citat: '1 § Brott är en gärning som är beskriven i denna balk eller i annan lag eller författning och för vilken straff som sägs nedan är föreskrivet.', kalla: 'BrB 1 kap. 1 §' },
+      '**Brottsbalken** är den centrala författningen för brott och brottspåföljder och innehåller den *allmänna straffrätten*. Brotten där grupperas i brott mot liv och hälsa, förmögenhetsbrott och brott mot offentliga intressen. Vid sidan av den finns **specialstraffrätten** – separata lagar för till exempel miljöbrott, trafikbrott, narkotikabrott, vapenbrott och skattebrott.',
+      { h: 'Legalitetsprincipen garanterar rättssäkerheten' },
+      '**Legalitetsprincipen** innebär att en domstol inte får döma för en handling som inte motsvaras av något brott i lag. Den gör rättsskipningen förutsägbar och består av tre förbud:',
+      { lista: [
+        '**Retroaktivitetsförbudet** – föreskrifter om vad som är brottsligt får inte införas i efterhand.',
+        '**Analogiförbudet** – föreskrifter om vad som är brottsligt får inte utsträckas utöver vad ordalydelsen tillåter.',
+        '**Obestämdhetsförbudet** – föreskrifter om vad som är brottsligt måste vara bestämda till sin utformning.'
+      ]},
+      { ruta: { h: 'Analogi – tillåtet i civilrätten, förbjudet i straffrätten', p: [
+        'Analog lagtillämpning innebär att en rättsregel från ett tidigare, liknande fall används som grund för en bedömning. Men när det gäller vad som är *brottsligt* är analogisk tillämpning förbjuden – det är just vad analogiförbudet säger.'
+      ]}}
+    ],
+    begrepp: ['Brott', 'Brottsbalken', 'Specialstraffrätt', 'Legalitetsprincipen'],
+    komihag: [
+      'Ett **brott** = en handling som står i lag och har ett straff.',
+      'De flesta brott står i **brottsbalken**, övriga i specialstrafflagar.',
+      '**Legalitetsprincipen**: inget brott utan lag – inga lagar i efterhand, ingen analogi, inga otydliga lagar.'
+    ]
+  },
+  {
+    id: 's1-2', nr: '1.2', emoji: '🧩', rubrik: 'Rekvisit, uppsåt och oaktsamhet',
+    hook: 'En man erkänner att han tänkte stjäla en tröja i en butik. Han blir ändå inte dömd för stöld. Hur kan det komma sig?',
+    lattlast: [
+      'Lagtexten beskriver vilka villkor som måste vara uppfyllda för att något ska vara ett brott. Villkoren kallas *rekvisit*. Det finns två slag.',
+      { lista: [
+        '**Objektiva rekvisit** är själva handlingen och vad den leder till.',
+        '**Subjektiva rekvisit** är vad personen tänkte och ville – avsikten.'
+      ]},
+      'Handlingen måste också ha orsakat följden. Det tydliga sambandet kallas *adekvat kausalitet*.',
+      'Huvudregeln är att *alla* rekvisit måste vara uppfyllda. Det kallas *kumulativa rekvisit*. Står det "eller" mellan två rekvisit räcker det att ett av dem är uppfyllt. Det kallas *alternativa rekvisit*.',
+      { h: 'Uppsåt och oaktsamhet' },
+      '**Uppsåt** betyder att man gör något medvetet. Det krävs nästan alltid för att man ska kunna dömas.',
+      { lista: [
+        '*Direkt uppsåt:* följden var själva syftet.',
+        '*Insiktsuppsåt:* personen var nästan säker på att följden skulle komma.',
+        '*Likgiltighetsuppsåt:* personen såg risken men brydde sig inte.'
+      ]},
+      '**Oaktsamhet** betyder att man varit slarvig eller vårdslös. Det räcker bara om det står i lagen just för det brottet.'
+    ],
+    fordjupning: [
+      'Utgångspunkten i straffrätten är en *otillåten gärning*. Men det räcker inte att någon utfört en viss gärning – det måste också finnas ett tydligt orsakssamband mellan gärningen och dess verkan, så kallad *adekvat kausalitet*.',
+      'Gärningen, orsakssambandet och uppsåtet beskrivs i lagtexten som rekvisit. **Objektiva rekvisit** är själva handlingen och dess konsekvenser; handlingen måste falla in under en konkret brottsbeskrivning. **Subjektiva rekvisit** är gärningspersonens avsikt.',
+      'Huvudregeln är *kumulativa rekvisit*: samtliga objektiva och subjektiva rekvisit ska vara uppfyllda. Där ordet "eller" står mellan rekvisiten räcker det att något av dem är uppfyllt – *alternativa rekvisit*.',
+      { h: 'Uppsåt är huvudregeln' },
+      { citat: '2 § En gärning skall, om inte annat är särskilt föreskrivet, anses som brott endast då den begås uppsåtligen.', kalla: 'BrB 1 kap. 2 §' },
+      '**Uppsåt** (på latin *dolus*) delas in i tre nivåer, från högst till lägst: *direkt uppsåt* (avsiktsuppsåt – följden är syftet), *insiktsuppsåt* (praktiskt taget säker på följden) och *likgiltighetsuppsåt* (insåg risken men var likgiltig).',
+      'Uppsåtskravet behöver inte stå utskrivet i paragrafen. Räcker **oaktsamhet** (*culpa*) står det däremot uttryckligen. Därför finns parallella brott: *mord* kräver uppsåt, medan den som av oaktsamhet orsakar en annans död döms för *vållande till annans död*.',
+      'Att vara berusad är ingen ursäkt: har gärningen begåtts under självförvållat rus ska den ändå anses som brott (BrB 1 kap. 2 §).'
+    ],
+    fall: {
+      titel: 'Stöld – vilka rekvisit beskriver lagen?', tag: 'BrB 8 kap. 1 §',
+      text: [
+        { citat: 'Den som olovligen tager vad annan tillhör med uppsåt att tillägna sig det, dömes, om tillgreppet innebär skada, för stöld till fängelse i högst två år.', kalla: 'BrB 8 kap. 1 §' },
+        { lista: [
+          'Objektiva rekvisit: "olovligen tar vad annan tillhör" och "tillgreppet innebär skada".',
+          'Subjektivt rekvisit: "med uppsåt att tillägna sig det".'
+        ]},
+        'I ett rättsfall erkände en man att han tänkte ta en tröja i en butik. Det subjektiva rekvisitet var alltså uppfyllt. Men det gick inte att bevisa att han lämnat butiken – de objektiva rekvisiten var inte uppfyllda, och han dömdes inte för fullbordad stöld.'
+      ]
+    },
+    begrepp: ['Objektiva rekvisit', 'Subjektiva rekvisit', 'Uppsåt', 'Oaktsamhet'],
+    komihag: [
+      'Objektiva rekvisit = vad som *hände*. Subjektiva rekvisit = vad personen *ville*.',
+      'Huvudregeln: alla rekvisit måste vara uppfyllda (kumulativa).',
+      '**Uppsåt** krävs om inte lagen säger att **oaktsamhet** räcker.'
+    ]
+  },
+  {
+    id: 's1-3', nr: '1.3', emoji: '🛡️', rubrik: 'Försök och nödvärn',
+    hook: 'Får man slå tillbaka om någon angriper en med en hammare? Och hur länge får man fortsätta slå?',
+    lattlast: [
+      'Ibland lyckas inte ett brott. Ändå kan det vara straffbart.',
+      { lista: [
+        '**Försök till brott:** någon försökte begå ett brott men lyckades inte, till exempel försök till stöld.',
+        '*Förberedelse:* för vissa allvarliga brott är redan planeringen straffbar, till exempel förberedelse till rån.',
+        '*Stämpling:* att bestämma med någon annan att begå ett brott, eller erbjuda sig att göra det.'
+      ]},
+      'Det krävs mer än löst prat med en kompis. Planen måste ha kommit en bit på väg.',
+      { h: 'Nödvärn' },
+      '**Nödvärn** betyder att man får försvara sig när någon angriper en. Då kan man bli straffri.',
+      'Men våldet får inte vara uppenbart för mycket. När angreppet slutar måste försvaret också sluta.',
+      'Använder man mer våld än situationen kräver kallas det *nödvärnsexcess*. Då kan man själv dömas, till exempel för misshandel.'
+    ],
+    fordjupning: [
+      'Alla planerade brott blir inte verklighet. Enligt brottsbalkens 23 kapitel kan ändå vissa steg på vägen vara straffbara:',
+      { lista: [
+        '**Försök till brott** – någon har försökt begå ett brott men inte lyckats. Är i vissa fall straffbart (BrB 23 kap. 1 §).',
+        '*Förberedelse till brott* – för vissa allvarliga brott är redan planeringen brottslig. Genomförandet ska ha kommit en bit på väg; ett "löst snack med en kompis" räcker inte.',
+        '*Stämpling* – att i samråd med någon annan besluta om ett brott, eller åta sig eller erbjuda sig att utföra det (BrB 23 kap. 2 §).'
+      ]},
+      { h: 'Nödvärnsrätten' },
+      '**Nödvärn** (BrB 24 kap. 1 §) innebär frihet från ansvar: alla får använda våld i en nödsituation om våldet inte är *uppenbart oförsvarligt*. Det kan gälla ett angrepp på en person, ett pågående inbrott eller någon som vägrar lämna en bostad.',
+      'Rätten är begränsad. Om angreppet upphör måste också nödvärnsvåldet upphöra. Överskrids gränsen och personen brukar mer våld än situationen kräver är det *nödvärnsexcess*, och personen blir då själv ansvarig för exempelvis ett misshandelsbrott.'
+    ],
+    fall: {
+      titel: 'Inbrottstjuv nedslagen med en mopedhjälm', tag: 'Rättsfall',
+      text: [
+        'En man skulle gripa en tjuv som brutit sig in i en bil. Tjuven attackerade honom med en hammare. Mannen blev livrädd och slog tjuven med en mopedhjälm – och fortsatte slå även när tjuven låg ner på marken. Tjuven fick en allvarlig skallskada.',
+        'Tingsrätten friade mannen, men hovrätten dömde honom till fem års fängelse. Det inledande våldet var nödvärn, men våldet skulle ha upphört när tjuven låg på marken. Det som skedde därefter var uppenbart oförsvarligt och därmed straffbart.'
+      ]
+    },
+    begrepp: ['Försök till brott', 'Nödvärn'],
+    komihag: [
+      'Försök, förberedelse och stämpling kan vara straffbara – men bara för vissa brott.',
+      '**Nödvärn** gör försvar straffritt, om våldet inte är uppenbart oförsvarligt.',
+      'När angreppet slutar måste försvaret sluta – annars nödvärnsexcess.'
+    ]
+  }
+  ]
+},
+/* ─────────────────────────── DEL 2 ─────────────────────────── */
+{
+  id: 'del2', nr: 'Del 2', titel: 'Påföljder och synen på straff',
+  lead: 'Vad händer med den som döms – och varför straffar samhället över huvud taget? Här lär du dig de vanligaste påföljderna och de idéer som ligger bakom dem.',
+  sections: [
+  {
+    id: 's2-1', nr: '2.1', emoji: '🏛️', rubrik: 'Påföljder och straffvärde',
+    hook: 'Två 19-åringar skjuter ett rådjur under förbjuden tid, med förbjudet vapen och från ett fordon. De döms för grovt jaktbrott – men hamnar inte i fängelse. Varför?',
+    lattlast: [
+      'Det ett brott leder till kallas **påföljd**. Oftast är det böter eller fängelse.',
+      'För varje brott finns en **straffskala**. Den visar det lägsta och det högsta straffet. Mord har till exempel fängelse i lägst tio år, upp till livstid.',
+      'Hur allvarligt ett brott är kallas **straffvärde**. Det avgör var på straffskalan straffet hamnar.',
+      { h: 'De vanligaste påföljderna' },
+      { lista: [
+        '**Fängelse** är det strängaste straffet. Den som sköter sig kan släppas på prov när två tredjedelar av tiden har gått.',
+        '**Böter** är ett lindrigare straff. *Penningböter* är en bestämd summa. *Dagsböter* beror på hur mycket man tjänar.',
+        '**Villkorlig dom** ges om den dömde troligen inte begår fler brott. Prövotiden är två år.',
+        '**Skyddstillsyn** betyder att den dömde träffar en övervakare regelbundet. Skola eller jobb kan fortsätta.'
+      ]},
+      'Det finns fler påföljder, till exempel samhällstjänst, fotboja och särskild vård. Unga mellan 15 och 18 år kan få *ungdomsvård* eller *ungdomstjänst*.'
+    ],
+    fordjupning: [
+      'En **påföljd** är oftast ett straff, vanligen böter eller fängelse, men kan också vara villkorlig dom, skyddstillsyn eller särskild vård. Ett brott kan dessutom leda till *annan rättsverkan*, som skadestånd, utvisning, körkortsindragning eller förverkande av egendom. Den dömde registreras i *belastningsregistret*.',
+      'I BrB 29 kap. finns reglerna om **straffskala** och **straffvärde**. Straffskalan anger lägsta och högsta straff; straffvärdet anger hur allvarligt brottet är i relation till andra brott och avgör var i skalan straffet hamnar. Vissa *artbrott* – till exempel rån, grovt rattfylleri, narkotikabrott och vapenbrott – bör nästan alltid leda till fängelse oavsett straffvärdet i det enskilda fallet.',
+      { tabell: {
+        huvud: ['Påföljd', 'Används när …', 'Att känna till'],
+        rader: [
+          ['**Fängelse**', 'allvarliga brott med högt straffvärde', 'Tidsbestämt (vid flera brott högst 18 år) eller livstid. Villkorlig frigivning efter 2/3.'],
+          ['**Böter**', 'lägre straffvärde, t.ex. ringa stöld', 'Penningböter = bestämd summa. Dagsböter = efter inkomst.'],
+          ['**Villkorlig dom**', 'förmodad engångshändelse', 'Ingen övervakning. Prövotid två år.'],
+          ['**Skyddstillsyn**', 'mindre allvarliga brott', 'Regelbunden kontakt med övervakare. Vardagen fortsätter.']
+        ]
+      }},
+      'Vid villkorlig frigivning släpps den dömde på prov och prövoperioden varar strafftiden ut. Ofta finns *övervakning* i början; den upphör efter ett år, men begår personen nya brott kan frigivningen dras in.',
+      'Andra påföljder är *särskild vård* (vid psykisk sjukdom eller missbruk), *rättspsykiatrisk vård med särskild utskrivningsprövning*, *samhällstjänst* och *elektronisk fotboja*. För unga finns *ungdomsvård*, *ungdomstjänst* (20–150 timmars arbete) och *ungdomsövervakning*.'
+    ],
+    fall: {
+      titel: 'Två unga män sköt rådjur i Färila', tag: 'Inledande fall',
+      text: [
+        'Männen sköt ett rådjur under förbjuden tid, med förbjudet vapen och med hjälp av ett fordon. Tingsrätten slog fast att ett grovt jaktbrott hade begåtts – ett brott med fängelse i minst sex månader i straffskalan.',
+        'Tingsrätten ansåg att straffvärdet låg på två månaders fängelse. Eftersom männen var ostraffade sedan tidigare och levde under ordnade förhållanden dömdes de till **villkorlig dom** med samhällstjänst som motsvarade straffvärdet: 75 timmar.',
+        'Fundera: är det rätt att den som är ung eller "lever under ordnade förhållanden" får ett mildare straff?'
+      ]
+    },
+    begrepp: ['Påföljd', 'Straffskala', 'Straffvärde', 'Fängelse', 'Böter', 'Villkorlig dom', 'Skyddstillsyn'],
+    komihag: [
+      '**Straffskala** = spannet i lagen. **Straffvärde** = hur allvarligt just detta brott är.',
+      'Villkorlig frigivning efter två tredjedelar av fängelsestraffet.',
+      'Dagsböter följer inkomsten – penningböter är en fast summa.'
+    ]
+  },
+  {
+    id: 's2-2', nr: '2.2', emoji: '🔭', rubrik: 'Straffrättsliga ideologier',
+    hook: '"Öga för öga, tand för tand." Ska straffet vara samhällets hämnd – eller ska det se till att brott inte händer igen?',
+    lattlast: [
+      'Det finns olika idéer om varför samhället straffar. De kallas straffteorier.',
+      { h: 'Den absoluta straffteorin' },
+      'Straffet är samhällets hämnd för brottet. Det kallas **vedergällning**. Ett allvarligare brott ska ge ett hårdare straff.',
+      'En gammal form är *talionprincipen*: "öga för öga, tand för tand". Brottslingen ska drabbas av samma skada som offret.',
+      { h: 'Den relativa straffteorin' },
+      'Straffet ska förebygga brott. Det kan ske på två sätt:',
+      { lista: [
+        '**Allmänprevention:** straffet ska skrämma *alla andra* från att begå samma brott.',
+        '**Individualprevention:** straffet ska få *just den dömde* att sluta begå brott, till exempel genom behandling.'
+      ]},
+      'I Sverige i dag ska domstolen tänka på båda formerna av prevention när den dömer.',
+      { h: 'Hjälper hårdare straff?' },
+      'Politiker föreslår ofta strängare straff. Forskare menar att längre fängelsestraff ofta är dyra och inte minskar brotten.'
+    ],
+    fordjupning: [
+      'Förr var syftet med straffen framför allt allmänpreventivt – att avskräcka. Samtidigt skulle straffet vara samhällets hämnd i proportion till brottets allvar, **vedergällning**, som är kärnan i den *absoluta straffteorin*. Tanken var att den obalans gärningspersonen skapat återställdes genom ett hårt straff. *Talionprincipen* – "öga för öga, tand för tand" – var grundprincipen i den babyloniske kungen Hammurabis lagar.',
+      'Den *relativa straffteorin* innebär att straffets syfte är att förebygga brott. Hit hör **allmänprevention**: att straffet ska avskräcka allmänheten.',
+      { h: 'Från upplysningen till 1900-talet' },
+      { lista: [
+        'Under upplysningstiden i slutet av 1700-talet ledde tankarna om alla människors lika värde till att kropps- och skamstraff förbjöds.',
+        'Den *klassiska straffrättsskolan* förespråkade proportionalitet mellan brott och straff, påverkad av bland andra Voltaire och utilitarismen (nyttoetik).',
+        'I början av 1900-talet visade ny kunskap hur sociala faktorer som umgänge och uppväxt påverkar beteendet. Påföljderna skulle då, förutom att vara **individualpreventiva**, också vara behandlande – målet blev *återanpassning till samhället*.'
+      ]},
+      { h: 'Vår tids syn' },
+      'I svensk rätt eftersträvas i dag både den individualpreventiva och den allmänpreventiva principen, och domstolen ska väga in båda. Till detta kommer att skydda samhället genom att låsa in gärningspersonen – ett motiv som finns med när livstids fängelse döms ut. Balansgången är svår: påföljderna ska avskräcka men samtidigt göra återanpassning möjlig. Forskning visar att den som suttit i fängelse ofta har svårt att få bostad och arbete, och risken för återfall är då stor.',
+      { citat: 'En ständigt återkommande skärpning av straffen är dyrt, verkningslöst och ibland till och med kontraproduktivt. En fängelseplats i Sverige kostar drygt en miljon kronor per år. Dessa pengar kan användas till andra alternativ med bättre brottsförebyggande effekt.', kalla: 'Sex kriminologiprofessorer vid Stockholms universitet, DN Debatt 2018-01-30' }
+    ],
+    fall: {
+      titel: 'Ett etiskt dilemma', tag: 'Diskutera',
+      text: [
+        'En ung flicka mördas på väg hem från sitt sommarjobb. Många blir upprörda och kräver hårdare straff.',
+        { lista: [
+          'Vilket straff är rimligt enligt den *absoluta* straffteorin? Vad är det straffet till för?',
+          'Vilket straff är rimligt enligt den *relativa* straffteorin – och vad ska straffet åstadkomma?',
+          'Professorerna menar att längre straff inte minskar brottsligheten. Vilken straffteori argumenterar de utifrån?'
+        ]}
+      ]
+    },
+    begrepp: ['Vedergällning', 'Allmänprevention', 'Individualprevention'],
+    komihag: [
+      'Absolut straffteori = **vedergällning**, straffet som hämnd i proportion till brottet.',
+      'Relativ straffteori = förebygga brott: **allmänprevention** (alla) och **individualprevention** (den dömde).',
+      'Svensk rätt väger in båda preventionsprinciperna.'
+    ]
+  }
+  ]
+},
+/* ─────────────────────────── DEL 3 ─────────────────────────── */
+{
+  id: 'del3', nr: 'Del 3', titel: 'Tillämpning',
+  lead: 'Nu använder du det du lärt dig. Med hjälp av en given lagtext kan du lösa ett enkelt straffrättsligt fall steg för steg.',
+  sections: [
+  {
+    id: 's3-1', nr: '3.1', emoji: '🔍', rubrik: 'Så löser du ett straffrättsfall',
+    hook: 'Någon tänder eld på ett trädgårdsförråd. Ett annat fall: någon tänder eld på ett hus där en person sover. Är det samma brott?',
+    lattlast: [
+      'Ett straffrättsfall löser du i fyra steg.',
+      { lista: [
+        '*1. Hitta lagrummet.* Vilken paragraf handlar fallet om?',
+        '*2. Plocka ut rekvisiten.* Vad måste ha hänt (**objektiva rekvisit**)? Vad måste personen ha velat (**subjektiva rekvisit**)?',
+        '*3. Pröva mot fakta.* Stämmer varje rekvisit med det som hände i fallet?',
+        '*4. Dra en slutsats.* Är alla rekvisit uppfyllda? Då är det ett brott.'
+      ]},
+      'Tänk också på om lagen kräver **uppsåt** eller om **oaktsamhet** räcker. Och om det finns ett skäl till att personen är straffri, till exempel **nödvärn**.'
+    ],
+    fordjupning: [
+      'Att lösa ett straffrättsfall med hjälp av en given rättskälla innebär att jämföra händelseförloppet med lagtextens rekvisit, ett i taget:',
+      { lista: [
+        '*Lagrum:* identifiera vilken paragraf som är aktuell. Finns det flera brott som kan komma i fråga, till exempel en grövre och en lindrigare variant?',
+        '*Rekvisit:* dela upp paragrafen i **objektiva rekvisit** och **subjektiva rekvisit**. Är de kumulativa eller står det "eller" mellan dem (alternativa)?',
+        '*Prövning:* gå igenom fakta i fallet och pröva varje rekvisit. Finns adekvat kausalitet mellan handling och följd?',
+        '*Slutsats:* är samtliga nödvändiga rekvisit uppfyllda – och finns det någon ansvarsfrihetsgrund, som nödvärn?'
+      ]},
+      'Ett vanligt misstag är att stanna vid gärningspersonens avsikt. Avsikten (subjektivt rekvisit) räcker inte – de objektiva rekvisiten måste också vara uppfyllda, som i fallet med tröjan i butiken.'
+    ],
+    fall: {
+      titel: 'Övningsfall: mordbrand', tag: 'BrB 13 kap.',
+      text: [
+        '**Lagrum:** *Mordbrand* (BrB 13 kap. 1 §) innebär att en person anlägger en brand som innebär fara för annans liv eller hälsa, *eller* fara för omfattande förstörelse av annans egendom.',
+        { tabell: {
+          huvud: ['Steg', 'Analys'],
+          rader: [
+            ['Objektiva rekvisit', 'Anlägga en brand + fara för annans liv/hälsa *eller* fara för omfattande förstörelse av annans egendom. Ordet "eller" gör faran till alternativa rekvisit.'],
+            ['Subjektivt rekvisit', 'Inget sägs om oaktsamhet – alltså krävs **uppsåt**.'],
+            ['Förrådet', 'Branden hotar omfattande förstörelse av annans egendom → mordbrand.'],
+            ['Huset', 'Någon befinner sig i huset – risk för personskador → *grov mordbrand* (BrB 13 kap. 2 §).']
+          ]
+        }},
+        'Om personen i stället varit ovarsam med eld, utan uppsåt, blir det i stället *allmänfarlig vårdslöshet* (BrB 13 kap. 6 §) – oaktsamhet står då uttryckligen i lagen.'
+      ]
+    },
+    begrepp: ['Objektiva rekvisit', 'Subjektiva rekvisit', 'Uppsåt', 'Oaktsamhet'],
+    komihag: [
+      'Lagrum → rekvisit → pröva mot fakta → slutsats.',
+      '"Eller" i lagtexten = alternativa rekvisit. Annars måste alla vara uppfyllda.',
+      'Står inget om oaktsamhet krävs **uppsåt**.'
+    ]
+  }
+  ]
+}
+];
+
+const SECTIONS = DELAR.flatMap(d => d.sections);
+
+const SAMMANFATTNING = [
+  { h: 'Del 1 · Brott och ansvar', lista: [
+    'Ett **brott** är en handling som är beskriven i lag och har ett straff föreskrivet.',
+    'De flesta brott står i **brottsbalken**, övriga i specialstrafflagar.',
+    '**Legalitetsprincipen**: retroaktivitets-, analogi- och obestämdhetsförbudet.',
+    'Objektiva och subjektiva rekvisit måste vara uppfyllda. **Uppsåt** krävs om inte **oaktsamhet** anges.'
+  ]},
+  { h: 'Del 2 · Påföljder och synen på straff', lista: [
+    '**Straffskala** = lägsta–högsta straff. **Straffvärde** = brottets allvar.',
+    '**Fängelse**, **böter**, **villkorlig dom** och **skyddstillsyn** är vanliga påföljder.',
+    'Absolut straffteori: **vedergällning**. Relativ straffteori: prevention.',
+    'Domstolen väger in både **allmänprevention** och **individualprevention**.'
+  ]},
+  { h: 'Del 3 · Tillämpning', lista: [
+    'Lös fall i fyra steg: lagrum → rekvisit → prövning → slutsats.',
+    '"Eller" i lagtexten = alternativa rekvisit.',
+    'Pröva alltid om någon ansvarsfrihetsgrund, som **nödvärn**, finns.'
+  ]}
+];
+
+/* ---------- Textformatering: **term** -> markerad fackterm, *ord* -> kursiv ---------- */
+function fmt(text) {
+  const parts = String(text).split(/(\*\*.+?\*\*|\*[^*\s][^*]*?\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**') && part.length > 4)
+      return <strong key={i} className="term">{part.slice(2, -2)}</strong>;
+    if (part.startsWith('*') && part.endsWith('*') && part.length > 2)
+      return <em key={i}>{part.slice(1, -1)}</em>;
+    return <React.Fragment key={i}>{part}</React.Fragment>;
+  });
+}
+
+/* ===================== INNEHÅLLSKOMPONENTER ===================== */
+
+function Tabell({ t }) {
+  return (
+    <div className="tbl-wrap">
+      <table className="tbl">
+        <thead><tr>{t.huvud.map((h, i) => <th key={i} className={i > 0 ? 'num' : ''}>{h}</th>)}</tr></thead>
+        <tbody>
+          {t.rader.map((r, i) => (
+            <tr key={i}>{r.map((c, j) => <td key={j} className={j > 0 && /^[−\d]/.test(c) ? 'num' : ''}>{fmt(c)}</td>)}</tr>
+          ))}
+        </tbody>
+        {t.summa && (
+          <tfoot><tr>{t.summa.map((c, j) => <td key={j} className={j > 0 ? 'num' : ''}>{c}</td>)}</tr></tfoot>
+        )}
+      </table>
+    </div>
+  );
+}
+
+function Items({ list }) {
+  return (list || []).map((it, i) => {
+    if (typeof it === 'string') return <p key={i}>{fmt(it)}</p>;
+    if (it.h) return <h3 key={i}>{it.h}</h3>;
+    if (it.lista) return <ul key={i}>{it.lista.map((t, j) => <li key={j}>{fmt(t)}</li>)}</ul>;
+    if (it.citat) return (
+      <blockquote className="citat" key={i}>
+        {fmt(it.citat)}
+        {it.kalla && <span className="citat-k">— {it.kalla}</span>}
+      </blockquote>
+    );
+    if (it.tabell) return <Tabell key={i} t={it.tabell} />;
+    if (it.ruta) return (
+      <div className="ruta" key={i}>
+        <div className="ruta-h">🔎 {it.ruta.h}</div>
+        <Items list={it.ruta.p} />
+      </div>
+    );
+    return null;
+  });
+}
+
+function Nyckelbegrepp({ list }) {
+  const items = list.map(b => typeof b === 'string' ? { term: b, def: BEGREPP[b] } : b);
+  const egen = items.some(b => b.kalla);
+  return (
+    <div className="nyckel">
+      <div className="nyckel-h">🔑 Nyckelbegrepp</div>
+      <dl>
+        {items.map(b => (
+          <div className="nb" key={b.term}>
+            <dt>{b.term}</dt>
+            <dd>{b.def}</dd>
+          </div>
+        ))}
+      </dl>
+      {egen && <div className="nyckel-k">Begreppet finns inte i begreppsövningen – förklaringen kommer från kurstexten.</div>}
+    </div>
+  );
+}
+
+function Section({ sec, mode }) {
+  const text = mode === 'lattlast' ? sec.lattlast : sec.fordjupning;
+  return (
+    <section id={sec.id} className="sec">
+      <div className="sec-head">
+        <span className="sec-emoji" aria-hidden="true">{sec.emoji}</span>
+        <h2 className="sec-title"><span className="nr">{sec.nr}</span>{sec.rubrik}</h2>
+      </div>
+      <p className="ingress"><b>🤔 Fundera först</b>{fmt(sec.hook)}</p>
+
+      <div className="block">
+        <Items list={text} />
+
+
+        {sec.fall && (
+          <div className="case">
+            <div className="case-h">📌 {sec.fall.titel}{sec.fall.tag && <span className="case-tag">{sec.fall.tag}</span>}</div>
+            <Items list={sec.fall.text} />
+          </div>
+        )}
+
+        <Nyckelbegrepp list={sec.begrepp} />
+
+        <div className="komihag">
+          <div className="komihag-h">💡 Kom ihåg</div>
+          <ul>{sec.komihag.map((t, i) => <li key={i}>{fmt(t)}</li>)}</ul>
+        </div>
+
+        <div className="to-top">
+          <a href="#toppen" onClick={(e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}>↑ Till toppen</a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ===================== APP ===================== */
+
+function App() {
+  /* Läget sparas bara i sessionStorage under egen nyckel. */
+  const [mode, setMode] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem(PAGE.storeKey);
+      if (saved === 'lattlast' || saved === 'fordjupning') return saved;
+    } catch (e) {}
+    return 'lattlast';
+  });
+  const [active, setActive] = useState(SECTIONS[0].id);
+  const [tocOpen, setTocOpen] = useState(false);
+
+  useEffect(() => {
+    try { sessionStorage.setItem(PAGE.storeKey, mode); } catch (e) {}
+  }, [mode]);
+
+  /* Markera aktuellt avsnitt i innehållsförteckningen. */
+  useEffect(() => {
+    if (!('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver(entries => {
+      const vis = entries.filter(en => en.isIntersecting)
+                         .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+      if (vis.length) setActive(vis[0].target.id);
+    }, { rootMargin: '-15% 0px -70% 0px' });
+    [...SECTIONS.map(s => s.id), 'sammanfattning'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) io.observe(el);
+    });
+    return () => io.disconnect();
+  }, []);
+
+  /* Djuplänk: scrolla till avsnittet i URL:ens hash när sidan laddats. */
+  useEffect(() => {
+    const id = decodeURIComponent((window.location.hash || '').replace('#', ''));
+    if (!id) return;
+    window.setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ block: 'start' });
+    }, 150);
+  }, []);
+
+  const goto = (e, id) => {
+    e.preventDefault();
+    setTocOpen(false);
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    try { history.replaceState(null, '', '#' + id); } catch (err) {}
+  };
+
+  const activeSec = SECTIONS.find(s => s.id === active);
+  const activeLabel = activeSec ? activeSec.nr + ' ' + activeSec.rubrik : 'Sammanfattning';
+
+  return (
+    <div className="wrap" id="toppen">
+
+      <a href={PAGE.hub} className="back" onClick={(e) => smartBack(e, PAGE.hub)}>
+        ← Tillbaka till Straffrätt
+      </a>
+
+      <header className="head">
+        <p className="eyebrow">{PAGE.eyebrow}</p>
+        <h1>{PAGE.titel}</h1>
+        <div className="rule"></div>
+        <p className="lead">
+          Pluggmaterial i tre delar och {SECTIONS.length} avsnitt. Välj <strong>Lättläst</strong> för korta meningar
+          och en tanke i taget, eller <strong>Fördjupning</strong> för resonemang, undantag och samband.
+        </p>
+      </header>
+
+      <div className="pill-toggle" role="tablist" aria-label="Välj läge">
+        <button role="tab" aria-selected={mode === 'lattlast'}
+                className={mode === 'lattlast' ? 'active' : 'inactive'}
+                onClick={() => setMode('lattlast')}>Lättläst</button>
+        <button role="tab" aria-selected={mode === 'fordjupning'}
+                className={mode === 'fordjupning' ? 'active' : 'inactive'}
+                onClick={() => setMode('fordjupning')}>Fördjupning</button>
+      </div>
+      <p className="mode-note" aria-live="polite">
+        {mode === 'lattlast'
+          ? 'Lättläst: korta meningar och en tanke i taget. Fackorden förklaras första gången.'
+          : 'Fördjupning: samma avsnitt och fackord, men med resonemang, undantag och kopplingar.'}
+      </p>
+
+      <div className="layout">
+        <nav className={'toc' + (tocOpen ? ' open' : '')} aria-label="Innehåll">
+          <button className="toc-btn" onClick={() => setTocOpen(o => !o)} aria-expanded={tocOpen}>
+            <span className="toc-btn-t">☰ {activeLabel}</span>
+            <span aria-hidden="true">{tocOpen ? '▲' : '▼'}</span>
+          </button>
+          <div className="toc-h">Innehåll</div>
+          <div className="toc-list">
+            {DELAR.map(d => (
+              <React.Fragment key={d.id}>
+                <div className="toc-del">{d.nr} · {d.titel}</div>
+                {d.sections.map(s => (
+                  <a href={'#' + s.id} key={s.id} onClick={(e) => goto(e, s.id)}
+                     className={s.id === active ? 'active' : ''}>
+                    <span className="toc-n">{s.nr}</span>
+                    <span className="toc-t">{s.rubrik}</span>
+                  </a>
+                ))}
+              </React.Fragment>
+            ))}
+            <div className="toc-del">Avslutning</div>
+            <a href="#sammanfattning" onClick={(e) => goto(e, 'sammanfattning')}
+               className={active === 'sammanfattning' ? 'active' : ''}>
+              <span className="toc-n">★</span>
+              <span className="toc-t">Sammanfattning</span>
+            </a>
+          </div>
+        </nav>
+
+        <main>
+          {DELAR.map(d => (
+            <React.Fragment key={d.id}>
+              <div className="del-head" id={d.id}>
+                <p className="del-nr">{d.nr}</p>
+                <h2>{d.titel}</h2>
+                <p className="del-lead">{d.lead}</p>
+              </div>
+              {d.sections.map(s => <Section key={s.id} sec={s} mode={mode} />)}
+            </React.Fragment>
+          ))}
+
+          <section className="summary" id="sammanfattning" aria-label="Sammanfattning">
+            <h2>📝 Sammanfattning</h2>
+            <div className="sum-grid">
+              {SAMMANFATTNING.map(col => (
+                <div className="sum-col" key={col.h}>
+                  <h3>{col.h}</h3>
+                  <ul>{col.lista.map((t, i) => <li key={i}>{fmt(t)}</li>)}</ul>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="next" aria-label="Öva vidare">
+            <h2>Öva vidare</h2>
+            <p>Har du läst klart? Testa dig själv på områdets begrepp och quiz.</p>
+            <div className="next-grid">
+              <a className="next-btn ghost" href="rs_straff_begrepp.html">📖 Öva på begrepp</a>
+              <a className="next-btn primary" href="rs_straff_quiz.html">🎯 Starta quizet</a>
+              <a className="next-btn ghost wide" href={PAGE.hub}>📚 Till Straffrätt</a>
+            </div>
+          </section>
+
+          <footer className="foot">
+            <p>Källa: {PAGE.kalla}</p>
+            <p className="by">Designad av John</p>
+          </footer>
+        </main>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+
+<script src="feedback-widget.js" defer></script>
+<script data-goatcounter="https://johnblixt.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
