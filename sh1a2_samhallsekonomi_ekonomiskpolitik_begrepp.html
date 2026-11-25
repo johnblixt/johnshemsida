@@ -11,6 +11,7 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="progress.js"></script>
+  <script src="begrepp-export.js"></script>
   <style>
     body { font-family: 'EB Garamond', serif; background: #fff7ed; }
     .font-fredoka { font-family: 'Fredoka', sans-serif; }
@@ -145,6 +146,46 @@ const concepts = [
     ickeExempel: { korrekt: 'Att Riksbanken siktar på att hålla inflationen på omkring två procent per år genom att justera styrräntan är ett exempel på ett inflationsmål.', icke: 'Att staten bestämmer hur stor andel av BNP som ska betalas i skatt är ett exempel på ett inflationsmål.', forklaring: 'Andelen av BNP som betalas i skatt beskriver i stället skattekvoten – ett inflationsmål handlar om vilken nivå centralbanken siktar på för prisökningarna i ekonomin.' } },
 ];
 
+// ════════════════════════════════════════════════════════════
+// WORD-NEDLADDNING (begrepp-export.js)
+// ════════════════════════════════════════════════════════════
+const EXPORT_META = {
+  title: 'Ekonomisk politik',
+  course: 'Samhällskunskap 1a2',
+  short: 'Sa1a2',
+  fileBase: 'sh1a2_samhallsekonomi_ekonomiskpolitik_begrepp',
+  color: PRIMARY,
+  colorLight: PRIMARY_LIGHT,
+  colorText: PRIMARY_TEXT,
+};
+
+function DownloadButton({ kind, label }) {
+  const [state, setState] = useState('idle'); // 'idle' | 'busy' | 'error'
+  const click = () => {
+    if (state === 'busy' || !window.BegreppExport) return;
+    setState('busy');
+    const fn = kind === 'cards' ? BegreppExport.exportCutCards : BegreppExport.exportList;
+    fn(concepts, EXPORT_META)
+      .then(() => setState('idle'))
+      .catch(() => setState('error'));
+  };
+  return (
+    <div className="flex flex-col items-center">
+      <button
+        onClick={click}
+        disabled={state === 'busy'}
+        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-bold font-fredoka text-sm border-2 bg-white hover:shadow-md active:scale-95 transition-all disabled:opacity-60"
+        style={{ borderColor: PRIMARY, color: PRIMARY_TEXT }}
+      >
+        {state === 'busy' ? '⏳ Skapar Word-fil…' : label}
+      </button>
+      {state === 'error' && (
+        <p className="text-xs text-red-500 mt-2 font-fredoka">Det gick inte att skapa filen. Kontrollera internetanslutningen och försök igen.</p>
+      )}
+    </div>
+  );
+}
+
 function getFeedback(score, total) {
   const p = score / total;
   if (p >= 0.9) return 'Redo för provet! Fantastiskt bra!';
@@ -228,6 +269,9 @@ function ListView({ onComplete }) {
 
   return (
     <div>
+      <div className="flex justify-center mb-5">
+        <DownloadButton kind="list" label="📄 Ladda ner listan som Word" />
+      </div>
       <input
         type="text"
         value={query}
@@ -396,6 +440,10 @@ function FlashcardView({ onComplete }) {
       <div className="flex flex-col items-center gap-2 mt-1">
         <p className="text-slate-500 font-medium bg-slate-200 px-4 py-1 rounded-full text-xs font-fredoka">{deckIdx + 1} av {deck.length}</p>
         <button onClick={restartAll} className="text-slate-400 text-xs hover:text-slate-600 transition-colors underline font-fredoka">↺ Börja om med alla</button>
+      </div>
+      <div className="mt-8 flex flex-col items-center gap-2">
+        <DownloadButton kind="cards" label="✂️ Ladda ner klipp-ut-kort (Word)" />
+        <p className="text-xs text-slate-400 font-fredoka text-center max-w-xs">Skriv ut, klipp ut korten och skriv förklaringen på baksidan.</p>
       </div>
     </div>
   );

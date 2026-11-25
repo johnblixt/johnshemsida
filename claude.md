@@ -512,6 +512,16 @@ Icke-exempel-vyn är en interaktiv 'Välj rätt tillämpning'-övning där eleve
 - Poängräknare och slutresultat när alla begrepp är genomgångna
 - 'Börja om'-knapp som blandar om ordningen
 
+### Word-nedladdning (begreppslista + klipp-ut-kort)
+Delad fil `begrepp-export.js` i repo-roten, exponerad som `window.BegreppExport`. Kopiera aldrig in logiken i en sida. Referensimplementation: `sh1a2_samhallsekonomi_ekonomiskpolitik_begrepp.html`.
+- Laddas med `<script src="begrepp-export.js"></script>` i `<head>`, direkt efter `progress.js`
+- docx.js (`unpkg.com/docx@9.16.0/dist/index.iife.js`) laddas först vid klick, så sidans laddtid påverkas inte
+- I sidan: konstanten `EXPORT_META` (`title`, `course`, `short`, `fileBase` = sid-ID, `color`, `colorLight`, `colorText`) och komponenten `DownloadButton` (`kind="list"` eller `kind="cards"`) med laddnings- och feltillstånd
+- **Listvy:** knappen "📄 Ladda ner listan som Word" överst, ovanför sökfältet → `[sid-ID]_lista.docx`: rubrik, kurs + antal begrepp, tabell Nr | Begrepp | Förklaring med rubrikrad i ämnets ljusa färg som upprepas på varje sida, sidnummer i sidfoten
+- **Flashcard-vy:** knappen "✂️ Ladda ner klipp-ut-kort (Word)" under korten, med hjälptexten "Skriv ut, klipp ut korten och skriv förklaringen på baksidan." → `[sid-ID]_klippkort.docx`: A4, 2 × 4 kort per sida (9,2 × 6,35 cm), streckade klipplinjer, bara begreppet (20 pt fetstil) och liten etikett "[kort kursnamn] · [område]". **Aldrig förklaringen.** Instruktionen står i sidhuvudet
+- Exporten följer alltid `concepts`-arrayen (`definition`, eller `def`). Har sidan Enkel svenska skickas `getDefinition` i `EXPORT_META` så att listan följer det valda läget. Korten påverkas aldrig, eftersom de bara har begreppet
+- Exporten rör aldrig progress, rank eller verifieringskod
+
 ### Tillbaka-knapp — gäller ALLA filer
 - Varje fil (quiz, begreppslista, lucktext, uppgifter) ska ha en **tillbaka-knapp** (se [Tillbaka-navigering](#tillbaka-navigering) för vart den ska länka)
 - Placeras högst upp till vänster
