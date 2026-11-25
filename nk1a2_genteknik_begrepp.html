@@ -11,6 +11,7 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="progress.js"></script>
+  <script src="begrepp-export.js"></script>
   <style>
     body { font-family: 'EB Garamond', serif; background: #f0fdf4; }
     .font-fredoka { font-family: 'Fredoka', sans-serif; }
@@ -361,6 +362,58 @@ function shuffleDeck(cards, lastId) {
   return d;
 }
 
+
+// ════════════════════════════════════════════════════════════
+// WORD-NEDLADDNING (begrepp-export.js)
+// Följer valt delfilter. Listan tar med exemplet (och det enkla
+// exemplet när 📖 Enkel svenska är på). Definitionerna är redan på
+// enkel svenska och ändras aldrig.
+// ════════════════════════════════════════════════════════════
+function exportMeta(kind, del, easy) {
+  return {
+    kind,
+    title: 'Cellen, DNA och genteknik' + (del === 'alla' ? '' : ` – Del ${del}`),
+    course: 'Naturkunskap 1a2',
+    short: 'Nak1a2',
+    fileBase: PROGRESS_ID + (del === 'alla' ? '' : `_del${del}`),
+    color: PRIMARY,
+    colorLight: '#dcfce7',
+    colorText: PRIMARY_TEXT,
+    getDefinition: c => c.def,
+    getExtra: c => easy ? [`Exempel: ${c.ex}`, `Enkel svenska: ${c.exEnkel}`] : [`Exempel: ${c.ex}`],
+    getGroup: c => `Del ${c.del} – ${DELAR[c.del]}`,
+    getCardLabel: c => `Nak1a2 · Cellen, DNA och genteknik · Del ${c.del}`,
+  };
+}
+
+function DownloadButton({ label, getItems, getMeta }) {
+  const [state, setState] = useState('idle'); // 'idle' | 'busy' | 'error'
+  const click = () => {
+    if (state === 'busy' || !window.BegreppExport) return;
+    setState('busy');
+    const meta = getMeta();
+    const fn = meta.kind === 'cards' ? BegreppExport.exportCutCards : BegreppExport.exportList;
+    fn(getItems(), meta)
+      .then(() => setState('idle'))
+      .catch(() => setState('error'));
+  };
+  return (
+    <div className="flex flex-col items-center">
+      <button
+        onClick={click}
+        disabled={state === 'busy'}
+        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm border-2 bg-white hover:shadow-md active:scale-95 transition-all disabled:opacity-60"
+        style={{ borderColor: PRIMARY_TEXT, color: PRIMARY_TEXT }}
+      >
+        {state === 'busy' ? '⏳ Skapar Word-fil…' : label}
+      </button>
+      {state === 'error' && (
+        <p className="text-xs text-red-500 mt-2">Det gick inte att skapa filen. Kontrollera internetanslutningen och försök igen.</p>
+      )}
+    </div>
+  );
+}
+
 function getFeedback(score, total) {
   const p = total ? score / total : 0;
   if (p >= 0.9) return 'Redo för provet! Fantastiskt bra!';
@@ -463,6 +516,13 @@ function ListView({ onComplete, easy }) {
 
   return (
     <div>
+      <div className="flex justify-center mb-5">
+        <DownloadButton
+          label={del === 'alla' ? '📄 Ladda ner listan som Word' : `📄 Ladda ner Del ${del} som Word`}
+          getItems={() => filterByDel(del)}
+          getMeta={() => exportMeta('list', del, easy)}
+        />
+      </div>
       <input
         type="search"
         value={query}
@@ -670,6 +730,14 @@ function FlashcardView({ onComplete, easy }) {
       <div className="flex flex-col items-center gap-2 mt-1">
         <p className="text-slate-500 font-medium bg-slate-200 px-4 py-1 rounded-full text-xs font-fredoka">{deckIdx + 1} av {deck.length}</p>
         <button onClick={restartAll} className="text-slate-400 text-xs hover:text-slate-600 transition-colors underline font-fredoka">↺ Börja om med alla</button>
+      </div>
+      <div className="mt-8 flex flex-col items-center gap-2">
+        <DownloadButton
+          label={del === 'alla' ? '✂️ Ladda ner klipp-ut-kort (Word)' : `✂️ Ladda ner klipp-ut-kort, Del ${del} (Word)`}
+          getItems={() => filterByDel(del)}
+          getMeta={() => exportMeta('cards', del, easy)}
+        />
+        <p className="text-xs text-slate-400 font-fredoka text-center max-w-xs">Skriv ut, klipp ut korten och skriv förklaringen på baksidan.</p>
       </div>
     </div>
   );

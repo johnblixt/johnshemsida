@@ -9,6 +9,7 @@
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="begrepp-export.js"></script>
   <style>
     body { font-family: 'EB Garamond', serif; }
     .flip-card { perspective: 1000px; height: 350px; width: 100%; max-width: 400px; cursor: pointer; }
@@ -84,6 +85,47 @@
     const P = '#0d9488';
     const PLIGHT = '#ccfbf1';
     const PDARK = '#134e4a';
+
+    // ════════════════════════════════════════════════════════════
+    // WORD-NEDLADDNING (begrepp-export.js)
+    // ════════════════════════════════════════════════════════════
+    const EXPORT_META = {
+      title: 'Rättsfilosofi och juridisk metod',
+      course: 'Rätten och samhället',
+      short: 'Rätten och samhället',
+      fileBase: 'rs_rattsfilosofi_begrepp',
+      color: P,
+      colorLight: PLIGHT,
+      colorText: PDARK,
+    };
+
+    function DownloadButton({ label, getItems, getMeta }) {
+      const [state, setState] = useState('idle'); // 'idle' | 'busy' | 'error'
+      const click = () => {
+        if (state === 'busy' || !window.BegreppExport) return;
+        setState('busy');
+        const meta = getMeta();
+        const fn = meta.kind === 'cards' ? BegreppExport.exportCutCards : BegreppExport.exportList;
+        fn(getItems(), meta)
+          .then(() => setState('idle'))
+          .catch(() => setState('error'));
+      };
+      return (
+        <div className="flex flex-col items-center">
+          <button
+            onClick={click}
+            disabled={state === 'busy'}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm border-2 bg-white hover:shadow-md active:scale-95 transition-all disabled:opacity-60"
+            style={{ borderColor: P, color: PDARK }}
+          >
+            {state === 'busy' ? '⏳ Skapar Word-fil…' : label}
+          </button>
+          {state === 'error' && (
+            <p className="text-xs text-red-500 mt-2">Det gick inte att skapa filen. Kontrollera internetanslutningen och försök igen.</p>
+          )}
+        </div>
+      );
+    }
 
     const lucktextSentences = [
       "Att det anses passande att tacka när man får en gåva, utan att det står i någon lag, är ett exempel på en ___.",
@@ -218,6 +260,13 @@
 
       return (
         <div>
+          <div className="flex justify-center mb-5">
+            <DownloadButton
+              label="📄 Ladda ner listan som Word"
+              getItems={() => concepts}
+              getMeta={() => ({ ...EXPORT_META, kind: 'list' })}
+            />
+          </div>
           <input
             type="text"
             value={query}
@@ -370,6 +419,14 @@
           <div className="flex flex-col items-center gap-2 mt-1">
             <p className="text-slate-500 font-medium bg-slate-200 px-4 py-1 rounded-full text-xs">{deckIdx + 1} av {deck.length}</p>
             <button onClick={restartAll} className="text-slate-400 text-xs hover:text-slate-600 transition-colors underline">↺ Börja om med alla</button>
+          </div>
+          <div className="mt-8 flex flex-col items-center gap-2">
+            <DownloadButton
+              label="✂️ Ladda ner klipp-ut-kort (Word)"
+              getItems={() => concepts}
+              getMeta={() => ({ ...EXPORT_META, kind: 'cards' })}
+            />
+            <p className="text-xs text-slate-400 text-center max-w-xs">Skriv ut, klipp ut korten och skriv förklaringen på baksidan.</p>
           </div>
         </div>
       );

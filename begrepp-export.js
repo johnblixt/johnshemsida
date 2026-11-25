@@ -14,8 +14,12 @@
      color:      PRIMARY,                    // ämnets primärfärg (#hex)
      colorLight: PRIMARY_LIGHT,              // ljus bakgrund (#hex)
      colorText:  PRIMARY_TEXT,               // mörk text på färg (#hex)
-     getDefinition: (c) => c.definition      // valfri — t.ex. för Enkel svenska
+     getDefinition: (c) => c.definition,     // valfri — t.ex. för Enkel svenska
+     getExtra:   (c) => [c.ex],              // valfri — extra rader (t.ex. exempel) under förklaringen i listan
+     getGroup:   (c) => 'Del ' + c.del,      // valfri — grupprubrik i listan när värdet byter
+     getCardLabel: (c) => 'Nak1a2 · Del 1'   // valfri — etiketten på klipp-ut-korten
    }
+   Nr i listan = c.id om det finns, annars löpnummer.
 
    docx.js laddas först när någon klickar (påverkar inte sidans laddtid).
    ════════════════════════════════════════════════════════════ */
@@ -42,6 +46,10 @@
     if (meta && typeof meta.getDefinition === 'function') return meta.getDefinition(c) || '';
     return c.definition || c.def || '';
   }
+  function extraOf(c, meta) {
+    if (!meta || typeof meta.getExtra !== 'function') return [];
+    return (meta.getExtra(c) || []).filter(Boolean);
+  }
 
   // ── Begreppslista: Nr | Begrepp | Förklaring ───────────────
   function buildList(d, concepts, meta) {
@@ -60,10 +68,17 @@
         shading: opts.fill ? { type: d.ShadingType.CLEAR, color: 'auto', fill: opts.fill } : undefined,
         margins: { top: 90, bottom: 90, left: 120, right: 120 },
         verticalAlign: d.VerticalAlign.TOP,
+        columnSpan: opts.span,
         children: [new d.Paragraph({
           alignment: opts.center ? d.AlignmentType.CENTER : d.AlignmentType.LEFT,
+          keepNext: !!opts.keepNext,
           children: [new d.TextRun({ text: text, bold: !!opts.bold, color: opts.color, size: opts.size || 22, font: FONT })]
-        })]
+        })].concat((opts.extra || []).map(function (t) {
+          return new d.Paragraph({
+            spacing: { before: 60 },
+            children: [new d.TextRun({ text: t, italics: true, color: '64748B', size: 20, font: FONT })]
+          });
+        }))
       });
     }
 
@@ -76,15 +91,27 @@
         cell('Förklaring', W[2], { bold: true, fill: light, color: dark })
       ]
     });
-    var rows = concepts.map(function (c, i) {
-      return new d.TableRow({
+    var rows = [];
+    var lastGroup = null;
+    concepts.forEach(function (c, i) {
+      if (typeof meta.getGroup === 'function') {
+        var g = meta.getGroup(c);
+        if (g && g !== lastGroup) {
+          rows.push(new d.TableRow({
+            cantSplit: true,
+            children: [cell(g, W[0] + W[1] + W[2], { span: 3, bold: true, color: dark, fill: 'F8FAFC', keepNext: true })]
+          }));
+          lastGroup = g;
+        }
+      }
+      rows.push(new d.TableRow({
         cantSplit: true,
         children: [
-          cell(String(i + 1), W[0], { center: true, color: '64748B' }),
+          cell(String(c.id != null ? c.id : i + 1), W[0], { center: true, color: '64748B' }),
           cell(c.term, W[1], { bold: true }),
-          cell(defOf(c, meta), W[2])
+          cell(defOf(c, meta), W[2], { extra: extraOf(c, meta) })
         ]
-      });
+      }));
     });
 
     return new d.Document({
@@ -129,6 +156,9 @@
     var dash = { style: d.BorderStyle.DASHED, size: 6, color: '64748B' };
     var none = { style: d.BorderStyle.NONE, size: 0, color: 'FFFFFF' };
     var label = (meta.short || meta.course) + ' · ' + meta.title;
+    function labelOf(c) {
+      return typeof meta.getCardLabel === 'function' ? meta.getCardLabel(c) : label;
+    }
 
     function card(c) {
       var b = c ? dash : none;
@@ -145,7 +175,7 @@
           }),
           new d.Paragraph({
             alignment: d.AlignmentType.CENTER,
-            children: [new d.TextRun({ text: label, size: 16, color: '94A3B8', font: FONT })]
+            children: [new d.TextRun({ text: labelOf(c), size: 16, color: '94A3B8', font: FONT })]
           })
         ] : [new d.Paragraph('')]
       });

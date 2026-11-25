@@ -159,13 +159,14 @@ const EXPORT_META = {
   colorText: PRIMARY_TEXT,
 };
 
-function DownloadButton({ kind, label }) {
+function DownloadButton({ label, getItems, getMeta }) {
   const [state, setState] = useState('idle'); // 'idle' | 'busy' | 'error'
   const click = () => {
     if (state === 'busy' || !window.BegreppExport) return;
     setState('busy');
-    const fn = kind === 'cards' ? BegreppExport.exportCutCards : BegreppExport.exportList;
-    fn(concepts, EXPORT_META)
+    const meta = getMeta();
+    const fn = meta.kind === 'cards' ? BegreppExport.exportCutCards : BegreppExport.exportList;
+    fn(getItems(), meta)
       .then(() => setState('idle'))
       .catch(() => setState('error'));
   };
@@ -270,7 +271,7 @@ function ListView({ onComplete }) {
   return (
     <div>
       <div className="flex justify-center mb-5">
-        <DownloadButton kind="list" label="📄 Ladda ner listan som Word" />
+        <DownloadButton label="📄 Ladda ner listan som Word" getItems={() => concepts} getMeta={() => ({ ...EXPORT_META, kind: 'list' })} />
       </div>
       <input
         type="text"
@@ -442,7 +443,7 @@ function FlashcardView({ onComplete }) {
         <button onClick={restartAll} className="text-slate-400 text-xs hover:text-slate-600 transition-colors underline font-fredoka">↺ Börja om med alla</button>
       </div>
       <div className="mt-8 flex flex-col items-center gap-2">
-        <DownloadButton kind="cards" label="✂️ Ladda ner klipp-ut-kort (Word)" />
+        <DownloadButton label="✂️ Ladda ner klipp-ut-kort (Word)" getItems={() => concepts} getMeta={() => ({ ...EXPORT_META, kind: 'cards' })} />
         <p className="text-xs text-slate-400 font-fredoka text-center max-w-xs">Skriv ut, klipp ut korten och skriv förklaringen på baksidan.</p>
       </div>
     </div>
